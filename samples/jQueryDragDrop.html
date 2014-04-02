@@ -1,0 +1,79 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>HTML Drag and Drop</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $$ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $$(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+         { initialPosition: new go.Point(0, 0) });
+
+    myDiagram.nodeTemplate =
+      $$(go.Node, "Auto",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "loc", go.Point.parse),
+        $$(go.Shape, "Ellipse",
+          { fill: "white" }),
+        $$(go.TextBlock,
+          { margin: 5 },
+          new go.Binding("text", "text").makeTwoWay()));
+
+    $("li").draggable({
+      stack: "#myDiagram",
+      revert: true,
+      revertDuration: 0
+    });
+
+    $("#myDiagram").droppable({
+      activeClass: "ui-state-highlight",
+      drop: function(event, ui) {
+        var elt = ui.draggable.first();
+        var text = elt.context.textContent;
+        var x = ui.offset.left - myDiagram.div.offsetLeft;
+        var y = ui.offset.top - myDiagram.div.offsetTop;
+        var p = new go.Point(x, y);
+        var q = myDiagram.transformViewToDoc(p);
+        var model = myDiagram.model;
+        model.startTransaction("drop");
+        model.addNodeData({
+          text: text,
+          loc: go.Point.stringify(q)
+        });
+        model.commitTransaction("drop");
+      }
+    });
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; width:20%">
+      <div id="myItems" style="border: solid 1px black; height: 700px">
+        <ul>
+          <li>First</li>
+          <li>Second</li>
+          <li>Third</li>
+          <li>Fourth</li>
+          <li>Fifth</li>
+        </ul>
+      </div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; width:80%">
+      <div id="myDiagram" style="border: solid 1px black; height: 700px"></div>
+    </span>
+  </div>
+  This demonstrates using jQuery drag-and-drop capability to allow the user to drag HTML list items into a GoJS diagram.
+</div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>Incremental Tree</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+        {
+          autoScale: go.Diagram.UniformToFill,
+          contentAlignment: go.Spot.Center,
+          layout: $(go.ForceDirectedLayout),
+          // moving and copying nodes also moves and copies their subtrees
+          "commandHandler.copiesTree": true,  // for the copy command
+          "commandHandler.deletesTree": true, // for the delete command
+          "draggingTool.dragsTree": true,  // dragging for both move and copy
+          "undoManager.isEnabled": true
+        });
+
+
+    // Define the Node template.
+    // This uses a Spot Panel to position a button relative
+    // to the ellipse surrounding the text.
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        { selectionObjectName: "PANEL",
+          isTreeExpanded: false,
+          isTreeLeaf: false },
+        // the node's outer shape, which will surround the text
+        $(go.Panel, "Auto",
+          { name: "PANEL" },
+          $(go.Shape, "Ellipse",
+            { fill: "whitesmoke",
+              stroke: "black" },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { font: "12pt sans-serif",
+              margin: 5 },
+            new go.Binding("text", "key"))
+        ),
+        // the expand/collapse button, at the top-right corner
+        $("TreeExpanderButton",
+          { alignment: go.Spot.TopRight,
+            alignmentFocus: go.Spot.Center,
+            // customize the expander behavior to
+            // create children if the node has never been expanded
+            click: function (e, obj) {  // OBJ is the Button
+                var node = obj.part;  // get the Node containing this Button
+                if (node === null) return;
+                e.handled = true;
+                var diagram = node.diagram;
+                diagram.startTransaction("CollapseExpandTree");
+                // this behavior is specific to this incrementalTree sample:
+                var data = node.data;
+                if (!data.everExpanded) {
+                  // only create children once per node
+                  diagram.model.setDataProperty(data, "everExpanded", true);
+                  var numchildren = createSubTree(data);
+                  if (numchildren === 0) {  // now known no children: don't need Button!
+                    obj.visible = false;
+                  }
+                }
+                // this behavior is generic for most expand/collapse tree buttons:
+                node.isTreeExpanded = !node.isTreeExpanded;  // expand or collapse
+                diagram.commitTransaction("CollapseExpandTree");
+              }
+          }
+        )  // end TreeExpanderButton
+      );  // end Node
+
+    // create the model with a root node data
+    myDiagram.model = new go.TreeModel([
+      { key: 0, color: "lightgreen", everExpanded: false }
+    ]);
+  }
+
+  // This dynamically creates the immediate children for a node.
+  // The sample assumes that we have no idea of whether there are any children
+  // for a node until we look for them the first time, which happens
+  // upon the first tree-expand of a node.
+  function createSubTree(parentdata) {
+    var numchildren = Math.floor(Math.random() * 10);
+    if (myDiagram.nodes.count <= 1) {
+      numchildren += 1;  // make sure the root node has at least one child
+    }
+    // create several node data objects and add them to the model
+    var model = myDiagram.model;
+    var parent = myDiagram.findNodeForData(parentdata);
+    for (var i = 0; i < numchildren; i++) {
+      var childdata = {
+        key: model.nodeDataArray.length,
+        parent: parentdata.key,
+        color: go.Brush.randomColor()
+      };
+      // add to model.nodeDataArray and create a Node
+      model.addNodeData(childdata);
+      // position the new child node close to the parent
+      var child = myDiagram.findNodeForData(childdata);
+      child.location = parent.location;
+    }
+    return numchildren;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
+  <p>
+  This diagram demonstrates the expansion of a tree where nodes are only created "on-demand",
+  when the user clicks on the "expand" Button.
+  As you expand the tree, it automatically performs a force-directed layout,
+  which will make some room for the additional nodes.
+  </p>
+  <p>
+  The data for each node is implemented by a JavaScript object held by the Diagram's model.
+  Each node data has an <b>everExpanded</b> property that indicates whether we have already
+  created all of its "child" data and added them to the model.
+  The <b>everExpanded</b> property defaults to false,
+  to match the initial value of <a>Node.isTreeExpanded</a> in the node template,
+  which specifies that the nodes start collapsed.
+  </p>
+  <p>
+  When the user clicks on the "expand" Button, the button click event handler finds the corresponding
+  data object by going up the visual tree to find the Node via the <a>GraphObject.part</a> property
+  and then getting the node data that the Node is bound to via <a>Part.data</a>.
+  If <b>everExpanded</b> is false, the code creates a random number of
+  child data for that node, each with a random <b>color</b> property.
+  Then the button click event handler changes the value of <b>Node.isExpandedTree</b>,
+  thereby expanding or collapsing the node.
+  </p>
+  <p>
+  Some initial node expansions result in there being no children at all.
+  In this case the Button is made invisible.
+  </p>
+  <p>
+  All changes are performed within a transaction.
+  You should always surround your code with calls to <a>Model.startTransaction</a> and <a>Model.commitTransaction</a>,
+  or the same methods on <a>Diagram</a>.
+  </p>
+  <p>
+  The diagram's <a>Diagram.layout</a> is an instance of <a>ForceDirectedLayout</a>.
+  The standard conditions under which the layout will be performed include
+  when nodes or links or group-memberships are added or removed from the model,
+  or when they change visibility.
+  In this case that means that when the user expands or collapses a node,
+  another force-directed layout occurs again, even upon repeated expansions or collapses.
+  </p>
+</div>
+</body>
+</html>

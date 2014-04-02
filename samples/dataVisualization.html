@@ -1,0 +1,299 @@
+<!doctype html>
+<html>
+<head>
+<title>Data Visualization GoJS Sample</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<!--
+The div needs an explicit size or else we won't see anything.
+Lets also add a border to help see the edges.
+-->
+<style type="text/css">
+  #myDiagram {
+    border: solid 1px black;
+    width:400px;
+    height:400px;
+    margin-right: 12px;
+    float: left;
+    background-color: whitesmoke;
+  }
+
+  #controls {
+    border: solid 1px gray;
+    width: 300px;
+    background: #ffffff;
+    padding: 5px;
+    float: left;
+  }
+
+  #infoBoxHolder {
+    z-index: 300;
+    position: absolute;
+    left: 5px;
+  }
+
+  #infoBox {
+    border: 1px solid #999;
+    padding: 8px;
+    background-color: whitesmoke;
+    opacity:0.9;
+    position: relative;
+    width: 170px;
+    //height: 60px;
+    font-family: arial, helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+  }
+
+  /* this is known as the "clearfix" hack to allow
+     floated objects to add to the height of a div */
+  #infoBox:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+
+  div.infoTitle {
+    width: 100px;
+    font-weight: normal;
+    color:  #787878;
+    float: left;
+    margin-left: 4px;
+  }
+
+  div.infoValues {
+    width: 30px;
+    text-align: right;
+    float: right;
+  }
+
+  label:hover, label:focus { background: #CEDFF2; }
+</style>
+
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<!-- we also link to a file that contains some data on the iris flower -->
+<script src="dataVisualization.js"></script>
+<script id="code">
+  var myDiagram;
+  var myLocation = {
+    x: "sepalLength",
+    y: "sepalWidth"
+  }
+  var lastStroked = null;
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+        { contentAlignment: go.Spot.Center,
+          initialContentAlignment: go.Spot.Center,
+          autoScale: go.Diagram.Uniform,
+          isReadOnly: true });
+
+    // define a simple Node template (but use the default Link template)
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { selectable: false,
+          mouseOver: function(e, obj) { highlightNode(e, obj) }
+        },
+        new go.Binding("location", "", function(nothing, elt) {
+            return new go.Point(
+              elt.data[myLocation.x]*200,
+              elt.data[myLocation.y]*200)
+          }),
+
+        $(go.Shape, "Hexagon",
+          { name: "SHAPE",
+            width: 20, height: 20,
+            strokeWidth: 4, stroke: null },
+          new go.Binding("fill", "species", function(name) {
+              switch (name) {
+                case "Iris-setosa":     return "rgba(240, 120,  50, .6)";
+                case "Iris-versicolor": return "rgba(240, 230, 120, .6)";
+                case "Iris-virginica":  return "rgba(125, 200, 120, .6)";
+              }
+              return "black";
+            }))
+      );
+
+    // http://en.wikipedia.org/wiki/Iris_flower_data_set
+    // data is defined in dataVisualization.js
+    var array = [];
+    for (var i = 0; i < irisData.length; i++) {
+      var line = irisData[i];
+      var data = {
+        sepalLength: line[0],
+        sepalWidth:  line[1],
+        petalLength: line[2],
+        petalWidth:  line[3],
+        species:     line[4]
+      };
+      array.push(data);
+    }
+
+    myDiagram.model = new go.Model(array);;
+
+
+    myDiagram.mouseOver = function(e) {
+      doMouseOver(e);
+    }
+
+    function doMouseOver(e) {
+      if (e === undefined) e = myDiagram.lastInput;
+      var doc = e.documentPoint;
+      var list = myDiagram.findObjectsNear(
+        doc,
+        100,
+        null,
+        function(x) { return x instanceof go.Part; });
+      var closest = null;
+      var closestDist = 999999999;
+      var itr = list.iterator;
+      while (itr.next()) {
+        var val = itr.value;
+        var dist = doc.distanceSquaredPoint(val.getDocumentPoint(go.Spot.Center));
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = val;
+        }
+      }
+      highlightNode(e, closest);
+    }
+
+    // Called with a Node (or null) that the mouse is over or near
+    function highlightNode(e, node) {
+      if (node !== null) {
+        var shape = node.findObject("SHAPE");
+        shape.stroke = "white";
+        if (lastStroked !== null && lastStroked !== shape) lastStroked.stroke = null;
+        lastStroked = shape;
+        updateInfoBox(e.viewPoint, node.data);
+      } else {
+        if (lastStroked !== null) lastStroked.stroke = null;
+        lastStroked = null;
+        document.getElementById("infoBoxHolder").innerHTML = "";
+      }
+    }
+
+    // Make sure the infoBox is momentarily hidden if the user tries to mouse over it
+    var infoBoxH = document.getElementById("infoBoxHolder");
+    infoBoxH.addEventListener("mousemove", function() {
+      var box = document.getElementById("infoBoxHolder");
+      box.style.left = parseInt(box.style.left) + "px";
+      box.style.top = parseInt(box.style.top)+30 + "px";
+    }, false);
+
+    var diagramDiv = document.getElementById("myDiagram");
+    // Make sure the infoBox is hidden when the mouse is not over the Diagram
+    diagramDiv.addEventListener("mouseout", function(e) {
+      if (lastStroked !== null) lastStroked.stroke = null;
+      lastStroked = null;
+
+      var infoBox = document.getElementById("infoBox");
+      var elem = document.elementFromPoint(e.clientX, e.clientY);
+      if (elem === infoBox || elem.parentNode === infoBox) {
+        var box = document.getElementById("infoBoxHolder");
+        box.style.left = parseInt(box.style.left) + "px";
+        box.style.top = parseInt(box.style.top)+30 + "px";
+      } else {
+        var box = document.getElementById("infoBoxHolder");
+        box.innerHTML = "";
+      }
+    }, false);
+
+  } // end init
+
+  //
+  function updateInfoBox(mousePt, data) {
+    var x =
+    "<div id='infoBox'>" +
+    "<div>" + data.species + "</div>" +
+    "<div class='infoTitle'>Sepal Length</div>" +
+    "<div class='infoValues'>" + data.sepalLength + "</div>" +
+    "<div class='infoTitle'>Sepal Width</div>" +
+    "<div class='infoValues'>" + data.sepalWidth + "</div>" +
+    "<div class='infoTitle'>Petal Length</div>" +
+    "<div class='infoValues'>" + data.petalLength + "</div>" +
+    "<div class='infoTitle'>Petal Width</div>" +
+    "<div class='infoValues'>" + data.petalWidth + "</div></div>"
+
+    var box = document.getElementById("infoBoxHolder");
+    box.innerHTML = x;
+    box.style.left = mousePt.x+120 + "px";
+    box.style.top = mousePt.y+20 + "px";
+  }
+
+  // This function is called which a radio button is pressed
+  // It changes the value of a variable that the node template's
+  // location conversion function uses.
+  // It then updates all target bindings,
+  function changeAxes(e) {
+    var value = e.value;
+    if (e.name === "X") {
+      myLocation.x = value;
+    } else {
+      myLocation.y = value;
+    }
+    myDiagram.startTransaction("updateBindings");
+    myDiagram.updateAllTargetBindings();
+    myDiagram.commitTransaction("updateBindings");
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="display: inline-block">
+
+    <!--The DIV for the Diagram needs an explicit size or else we won't see anything.
+         Also add a border to help see the edges. -->
+    <div id="myDiagram" style="background-color: #3D3D3D; border: solid 1px black; width:500px; height:500px"></div>
+    <!-- This sibling of the Diagram provides information when the mouse is near a Diagram Node -->
+    <div id="infoBoxHolder">
+      <!-- Initially Empty, it is populated when updateInfoBox is called -->
+    </div>
+
+
+  <div id="controls">
+    <div style="border: solid 1px gray; float: left;  padding: 2px;">
+      <p style="text-align: center;">X-axis</p>
+      <hr/>
+      <input type="radio" name="X" onclick="changeAxes(this)" value="sepalLength" id="SLx" checked/>
+      <label for="SLx">Sepal Length</label><br/>
+      <input type="radio" name="X" onclick="changeAxes(this)" value="sepalWidth" id="SWx" />
+      <label for="SWx">Sepal Width</label><br/>
+      <input type="radio" name="X" onclick="changeAxes(this)" value="petalLength" id="PLx"/>
+      <label for="PLx">Petal Length</label><br/>
+      <input type="radio" name="X" onclick="changeAxes(this)" value="petalWidth" id="PWx"/>
+      <label for="PWx">Petal Width</label><br/>
+    </div>
+    <div style="border: solid 1px gray; float: left; margin-left: 10px; padding: 2px;">
+      <p style="text-align: center;">Y-axis</p>
+      <hr/>
+      <input type="radio" name="Y" onclick="changeAxes(this)" value="sepalLength" id="SLy"/>
+      <label for="SLy">Sepal Length</label><br/>
+      <input type="radio" name="Y" onclick="changeAxes(this)" value="sepalWidth" id="SWy" checked/>
+      <label for="SWy">Sepal Width</label><br/>
+      <input type="radio" name="Y" onclick="changeAxes(this)" value="petalLength" id="PLy"/>
+      <label for="PLy">Petal Length</label><br/>
+      <input type="radio" name="Y" onclick="changeAxes(this)" value="petalWidth" id="PWy"/>
+      <label for="PWy">Petal Width</label><br/>
+    </div>
+
+    <div id="description" style="float: left;">
+      <p>This sample gives an example of a Diagram interacting with other HTML elements on the page.</p>
+      <p>As the mouse moves over the diagram, a formatted div displays information about the nearest Node.</p>
+      <p>The data displayed is from the <a href="http://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>, describing the variations in dimensions of three related flower species.</p>
+    </div>
+  </div>
+  </div>
+
+
+</div>
+</body>
+</html>

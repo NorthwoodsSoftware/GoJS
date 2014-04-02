@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Beat Paths</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css" />
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    // Must name or refer to the DIV HTML element
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        { // automatically scale the diagram to fit the viewport's size
+          autoScale: go.Diagram.Uniform,
+          // disable user copying of parts
+          allowCopy: false });
+
+    // replace the default Node template in the nodeTemplateMap
+    myDiagram.nodeTemplate =
+      $(go.Node, "Vertical",  // the whole node panel
+        $(go.TextBlock,  // the text label
+          new go.Binding("text", "key")),
+        $(go.Picture,  // the icon showing the logo
+          // You should set the desiredSize (or width and height)
+          // whenever you know what size the Picture should be.
+          { desiredSize: new go.Size(50, 50) },
+          new go.Binding("source", "key", convertKeyImage))
+      );
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      $(go.Link,  // the whole link panel
+        { routing: go.Link.Normal,
+          curve: go.Link.Bezier,
+          toShortLength: 2 },
+        $(go.Shape,  // the link shape
+          { isPanelMain: true,
+            stroke: "black",
+            strokeWidth: 1.5 }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "standard",
+            stroke: null })
+      );
+
+    // the array of link data objects: the relationships between the nodes
+    var linkDataArray = [
+      { from: "NE", to: "CLE" },
+      { from: "NE", to: "DAL" },
+      { from: "NE", to: "IND" },
+      { from: "PIT", to: "CLE" },
+      { from: "DAL", to: "NYG" },
+      { from: "DAL", to: "GB" },
+      { from: "CLE", to: "SEA" },
+      { from: "NYG", to: "DET" },
+      { from: "GB", to: "MIN" },
+      { from: "GB", to: "PHI" },
+      { from: "SEA", to: "PHI" },
+      { from: "SEA", to: "CIN" },
+      { from: "IND", to: "TB" },
+      { from: "IND", to: "JAC" },
+      { from: "MIN", to: "SD" },
+      { from: "PHI", to: "NYJ" },
+      { from: "DET", to: "CHI" },
+      { from: "DET", to: "DEN" },
+      { from: "JAC", to: "DEN" },
+      { from: "SD", to: "DEN" },
+      { from: "CHI", to: "OAK" },
+      { from: "TB", to: "TEN" },
+      { from: "DEN", to: "TEN" },
+      { from: "DEN", to: "KC" },
+      { from: "DEN", to: "BUF" },
+      { from: "TEN", to: "OAK" },
+      { from: "TEN", to: "ATL" },
+      { from: "TEN", to: "HOU" },
+      { from: "BUF", to: "WAS" },
+      { from: "OAK", to: "MIA" },
+      { from: "HOU", to: "MIA" },
+      { from: "HOU", to: "CAR" },
+      { from: "WAS", to: "NYJ" },
+      { from: "WAS", to: "ARI" },
+      { from: "CIN", to: "BAL" },
+      { from: "NYJ", to: "MIA" },
+      { from: "CAR", to: "ARI" },
+      { from: "CAR", to: "STL" },
+      { from: "CAR", to: "SF" },
+      { from: "NO", to: "SF" },
+      { from: "BAL", to: "STL" },
+      { from: "BAL", to: "SF" }
+    ];
+
+    // create the model and assign it to the Diagram
+    var model = new go.GraphLinksModel();
+    // automatically create node data objects for each "from" or "to" reference
+    // (set this property before setting the linkDataArray)
+    model.archetypeNodeData = {};
+    // process all of the link relationship data
+    model.linkDataArray = linkDataArray;
+    myDiagram.model = model;
+
+    // position all of the nodes and route all of the links
+    myDiagram.layout =
+      $(go.LayeredDigraphLayout,
+        { direction: 90,
+          layerSpacing: 10,
+          columnSpacing: 15,
+          setsPortSpots: false });
+  }
+
+  function convertKeyImage(key) {
+    if (!key) key = "NE";
+    return "http://www.nwoods.com/go/beatpaths/" + key + "_logo-50x50.png";
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p><b>Beat Paths</b>: The 2007 NFL Season</p>
+  <div id="myDiagram" style="border: solid 1px gray; margin: 10px; height: 700px"></div>
+  <p>
+  This sample demonstrates reading JSON data describing the relative rankings of NFL teams
+  at a particular moment of time and generating a diagram from that data.
+  The ranking information came from www.beatpaths.com.
+  </p>
+  <p>
+  The JSON data is basically just a list of relationships.
+  Unlike most model data, there are no elements describing the nodes --
+  the node definitions are implicit in the references from the links.
+  Hence the <a>Diagram.model</a> has <a>GraphLinksModel.archetypeNodeData</a> set to a JavaScript object.
+  </p>
+  <p>
+  The node template uses the <b>convertKeyImage</b> function to convert the team name
+  into a URI referring to an image on our web site.
+  </p>
+</div>
+</body>
+</html>

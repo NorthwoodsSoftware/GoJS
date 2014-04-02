@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+<head>
+<title>Update Demo GoJS Sample</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+// This variable refers to the Model that both Diagrams use.
+// It is here to allow usage by Data property setters.
+var myModel;
+
+// define a node data class that automatically notifies when the "loc" property changes value
+function Data(k, p) {
+  this.key = k;
+  if (p !== undefined)
+    this._loc = p;
+  else
+    this._loc = new go.Point();
+}
+
+Data.prototype = {
+  // set the constructor: needed so that the model can construct copies of the Data
+  constructor: Data,
+
+  // define the "loc" property getter and setter
+  get loc() { return this._loc; },
+  set loc(val) {
+    var old = this._loc;
+    if (!old.equals(val)) {
+      this._loc = val.copy();
+      myModel.raiseDataChanged(this, "loc", old, this._loc);
+    }
+  }
+};
+
+function init() {
+  if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+  var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+  // define a nice brush
+  var bluegradient = $(go.Brush, go.Brush.Linear, { 0: "#00ACED", 0.5: "#00ACED", 1: "#0079A6" });
+
+  var blueDiagram =
+    $(go.Diagram, "blueDiagram",
+      {
+        "clickCreatingTool.archetypeNodeData": new Data("node")
+      });
+
+  blueDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc").makeTwoWay(),
+      $(go.Shape, "RoundedRectangle",
+        { fill: bluegradient, stroke: "#0079A6",
+          portId: "", cursor: "pointer",  // the node's only port is the Shape
+          fromLinkable: true, fromLinkableDuplicates: true, fromLinkableSelfNode: true,
+          toLinkable: true, toLinkableDuplicates: true, toLinkableSelfNode: true }),
+      $(go.TextBlock,
+        { margin: 3, font: "bold 10pt arial", stroke: "whitesmoke" },
+        new go.Binding("text", "key"))
+    );
+
+  blueDiagram.linkTemplate =
+    $(go.Link,  // the whole link panel
+      { curve: go.Link.Bezier, adjusting: go.Link.Stretch,
+        relinkableFrom: true, relinkableTo: true, reshapable: true },
+      new go.Binding("curviness", "curviness"),
+      $(go.Shape,  // the link shape
+        { strokeWidth: 2, stroke: "blue" }),
+      $(go.Shape,  // the arrowhead
+        { toArrow: "standard",
+          fill: "blue", stroke: null })
+    );
+
+
+  var greenDiagram =
+    $(go.Diagram, "greenDiagram",
+      {
+        "clickCreatingTool.archetypeNodeData": new Data("node")
+      });
+
+  greenDiagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      new go.Binding("location", "loc").makeTwoWay(),
+      $(go.Shape, "Ellipse",
+        { fill: "lightgreen", width: 20, height: 20, portId: "" }),
+      $(go.TextBlock,
+        { margin: 3, font: "bold 12px Georgia" },
+        new go.Binding("text", "key"))
+    );
+
+  greenDiagram.linkTemplate =
+    $(go.Link,  // the whole link panel
+      new go.Binding("curviness", "curviness"),
+      $(go.Shape,  // the link shape
+        { strokeWidth: 2, stroke: "#76C176" }),
+      $(go.Shape,  // the arrowhead
+        { toArrow: "standard",
+          fill: "#76C176", stroke: null })
+    );
+
+
+  // create the model data that will be represented in both diagrams simultaneously
+  var model = new go.GraphLinksModel(
+  [
+    new Data("Alpha", new go.Point(20,20)),
+    new Data("Beta", new go.Point(160,120))
+  ],
+  [
+    { from: "Alpha", to: "Beta" }
+  ]);
+  myModel = model;  // make accessible to the property setter(s)
+
+  // the two Diagrams share the same model
+  blueDiagram.model = model;
+  greenDiagram.model = model;
+
+  // now turn on undo/redo
+  model.undoManager.isEnabled = true;
+
+
+  // *********************************************************
+  // A third diagram is on this page to display the undo state
+  // *********************************************************
+
+  var undoDisplay =
+    $(go.Diagram, "undoDisplay",
+      { allowMove: false,
+        maxSelectionCount: 1 });
+
+  undoDisplay.nodeTemplate =
+    $(go.Node,
+      $("TreeExpanderButton",
+        { width: 14,
+          "ButtonBorder.fill": "whitesmoke" }),
+      $(go.Panel, "Horizontal",
+        { position: new go.Point(16, 0) },
+        new go.Binding("background", "color"),
+        $(go.TextBlock, {margin: 2},
+          new go.Binding("text", "text"))
+      )
+    );
+
+  undoDisplay.linkTemplate = $(go.Link);  // not really used
+
+  undoDisplay.layout =
+    $(go.TreeLayout,
+      { alignment: go.TreeLayout.AlignmentStart,
+        angle: 0,
+        compaction: go.TreeLayout.CompactionNone,
+        layerSpacing: 16,
+        layerSpacingParentOverlap: 1,
+        nodeIndent: 2,
+        nodeIndentPastParent: 0.88,
+        nodeSpacing: 0,
+        setsPortSpot: false,
+        setsChildPortSpot: false,
+        arrangementSpacing: new go.Size(2, 2)
+      });
+
+  var undoModel =
+    $(go.GraphLinksModel,  // initially empty
+      { isReadOnly: true });
+  undoDisplay.model = undoModel;
+
+  // ******************************************************
+  // Add an undo listener to the main model
+  // ******************************************************
+
+  var changedLog = document.getElementById("modelChangedLog");
+  var editToRedo = null; // a node in the undoDisplay
+  var editList = [];
+
+  model.addChangedListener(function(e) {
+    // do not display some uninteresting kinds of transaction notifications
+    if (e.change === go.ChangedEvent.Transaction) {
+      if (e.propertyName === "CommittingTransaction" || e.modelChange === "SourceChanged") return;
+      // do not display any layout transactions
+      if (e.oldValue === "Layout") return;
+    }  // You will probably want to use e.isTransactionFinished instead
+
+    // Add entries into the log
+    var changes = e.toString();
+    if (changes[0] !== "*") changes = "&nbsp;&nbsp;" + changes;
+    changedLog.innerHTML += changes + "<br/>";
+    changedLog.scrollTop = changedLog.scrollHeight;
+
+    // Modify the undoDisplay Diagram
+    if (e.propertyName === "CommittedTransaction") {
+      if (editToRedo != null) {
+        // remove from the undo display diagram all nodes after editToRedo
+        for (var i = editToRedo.data.index+1; i < editList.length; i++) {
+          undoDisplay.remove(editList[i]);
+        }
+        editList = editList.slice(0, editToRedo.data.index);
+        editToRedo = null;
+      }
+
+      var tx = e.object;
+      var txname = (tx !== null ? e.object.name : "");
+      var parentData = {text: txname, tag: e.object, index: editList.length - 1};
+      undoModel.addNodeData(parentData)
+      var parentKey = undoModel.getKeyForNodeData(parentData);
+      var parentNode = undoDisplay.findNodeForKey(parentKey);
+      editList.push(parentNode);
+      if (tx !== null) {
+        var allChanges = tx.changes;
+      var itr = allChanges.iterator;
+      var odd = true;
+      while (itr.next()) {
+        var change = itr.value;
+        var childData = {
+          color: (odd ? "white" : "#E0FFED"),
+          text: change.toString()
+        }
+        odd = !odd;
+        undoModel.addNodeData(childData)
+        var childKey = undoModel.getKeyForNodeData(childData);
+        undoModel.addLinkData({ from: parentKey, to: childKey });
+      }
+      undoDisplay.commandHandler.collapseTree(parentNode);
+      }
+    } else if (e.propertyName === "FinishedUndo" || e.propertyName === "FinishedRedo") {
+      var undoManager = model.undoManager;
+      if (editToRedo !== null) {
+        editToRedo.isSelected = false;
+        editToRedo = null;
+      }
+      // Find the node that represents the undo or redo state and select it
+      var nextEdit = undoManager.transactionToRedo;
+      if (nextEdit !== null) {
+        var itr = undoDisplay.nodes;
+        while (itr.next()) {
+          var node = itr.value;
+          if (node.data.tag === nextEdit) {
+            node.isSelected = true;
+            editToRedo = node;
+            break;
+          }
+        }
+      }
+    }
+  }); // end model changed listener
+} // end init
+
+function resetLog() {
+  var div = document.getElementById("modelChangedLog").innerHTML = "";
+}
+
+function undo() {
+  myModel.undoManager.undo()
+}
+
+function redo() {
+  myModel.undoManager.redo()
+}
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>Update Demo <b>GoJS</b> Sample</p>
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+  <div style="width:100%; white-space:nowrap">
+    <div style="display: inline-block; vertical-align: top; width:50%">
+      <div id="blueDiagram" style="border: solid 1px blue; width:100%; height:300px;"></div>
+      <div style="width:100%; height:20px"></div>
+      <div id="greenDiagram" style="border: solid 1px green; width:100%; height:300px"></div>
+    </div>
+    <div style="display: inline-block; vertical-align: top; width:50%">
+      <div style="width:100%; height:300px">
+        <input type="button" onclick="resetLog()" style="height:20px; font-size: 11px;" value="Reset Model log" />
+        <div id="modelChangedLog" style="height:280px;border: solid 1px gray; font-family:Monospace; font-size:11px; overflow:scroll"></div>
+      </div>
+      <div style="width:100%; height:20px"></div>
+      <div style="">
+        <input type="button" onclick="undo()" style="height:20px; font-size: 11px;" value="Undo" />
+        <input type="button" onclick="redo()" style="height:20px; font-size: 11px;" value="Redo" />
+        <div id="undoDisplay" style="height:280px; border: solid 1px gray"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

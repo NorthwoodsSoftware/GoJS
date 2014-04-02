@@ -1,0 +1,127 @@
+﻿"use strict";
+/*
+*  Copyright (C) 1998-2014 by Northwoods Software Corporation. All Rights Reserved.
+*/
+
+/**
+* @constructor
+* @extends RotatingTool
+* @class
+* A custom tool for rotating multiple objects at a time. When more than one
+* part is selected, rotates all parts, revolving them about their collective center.
+* If the control key is held down during rotation, rotates all parts individually.
+*/
+function RotateMultipleTool() {
+  go.RotatingTool.call(this);
+  this.name = "RotateMultiple";
+  // holds references to all selected non-Link Parts and their offset & angles
+  this.initialInfo = null;
+  // initial angle when rotating as a whole
+  this.initialAngle = 0;
+  // rotation point of selection
+  this.centerPoint = null;
+ }
+go.Diagram.inherit(RotateMultipleTool, go.RotatingTool);
+
+/**
+* Calls RotatingTool.doActivate, and then remembers the center point of the collection,
+* and the initial distances and angles of selected parts to the center.
+* @this {RotateMultipleTool}
+*/
+RotateMultipleTool.prototype.doActivate = function() {
+  go.RotatingTool.prototype.doActivate.call(this);
+  var diagram = this.diagram;
+  // center point of the collection
+  this.centerPoint = diagram.computePartsBounds(diagram.selection).center;
+
+  // remember the angle relative to the center point when rotating the whole collection
+  this.initialAngle = this.centerPoint.directionPoint(diagram.lastInput.documentPoint);
+
+  // remember initial angle and distance for each Part
+  this.initialInfo = new go.Map(go.Part, PartInfo);
+  var itr = diagram.selection.iterator;
+  while (itr.next()) {
+    var part = itr.value;
+    if (part instanceof go.Link || part instanceof go.Group) continue;  // only Nodes and simple Parts
+    // distance from centerPoint to locationSpot of part
+    var dist = Math.sqrt(this.centerPoint.distanceSquaredPoint(part.location));
+    // calculate initial relative angle
+    var dir = this.centerPoint.directionPoint(part.location);
+    // saves part-angle combination in array
+    this.initialInfo.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
+  }
+}
+
+/**
+* @ignore
+* Internal class that remembers a Part's offset & angle.
+*/
+function PartInfo(placementAngle, distance, rotationAngle) {
+  this.placementAngle = placementAngle * (Math.PI / 180);  // in radians
+  this.distance = distance;
+  this.rotationAngle = rotationAngle;  // in degrees
+}
+
+/**
+* Clean up any references to Parts.
+* @this {RotateMultipleTool}
+*/
+RotateMultipleTool.prototype.doDeactivate = function() {
+  this.initialInfo = null;
+  go.RotatingTool.prototype.doDeactivate.call(this);
+};
+
+/**
+* Overrides rotatingTool.rotate to rotate all selected objects about their collective center.
+* When the control key is held down while rotating, all selected objects are rotated individually.
+* @this {RotateMultipleTool}
+* @param {number} newangle
+*/
+RotateMultipleTool.prototype.rotate = function(newangle) {
+  var diagram = this.diagram;
+  var e = this.diagram.lastInput;
+  // when rotating individual parts, remember the original angle difference
+  var angleDiff = newangle - this.adornedObject.part.rotateObject.angle;
+  var itr = diagram.selection.iterator;
+  while (itr.next()) {
+    var part = itr.value;
+    if (part instanceof go.Link || part instanceof go.Group) continue; // only Nodes and simple Parts
+    // rotate every selected non-Link Part
+    // find information about the part set in RotateMultipleTool.initialInformation
+    var partInfo = this.initialInfo.getValue(part);
+    if (e.control || e.meta) {
+      if (this.adornedObject.part === part) {
+        part.rotateObject.angle = newangle;
+      } else {
+        part.rotateObject.angle += angleDiff;
+      }
+    } else {
+      var radAngle = newangle * (Math.PI / 180); // converts the angle traveled from degrees to radians
+      // calculate the part's x-y location relative to the central rotation point
+      var offsetX = partInfo.distance * Math.cos(radAngle + partInfo.placementAngle);
+      var offsetY = partInfo.distance * Math.sin(radAngle + partInfo.placementAngle);
+      // move part
+      part.location = new go.Point(this.centerPoint.x + offsetX, this.centerPoint.y + offsetY);
+      // rotate part
+      part.rotateObject.angle = partInfo.rotationAngle + newangle;
+    }
+  }
+}
+
+/**
+* This override needs to calculate the desired angle with different rotation points,
+* depending on whether we are rotating the whole selection as one, or Parts individually.
+* @this {RotateMultipleTool}
+* @param {Point} newPoint in document coordinates
+*/
+RotateMultipleTool.prototype.computeRotate = function(newPoint) {
+  var diagram = this.diagram;
+  var e = this.diagram.lastInput;
+  if (e.control || e.meta) {  // relative to the center of the Node whose handle we are rotating
+    var part = this.adornedObject.part;
+    var rotationPoint = part.getDocumentPoint(part.locationSpot);
+    return rotationPoint.directionPoint(newPoint);
+  } else {  // relative to the center of the whole selection
+    return this.centerPoint.directionPoint(newPoint) - this.initialAngle;
+  }
+};

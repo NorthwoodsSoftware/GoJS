@@ -1,0 +1,171 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title>Local View</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myFullDiagram =
+        $(go.Diagram, "fullDiagram",  // each diagram refers to its DIV HTML element by id
+          { autoScale: go.Diagram.Uniform,  // automatically scale down to show whole tree
+            contentAlignment: go.Spot.Center,  // center the tree in the viewport
+            isReadOnly: true,  // don't allow user to change the diagram
+            layout: $(go.TreeLayout,
+                      { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            maxSelectionCount: 1  // only one node may be selected at a time in each diagram
+          });
+
+      myLocalDiagram =  // this is very similar to the full Diagram
+        $(go.Diagram, "localDiagram",
+          { autoScale: go.Diagram.Uniform,
+            contentAlignment: go.Spot.Center,
+            isReadOnly: true,
+            layout: $(go.TreeLayout,
+                      { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            maxSelectionCount: 1
+          });
+
+      // Define a node template that is shared by both diagrams
+      var myNodeTemplate =
+        $(go.Node, "Auto",
+          { locationSpot: go.Spot.Center },
+          new go.Binding("text", "key"),  // for sorting
+          $(go.Shape, "RoundedRectangle",
+            new go.Binding("fill", "color"),
+            { stroke: "gray" }),
+          $(go.TextBlock,
+            { margin: 1 },
+            new go.Binding("text", "key"))
+        );
+      myFullDiagram.nodeTemplate = myNodeTemplate;
+      myLocalDiagram.nodeTemplate = myNodeTemplate;
+
+      // Define a basic link template, not selectable, shared by both diagrams
+      var myLinkTemplate =
+        $(go.Link,
+          { routing: go.Link.Normal,
+            selectable: false },
+          $(go.Shape,
+            { isPanelMain: true, strokeWidth: 1 })
+        );
+      myFullDiagram.linkTemplate = myLinkTemplate;
+      myLocalDiagram.linkTemplate = myLinkTemplate;
+
+      // Create the full tree diagram
+      setupDiagram();
+
+      // Create a part in the background of the full diagram to highlight the selected node
+      highlighter =
+        $(go.Part, "Auto",
+          { layerName: "Background", selectable: false, isInDocumentBounds: false,
+            locationSpot: go.Spot.Center },
+          $(go.Shape, "Ellipse",
+            { fill: $(go.Brush, go.Brush.Radial, { 0.0: "yellow", 1.0: "white" }),
+              stroke: null,
+              desiredSize: new go.Size(400, 400) }));
+      myFullDiagram.add(highlighter);
+
+      // When a different node is selected in either diagram, focus the local diagram on it
+      myFullDiagram.addDiagramListener("ChangedSelection", function () { showLocalOnFullClick(); });
+      myLocalDiagram.addDiagramListener("ChangedSelection", function () { showLocalOnLocalClick(); });
+
+      // Start by focusing the diagrams on the node at the top of the tree.
+      // Wait until the tree has been laid out before selecting the root node.
+      myFullDiagram.addDiagramListener("initialLayoutCompleted", function (e) {
+        myFullDiagram.findPartForKey("node0").isSelected = true;
+        showLocalOnFullClick();
+      });
+    }
+
+    // Make the corresponding node in the full diagram to that selected in the local diagram selected,
+    // then call showLocalOnFullClick to update the local diagram.
+    function showLocalOnLocalClick() {
+      var selectedLocal = myLocalDiagram.selection.first();
+      if (selectedLocal !== null) {
+        // there are two separate Nodes, one for each Diagram, but they share the same key value
+        myFullDiagram.select(myFullDiagram.findPartForKey(selectedLocal.data.key));
+      }
+    }
+
+    function showLocalOnFullClick() {
+      var node = myFullDiagram.selection.first();
+      if (node !== null) {
+        // move the large yellow node behind the selected node to highlight it
+        highlighter.location = node.location;
+        // create a new model for the local Diagram
+        var model = new go.TreeModel();
+        // add the selected node and its children and grandchildren to the local diagram
+        var nearby = node.findTreeParts(3);  // three levels of the (sub)tree
+        // add parent and grandparent
+        var parent = node.findTreeParentNode();
+        if (parent !== null) {
+          nearby.add(parent);
+          var grandparent = parent.findTreeParentNode();
+          if (grandparent !== null) {
+            nearby.add(grandparent);
+          }
+        }
+        // create the model using the same node data as in myFullDiagram's model
+        for (var it = nearby.iterator; it.next(); ) {
+          var n = it.value;
+          if (n instanceof go.Node) model.addNodeData(n.data);
+        }
+        myLocalDiagram.model = model;
+        // select the node at the diagram's focus
+        myLocalDiagram.findPartForKey(node.data.key).isSelected = true;
+      }
+    }
+
+    // Create the tree diagram, containing 100 nodes and with each node having up to three children
+    function setupDiagram() {
+      var model = new go.TreeModel();
+      model.addNodeData({
+        key: "node0",
+        color: go.Brush.randomColor()
+      });
+      var layerFirst = 0;
+      var totalNodes = 1;
+      while (totalNodes < 100) {
+        for (var i = layerFirst; i < totalNodes && totalNodes < 100; i++) {
+          var children = Math.floor(Math.random() * 3) + 1;
+          for (var j = 0; j < children && totalNodes < 100; j++) {
+            model.addNodeData({
+              key: "node" + totalNodes,
+              parent: "node" + i,
+              color: go.Brush.randomColor()
+            });
+            totalNodes++;
+          }
+        }
+        layerfirst = totalNodes;
+      }
+      myFullDiagram.model = model;
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="fullDiagram" style="height:250px;width:100%;border:1px solid black;margin:2px"></div>
+  <div id="localDiagram" style="height:350px;width:100%;border:1px solid black;margin:2px"></div>
+  <div id="description">
+  <p>
+  This sample includes two diagrams, the one on top showing a full tree and the one below
+  focusing on a specific node in the tree and those nodes that are logically "near" it.
+  When the selection changes in either diagram, the lower diagram changes its focus to the selected node.
+  To show which node in the full tree is selected, a large yellow highlighter part in the background layer of the upper diagram is placed behind the selected node.
+  </p>
+  <p>
+  Although it is not demonstrated in this sample, one could well use very simple templates for Nodes and for Links in the top Diagram.
+  This would make the top Diagram more efficient to construct when there are very many more nodes.
+  And one could use more detailed templates in the bottom Diagram, where there is more room to show information for each node.
+  </p>
+  </div>
+</div>
+</body>
+</html>

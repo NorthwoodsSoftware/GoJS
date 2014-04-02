@@ -1,0 +1,217 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>Layered Digraph Layout</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must be the ID or reference to div
+        {
+          initialAutoScale: go.Diagram.UniformToFill,
+          layout: $(go.LayeredDigraphLayout)
+          // other Layout properties are set by the layout function, defined below
+        });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        $(go.Shape, "Rectangle",
+          { fill: "lightgray",  // the initial value, but data-binding may provide different value
+            stroke: "black",
+            desiredSize: new go.Size(30, 30) },
+          new go.Binding("fill", "fill")),
+        $(go.TextBlock,
+          new go.Binding("text", "text"))
+      );
+
+    // define the Link template to be minimal
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { selectable: false },
+        $(go.Shape));
+
+    // generate a tree with the default values
+    rebuildGraph();
+  }
+
+  function rebuildGraph() {
+    var minNodes = document.getElementById("minNodes").value;
+    minNodes = parseInt(minNodes, 10);
+
+    var maxNodes = document.getElementById("maxNodes").value;
+    maxNodes = parseInt(maxNodes, 10);
+
+    generateDigraph(minNodes, maxNodes);
+  }
+
+  function generateDigraph(minNodes, maxNodes) {
+    myDiagram.startTransaction("generateDigraph");
+    // replace the diagram's model's nodeDataArray
+    generateNodes(minNodes, maxNodes);
+    // replace the diagram's model's linkDataArray
+    generateLinks();
+    // force a diagram layout
+    layout();
+    myDiagram.commitTransaction("generateDigraph");
+  }
+
+  // Creates a random number of randomly colored nodes.
+  function generateNodes(minNodes, maxNodes) {
+    var nodeArray = [];
+    // get the values from the fields and create a random number of nodes within the range
+    var min = parseInt(minNodes, 10);
+    var max = parseInt(maxNodes, 10);
+    if (isNaN(min)) min = 0;
+    if (isNaN(max) || max < min) max = min;
+    var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
+    var i;
+    for (i = 0; i < numNodes; i++) {
+      nodeArray.push({
+        key: i,
+        text: i.toString(),
+        fill: go.Brush.randomColor()
+      });
+    }
+
+    // randomize the node data
+    for (i = 0; i < nodeArray.length; i++) {
+      var swap = Math.floor(Math.random() * nodeArray.length);
+      var temp = nodeArray[swap];
+      nodeArray[swap] = nodeArray[i];
+      nodeArray[i] = temp;
+    }
+
+    // set the nodeDataArray to this array of objects
+    myDiagram.model.nodeDataArray = nodeArray;
+  }
+
+  // Create some link data
+  function generateLinks() {
+    if (myDiagram.nodes.count < 2) return;
+    var linkArray = [];
+    var nit = myDiagram.nodes;
+    var nodes = new go.List(go.Node);
+    nodes.addAll(nit);
+    for (var i = 0; i < nodes.count - 1; i++) {
+      var from = nodes.elt(i);
+      var numto = Math.floor(1 + (Math.random() * 3) / 2);
+      for (var j = 0; j < numto; j++) {
+        var idx = Math.floor(i + 5 + Math.random() * 10);
+        if (idx >= nodes.count) idx = i + (Math.random() * (nodes.count - i)) | 0;
+        var to = nodes.elt(idx);
+        linkArray.push({ from: from.data.key, to: to.data.key });
+      }
+    }
+    myDiagram.model.linkDataArray = linkArray;
+  }
+
+  function layout() {
+    myDiagram.startTransaction("change Layout");
+    var lay = myDiagram.layout;
+
+    var direction = getRadioValue("direction");
+    direction = parseFloat(direction, 10);
+    lay.direction = direction;
+
+    var layerSpacing = document.getElementById("layerSpacing").value;
+    layerSpacing = parseFloat(layerSpacing, 10);
+    lay.layerSpacing = layerSpacing;
+
+    var columnSpacing = document.getElementById("columnSpacing").value;
+    columnSpacing = parseFloat(columnSpacing, 10);
+    lay.columnSpacing = columnSpacing;
+
+    var cycleRemove = getRadioValue("cycleRemove");
+    if (cycleRemove === "CycleDepthFirst") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
+    else if (cycleRemove === "CycleGreedy") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleGreedy;
+
+    var layering = getRadioValue("layering");
+    if (layering === "LayerOptimalLinkLength") lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
+    else if (layering === "LayerLongestPathSource") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSource;
+    else if (layering === "LayerLongestPathSink") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSink;
+
+    var initialize = getRadioValue("initialize");
+    if (initialize === "InitDepthFirstOut") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstOut;
+    else if (initialize === "InitDepthFirstIn") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
+    else if (initialize === "InitNaive") lay.initializeOption = go.LayeredDigraphLayout.InitNaive;
+
+    var aggressive = getRadioValue("aggressive");
+    if (aggressive === "AggressiveLess") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveLess;
+    else if (aggressive === "AggressiveNone") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
+    else if (aggressive === "AggressiveMore") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveMore;
+
+    //TODO implement pack option
+    var pack = document.getElementsByName("pack");
+    var packing = 0;
+    for (var i = 0; i < pack.length; i++) {
+      if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
+    }
+    lay.packOption = packing;
+
+    var setsPortSpots = document.getElementById("setsPortSpots");
+    lay.setsPortSpots = setsPortSpots.checked;
+
+    myDiagram.commitTransaction("change Layout");
+  }
+
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++)
+      if (radio[i].checked) return radio[i].value;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>New Graph</b><br />
+      MinNodes: <input type="text" size="2" id="minNodes" value="20" /><br />
+      MaxNodes: <input type="text" size="2" id="maxNodes" value="100" /><br />
+      <button type="button" onclick="rebuildGraph()">Generate Digraph</button>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>LayeredDigraphLayout Properties</b><br />
+      Direction:
+      <input type="radio" name="direction" onclick="layout()" value="0" checked="checked" />Right (0)
+      <input type="radio" name="direction" onclick="layout()" value="90" />Down (90)
+      <input type="radio" name="direction" onclick="layout()" value="180" />Left (180)
+      <input type="radio" name="direction" onclick="layout()" value="270" />Up (270)<br />
+      LayerSpacing:
+      <input type="text" size="2" id="layerSpacing" value="25" onchange="layout()" style="clear: left;" /><br />
+      ColumnSpacing:
+      <input type="text" size="2" id="columnSpacing" value="25" onchange="layout()" /><br />
+      CycleRemove:
+      <input type="radio" name="cycleRemove" onclick="layout()" value="CycleDepthFirst" checked="checked" /> CycleDepthFirst
+      <input type="radio" name="cycleRemove" onclick="layout()" value="CycleGreedy" /> CycleGreedy<br />
+      Layering:
+      <input type="radio" name="layering" onclick="layout()" value="LayerOptimalLinkLength" checked="checked" /> LayerOptimalLinkLength
+      <input type="radio" name="layering" onclick="layout()" value="LayerLongestPathSource" /> LayerLongestPathSource
+      <input type="radio" name="layering" onclick="layout()" value="LayerLongestPathSink" /> LayerLongestPathSink<br />
+      Initialize:
+      <input type="radio" name="initialize" onclick="layout()" value="InitDepthFirstOut" checked="checked" /> InitDepthFirstOut
+      <input type="radio" name="initialize" onclick="layout()" value="InitDepthFirstIn" /> InitDepthFirstIn
+      <input type="radio" name="initialize" onclick="layout()" value="InitNaive" /> InitNaive<br />
+      Aggressive:
+      <input type="radio" name="aggressive" onclick="layout()" value="AggressiveNone" /> AggressiveNone
+      <input type="radio" name="aggressive" onclick="layout()" value="AggressiveLess" checked="checked" /> AggressiveLess
+      <input type="radio" name="aggressive" onclick="layout()" value="AggressiveMore" /> AggressiveMore<br />
+      Pack:
+      <input type="checkbox" name="pack" onclick="layout()" value="4" checked="checked" /> PackMedian
+      <input type="checkbox" name="pack" onclick="layout()" value="2" checked="checked" /> PackStraighten
+      <input type="checkbox" name="pack" onclick="layout()" value="1" checked="checked" /> PackExpand<br />
+      SetsPortSpots: <input type="checkbox" id="setsPortSpots" onclick="layout()" value="SetsPortSpots" checked="checked" /><br />
+    </span>
+  </div>
+  <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 500px" />
+</div>
+</body>
+</html>

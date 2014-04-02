@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+  <title>Euler Diagram</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        { isReadOnly: true,
+          allowSelect: false });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "loc", go.Point.parse),
+        $(go.Shape, "Ellipse",
+          { fill: "transparent" },
+          new go.Binding("stroke", "color"),
+          new go.Binding("strokeWidth", "width"),
+          new go.Binding("strokeDashArray", "dash")),
+        $(go.TextBlock,
+          { margin: 1,
+            maxSize: new go.Size(80, 80) },
+          new go.Binding("text", "text")),
+        { cursor: "pointer",
+          click: function(e, obj) { window.open("https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(obj.part.data.text)); }
+        }
+      );
+
+    myDiagram.nodeTemplateMap.add("center",
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "loc", go.Point.parse),
+        $(go.Shape, "Circle",
+          { fill: "rgba(128,128,128,0.05)", stroke: null,
+            width: 550, height: 550
+          }),
+        $(go.Shape, "Circle",
+          { fill: "rgba(128,128,128,0.05)", stroke: null,
+            width: 400, height: 400
+          }),
+        $(go.Shape, "Circle",
+          { fill: "rgba(128,128,128,0.05)", stroke: null,
+            width: 250, height: 250
+          }),
+        $(go.Panel, "Spot",
+          $(go.Shape, "Circle",
+            { isPanelMain: true,
+              fill: "transparent",
+              portId: "" },
+            new go.Binding("stroke", "hicolor"),
+            new go.Binding("strokeWidth", "hiwidth")),
+          $(go.Shape, "Circle",
+            { isPanelMain: true,
+              fill: "transparent" },
+            new go.Binding("stroke", "color"),
+            new go.Binding("strokeWidth", "width"),
+            new go.Binding("strokeDashArray", "dash")),
+          $(go.TextBlock,
+            { maxSize: new go.Size(80, 80) },
+            new go.Binding("text", "text")),
+          { cursor: "pointer",
+            click: function(e, obj) { window.open("https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(obj.part.data.text)); }
+          }
+        )
+      ));
+
+    myDiagram.linkTemplate =
+      $(go.Link,
+        $(go.Shape,
+          new go.Binding("stroke", "color"),
+          new go.Binding("strokeWidth", "width"),
+          new go.Binding("strokeDashArray", "dash"))
+      );
+
+    var nodeDataArray = [
+      { key: 1, text: "Cognitive Procedural", loc: "300 300", category: "center" },
+      { key: 2, text: "Cognitive Problem Solving", loc: "600 300", category: "center", hicolor: "lightblue", hiwidth: 7 },
+      { key: 11, text: "Logical Reasoning", loc: "450 275" },
+      { key: 12, text: "Scaffolding", loc: "450 325" },
+      { key: 13, text: "Part Task Training", loc: "425 400" },
+      { key: 21, text: "Training Wheels", loc: "325 125" },
+      { key: 22, text: "Exploratory Learning", loc: "250 150" },
+      { key: 23, text: "Learner Control", loc: "650 150" },
+      { key: 31, text: "Overlearning", loc: "450 475" }
+    ];
+    var linkDataArray = [
+      { from: 1, to: 11, color: "gray" },
+      { from: 1, to: 12, color: "gray", dash: [3, 2] },
+      { from: 1, to: 13, color: "olive", width: 2 },
+      { from: 1, to: 21, color: "olive", width: 3 },
+      { from: 1, to: 22, color: "olive", width: 2 },
+      { from: 1, to: 23, color: "crimson", width: 2 },
+      { from: 1, to: 31 },
+      { from: 2, to: 11, color: "gray" },
+      { from: 2, to: 12, color: "olive", width: 2 },
+      { from: 2, to: 13, color: "gray", dash: [3, 2] },
+      { from: 2, to: 21, color: "crimson", width: 2 },
+      { from: 2, to: 22, color: "crimson", width: 2 },
+      { from: 2, to: 23, color: "black", width: 3 },
+      { from: 2, to: 31, color: "black", dash: [3, 2] }
+    ];
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <h3>Euler-style Diagram</h3>
+  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:600px"></div>
+  <p>
+    This diagram is read-only, but clicking on a node will search Wikipedia
+    with a query string generated from the "text" property of the node data.
+  </p>
+</div>
+</body>
+</html>

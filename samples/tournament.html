@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+<title>Tournament</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+        {
+          initialContentAlignment: go.Spot.Center,  // center the content
+          "textEditingTool.starting": go.TextEditingTool.SingleClick,
+          "textEditingTool.textValidation": isValidScore,
+          layout: $(go.TreeLayout, { angle: 180 }),
+          "undoManager.isEnabled": true
+        });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { selectable: false },
+        $(go.Shape, "Rectangle",
+          { fill: 'whitesmoke', strokeWidth: 2 },
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.Panel, "Table",
+          $(go.RowColumnDefinition, { column: 0, separatorStroke: "black" }),
+          $(go.RowColumnDefinition, { column: 1, separatorStroke: "black" }),
+          $(go.RowColumnDefinition, { row: 0, separatorStroke: "black" }),
+          $(go.RowColumnDefinition, { row: 1, separatorStroke: "black" }),
+          $(go.TextBlock, "",
+            { row: 0,
+              wrap: go.TextBlock.None, margin: 5, width: 90,
+              isMultiline: false, textAlign: 'left' },
+            new go.Binding("text", "player1").makeTwoWay()),
+          $(go.TextBlock, "",
+            { row: 1,
+              wrap: go.TextBlock.None, margin: 5, width: 90,
+              isMultiline: false, textAlign: 'left' },
+            new go.Binding("text", "player2").makeTwoWay()),
+          $(go.TextBlock, "-",
+            { column: 1, row: 0,
+              wrap: go.TextBlock.None, margin: 2, width: 25,
+              isMultiline: false, editable: true, textAlign: 'right' },
+            new go.Binding("text", "score1").makeTwoWay()),
+          $(go.TextBlock, "-",
+            { column: 1, row: 1,
+              wrap: go.TextBlock.None, margin: 2, width: 25,
+              isMultiline: false, editable: true, textAlign: 'right' },
+            new go.Binding("text", "score2").makeTwoWay())
+        )
+        /* // For debug purposes, show the node ID
+        ,$(go.TextBlock,
+          { font: '9px sans-serif',
+            stroke: 'lightcoral',
+            alignment: new go.Spot(1, 1, -2, -1) },
+          new go.Binding("text", "key"))
+        */
+      );
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Link.Orthogonal,
+          selectable: false },
+        $(go.Shape));
+
+    // Generates the original graph from an array of player names
+    function createPairs(players) {
+      if (players.length % 2 !== 0) players.push('(empty)');
+      var startingGroups = players.length / 2;
+      var currentLevel = Math.ceil(Math.log(startingGroups) / Math.log(2));
+      var levelGroups = [];
+      var currentLevel = Math.ceil(Math.log(startingGroups) / Math.log(2));
+      for (var i = 0; i < startingGroups; i++) {
+        levelGroups.push(currentLevel + '-' + i);
+      }
+      var totalGroups = [];
+      makeLevel(levelGroups, currentLevel, totalGroups, players);
+      return totalGroups;
+    }
+
+    function makeLevel(levelGroups, currentLevel, totalGroups, players) {
+      currentLevel--;
+      var len = levelGroups.length;
+      var parentKeys = [];
+      var parentNumber = 0;
+      var p = '';
+      for (var i = 0; i < len; i++) {
+        if (parentNumber === 0) {
+          p = currentLevel + '-' + parentKeys.length;
+          parentKeys.push(p);
+        }
+
+        if (players !== null) {
+          var p1 = players[i*2];
+          var p2 = players[(i*2) + 1];
+          totalGroups.push({ key: levelGroups[i], parent: p, player1: p1, player2: p2, parentNumber: parentNumber });
+        } else {
+          totalGroups.push({ key: levelGroups[i], parent: p, parentNumber: parentNumber });
+        }
+
+        parentNumber++;
+        if (parentNumber > 1) parentNumber = 0;
+      }
+
+      // after the first created level there are no player names
+      if (currentLevel >= 0) makeLevel(parentKeys, currentLevel, totalGroups, null)
+    }
+
+    function makeModel(players) {
+      myDiagram.model = new go.TreeModel(createPairs(players));
+    }
+
+
+    var myPlayers =
+     ['Adler',
+      'Pollock',
+      'Montgomery',
+      'Lestrade',
+      'Wilson',
+      'Moran',
+      'Bardle',
+      'Edwards'];
+    makeModel(myPlayers);
+
+
+    myDiagram.model.addChangedListener(function(e) {
+      if (e.propertyName !== 'score1' && e.propertyName !== 'score2') return;
+      var data = e.object;
+      if (isNaN(data.score1) || isNaN(data.score2)) return;
+
+      // TODO: What happens if score1 and score2 are the same number?
+
+      // both score1 and score2 are numbers,
+      // set the name of the higher-score'd player in the advancing (parent) node
+      // if the data.parentNumber is 0, then we set player1 on the parent
+      // if the data.parentNumber is 1, then we set player2
+      var parent = myDiagram.findNodeForKey(data.parent);
+      if (parent === null) return;
+
+      var playerName = parseInt(data.score1) > parseInt(data.score2) ? data.player1 : data.player2;
+      if (parseInt(data.score1) === parseInt(data.score2)) playerName = "";
+      myDiagram.model.setDataProperty(parent.data, (data.parentNumber === 0 ? "player1" : "player2"), playerName);
+    })
+  } // end init
+
+
+  function isValidScore(textblock, oldstr, newstr) {
+    // If the new string is not a number or a single hypen, disallow it
+    if (isNaN(newstr) && newstr !== "-") return false;
+    // Otherwise, allow the score
+    return true;
+
+    // Here it would also be possible to disallow entering
+    // the same score for two players, if that is desired.
+  }
+
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+  <div id="myDiagram" style="border: solid 1px black; width:700px; height:600px"></div>
+  <p>
+    Click on the empty score boxes next to names to fill in scores for each player. When two players in a bracket have a score, one of them will automatically advance to the next bracket.
+  </p>
+</div>
+</body>
+</html>

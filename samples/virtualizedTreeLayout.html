@@ -1,0 +1,385 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title>Virtualized Tree with TreeLayout</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css" />
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    // this controls whether the tree grows deeper towards the right or downwards:
+    var HORIZONTAL = true;
+
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // The Diagram just shows what should be visible in the viewport.
+      // Its model does NOT include node data for the whole tree, but only that
+      // which might be visible in the viewport.
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            contentAlignment: go.Spot.Center,
+            initialDocumentSpot: go.Spot.Center,
+            initialViewportSpot: go.Spot.Center,
+
+            // Use a virtualized TreeLayout which does not require
+            // that the Nodes and Links exist first for an accurate layout
+            layout:
+              $(VirtualizedTreeLayout,
+                {
+                  angle: (HORIZONTAL ? 0 : 90),
+                  nodeSpacing: 4,
+                  compaction: go.TreeLayout.CompactionNone
+                }),
+
+            // Define the template for Nodes, used by virtualization.
+            nodeTemplate:
+              $(go.Node, "Auto",
+                { isLayoutPositioned: false },
+                new go.Binding("position", "", function(d) { return d.bounds.position; })
+                              .makeTwoWay(function(p, d) { d.bounds.position = p; }),
+                { width: 70, height: 20 },  // in cooperation with the loadTree function, below
+                $(go.Shape, "Rectangle",
+                  new go.Binding("fill", "c")),
+                $(go.TextBlock,
+                  { margin: 2 },
+                  new go.Binding("text", "c")),
+                {
+                  toolTip:
+                    $(go.Adornment, "Auto",
+                      $(go.Shape, { fill: "lightyellow" }),
+                      $(go.TextBlock, { margin: 3 },
+                        new go.Binding("text", "",
+                                       function(d) { return "key: " + d.k + "\nbounds: " + d.bounds.toString(); }))
+                    )
+                }
+              ),
+
+            // Define the template for Links
+            linkTemplate:
+              $(go.Link,
+                { isLayoutPositioned: false },
+                {
+                  fromSpot: (HORIZONTAL ? go.Spot.Right : go.Spot.Bottom),
+                  toSpot: (HORIZONTAL ? go.Spot.Left : go.Spot.Top)
+                },
+                $(go.Shape)
+              )
+          });
+
+      // This model includes the entire tree of data
+      myTreeModel =
+        $(go.TreeModel,
+          { // we use single character property names, to save space when rendered as JSON
+            nodeKeyProperty: "k",
+            nodeParentKeyProperty: "p"
+          });  // must match the TreeModel used by the Diagram, below
+
+      // The virtualized layout works on the full model, not on the Diagram Nodes and Links
+      myDiagram.layout.model = myTreeModel;
+
+      // Do not set myDiagram.model = myTreeModel -- that would create a zillion Nodes and Links!
+      // In the future Diagram may have built-in support for virtualization.
+      // For now, we have to implement virtualization ourselves by having the Diagram's model
+      // be different than the "real" model.
+      myDiagram.model =
+        $(go.TreeModel,  // this only holds nodes that should be in the viewport
+          {
+            nodeKeyProperty: "k",
+            nodeParentKeyProperty: "p"
+          });  // must match myTreeModel, above
+
+      // for now, we have to implement virtualization ourselves
+      myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
+
+      // This is a status message
+      myLoading =
+        $(go.Part,  // this has to set the location or position explicitly
+          { location: new go.Point(0, 0) },
+          $(go.TextBlock, "loading...",
+            { stroke: "red", font: "20pt sans-serif" }));
+
+      // temporarily add the status indicator
+      myDiagram.add(myLoading);
+
+      // Allow the myLoading indicator to be shown now,
+      // but allow objects added in loadTree to also be considered part of the initial Diagram.
+      // If you are not going to add temporary initial Parts, don't call delayInitialization.
+      myDiagram.delayInitialization(loadTree);
+    }
+
+    function loadTree() {
+      // create a lot of tree data for the myTreeModel
+      var total = 12345;
+      var treedata = [];
+      for (var i = 0; i < total; i++) {
+        var d = {
+          k: i,  // this node data's key
+          c: go.Brush.randomColor(),  // the node's color
+          p: (i > 0 ? Math.floor(Math.random() * i / 2) : undefined)  // the random parent's key
+        };
+        //!!!???@@@ this needs to be customized to account for your chosen Node template
+        d.bounds = new go.Rect(0, 0, 70, 20);
+        treedata.push(d);
+      }
+      myTreeModel.nodeDataArray = treedata;
+
+      // make it faster to get from a model parent data object to all of the children data
+      improveNavigation(myTreeModel);
+
+      // remove the status indicator
+      myDiagram.remove(myLoading);
+    }
+
+    // this adds ._parent and ._children properties on each node data
+    function improveNavigation(model) {  // this must be a TreeModel
+      var tdata = model.nodeDataArray;
+      // create an Array of child data references for each parent data
+      for (var i = 0; i < tdata.length; i++) {
+        var child = tdata[i];
+        var parentkey = model.getParentKeyForNodeData(child);
+        var parent = model.findNodeDataForKey(parentkey);
+        if (parent) {
+          child._parent = parent;
+          var childarr = parent._children;
+          if (childarr) {
+            childarr.push(child);
+          } else {
+            parent._children = [child];
+          }
+        }
+      }
+    }
+
+
+    // The following functions implement virtualization of the Diagram
+
+    // As the user scrolls or zooms, make sure the Parts (Nodes and Links) exist in the viewport.
+    function onViewportChanged(e) {
+      // make sure there are Nodes for each node data that is in the viewport
+      // or that is connected to such a Node
+      var viewb = myDiagram.viewportBounds;  // the new viewportBounds
+      var model = myDiagram.model;
+
+      var tdata = myTreeModel.nodeDataArray;
+      for (var i = 0; i < tdata.length; i++) {
+        var d = tdata[i];
+        if (!d.bounds) continue;
+        if (d.bounds.intersectsRect(viewb)) {
+          if (!model.containsNodeData(d)) {
+            model.addNodeData(d);
+          }
+          // make sure links to all parent nodes appear
+          var parent = d._parent;
+          while (parent && !model.containsNodeData(parent)) {
+            model.addNodeData(parent);
+            parent = parent._parent;
+          }
+          // make sure links to children appear
+          var childarr = d._children;
+          if (childarr) {
+            for (var j = 0; j <  childarr.length; j++) {
+              var child = childarr[j];
+              if (!model.containsNodeData(child)) {
+                model.addNodeData(child);
+              }
+            }
+          }
+        }
+      }
+
+      if (myRemoveTimer === null) {
+        // only remove offscreen nodes after a delay
+        myRemoveTimer = setTimeout(removeOffscreen, 3000);
+      }
+
+      updateCounts();  // only for this sample
+    }
+
+    // occasionally remove Parts that are offscreen from the Diagram
+    var myRemoveTimer = null;
+
+    function removeOffscreen() {
+      myRemoveTimer = null;
+
+      var viewb = myDiagram.viewportBounds;
+      var remove = [];  // collect for later removal
+      var it = myDiagram.nodes;
+      while (it.next()) {
+        var n = it.value;
+        var d = n.data;
+        if (d === null) continue;
+        if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
+          // even if the node is out of the viewport, keep it if it is selected or
+          // if any link connecting with the node is still in the viewport
+          var vis = false;
+          var lit = n.linksConnected;
+          while (lit.next()) {
+            var l = lit.value;
+            if (l.actualBounds.intersectsRect(viewb)) {
+              vis = true;
+              break;
+            }
+          }
+          if (!vis) remove.push(d);
+        }
+      }
+
+      myDiagram.model.removeNodeDataCollection(remove);
+
+      updateCounts();  // only for this sample
+    }
+
+    // This function is only used in this sample to demonstrate the effects of the virtualization.
+    // In a real application you would delete this function and all calls to it.
+    function updateCounts() {
+      document.getElementById("myMessage1").textContent = myTreeModel.nodeDataArray.length;
+      document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
+    }
+
+    // The normal mechanism for determining the size of the document depends on all of the
+    // Nodes and Links existing, so we need to use a function that depends only on the model data.
+    function computeDocumentBounds(model) {
+      var b = new go.Rect();
+      var tdata = model.nodeDataArray;
+      for (var i = 0; i < tdata.length; i++) {
+        var d = tdata[i];
+        if (!d.bounds) continue;
+        if (i === 0) {
+          b.set(d.bounds);
+        } else {
+          b.unionRect(d.bounds);
+        }
+      }
+      return b;
+    }
+
+    // end of virtualized Diagram
+
+
+    // Here we try to replace the dependence of TreeLayout on Nodes
+    // with depending only on the data in the TreeModel.
+    function VirtualizedTreeLayout() {
+      go.TreeLayout.call(this);
+      this.isOngoing = false;
+      this.model = null;  // add this property for holding the whole TreeModel
+    }
+    go.Diagram.inherit(VirtualizedTreeLayout, go.TreeLayout);
+
+    VirtualizedTreeLayout.prototype.createNetwork = function() {
+      return new VirtualizedTreeNetwork();  // defined below
+    };
+
+    // ignore the argument, an (implicit) collection of Parts
+    VirtualizedTreeLayout.prototype.makeNetwork = function(coll) {
+      var net = this.createNetwork();
+      net.addData(this.model);  // use the model data, not any actual Nodes and Links
+      return net;
+    };
+
+    VirtualizedTreeLayout.prototype.commitLayout = function() {
+      go.TreeLayout.prototype.commitLayout.call(this);
+      // can't depend on regular bounds computation that depends on all Nodes existing
+      this.diagram.fixedBounds = computeDocumentBounds(this.model);
+      // update the positions of any existing Nodes
+      for (var it = this.diagram.nodes.iterator; it.next();) {
+        it.value.updateTargetBindings();
+      }
+    };
+
+
+    // Use Virtualized versions of TreeVertex and TreeEdge.
+    function VirtualizedTreeNetwork() {
+      go.TreeNetwork.call(this);
+    }
+    go.Diagram.inherit(VirtualizedTreeNetwork, go.TreeNetwork);
+
+    VirtualizedTreeNetwork.prototype.createVertex = function() {
+      return new VirtualizedTreeVertex();  // defined below
+    };
+
+    VirtualizedTreeNetwork.prototype.createEdge = function() {
+      return new VirtualizedTreeEdge();  // defined below
+    };
+
+    VirtualizedTreeNetwork.prototype.addData = function(model) {
+      if (model instanceof go.TreeModel) {
+        var dataVertexMap = new go.Map();
+        var tdata = model.nodeDataArray;
+        for (var i = 0; i < tdata.length; i++) {
+          var d = tdata[i];
+          var v = this.createVertex();
+          v.data = d;
+          dataVertexMap.add(d, v);
+          this.addVertex(v);
+        }
+
+        for (var i = 0; i < tdata.length; i++) {
+          var child = tdata[i];
+          var parent = child._parent;
+          if (parent) {  // if there is a parent, there should be an edge
+            // now find corresponding vertexes
+            var f = dataVertexMap.getValue(parent);
+            var t = dataVertexMap.getValue(child);
+            if (f === null || t === null) continue;  // skip
+            // create and add VirtualizedTreeEdge
+            var e = this.createEdge();
+            e.data = child;
+            e.fromVertex = f;
+            e.toVertex = t;
+            this.addEdge(e);
+          }
+        }
+      } else {
+        throw new Error("can only handle TreeModel data");
+      }
+    };
+
+
+    // Associate with node data rather than with a Node.
+    function VirtualizedTreeVertex() {
+      go.TreeVertex.call(this);
+      this._data = null;
+    }
+    go.Diagram.inherit(VirtualizedTreeVertex, go.TreeVertex);
+
+    Object.defineProperty(VirtualizedTreeVertex.prototype, "data", {
+      get: function() { return this._data; },
+      set: function(val) {
+        this._data = val;
+        if (val !== null) {
+          this.focus = new go.Point(val.bounds.width/2, val.bounds.height/2);
+          this.bounds = val.bounds;
+        }
+      }
+    });
+
+    VirtualizedTreeVertex.prototype.commit = function() {
+      if (this._data !== null) {
+        this._data.bounds.set(this.bounds);
+      }
+    };
+
+
+    // Associate with link data rather than with a Link.
+    // NOTE: This does not support custom routing of links that is normally done by TreeLayout.
+    function VirtualizedTreeEdge() {
+      go.TreeEdge.call(this);
+      this.data = null;
+    }
+    go.Diagram.inherit(VirtualizedTreeEdge, go.TreeEdge);
+
+    // end of VirtualizedTree[Layout/Network/Vertex/Edge]
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  This uses a <a>TreeModel</a> and a virtualized <a>TreeLayout</a>.
+  Node data in TreeModel: <span id="myMessage1"></span>.
+  Actual Nodes in Diagram: <span id="myMessage2"></span>.
+  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
+</div>
+</body>
+</html>

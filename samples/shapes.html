@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+<title>GoJS Shapes</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // create the Diagram for the HTML DIV element
+        // customize the Diagram.layout to be a GridLayout with a particular cell size
+        { layout: $(go.GridLayout, { cellSize: new go.Size(50, 10) }) });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Vertical",
+        {
+          locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+          selectionAdorned: false,  // no selection handle when selected
+          resizable: true, resizeObjectName: "SHAPE",  // user can resize the Shape
+          rotatable: true, rotateObjectName: "SHAPE",  // user can rotate the Shape without rotating the label
+          layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized  // don't re-layout when node changes size
+        },
+        $(go.Shape,
+          {
+            name: "SHAPE",  // named so that the above properties can refer to this particular GraphObject
+            width: 50, height: 50,
+            fill: $(go.Brush, go.Brush.Linear, { 0.0: "white", 1.0: "gray" }),
+            strokeWidth: 2
+          },
+          // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
+          new go.Binding("figure", "key")),
+        $(go.TextBlock,  // the label
+          new go.Binding("text", "key"))
+      );
+
+    // initialize the model
+    var figs = [];
+    // for each kind of figure, create a Shape using that figure
+    for (var k in go.Shape.FigureGenerators) {
+      // ignore all-lower-case figure names
+      if (k.toLowerCase() === k) continue;
+      // the node data just has a single property whose value is the figure name
+      figs.push({ key: k });
+    }
+    myDiagram.model.nodeDataArray = figs;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>All predefined <b>GoJS</b> figures:</p>
+  <div id="myDiagram" style="border: solid 1px blue; height:600px"></div>
+  <p>You can specify a predefined geometry for a <a>Shape</a> by setting its <a>Shape.figure</a>.</p>
+  <p>For predefined arrowheads, see the <a href="arrowheads.html">Arrowheads</a> sample.</p>
+</div>
+</body>
+</html>

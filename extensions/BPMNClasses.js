@@ -1,0 +1,81 @@
+"use strict";
+/*
+*  Copyright (C) 1998-2014 by Northwoods Software Corporation. All Rights Reserved.
+*/
+
+// Contains PoolLink and BPMNLinkingTool classes for the BPMN sample
+
+// PoolLink, a special Link class for message flows from edges of pools
+
+function PoolLink() {
+  go.Link.call(this);
+}
+go.Diagram.inherit(PoolLink, go.Link);
+
+PoolLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
+  var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
+                      port.getDocumentPoint(go.Spot.BottomRight));
+  var op = go.Link.prototype.getLinkPoint.call(this, othernode, otherport, spot, from, ortho, node, port);
+
+  var below = op.y > r.centerY;
+  var y = below ? r.bottom : r.top;
+  if (node.category === "privateProcess") {
+    if (op.x < r.left) return new go.Point(r.left, y);
+    if (op.x > r.right) return new go.Point(r.right, y);
+    return new go.Point(op.x, y);
+  } else { // otherwise get the standard link point by calling the base class method
+    return go.Link.prototype.getLinkPoint.call(this, node, port, spot, from, ortho, othernode, otherport);
+  }
+};
+
+// If there are two links from & to same node... and pool is offset in X from node... the link toPoints collide on pool
+PoolLink.prototype.computeOtherPoint = function(othernode, otherport) {
+  var op = go.Link.prototype.computeOtherPoint(this, othernode, otherport);
+  var node = this.toNode;
+  if (node === othernode) node = this.fromNode;
+  if (othernode.category === "privateProcess") {
+    op.x = node.getDocumentPoint(go.Spot.MiddleBottom).x;
+  }
+  return op;
+};
+
+PoolLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
+  if (node.category === "privateProcess") {
+    var p = port.getDocumentPoint(go.Spot.Center);
+    var op = otherport.getDocumentPoint(go.Spot.Center);
+    var below = op.y > p.y;
+    return below ? 90 : 270;
+  } else {
+    return go.Link.prototype.getLinkDirection.call(this, node, port, linkpoint, spot, from, ortho, othernode, otherport);
+  }
+};
+
+
+// BPMNLinkingTool, a custom linking tool to switch the class of the link created.
+
+function BPMNLinkingTool() {
+  go.LinkingTool.call(this);
+}
+go.Diagram.inherit(BPMNLinkingTool, go.LinkingTool);
+
+BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
+  var lsave = null;
+  // maybe temporarily change the link data that is copied to create the new link
+  if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") {
+    lsave = myDiagram.toolManager.linkingTool.archetypeLinkData;
+    myDiagram.toolManager.linkingTool.archetypeLinkData = { category: "msg" };
+  }
+
+  // create the link in the standard manner by calling the base method
+  var newlink = go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
+
+  // maybe make the label visible
+  if (fromnode.category === "gateway") {
+    var label = newlink.findObject("Label");
+    if (label !== null) label.visible = true;
+  }
+
+  // maybe restore the original archetype link data
+  if (lsave !== null) myDiagram.toolManager.linkingTool.archetypeLinkData = lsave;
+  return newlink;
+};

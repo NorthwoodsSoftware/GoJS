@@ -1,0 +1,142 @@
+ <!doctype html>
+<html>
+<head>
+  <title>BPMN Editor</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css" />
+  <link href="BPMN.css" rel="stylesheet" type="text/css" />
+  <script src="go.js"></script>
+  <script src="DrawCommandHandler.js"></script>
+  <script src="BPMNClasses.js"></script>
+  <script src="BPMN.js"></script>
+</head>
+<body onload="init()">
+  <div>
+    <div id="currentFile">(Unsaved File)</div>
+    <div id="menuBar">
+      <ul id="nav">
+        <li><a href="#">File</a>
+          <ul>
+            <li><a href="#" onclick="newDocument()">New</a></li>
+            <li><a href="#" onclick="openDocument()">Open...</a></li>
+            <li><a href="#" onclick="saveDocument()">Save</a></li>
+            <li><a href="#" onclick="saveDocumentAs()">Save As...</a></li>
+            <li><a href="#" onclick="removeDocument()">Delete...</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Edit</a>
+          <ul>
+            <li><a href="#" onclick="myDiagram.commandHandler.undo()">Undo</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.redo()">Redo</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.cutSelection()">Cut</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.copySelection()">Copy</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.pasteSelection()">Paste</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.deleteSelection()">Delete</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.selectAll()">Select All</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Align</a>
+          <ul>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignLeft()">Left Sides</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignRight()">Right Sides</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignTop()">Tops</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignBottom()">Bottoms</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignCenterX()">Center X</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignCenterY()">Center Y</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Space</a>
+          <ul>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignRow(askSpace())">In Row...</a></li>
+            <li><a href="#" onclick="myDiagram.commandHandler.alignColumn(askSpace())">In Column...</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Options</a>
+          <ul>
+            <li><a href="#">
+              <input id="grid" type="checkbox" name="options" value="grid" onclick="updateGridOption()">Grid</a></li>
+            <li><a href="#">
+              <input id="snap" type="checkbox" name="options" value="0" onclick="updateSnapOption()">Snapping</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!--END menu bar -->
+
+    <!-- Styling for this portion is in BPMN.css -->
+    <div id="PaletteAndDiagram">
+      <div id="sideBar">
+        <div class="handle">Palette:</div>
+        <div id="myPalette" ></div>
+        <div class="handle">Overview:</div>
+        <div id="myOverview" ></div>
+      </div>
+      <div id="myDiagram"></div>
+      <div id="description">
+        <p>
+          This sample describes templates and relationships typically used in <a href="http://en.wikipedia.org/wiki/Business_Process_Model_and_Notation">Business Process Model and Notation (BPMN)</a>,
+          to be used as a starting point for developing BPMN or flow-like web applications.
+        </p>
+        <p>In addition to this HTML file, this sample uses the files:</p>
+        <ul>
+          <li><a href="BPMN.css">BPMN.css</a> for styling
+          <li><a href="BPMN.js">BPMN.js</a> for the Diagram logic
+          <li><a href="BPMNClasses.js">BPMNClasses.js</a> - Custom PoolLink and BPMNLinkingTool classes
+          <li><a href="DrawCommandHandler.js">DrawCommandHandler.js</a> - Custom CommandHandler class
+        </ul>
+
+      </div>
+    </div>
+
+    <div id="openDocument" class="draggable">
+      <div id="openDraggableHandle" class="handle">Open File</div>
+      <div id="openText" class="elementText">Choose file to open...</div>
+      <select id="mySavedFiles" class="mySavedFiles"></select>
+      <br />
+      <button id="openBtn" class="elementBtn" type="button" onclick="loadFile()" style="margin-left: 70px">Open</button>
+      <button id="cancelBtn" class="elementBtn" type="button" onclick="closeElement('openDocument')">Cancel</button>
+    </div>
+
+    <div id="removeDocument" class="draggable">
+      <div id="removeDraggableHandle" class="handle">Delete File</div>
+      <div id="removeText" class="elementText">Choose file to remove...</div>
+      <select id="mySavedFiles2" class="mySavedFiles"></select>
+      <br />
+      <button id="removeBtn" class="elementBtn" type="button" onclick="removeFile()" style="margin-left: 70px">Remove</button>
+      <button id="cancelBtn2" class="elementBtn" type="button" onclick="closeElement('removeDocument')">Cancel</button>
+    </div>
+
+    <!-- A simple preset model and JSON save/load buttons are hidden on the page -->
+    <div style="visibility: hidden;">
+      <div class="handle">JSON:</div>
+      <div id="buttons">
+        <button id="loadModel" onclick="loadModel()">Load</button>
+        <button id="saveModel" onclick="saveModel()">Save</button>
+      </div>
+      <textarea id="mySavedModel" style="width: 100%; height: 300px">
+        { "class": "go.GraphLinksModel",
+          "linkFromPortIdProperty": "fromPort",
+          "linkToPortIdProperty": "toPort",
+          "modelData": {"position":"230 200"},
+          "nodeDataArray": [
+        {"category":"event", "item":"start", "key":101, "loc":"450 540", "text":"Start", "eventType":1, "eventDimension":1},
+        {"category":"event", "item":"End", "key":104, "loc":"1130 540", "text":"End", "eventType":1, "eventDimension":8},
+        {"category":"activity", "item":"generic task", "key":5, "loc":"1010 540", "text":"Send Invoice", "taskType":0, "boundaryEventArray":[  ]},
+        {"category":"activity", "item":"generic task", "key":-4, "loc":"860 540", "text":"Fulfill Order", "taskType":0, "boundaryEventArray":[  ]},
+        {"category":"activity", "item":"generic task", "key":-5, "loc":"710 540", "text":"Credit Check", "taskType":0, "boundaryEventArray":[  ]},
+        {"category":"activity", "item":"generic task", "key":-6, "loc":"560 540", "text":"Receive Order", "taskType":0, "boundaryEventArray":[  ]},
+        {"category":"annotation", "key":701, "loc":"494 434", "text":"Basic Order Process"}
+        ],
+          "linkDataArray": [
+        {"from":101, "to":-6, "fromPort":"", "toPort":""},
+        {"from":-6, "to":-5, "fromPort":"", "toPort":""},
+        {"from":-5, "to":-4, "fromPort":"", "toPort":""},
+        {"from":-4, "to":5, "fromPort":"", "toPort":""},
+        {"from":5, "to":104, "fromPort":"", "toPort":""}
+        ]}
+      </textarea>
+    </div>
+
+  </div>
+</body>
+</html>

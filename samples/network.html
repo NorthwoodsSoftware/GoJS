@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+<head>
+<title>Network Configuration</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        {
+          allowDrop: true,
+          initialContentAlignment: go.Spot.Center,
+          "undoManager.isEnabled": true
+        });
+
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("saveModel");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx); 
+      }
+    });
+
+    myDiagram.nodeTemplateMap.add("Generator",
+      $(go.Node,
+        { locationSpot: go.Spot.Center, background: "darkblue" },
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Shape, "ACVoltageSource",
+          { stroke: "white", strokeWidth: 3, fill: "transparent",
+            width: 40, height: 40, margin: 5,
+            portId: "", fromLinkable: true, cursor: "pointer" })
+      ));
+
+    myDiagram.nodeTemplateMap.add("Connector",
+      $(go.Node,
+        { locationSpot: go.Spot.Center, background: "gray" },
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Shape, "Circle",
+          { stroke: null, fill: $(go.Brush, go.Brush.Linear, { 0: "lightgray", 1: "gray" }),
+            width: 20, height: 20, margin: 2,
+            portId: "", fromLinkable: true, cursor: "pointer" })
+      ));
+
+    myDiagram.nodeTemplateMap.add("Consumer",
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center, locationObjectName: "BODY",
+          selectionObjectName: "BODY" },
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Picture, "images/pc.jpg",
+          { name: "BODY", width: 50, height: 40, margin: 2,
+            portId: "", fromLinkable: true, cursor: "pointer" }),
+        $(go.TextBlock,
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left },
+          new go.Binding("text", "key"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("HBar",
+      $(go.Node,
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+        { layerName: "Background",
+          // special resizing: just at the ends
+          resizable: true, resizeObjectName: "SHAPE",
+          resizeAdornmentTemplate:
+            $(go.Adornment, "Spot",
+              $(go.Placeholder),
+              $(go.Shape,  // left resize handle
+                { alignment: go.Spot.Left, cursor: "col-resize",
+                desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "dodgerblue" }),
+              $(go.Shape,  // right resize handle
+                { alignment: go.Spot.Right, cursor: "col-resize",
+                desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "dodgerblue" }))
+            },
+        $(go.Shape, "Rectangle",
+          { name: "SHAPE",
+            fill: "black", stroke: null, strokeWidth: 0,
+            width: 1000, height: 4, 
+            minSize: new go.Size(100, 4),
+            maxSize: new go.Size(Infinity, 4) },
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          { portId: "", toLinkable: true })
+      ));
+
+    myDiagram.linkTemplate =
+      $(BarLink,  // subclass defined below
+        { routing: go.Link.Orthogonal,
+          relinkableFrom: true, relinkableTo: true },
+        $(go.Shape,
+          { strokeWidth: 2 })
+      );
+
+    // start off with a simple diagram
+    load();
+
+    // initialize Palette
+    myPalette =
+      $(go.Palette, "myPalette",
+        { nodeTemplateMap: myDiagram.nodeTemplateMap,
+          layout:
+            $(go.GridLayout,
+              { cellSize: new go.Size(2, 2),
+                isViewportSized: true })
+        }
+      );
+
+    myPalette.model.nodeDataArray = [
+      { "key": "Gen", "category": "Generator" },
+      { "key": "Cons", "category": "Consumer" },
+      { "key": "Dest", "category": "Connector" },
+      { "key": "Bar", "category":"HBar", "size":"100 4"},
+    ];
+
+    // remove cursors on all ports in the Palette
+    // make TextBlocks invisible, to reduce size of Nodes
+    var nit = myPalette.nodes;
+    while (nit.next()) {
+      var pit = nit.value.ports;
+      while (pit.next()) {
+        pit.value.cursor = "";
+      }
+      var eit = nit.value.elements;
+      while (eit.next()) {
+        var tb = eit.value;
+        if (tb instanceof go.TextBlock) tb.visible = false;
+      }
+    }
+
+    // initialize Overview
+    myOverview =
+      $(go.Overview, "myOverview",
+        { observed: myDiagram,
+          contentAlignment: go.Spot.Center });
+  }
+
+
+  function BarLink() {
+    go.Link.call(this);
+  }
+  go.Diagram.inherit(BarLink, go.Link);
+
+  BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
+    var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
+                        port.getDocumentPoint(go.Spot.BottomRight));
+    var op = otherport.getDocumentPoint(go.Spot.Center);
+    var below = op.y > r.centerY;
+    var y = below ? r.bottom : r.top;
+    if (node.category === "HBar") {
+      if (op.x < r.left) return new go.Point(r.left, y);
+      if (op.x > r.right) return new go.Point(r.right, y);
+      return new go.Point(op.x, y);
+    } else {
+      return new go.Point(r.centerX, y);
+    }
+  };
+
+  BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
+    var p = port.getDocumentPoint(go.Spot.Center);
+    var op = otherport.getDocumentPoint(go.Spot.Center);
+    var below = op.y > p.y;
+    return below ? 90 : 270;
+  };
+
+
+  // save a model to and load a model from Json text, displayed below the Diagram
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:140px">
+      <div id="myPalette" style="background-color: lightgray; border: solid 1px black; height: 500px"></div>
+      <div id="myOverview" style="border: solid 1px black; height: 100px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:80%">
+      <div id="myDiagram" style="border: solid 1px black; height: 600px"></div>
+    </span>
+  </div>
+  <div id="buttons">
+    <button id="loadModel" onclick="load()">Load</button>
+    <button id="saveModel" onclick="save()">Save</button>
+  </div>
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [ 
+{"key":"Gen1", "category":"Generator", "location":"300 0"},
+{"key":"1", "category":"HBar", "location":"100 100", "size":"500 4"},
+{"key":"Cons1", "category":"Consumer", "location":"53 234"},
+{"key":"2", "category":"HBar", "location":"0 300", "size":"600 4"},
+{"key":"Conn1", "category":"Connector", "location":"232.5 207.75"},
+{"key":"Cons3", "category":"Consumer", "location":"357.5 230.75"},
+{"key":"Cons2", "category":"Consumer", "location":"484.5 164.75"}
+ ],
+  "linkDataArray": [ 
+{"from":"Gen1", "to":"1"},
+{"from":"Cons1", "to":"2"},
+{"from":"Conn1", "to":"1", "fromPort":"", "toPort":""},
+{"from":"Conn1", "to":"2", "fromPort":"", "toPort":""},
+{"from":"Cons3", "to":"2", "fromPort":"", "toPort":""},
+{"from":"Cons2", "to":"1", "fromPort":"", "toPort":""}
+ ]}
+  </textarea>
+</div>
+</body>
+
+</html>

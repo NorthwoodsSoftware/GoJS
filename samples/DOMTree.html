@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+<title>HTML DOM Tree</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css" />
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  var names = {}; // hash to keep track of what names have been used
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        { initialAutoScale: go.Diagram.UniformToFill });
+
+    // Define a simple node template consisting of text followed by an expand/collapse button
+    myDiagram.nodeTemplate =
+      $(go.Node, "Horizontal",
+        { selectionChanged: nodeSelectionChanged },
+        $(go.Panel, "Auto",
+          $(go.Shape, { fill: "darkslategray", stroke: null }),
+          $(go.TextBlock,
+            { font: "bold 13px Helvetica, bold Arial, sans-serif",
+              stroke: "white", margin: 3 },
+            new go.Binding("text", "key"))
+        ),
+        $("TreeExpanderButton")
+      );
+
+    // Define a trivial link template with no arrowhead.
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { selectable: false },
+        $(go.Shape));  // the link shape
+
+    // Define the layout for the diagram
+    myDiagram.layout =
+      $(go.TreeLayout,
+        { nodeSpacing: 5, layerSpacing: 30 });
+
+    var nodeDataArray = [];
+
+    // Walk the DOM, starting at document
+    function traverseDom(node, parentName) {
+      // skip everything but HTML Elements
+      if (!(node instanceof Element)) return;
+      // Ignore the menu on the left of the page
+      if (node.id === "menu") return;
+      // add this node to the nodeDataArray
+      var name = getName(node);
+      var data = { key: name, name: name };
+      nodeDataArray.push(data);
+      // add a link to its parent
+      if (parentName !== null) {
+        data.parent = parentName;
+      }
+      // find all children
+      var l = node.childNodes.length;
+      for (var i = 0; i < l; i++) {
+        traverseDom(node.childNodes[i], name);
+      }
+    }
+
+    // Give every node a unique name
+    function getName(node) {
+      var n = node.nodeName;
+      if (node.id) n = n + " (" + node.id + ")";
+      var namenum = n;
+      var i = 1;
+      while (names[namenum] !== undefined) {
+        namenum = n + i;
+        i++;
+      }
+      names[namenum] = node;
+      return namenum;
+    }
+
+    // build up the tree
+    traverseDom(document.activeElement, null);
+
+    // create the model for the DOM tree
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+  }
+
+  // When a Node is selected, highlight the corresponding HTML element.
+  function nodeSelectionChanged(node) {
+    if (node.isSelected) {
+      names[node.data.name].style.backgroundColor = "lightblue";
+    } else {
+      names[node.data.name].style.backgroundColor = "";
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <h3>HTML DOM Tree</h3>
+  <p>
+    This sample shows the DOM of this page displayed as a tree.
+    Each Node in the Diagram shows information about the corresponding HTML element in the DOM.
+  </p>
+  <p>
+    When a node is selected, the background color of the corresponding HTML Element changes to lightblue.
+    Below the diagram are some more HTML elements to illustrate the effect.
+  </p>
+  <!-- The DIV needs an explicit size or else we won't see anything. -->
+  <div id="myDiagram" style="border: 1px solid blue; width:100%; height:300px"></div>
+  <p id="lastParagraph">
+    Elements with an id attribute are noted in parenthesis.
+  </p>
+  <div id="otherInfo">
+    <div id="tableContainer" style="display: inline-block;">
+      <table border="1" style="border-collapse: collapse;">
+        <tr>
+        <th id="firstHeader">Table header</th>
+        <th id="secondHeader">Table header 2</th>
+        </tr>
+        <tr>
+        <td>row 1, cell 1</td>
+        <td>row 1, cell 2</td>
+        </tr>
+        <tr>
+        <td>row 2, cell 1</td>
+        <td>row 2, cell 2</td>
+        </tr>
+      </table>
+    </div>
+    <div id="listContainer" style="display: inline-block; border: 1px solid gray; margin-left: 10px; width: 100px">
+      <p>My grocery list</p>
+      <ul id="groceryList">
+        <li>Coffee</li>
+        <li>Milk</li>
+        <li>Bread</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

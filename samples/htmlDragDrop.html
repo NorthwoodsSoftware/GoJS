@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<title>Drag and Drop Example</title>
+<style>
+  .draggable {
+    font: bold 16px sans-serif;
+    width: 140px;
+    height: 20px;
+    text-align: center;
+    background: white;
+    cursor: move;
+    margin-top: 20px;
+  }
+
+  .palettezone {
+    width: 140px;
+    height: 380px;
+    background: lightblue;
+    margin-bottom: 10px;
+    padding: 10px;
+    padding-top: 1px;
+    padding-bottom: 20px;
+    float: left;
+  }
+</style>
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    // *********************************************************
+    // First, set up the infrastructure to do HTML drag-and-drop
+    // *********************************************************
+
+    var dragged = null; // A reference to the element currently being dragged
+
+    // This event should only fire on the drag targets.
+    // Instead of finding every drag target,
+    // we can add the event to the document and disregard
+    // all elements that are not of class "draggable"
+    document.addEventListener("dragstart", function(event) {
+      if (event.target.className !== "draggable") return;
+      // Some data must be set to allow drag
+      event.dataTransfer.setData("text", "");
+
+      // store a reference to the dragged element
+      dragged = event.target;
+      // Objects during drag will have a red border
+      event.target.style.border = "2px solid red";
+    }, false);
+
+    // This event resets styles after a drag has completed (successfully or not)
+    document.addEventListener("dragend", function(event) {
+      // reset the border of the dragged element
+      dragged.style.border = "";
+    }, false);
+
+    // Next, events intended for the drop target - the Diagram div
+
+    var div = document.getElementById('myDiagram');
+    div.addEventListener("dragenter", function(event) {
+      // Here you could also set effects on the Diagram,
+      // such as changing the background color to indicate an acceptable drop zone
+
+      // Requirement in some browsers, such as Internet Explorer
+      event.preventDefault();
+    }, false);
+
+    div.addEventListener("dragover", function(event) {
+      // We call preventDefault to allow a drop
+      // But on divs that already contain an element,
+      // we want to disallow dropping
+
+      if (event.target.className === "dropzone") {
+        // Disallow a drop by returning before a call to preventDefault:
+        return;
+      }
+
+      // Allow a drop on everything else
+      event.preventDefault();
+    }, false);
+
+    div.addEventListener("dragleave", function(event) {
+      // reset background of potential drop target
+      if (event.target.className == "dropzone") {
+        event.target.style.background = "";
+      }
+    }, false);
+
+    var remove = document.getElementById('remove');
+    div.addEventListener("drop", function(event) {
+      // prevent default action
+      // (open as link for some elements in some browsers)
+      event.preventDefault();
+
+
+      // Dragging onto a Diagram
+      if (this === myDiagram.div) {
+        var can = event.target;
+
+        // if the target is not the canvas, we may have trouble, so just quit:
+        if (!(can instanceof HTMLCanvasElement)) return;
+
+        var bbox = can.getBoundingClientRect();
+        var mx = event.clientX - bbox.left * (can.width / bbox.width);
+        var my = event.clientY - bbox.top * (can.height / bbox.height);
+        var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
+
+        myDiagram.model.addNodeData({
+          location: point,
+          text: dragged.textContent
+        });
+
+        // remove dragged element from its old location
+        if (remove.checked) dragged.parentNode.removeChild(dragged);
+      }
+
+
+      // If we were using drag data, we could get it here, ie:
+      // var data = event.dataTransfer.getData('text');
+    }, false);
+
+
+
+
+    // *********************************************************
+    // Second, set up a GoJS Diagram
+    // *********************************************************
+
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                  {
+                    initialContentAlignment: go.Spot.Center,
+                    "undoManager.isEnabled": true
+                  });  // center the content
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { locationSpot: go.Spot.Center },
+        new go.Binding('location'),
+        $(go.Shape, "Rectangle",
+          { fill: 'white' },
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3, font: "bold 16px sans-serif", width: 140, textAlign: 'center' },  // some room around the text
+          // TextBlock.text is bound to Node.data.key
+          new go.Binding("text"))
+      );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { text: "Alpha", color: "lightblue" },
+      { text: "Beta", color: "orange" },
+      { text: "Gamma", color: "lightgreen" },
+      { text: "Delta", color: "pink" }
+    ],
+    [ ]);
+  }
+
+</script>
+</head>
+<body onload="init()">
+
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 5px;">
+      <div class="palettezone">
+        <div class="draggable" draggable="true">Water</div>
+        <div class="draggable" draggable="true">Coffee</div>
+        <div class="draggable" draggable="true">Tea</div>
+      </div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px; margin-left: 10px;">
+      <div class="dropzone" id="myDiagram" style="border: solid 1px black; width:400px; height:400px;"></div>
+    </span>
+  </div>
+
+  <input id="remove" type="checkbox" /><label for="remove">Remove HTML item after drag</label>
+
+  <p>
+  The "Palette" in this sample is not a Palette (or GoJS control) at all. It is a collection of HTML elements with draggable attributes using the <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop">HTML Drag and Drop API</a>.
+  <p></p>
+  This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes.
+  </p>
+</div>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,442 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title>Virtualized Graph with ForceDirectedLayout</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css" />
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // The Diagram just shows what should be visible in the viewport.
+      // Its model does NOT include node data for the whole graph, but only that
+      // which might be visible in the viewport.
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            contentAlignment: go.Spot.Center,
+
+            // use a virtualized ForceDirectedLayout which does not require
+            // that the Nodes and Links exist first for an accurate layout
+            layout:
+              $(VirtualizedForceDirectedLayout,
+                { maxIterations: 25 }),
+
+            // Define the template for Nodes, used by virtualization.
+            nodeTemplate:
+              $(go.Node, "Auto",
+                { isLayoutPositioned: false },
+                new go.Binding("position", "", function(d) { return d.bounds.position; })
+                              .makeTwoWay(function(p, d) { d.bounds.position = p; }),
+                { width: 70, height: 20 },  // in cooperation with the nodeSize function, below
+                $(go.Shape, "Rectangle",
+                  new go.Binding("fill", "c")),
+                $(go.TextBlock,
+                  { margin: 2 },
+                  new go.Binding("text", "c")),
+                {
+                  toolTip:
+                    $(go.Adornment, "Auto",
+                      $(go.Shape, { fill: "lightyellow" }),
+                      $(go.TextBlock, { margin: 3 },
+                        new go.Binding("text", "",
+                                       function(d) { return "key: " + d.k + "\nbounds: " + d.bounds.toString(); }))
+                    )
+                }
+              ),
+
+            // Define the template for Links
+            linkTemplate:
+              $(go.Link,
+                { isLayoutPositioned: false },
+                $(go.Shape)
+              )
+          });
+
+      // This model includes the entire graph of data
+      myGraphModel =
+        $(go.GraphLinksModel,
+          { // we use single character property names, to save space when rendered as JSON
+            nodeKeyProperty: "k",
+            linkFromKeyProperty: "f",
+            linkToKeyProperty: "t"
+          });  // must match the GraphLinksModel used by the Diagram, below
+
+      // The virtualized layout works on the full model, not on the Diagram Nodes and Links
+      myDiagram.layout.model = myGraphModel;
+
+      // Do not set myDiagram.model = myGraphModel -- that would create a zillion Nodes and Links!
+      // In the future Diagram may have built-in support for virtualization.
+      // For now, we have to implement virtualization ourselves by having the Diagram's model
+      // be different than the "real" model.
+      myDiagram.model =
+        $(go.GraphLinksModel,  // this only holds Nodes and Links that should be seen in the viewport
+          {
+            nodeKeyProperty: "k",
+            linkFromKeyProperty: "f",
+            linkToKeyProperty: "t"
+          });  // must match myGraphModel, above
+
+      // for now, we have to implement virtualization ourselves
+      myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
+
+      // once the layout has finished we can decide where to position the viewport
+      myDiagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+        var firstdata = myGraphModel.findNodeDataForKey(0);
+        if (firstdata) {
+          myDiagram.centerRect(firstdata.bounds);
+        }
+      });
+
+      // This is a status message
+      myLoading =
+        $(go.Part,  // this has to set the location or position explicitly
+          { location: new go.Point(0, 0) },
+          $(go.TextBlock, "loading...",
+            { stroke: "red", font: "20pt sans-serif" }));
+
+      // temporarily add the status indicator
+      myDiagram.add(myLoading);
+
+      // Allow the myLoading indicator to be shown now,
+      // but allow objects added in loadTree to also be considered part of the initial Diagram.
+      // If you are not going to add temporary initial Parts, don't call delayInitialization.
+      myDiagram.delayInitialization(loadGraph);
+    }
+
+    function loadGraph() {
+      // create a lot of data for the myGraphModel
+      generateNodes(myGraphModel, 1234, 1234);
+      generateLinks(myGraphModel, 1, 5);
+
+      // make it faster to get from a model data object to all adjacent data
+      improveNavigation(myGraphModel);
+
+      // remove the status indicator
+      myDiagram.remove(myLoading);
+    }
+
+    // Creates a random number of randomly colored nodes.
+    function generateNodes(model, min, max) {
+      if (isNaN(min) || min < 0) min = 2;
+      if (isNaN(max) || max < min) max = min;
+      var nodeArray = [];
+      var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
+      for (var i = 0; i < numNodes; i++) {
+        var d = {
+          k: i,
+          c: go.Brush.randomColor()  // the node's color
+        };
+        //!!!???@@@ this needs to be customized to account for your chosen Node template
+        d.bounds = new go.Rect(0, 0, 70, 20);
+        nodeArray.push(d);
+      }
+      model.nodeDataArray = nodeArray;
+    }
+
+    // Takes the random collection of nodes and creates a random tree with them.
+    // Respects the minimum and maximum number of links from each node.
+    // (The minimum can be disregarded if we run out of nodes to link to)
+    function generateLinks(model, min, max) {
+      if (model.nodeDataArray.length < 2) return;
+      if (isNaN(min) || min < 1) min = 1;
+      if (isNaN(max) || max < min) max = min;
+      var linkArray = [];
+      // make two Lists of nodes to keep track of where links already exist
+      var nodes = new go.List();
+      nodes.addAll(model.nodeDataArray);
+      var available = new go.List();
+      available.addAll(nodes);
+      for (var i = 0; i < nodes.length; i++) {
+        var next = nodes.elt(i);
+        available.remove(next)
+        var children = Math.floor(Math.random() * (max - min + 1)) + min;
+        for (var j = 1; j <= children; j++) {
+          if (available.length === 0) break;
+          var to = available.elt(0);
+          available.remove(to);
+          linkArray.push({ f: next.k, t: to.k});
+        }
+      }
+      model.linkDataArray = linkArray;
+    }
+
+    // this adds ._from and ._to properties on each link data
+    // and a ._links property on each node data
+    function improveNavigation(model) {  // this must be a GraphLinksModel
+      var ldata = model.linkDataArray;
+      // create an Array of connected link data for each node data
+      for (var i = 0; i < ldata.length; i++) {
+        var d = ldata[i];
+        var from = model.findNodeDataForKey(d.f);
+        var to = model.findNodeDataForKey(d.t);
+        if (from && to) {
+          d._from = from;
+          d._to = to;
+          var fromarr = from._links;
+          if (fromarr) {
+            fromarr.push(d);
+          } else {
+            from._links = [d];
+          }
+          var toarr = to._links;
+          if (toarr) {
+            toarr.push(d);
+          } else {
+            to._links = [d];
+          }
+        }
+      }
+    }
+
+
+    // The following functions implement virtualization of the Diagram
+
+    // As the user scrolls or zooms, make sure the Parts (Nodes and Links) exist in the viewport.
+    function onViewportChanged(e) {
+      // make sure there are Nodes for each node data that is in the viewport
+      // or that is connected to such a Node
+      var viewb = myDiagram.viewportBounds;  // the new viewportBounds
+      var model = myDiagram.model;
+      var b = new go.Rect();
+
+      var ndata = myGraphModel.nodeDataArray;
+      for (var i = 0; i < ndata.length; i++) {
+        var n = ndata[i];
+        if (!n._links && n.bounds.intersectsRect(viewb)) {
+          if (!model.containsNodeData(n)) {
+            model.addNodeData(n);
+          }
+        }
+      }
+
+      var ldata = myGraphModel.linkDataArray;
+      for (var i = 0; i < ldata.length; i++) {
+        var l = ldata[i];
+        b.set(l._from.bounds);
+        b.unionRect(l._to.bounds);
+        if (b.intersectsRect(viewb)) {
+          // also make sure both connected nodes are present,
+          // so that link routing is authentic
+          if (!model.containsNodeData(l._from)) {
+            model.addNodeData(l._from);
+          }
+          if (!model.containsNodeData(l._to)) {
+            model.addNodeData(l._to);
+          }
+          // make sure links appear
+          if (!model.containsLinkData(l)) {
+            model.addLinkData(l);
+          }
+        }
+      }
+
+      if (myRemoveTimer === null) {
+        // only remove offscreen nodes after a delay
+        myRemoveTimer = setTimeout(removeOffscreen, 3000);
+      }
+
+      updateCounts();  // only for this sample
+    }
+
+    // occasionally remove Parts that are offscreen from the Diagram
+    var myRemoveTimer = null;
+
+    function removeOffscreen() {
+      myRemoveTimer = null;
+
+      var viewb = myDiagram.viewportBounds;
+      var remove = [];  // collect for later removal
+      var removeLinks = new go.Set();  // link data connected to a node data to remove
+      var it = myDiagram.nodes;
+      while (it.next()) {
+        var n = it.value;
+        var d = n.data;
+        if (d === null) continue;
+        if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
+          // even if the node is out of the viewport, keep it if it is selected or
+          // if any link connecting with the node is still in the viewport
+          var vis = false;
+          var lit = n.linksConnected;
+          while (lit.next()) {
+            var l = lit.value;
+            if (l.actualBounds.intersectsRect(viewb)) {
+              vis = true;
+              break;
+            }
+          }
+          if (!vis) {
+            remove.push(d);
+            lit.reset();
+            while (lit.next()) {
+              removeLinks.add(lit.value.data);
+            }
+          }
+        }
+      }
+
+      myDiagram.model.removeNodeDataCollection(remove);
+      myDiagram.model.removeLinkDataCollection(removeLinks);
+
+      updateCounts();  // only for this sample
+    }
+
+    // This function is only used in this sample to demonstrate the effects of the virtualization.
+    // In a real application you would delete this function and all calls to it.
+    function updateCounts() {
+      document.getElementById("myMessage1").textContent = myGraphModel.nodeDataArray.length;
+      document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
+      document.getElementById("myMessage3").textContent = myDiagram.links.count;
+      document.getElementById("myMessage4").textContent = myDiagram.model.linkDataArray.length;
+    }
+
+    // The normal mechanism for determining the size of the document depends on all of the
+    // Nodes and Links existing, so we need to use a function that depends only on the model data.
+    function computeDocumentBounds(model) {
+      var b = new go.Rect();
+      var ndata = model.nodeDataArray;
+      for (var i = 0; i < ndata.length; i++) {
+        var d = ndata[i];
+        if (!d.bounds) continue;
+        if (i === 0) {
+          b.set(d.bounds);
+        } else {
+          b.unionRect(d.bounds);
+        }
+      }
+      return b;
+    }
+
+    // end of virtualized Diagram
+
+
+    // Here we try to replace the dependence of ForceDirectedLayout on Nodes
+    // with depending only on the data in the GraphLinksModel.
+    function VirtualizedForceDirectedLayout() {
+      go.ForceDirectedLayout.call(this);
+      this.isOngoing = false;
+      this.model = null;  // add this property for holding the whole GraphLinksModel
+    }
+    go.Diagram.inherit(VirtualizedForceDirectedLayout, go.ForceDirectedLayout);
+
+    VirtualizedForceDirectedLayout.prototype.createNetwork = function() {
+      return new VirtualizedForceDirectedNetwork();  // defined below
+    };
+
+    // ignore the argument, an (implicit) collection of Parts
+    VirtualizedForceDirectedLayout.prototype.makeNetwork = function(coll) {
+      var net = this.createNetwork();
+      net.addData(this.model);  // use the model data, not any actual Nodes and Links
+      return net;
+    };
+
+    VirtualizedForceDirectedLayout.prototype.commitLayout = function() {
+      go.ForceDirectedLayout.prototype.commitLayout.call(this);
+      // can't depend on regular bounds computation that depends on all Nodes existing
+      this.diagram.fixedBounds = computeDocumentBounds(this.model);
+      // update the positions of any existing Nodes
+      for (var it = this.diagram.nodes.iterator; it.next(); ) {
+        it.value.updateTargetBindings();
+      }
+    };
+
+
+    // Use Virtualized versions of ForceDirectedVertex and ForceDirectedEdge.
+    function VirtualizedForceDirectedNetwork() {
+      go.ForceDirectedNetwork.call(this);
+    }
+    go.Diagram.inherit(VirtualizedForceDirectedNetwork, go.ForceDirectedNetwork);
+
+    VirtualizedForceDirectedNetwork.prototype.createVertex = function() {
+      return new VirtualizedForceDirectedVertex();  // defined below
+    };
+
+    VirtualizedForceDirectedNetwork.prototype.createEdge = function() {
+      return new VirtualizedForceDirectedEdge();  // defined below
+    };
+
+    VirtualizedForceDirectedNetwork.prototype.addData = function(model) {
+      if (model instanceof go.GraphLinksModel) {
+        var dataVertexMap = new go.Map();
+        // create a vertex for each node data
+        var ndata = model.nodeDataArray;
+        for (var i = 0; i < ndata.length; i++) {
+          var d = ndata[i];
+          var v = this.createVertex();
+          v.data = d;
+          dataVertexMap.add(d.k, v);
+          this.addVertex(v);
+        }
+        // create an edge for each link data
+        var ldata = model.linkDataArray;
+        for (var i = 0; i < ldata.length; i++) {
+          var d = ldata[i];
+          // now find corresponding vertexes
+          var from = dataVertexMap.getValue(d.f);
+          var to = dataVertexMap.getValue(d.t);
+          if (from === null || to === null) continue;  // skip
+          // create and add VirtualizedForceDirectedEdge
+          var e = this.createEdge();
+          e.data = d;
+          e.fromVertex = from;
+          e.toVertex = to;
+          this.addEdge(e);
+        }
+      } else {
+        throw new Error("can only handle GraphLinksModel data");
+      }
+    };
+
+    VirtualizedForceDirectedNetwork.prototype.deleteArtificialVertexes = function() { };
+
+
+    // Associate with node data rather than with a Node.
+    function VirtualizedForceDirectedVertex() {
+      go.ForceDirectedVertex.call(this);
+      this._data = null;
+    }
+    go.Diagram.inherit(VirtualizedForceDirectedVertex, go.ForceDirectedVertex);
+
+    Object.defineProperty(VirtualizedForceDirectedVertex.prototype, "data", {
+      get: function() { return this._data; },
+      set: function(val) {
+        this._data = val;
+        if (val !== null) {
+          this.focus = new go.Point(val.bounds.width/2, val.bounds.height/2);
+          this.bounds = val.bounds;
+        }
+      }
+    });
+
+    VirtualizedForceDirectedVertex.prototype.commit = function() {
+      if (this._data !== null) {
+        this._data.bounds.set(this.bounds);
+      }
+    };
+
+
+    // Associate with link data rather than with a Link.
+    // NOTE: This does not support custom routing of links that is normally done by ForceDirectedLayout.
+    function VirtualizedForceDirectedEdge() {
+      go.ForceDirectedEdge.call(this);
+      this.data = null;
+    }
+    go.Diagram.inherit(VirtualizedForceDirectedEdge, go.ForceDirectedEdge);
+
+    // end of VirtualizedForceDirected[Layout/Network/Vertex/Edge]
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  This uses a <a>GraphLinksModel</a> and a virtualized <a>ForceDirectedLayout</a>.
+  Node data in Model: <span id="myMessage1"></span>.
+  Actual Nodes in Diagram: <span id="myMessage2"></span>.
+  Actual Links in Diagram: <span id="myMessage3"></span>.
+  Actual link data in model: <span id="myMessage4"></span>.
+  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
+</div>
+</body>
+</html>

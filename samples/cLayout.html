@@ -1,0 +1,287 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>Circular Layout</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must be the ID or reference to div
+        {
+          initialAutoScale: go.Diagram.UniformToFill,
+          layout: $(go.CircularLayout)
+          // other properties are set by the layout function, defined below
+        });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        // make sure the Node.location is different from the Node.position
+        { locationSpot: go.Spot.Center },
+        new go.Binding("text", "text"),  // for sorting
+        $(go.Shape, "Ellipse",  // the default value for the Shape.figure property
+          { fill: "lightgray",
+            stroke: "black",
+            desiredSize: new go.Size(30, 30) },
+          new go.Binding("figure", "figure"),
+          new go.Binding("fill", "fill"),
+          new go.Binding("desiredSize", "size")),
+        $(go.TextBlock,
+          new go.Binding("text", "text"))
+      );
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { selectable: false },
+        $(go.Shape));
+
+    // generate a circle using the default values
+    rebuildGraph();
+  }
+
+  function rebuildGraph() {
+    var numNodes = document.getElementById("numNodes").value;
+    numNodes = parseInt(numNodes, 10);
+    if (isNaN(numNodes)) numNodes = 16;
+
+    var width = document.getElementById("width").value;
+    width = parseFloat(width, 10);
+
+    var height = document.getElementById("height").value;
+    height = parseFloat(height, 10);
+
+    var randSizes = document.getElementById("randSizes").checked;
+
+    var circ = document.getElementById("circ").checked;
+
+    var cyclic = document.getElementById("cyclic").checked;
+
+    var minLinks = document.getElementById("minLinks").value;
+    minLinks = parseInt(minLinks, 10);
+
+    var maxLinks = document.getElementById("maxLinks").value;
+    maxLinks = parseInt(maxLinks, 10);
+
+    generateCircle(numNodes, width, height, minLinks, maxLinks, randSizes, circ, cyclic);
+  }
+
+  function generateCircle(numNodes, width, height, minLinks, maxLinks, randSizes, circ, cyclic) {
+    myDiagram.startTransaction("generateCircle");
+    // replace the diagram's model's nodeDataArray
+    generateNodes(numNodes, width, height, randSizes, circ);
+    // replace the diagram's model's linkDataArray
+    generateLinks(minLinks, maxLinks, cyclic);
+    // force a diagram layout
+    layout();
+    myDiagram.commitTransaction("generateCircle");
+  }
+
+  function generateNodes(numNodes, width, height, randSizes, circ) {
+    var nodeArray = [];
+    for (var i = 0; i < numNodes; i++) {
+      var size;
+      if (randSizes) {
+        size = new go.Size(Math.floor(Math.random() * (65 - width + 1)) + width, Math.floor(Math.random() * (65 - height + 1)) + height);
+      } else {
+        size = new go.Size(width, height);
+      }
+
+      if (circ) size.height = size.width;
+
+      var figure = "Rectangle";
+      if (circ) figure = "Ellipse";
+
+      nodeArray.push({
+        key: i,
+        text: i.toString(),
+        figure: figure,
+        fill: go.Brush.randomColor(),
+        size: size
+      });
+    }
+
+    // randomize the data, to help demonstrate sorting
+    for (i = 0; i < nodeArray.length; i++) {
+      var swap = Math.floor(Math.random() * nodeArray.length);
+      var temp = nodeArray[swap];
+      nodeArray[swap] = nodeArray[i];
+      nodeArray[i] = temp;
+    }
+
+    // set the nodeDataArray to this array of objects
+    myDiagram.model.nodeDataArray = nodeArray;
+  }
+
+  function generateLinks(min, max, cyclic) {
+    if (myDiagram.nodes.count < 2) return;
+    var linkArray = [];
+    var nit = myDiagram.nodes;
+    var nodes = new go.List(go.Node);
+    nodes.addAll(nit);
+    var num = nodes.length;
+    if (cyclic) {
+      for (var i = 0; i < num; i++) {
+        if (i >= num - 1) {
+          linkArray.push({ from: i, to: 0 });
+        } else {
+          linkArray.push({ from: i, to: i + 1 });
+        }
+      }
+    } else {
+      if (isNaN(min) || min < 0) min = 0;
+      if (isNaN(max) || max < min) max = min;
+      for (var i = 0; i < num; i++) {
+        var next = nodes.elt(i);
+        var children = Math.floor(Math.random() * (max - min + 1)) + min;
+        for (var j = 1; j <= children; j++) {
+          var to = nodes.elt(Math.floor(Math.random() * num));
+          // get keys from the Node.text strings
+          var nextKey = parseInt(next.text, 10);
+          var toKey = parseInt(to.text, 10);
+          if (nextKey !== toKey) {
+            linkArray.push({ from: nextKey, to: toKey });
+          }
+        }
+      }
+    }
+    myDiagram.model.linkDataArray = linkArray;
+  }
+
+  // Update the layout from the controls, and then perform the layout again
+  function layout() {
+    myDiagram.startTransaction("change Layout");
+    var lay = myDiagram.layout;
+
+    var radius = document.getElementById("radius").value;
+    if (radius !== "NaN") radius = parseFloat(radius, 10);
+    else radius = NaN;
+    lay.radius = radius;
+
+    var aspectRatio = document.getElementById("aspectRatio").value;
+    aspectRatio = parseFloat(aspectRatio, 10);
+    lay.aspectRatio = aspectRatio;
+
+    var startAngle = document.getElementById("startAngle").value;
+    startAngle = parseFloat(startAngle, 10);
+    lay.startAngle = startAngle;
+
+    var sweepAngle = document.getElementById("sweepAngle").value;
+    sweepAngle = parseFloat(sweepAngle, 10);
+    lay.sweepAngle = sweepAngle;
+
+    var spacing = document.getElementById("spacing").value;
+    spacing = parseFloat(spacing, 10);
+    lay.spacing = spacing;
+
+    var arrangement = document.getElementById("arrangement").value;
+    if (arrangement === "ConstantDistance") lay.arrangement = go.CircularLayout.ConstantDistance;
+    else if (arrangement === "ConstantAngle") lay.arrangement = go.CircularLayout.ConstantAngle;
+    else if (arrangement === "ConstantSpacing") lay.arrangement = go.CircularLayout.ConstantSpacing;
+    else if (arrangement === "Packed") lay.arrangement = go.CircularLayout.Packed;
+
+    var diamFormula = getRadioValue("diamFormula");
+    if (diamFormula === "Pythagorean") lay.nodeDiameterFormula = go.CircularLayout.Pythagorean;
+    else if (diamFormula === "Circular") lay.nodeDiameterFormula = go.CircularLayout.Circular;
+
+    var direction = document.getElementById("direction").value;
+    if (direction === "Clockwise") lay.direction = go.CircularLayout.Clockwise;
+    else if (direction === "Counterclockwise") lay.direction = go.CircularLayout.Counterclockwise;
+    else if (direction === "BidirectionalLeft") lay.direction = go.CircularLayout.BidirectionalLeft;
+    else if (direction === "BidirectionalRight") lay.direction = go.CircularLayout.BidirectionalRight;
+
+    var sorting = document.getElementById("sorting").value;
+    if (sorting === "Forwards") lay.sorting = go.CircularLayout.Forwards;
+    else if (sorting === "Reverse") lay.sorting = go.CircularLayout.Reverse;
+    else if (sorting === "Ascending") lay.sorting = go.CircularLayout.Ascending;
+    else if (sorting === "Descending") lay.sorting = go.CircularLayout.Descending;
+    else if (sorting === "Optimized") lay.sorting = go.CircularLayout.Optimized;
+
+    myDiagram.commitTransaction("change Layout");
+  }
+
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++)
+      if (radio[i].checked) return radio[i].value;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>New Graph</b><br />
+      # of nodes: <input type="text" size="2" id="numNodes" value="16" /><br />
+      Node Size: <input type="text" size="2" id="width" value="25" /><input type="text" size="2" id="height" value="25" /><br />
+      Random Sizes: <input type="checkbox" id="randSizes" checked="checked" /> (<= 65) <br />
+      Circular Nodes: <input type="checkbox" id="circ" /><br />
+      Graph is simple ring: <input type="checkbox" id="cyclic" /><br />
+      Min Links from Node: <input type="text" size="2" id="minLinks" value="1" /><br />
+      Max Links from Node: <input type="text" size="2" id="maxLinks" value="2" /><br />
+      <button type="button" onclick="rebuildGraph()">Generate Circle</button>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>CircularLayout Properties</b><br />
+      Radius:
+      <input type="text" size="2" id="radius" value="NaN" onchange="layout()" />
+      (along X axis; NaN or > 0)
+      <br />
+      Aspect Ratio:
+      <input type="text" size="2" id="aspectRatio" value="1" onchange="layout()" />
+      (1 is circular; > 0)
+      <br />
+      Start Angle:
+      <input type="text" size="2" id="startAngle" value="0" onchange="layout()" />
+      (angle at first element)
+      <br />
+      Sweep Angle:
+      <input type="text" size="2" id="sweepAngle" value="360" onchange="layout()" />
+      (degrees occupied; >= 1, <= 360)
+      <br />
+      Spacing:
+      <input type="text" size="2" id="spacing" value="6" onchange="layout()" />
+      (actual spacing also depends on radius)
+      <br />
+      Arrangement:
+      <select name="arrangement" id="arrangement" onchange="layout()">
+        <option value="ConstantDistance">ConstantDistance</option>
+        <option value="ConstantAngle">ConstantAngle</option>
+        <option value="ConstantSpacing" selected="selected">ConstantSpacing</option>
+        <option value="Packed">Packed</option>
+      </select>
+      <br />
+      Node Diameter:
+      <input type="radio" name="diamFormula" onclick="layout()" value="Pythagorean" checked="checked" /> Pythagorean
+      <input type="radio" name="diamFormula" onclick="layout()" value="Circular" /> Circular<br />
+      Direction:
+      <select name="direction" id="direction" onchange="layout()">
+        <option value="Clockwise" selected="selected">Clockwise</option>
+        <option value="Counterclockwise">Counterclockwise</option>
+        <option value="BidirectionalLeft">BidirectionalLeft</option>
+        <option value="BidirectionalRight">BidirectionalRight</option>
+      </select>
+      <br />
+      Sorting:
+      <select name="sorting" id="sorting" onchange="layout()">
+        <option value="Forwards" selected="selected">Forwards</option>
+        <option value="Reverse">Reverse</option>
+        <option value="Ascending">Ascending</option>
+        <option value="Descending">Descending</option>
+        <option value="Optimized">Optimized</option>
+      </select>
+      (use "Optimized" to reduce the number of link crossings)
+    </span>
+  </div>
+  <div>
+    <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 500px;" />
+  </div>
+</div>
+</body>
+</html>

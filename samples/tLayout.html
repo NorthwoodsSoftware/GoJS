@@ -1,0 +1,378 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>Tree Layout</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must be the ID or reference to div
+        {
+          initialAutoScale: go.Diagram.UniformToFill,
+          layout: $(go.TreeLayout,
+                    { comparer: go.LayoutVertex.smartComparer }) // have the comparer sort by numbers as well as letters
+                    // other properties are set by the layout function, defined below
+        });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("text", "text"),  // for sorting
+        $(go.Shape, "Ellipse",
+          { fill: "lightgray",  // the initial value, but data-binding may provide different value
+            stroke: "black",
+            desiredSize: new go.Size(30, 30) },
+          new go.Binding("fill", "fill")),
+        $(go.TextBlock,
+          new go.Binding("text", "text"))
+      );
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Link.Orthogonal,
+          selectable: false },
+        $(go.Shape));
+
+    // generate a tree with the default values
+    rebuildGraph();
+  }
+
+  function rebuildGraph() {
+    var minNodes = document.getElementById("minNodes").value;
+    minNodes = parseInt(minNodes, 10);
+
+    var maxNodes = document.getElementById("maxNodes").value;
+    maxNodes = parseInt(maxNodes, 10);
+
+    var minChil = document.getElementById("minChil").value;
+    minChil = parseInt(minChil, 10);
+
+    var maxChil = document.getElementById("maxChil").value;
+    maxChil = parseInt(maxChil, 10);
+
+    // create and assign a new model
+    var nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil);
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+
+    // update the diagram layout customized by the various control values
+    layout();
+  }
+
+  // Creates a random number (between MIN and MAX) of randomly colored nodes.
+  function generateNodeData(minNodes, maxNodes, minChil, maxChil) {
+    var nodeArray = [];
+    if (minNodes === undefined || isNaN(minNodes) || minNodes < 1) minNodes = 1;
+    if (maxNodes === undefined || isNaN(maxNodes) || maxNodes < minNodes) maxNodes = minNodes;
+
+    // Create a bunch of node data
+    var numNodes = Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes;
+    for (var i = 0; i < numNodes; i++) {
+      nodeArray.push({
+        key: i,  // the unique identifier
+        // "parent" is set by code below that assigns children
+        text: i.toString(),  // some text to be shown by the node template
+        fill: go.Brush.randomColor()  // a color to be shown by the node template
+      });
+    }
+
+    // Randomize the node data
+    for (i = 0; i < nodeArray.length; i++) {
+      var swap = Math.floor(Math.random() * nodeArray.length);
+      var temp = nodeArray[swap];
+      nodeArray[swap] = nodeArray[i];
+      nodeArray[i] = temp;
+    }
+
+    // Takes the random collection of node data and creates a random tree with them.
+    // Respects the minimum and maximum number of links from each node.
+    // The minimum can be disregarded if we run out of nodes to link to.
+    if (nodeArray.length > 1) {
+      if (minChil === undefined || isNaN(minChil) || minChil < 0) minChil = 0;
+      if (maxChil === undefined || isNaN(maxChil) || maxChil < minChil) maxChil = minChil;
+
+      // keep the Set of node data that do not yet have a parent
+      var available = new go.Set();
+      available.addAll(nodeArray);
+      for (var i = 0; i < nodeArray.length; i++) {
+        var parent = nodeArray[i];
+        available.remove(parent);
+
+        // assign some number of node data as children of this parent node data
+        var children = Math.floor(Math.random() * (maxChil - minChil + 1)) + minChil;
+        for (var j = 0; j < children; j++) {
+          var child = available.first();
+          if (child === null) break;  // oops, ran out already
+          available.remove(child);
+          // have the child node data refer to the parent node data by its key
+          child.parent = parent.key;
+        }
+        if (available.count === 0) break;  // nothing left?
+      }
+    }
+    return nodeArray;
+  }
+
+  // Update the layout from the controls, and then perform the layout again
+  function layout() {
+    myDiagram.startTransaction("change Layout");
+    var lay = myDiagram.layout;
+
+    var style = document.getElementById("style").value;
+    if (style === "Layered") lay.treeStyle = go.TreeLayout.StyleLayered;
+    else if (style === "Alternating") lay.treeStyle = go.TreeLayout.StyleAlternating;
+    else if (style === "LastParents") lay.treeStyle = go.TreeLayout.StyleLastParents;
+    else if (style === "RootOnly") lay.treeStyle = go.TreeLayout.StyleRootOnly;
+
+    var angle = getRadioValue("angle");
+    angle = parseFloat(angle, 10);
+    lay.angle = angle;
+
+    var align = document.getElementById("align").value;
+    if (align === "CenterChildren") lay.alignment = go.TreeLayout.AlignmentCenterChildren;
+    else if (align === "CenterSubtrees") lay.alignment = go.TreeLayout.AlignmentCenterSubtrees;
+    else if (align === "Start") lay.alignment = go.TreeLayout.AlignmentStart;
+    else if (align === "End") lay.alignment = go.TreeLayout.AlignmentEnd;
+    else if (align === "Bus") lay.alignment = go.TreeLayout.AlignmentBus;
+    else if (align === "BusBranching") lay.alignment = go.TreeLayout.AlignmentBusBranching;
+    else if (align === "TopLeftBus") lay.alignment = go.TreeLayout.AlignmentTopLeftBus;
+    else if (align === "BottomRightBus") lay.alignment = go.TreeLayout.AlignmentBottomRightBus;
+
+    var nodeSpacing = document.getElementById("nodeSpacing").value;
+    nodeSpacing = parseFloat(nodeSpacing, 10);
+    lay.nodeSpacing = nodeSpacing;
+
+    var nodeIndent = document.getElementById("nodeIndent").value;
+    nodeIndent = parseFloat(nodeIndent, 10);
+    lay.nodeIndent = nodeIndent;
+
+    var nodeIndentPastParent = document.getElementById("nodeIndentPastParent").value;
+    nodeIndentPastParent = parseFloat(nodeIndentPastParent, 10);
+    lay.nodeIndentPastParent = nodeIndentPastParent;
+
+    var layerSpacing = document.getElementById("layerSpacing").value;
+    layerSpacing = parseFloat(layerSpacing, 10);
+    lay.layerSpacing = layerSpacing;
+
+    var layerSpacingParentOverlap = document.getElementById("layerSpacingParentOverlap").value;
+    layerSpacingParentOverlap = parseFloat(layerSpacingParentOverlap, 10);
+    lay.layerSpacingParentOverlap = layerSpacingParentOverlap;
+
+    var sorting = document.getElementById("sorting").value;
+    if (sorting === "Forwards") lay.sorting = go.TreeLayout.SortingForwards;
+    else if (sorting === "Reverse") lay.sorting = go.TreeLayout.SortingReverse;
+    else if (sorting === "Ascending") lay.sorting = go.TreeLayout.SortingAscending;
+    else if (sorting === "Descending") lay.sorting = go.TreeLayout.SortingDescending;
+
+    var compaction = getRadioValue("compaction");
+    if (compaction === "Block") lay.compaction = go.TreeLayout.CompactionBlock;
+    else if (compaction === "None") lay.compaction = go.TreeLayout.CompactionNone;
+
+    var breadthLimit = document.getElementById("breadthLimit").value;
+    breadthLimit = parseFloat(breadthLimit, 10);
+    lay.breadthLimit = breadthLimit;
+
+    var rowSpacing = document.getElementById("rowSpacing").value;
+    rowSpacing = parseFloat(rowSpacing, 10);
+    lay.rowSpacing = rowSpacing;
+
+    var rowIndent = document.getElementById("rowIndent").value;
+    rowIndent = parseFloat(rowIndent, 10);
+    lay.rowIndent = rowIndent;
+
+    var setsPortSpot = document.getElementById("setsPortSpot").checked;
+    lay.setsPortSpot = setsPortSpot;
+
+    var setsChildPortSpot = document.getElementById("setsChildPortSpot").checked;
+    lay.setsChildPortSpot = setsChildPortSpot;
+
+    if (style !== "Layered") {
+      var altAngle = getRadioValue("altAngle");
+      altAngle = parseFloat(altAngle, 10);
+      lay.alternateAngle = altAngle;
+
+      var altAlign = document.getElementById("altAlign").value;
+      if (altAlign === "CenterChildren") lay.alternateAlignment = go.TreeLayout.AlignmentCenterChildren;
+      else if (altAlign === "CenterSubtrees") lay.alternateAlignment = go.TreeLayout.AlignmentCenterSubtrees;
+      else if (altAlign === "Start") lay.alternateAlignment = go.TreeLayout.AlignmentStart;
+      else if (altAlign === "End") lay.alternateAlignment = go.TreeLayout.AlignmentEnd;
+      else if (altAlign === "Bus") lay.alternateAlignment = go.TreeLayout.AlignmentBus;
+      else if (altAlign === "BusBranching") lay.alternateAlignment = go.TreeLayout.AlignmentBusBranching;
+      else if (altAlign === "TopLeftBus") lay.alternateAlignment = go.TreeLayout.AlignmentTopLeftBus;
+      else if (altAlign === "BottomRightBus") lay.alternateAlignment = go.TreeLayout.AlignmentBottomRightBus;
+
+      var altNodeSpacing = document.getElementById("altNodeSpacing").value;
+      altNodeSpacing = parseFloat(altNodeSpacing, 10);
+      lay.alternateNodeSpacing = altNodeSpacing;
+
+      var altNodeIndent = document.getElementById("altNodeIndent").value;
+      altNodeIndent = parseFloat(altNodeIndent, 10);
+      lay.alternateNodeIndent = altNodeIndent;
+
+      var altNodeIndentPastParent = document.getElementById("altNodeIndentPastParent").value;
+      altNodeIndentPastParent = parseFloat(altNodeIndentPastParent, 10);
+      lay.alternateNodeIndentPastParent = altNodeIndentPastParent;
+
+      var altLayerSpacing = document.getElementById("altLayerSpacing").value;
+      altLayerSpacing = parseFloat(altLayerSpacing, 10);
+      lay.alternateLayerSpacing = altLayerSpacing;
+
+      var altLayerSpacingParentOverlap = document.getElementById("altLayerSpacingParentOverlap").value;
+      altLayerSpacingParentOverlap = parseFloat(altLayerSpacingParentOverlap, 10);
+      lay.alternateLayerSpacingParentOverlap = altLayerSpacingParentOverlap;
+
+      var altSorting = document.getElementById("altSorting").value;
+      if (altSorting === "Forwards") lay.alternateSorting = go.TreeLayout.SortingForwards;
+      else if (altSorting === "Reverse") lay.alternateSorting = go.TreeLayout.SortingReverse;
+      else if (altSorting === "Ascending") lay.alternateSorting = go.TreeLayout.SortingAscending;
+      else if (altSorting === "Descending") lay.alternateSorting = go.TreeLayout.SortingDescending;
+
+      var altCompaction = getRadioValue("altCompaction");
+      if (altCompaction === "Block") lay.alternateCompaction = go.TreeLayout.CompactionBlock;
+      else if (altCompaction === "None") lay.alternateCompaction = go.TreeLayout.CompactionNone;
+
+      var altBreadthLimit = document.getElementById("altBreadthLimit").value;
+      altBreadthLimit = parseFloat(altBreadthLimit, 10);
+      lay.alternateBreadthLimit = altBreadthLimit;
+
+      var altRowSpacing = document.getElementById("altRowSpacing").value;
+      altRowSpacing = parseFloat(altRowSpacing, 10);
+      lay.alternateRowSpacing = altRowSpacing;
+
+      var altRowIndent = document.getElementById("altRowIndent").value;
+      altRowIndent = parseFloat(altRowIndent, 10);
+      lay.alternateRowIndent = altRowIndent;
+
+      var altSetsPortSpot = document.getElementById("altSetsPortSpot").checked;
+      lay.alternateSetsPortSpot = altSetsPortSpot;
+
+      var altSetsChildPortSpot = document.getElementById("altSetsChildPortSpot").checked;
+      lay.alternateSetsChildPortSpot = altSetsChildPortSpot;
+    }
+
+    myDiagram.commitTransaction("change Layout");
+  }
+
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++)
+      if (radio[i].checked) return radio[i].value;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>Tree Style</b><br />
+      <select name="style" id="style" onchange="layout()">
+        <option value="Layered" selected="selected">Layered</option>
+        <option value="Alternating">Alternating</option>
+        <option value="LastParents">LastParents</option>
+        <option value="RootOnly">RootOnly</option>
+      </select>
+      <br />
+      <br />
+      <b>New Tree</b><br />
+      MinNodes: <input type="text" size="2" id="minNodes" value="20" /><br />
+      MaxNodes: <input type="text" size="2" id="maxNodes" value="100" /><br />
+      MinChildren: <input type="text" size="2" id="minChil" value="3" /><br />
+      MaxChildren: <input type="text" size="2" id="maxChil" value="5" /><br />
+      <button type="button" onclick="rebuildGraph()">Generate Tree</button>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>Default Properties</b><br />
+      Angle:
+        <input type="radio" name="angle" onclick="layout()" value="0" checked="checked" />Right
+        <input type="radio" name="angle" onclick="layout()" value="90" />Down
+        <input type="radio" name="angle" onclick="layout()" value="180" />Left
+        <input type="radio" name="angle" onclick="layout()" value="270" />Up<br />
+      Alignment:
+        <select name="align" id="align" onchange="layout()">
+          <option value="CenterChildren" selected="selected">CenterChildren</option>
+          <option value="CenterSubtrees">CenterSubtrees</option>
+          <option value="Start">Start</option>
+          <option value="End">End</option>
+          <option value="Bus">Bus</option>
+          <option value="BusBranching">BusBranching</option>
+          <option value="TopLeftBus">TopLeftBus</option>
+          <option value="BottomRightBus">BottomRightBus</option>
+        </select>
+        <br />
+      NodeSpacing: <input type="text" size="2" id="nodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
+      NodeIndent: <input type="text" size="2" id="nodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
+      NodeIndentPastParent: <input type="text" size="2" id="nodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      LayerSpacing: <input type="text" size="2" id="layerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
+      LayerSpacingParentOverlap: <input type="text" size="2" id="layerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      Sorting:
+        <select name="sorting" id="sorting" onchange="layout()">
+          <option value="Forwards" selected="selected">Forwards</option>
+          <option value="Reverse">Reverse</option>
+          <option value="Ascending">Ascending</option>
+          <option value="Descending">Descending</option>
+        </select>
+        <br />
+      Compaction:
+        <input type="radio" name="compaction" onclick="layout()" value="Block" checked="checked" /> Block
+        <input type="radio" name="compaction" onclick="layout()" value="None" /> None<br />
+      BreadthLimit: <input type="text" size="2" id="breadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
+      RowSpacing: <input type="text" size="2" id="rowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
+      RowIndent: <input type="text" size="2" id="rowIndent" value="10" onchange="layout()" /> (>= 0)<br />
+      SetsPortSpot: <input type="checkbox" id="setsPortSpot" checked="checked" onclick="layout()" />
+      SetsChildPortSpot: <input type="checkbox" id="setsChildPortSpot" checked="checked" onclick="layout()" /><br />
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>Alternates</b>
+      (only when TreeStyle is not Layered)
+      <br />
+      Angle:
+        <input type="radio" name="altAngle" onclick="layout()" value="0" checked="checked" />Right
+        <input type="radio" name="altAngle" onclick="layout()" value="90" />Down
+        <input type="radio" name="altAngle" onclick="layout()" value="180" />Left
+        <input type="radio" name="altAngle" onclick="layout()" value="270" />Up<br />
+      Alignment:
+        <select name="altAlign" id="altAlign" onchange="layout()">
+          <option value="CenterChildren" selected="selected">CenterChildren</option>
+          <option value="CenterSubtrees">CenterSubtrees</option>
+          <option value="Start">Start</option>
+          <option value="End">End</option>
+          <option value="Bus">Bus</option>
+          <option value="BusBranching">BusBranching</option>
+          <option value="TopLeftBus">TopLeftBus</option>
+          <option value="BottomRightBus">BottomRightBus</option>
+        </select>
+        <br />
+      NodeSpacing: <input type="text" size="2" id="altNodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
+      NodeIndent: <input type="text" size="2" id="altNodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
+      NodeIndentPastParent: <input type="text" size="2" id="altNodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      LayerSpacing: <input type="text" size="2" id="altLayerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
+      LayerSpacingParentOverlap: <input type="text" size="2" id="altLayerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      Sorting:
+        <select name="altSorting" id="altSorting" onchange="layout()">
+          <option value="Forwards" selected="selected">Forwards</option>
+          <option value="Reverse">Reverse</option>
+          <option value="Ascending">Ascending</option>
+          <option value="Descending">Descending</option>
+        </select>
+        <br />
+      Compaction:
+        <input type="radio" name="altCompaction" onclick="layout()" value="Block" checked="checked" /> Block
+        <input type="radio" name="altCompaction" onclick="layout()" value="None" /> None<br />
+      BreadthLimit: <input type="text" size="2" id="altBreadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
+      RowSpacing: <input type="text" size="2" id="altRowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
+      RowIndent: <input type="text" size="2" id="altRowIndent" value="10" onchange="layout()" /> (>= 0)<br />
+      SetsPortSpot: <input type="checkbox" id="altSetsPortSpot" checked="checked" onclick="layout()" />
+      SetsChildPortSpot: <input type="checkbox" id="altSetsChildPortSpot" checked="checked" onclick="layout()" /><br />
+    </span>
+  </div>
+  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+</div>
+</body>
+</html>

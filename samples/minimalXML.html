@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<title>Minimal GoJS Sample</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $$ = go.GraphObject.make;  // for conciseness in defining templates, avoid $ due to jQuery
+
+    myDiagram = $$(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                   { initialContentAlignment: go.Spot.Center });  // center the content
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $$(go.Node, "Auto",
+         $$(go.Shape, "RoundedRectangle",
+            // Shape.fill is bound to Node.data.color
+            new go.Binding("fill", "color")),
+         $$(go.TextBlock,
+            { margin: 3 },  // some room around the text
+            // TextBlock.text is bound to Node.data.key
+            new go.Binding("text", "key"))
+      );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // The previous initialization is the same as the minimal.html sample.
+    // Here we request XML-format data from the server, in this case from a static file.
+    jQuery.ajax({
+      url: "minimal.xml",
+      success: load,
+      dataType: "xml"
+    });
+  }
+
+  function load(x) {
+    // ought to handle parse errors here:
+    var xml = jQuery(x.xml ? x.xml : x);
+    // this does direct binding to XML DOM elements:
+    myDiagram.model = new go.GraphLinksModel(xml.find("node").toArray(), xml.find("link").toArray());
+    // such binding is read-only at the current time
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>Minimal <b>GoJS</b> Sample, reading XML data</p>
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+  <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
+  <p>
+  This is just like the <a href="minimal.html">Minimal</a> sample, but this reads XML data from the server.
+  </p>
+  <p>
+  Here is the contents of the <code>minimal.xml</code> file:
+  <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;graph&gt;
+  &lt;node key="Alpha" color="lightblue" /&gt;
+  &lt;node key="Beta" color="orange" /&gt;
+  &lt;node key="Gamma" color="lightgreen" /&gt;
+  &lt;node key="Delta" color="pink" /&gt;
+  &lt;link from="Alpha" to="Beta" /&gt;
+  &lt;link from="Alpha" to="Gamma" /&gt;
+  &lt;link from="Beta" to="Beta" /&gt;
+  &lt;link from="Gamma" to="Delta" /&gt;
+  &lt;link from="Delta" to="Alpha" /&gt;
+&lt;/graph&gt;
+  </pre>
+  </p>
+  <p>
+  This sample uses direct binding to XML DOM elements --
+  the Model's <a>Model.nodeDataArray</a> is actually an XML DOM object,
+  and each Node has data <a>Binding</a>s directly to XML DOM elements.
+  </p>
+  <p>
+  Such direct binding at the current time only supports read-only models.
+  If you want to read <i>and write</i> XML you need to use regular JavaScript Objects and
+  implement your own persistence from and to XML.
+  Of course even if <b>GoJS</b> supported updating XML DOM directly,
+  this "minimal" sample has no way to update the data on the server.
+  </p>
+</div>
+</body>
+</html>

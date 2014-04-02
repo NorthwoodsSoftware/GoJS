@@ -1,0 +1,323 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title>Radial Layout</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+
+  var showCircles = true;  // show a circle behind the nodes in each layer
+  var maxCircles = 2;  // how many concentric layers to show
+  var rotateText = true;  // whether to rotate the label with the angle of the node
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram", // must be the ID or reference to div
+        { initialAutoScale: go.Diagram.Uniform,
+          initialContentAlignment: go.Spot.Center,
+          padding: 10,
+          //isReadOnly: true,
+          maxSelectionCount: 1 });
+
+    var commonToolTip =
+      $(go.Adornment, "Auto",
+        { isShadowed: true },
+        $(go.Shape, { fill: "#FFFFCC" }),
+        $(go.Panel, "Vertical",
+          { margin: 3 },
+          $(go.TextBlock,  // bound to node data
+            {margin: 4, font: "bold 12pt sans-serif" },
+            new go.Binding("text")),
+          $(go.TextBlock,  // bound to node data
+            new go.Binding("text", "color", function(c) { return "Color: " + c; })),
+          $(go.TextBlock,  // bound to Adornment because of call to Binding.ofObject
+            new go.Binding("text", "", function(ad) { return "Connections: " + ad.adornedPart.linksConnected.count; }).ofObject())
+        )  // end Vertical Panel
+      );  // end Adornment
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        {
+          locationSpot: go.Spot.Center,  // Node.location is the center of the Shape
+          locationObjectName: "SHAPE",
+          selectionAdorned: false,
+          selectionChanged: nodeSelectionChanged,
+          toolTip: commonToolTip
+        },
+        $(go.Shape, "Ellipse",
+          {
+            name: "SHAPE",
+            fill: "lightgray",  // default value, but also data-bound
+            stroke: "transparent",  // modified by highlighting
+            strokeWidth: 2,
+            desiredSize: new go.Size(20, 20),
+            portId: ""  // so links will go to the shape, not the whole node
+          },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { name: "TEXTBLOCK" },
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left },
+          new go.Binding("text", "text"))
+      );
+
+    myDiagram.nodeTemplateMap.add("Root",
+      $(go.Node, "Auto",
+        {
+          locationSpot: go.Spot.Center,
+          selectionAdorned: false,
+          selectionChanged: nodeSelectionChanged,
+          toolTip: commonToolTip
+        },
+        $(go.Shape, "Ellipse",
+          { fill: "white" }),
+        $(go.TextBlock,
+          { font: "bold 14pt" },
+          new go.Binding("text", "text"))
+      ));
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        {
+          routing: go.Link.Normal,
+          curve: go.Link.Bezier,
+          selectionAdorned: false,
+          layerName: "Background"
+        },
+        $(go.Shape,
+          { stroke: "black",  // default value, but is data-bound
+            strokeWidth: 1 },
+          new go.Binding("stroke", "color"))
+      );
+
+    generateGraph();
+  }
+
+  function generateGraph() {
+    var names = [
+      "Joshua", "Daniel", "Robert", "Noah", "Anthony",
+      "Elizabeth", "Addison", "Alexis", "Ella", "Samantha",
+      "Joseph", "Scott", "James", "Ryan", "Benjamin",
+      "Walter", "Gabriel", "Christian", "Nathan", "Simon",
+      "Isabella", "Emma", "Olivia", "Sophia", "Ava",
+      "Emily", "Madison", "Tina", "Elena", "Mia",
+      "Jacob", "Ethan", "Michael", "Alexander", "William",
+      "Natalie", "Grace", "Lily", "Alyssa", "Ashley",
+      "Sarah", "Taylor", "Hannah", "Brianna", "Hailey",
+      "Christopher", "Aiden", "Matthew", "David", "Andrew",
+      "Kaylee", "Juliana", "Leah", "Anna", "Allison",
+      "John", "Samuel", "Tyler", "Dylan", "Jonathan"
+    ];
+
+    var nodeDataArray = [];
+    for (var i = 0; i < names.length; i++) {
+      nodeDataArray.push({ key: i, text: names[i], color: go.Brush.randomColor(128, 240) });
+    }
+
+    var linkDataArray = [];
+    var num = nodeDataArray.length;
+    for (var i = 0; i < num * 2; i++) {
+      var a = Math.floor(Math.random() * num);
+      var b = Math.floor(Math.random() * num / 4) + 1;
+      linkDataArray.push({ from: a, to: (a + b) % num, color: go.Brush.randomColor(0, 127) });
+    }
+
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+    var someone = nodeDataArray[Math.floor(Math.random() * nodeDataArray.length)];
+    var somenode = myDiagram.findNodeForData(someone);
+    myDiagram.select(somenode);
+  }
+
+  function nodeSelectionChanged(node) {
+    var diagram = node.diagram;
+    if (diagram === null) return;
+    if (node.isSelected) {
+      node.category = "Root";
+      var results = findDistances(node);
+      radialLayout(node, results);
+    }
+  }
+
+  // returns a Map of Nodes with distance values
+  function findDistances(source) {
+    var diagram = source.diagram;
+    // keep track of distances from the source node
+    var distances = new go.Map(go.Node, "number");
+    var nit = diagram.nodes;
+    while (nit.next()) {
+      var n = nit.value;
+      distances.add(n, Infinity);
+    }
+    // the source node starts with distance 0
+    distances.add(source, 0);
+    // keep track of nodes for we have set a non-Infinity distance,
+    // but which we have not yet finished examining
+    var seen = new go.Set(go.Node);
+    seen.add(source);
+
+    // local function for finding a Node with the smallest distance in a given collection
+    function leastNode(coll, distances) {
+      var bestdist = Infinity;
+      var bestnode = null;
+      var it = coll.iterator;
+      while (it.next()) {
+        var n = it.value;
+        var dist = distances.getValue(n);
+        if (dist < bestdist) {
+          bestdist = dist;
+          bestnode = n;
+        }
+      }
+      return bestnode;
+    }
+
+    // keep track of nodes we have finished examining;
+    // this avoids unnecessary traversals and helps keep the SEEN collection small
+    var finished = new go.Set(go.Node);
+    while (seen.count > 0) {
+      // look at the unfinished node with the shortest distance so far
+      var least = leastNode(seen, distances);
+      var leastdist = distances.getValue(least);
+      // by the end of this loop we will have finished examining this LEAST node
+      seen.remove(least);
+      finished.add(least);
+      // look at all Links connected with this node
+      var it = least.linksConnected;
+      while (it.next()) {
+        var link = it.value;
+        var neighbor = link.getOtherNode(least);
+        // skip nodes that we have finished
+        if (finished.contains(neighbor)) continue;
+        var neighbordist = distances.getValue(neighbor);
+        // assume "distance" along a link is unitary, but could be any non-negative number.
+        var dist = leastdist + 1;  //Math.sqrt(least.location.distanceSquaredPoint(neighbor.location));
+        if (dist < neighbordist) {
+          // if haven't seen that node before, add it to the SEEN collection
+          if (neighbordist == Infinity) {
+            seen.add(neighbor);
+          }
+          // record the new best distance so far to that node
+          distances.add(neighbor, dist);
+        }
+      }
+    }
+
+    return distances;
+  }
+
+  function radialLayout(root, distances) {
+    root.diagram.startTransaction("radial layout");
+    // sort all results into Arrays of Nodes with the same distance
+    var nodes = {};
+    var maxlayer = 0;
+    var it = distances.iterator;
+    while (it.next()) {
+      var node = it.key;
+      if (node !== root) node.category = "";  // remove "Root" category from all non-root nodes
+      node._laid = false;
+      var layer = it.value;
+      if (layer === Infinity) continue;
+      if (layer > maxlayer) maxlayer = layer;
+      var layernodes = nodes[layer];
+      if (layernodes === undefined) {
+        layernodes = [];
+        nodes[layer] = layernodes;
+      }
+      layernodes.push(node);
+    }
+
+    // optional: add circles in the background
+    // need to remove any old ones first
+    var gridlayer = root.diagram.findLayer("Grid");
+    var circles = new go.Set(go.Part);
+    for (var git = gridlayer.parts; git.next(); ) {
+      var circle = git.value;
+      if (circle.name === "CIRCLE") circles.add(circle);
+    }
+    for (var cit = circles.iterator; cit.next(); ) {
+      root.diagram.remove(cit.value);
+    }
+    // add circles centered at the root
+    if (showCircles) {
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+      for (var lay = 1; lay <= maxCircles; lay++) {
+        var radius = lay * 100;
+        var circle =
+          $(go.Part,
+            { name: "CIRCLE", layerName: "Grid" },
+            { locationSpot: go.Spot.Center, location: new go.Point(0, 0) },
+            $(go.Shape, "Circle",
+              { width: radius * 2, height: radius * 2 },
+              { fill: "rgba(200,200,200,0.2)", stroke: null }));
+        node.diagram.add(circle);
+      }
+    }
+
+    // now recursively position nodes, starting with the root
+    root.location = new go.Point(0, 0);
+    radlay1(root, 1, 0, 360, distances);
+    // finally, hide nodes with distance > maxCircles
+    it = distances.iterator;
+    while (it.next()) {
+      var node = it.key;
+      node.visible = (it.value <= maxCircles);
+    }
+    root.diagram.commitTransaction("radial layout");
+  }
+
+  function radlay1(node, layer, angle, sweep, distances) {
+    if (layer > maxCircles) return;
+    var nodes = [];
+    var it = node.findNodesConnected();
+    while (it.next()) {
+      var n = it.value;
+      if (n._laid) continue;
+      if (distances.getValue(n) === layer) nodes.push(n);
+    }
+    var found = nodes.length;
+    if (found === 0) return;
+
+    var radius = layer * 100;
+    var separator = sweep / found;
+    var start = angle - sweep / 2 + separator / 2;
+    for (var i = 0; i < found; i++) {
+      var n = nodes[i];
+      var a = start + i * separator;
+      var p = new go.Point(radius, 0);
+      p.rotate(a);
+      n.location = p;
+      n._laid = true;
+      if (rotateText) {
+        n.angle = a;
+        var label = n.findObject("TEXTBLOCK");
+        if (label !== null) {
+          label.angle = ((a > 90 && a < 270 || a < -90) ? 180 : 0);
+        }
+      }
+      radlay1(n, layer + 1, a, sweep / found, distances);
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
+  <p>
+    Click on a Node to center it and show its relationships.
+  </p>
+  <p>
+    You can set some parameters in the JavaScript code to control how many layers to show,
+    whether to draw the circles, and whether to rotate the text.
+    It is also easy to add more information to each node, including pictures,
+    or to put such information into tooltips.
+  </p>
+</div>
+</body>
+</html>

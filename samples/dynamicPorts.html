@@ -1,0 +1,356 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>Dynamic Ports</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  //for conciseness in defining node templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  //Diagram refers to its DIV HTML element by id
+        { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
+
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx); 
+      }
+    });
+
+    var nodeMenu =  // context menu for each Node
+      $(go.Adornment, "Vertical",
+        $("ContextMenuButton",
+          $(go.TextBlock, "Add top port"),
+          { click: function (e, obj) { addPort("top"); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Add left port"),
+          { click: function (e, obj) { addPort("left"); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Add right port"),
+          { click: function (e, obj) { addPort("right"); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Add bottom port"),
+          { click: function (e, obj) { addPort("bottom"); } })
+      );
+
+    var portSize = 8;
+
+    var portMenu =  // context menu for each port
+      $(go.Adornment, "Vertical",
+        $("ContextMenuButton",
+          $(go.TextBlock, "Remove port"),
+          // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
+          { click: function (e, obj) { removePort(obj.part.adornedObject); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Change color"),
+          { click: function (e, obj) { changeColor(obj.part.adornedObject); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Remove side ports"),
+          { click: function (e, obj) { removeAll(obj.part.adornedObject); } })
+      );
+
+    // the node template
+    // includes a panel on each side with an itemArray of panels containing ports
+    myDiagram.nodeTemplate =
+      $(go.Node, "Table",
+        { locationObjectName: "BODY",
+          locationSpot: go.Spot.Center,
+          selectionObjectName: "BODY",
+          contextMenu: nodeMenu
+        },
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+
+        // the body
+        $(go.Panel, "Auto",
+          { row: 1, column: 1, name: "BODY",
+            stretch: go.GraphObject.Fill },
+          $(go.Shape, "Rectangle",
+            { fill: "#BFBFBF",
+              minSize: new go.Size(56, 56) }),
+          $(go.TextBlock,
+            { margin: 10, textAlign: "center" },
+            new go.Binding("text", "key"))
+        ),  // end Auto Panel body
+
+        // the Panel holding the left port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.leftArray
+        $(go.Panel, "Vertical",
+          { row: 1, column: 0,
+            itemTemplate:
+              $(go.Panel,
+                { _side: "left",
+                  fromSpot: go.Spot.Left, toSpot: go.Spot.Left,
+                  fromLinkable: true, toLinkable: true, cursor: "pointer",
+                  contextMenu: portMenu },
+                new go.Binding("portId", "portId"),
+                $(go.Shape, "Rectangle",
+                  { stroke: null,
+                    desiredSize: new go.Size(portSize, portSize),
+                    margin: new go.Margin(1,0) },
+                  new go.Binding("fill", "portColor"))
+              )  // end itemTemplate
+          },
+          new go.Binding("itemArray","leftArray")
+        ),  // end Vertical Panel
+
+        // the Panel holding the top port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.topArray
+        $(go.Panel, "Horizontal",
+          { row: 0, column: 1,
+            itemTemplate:
+              $(go.Panel,
+                { _side: "top",
+                  fromSpot: go.Spot.Top, toSpot: go.Spot.Top,
+                  fromLinkable: true, toLinkable: true, cursor: "pointer",
+                  contextMenu: portMenu },
+                new go.Binding("portId", "portId"),
+                $(go.Shape, "Rectangle",
+                  { stroke: null,
+                    desiredSize: new go.Size(portSize, portSize),
+                    margin: new go.Margin(0, 1) },
+                  new go.Binding("fill", "portColor"))
+              )  // end itemTemplate
+          },
+          new go.Binding("itemArray", "topArray")
+        ),  // end Horizontal Panel
+
+        // the Panel holding the right port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.rightArray
+        $(go.Panel, "Vertical",
+          { row: 1, column: 2,
+            itemTemplate:
+              $(go.Panel,
+                { _side: "right",
+                  fromSpot: go.Spot.Right, toSpot: go.Spot.Right,
+                  fromLinkable: true, toLinkable: true, cursor: "pointer",
+                  contextMenu: portMenu },
+                new go.Binding("portId", "portId"),
+                $(go.Shape, "Rectangle",
+                  { stroke: null,
+                    desiredSize: new go.Size(portSize, portSize),
+                    margin: new go.Margin(1, 0) },
+                  new go.Binding("fill", "portColor"))
+              )  // end itemTemplate
+          },
+          new go.Binding("itemArray", "rightArray")
+        ),  // end Vertical Panel
+
+        // the Panel holding the bottom port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.bottomArray
+        $(go.Panel, "Horizontal",
+          { row: 2, column: 1,
+            itemTemplate:
+              $(go.Panel,
+                { _side: "bottom",
+                  fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom,
+                  fromLinkable: true, toLinkable: true, cursor: "pointer",
+                  contextMenu: portMenu },
+                new go.Binding("portId", "portId"),
+                $(go.Shape, "Rectangle",
+                  { stroke: null,
+                    desiredSize: new go.Size(portSize, portSize),
+                    margin: new go.Margin(0, 1) },
+                  new go.Binding("fill", "portColor"))
+              )  // end itemTemplate
+          },
+          new go.Binding("itemArray", "bottomArray")
+        )  // end Horizontal Panel
+      );  // end Node
+
+    // an orthogonal link template, reshapable and relinkable
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Link.AvoidsNodes,
+          reshapable: true,
+          resegmentable: true,
+          relinkableFrom: true,
+          relinkableTo: true,
+          corner: 4
+        },
+        new go.Binding("points").makeTwoWay(),
+        $(go.Shape)
+      );
+
+    // support double-clicking in the background to add a copy of this data as a node
+    myDiagram.toolManager.clickCreatingTool.archetypeNodeData = {
+      key: "Unit",
+      leftArray: [],
+      rightArray: [],
+      topArray: [],
+      bottomArray: []
+      // if you add data properties here, you should copy them in copyNodeData below
+    };
+
+    // load the diagram from JSON data
+    load();
+  }
+
+
+  // When copying a node, we need to copy the data that the node is bound to.
+  // This JavaScript object includes properties for the node as a whole, and
+  // four properties that are Arrays holding data for each port.
+  // Those arrays and port data objects need to be copied too.
+
+  function copyNodeData(data) {
+    var copy = {};
+    copy.key = data.key;  // adding to the Model will make the key value unique
+    copy.loc = data.loc;
+    copy.leftArray = copyPortArray(data.leftArray);
+    copy.rightArray = copyPortArray(data.rightArray);
+    copy.topArray = copyPortArray(data.topArray);
+    copy.bottomArray = copyPortArray(data.bottomArray);
+    // if you add data properties, you should copy them here too
+    return copy;
+  }
+
+  function copyPortArray(arr) {
+    var copy = [];
+    if (Array.isArray(arr)) {
+      for (var i = 0; i < arr.length; i++) {
+        copy.push(copyPortData(arr[i]));
+      }
+    }
+    return copy;
+  }
+
+  function copyPortData(data) {
+    var copy = {};
+    copy.portId = data.portId;
+    copy.portColor = data.portColor;
+    // if you add port data properties, you should copy them here too
+    return copy;
+  }
+
+
+  // Add a port to the specified side of the selected nodes.
+  function addPort(side) {
+    myDiagram.startTransaction("addPort");
+    var it = myDiagram.selection.iterator;
+    while (it.next()) {
+      var node = it.value;
+      // skip any selected Links
+      if (!(node instanceof go.Node)) continue;
+      // compute the next available index number for the side
+      var i = 0;
+      while (node.findPort(side + i.toString()) !== node) i++;
+      // now this new port name is unique within the whole Node because of the side prefix
+      var name = side + i.toString();
+      // get the Array of port data to be modified
+      var arr = node.data[side + "Array"];
+      if (arr) {
+        // create a new port data object
+        var newportdata = {
+          portId: name,
+          portColor: go.Brush.randomColor()
+          // if you add port data properties here, you should copy them in copyPortData above
+        };
+        // and add it to the Array of port data
+        myDiagram.model.insertArrayItem(arr, -1, newportdata);
+      }
+    }
+    myDiagram.commitTransaction("addPort");
+  }
+
+  // Remove the clicked port from the node.
+  // Links to the port will be redrawn to the node's shape.
+  function removePort(port) {
+    myDiagram.startTransaction("removePort");
+    var pid = port.portId;
+    var arr = port.panel.itemArray;
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].portId === pid) {
+        myDiagram.model.removeArrayItem(arr, i);
+        break;
+      }
+    }
+    myDiagram.commitTransaction("removePort");
+  }
+
+  // Remove all ports from the same side of the node as the clicked port.
+  function removeAll(port) {
+    myDiagram.startTransaction("removePorts");
+    var nodedata = port.part.data;
+    var side = port._side;  // there are four property names, all ending in "Array"
+    myDiagram.model.setDataProperty(nodedata, side + "Array", []);  // an empty Array
+    myDiagram.commitTransaction("removePorts");
+  }
+
+  // Change the color of the clicked port.
+  function changeColor(port) {
+    myDiagram.startTransaction("colorPort");
+    var data = port.data;
+    myDiagram.model.setDataProperty(data, "portColor", go.Brush.randomColor());
+    myDiagram.commitTransaction("colorPort");
+  }
+
+
+  // Save the model to / load it from JSON text shown on the page itself, not in a database.
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+
+    // link data includes the names of the to- and from- ports;
+    // the GraphLinksModel needs to set these property names:
+    // linkFromPortIdProperty and linkToPortIdProperty.
+
+    // Customize the node data copying function
+    // to avoid sharing of port data arrays and of the port data themselves.
+    // (Functions cannot be written/read in JSON format.)
+    myDiagram.model.copyNodeDataFunction = copyNodeData;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="width:600px; height:500px; border:1px solid black"></div>
+  Add port to selected nodes:
+  <button onclick="addPort('top')">Top</button>
+  <button onclick="addPort('bottom')">Bottom</button>
+  <button onclick="addPort('left')">Left</button>
+  <button onclick="addPort('right')">Right</button>
+  <p>
+  Double-click in the diagram background in order to add a new node there.
+  In this sample you can add ports to a selected nodes by clicking the above buttons or by using the context menu.
+  Draw links between ports by dragging between ports.
+  If you select a link you can relink or reshape it.
+  Right-click or touch-hold on a port to bring up a context menu that allows you to remove it or change its color.
+  </p>
+  <p>
+  <button id="SaveButton" onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  </p>
+  <textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"key":"unit One", "loc":"101 204", "leftArray":[ {"portColor":"#425e5c", "portId":"left0"} ], "topArray":[ {"portColor":"#d488a2", "portId":"top0"} ], "bottomArray":[ {"portColor":"#316571", "portId":"bottom0"} ], "rightArray":[ {"portColor":"#923951", "portId":"right0"},{"portColor":"#ef3768", "portId":"right1"} ] },
+{"key":"unit Two", "loc":"320 152", "leftArray":[ {"portColor":"#7d4bd6", "portId":"left0"},{"portColor":"#cc585c", "portId":"left1"},{"portColor":"#b1273a", "portId":"left2"} ], "topArray":[ {"portColor":"#14abef", "portId":"top0"} ], "bottomArray":[ {"portColor":"#dd45c7", "portId":"bottom0"},{"portColor":"#995aa6", "portId":"bottom1"},{"portColor":"#6b95cb", "portId":"bottom2"} ], "rightArray":[  ] },
+{"key":"unit Three", "loc":"384 319", "leftArray":[ {"portColor":"#bd8f27", "portId":"left0"},{"portColor":"#c14617", "portId":"left1"},{"portColor":"#47fa60", "portId":"left2"} ], "topArray":[ {"portColor":"#d08154", "portId":"top0"} ], "bottomArray":[ {"portColor":"#6cafdb", "portId":"bottom0"} ], "rightArray":[  ] },
+{"key":"unit Four", "loc":"138 351", "leftArray":[ {"portColor":"#491389", "portId":"left0"} ], "topArray":[ {"portColor":"#77ac1e", "portId":"top0"} ], "bottomArray":[ {"portColor":"#e9701b", "portId":"bottom0"} ], "rightArray":[ {"portColor":"#24d05e", "portId":"right0"},{"portColor":"#cfabaa", "portId":"right1"} ] }
+ ],
+  "linkDataArray": [
+{"from":"unit Four", "to":"unit One", "fromPort":"top0", "toPort":"bottom0"},
+{"from":"unit Four", "to":"unit Two", "fromPort":"top0", "toPort":"bottom0"},
+{"from":"unit Three", "to":"unit Two", "fromPort":"top0", "toPort":"bottom1"},
+{"from":"unit Four", "to":"unit Three", "fromPort":"right0", "toPort":"left0"},
+{"from":"unit Four", "to":"unit Three", "fromPort":"right1", "toPort":"left2"},
+{"from":"unit One", "to":"unit Two", "fromPort":"right0", "toPort":"left1"},
+{"from":"unit One", "to":"unit Two", "fromPort":"right1", "toPort":"left2"}
+ ]}
+  </textarea>
+</div>
+</body>
+</html>

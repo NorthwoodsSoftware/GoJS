@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+<title>Planogram</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    // Initialize the main Diagram
+    var cellSize = new go.Size(50, 50);
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        {
+          grid: $(go.Panel, "Grid",
+                  { gridCellSize: cellSize },
+                  $(go.Shape, "LineH", { stroke: "lightgray" }),
+                  $(go.Shape, "LineV", { stroke: "lightgray" })
+                ),
+          // support grid snapping when dragging and when resizing
+          "draggingTool.isGridSnapEnabled": true,
+          "draggingTool.gridSnapCellSpot": go.Spot.Center,
+          "resizingTool.isGridSnapEnabled": true,
+          allowDrop: true,  // handle drag-and-drop from the Palette
+          "undoManager.isEnabled": true
+        });
+
+    // Regular Nodes represent items to be put onto racks.
+    // Nodes are currently resizable, but if that is not desired, just set resizable to false.
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { resizable: true, resizeObjectName: "SHAPE",
+          // because the gridSnapCellSpot is Center, offset the Node's location
+          locationSpot: new go.Spot(0, 0, cellSize.width / 2, cellSize.height / 2)
+        },
+        // always save/load the point that is the top-left corner of the node, not the location
+        new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+        { // what to do when a drag-over or a drag-drop occurs on a Node
+          mouseDragEnter: function(e, node, prev) { highlightGroup(node.containingGroup, true); },
+          mouseDragLeave: function(e, node, next) { highlightGroup(node.containingGroup, false); },
+          mouseDrop: function(e, node) {
+            var grp = node.containingGroup;
+            if (grp !== null) {
+              var ok = grp.addMembers(grp.diagram.selection, true);
+              if (!ok) grp.diagram.currentTool.doCancel();
+            }
+          }
+        },
+        $(go.Panel, "Spot",
+          $(go.Shape, "Rectangle",
+            { name: "SHAPE",
+              fill: "white",
+              minSize: cellSize,
+              desiredSize: cellSize  // initially 1x1 cell
+            },
+            new go.Binding("fill", "color"),
+            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify))
+        ),  // end Spot Panel
+        $(go.TextBlock,
+          { alignment: go.Spot.Center },
+          new go.Binding("text", "key"))
+      );  // end Node
+
+    // Groups represent racks where items (Nodes) can be placed.
+    // Currently they are movable and resizable, but you can change that
+    // if you want the racks to remain "fixed".
+    // Groups provide feedback when the user drags nodes onto them.
+
+    var groupFill = "rgba(128,128,128,0.2)";
+    var groupStroke = "gray";
+    var dropFill = "rgba(128,255,255,0.2)";
+    var dropStroke = "red";
+
+    function highlightGroup(grp, show) {
+      if (!grp) return;
+      var shape = grp.findObject("SHAPE");
+      if (shape) {
+        if (show) {  // check that the drop may really happen into the Group
+          var tool = grp.diagram.toolManager.draggingTool;
+          var map = tool.draggedParts != null ? tool.draggedParts : tool.copiedParts;  // this is a Map
+          if (grp.canAddMembers(map.toKeySet())) {
+            shape.fill = dropFill;
+            shape.stroke = dropStroke;
+            return;
+          }
+        }
+        shape.fill = groupFill;
+        shape.stroke = groupStroke;
+      }
+    }
+
+    myDiagram.groupTemplate =
+      $(go.Group,
+        { resizable: true, resizeObjectName: "SHAPE",
+          // because the gridSnapCellSpot is Center, offset the Group's location
+          locationSpot: new go.Spot(0, 0, cellSize.width/2, cellSize.height/2)
+        },
+        // always save/load the point that is the top-left corner of the node, not the location
+        new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+        { // what to do when a drag-over or a drag-drop occurs on a Group
+          mouseDragEnter: function(e, grp, prev) { highlightGroup(grp, true); },
+          mouseDragLeave: function(e, grp, next) { highlightGroup(grp, false); },
+          mouseDrop: function(e, grp) {
+            var ok = grp.addMembers(grp.diagram.selection, true);
+            if (!ok) grp.diagram.currentTool.doCancel();
+          }
+        },
+        $(go.Shape, "Rectangle",  // the rectangular shape around the members
+          { name: "SHAPE",
+            fill: groupFill, stroke: "gray",
+            minSize: new go.Size(cellSize.width*2, cellSize.height*2)
+          },
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify))
+      );
+
+    // decide what kinds of Parts can be added to a Group or to top-level
+    myDiagram.commandHandler.memberValidation = function(grp, node) {
+      if (grp instanceof go.Group && node instanceof go.Group) return false;  // cannot add Groups to Groups
+      return true;
+    };
+
+    // what to do when a drag-drop occur-s in the Diagram's background
+    myDiagram.mouseDrop = function(e) {
+      // when the selection is dropped in the diagram's background,
+      // make sure the selected Parts no longer belong to any Group
+      var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
+      if (!ok) myDiagram.currentTool.doCancel();
+    };
+
+    // start off with four "racks" that are positioned next to each other
+    myDiagram.model = new go.GraphLinksModel([
+      { key: "G1", isGroup: true, pos: "0 0", size: "200 200" },
+      { key: "G2", isGroup: true, pos: "200 0", size: "200 200" },
+      { key: "G3", isGroup: true, pos: "0 200", size: "200 200" },
+      { key: "G4", isGroup: true, pos: "200 200", size: "200 200" }
+    ]);
+    // this sample does not make use of any links
+
+    // For this sample, automatically show the state of the diagram's model on the page
+    myDiagram.model.addChangedListener(function(e) {
+      if (e.isTransactionFinished) {
+        document.getElementById("savedModel").textContent = myDiagram.model.toJson();
+      }
+    });
+
+
+    // initialize the Palette
+    myPalette =
+      $(go.Palette, "myPalette",
+        { // share the templates with the main Diagram
+          nodeTemplate: myDiagram.nodeTemplate,
+          groupTemplate: myDiagram.groupTemplate,
+          // limit items to one column
+          layout: $(go.GridLayout, { wrappingColumn: 1 })
+        });
+
+    // specify the contents of the Palette
+    myPalette.model = new go.GraphLinksModel([
+      { key: "g", color: "green" },
+      { key: "b", color: "blue" },
+      { key: "y", color: "yellow" }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
+      <div id="myPalette" style="border: solid 1px black; height: 500px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
+      <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
+    </span>
+  </div>
+  Drag-and-drop "items" from the Palette onto "racks" in the Diagram.
+  "Items" are implemented as Nodes; "racks" are implemented as Groups.
+  <div style="display: inline">
+    <pre id="savedModel" />
+  </div>
+</div>
+</body>
+</html>

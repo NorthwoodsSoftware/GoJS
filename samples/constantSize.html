@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+  <title>Kitten Monitor</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            initialContentAlignment: go.Spot.TopLeft,
+            isReadOnly: true,  // allow selection but not moving or copying or deleting
+            "toolManager.hoverDelay": 100,  // how quickly tooltips are shown
+            "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom  // mouse wheel zooms instead of scrolls
+          });
+
+      // the background image, a floor plan
+      myDiagram.add(
+        $(go.Part,  // this Part is not bound to any model data
+          { layerName: "Background", position: new go.Point(0, 0),
+            selectable: false, pickable: false },
+          $(go.Picture, "http://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg"))
+        );
+
+      // the template for each kitten, for now just a colored circle
+      myDiagram.nodeTemplate =
+        $(go.Node,
+          new go.Binding("location", "loc"),  // specified by data
+          { locationSpot: go.Spot.Center },   // at center of node
+          $(go.Shape, "Circle",
+            { width: 12, height: 12, stroke: null },
+            new go.Binding("fill", "color")),  // also specified by data
+          { // this tooltip shows the name and picture of the kitten
+            toolTip:
+              $(go.Adornment, "Auto",
+                $(go.Shape, { fill: "lightyellow" }),
+                $(go.Panel, "Vertical",
+                  $(go.Picture,
+                    new go.Binding("source", "src", function(s) { return "images/" + s + ".png"; })),
+                  $(go.TextBlock, { margin: 3 },
+                    new go.Binding("text", "key"))
+                )
+              )
+          }
+        );
+
+      // pretend there are four kittens
+      myDiagram.model.nodeDataArray = [
+        { key: "Alonzo", src: "50x40", loc: new go.Point(220, 130), color: "blue" },
+        { key: "Coricopat", src: "55x55", loc: new go.Point(420, 250), color: "green" },
+        { key: "Garfield", src: "60x90", loc: new go.Point(640, 450), color: "red" },
+        { key: "Demeter", src: "80x50", loc: new go.Point(140, 350), color: "purple" }
+      ];
+
+      // This code keeps all nodes at a constant size in the viewport,
+      // by adjusting for any scaling done by zooming in or out.
+      // This code ignores simple Parts;
+      // Links will automatically be rerouted as Nodes change size.
+      var origscale = NaN;
+      var oldscale = NaN;
+      myDiagram.addDiagramListener("InitialLayoutCompleted", function(e) { origscale = oldscale = myDiagram.scale; });
+      myDiagram.addDiagramListener("ViewportBoundsChanged", function(e) {
+        if (isNaN(origscale)) return;
+        var newscale = myDiagram.scale;
+        if (oldscale === newscale) return;  // optimization: don't scale Nodes when just scrolling/panning
+        oldscale = newscale;
+        myDiagram.skipsUndoManager = true;
+        myDiagram.startTransaction("scale Nodes");
+        for (var it = myDiagram.nodes; it.next(); ) {
+          var node = it.value;
+          node.scale = origscale / newscale;
+        }
+        myDiagram.commitTransaction("scale Nodes");
+        myDiagram.skipsUndoManager = false;
+      });
+
+      // simulate some real-time position monitoring, once every 2 seconds
+      function randomMovement() {
+        var model = myDiagram.model;
+        var arr = model.nodeDataArray;
+        for (var i = 0; i < arr.length; i++) {
+          var data = arr[i];
+          var pt = data.loc;
+          pt.x += 20 * Math.random() - 10;
+          pt.y += 20 * Math.random() - 10;
+          model.updateTargetBindings(data);
+        }
+      }
+      function loop() {
+        setTimeout(function() { randomMovement(); loop(); }, 2000);
+      }
+      loop();  // start the simulation
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <h3>Kitten Monitor with constant size tokens representing kittens</h3>
+  <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+  <p>The tooltip for each kitten shows its name and photo.</p>
+  <p>When you zoom in or out the effective size of each Node is kept constant by changing its <a>GraphObject.scale</a>.</p>
+</div>
+</body>
+</html>

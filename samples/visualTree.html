@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+  <title>GoJS Visual Tree</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css" />
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          { "undoManager.isEnabled": true });
+
+      // define the "sample" Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          // define the node's outer shape
+          $(go.Shape, "RoundedRectangle",
+            { fill: "white",
+              stroke: "black" },
+            new go.Binding("fill", "color")),
+          // define the node's text
+          $(go.TextBlock,
+            { margin: 5 },
+            new go.Binding("text", "key"))
+        );
+      // use the default link template
+
+      myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: "Alpha", color: "lightblue" },
+        { key: "Beta", color: "pink" }
+      ],
+      [
+        { from: "Alpha", to: "Beta" }
+      ]);
+
+
+      // Now we can initialize a Diagram that looks at the visual tree that constitutes the Diagram above.
+      myVisualTree =
+        $(go.Diagram, "myVisualTree",
+          {
+            isReadOnly: true,  // do not allow users to modify or select in this view
+            allowSelect: false,
+            layout: $(go.TreeLayout, { nodeSpacing: 5 })
+          });
+
+      myVisualTree.nodeTemplate =
+        $(go.Node, "Auto",
+          $(go.Shape, { fill: "darkkhaki", stroke: null }),  // assume a dark background
+          $(go.TextBlock,
+            { font: "bold 13px Helvetica, bold Arial, sans-serif",
+              stroke: "black", margin: 3 },
+            // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+            new go.Binding("text", "", function(x) { return x.toString(); } ))
+        );
+
+      myVisualTree.linkTemplate =
+        $(go.Link,
+          $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 })
+        );
+
+      drawVisualTree();
+    }
+
+    function drawVisualTree() {
+      var visualNodeDataArray = [];
+
+      function traverseVisualTree(obj, parent) {
+        obj.key = visualNodeDataArray.length;
+        visualNodeDataArray.push(obj);
+        if (parent) {
+          obj.parentKey = parent.key;
+        }
+        if (obj instanceof go.Diagram) {
+          var lit = obj.layers;
+          while (lit.next()) traverseVisualTree(lit.value, obj);
+        } else if (obj instanceof go.Layer) {
+          var pit = obj.parts;
+          while (pit.next()) traverseVisualTree(pit.value, obj);
+        } else if (obj instanceof go.Panel) {
+          var eit = obj.elements;
+          while (eit.next()) traverseVisualTree(eit.value, obj);
+        }
+      }
+
+      traverseVisualTree(myDiagram, null);
+
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+      myVisualTree.model =
+        $(go.TreeModel,
+          { nodeParentKeyProperty: "parentKey",
+            nodeDataArray: visualNodeDataArray });
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <h3>GoJS Visual Tree</h3>
+  <p>
+  This sample shows the actual visual tree of a running Diagram.
+  The Diagram that we inspect is named "myDiagram" and initially contains two simple Nodes and one Link.
+  The Diagram below it is named "myVisualTree" and shows the visual tree of "myDiagram".
+  </p>
+  <b>myDiagram</b>, the diagram being inspected:<br />
+  <div id="myDiagram" style="border: 1px solid blue; width: 300px; height: 200px"></div>
+  <br />
+  <input type="button" onclick="drawVisualTree()" value="Draw Visual Tree" />
+  <br />
+  <br />
+  <b>myVisualTree</b>, showing the Layers, Nodes and Links that are in <b>myDiagram</b> above:<br />
+  <div id="myVisualTree" style="border: 1px solid blue; width: 100%; height: 300px; background:darkslategray"></div>
+  <p>
+  You can also try selecting, copying, and deleting parts in <b>myDiagram</b>
+  and then click on "Draw Visual Tree" again to see how the visual tree in <b>myDiagram</b> changes.
+  </p>
+  <p>
+  The <b>traverseVisualTree</b> function is what walks the visual tree of "myDiagram"
+  and constructs the corresponding Nodes and Links used in "myVisualTree".
+  The text for each Node in "myVisualTree" is data-bound to the actual Diagram/Layer/Part/GraphObject object.
+  That object is converted to a text string by using the <b>toString</b> method.
+  </p>
+</div>
+</body>
+</html>

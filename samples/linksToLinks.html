@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+<title>Links to Links</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+        { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
+
+    // the regular node template, which supports user-drawn links from the main Shape
+    myDiagram.nodeTemplate =
+      $("Node", "Auto",
+        { locationSpot: go.Spot.Center,
+          layerName: "Background" },  // always have regular nodes behind Links
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        $("Shape", "Ellipse",
+          { fill: "white",
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" },
+          new go.Binding("fill", "color")),
+        $("TextBlock",
+          { margin: 2 },  // make some extra space for the shape around the text
+          new go.Binding("text", "key"))  // the label shows the node data's key
+      );
+
+    // This is the template for a label node on a link: just an Ellipse.
+    // This node supports user-drawn links to and from the label node.
+    myDiagram.nodeTemplateMap.add("LinkLabel",
+      $("Node",
+        { selectable: false, avoidable: false,
+          layerName: "Foreground" },  // always have link label nodes in front of Links
+        $("Shape", "Ellipse",
+          { width: 5, height: 5, stroke: null,
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" })
+      ));
+
+    // the regular link template, a straight blue arrow
+    myDiagram.linkTemplate =
+      $("Link",
+        { relinkableFrom: true, relinkableTo: true, toShortLength: 2 },
+        $("Shape", { stroke: "blue", strokeWidth: 2 }),
+        $("Shape", { fill: "blue", stroke: null, toArrow: "Standard" })
+      );
+
+    // This template shows links connecting with label nodes as green and arrow-less.
+    myDiagram.linkTemplateMap.add("linkToLink",
+      $("Link",
+        { relinkableFrom: true, relinkableTo: true },
+        $("Shape", { stroke: "green", strokeWidth: 1.5 })
+      ));
+
+
+    // GraphLinksModel support for link label nodes requires specifying two properties.
+    myDiagram.model =
+      $(go.GraphLinksModel,
+        { linkLabelKeysProperty: "labelKeys" });
+
+    // Whenever a new Link is drawng by the LinkingTool, it also adds a node data object
+    // that acts as the label node for the link, to allow links to be drawn to/from the link.
+    myDiagram.toolManager.linkingTool.archetypeLabelNodeData =
+      { category: "LinkLabel" };
+
+    // this DiagramEvent handler is called during the linking or relinking transactions
+    function maybeChangeLinkCategory(e) {
+      var link = e.subject;
+      var linktolink = (link.fromNode.isLinkLabel || link.toNode.isLinkLabel);
+      e.diagram.model.setCategoryForLinkData(link.data, (linktolink ? "linkToLink" : ""));
+    }
+    myDiagram.addDiagramListener("LinkDrawn", maybeChangeLinkCategory);
+    myDiagram.addDiagramListener("LinkRelinked", maybeChangeLinkCategory);
+
+    load();
+  }
+
+  // Show the diagram's model in JSON format
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+  }
+</script>
+</head>
+<body onload="init()">
+  <p>
+    This demonstrates the ability for a <a>Link</a> to appear to connect with another Link.
+    Regular links are blue.  Link-connecting links are green.  Try moving a node around to see how the links adapt.
+    Initially the "Alpha" node connects with the link between Gamma and Delta.
+    There is also a link between the two horizontal links.
+  </p>
+  <p>
+    This effect is achieved by using "label nodes" that belong to links.
+    Such "label nodes" are real <a>Node</a>s that are referenced from their owning <a>Link</a>.
+    This sample customizes the "Link Label" Node template to allow the user to draw new links to/from such label nodes.
+  </p>
+  <p>
+    Newly drawn links automatically get a label node by the <a>LinkingTool</a> because this sample initializes
+    the <a>LinkingTool.archetypeLabelNodeData</a> property of the <a>ToolManager.linkingTool</a>.
+    The category (i.e. template) of each link is determined by what kinds of nodes the link is connected with.
+  </p>
+  <div id="sample">
+    <div id="myDiagram" style="border: solid 1px blue; width:100%; height:400px;"></div>
+    <button onclick="save()">Save</button>
+    <button onclick="load()">Load</button>
+    Diagram.model saved in JSON format:<br />
+    <textarea id="mySavedModel" style="width:100%;height:400px">
+{ "class": "go.GraphLinksModel",
+  "linkLabelKeysProperty": "labelKeys",
+  "nodeDataArray": [ 
+{"key":"Alpha", "color":"orange", "loc":"27 14"},
+{"key":"Beta", "color":"lightgreen", "loc":"128 14"},
+{"key":"Gamma", "color":"yellow", "loc":"29 86"},
+{"key":"Delta", "color":"lightblue", "loc":"129 84"},
+{"key":"A-B", "category":"LinkLabel" },
+{"key":"G-D", "category":"LinkLabel" },
+{"key":"A-G", "category":"LinkLabel" },
+{"key":"A-G-D", "category":"LinkLabel" },
+{"key":"A-B-G-D", "category":"LinkLabel" }
+ ],
+  "linkDataArray": [ 
+{"from":"Alpha", "to":"Beta", "labelKeys":[ "A-B" ]},
+{"from":"Gamma", "to":"Delta", "labelKeys":[ "G-D" ]},
+{"from":"Alpha", "to":"Gamma", "labelKeys":[ "A-G" ]},
+{"from":"Alpha", "to":"G-D", "labelKeys":[ "A-G-D" ], "category":"linkToLink"},
+{"from":"A-B", "to":"G-D", "labelKeys":[ "A-B-G-D" ], "category":"linkToLink"}
+ ]}
+    </textarea>
+  </div>
+</body>
+</html>

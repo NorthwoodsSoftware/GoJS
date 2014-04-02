@@ -1,0 +1,124 @@
+<!doctype html>
+<html ng-app="minimal">
+<head>
+<title>Minimal GoJS Sample with AngularJS</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css" />
+<script src="go.js"></script>
+<script src="goSamples.js"></script> <!-- only needed for the goSamples framework -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
+<script id="code">
+  angular.module('minimal', [])
+    .directive('goDiagram', function() {
+      return {
+        restrict: 'E',
+        template: '<div></div>',  // just a simple DIV element
+        replace: true,
+        scope: { model: '=goModel' },
+        link: function(scope, element, attrs) {
+          var $ = go.GraphObject.make;
+          var diagram =  // create a Diagram for the given HTML DIV element
+            $(go.Diagram, element[0],
+              {
+                nodeTemplate: $(go.Node, "Auto",
+                                { locationSpot: go.Spot.Center },
+                                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+                                $(go.Shape, "RoundedRectangle", new go.Binding("fill", "color"),
+                                  {
+                                    portId: "", cursor: "pointer",
+                                    fromLinkable: true, toLinkable: true,
+                                    fromLinkableSelfNode: true, toLinkableSelfNode: true,
+                                    fromLinkableDuplicates: true, toLinkableDuplicates: true
+                                  }),
+                                $(go.TextBlock, { margin: 3 }, new go.Binding("text", "key"))
+                              ),
+                linkTemplate: $(go.Link,
+                                { relinkableFrom: true, relinkableTo: true },
+                                $(go.Shape),
+                                $(go.Shape, { toArrow: "OpenTriangle" })
+                              ),
+                initialContentAlignment: go.Spot.Center,
+                "undoManager.isEnabled": true
+              });
+          // whenever a GoJS transaction has finished modifying the model, update all Angular bindings
+          function updateAngular(e) {
+            if (e.isTransactionFinished) scope.$apply();
+          }
+          // notice when the value of "model" changes: update the Diagram.model
+          scope.$watch("model", function(newmodel) {
+            var oldmodel = diagram.model;
+            if (oldmodel !== newmodel) {
+              if (oldmodel) oldmodel.removeChangedListener(updateAngular);
+              newmodel.addChangedListener(updateAngular);
+              diagram.model = newmodel;
+            }
+          });
+          // update the model when the selection changes
+          diagram.addDiagramListener("ChangedSelection", function(e) {
+            var selnode = diagram.selection.first();
+            diagram.model.selectedNodeData = (selnode instanceof go.Node ? selnode.data : null);
+            scope.$apply();
+          });
+        }
+      };
+    })
+    .controller('MinimalCtrl', function($scope) {
+      $scope.model = new go.GraphLinksModel(
+        [
+          { key: "Alpha", color: "lightblue" },
+          { key: "Beta", color: "orange" },
+          { key: "Gamma", color: "lightgreen" },
+          { key: "Delta", color: "pink" }
+        ],
+        [
+          { from: "Alpha", to: "Beta" },
+          { from: "Alpha", to: "Gamma" },
+          { from: "Beta", to: "Beta" },
+          { from: "Gamma", to: "Delta" },
+          { from: "Delta", to: "Alpha" }
+        ]);
+      $scope.model.selectedNodeData = null;
+      $scope.replaceModel = function() {
+        $scope.model = new go.GraphLinksModel(
+            [
+              { key: "zeta", color: "red" },
+              { key: "eta", color: "green" }
+            ],
+            [
+              { from: "zeta", to: "eta" }
+            ]
+          );
+      }
+    });
+</script>
+</head>
+<body ng-controller="MinimalCtrl"
+      onload="if (window.goSamples) goSamples()"> <!-- only needed for the goSamples framework -->
+<div id="sample">
+  <go-diagram go-model="model" style="border: solid 1px blue; width:100%; height:400px"></go-diagram>
+  Number of node data: {{model.nodeDataArray.length}}
+  <br />
+  Alpha node location: {{model.findNodeDataForKey("Alpha").loc}}
+  <br />
+  Selected node: {{model.selectedNodeData.key}}
+  <br />
+  Number of link data: {{model.linkDataArray.length}}
+  <br />
+  First link data: {{model.linkDataArray[0].from}} --> {{model.linkDataArray[0].to}}
+  <p>
+  This defines an AngularJS directive for creating a <b>GoJS</b> <a>Diagram</a> with certain properties.
+  It also sets up a controller holding a <a>GraphLinksModel</a> that is passed
+  to the <b>go-diagram</b> element via the <b>go-model</b> attribute.
+  </p>
+  <p>
+  Note that the above bindings are updated automatically as the user moves the "Alpha" node,
+  copies or deletes Parts in the Diagram, reconnects the Link from "Alpha" to "Beta", or performs an undo or redo.
+  </p>
+  <p>
+  You can also replace the <a>Diagram.model</a> just by setting the "model" property on the $scope,
+  since the "goDiagram" directive watches that property for changes.
+  </p>
+  <button ng-click="replaceModel()">Replace Model</button>
+</div>
+</body>
+</html>

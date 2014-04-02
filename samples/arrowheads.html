@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+<title>GoJS Arrowheads</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    var myDiagram =
+      $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+        { isReadOnly: true,  // don't allow move or delete
+          initialContentAlignment: go.Spot.Center });
+
+    // construct a shared radial gradient brush
+    var radBrush = $(go.Brush, go.Brush.Radial, { 0: "#969696", 1: "#666666"});
+
+    // these are the nodes that are in a circle
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        new go.Binding("desiredSize", "ds"),
+        new go.Binding("location", "loc"),
+        $(go.Shape, "Circle",
+          { fill: radBrush, // uses a radial brush
+            strokeWidth: 0,
+            stroke: null }), // no outline
+        $(go.TextBlock,
+          { margin: 1, stroke: null },  // some room around the text
+          new go.Binding("stroke", "stroke"), //text color
+          new go.Binding("text", "key")),
+        { click: showArrowInfo,  // defined below
+          toolTip:  // define a tooltip for each link that displays its information
+              $(go.Adornment, "Auto",
+                $(go.Shape, { fill: "#EFEFCC" }),
+                $(go.TextBlock, { margin: 4 },
+                  new go.Binding("text",  "" , infoString).ofObject())
+              )
+        }
+      );
+
+    // use a special template for the center node
+    myDiagram.nodeTemplateMap.add("Center",
+      $(go.Node, "Spot",
+        { selectable: false },
+        new go.Binding("desiredSize", "ds"),
+        new go.Binding("location", "loc"),
+        $(go.Shape, "Circle",
+          { fill: radBrush, // uses a radial brush
+            strokeWidth: 0,
+            stroke: null }), // no outline
+        $(go.TextBlock, "Arrowheads",
+          { margin: 1,
+            stroke: "white",
+            font: "bold 14px sans-serif"})
+      ));
+
+    myDiagram.linkTemplate =
+      $(go.Link,  // the whole link panel
+        { routing: go.Link.Normal },
+        $(go.Shape,  // the link shape
+          { isPanelMain: true,
+            stroke: "gray", strokeWidth: 2 }),
+        $(go.Shape,  // the "from" arrowhead
+          new go.Binding("fromArrow", "fromArrow"),
+          { scale: 2, fill: "red" } ),
+        $(go.Shape,  // the "to" arrowhead
+          new go.Binding("toArrow","toArrow"),
+          { scale: 2, fill: "red" } ),
+        { click: showArrowInfo,
+          toolTip:  // define a tooltip for each link that displays its information
+              $(go.Adornment, "Auto",
+                $(go.Shape, { fill: "#EFEFCC" }),
+                $(go.TextBlock, { margin: 4 },
+                  new go.Binding("text",  "" , infoString).ofObject())
+              )
+        }
+      );
+
+    var arrowheads = []; // array of all arrowhead names
+    for (var x in go.Shape.ArrowheadGeometries) {
+      var arrowname = go.Shape.ArrowheadGeometries[x];
+      if (typeof arrowname === "string" && arrowname !== "None") {
+        arrowheads.push(arrowname);
+      }
+    }
+
+    var arL = []; // collect link data
+    var i = 0;
+    for (var j = 0; j < arrowheads.length; j = j + 2) {
+      arL.push({to: i++, from: "Center", toArrow: arrowheads[j], fromArrow: arrowheads[j+1]});
+    }
+
+    var arN = [];  // collect node data
+    var angleOffset = -Math.PI/2;
+    // the big central node
+    arN.push({ category: "Center", key: "Center", ds: new go.Size(200, 200), loc: new go.Point(200, 150) });
+    // fill the array of nodes that was created earlier
+    for (var i = 0; i < arL.length; i++) {
+      var angle = i*Math.PI*2/arL.length + angleOffset;
+      var x = 286+180*Math.cos(angle);
+      var y = 236+180*Math.sin(angle);
+      arN.push({ stroke: null, key: i, ds: new go.Size(28, 28), loc: new go.Point(x, y) });
+    }
+
+    myDiagram.model = new go.GraphLinksModel(arN, arL);
+  }
+
+  // a conversion function used to get arrowhead information for a Part
+  function infoString(obj) {
+    var part = obj.part;
+    if (part instanceof go.Adornment) part = part.adornedPart;
+    var msg = "";
+    if (part instanceof go.Link) {
+      var link = part;
+      msg = "toArrow: " + link.data.toArrow + ";\nfromArrow: " + link.data.fromArrow;
+    } else if (part instanceof go.Node) {
+      var node = part;
+      var link = node.linksConnected.first();
+      msg = "toArrow: " + link.data.toArrow + ";\nfromArrow: " + link.data.fromArrow;
+    }
+    return msg;
+  }
+
+  // a GraphObject.click event handler to show arrowhead information
+  function showArrowInfo(e, obj) {
+    var msg = infoString(obj);
+    if (msg) {
+      var status = document.getElementById("myArrowheadInfo");
+      if (status) status.textContent = msg;
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>All predefined <b>GoJS</b> arrowheads:</p>
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+  <div id="myDiagram" style="border: solid 1px black; width:600px; height:500px"></div>
+  <div id="myArrowheadInfo" style="color:red"></div>
+  <p>Select or hover over a Node or its Link to see the names of the arrowheads on the Link.</p>
+  <p>
+    Each Link shows two arrowheads.
+    The Link template has a Shape whose <a>Shape.toArrow</a> property is bound to an arrowhead name.
+    A different Shape in the template has its <a>Shape.fromArrow</a> property bound to a different arrowhead name.
+    Each arrowhead has been scaled up to make it more easily visible.
+  </p>
+  <p>For predefined shape geometries, see the <a href="shapes.html">Shapes</a> sample.</p>
+</div>
+</body>
+</html>

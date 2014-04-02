@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+<title>Polygon Drawing Tool</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script src="PolygonDrawingTool.js"></script>
+
+<script>
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram");
+
+    myDiagram.nodeTemplate =
+      $(go.Node,
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        { selectionAdorned: true, selectionObjectName: "SHAPE",
+          selectionAdornmentTemplate:  // custom selection adornment: a blue rectangle
+            $(go.Adornment, "Auto",
+              $(go.Shape, { stroke: "dodgerblue", fill: null }),
+              $(go.Placeholder, { margin: -1 }))
+        },
+        { resizable: true, resizeObjectName: "SHAPE" },
+        { rotatable: true, rotateObjectName: "SHAPE" },
+        $(go.Shape,
+          { name: "SHAPE", fill: "lightgray", strokeWidth: 1.5 },
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("geometry", "geo", go.Geometry.parse).makeTwoWay(go.Geometry.stringify),
+          new go.Binding("fill"),
+          new go.Binding("stroke"),
+          new go.Binding("strokeWidth")));
+
+    // create polygon drawing tool for myDiagram
+    var tool = new PolygonDrawingTool();
+    // provide the default JavaScript object for a new polygon in the model
+    tool.archetypePartData =
+      { fill: "yellow", stroke: "blue", strokeWidth: 3 };
+    tool.isPolygon = true;  // for a polyline drawing tool set this property to false
+    // install as first mouse-down-tool
+    myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
+
+    load();  // load a simple diagram from the textarea
+  }
+
+  function mode(draw, polygon) {
+    // assume PolygonDrawingTool is the first tool in the mouse-down-tools list
+    var tool = myDiagram.toolManager.mouseDownTools.elt(0);
+    tool.isEnabled = draw;
+    tool.isPolygon = polygon;
+    tool.archetypePartData.fill = (polygon ? "yellow" : null);
+  }
+
+  // this command ends the PolygonDrawingTool
+  function finish(commit) {
+    var tool = myDiagram.currentTool;
+    if (commit && tool instanceof PolygonDrawingTool) {
+      var lastInput = myDiagram.lastInput;
+      if (lastInput.event instanceof window.MouseEvent) tool.removeLastPoint();  // remove point from last mouse-down
+      tool.finishShape();
+    } else {
+      tool.doCancel();
+    }
+  }
+
+  // this command removes the last clicked point from the temporary Shape
+  function undo() {
+    var tool = myDiagram.currentTool;
+    if (tool instanceof PolygonDrawingTool) {
+      var lastInput = myDiagram.lastInput;
+      if (lastInput.event instanceof window.MouseEvent) tool.removeLastPoint();  // remove point from last mouse-down
+      tool.undo();
+    }
+  }
+
+  // save a model to and load a model from Json text, displayed below the Diagram
+  function save() {
+    var str = '{ "position": "' + go.Point.stringify(myDiagram.position) + '",\n  "model": ' + myDiagram.model.toJson() + ' }';
+    document.getElementById("mySavedDiagram").value = str;
+  }
+  function load() {
+    var str = document.getElementById("mySavedDiagram").value;
+    try {
+      var json = JSON.parse(str);
+      myDiagram.initialPosition = go.Point.parse(json.position || "0 0");
+      myDiagram.model = go.Model.fromJson(json.model);
+      myDiagram.model.undoManager.isEnabled = true;
+    } catch (ex) {
+      alert(ex);
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="display: inline-block;">
+    <div style="float:left;">
+      <div id="myDiagram" style="border: solid 1px gray; width: 700px; height: 350px;"></div>
+    </div>
+    <p>
+      <button onclick="mode(true, true)">Draw Polygon</button>
+      <button onclick="mode(true, false)">Draw Polyline</button>
+      <button onclick="mode(false)">Select Mode</button>
+      <button onclick="finish(true)">Finish Drawing</button>
+      <button onclick="finish(false)">Cancel Drawing</button>
+      <button onclick="undo()">Undo Last Point</button>
+    </p>
+  </div>
+  <p>
+    This sample demonstrates the PolygonDrawingTool, a custom tool added to the Diagram's mouseDownTools. It is defined in its own file, as <a href="PolygonDrawingTool.js">PolygonDrawingTool.js</a>.
+  </p>
+  <p>
+    These extensions serve as examples of features that can be added to GoJS by writing new classes. With the PolygonDrawingTool, a new mode is supported that allows the user to draw custom shapes.
+  </p>
+  <p>
+    Click a "Draw" button and then click in the diagram to place a new point in a polygon or polyline shape. Right-click or Enter to finish.  Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point. Click the "Select Mode" button to switch back to the normal selection behavior, so that you can select, resize, and rotate the shapes.
+  </p>
+  <div>
+    <button onclick="save()">Save</button>
+    <button onclick="load()">Load</button>
+  </div>
+  <textarea id="mySavedDiagram" style="width:800px;height:200px">
+{ "position": "0 0",
+  "model": { "class": "go.GraphLinksModel",
+  "nodeDataArray": [ {"loc":"183 148", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
+  "linkDataArray": [  ]
+} }
+  </textarea>
+</div>
+</body>
+</html>

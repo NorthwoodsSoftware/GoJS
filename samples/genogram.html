@@ -1,0 +1,582 @@
+<!doctype html>
+<html>
+<head>
+  <title>Genogram</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css" />
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            initialAutoScale: go.Diagram.Uniform,
+            initialContentAlignment: go.Spot.Center,
+            // when a node is selected, draw a big yellow circle behind it
+            nodeSelectionAdornmentTemplate:
+              $(go.Adornment, "Auto",
+                { layerName: "Grid" },  // the predefined layer that is behind everything else
+                $(go.Shape, "Circle", { fill: "yellow", stroke: null }),
+                $(go.Placeholder)
+              )
+          });
+
+      function attrFill(a) {
+        switch (a) {
+          case "A": return "green";
+          case "B": return "orange";
+          case "C": return "red";
+          case "D": return "cyan";
+          case "E": return "gold";
+          case "F": return "pink";
+          case "G": return "blue";
+          case "H": return "brown";
+          case "I": return "purple";
+          case "J": return "chartreuse";
+          case "K": return "lightgray";
+          case "L": return "magenta";
+          default: return "transparent";
+        }
+      }
+
+      var tlpt = new go.Point(1, 1);
+      var trpt = new go.Point(20, 1);
+      var brpt = new go.Point(20, 20);
+      var blpt = new go.Point(1, 20);
+      function malePosition(a) {
+        switch (a) {
+          case "A": return tlpt;
+          case "B": return tlpt;
+          case "C": return tlpt;
+          case "D": return trpt;
+          case "E": return trpt;
+          case "F": return trpt;
+          case "G": return brpt;
+          case "H": return brpt;
+          case "I": return brpt;
+          case "J": return blpt;
+          case "K": return blpt;
+          case "L": return blpt;
+          default: return tlpt;
+        }
+      }
+
+      var tlarc = go.Geometry.parse("M20 20 B 180 90 20 20 19 19 z", true);
+      var trarc = go.Geometry.parse("M20 20 B 270 90 20 20 19 19 z", true);
+      var brarc = go.Geometry.parse("M20 20 B 0 90 20 20 19 19 z", true);
+      var blarc = go.Geometry.parse("M20 20 B 90 90 20 20 19 19 z", true);
+      function femaleGeometry(a) {
+        switch (a) {
+          case "A": return tlarc;
+          case "B": return tlarc;
+          case "C": return tlarc;
+          case "D": return trarc;
+          case "E": return trarc;
+          case "F": return trarc;
+          case "G": return brarc;
+          case "H": return brarc;
+          case "I": return brarc;
+          case "J": return blarc;
+          case "K": return blarc;
+          case "L": return blarc;
+          default: return tlarc;
+        }
+      }
+
+
+      // two different node templates, one for each sex,
+      // named by the category value in the node data object
+      myDiagram.nodeTemplateMap.add("M",  // male
+        $(go.Node, "Vertical",
+          { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
+          $(go.Panel,
+            { name: "ICON" },
+            $(go.Shape, "Rectangle",
+              { width: 40, height: 40, strokeWidth: 2, fill: "white", portId: "" }),
+            $(go.Panel,
+              {
+                itemTemplate:
+                  $(go.Panel,
+                    $(go.Shape, "Rectangle",
+                      { width: 19, height: 19, stroke: null, strokeWidth: 0 },
+                      new go.Binding("fill", "", attrFill),
+                      new go.Binding("position", "", malePosition))
+                  ),
+                margin: 1
+              },
+              new go.Binding("itemArray", "a")
+            )
+          ),
+          $(go.TextBlock,
+            { textAlign: "center", maxSize: new go.Size(80, NaN) },
+            new go.Binding("text", "n"))
+        ));
+
+      myDiagram.nodeTemplateMap.add("F",  // female
+        $(go.Node, "Vertical",
+          { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
+          $(go.Panel,
+            { name: "ICON" },
+            $(go.Shape, "Ellipse",
+              { width: 40, height: 40, strokeWidth: 2, fill: "white", portId: "" }),
+            $(go.Panel,
+              {
+                itemTemplate:
+                  $(go.Panel,
+                    $(go.Shape,
+                      { stroke: null, strokeWidth: 0 },
+                      new go.Binding("fill", "", attrFill),
+                      new go.Binding("geometry", "", femaleGeometry))
+                  ),
+                margin: 1
+              },
+              new go.Binding("itemArray", "a")
+            )
+          ),
+          $(go.TextBlock,
+            { textAlign: "center", maxSize: new go.Size(80, NaN) },
+            new go.Binding("text", "n"))
+        ));
+
+      // the representation of each label node -- nothing shows on a Marriage Link
+      myDiagram.nodeTemplateMap.add("LinkLabel",
+        $(go.Node, { selectable: false, width: 1, height: 1, fromEndSegmentLength: 20 }));
+
+
+      myDiagram.linkTemplate =  // for parent-child relationships
+        $(go.Link,
+          {
+            routing: go.Link.Orthogonal, curviness: 10,
+            layerName: "Background", selectable: false,
+            fromSpot: go.Spot.Bottom, toSpot: go.Spot.Top
+          },
+          $(go.Shape, { strokeWidth: 2 })
+        );
+
+      myDiagram.linkTemplateMap.add("Marriage",  // for marriage relationships
+        $(go.Link, { selectable: false },
+          $(go.Shape, { strokeWidth: 2, stroke: "darkgreen" })
+      ));
+
+
+      myDiagram.layout =
+        $(GenogramLayout, { direction: 90, layerSpacing: 30, columnSpacing: 10 });
+
+      // n: name, s: sex, m: mother, f: father, ux: wife, vir: husband, a: attributes/markers
+      setupDiagram(myDiagram, [
+          { key: 0, n: "Aaron", s: "M", m:-10, f:-11, ux: 1, a: ["C", "F", "K"] },
+          { key: 1, n: "Alice", s: "F", m:-12, f:-13, a: ["B", "H", "K"] },
+          { key: 2, n: "Bob", s: "M", m: 1, f: 0, ux: 3, a: ["C", "H", "L"] },
+          { key: 3, n: "Barbara", s: "F", a: ["C"] },
+          { key: 4, n: "Bill", s: "M", m: 1, f: 0, ux: 5, a: ["E", "H"] },
+          { key: 5, n: "Brooke", s: "F", a: ["B", "H", "L"] },
+          { key: 6, n: "Claire", s: "F", m: 1, f: 0, a: ["C"] },
+          { key: 7, n: "Carol", s: "F", m: 1, f: 0, a: ["C", "I"] },
+          { key: 8, n: "Chloe", s: "F", m: 1, f: 0, vir: 9, a: ["E"] },
+          { key: 9, n: "Chris", s: "M", a: ["B", "H"] },
+          { key: 10, n: "Ellie", s: "F", m: 3, f: 2, a: ["E", "G"] },
+          { key: 11, n: "Dan", s: "M", m: 3, f: 2, a: ["B", "J"] },
+          { key: 12, n: "Elizabeth", s: "F", vir: 13, a: ["J"] },
+          { key: 13, n: "David", s: "M", m: 5, f: 4, a: ["B", "H"] },
+          { key: 14, n: "Emma", s: "F", m: 5, f: 4, a: ["E", "G"] },
+          { key: 15, n: "Evan", s: "M", m: 8, f: 9, a: ["F", "H"] },
+          { key: 16, n: "Ethan", s: "M", m: 8, f: 9, a: ["D", "K"] },
+          { key: 17, n: "Eve", s: "F", vir: 16, a: ["B", "F", "L"] },
+          { key: 18, n: "Emily", s: "F", m: 8, f: 9 },
+          { key: 19, n: "Fred", s: "M", m: 17, f: 16, a: ["B"] },
+          { key: 20, n: "Faith", s: "F", m: 17, f: 16, a: ["L"] },
+          { key: 21, n: "Felicia", s: "F", m: 12, f: 13, a: ["H"] },
+          { key: 22, n: "Frank", s: "M", m: 12, f: 13, a: ["B", "H"] },
+
+          // "Aaron"'s ancestors
+          { key: -10, n: "Paternal Grandfather", s: "M", m: -33, f: -32, ux: -11, a: ["A"] },
+          { key: -11, n: "Paternal Grandmother", s: "F", a: ["E"] },
+          { key: -32, n: "Paternal Great", s: "M", ux: -33, a: ["F", "H"] },
+          { key: -33, n: "Paternal Great", s: "F" },
+          { key: -40, n: "Great Uncle", s: "M", m: -33, f: -32, a: ["F", "H"] },
+          { key: -41, n: "Great Aunt", s: "F", m: -33, f: -32, a: ["B", "I"] },
+          { key: -20, n: "Uncle", s: "M", m: -11, f: -10, a: ["A"] },
+
+          // "Alice"'s ancestors
+          { key: -12, n: "Maternal Grandfather", s: "M", ux: -13, a: ["D", "L"] },
+          { key: -13, n: "Maternal Grandmother", s: "F", m: -31, f: -30, a: ["H"] },
+          { key: -21, n: "Aunt", s: "F", m: -13, f: -12, a: ["C", "I"] },
+          { key: -22, n: "???", s: "M", ux: -21 },
+          { key: -23, n: "cousin", s: "M", m: -21, f: -22 },
+          { key: -30, n: "Maternal Great", s: "M", ux: -31, a: ["D", "J"] },
+          { key: -31, n: "Maternal Great", s: "F", m: -50, f: -51, a: ["B", "H", "L"] },
+          { key: -42, n: "Great Uncle", s: "M", m: -30, f: -31, a: ["C", "J"] },
+          { key: -43, n: "Great Aunt", s: "F", m: -30, f: -31, a: ["E", "G"] },
+          { key: -50, n: "Maternal Great Great", s: "F", ux: -51, a: ["D", "I"] },
+          { key: -51, n: "Maternal Great Great", s: "M", a: ["B", "H"] }
+        ],
+        4 /* focus on this person */);
+    }
+
+
+    // create and initialize the Diagram.model given an array of node data representing people
+    function setupDiagram(diagram, array, focusId) {
+      diagram.model =
+        go.GraphObject.make(go.GraphLinksModel,
+          { // declare support for link label nodes
+            linkLabelKeysProperty: "labelKeys",
+            // this property determines which template is used
+            nodeCategoryProperty: "s",
+            // create all of the nodes for people
+            nodeDataArray: array
+          });
+      setupMarriages(diagram);
+      setupParents(diagram);
+
+      var node = diagram.findNodeForKey(focusId);
+      if (node !== null) {
+        diagram.select(node);
+        var it = node.linksConnected;
+        while (it.next()) {
+          var l = it.value;
+          if (!l.isLabeledLink) continue;
+          l.opacity = 0;
+          var spouse = l.getOtherNode(node);
+          spouse.opacity = 0;
+          spouse.pickable = false;
+        }
+      }
+    }
+
+    function findMarriage(diagram, a, b) {
+      var nodeA = diagram.findNodeForKey(a);
+      var nodeB = diagram.findNodeForKey(b);
+      if (nodeA !== null && nodeB !== null) {
+        var it = nodeA.findLinksBetween(nodeB);  // in either direction
+        while (it.next()) {
+          var link = it.value;
+          // Link.data.category === "Marriage" means it's a marriage relationship
+          if (link.data !== null && link.data.category === "Marriage") return link;
+        }
+      }
+      return null;
+    }
+
+    // now process the node data to determine marriages
+    function setupMarriages(diagram) {
+      var model = diagram.model;
+      var nodeDataArray = model.nodeDataArray;
+      for (var i = 0; i < nodeDataArray.length; i++) {
+        var data = nodeDataArray[i];
+        var key = data.key;
+        var uxs = data.ux;
+        if (uxs !== undefined) {
+          if (typeof uxs === "number") uxs = [ uxs ];
+          for (var j = 0; j < uxs.length; j++) {
+            var wife = uxs[j];
+            if (key === wife) {
+              // or warn no reflexive marriages
+              continue;
+            }
+            var link = findMarriage(diagram, key, wife);
+            if (link === null) {
+              // add a label node for the marriage link
+              var mlab = { s: "LinkLabel" };
+              model.addNodeData(mlab);
+              // add the marriage link itself, also referring to the label node
+              var mdata = { from: key, to: wife, labelKeys: [mlab.key], category: "Marriage" };
+              model.addLinkData(mdata);
+            }
+          }
+        }
+        var virs = data.vir;
+        if (virs !== undefined) {
+          if (typeof virs === "number") virs = [ virs ];
+          for (var j = 0; j < virs.length; j++) {
+            var husband = virs[j];
+            if (key === husband) {
+              // or warn no reflexive marriages
+              continue;
+            }
+            var link = findMarriage(diagram, key, husband);
+            if (link === null) {
+              // add a label node for the marriage link
+              var mlab = { s: "LinkLabel" };
+              model.addNodeData(mlab);
+              // add the marriage link itself, also referring to the label node
+              var mdata = { from: key, to: husband, labelKeys: [mlab.key], category: "Marriage" };
+              model.addLinkData(mdata);
+            }
+          }
+        }
+      }
+    }
+
+    // process parent-child relationships once all marriages are known
+    function setupParents(diagram) {
+      var model = diagram.model;
+      var nodeDataArray = model.nodeDataArray;
+      for (var i = 0; i < nodeDataArray.length; i++) {
+        var data = nodeDataArray[i];
+        var key = data.key;
+        var mother = data.m;
+        var father = data.f;
+        if (mother !== undefined && father !== undefined) {
+          var link = findMarriage(diagram, mother, father);
+          if (link === null) {
+            // or warn no known mother or no known father or no known marriage between them
+            if (window.console) window.console.log("unknown marriage: " + mother + " & " + father);
+            continue;
+          }
+          var mdata = link.data;
+          var mlabkey = mdata.labelKeys[0];
+          var cdata = { from: mlabkey, to: key };
+          myDiagram.model.addLinkData(cdata);
+        }
+      }
+    }
+
+
+    function GenogramLayout() {
+      go.LayeredDigraphLayout.call(this);
+    }
+    go.Diagram.inherit(GenogramLayout, go.LayeredDigraphLayout);
+
+    GenogramLayout.prototype.makeNetwork = function(coll) {
+      // generate LayoutEdges for each parent-child Link
+      var net = this.createNetwork();
+      if (coll instanceof go.Diagram) {
+        this.add(net, coll.nodes, true);
+        this.add(net, coll.links, true);
+      } else if (coll instanceof go.Group) {
+        this.add(net, coll.memberParts, false);
+      } else if (coll.iterator) {
+        this.add(net, coll.iterator, false);
+      }
+      return net;
+    };
+
+    // internal method for creating LayeredDigraphNetwork where husband/wife pairs are represented
+    // by a single LayeredDigraphVertex corresponding to the label Node on the marriage Link
+    GenogramLayout.prototype.add = function(net, coll, nonmemberonly) {
+      // consider all Nodes in the given collection
+      var it = coll.iterator;
+      while (it.next()) {
+        var node = it.value;
+        if (!(node instanceof go.Node)) continue;
+        if (!node.isLayoutPositioned || !node.isVisible()) continue;
+        if (nonmemberonly && node.containingGroup !== null) continue;
+        // if it's an unmarried Node, or if it's a Link Label Node, create a LayoutVertex for it
+        if (node.isLinkLabel) {
+          // get marriage Link
+          var link = node.labeledLink;
+          var spouseA = link.fromNode;
+          var spouseB = link.toNode;
+          // create vertex representing both husband and wife
+          var vertex = net.addNode(node);
+          // now define the vertex size to be big enough to hold both spouses
+          vertex.width = spouseA.actualBounds.width + 30 + spouseB.actualBounds.width;
+          vertex.height = Math.max(spouseA.actualBounds.height, spouseB.actualBounds.height);
+          vertex.focus = new go.Point(spouseA.actualBounds.width + 30/2, vertex.height/2);
+        } else {
+          var anymarriage = false;
+          var mit = node.linksConnected;
+          while (mit.next()) {
+            var link = mit.value;
+            if (link.isLabeledLink) {  // assume a marriage Link has a label Node
+              anymarriage = true;
+              break;
+            }
+          }
+          // don't add a vertex for any married person!
+          // instead, code above adds label node for marriage link
+          if (!anymarriage) {
+            var vertex = net.addNode(node);
+          }
+        }
+      }
+      // now do all Links
+      it.reset();
+      while (it.next()) {
+        var link = it.value;
+        if (!(link instanceof go.Link)) continue;
+        if (!link.isLayoutPositioned || !link.isVisible()) continue;
+        if (nonmemberonly && link.containingGroup !== null) continue;
+        // if it's a parent-child link, add a LayoutEdge for it
+        if (!link.isLabeledLink) {
+          var parent = net.findVertex(link.fromNode);  // should be a label node
+          var child = net.findVertex(link.toNode);
+          if (child !== null) {  // an unmarried child
+            net.linkVertexes(parent, child, link);
+          } else {  // a married child
+            var mit = link.toNode.linksConnected;
+            while (mit.next()) {
+              var l = mit.value;
+              if (l.data.category !== "Marriage") continue;
+              // found the Marriage Link, now get its label Node
+              var mlab = l.labelNodes.first();
+              // parent-child link should connect with the label node,
+              // so the LayoutEdge should connect with the LayoutVertex representing the label node
+              var mlabvert = net.findVertex(mlab);
+              if (mlabvert !== null) {
+                net.linkVertexes(parent, mlabvert, link);
+              }
+            }
+          }
+        }
+      }
+    };
+
+    GenogramLayout.prototype.assignLayers = function() {
+      go.LayeredDigraphLayout.prototype.assignLayers.call(this);
+      var horiz = this.direction == 0.0 || this.direction == 180.0;
+      // for every vertex, record the maximum vertex width or height for the vertex's layer
+      var maxsizes = [];
+      for (var it = this.network.vertexes.iterator; it.next(); ) {
+        var v = it.value;
+        var lay = v.layer;
+        var max = maxsizes[lay];
+        if (max === undefined) max = 0;
+        var sz = (horiz ? v.width : v.height);
+        if (sz > max) maxsizes[lay] = sz;
+      }
+      // now make sure every vertex has the maximum width or height according to which layer it is in,
+      // and aligned on the left (if horizontal) or the top (if vertical)
+      for (it = this.network.vertexes.iterator; it.next(); ) {
+        var v = it.value;
+        var lay = v.layer;
+        var max = maxsizes[lay];
+        if (horiz) {
+          v.focus = new go.Point(0, v.height / 2);
+          v.width = max;
+        } else {
+          v.focus = new go.Point(v.width / 2, 0);
+          v.height = max;
+        }
+      }
+      // from now on, the LayeredDigraphLayout will think that the Node is bigger than it really is
+      // (other than the ones that are the widest or tallest in their respective layer).
+    };
+
+    GenogramLayout.prototype.commitNodes = function() {
+      go.LayeredDigraphLayout.prototype.commitNodes.call(this);
+      // position regular nodes
+      var it = this.network.vertexes.iterator;
+      while (it.next()) {
+        var v = it.value;
+        if (v.node === null) continue;
+        if (v.node.isLinkLabel) continue;
+        v.node.position = new go.Point(v.x, v.y);
+      }
+      // position the spouses of each marriage vertex
+      it.reset();
+      while (it.next()) {
+        var v = it.value;
+        if (v.node === null) continue;
+        if (!v.node.isLinkLabel) continue;
+        var labnode = v.node;
+        var lablink = labnode.labeledLink;
+        var spouseA = lablink.fromNode;
+        var spouseB = lablink.toNode;
+        // see if the parents are on the desired sides, to avoid a link crossing
+        var aParentsNode = this.findParentsMarriageLabelNode(spouseA);
+        var bParentsNode = this.findParentsMarriageLabelNode(spouseB);
+        if (aParentsNode !== null && bParentsNode !== null && aParentsNode.position.x > bParentsNode.position.x) {
+          // swap the spouses
+          spouseA = lablink.toNode;
+          spouseB = lablink.fromNode;
+        }
+        spouseA.position = new go.Point(v.x, v.y);
+        spouseB.position = new go.Point(v.x + spouseA.actualBounds.width + 30, v.y);
+        if (spouseA.opacity === 0) {
+          var pos = new go.Point(v.centerX - spouseA.actualBounds.width/2, v.y);
+          spouseA.position = pos;
+          spouseB.position = pos;
+        } else if (spouseB.opacity === 0) {
+          var pos = new go.Point(v.centerX - spouseB.actualBounds.width/2, v.y);
+          spouseA.position = pos;
+          spouseB.position = pos;
+        }
+      }
+    };
+
+    GenogramLayout.prototype.findParentsMarriageLabelNode = function(node) {
+      var it = node.findNodesInto();
+      while (it.next()) {
+        var n = it.value;
+        if (n.isLinkLabel) return n;
+      }
+      return null;
+    };
+
+    // end GenogramLayout class
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:600px"></div>
+  <p>A <em>genogram</em> is an extended family tree diagram that show information about each person or each relationship.</p>
+  <p>The node data representing the people, processed by the <code>setupDiagram</code> function:</p>
+  <pre id="peopleData">[
+    { key: 0, n: "Aaron", s: "M", m:-10, f:-11, ux: 1, a: ["C", "F", "K"] },
+    { key: 1, n: "Alice", s: "F", m:-12, f:-13, a: ["B", "H", "K"] },
+    { key: 2, n: "Bob", s: "M", m: 1, f: 0, ux: 3, a: ["C", "H", "L"] },
+    { key: 3, n: "Barbara", s: "F", a: ["C"] },
+    { key: 4, n: "Bill", s: "M", m: 1, f: 0, ux: 5, a: ["E", "H"] },
+    { key: 5, n: "Brooke", s: "F", a: ["B", "H", "L"] },
+    { key: 6, n: "Claire", s: "F", m: 1, f: 0, a: ["C"] },
+    { key: 7, n: "Carol", s: "F", m: 1, f: 0, a: ["C", "I"] },
+    { key: 8, n: "Chloe", s: "F", m: 1, f: 0, vir: 9, a: ["E"] },
+    { key: 9, n: "Chris", s: "M", a: ["B", "H"] },
+    { key: 10, n: "Ellie", s: "F", m: 3, f: 2, a: ["E", "G"] },
+    { key: 11, n: "Dan", s: "M", m: 3, f: 2, a: ["B", "J"] },
+    { key: 12, n: "Elizabeth", s: "F", vir: 13, a: ["J"] },
+    { key: 13, n: "David", s: "M", m: 5, f: 4, a: ["B", "H"] },
+    { key: 14, n: "Emma", s: "F", m: 5, f: 4, a: ["E", "G"] },
+    { key: 15, n: "Evan", s: "M", m: 8, f: 9, a: ["F", "H"] },
+    { key: 16, n: "Ethan", s: "M", m: 8, f: 9, a: ["D", "K"] },
+    { key: 17, n: "Eve", s: "F", vir: 16, a: ["B", "F", "L"] },
+    { key: 18, n: "Emily", s: "F", m: 8, f: 9 },
+    { key: 19, n: "Fred", s: "M", m: 17, f: 16, a: ["B"] },
+    { key: 20, n: "Faith", s: "F", m: 17, f: 16, a: ["L"] },
+    { key: 21, n: "Felicia", s: "F", m: 12, f: 13, a: ["H"] },
+    { key: 22, n: "Frank", s: "M", m: 12, f: 13, a: ["B", "H"] },
+
+    // "Aaron"'s ancestors
+    { key: -10, n: "Paternal Grandfather", s: "M", m: -33, f: -32, ux: -11, a: ["A"] },
+    { key: -11, n: "Paternal Grandmother", s: "F", a: ["E"] },
+    { key: -32, n: "Paternal Great", s: "M", ux: -33, a: ["F", "H"] },
+    { key: -33, n: "Paternal Great", s: "F" },
+    { key: -40, n: "Great Uncle", s: "M", m: -33, f: -32, a: ["F", "H"] },
+    { key: -41, n: "Great Aunt", s: "F", m: -33, f: -32, a: ["B", "I"] },
+    { key: -20, n: "Uncle", s: "M", m: -11, f: -10, a: ["A"] },
+          
+    // "Alice"'s ancestors
+    { key: -12, n: "Maternal Grandfather", s: "M", ux: -13, a: ["D", "L"] },
+    { key: -13, n: "Maternal Grandmother", s: "F", m: -31, f: -30, a: ["H"] },
+    { key: -21, n: "Aunt", s: "F", m: -13, f: -12, a: ["C", "I"] },
+    { key: -22, n: "???", s: "M", ux: -21 },
+    { key: -23, n: "cousin", s: "M", m: -21, f: -22 },
+    { key: -30, n: "Maternal Great", s: "M", ux: -31, a: ["D", "J"] },
+    { key: -31, n: "Maternal Great", s: "F", m: -50, f: -51, a: ["B", "H", "L"] },
+    { key: -42, n: "Great Uncle", s: "M", m: -30, f: -31, a: ["C", "J"] },
+    { key: -43, n: "Great Aunt", s: "F", m: -30, f: -31, a: ["E", "G"] },
+    { key: -50, n: "Maternal Great Great", s: "F", ux: -51, a: ["D", "I"] },
+    { key: -51, n: "Maternal Great Great", s: "M", a: ["B", "H"] }
+]</pre>
+  The properties are:
+  <ul>
+    <li><b>key</b>, the unique ID of the person</li>
+    <li><b>n</b>, the person's name</li>
+    <li><b>s</b>, the person's sex</li>
+    <li><b>m</b>, the person's mother's key</li>
+    <li><b>f</b>, the person's father's key</li>
+    <li><b>ux</b>, the person's wife</li>
+    <li><b>vir</b>, the person's husband</li>
+    <li><b>a</b>, an Array of the attributes or markers that the person has</li>
+  </ul>
+  There are functions that convert an attribute value into a brush color or Shape geometry,
+  to be added to the Node representing the person.
+  <p>A custom <a>LayeredDigraphLayout</a> does the layout, assuming there is a central person whose mother and father
+  each have their own ancestors.  In this case we focus on "Bill", but any of the children of "Alice" and "Aaron" would work.</p>
+</div>
+</body>
+</html>

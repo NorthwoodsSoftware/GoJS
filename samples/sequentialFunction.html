@@ -1,0 +1,152 @@
+﻿<!doctype html>
+<html>
+<head>
+<title> Sequential Function Chart</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram", // must be the ID or reference to an HTML DIV
+        {
+          allowCopy: false,  // don't allow copying nodes or links
+          "undoManager.isEnabled": true  // enable undo & redo
+        });
+
+    // define the step Node template
+    myDiagram.nodeTemplateMap.add("step",
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "", toLocation).makeTwoWay(fromLocation),
+        $(go.Shape, "Rectangle",
+          {
+            fill: $(go.Brush, go.Brush.Linear, { 0: "whitesmoke", 1: "pink" }),
+            stroke: "gray",
+            desiredSize: new go.Size(160, 60),
+            portId: "",  // so that links connect to the Shape, not to the whole Node
+            fromSpot: go.Spot.BottomSide,
+            toSpot: go.Spot.TopSide,
+            alignment: go.Spot.Center
+          }),
+        $(go.TextBlock,
+          {
+            alignment: go.Spot.Center,
+            wrap: go.TextBlock.WrapFit,
+            editable: true
+          },
+          new go.Binding("text", "text").makeTwoWay())
+      ));
+
+    // define the transition Node template.
+    myDiagram.nodeTemplateMap.add("transition",
+      $(go.Node, "Horizontal",
+        { locationSpot: go.Spot.Center, locationObjectName: "BAR" },
+        new go.Binding("location", "", toLocation).makeTwoWay(fromLocation),
+        $(go.Shape, "Rectangle",
+          {
+            name: "BAR",
+            fill: "black",
+            stroke: null,
+            desiredSize: new go.Size(60, 6),
+            portId: "",
+            fromSpot: go.Spot.BottomSide,
+            toSpot: go.Spot.TopSide
+          }),
+        $(go.TextBlock,
+          new go.Binding("text", "text").makeTwoWay())
+      ));
+
+    // define the parallel Node template.
+    myDiagram.nodeTemplateMap.add("parallel",
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "", toLocation).makeTwoWay(fromLocation),
+        $(go.Shape, "Rectangle",
+          {
+            fill: "transparent",
+            stroke: "black",
+            fromSpot: go.Spot.BottomCenter,
+            toSpot: go.Spot.TopCenter,
+            desiredSize: new go.Size(200, 6),
+            portId: "",
+            fromSpot: go.Spot.BottomSide,
+            toSpot: go.Spot.TopSide,
+            alignment: go.Spot.Center
+          })
+      ));
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Link.Orthogonal },
+        $(go.Shape,
+          { stroke: "black", strokeWidth: 2 })
+      );
+
+    // create the graph by reading the JSON data saved in "mySavedModel" textarea element
+    load();
+  }
+
+  // define a converter from two data properties to Node.location
+  function toLocation(data, node) {
+    return new go.Point(data.x, data.y);
+  }
+
+  // define a reverse converter, from Node.location to two data properties
+  function fromLocation(loc, data) {
+    data.x = loc.x;
+    data.y = loc.y;
+  }
+
+  // Show the diagram's model in JSON format
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+  }
+</script>
+</head>
+<body onload="init()" >
+<div id="sample">
+  You can edit text in-place by clicking on the text of a selected node.
+  <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
+  <button onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  Diagram Model saved in JSON format:
+  <br />
+  <textarea id="mySavedModel" style="width:100%;height:400px">
+{ "nodeDataArray": [
+{"key":"S1", "category":"step", "x":201, "y":40, "text":"Step 1"},
+{"key":"TR1", "category":"transition", "x":200.5, "y":108, "text":"Trans1"},
+{"key":"S2", "category":"step", "x":201, "y":176, "text":"Step 2"},
+{"key":"TR2", "category":"transition", "x":200.5, "y":244, "text":"Trans2"},
+{"key":"BAR1", "category":"parallel", "x":201, "y":290, "width":200},
+{"key":"S3", "category":"step", "x":101, "y":358, "text":"Step 3"},
+{"key":"S4", "category":"step", "x":301, "y":358, "text":"Step 4"},
+{"key":"BAR2", "category":"parallel", "x":201, "y":426, "width":200},
+{"key":"TR3", "category":"transition", "x":200.5, "y":472, "text":"Trans3"},
+{"key":"S5", "category":"step", "x":201, "y":540, "text":"Step 5"}
+ ],
+  "linkDataArray": [
+{"from":"S1", "to":"TR1"},
+{"from":"TR1", "to":"S2"},
+{"from":"S2", "to":"TR2"},
+{"from":"TR2", "to":"BAR1"},
+{"from":"BAR1", "to":"S3"},
+{"from":"BAR1", "to":"S4"},
+{"from":"S3", "to":"BAR2"},
+{"from":"S4", "to":"BAR2"},
+{"from":"BAR2", "to":"TR3"},
+{"from":"TR3", "to":"S5"}
+ ]}
+  </textarea>
+</div>
+</body>
+</html>

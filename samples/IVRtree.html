@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+<head>
+<title>Interactive Voice Response Tree</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
+  <script src="go.js"></script>
+  <script src="goSamples.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            allowCopy: false,
+            initialContentAlignment: go.Spot.Center,
+            "draggingTool.dragsTree": true,
+            "commandHandler.deletesTree": true,
+            "undoManager.isEnabled": true
+          });
+
+      myDiagram.addDiagramListener("Modified", function(e) {
+        var button = document.getElementById("SaveButton");
+        if (button) button.disabled = !myDiagram.isModified;
+        var idx = document.title.indexOf("*");
+        if (myDiagram.isModified) {
+          if (idx < 0) document.title += "*";
+        } else {
+          if (idx >= 0) document.title = document.title.substr(0, idx); 
+        }
+      });
+
+      // Define a new kind of button, used to toggle the visibility of a GraphObject named "COLLAPSIBLE".
+      // Caution: you can only control the visibility of one element in a Part at a time, due to the hard-coding of the "COLLAPSIBLE" name.
+      go.GraphObject.Builders.add("PanelExpanderButton", function() {
+        return $("Button",
+              { "ButtonBorder.stroke": null,
+                "ButtonBorder.fill": "transparent",
+                click: function(e, obj) {
+                  var elt = obj.part.findObject("COLLAPSIBLE");
+                  if (elt !== null) {
+                    obj.diagram.startTransaction("Collapse/Expand Panel");
+                    elt.visible = !elt.visible;
+                    obj.diagram.commitTransaction("Collapse/Expand Panel");
+                  }
+                } },
+              $(go.Shape, "TriangleUp",
+                { desiredSize: new go.Size(6, 4) },
+                new go.Binding("figure", "visible", function(vis) { return vis ? "TriangleUp" : "TriangleDown"; }).ofObject("COLLAPSIBLE")));  // end Button
+        });
+
+      var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "skyblue" });
+      var greengrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "green" });
+      var redgrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "red" });
+      var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "yellow", 1: "orange" });
+
+      // each action is represented by a shape and some text
+      var actionTemplate =
+        $(go.Panel, "Horizontal",
+          $(go.Shape,
+            { width: 12, height: 12 },
+            new go.Binding("figure"),
+            new go.Binding("fill")),
+          $(go.TextBlock,
+            new go.Binding("text"))
+        );
+
+      // each regular Node has body consisting of a title followed by a collapsible list of actions,
+      // with a TreeExpanderButton underneath the body
+      myDiagram.nodeTemplate =  // the default node template
+        $(go.Node, "Vertical",
+          { selectionObjectName: "BODY" },
+          // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
+          $(go.Panel, "Auto",
+            { name: "BODY" },
+            $(go.Shape, "RoundedRectangle",
+              { fill: bluegrad },
+              new go.Binding("fill"),
+              new go.Binding("stroke")),
+            $(go.Panel, "Vertical",
+              // the title
+              $(go.TextBlock, { font: "bold 12pt Arial" },
+                new go.Binding("text", "question")),
+              // the optional list of actions
+              $(go.Panel, "Table",
+                { stretch: go.GraphObject.Horizontal,
+                  visible: false },  // not visible unless there is more than one action
+                new go.Binding("visible", "actions", function(acts) {
+                     return (acts instanceof Array && acts.length > 0);
+                   }),
+                // headered by a label and a PanelExpanderButton
+                $(go.TextBlock, "Steps", { row: 0, alignment: go.Spot.Left }),
+                $("PanelExpanderButton", { row: 0, alignment: go.Spot.Right }),
+                // with the list data bound in the Vertical Panel
+                $(go.Panel, "Vertical",
+                  {
+                    row: 1, name: "COLLAPSIBLE",  // identify to the PanelExpanderButton click function
+                    padding: 2,
+                    stretch: go.GraphObject.Horizontal,  // take up whole available width
+                    background: "white",  // to distinguish from the node's body
+                    defaultAlignment: go.Spot.Left,  // thus no need to specify alignment on each element
+                    itemTemplate: actionTemplate  // the Panel created for each item in Panel.itemArray
+                  },
+                  new go.Binding("itemArray", "actions")  // bind Panel.itemArray to nodedata.actions
+                )  // end inner Vertical Panel
+              )  // end Table Panel
+            )  // end outer Vertical Panel
+          ),  // end "BODY", an Auto Panel
+          $(go.Panel,  // this is underneath the "BODY"
+            { height: 15 },  // always this height, even if the TreeExpanderButton is not visible
+            $("TreeExpanderButton"))
+        );
+
+      // define a second kind of Node:
+      myDiagram.nodeTemplateMap.add("Terminal",
+        $(go.Node, "Spot",
+          $(go.Shape, "StopSign",
+            { width: 40, height: 40 },
+            new go.Binding("fill"),
+            new go.Binding("stroke")),
+          $(go.TextBlock,
+            new go.Binding("text")))
+        );
+
+      myDiagram.linkTemplate =
+        $(go.Link, go.Link.Orthogonal,
+          { corner: 10 },
+          $(go.Shape,
+            { strokeWidth: 2 }),
+          $(go.Shape,
+            { toArrow: "Standard" }),
+          $(go.TextBlock, go.Link.OrientUpright,
+            { background: "white",
+              visible: false,  // unless the binding sets it to true for a non-empty string
+              segmentIndex: -2,
+              segmentOrientation: go.Link.None },
+            new go.Binding("text", "answer"),
+            // hide empty string;
+            // if the "answer" property is undefined, visible is false due to above default setting
+            new go.Binding("visible", "answer", function(a) { return (a ? true : false); }))
+        );
+
+      myDiagram.layout =
+        $(go.TreeLayout,
+          { angle: 90, arrangement: go.TreeLayout.ArrangementFixedRoots });
+
+      load();
+    }
+
+    function save() {
+      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
+    }
+    function load() {
+      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  Interactive Voice Response Tree (IVR tree)
+  <div id="myDiagram" style="border: solid 1px black; width:100%; height:500px"></div>
+  <button id="SaveButton" onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  <br />
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":"1", "question":"Present choices",
+ "actions":[
+   {"text":"first", "figure":"ElectricalHazard", "fill":"blue"},
+   {"text":"second", "figure":"FireHazard", "fill":"red"},
+   {"text":"third", "figure":"IrritationHazard", "fill":"yellow"}
+ ]},
+{"key":"2", "question":"Hello World?"},
+{"key":"3", "question":"How much?"},
+{"key":"4", "question":"other choices",
+ "actions":[
+   {"text":"a much longer string", "figure":"FireHazard", "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"yellow", "1":"orange"}}},
+   {"text":"last", "figure":"IrritationHazard", "fill":"yellow"}
+ ],
+ "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"yellow", "1":"orange"}}},
+{"key":"5", "question":"hi!"},
+{"key":"6", "question":"more?"},
+{"key":"7", "question":"less?"},
+{"key":"8", "question":"do something"},
+{"key":"9", "question":"do something else"},
+{"key":"10", "question":"last action"},
+{"key":"11", "category":"Terminal", "text":"OK", "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"white", "1":"green"}}, "stroke":"green"},
+{"key":"12", "category":"Terminal", "text":"stop", "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"white", "1":"red"}}, "stroke":"red"}
+ ],
+  "linkDataArray": [ 
+{"from":"1", "to":"2", "answer":"Yes"},
+{"from":"1", "to":"3", "answer":"No"},
+{"from":"1", "to":"4", "answer":"Maybe"},
+{"from":"2", "to":"5", "answer":"Yes"},
+{"from":"3", "to":"6", "answer":"High"},
+{"from":"3", "to":"7", "answer":"Low"},
+{"from":"7", "to":"8", "answer":"Yes"},
+{"from":"7", "to":"9", "answer":"No"},
+{"from":"7", "to":"10", "answer":"Maybe"},
+{"from":"9", "to":"11"},
+{"from":"10", "to":"12"}
+ ]}
+   </textarea>
+</div>
+</body>
+</html>

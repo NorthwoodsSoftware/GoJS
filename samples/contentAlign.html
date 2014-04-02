@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+<title>Content Alignment examples</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<script src="go.js"></script>
+<script src="goSamples.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram",  // Must be the ID or reference to div
+                  { "undoManager.isEnabled": true });
+
+    var layer = myDiagram.findLayer("");
+    for (var i = 0; i < 15; i++) {
+      myDiagram.add( // add a new Node to the diagram's default layer
+        $(go.Node,
+          { position: new go.Point(Math.random() * 251, Math.random() * 251) },
+          $(go.Shape, "Circle",
+            { // light blue-greens:
+              fill: "rgba(0," + (Math.floor((256-150)*Math.random()) + 150) + "," + (Math.floor((256-150)*Math.random()) + 150) + ",.5)",
+              strokeWidth: 3,
+              desiredSize: new go.Size(30,30) })
+        ));
+    }
+
+    var myPosX = document.getElementById("positionX");
+    var myPosY = document.getElementById("positionY");
+    var myScale = document.getElementById("scale");
+    myDiagram.addDiagramListener("DocumentBoundsChanged", function (e) {
+      updateDOM(e.diagram);
+    });
+    myDiagram.addDiagramListener("ViewportBoundsChanged", function (e) {
+      updateDOM(e.diagram);
+    });
+
+    function updateDOM(d) {
+      var pos = d.position;
+      myPosX.value = Math.round(pos.x, 2);
+      myPosY.value = Math.round(pos.y, 2);
+      myScale.value = d.scale;
+    }
+  }
+
+  // occurs when one of the contentAlign radio buttons is clicked
+  function changeContentAlign(spot) {
+    myDiagram.startTransaction("");
+    myDiagram.contentAlignment = go.Spot[spot];
+    myDiagram.commitTransaction("");
+  }
+
+  function changePosition(posx, posy) {
+    myDiagram.startTransaction("");
+    var x = parseInt(posx);
+    var y = parseInt(posy);
+    myDiagram.position = new go.Point(x, y);
+    myDiagram.commitTransaction("");
+  }
+
+  function changeScale(scale) {
+    var scale = parseFloat(scale);
+    if (scale > 0) {
+      myDiagram.startTransaction("");
+      myDiagram.scale = scale;
+      myDiagram.commitTransaction("");
+    }
+  }
+
+  function changeFixedBounds(fx, fy, fw, fh) {
+    myDiagram.startTransaction("");
+    var x = parseFloat(fx);
+    var y = parseFloat(fy);
+    var h = parseFloat(fw);
+    var w = parseFloat(fh);
+    myDiagram.fixedBounds = new go.Rect(x, y, Math.max(1, w), Math.max(1, h));
+    myDiagram.commitTransaction("");
+  }
+
+  function changePadding(pt, pr, pb, pl) {
+    myDiagram.startTransaction("");
+    var t = parseFloat(pt);
+    var r = parseFloat(pr);
+    var b = parseFloat(pb);
+    var l = parseFloat(pl);
+    myDiagram.padding = new go.Margin(t, r, b, l);
+    myDiagram.commitTransaction("");
+  }
+
+  function changeHorizScroll(checked) {
+    myDiagram.startTransaction("");
+    myDiagram.allowHorizontalScroll = checked;
+    myDiagram.commitTransaction("");
+  }
+
+  function changeVertScroll(checked) {
+    myDiagram.startTransaction("");
+    myDiagram.allowVerticalScroll = checked;
+    myDiagram.commitTransaction("");
+  }
+
+  function hasHorizScroll(checked) {
+    myDiagram.startTransaction("");
+    myDiagram.hasHorizontalScrollbar = checked;
+    myDiagram.commitTransaction("");
+  }
+
+  function hasVertScroll(checked) {
+    myDiagram.startTransaction("");
+    myDiagram.hasVerticalScrollbar = checked;
+    myDiagram.commitTransaction("");
+  }
+
+  function changeAutoScale(scaleType) {
+    myDiagram.startTransaction("");
+    myDiagram.autoScale = go.Diagram[scaleType];
+    myDiagram.commitTransaction("");
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+<p>A Diagram's <a>Diagram.contentAlignment</a> property determines how parts are positioned when the
+<a>Diagram.viewportBounds</a> width or height is different than the <a>Diagram.documentBounds</a> width or height.</p>
+<div style="width:100%; white-space: nowrap">
+  <div style="display: inline-block; vertical-align: top; width:50%">
+    <div id="myDiagram" style="height: 400px; background: whitesmoke; border: solid 1px black"></div>
+  </div>
+
+  <div style="display: inline-block; vertical-align: top; width:50%">
+    <div style="border: solid 1px gray; padding:5px">
+      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="None" checked/><label for="None">None</label><br/>
+      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Left"/><label for="Left">Left</label><br/>
+      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Right"/><label for="Right">Right</label><br/>
+      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Top"/><label for="Top">Top</label><br/>
+      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Bottom"/><label for="Bottom">Bottom</label><br/>
+      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Center"/><label for="Center">Center</label><br/>
+
+      <p>Diagram's Position:
+        <input type="text" size="2" id="positionX" value="NaN"/>
+        <input type="text" size="2" id="positionY" value="NaN"/>
+        <input type="button" onclick="changePosition(positionX.value, positionY.value)" value="Change"/>
+      </p>
+
+      <p>Diagram's scale:
+        <input type="text" size="2" id="scale" value="1"/>
+        <input type="button" onclick="changeScale(scale.value)" value="Change"/>
+      </p>
+
+      <p>Diagram's fixedBounds (x, y, width, height):</p>
+      <p>
+        <input type="text" size="2" id="fixedX" value="NaN"/>
+        <input type="text" size="2" id="fixedY" value="NaN"/>
+        <input type="text" size="2" id="fixedW" value="NaN"/>
+        <input type="text" size="2" id="fixedH" value="NaN"/>
+        <input type="button" onclick="changeFixedBounds(fixedX.value, fixedY.value, fixedW.value, fixedH.value)" value="Set"/>
+      </p>
+
+      <p>Diagram's padding (top, right, bottom, left):</p>
+      <p>
+        <input type="text" size="2" id="padT" value="5"/>
+        <input type="text" size="2" id="padR" value="5"/>
+        <input type="text" size="2" id="padB" value="5"/>
+        <input type="text" size="2" id="padL" value="5"/>
+        <input type="button" onclick="changePadding(padT.value, padR.value, padB.value, padL.value)" value="Set"/>
+      </p>
+
+      <p>Diagram's autoScale:</p>
+      <p>
+        <input type="radio" name="autoScale" onclick="changeAutoScale(this.value)" id="DiagramNone" value="None" checked /><label for="DiagramNone">Diagram.None</label><br/>
+        <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="Uniform" /><label for="Uniform">Diagram.Uniform</label><br/>
+        <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="UniformToFill" /><label for="UniformToFill">Diagram.UniformToFill</label><br/>
+      </p>
+
+      <input type="button" onclick="myDiagram.zoomToFit()" value="Zoom to Fit"/> (but scale no greater than 1)
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>
