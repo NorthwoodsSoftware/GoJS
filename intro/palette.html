@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Palette -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Palette Diagrams</h2>
+<p>
+A <a>Palette</a> is a subclass of <a>Diagram</a> that is used to display a number of <a>Part</a>s that
+can be dragged into the diagram that is being modified by the user.
+The initialization of a <a>Palette</a> is just like the initialization of any <a>Diagram</a>.
+</p>
+<p>
+The following code initializes an empty Diagram on the right side, below.
+Note that we must set <a>Diagram.allowDrop</a> to true.
+In this example we do not bother initializing the model with any node data.
+</p>
+<p>
+This code also creates a <a>Palette</a>, in the same manner as you would any Diagram.
+You initialize its model in order to show nodes in the Palette.
+</p>
+<pre data-language="javascript" id="diagramPre">
+  // initialize the main Diagram
+  diagram.allowDrop = true;  // permit accepting drag-and-drops
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color"),
+        { portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  // start off with no Parts
+  diagram.undoManager.isEnabled = true;
+
+  // create the Palette
+  var myPalette =
+    $(go.Palette, "myPaletteDiv");
+
+  // the Palette's node template is different from the main Diagram's
+  myPalette.nodeTemplate =
+    $(go.Node, "Horizontal",
+      $(go.Shape,
+        { width: 14, height: 14, fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        new go.Binding("text", "color"))
+    );
+
+  // the list of data to show in the Palette
+  myPalette.model.nodeDataArray = [
+    { key: "LB", color: "lightblue" },
+    { key: "P", color: "pink" },
+    { key: "Y", color: "yellow" },
+    { key: "LG", color: "lightgreen" },
+    { key: "O", color: "orange" }
+  ];
+</pre>
+<div style="width:100%">
+  <span id="paletteSpan" style="display: inline-block; vertical-align: top">
+    <b>Palette:</b><br />
+    <div id="myPaletteDiv" style="width: 100px; height: 250px" class="diagramContainer"></div>
+  </span>
+  <span id="diagramSpan" style="display: inline-block; vertical-align: top">
+    <b>Diagram:</b><br />
+  </span>
+</div>
+<script>goCode("diagramPre", 250, 250, go.Diagram, "diagramSpan");</script>
+<p>
+Notice that when you drag a part from the Palette on the left into the Diagram on the right,
+that the appearance changes.
+What is being dragged is just the model data, not the actual <a>Part</a>s.
+Because each diagram can use its own templates, the same data object can be represented completely differently.
+</p>
+<p>
+If you want the Palette to show exactly the same kinds of Nodes as your main Diagram,
+you can have it share the templates of the main Diagram:
+</p>
+<pre data-language="javascript">
+  myPalette.nodeTemplateMap = myDiagram.nodeTemplateMap;
+</pre>
+
+</div>
+</body>
+</html>

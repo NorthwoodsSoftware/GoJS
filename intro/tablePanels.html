@@ -1,0 +1,480 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Table Panels -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Table Panels</h2>
+<p>
+The "Table" Panel, <a>Panel.Table</a>, arranges objects in rows and columns.
+</p>
+
+<h3>Simple Table Panels</h3>
+<p>
+Each object in a Table Panel is put into the cell indexed by the value of <a>GraphObject.row</a> and <a>GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+</p>
+<pre data-language="javascript" id="simpleTable">
+  diagram.add(
+    // all Parts are Panels
+    $(go.Part, go.Panel.Table,  // or "Table"
+        $(go.TextBlock, "row 0\ncol 0",
+          { row: 0, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 0\ncol 1",
+          { row: 0, column: 1, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 0",
+          { row: 1, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 2",
+          { row: 1, column: 2, margin: 2, background: "lightgray" })
+    ));
+</pre>
+<script>goCode("simpleTable", 600, 100)</script>
+<p>
+Note that not every "cell" of the table needs to have a <a>GraphObject</a> in it.
+</p>
+<p>
+If there are multiple objects in a cell, they will probably overlap each other in the cell.
+By default objects are center-aligned in each cell.
+</p>
+<pre data-language="javascript" id="multipleInCell">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        $(go.TextBlock, "row 0\ncol 0",
+          { row: 0, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 0 col 1\nyellow background",
+          // first object in the cell (row: 0, col: 1)
+          { row: 0, column: 1, margin: 2,
+            background: "yellow", stroke: "gray" }),
+        $(go.TextBlock, "row 0\ncol 1",
+          // second object in that cell overlaps the first one, the bigger yellow TextBlock
+          { row: 0, column: 1, margin: 2,
+            background: "transparent", stroke: "blue" }),
+        $(go.TextBlock, "row 1\ncol 0",
+          { row: 1, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 2",
+          { row: 1, column: 2, margin: 2, background: "lightgray" })
+      )
+    ));
+</pre>
+<script>goCode("multipleInCell", 600, 100)</script>
+
+<p>
+If a column or a row has no objects in it, that column or row is ignored.
+</p>
+<pre data-language="javascript" id="emptyColumns">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        $(go.TextBlock, "row 0\ncol 0",
+          { row: 0, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 0\ncol 11",  // column 11 -- nothing in columns 1-10
+          { row: 0, column: 11, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 0",
+          { row: 1, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 12",  // column 12
+          { row: 1, column: 12, margin: 2, background: "lightgray" })
+      )
+    ));
+</pre>
+<script>goCode("emptyColumns", 600, 100)</script>
+
+<h3>Sizing of Rows or Columns</h3>
+<p>
+The height of each row is normally determined by the greatest height of all of the objects in that row.
+Similarly, the width of each column is normally determined by the greatest width of all of the objects in that column.
+However you can provide row height or column width information for any row or column independent of any individual object
+by setting properties of the desired <a>RowColumnDefinition</a> of the Table panel.
+</p>
+<p>
+To fix a column width or a row height in code you can call <a>Panel.getColumnDefinition</a>
+or <a>Panel.getRowDefinition</a> and then set <a>RowColumnDefinition.width</a> or <a>RowColumnDefinition.height</a>.
+If you want to limit the width or height to certain ranges, set the <a>RowColumnDefinition.minimum</a> or <a>RowColumnDefinition.maximum</a>.
+If the maximum and the width or height conflict, the maximum takes precedence.
+For example, if the maximum is 70 but the natural value is 80, the actual value is limited to 70.
+If that value conflicts with the minimum, the minimum takes precedence.
+For example, if the minimum is 50 but the natural value is 40, the actual value is 50.
+</p>
+<p>
+This example demonstrates how the column width may be controlled.
+</p>
+<pre data-language="javascript" id="columnSizes">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left },
+        $(go.RowColumnDefinition, { column: 0, width: 100 }),
+        $(go.RowColumnDefinition, { column: 1, width: 100, minimum: 150 }),
+        $(go.RowColumnDefinition, { column: 2, width: 100, maximum: 50 }),
+        $(go.RowColumnDefinition, { column: 3, width: 100, minimum: 150, maximum: 50 }),
+        $(go.TextBlock, "Text Block",
+          { row: 0, column: 0, background: "green" }),
+        $(go.TextBlock, "Text Block",
+          { row: 0, column: 1, background: "red" }),
+        $(go.TextBlock, "Text Block",
+          { row: 0, column: 2, background: "yellow" }),
+        $(go.TextBlock, "Text Block",
+          { row: 0, column: 3, background: "red" }),
+        $(go.Panel, "Auto",
+          { row: 1, column: 0 },
+          $(go.Shape, "RoundedRectangle", { fill: "green" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.Panel, "Auto",
+          { row: 1, column: 1 },
+          $(go.Shape, "RoundedRectangle", { fill: "red" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.Panel, "Auto",
+          { row: 1, column: 2 },
+          $(go.Shape, "RoundedRectangle", { fill: "yellow" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.Panel, "Auto",
+          { row: 1, column: 3 },
+          $(go.Shape, "RoundedRectangle", { fill: "red" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "width: 100", { row: 2, column: 0 }),
+        $(go.TextBlock, "min: 150", { row: 2, column: 1 }),
+        $(go.TextBlock, "max: 50", { row: 2, column: 2 }),
+        $(go.TextBlock, "min & max", { row: 2, column: 3 })
+      )
+    ));
+</pre>
+<script>goCode("columnSizes", 600, 120)</script>
+<p>
+Note how the column with a minimum of 150 has a lot of extra space in it,
+and how the column with a maximum of 50 results in its elements being clipped.
+</p>
+
+<h3>Stretch and Alignment</h3>
+<p>
+The size of a GraphObject in a Panel is determined by many factors.
+The <a>GraphObject.stretch</a> property specifies whether the width and/or height should take up all
+of the space given to it by the Panel.
+When the width and/or height is not stretched to fill the given space,
+the <a>GraphObject.alignment</a> property controls where the object is placed if it is smaller than available space.
+One may also stretch the width while aligning vertically, just as one may also
+stretch vertically while aligning along the X axis.
+</p>
+<p>
+The alignment value for a GraphObject, if not given by the value of GraphObject.alignment, may be inherited.
+If the object is in a Table Panel, the value may inherit from the <a>RowColumnDefinition.alignment</a>s of
+the row and of the column that the object is in.
+Finally the value may be inherited from the <a>Panel.defaultAlignment</a> property.
+</p>
+<p>
+The same inheritance is true for the stretch value for a GraphObject: <a>GraphObject.stretch</a>,
+<a>RowColumnDefinition.stretch</a>, and finally <a>Panel.defaultStretch</a>.
+</p>
+
+<h4>Alignment in Columns</h4>
+<pre data-language="javascript" id="columns">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left },
+        $(go.RowColumnDefinition, { column: 0, width: 200 }),
+        $(go.RowColumnDefinition, { column: 1, width: 15 }),
+        $(go.Panel, "Auto",
+          { row: 0, column: 0, alignment: go.Spot.Left },
+          $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "alignment: Left", { row: 0, column: 2 }),
+        $(go.Panel, "Auto",
+          { row: 1, column: 0, alignment: go.Spot.Center},
+          $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "alignment: Center", { row: 1, column: 2 }),
+        $(go.Panel, "Auto",
+          { row: 2, column: 0, alignment: go.Spot.Right },
+          $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "alignment: Right", { row: 2, column: 2 }),
+        $(go.Panel, "Auto",
+          { row: 3, column: 0, stretch: go.GraphObject.Horizontal },
+          $(go.Shape, "RoundedRectangle", { fill: "yellow" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "stretch: Horizontal", { row: 3, column: 2 })
+      )
+    ));
+</pre>
+<script>goCode("columns", 600, 120)</script>
+
+<h4>Alignment in Rows</h4>
+<pre data-language="javascript" id="rows">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Top },
+        $(go.RowColumnDefinition, { row: 0, height: 50 }),
+        $(go.RowColumnDefinition, { row: 1, height: 15 }),
+        $(go.Panel, "Auto",
+          { row: 0, column: 0, alignment: go.Spot.Top },
+          $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "alignment:\nTop", { row: 2, column: 0 }),
+        $(go.Panel, "Auto",
+          { row: 0, column: 1, alignment: go.Spot.Center},
+          $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "alignment:\nCenter", { row: 2, column: 1 }),
+        $(go.Panel, "Auto",
+          { row: 0, column: 2, alignment: go.Spot.Bottom },
+          $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "alignment:\nBottom", { row: 2, column: 2 }),
+        $(go.Panel, "Auto",
+          { row: 0, column: 3, stretch: go.GraphObject.Vertical },
+          $(go.Shape, "RoundedRectangle", { fill: "yellow" }),
+          $(go.TextBlock, "Auto Panel")
+        ),
+        $(go.TextBlock, "stretch:\nVertical", { row: 2, column: 3 })
+      )
+    ));
+</pre>
+<script>goCode("rows", 600, 120)</script>
+
+<h3>Spanning Rows or Columns</h3>
+<p>
+An element in a Table Panel cell can cover more than one cell if you set the <a>GraphObject.rowSpan</a>
+or <a>GraphObject.columnSpan</a> properties.
+For example, if the value of GraphObject.columnSpan is greater than one, it specifies how many columns
+that object may cover, starting with the value of <a>GraphObject.column</a>, but excluding the column
+indexed by column + columnSpan.
+</p>
+<pre data-language="javascript" id="columnSpan">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        $(go.TextBlock, "Three Col Header",  // spans all three columns
+          { row: 0, column: 0, columnSpan: 3, stretch: go.GraphObject.Horizontal,
+            margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 0",
+          { row: 1, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 1",
+          { row: 1, column: 1, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 2\ncol 0",
+          { row: 2, column: 0, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 2\ncol 2",
+          { row: 2, column: 2, margin: 2, background: "lightgray" })
+      )
+    ));
+</pre>
+<script>goCode("columnSpan", 600, 120)</script>
+
+<p>
+Here is an example that includes both column spanning and row spanning.
+</p>
+<pre data-language="javascript" id="columnSpan2">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        $(go.TextBlock, "Greetings",
+          { row: 0, column: 0, columnSpan: 3, stretch: go.GraphObject.Horizontal,
+            margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "numbers",
+          { row: 1, column: 0, rowSpan: 2, stretch: go.GraphObject.Vertical,
+            margin: 2, background: "lightgray", angle: 270 }),
+        $(go.TextBlock, "row 1\ncol 1",
+          { row: 1, column: 1, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 1\ncol 2",
+          { row: 1, column: 2, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 2\ncol 1",
+          { row: 2, column: 1, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "row 2\ncol 3",
+          { row: 2, column: 3, margin: 2, background: "lightgray" }),
+        $(go.TextBlock, "Signature",
+          { row: 3, column: 2, columnSpan: 2, stretch: go.GraphObject.Horizontal,
+            margin: 2, background: "lightgray" })
+      )
+    ));
+</pre>
+<script>goCode("columnSpan2", 600, 120)</script>
+
+<h3>Separators and Row/Column Padding</h3>
+<p>
+Table Panels also support the optional drawing of lines between rows or columns.
+The <a>RowColumnDefinition.separatorStrokeWidth</a> property controls the extra space that comes before a particular row or column.
+The <a>RowColumnDefinition.separatorStroke</a> and <a>RowColumnDefinition.separatorDashArray</a> control if and how a line is drawn.
+</p>
+<p>
+For example, if you want to treat the first row and the first column as "headers",
+you can separate them from the rest of the table by drawing a black line before row 1 and column 1.
+</p>
+<pre data-language="javascript" id="Spacing">
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
+      $(go.Panel, "Table",
+        $(go.TextBlock, "Header 1",
+          { row: 0, column: 1, font: "bold 10pt sans-serif", margin: 2 }),
+        $(go.TextBlock, "Header 2",
+          { row: 0, column: 2, font: "bold 10pt sans-serif", margin: 2 }),
+
+        // drawn before row 1:
+        $(go.RowColumnDefinition, { row: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+        // drawn before column 1:
+        $(go.RowColumnDefinition, { column: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+
+        $(go.TextBlock, "One", { row: 1, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 1 col 1", { row: 1, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 1 col 2", { row: 1, column: 2, margin: 2 }),
+        $(go.TextBlock, "Two", { row: 2, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 2 col 1", { row: 2, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 2 col 2", { row: 2, column: 2, margin: 2 }),
+        $(go.TextBlock, "Three", { row: 3, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 3 col 1", { row: 3, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 3 col 2", { row: 3, column: 2, margin: 2 })
+      )
+    ));
+</pre>
+<script>goCode("Spacing", 600, 150)</script>
+
+<p>
+If you want to have a default separator between each row, set the default separator properties of the <a>Panel</a>. These properties are:
+</p>
+<ul>
+  <li><a>Panel.defaultSeparatorPadding</a>
+  <li><a>Panel.defaultRowSeparatorStrokeWidth</a>
+  <li><a>Panel.defaultRowSeparatorStroke</a>
+  <li><a>Panel.defaultRowSeparatorDashArray</a>
+  <li><a>Panel.defaultColumnSeparatorStrokeWidth</a>
+  <li><a>Panel.defaultColumnSeparatorStroke</a>
+  <li><a>Panel.defaultColumnSeparatorDashArray</a>
+</ul>
+<p>
+Any separator properties set on a particular RowColumnDefinition will take precedence over the default values provided on the Panel. This permits keeping the special black line separating the header row and header column from the rest.
+</p>
+<pre data-language="javascript" id="Spacing2">
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
+      $(go.Panel, "Table",
+        // Set defaults for all rows and columns:
+        { defaultRowSeparatorStroke: "gray",
+          defaultColumnSeparatorStroke: "gray" },
+
+        $(go.TextBlock, "Header 1",
+          { row: 0, column: 1, font: "bold 10pt sans-serif", margin: 2 }),
+        $(go.TextBlock, "Header 2",
+          { row: 0, column: 2, font: "bold 10pt sans-serif", margin: 2 }),
+
+        $(go.RowColumnDefinition, { row: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+        $(go.RowColumnDefinition, { column: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+
+        $(go.TextBlock, "One", { row: 1, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 1 col 1", { row: 1, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 1 col 2", { row: 1, column: 2, margin: 2 }),
+        $(go.TextBlock, "Two", { row: 2, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 2 col 1", { row: 2, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 2 col 2", { row: 2, column: 2, margin: 2 }),
+        $(go.TextBlock, "Three", { row: 3, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 3 col 1", { row: 3, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 3 col 2", { row: 3, column: 2, margin: 2 })
+      )
+    ));
+</pre>
+<script>goCode("Spacing2", 600, 150)</script>
+
+<p>
+RowColumnDefinitions also have a <a>RowColumnDefinition.separatorPadding</a> property, which can be used to add extra space to rows or columns. When a <a>RowColumnDefinition.background</a> is set, it includes the padding in its area.
+</p>
+<pre data-language="javascript" id="Padding">
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
+      $(go.Panel, "Table",
+        // Set defaults for all rows and columns:
+        { padding: 1.5,
+          defaultRowSeparatorStroke: "gray",
+          defaultColumnSeparatorStroke: "gray",
+          defaultSeparatorPadding: new go.Margin(18, 0, 8, 0) },
+
+        $(go.TextBlock, "Header 1",
+          { row: 0, column: 1, font: "bold 10pt sans-serif", margin: 2 }),
+        $(go.TextBlock, "Header 2",
+          { row: 0, column: 2, font: "bold 10pt sans-serif", margin: 2 }),
+
+        // Override the panel's default padding on the first row
+        $(go.RowColumnDefinition, { row: 0, separatorPadding: 0 }),
+
+        $(go.RowColumnDefinition, { row: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+        $(go.RowColumnDefinition, { row: 2, background: 'lightblue' }),
+
+        $(go.RowColumnDefinition, { column: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+        $(go.TextBlock, "One", { row: 1, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 1 col 1", { row: 1, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 1 col 2", { row: 1, column: 2, margin: 2 }),
+        $(go.TextBlock, "Two", { row: 2, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 2 col 1", { row: 2, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 2 col 2", { row: 2, column: 2, margin: 2 }),
+        $(go.TextBlock, "Three", { row: 3, column: 0, stroke: "green", margin: 2 }),
+        $(go.TextBlock, "row 3 col 1", { row: 3, column: 1, margin: 2 }),
+        $(go.TextBlock, "row 3 col 2", { row: 3, column: 2, margin: 2 })
+      )
+    ));
+</pre>
+<script>goCode("Padding", 600, 200)</script>
+
+<h3>TableRows and TableColumns</h3>
+<p>
+To avoid having to specify the row for each object, you can make use of a special Panel that can only be used in Table Panels,
+the <a>Panel.TableRow</a> panel type.  Put all of the objects for each row into a TableRow Panel.
+You will still need to specify the column for each object in each row.
+</p>
+<pre data-language="javascript" id="Spacing3">
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
+      $(go.Panel, "Table",
+        // Set defaults for all rows and columns:
+        { defaultRowSeparatorStroke: "gray",
+          defaultColumnSeparatorStroke: "gray" },
+        $(go.Panel, "TableRow", { row: 0 },
+          $(go.TextBlock, "Header 1",
+            { column: 1, font: "bold 10pt sans-serif", margin: 2 }),
+          $(go.TextBlock, "Header 2",
+            { column: 2, font: "bold 10pt sans-serif", margin: 2 })),
+        $(go.RowColumnDefinition, { row: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+        $(go.RowColumnDefinition, { column: 1, separatorStrokeWidth: 1.5, separatorStroke: "black" }),
+        $(go.Panel, "TableRow", { row: 1 },
+          $(go.TextBlock, "One", { column: 0, stroke: "green", margin: 2 }),
+          $(go.TextBlock, "row 1 col 1", { column: 1, margin: 2 }),
+          $(go.TextBlock, "row 1 col 2", { column: 2, margin: 2 })
+        ),
+        $(go.Panel, "TableRow", { row: 2 },
+          $(go.TextBlock, "Two", { column: 0, stroke: "green", margin: 2 }),
+          $(go.TextBlock, "row 2 col 1", { column: 1, margin: 2 }),
+          $(go.TextBlock, "row 2 col 2", { column: 2, margin: 2 })
+        ),
+        $(go.Panel, "TableRow", { row: 3 },
+          $(go.TextBlock, "Three", { column: 0, stroke: "green", margin: 2 }),
+          $(go.TextBlock, "row 3 col 1", { column: 1, margin: 2 }),
+          $(go.TextBlock, "row 3 col 2", { column: 2, margin: 2 })
+        )
+      )
+    ));
+</pre>
+<script>goCode("Spacing3", 600, 150)</script>
+<p>
+The same kind of organization is also possible with columns by using <a>Panel.TableColumn</a> Panels.
+</p>
+
+</div>
+</body>
+</html>

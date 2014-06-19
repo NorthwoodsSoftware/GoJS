@@ -3,9 +3,9 @@
 <head>
 <title>Swim Lanes</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   // These parameters need to be set before defining the templates.
 
@@ -20,15 +20,14 @@
   // compute the minimum length needed to hold all of the subgraphs
   function computeMinPlaceholderSize(diagram) {
     var len = MINLENGTH;
-    for (var it = diagram.nodes; it.next(); ) {
-      var group = it.value;
-      if (!(group instanceof go.Group)) continue;
+    diagram.nodes.each(function(group) {
+      if (!(group instanceof go.Group)) return;
       var holder = group.placeholder;
       if (holder !== null) {
         var sz = holder.actualBounds;
         len = Math.max(len, (HORIZONTAL ? sz.width : sz.height));
       }
-    }
+    });
     return (HORIZONTAL ? new go.Size(len, NaN) : new go.Size(NaN, len));
   }
 
@@ -74,9 +73,8 @@
 
   GroupResizingTool.prototype.resize = function(newr) {
     if (this.isLengthening()) {  // changing the length of all of the lanes
-      for (var it = myDiagram.nodes; it.next(); ) {
-        var group = it.value;
-        if (!(group instanceof go.Group)) continue;
+      myDiagram.nodes.each(function(group) {
+        if (!(group instanceof go.Group)) return;
         var shape = group.findObject("SHAPE");
         if (shape !== null) {  // set its desiredSize, but leave the other direction alone
           if (HORIZONTAL) {
@@ -85,7 +83,7 @@
             shape.height = newr.height;
           }
         }
-      }
+      });
     } else {  // changing the breadth and length of a single lane
       go.ResizingTool.prototype.resize.call(this, newr);
     }
@@ -106,9 +104,8 @@
     diagram.startTransaction("StackLayout");
     // make sure all of the Group Shapes are big enough
     var minsize = computeMinPlaceholderSize(diagram);
-    for (var it = diagram.nodes; it.next(); ) {
-      var group = it.value;
-      if (!(group instanceof go.Group)) continue;
+    diagram.nodes.each(function(group) {
+      if (!(group instanceof go.Group)) return;
       var shape = group.findObject("SHAPE");
       if (shape !== null) {  // change the desiredSize to be big enough in both directions
         var sz = computePlaceholderSize(group);
@@ -123,7 +120,7 @@
         if (!isNaN(shape.width) && !isNaN(cell.width) && cell.width > 0) shape.width = Math.ceil(shape.width / cell.width) * cell.width;
         if (!isNaN(shape.height) && !isNaN(cell.height) && cell.height > 0) shape.height = Math.ceil(shape.height / cell.height) * cell.height;
       }
-    }
+    });
     // now do all of the usual stuff, according to whatever properties have been set on this GridLayout
     go.GridLayout.prototype.doLayout.call(this, coll);
     diagram.commitTransaction("StackLayout");
@@ -138,6 +135,8 @@
     myDiagram =
       $(go.Diagram, "myDiagram",
         {
+          // start everything in the middle of the viewport
+          initialContentAlignment: go.Spot.Center,
           // use a custom ResizingTool (along with a custom ResizeAdornment on each Group)
           resizingTool: new GroupResizingTool(),
           // use a simple layout that ignores links to stack the top-level Groups on top of each other
@@ -154,6 +153,9 @@
           mouseDrop: function(e) { e.diagram.currentTool.doCancel(); },
           // a clipboard copied node is pasted into the original node's group (i.e. lane).
           "commandHandler.copiesGroupKey": true,
+          // automatically re-layout the swim lanes after dragging the selection
+          "SelectionMoved": relayoutDiagramStack,  // this DiagramEvent listener is
+          "SelectionCopied": relayoutDiagramStack, // defined below
           // enable undo & redo
           "undoManager.isEnabled": true
         });
@@ -163,8 +165,6 @@
       myDiagram.layout.invalidateLayout();  // but don't invalidate all Layouts that are in Groups
       myDiagram.layoutDiagram();
     }
-    myDiagram.addDiagramListener("SelectionMoved", relayoutDiagramStack);
-    myDiagram.addDiagramListener("SelectionCopied", relayoutDiagramStack);
 
     // this is a Part.dragComputation function for limiting where a Node may be dragged
     function stayInGroup(part, pt, gridpt) {
@@ -215,7 +215,7 @@
           movable: false, copyable: false, deletable: false,  // can't move or copy or delete lanes
           avoidable: false,
           selectionObjectName: "SHAPE",  // selecting a lane causes the body of the lane to be highlit, not the label
-          resizable: true, resizeObjectName: "SHAPE",  // allow lanes to be resized, but the custom resizeAdornmentTemplate only permits one kind of resizing
+          resizable: true, resizeObjectName: "SHAPE",  // the custom resizeAdornmentTemplate only permits two kinds of resizing
           layout: $(go.LayeredDigraphLayout,  // automatically lay out the lane's subgraph
                     { direction: HORIZONTAL ? 0 : 90, columnSpacing: 10, layeringOption: go.LayeredDigraphLayout.LayerLongestPathSource }),
           computesBoundsAfterDrag: true,  // needed to prevent recomputing Group.placeholder bounds too soon
@@ -273,8 +273,8 @@
         { relinkableFrom: true, relinkableTo: true },
         $(go.Shape),
         $(go.Shape, { toArrow: "Standard" }),
-        {
-          mouseDrop: function (e, link) {  // dropping a copy of some Nodes and Links onto this Link adds them to this Link's Group
+        { // dropping a copy of some Nodes and Links onto this Link adds them to this Link's Group
+          mouseDrop: function (e, link) {
             if (!e.shift && !e.control) return;  // cannot change groups with an unmodified drag-and-drop
             var grp = link.containingGroup;
             if (grp !== null) {
@@ -335,7 +335,8 @@
   <p>
     In this design each swimlane is implemented by a <a>Group</a>.
     Each Group has its own <a>Group.layout</a>, which in this case is a <a>LayeredDigraphLayout</a>.
-    The <a>Diagram.layout</a> is a custom <a>GridLayout</a> that arranges all of the swimlanes (i.e. the top-level Groups) in a vertical stack.
+    The <a>Diagram.layout</a> is a custom <a>GridLayout</a> that
+    arranges all of the swimlanes (i.e. the top-level Groups) in a vertical stack.
   </p>
   <p>
     When dragging nodes note that the nodes are limited to stay within the swimlanes.
@@ -343,17 +344,22 @@
   </p>
   <p>
     The Groups/lanes are selectable but not movable or copyable.
-    When a Group is selected, its custom <a>Part.resizeAdornmentTemplate</a> gives it a broad resize handle at the bottom of the Group
+    When a Group is selected, its custom <a>Part.resizeAdornmentTemplate</a>
+    gives it a broad resize handle at the bottom of the Group
     and a broad resize handle at the right side of the Group.
-    This allows the user to resize the "breadth" of the selected lane as well as the "length" of all of the lanes.
-    However, the custom <a>ResizingTool</a> prevents the lane from being too narrow to hold the <a>Group.placeholder</a> that represents the subgraph,
+    This allows the user to resize the "breadth" of the selected lane
+    as well as the "length" of all of the lanes.
+    However, the custom <a>ResizingTool</a> prevents the lane from being too narrow
+    to hold the <a>Group.placeholder</a> that represents the subgraph,
     and it prevents the lane from being too short to hold any of the contents of the lanes.
-    Each Group/lane is also has a <a>GraphObject.minSize</a> to keep it from being too narrow even if there are no member <a>Part</a>s at all.
+    Each Group/lane is also has a <a>GraphObject.minSize</a> to keep it from
+    being too narrow even if there are no member <a>Part</a>s at all.
   </p>
   <p>
     You can change this sample to have its swim lanes be vertically oriented by setting:<br />
     <code>&nbsp;&nbsp;var HORIZONTAL = false;</code><br />
-    Note that this change can only be done at <a>Diagram</a> initialization time, because the definitions of the templates depend on that variable.
+    Note that this change can only be done at <a>Diagram</a> initialization time,
+    because the definitions of the templates depend on that variable.
   </p>
 </div>
 </body>

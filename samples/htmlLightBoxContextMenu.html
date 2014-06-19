@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<head>
+<title>LightBox Style HTML Custom Context Menu</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<style type="text/css">
+  /* CSS for the lightbox context menu */
+  #LBblack {
+    z-index:299;
+    position: absolute;
+    display: none;
+
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+
+    background-color: black;
+    -moz-opacity: 0.8;
+    opacity:.80;
+    filter: alpha(opacity=80);
+  }
+
+  #LBlight {
+    z-index:300;
+    position: absolute;
+    display: none;
+
+    text-align: center;
+    left: 25%;
+    width: 50%;
+
+    background-color: #F5F5F5;
+    padding: 16px;
+    border: 16px solid #444;
+    border-radius: 10px;
+  }
+
+  #LBlight ul { list-style: none; }
+
+  #LBlight li {
+    font:700 20px/1em Helvetica, Arial, sans-serif;
+    position: relative;
+    min-width: 60px;
+  }
+
+  #LBlight a {
+    color: #444;
+    display: inline-block;
+    padding: 6px;
+    text-decoration: none;
+
+    margin: 12px;
+    border: 1px solid gray;
+    border-radius: 10px;
+  }
+
+  #LBlight a:hover { background: #444; }
+
+  #LBlight li:hover a { color: #EEE; }
+</style>
+
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+
+var myDiagram = null;
+
+function init() {
+  if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+  var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+  myDiagram =
+    $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+      { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
+
+  // define a simple Node template (but use the default Link template)
+  myDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      // We make a dummy context menu so that the contextMenuTool will activate,
+      // but we don't use this adornment
+      { contextMenu: $(go.Adornment) },
+      $(go.Shape, "RoundedRectangle",
+        // Shape.fill is bound to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding("text", "key"))
+    );
+
+  // create the model data that will be represented by Nodes and Links
+  myDiagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ],
+  [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ]);
+
+  // This is a dummy context menu for the whole Diagram:
+  myDiagram.contextMenu = $(go.Adornment);
+
+  // This is the actual HTML LightBox-style context menu, composed of buttons and a background:
+  var LBlight = document.getElementById("LBlight");
+  var LBblack = document.getElementById("LBblack");
+
+  // We don't want the div acting as a context menu to have a (browser) context menu!
+  LBlight.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
+  LBlight.addEventListener("selectstart", function(e) { e.preventDefault(); return false; }, false);
+  LBblack.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
+  LBblack.addEventListener("click", function(e) { cxTool.stopTool(); e.preventDefault(); return false; }, false);
+
+  // Override the ContextMenuTool.showContextMenu and hideContextMenu methods
+  // in order to modify the HTML appropriately.
+  var cxTool = myDiagram.toolManager.contextMenuTool;
+
+  // This is the override of ContextMenuTool.showContextMenu:
+  // This does not not need to call the base method.
+  cxTool.showContextMenu = function(contextmenu, obj) {
+    var diagram = this.diagram;
+    if (diagram === null) return;
+
+    // Hide any other existing context menu.
+    if (contextmenu !== this.currentContextMenu) {
+      this.hideContextMenu();
+    }
+
+    // Show only the relevant buttons given the current state.
+    var cmd = diagram.commandHandler;
+    document.getElementById("LBcut").style.display = cmd.canCutSelection() ? "block" : "none";
+    document.getElementById("LBcopy").style.display = cmd.canCopySelection() ? "block" : "none";
+    document.getElementById("LBpaste").style.display = cmd.canPasteSelection() ? "block" : "none";
+    document.getElementById("LBdelete").style.display = cmd.canDeleteSelection() ? "block" : "none";
+    document.getElementById("LBcolor").style.display = obj !== null ? "block" : "none";
+
+    // Now show the whole LightBox context menu
+    LBlight.style.display = "block";
+    LBblack.style.display = "block";
+
+    // Remember that there is now a context menu showing
+    this.currentContextMenu = contextmenu;
+  }
+
+  // This is the corresponding override of ContextMenuTool.hideContextMenu:
+  // This does not not need to call the base method.
+  cxTool.hideContextMenu = function() {
+    if (this.currentContextMenu === null) return;
+    LBlight.style.display = "none";
+    LBblack.style.display = "none";
+    this.currentContextMenu = null;
+  }
+}
+
+// This is the general menu command handler, parameterized by the name of the command.
+function cxcommand(val) {
+  var diagram = myDiagram;
+  if (!(diagram.currentTool instanceof go.ContextMenuTool)) return;
+  switch (val) {
+    case "Cut": diagram.commandHandler.cutSelection(); break;
+    case "Copy": diagram.commandHandler.copySelection(); break;
+    case "Paste": diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); break;
+    case "Delete": diagram.commandHandler.deleteSelection(); break;
+    case "Color": changeColor(diagram); break;
+  }
+  diagram.currentTool.stopTool();
+}
+
+// A custom command, for changing the color of the selected node(s).
+function changeColor(diagram) {
+  // Always make changes in a transaction, except when initializing the diagram.
+  diagram.startTransaction("change color");
+  diagram.selection.each(function(node) {
+    if (node instanceof go.Node) {  // ignore any selected Links and simple Parts
+      // Examine and modify the data, not the Node directly.
+      var data = node.data;
+      if (data.color === "red") {
+        // Call setDataProperty to support undo/redo as well as
+        // automatically evaluating any relevant bindings.
+        diagram.model.setDataProperty(data, "color", go.Brush.randomColor());
+      } else {
+        diagram.model.setDataProperty(data, "color", "red");
+      }
+    }
+  });
+  diagram.commitTransaction("change color");
+}
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>LightBox-style context menu <b>GoJS</b> Sample</p>
+
+  <div style="display: inline-block;">
+    <div style="position: relative">
+      <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
+    </div>
+    <div id="description">
+      <p>This demonstrates the implementation of a custom context menu
+         in the LightBox style commonly used on mobile devices.</p>
+      <p>For a regular HTML context menu implementation, see the <a href="customContextMenu.html">Custom Context Menu</a> sample.</p>
+      <p>Right-click or tap-hold on a Node to bring up a context menu.
+         If you have a selection copied in the clipboard,
+         you can bring up a context menu anywhere to paste.</p>
+      <p>The "Color" command changes the color of the selected node(s),
+         alternating between "red" and a random color.
+         It does so by iterating over the <a>Diagram.selection</a> and calling
+         <a>Model.setDataProperty</a> to set the "color" property of each node's data.
+         This assumes that there is a data <a>Binding</a> in the node template
+         that depends on the "color" property on the data.</p>
+    </div>
+  </div>
+
+  <div id="LBlight">
+    <ul>
+      <li><a href="#" id="LBcut" onclick="cxcommand('Cut')">Cut</a></li>
+      <li><a href="#" id="LBcopy" onclick="cxcommand('Copy')">Copy</a></li>
+      <li><a href="#" id="LBpaste" onclick="cxcommand('Paste')">Paste</a></li>
+      <li><a href="#" id="LBdelete" onclick="cxcommand('Delete')">Delete</a></li>
+      <li><a href="#" id="LBcolor" onclick="cxcommand('Color')">Color</a></li>
+    </ul>
+  </div>
+  <div id="LBblack"></div>
+</div>
+</body>
+</html>

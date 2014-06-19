@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Events -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Events</h2>
+<p>
+There are three basic kinds of events that <b>GoJS</b> deals with:
+<a>DiagramEvent</a>s, <a>InputEvent</a>s, and <a>ChangedEvent</a>s.
+</p>
+
+<h3>Diagram Events</h3>
+<p>
+<a>DiagramEvent</a>s represent general user-initiated changes to a diagram.
+You can register diagram event handlers by calling <a>Diagram.addDiagramListener</a>.
+Each kind of diagram event is distinguished by its name.
+</p>
+<p>
+Currently defined diagram event names include:
+</p>
+<ul>
+  <li>"<b>AnimationStarting</b>", an animation is about to start.</li>
+  <li>"<b>AnimationFinished</b>", an animation just completed.</li>
+  <li>"<b>BackgroundSingleClicked</b>", when a mouse left-button single-click happened in the background of the Diagram, not on a Part</li>
+  <li>"<b>BackgroundDoubleClicked</b>", when a mouse left-button double-click happened in the background of the Diagram, not on a Part</li>
+  <li>"<b>BackgroundContextClicked</b>", when a mouse right-button single-click happened in the background of the Diagram, not on a Part</li>
+  <li>"<b>ChangingSelection</b>", before the <a>Diagram.selection</a> collection changes</li>
+  <li>"<b>ChangedSelection</b>", after the <a>Diagram.selection</a> collection has changed</li>
+  <li>"<b>ClipboardChanged</b>", when <a>CommandHandler.copySelection</a> has changed the clipboard (but the Diagram is unmodified)</li>
+  <li>"<b>ClipboardPasted</b>", when <a>CommandHandler.pasteSelection</a> has copied Parts from the clipboard into the Diagram; the new Parts are held in the <a>Diagram.selection</a> collection</li>
+  <li>"<b>DocumentBoundsChanged</b>", when <a>Diagram.documentBounds</a> has changed value</li>
+  <li>"<b>ExternalObjectsDropped</b>", when the <a>DraggingTool</a> has copied Parts from another diagram into the Diagram; the new Parts are held in the <a>Diagram.selection</a> collection</li>
+  <li>"<b>InitialLayoutCompleted</b>", when the first diagram layout has completed after a major change to the diagram</li>
+  <li>"<b>LayoutCompleted</b>", whenever a diagram layout has completed</li>
+  <li>"<b>LinkDrawn</b>", when the <a>LinkingTool</a> has finished creating a new Link, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>LinkRelinked</b>", when the <a>RelinkingTool</a> has finished reconnecting an existing Link, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>LinkReshaped</b>", when the <a>LinkReshapingTool</a> has finished rerouting a Link, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>Modified</b>", the <a>Diagram.isModified</a> property has been set to a new value; do not modify the Diagram or its Model in the event listener</li>
+  <li>"<b>PartCreated</b>", when the <a>ClickCreatingTool</a> has inserted a new Part, which is the <a>DiagramEvent.subject</a></li>
+  <!--<li>"<b>PartReshaped</b>", when the <a>PartReshapingTool</a> has changed the geometry of a Shape, which is the <a>DiagramEvent.subject</a></li>-->
+  <li>"<b>PartResized</b>", when the <a>ResizingTool</a> has resized a GraphObject, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>PartRotated</b>", when the <a>RotatingTool</a> has rotated a GraphObject, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>ObjectSingleClicked</b>", when a mouse left-button single-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>ObjectDoubleClicked</b>", when a mouse left-button double-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>ObjectContextClicked</b>", when a mouse right-button single-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>SelectionMoved</b>", when the <a>DraggingTool</a> has moved some Parts; the moved Parts are held in the <a>Diagram.selection</a> collection</li>
+  <li>"<b>SelectionCopied</b>", when the <a>DraggingTool</a> has copied some Parts; the copied Parts are held in the <a>Diagram.selection</a> collection</li>
+  <li>"<b>SelectionDeleting</b>", before <a>CommandHandler.deleteSelection</a> deletes the <a>Diagram.selection</a> Parts; set <a>DiagramEvent.cancel</a> to true in order to cancel the deletion</li>
+  <li>"<b>SelectionDeleted</b>", after <a>CommandHandler.deleteSelection</a> has deleted the <a>Diagram.selection</a>, which is now empty</li>
+  <li>"<b>SelectionGrouped</b>", after <a>CommandHandler.groupSelection</a> has create a new Group from the <a>Diagram.selection</a>, which now holds the new Group</li>
+  <li>"<b>SelectionUngrouped</b>", after <a>CommandHandler.ungroupSelection</a> has removed the selected Group and kept the member Parts as the new <a>Diagram.selection</a></li>
+  <li>"<b>SubGraphCollapsed</b>", when <a>CommandHandler.collapseSubGraph</a> has collapsed selected Groups, making their member Parts not visible</li>
+  <li>"<b>SubGraphExpanded</b>", when <a>CommandHandler.expandSubGraph</a> has expanded selected Groups, making their member Parts visible</li>
+  <li>"<b>TextEdited</b>", when the <a>TextEditingTool</a> has completed in-place text editing; the modified TextBlock is the <a>DiagramEvent.subject</a></li>
+  <li>"<b>TreeCollapsed</b>", when <a>CommandHandler.collapseTree</a> has collapsed selected Nodes with subtrees, making the subtree nodes and links not visible</li>
+  <li>"<b>TreeExpanded</b>", when <a>CommandHandler.expandTree</a> has expanded selected Nodes with subtrees, making the subtree nodes and links visible</li>
+  <li>"<b>ViewportBoundsChanged</b>", when <a>Diagram.viewportBounds</a> has changed value</li>
+</ul>
+
+<p>
+DiagramEvents do not necessarily correspond to mouse events or keyboard events.
+Nor do they necessarily correspond to changes to the diagram's model --
+for tracking such changes, use <a>Model.addChangedListener</a>.
+Model <a>ChangedEvent</a>s are more complete and reliable than depending on <a>DiagramEvent</a>s.
+For example, the "LinkDrawn" DiagramEvent is not raised when code adds a link to a diagram.
+That DiagramEvent is only raised when the user draws a new link using the <a>LinkingTool</a>.
+DiagramEvents only occur because the user did something, perhaps indirectly.
+</p>
+
+<p class="box warning">
+Sometimes you want to update a database as the user makes changes to a diagram.
+Usually you will want to implement a <a>Model</a> <a>ChangedEvent</a> listener,
+by calling <a>Model.addChangedListener</a>, that notices the changes to the model
+and decides what to record in the database.
+See the discussion of ChangedEvents, below, and the <a href="../../samples/UpdateDemo.html">Update Demo</a>.
+</p>
+
+<p>
+This example demonstrates handling several diagram events: <b>"ObjectSingleClicked"</b>,
+<b>"BackgroundDoubleClicked"</b>, <b>"ClipboardPasted"</b>, and <b>"SelectionDeleting"</b>.
+</p>
+<pre data-language="javascript" id="diagramEvents">
+  function showMessage(s) {
+    document.getElementById("diagramEventsMsg").textContent = s;
+  }
+
+  diagram.addDiagramListener("ObjectSingleClicked",
+      function(e) {
+        var part = e.subject.part;
+        if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data.key);
+      });
+
+  diagram.addDiagramListener("BackgroundDoubleClicked",
+      function(e) { showMessage("Double-clicked at " + e.diagram.lastInput.documentPoint); });
+
+  diagram.addDiagramListener("ClipboardPasted",
+      function(e) { showMessage("Pasted " + e.diagram.selection.count + " parts"); });
+
+  diagram.addDiagramListener("SelectionDeleting",
+      function(e) {
+        if (e.diagram.selection.count > 1) {
+          e.cancel = true;
+          showMessage("Cannot delete multiple selected parts");
+        }
+      });
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta", group: "Omega" },
+    { key: "Gamma", group: "Omega" },
+    { key: "Omega", isGroup: true },
+    { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("diagramEvents", 600, 200)</script>
+<span id="diagramEventsMsg" style="color: red">(message)</span>
+
+
+<h3>Input Events</h3>
+<p>
+When a low-level HTML DOM event occurs, <b>GoJS</b> canonicalizes the keyboard/mouse event information
+into a new <a>InputEvent</a> that can be passed to and saved for various event-handling methods.
+</p>
+<p>
+An InputEvent keeps the <a>InputEvent.key</a> for keyboard events,
+the <a>InputEvent.viewPoint</a> and <a>InputEvent.button</a> for mouse events,
+and <a>InputEvent.modifiers</a> for both keyboard and mouse events.
+</p>
+<p>
+The diagram's event handlers also record the <a>InputEvent.documentPoint</a>,
+which is the <a>InputEvent.viewPoint</a> in document coordinates at the time of the mouse event,
+and the <a>InputEvent.timestamp</a>, which records the time that the event occurred in milliseconds.
+</p>
+<p>
+The InputEvent class also provides many handy properties for particular kinds of events.
+Examples include <a>InputEvent.control</a> (if the control key had been pressed) and
+<a>InputEvent.left</a> (if the left/primary mouse button was pressed).
+</p>
+<p>
+Some tools find the "current" <a>GraphObject</a> at the mouse point.
+This is remembered as the <a>InputEvent.targetObject</a>.
+</p>
+
+<h3>Higher-level input events</h3>
+<p>
+Some tools detect a sequence of input events to compose somewhat more abstract user events.
+Examples include "click" (mouse-down-and-up very close to each other) and "hover" (motionless mouse for some time).
+The tools will call an event handler (if there is any) for the current <a>GraphObject</a> at the mouse point.
+The event handler is held as the value of a property on the object.
+It then also "bubbles" the event up the chain of <a>GraphObject.panel</a>s until it ends with a <a>Part</a>.
+This allows a "click" event handler to be declared on a <a>Panel</a> and have it apply even if the click actually happens on an element deep inside the panel.
+If there is no object at the mouse point, the event occurs on the diagram.
+</p>
+<p>
+Click-like event properties include <a>GraphObject.click</a>, <a>GraphObject.doubleClick</a>, and <a>GraphObject.contextClick</a>.
+They also occur when there is no GraphObject -- the event happened in the diagram's background:
+<a>Diagram.click</a>, <a>Diagram.doubleClick</a>, and <a>Diagram.contextClick</a>.
+These are all properties that you can set to a function that is the event handler.
+</p>
+<p>
+Hover-like event properties include <a>GraphObject.mouseHover</a> and <a>GraphObject.mouseHold</a>.
+The equivalent diagram properties are <a>Diagram.mouseHover</a> and <a>Diagram.mouseHold</a>.
+</p>
+<p>
+Finally, mouse-over-like event properties include <a>GraphObject.mouseEnter</a>, <a>GraphObject.mouseOver</a>, and <a>GraphObject.mouseLeave</a>.
+But only <a>Diagram.mouseOver</a> applies to the diagram.
+</p>
+
+<p>
+This example demonstrates handling three higher-level input events:
+clicking on nodes and entering/leaving groups.
+</p>
+<pre data-language="javascript" id="inputEvents">
+  function showMessage(s) {
+    document.getElementById("inputEventsMsg").textContent = s;
+  }
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key")),
+      { click: function(e, obj) { showMessage("Clicked on " + obj.part.data.key); } }
+    );
+
+  diagram.groupTemplate =
+    $(go.Group, "Vertical",
+      $(go.TextBlock,
+        { alignment: go.Spot.Left, font: "Bold 12pt Sans-Serif" },
+        new go.Binding("text", "key")),
+      $(go.Panel, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          { name: "SHAPE",
+            parameter1: 14,
+            fill: "rgba(128,128,128,0.33)" }),
+        $(go.Placeholder, { padding: 5 })
+      ),
+      { mouseEnter: function(e, obj, prev) {  // change group's background brush
+            var shape = obj.part.findObject("SHAPE");
+            if (shape) shape.fill = "red";
+          },
+        mouseLeave: function(e, obj, next) {  // restore to original brush
+            var shape = obj.part.findObject("SHAPE");
+            if (shape) shape.fill = "rgba(128,128,128,0.33)";
+          } });
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta", group: "Omega" },
+    { key: "Gamma", group: "Omega" },
+    { key: "Omega", isGroup: true },
+    { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("inputEvents", 600, 200)</script>
+<span id="inputEventsMsg" style="color: red">(message)</span>
+
+
+<h3>Changed Events</h3>
+<p>
+The final category of events in <b>GoJS</b> are notifications of state changes, mostly object property changes.
+The <a>ChangedEvent</a> records the kind of change that occurred and enough information to be able to undo and redo them.
+</p>
+<p>
+Changed events are produced by both <a>Model</a> and <a>Diagram</a>.
+They are multicast events, so you can call <a>Model.addChangedListener</a> and <a>Diagram.addChangedListener</a>,
+as well as the corresponding removeChangedListener methods.
+</p>
+<p>
+A <a>Diagram</a> always registers itself as a listener on its <a>Model</a>, so that it can automatically
+notice changes to the model and update its Parts accordingly.
+Furthermore the <a>UndoManager</a>, if enabled, automatically listens to changes to both the model and the diagram,
+so that it can record the change history and perform undo and redo.
+</p>
+<p>
+In addition to the standard listeners there are also circumstances where detecting such changes is common
+enough to warrant having properties that are event handlers.
+The most common such property is <a>Part.selectionChanged</a>, which (if non-null) is called whenever
+<a>Part.isSelected</a> changes.
+</p>
+
+<h4>Model property changes</h4>
+<p>
+For property changes, that information includes the <a>ChangedEvent.object</a> that was modified,
+the <a>ChangedEvent.propertyName</a>, and the <a>ChangedEvent.oldValue</a> and <a>ChangedEvent.newValue</a> values
+for that property.
+Property changes are identified by the <a>ChangedEvent.change</a> == <a>ChangedEvent.Property</a>.
+</p>
+<p>
+The following property names for Property <a>ChangedEvent</a>s correspond to structural model data changes:
+</p>
+<ul>
+  <li>"<b>nodeDataArray</b>", when the <a>Model.nodeDataArray</a> Array has been replaced</li>
+  <li>"<b>nodeCategory</b>", due to a call to <a>Model.setCategoryForNodeData</a></li>
+
+  <li>"<b>nodeGroupKey</b>", due to a call to <a>GraphLinksModel.setGroupKeyForNodeData</a></li>
+  <li>"<b>linkDataArray</b>", when the <a>GraphLinksModel.linkDataArray</a> Array has been replaced</li>
+  <li>"<b>linkFromKey</b>", due to a call to <a>GraphLinksModel.setFromKeyForLinkData</a></li>
+  <li>"<b>linkToKey</b>", due to a call to <a>GraphLinksModel.setToKeyForLinkData</a></li>
+  <li>"<b>linkFromPortId</b>", due to a call to <a>GraphLinksModel.setFromPortIdForLinkData</a></li>
+  <li>"<b>linkToPortId</b>", due to a call to <a>GraphLinksModel.setToPortIdForLinkData</a></li>
+  <li>"<b>linkLabelKeys</b>", due to a call to <a>GraphLinksModel.setLabelKeysForLinkData</a></li>
+  <li>"<b>linkCategory</b>", due to a call to <a>GraphLinksModel.setCategoryForLinkData</a></li>
+
+  <li>"<b>nodeParentKey</b>", due to a call to <a>TreeModel.setParentKeyForNodeData</a></li>
+  <li>"<b>parentLinkCategory</b>", due to a call to <a>TreeModel.setParentLinkCategoryForNodeData</a></li>
+</ul>
+<p>
+The value of <a>ChangedEvent.modelChange</a> will be one of these strings.
+The value of <a>ChangedEvent.propertyName</a> depends on the name of the actual data property that was modified.
+For example, for the model property change "linkFromKey", the actual property name defaults to "from".
+But you might be using a different property name by setting <a>GraphLinksModel.linkFromKeyProperty</a>.
+</p>
+<p>
+Any property can be changed on a node data or link data object, by calling <a>Model.setDataProperty</a>.
+Such a call will result in the property name to be recorded as the <a>ChangedEvent.propertyName</a>.
+These cases are treated as normal property changes, not structural model changes, so <a>ChangedEvent.modelChange</a> will be empty.
+</p>
+<p>
+Finally, there are property changes on the model itself.
+For a listing of such properties, see the documentation for <a>Model</a>, <a>GraphLinksModel</a>, and <a>TreeModel</a>.
+These cases are treated as normal property changes, so <a>ChangedEvent.modelChange</a> will be empty.
+Both <a>ChangedEvent.model</a> and <a>ChangedEvent.object</a> will be the model itself.
+</p>
+
+<h4>Model collection changes</h4>
+<p>
+Other changed event kinds include <a>ChangedEvent.Insert</a> and <a>ChangedEvent.Remove</a>.
+In addition to all of the previously mentioned ChangedEvent properties used to record a property change,
+the <a>ChangedEvent.oldParam</a> and <a>ChangedEvent.newParam</a> provide the "index" information
+needed to be able to properly undo and redo the change.
+</p>
+<p>
+The following property names for Insert and Remove <a>ChangedEvent</a>s correspond to model changes to collections:
+</p>
+<ul>
+  <li>"<b>nodeDataArray</b>", due to a call to <a>Model.addNodeData</a> or <a>Model.removeNodeData</a></li>
+  <li>"<b>linkDataArray</b>", due to a call to <a>GraphLinksModel.addLinkData</a> or <a>GraphLinksModel.removeLinkData</a></li>
+  <li>"<b>linkLabelKeys</b>", due to a call to <a>GraphLinksModel.addLabelKeyForLinkData</a>
+      or <a>GraphLinksModel.removeLabelKeyForLinkData</a></li>
+</ul>
+
+<h4>Transactions</h4>
+<p>
+The final kind of model changed event is <a>ChangedEvent.Transaction</a>.
+These are not strictly object changes in the normal sense, but they do notify when a transaction starts or finishes,
+or when an undo or redo starts or finishes.
+</p>
+<p>
+The following property names describe the kind of transaction-related event that just occurred:
+</p>
+<ul>
+  <li>"<b>StartingFirstTransaction</b>"</li>
+  <li>"<b>StartedTransaction</b>"</li>
+  <li>"<b>CommittingTransaction</b>"</li>
+  <li>"<b>CommittedTransaction</b>"</li>
+  <li>"<b>RolledBackTransaction</b>"</li>
+  <li>"<b>StartingUndo</b>"</li>
+  <li>"<b>FinishedUndo</b>"</li>
+  <li>"<b>StartingRedo</b>"</li>
+  <li>"<b>FinishedRedo</b>"</li>
+</ul>
+<p>
+In each case the <a>ChangedEvent.object</a> is the <a>Transaction</a> holding a sequence of <a>ChangedEvent</a>s.
+The <a>ChangedEvent.oldValue</a> is the name of the transaction --
+the string passed to <a>UndoManager.startTransaction</a> or <a>UndoManager.commitTransaction</a>.
+The various standard commands and tools that perform transactions document the transaction name(s) that they employ.
+But your code can employ as many strings as you have places that execute transactions.
+</p>
+<p>
+It is commonplace to want to update a server database when a transaction has finished.
+You'll want to implement a Changed listener as follows:
+</p>
+<pre>
+  // notice whenever a transaction or undo/redo has occurred
+  diagram.model.addChangedListener(function(e) {
+    if (e.isTransactionFinished) saveModel();
+  });
+</pre>
+<p>
+Look at the <a href="../../samples/UpdateDemo.html">Update Demo</a> for a demonstration of how you can keep
+track of changes to a model when a transaction is committed or when an undo or redo is finished.
+The common pattern is to iterate over the ChangedEvents of the current Transaction
+in order to decide what to record in a database.
+</p>
+
+<h3>Clicking and Selecting</h3>
+<p>
+This example demonstrates both the "click" and the "selectionChanged" events:
+</p>
+<pre data-language="javascript" id="changeMethods">
+  function showMessage(s) {
+    document.getElementById("changeMethodsMsg").textContent = s;
+  }
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { selectionAdorned: false },
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key")),
+      {
+        click: function(e, obj) { showMessage("Clicked on " + obj.part.data.key); },
+        selectionChanged: function(part) {
+            var shape = part.elt(0);
+            shape.fill = part.isSelected ? "red" : "white";
+          }
+      }
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Beta", to: "Gamma" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("changeMethods", 600, 200)</script>
+<span id="changeMethodsMsg" style="color: red">(message)</span>
+<p>
+Try Ctrl-A to select everything.
+Note the distinction between the <a>GraphObject.click</a> event property and the <a>Part.selectionChanged</a> event property.
+Both are methods that get called when something has happened to the node.
+The <a>GraphObject.click</a> occurs when the user clicks on the node, which happens to select the node.
+But the <a>Part.selectionChanged</a> occurs even when there is no click event or even any mouse event --
+it was due to a property change to the node.
+</p>
+
+</div>
+</body>
+</html>

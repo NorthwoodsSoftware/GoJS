@@ -1,20 +1,9 @@
 <!doctype html>
 <html>
 <head>
-<title>Custom Context Menu GoJS Sample</title>
+<title>HTML Context Menu</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
-
 <style type="text/css">
-  #controls {
-    border: solid 1px gray;
-    width: 300px;
-    background: #ffffff;
-    padding: 5px;
-    float: left;
-    margin-left: 10px;
-  }
-
   /* CSS for the traditional context menu */
   #contextMenu {
     z-index: 300;
@@ -41,7 +30,6 @@
     position: relative;
     min-width: 60px;
   }
-  #contextMenu li:hover { background: #444; }
 
   #contextMenu a {
     color: #444;
@@ -49,76 +37,23 @@
     padding: 6px;
     text-decoration: none;
   }
+  
+  #contextMenu li:hover { background: #444; }
+  
   #contextMenu li:hover a { color: #EEE; }
-
-
-  /* CSS for the lightbox context menu */
-  #LBblack {
-    z-index:299;
-    position: absolute;
-    display: none;
-
-    top: 0%;
-    left: 0%;
-    width: 100%;
-    height: 100%;
-
-    background-color: black;
-    -moz-opacity: 0.8;
-    opacity:.80;
-    filter: alpha(opacity=80);
-  }
-
-  #LBlight {
-    z-index:300;
-    position: absolute;
-    display: none;
-
-    text-align: center;
-    left: 25%;
-    width: 50%;
-
-    background-color: #F5F5F5;
-    padding: 16px;
-    border: 16px solid #444;
-    border-radius: 10px;
-  }
-
-  #LBlight ul {
-    list-style: none;
-  }
-
-  #LBlight li {
-    font:700 20px/1em Helvetica, Arial, sans-serif;
-    position: relative;
-    min-width: 60px;
-  }
-  #LBlight a:hover { background: #444; }
-
-  #LBlight a {
-    color: #444;
-    display: inline-block;
-    padding: 6px;
-    text-decoration: none;
-
-    margin: 12px;
-    border: 1px solid gray;
-    border-radius: 10px;
-  }
-  #LBlight li:hover a { color: #EEE; }
 </style>
 
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
 
-var myContextMenu = null;
 var myDiagram = null;
-var cxMenu, cxShow, cxHide, lightShow, lightHide;
 
 function init() {
   if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
   var $ = go.GraphObject.make;  // for conciseness in defining templates
+
   myDiagram =
     $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
       { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
@@ -128,7 +63,7 @@ function init() {
     $(go.Node, "Auto",
       // We make a dummy context menu so that the contextMenuTool will activate,
       // but we don't use this adornment
-      { contextMenu: $(go.Adornment, "Horizontal") },
+      { contextMenu: $(go.Adornment) },
       $(go.Shape, "RoundedRectangle",
         // Shape.fill is bound to Node.data.color
         new go.Binding("fill", "color")),
@@ -154,161 +89,104 @@ function init() {
     { from: "Delta", to: "Alpha" }
   ]);
 
-  myDiagram.contextMenu = $(go.Adornment, "Horizontal");
+  // This is a dummy context menu for the whole Diagram:
+  myDiagram.contextMenu = $(go.Adornment);
 
-  cxMenu = myDiagram.toolManager.contextMenuTool;
+  // This is the actual HTML context menu:
   var cxElement = document.getElementById("contextMenu");
+
   // We don't want the div acting as a context menu to have a (browser) context menu!
   cxElement.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
   cxElement.addEventListener("blur", function(e) { cxMenu.stopTool(); }, false);
-  var cutButton = document.getElementById("cut");
-  var copyButton = document.getElementById("copy");
-  var pasteButton = document.getElementById("paste");
-  var deleteButton = document.getElementById("delete");
 
-  cxShow = function(contextmenu, obj) {
+  // Override the ContextMenuTool.showContextMenu and hideContextMenu methods
+  // in order to modify the HTML appropriately.
+  var cxTool = myDiagram.toolManager.contextMenuTool;
+
+  // This is the override of ContextMenuTool.showContextMenu:
+  // This does not not need to call the base method.
+  cxTool.showContextMenu = function(contextmenu, obj) {
     var diagram = this.diagram;
     if (diagram === null) return;
-    var mousePt = diagram.lastInput.viewPoint;
 
-    // hide any other existing context menu
+    // Hide any other existing context menu
     if (contextmenu !== this.currentContextMenu) {
       this.hideContextMenu();
     }
 
-    // An object or a selection to paste means we have something to show
-    if (obj !== null || diagram.commandHandler.canPasteSelection()) {
-      // Show only the relevant buttons
-      // This would be easier with a library like jQuery,
-      // but for the samples we don't want to want to assume any other dependencies
-      if (obj !== null) {
-        cutButton.style.display = "block";
-        copyButton.style.display = "block";
-        pasteButton.style.display = "none";
-        deleteButton.style.display = "block";
-      } else {
-        cutButton.style.display = "none";
-        copyButton.style.display = "none";
-        deleteButton.style.display = "none";
-        pasteButton.style.display = "block";
-      }
+    // Show only the relevant buttons given the current state.
+    var cmd = diagram.commandHandler;
+    document.getElementById("cut").style.display = cmd.canCutSelection() ? "block" : "none";
+    document.getElementById("copy").style.display = cmd.canCopySelection() ? "block" : "none";
+    document.getElementById("paste").style.display = cmd.canPasteSelection() ? "block" : "none";
+    document.getElementById("delete").style.display = cmd.canDeleteSelection() ? "block" : "none";
+    document.getElementById("color").style.display = obj !== null ? "block" : "none";
 
-      // we don't bother overriding positionContextMenu, we just do it here:
-      cxElement.style.display = "block";
-      cxElement.style.left = mousePt.x + "px";
-      cxElement.style.top = mousePt.y + "px";
-    }
+    // Now show the whole context menu element
+    cxElement.style.display = "block";
+    // we don't bother overriding positionContextMenu, we just do it here:
+    var mousePt = diagram.lastInput.viewPoint;
+    cxElement.style.left = mousePt.x + "px";
+    cxElement.style.top = mousePt.y + "px";
 
-    // Remember
+    // Remember that there is now a context menu showing
     this.currentContextMenu = contextmenu;
-    // Save for button interaction
-    myContextMenu = this;
   }
 
-  cxHide = function() {
+  // This is the corresponding override of ContextMenuTool.hideContextMenu:
+  // This does not not need to call the base method.
+  cxTool.hideContextMenu = function() {
     if (this.currentContextMenu === null) return;
     cxElement.style.display = "none";
     this.currentContextMenu = null;
-    // Save for button interaction
-    myContextMenu = null;
   }
-
-
-  var LBlight = document.getElementById("LBlight");
-  var LBblack = document.getElementById("LBblack");
-  // We don't want the div acting as a context menu to have a (browser) context menu!
-  LBlight.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
-  LBlight.addEventListener("selectstart", function(e) { e.preventDefault(); return false; }, false);
-  LBblack.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
-  LBblack.addEventListener("click", function(e) { cxMenu.stopTool(); e.preventDefault(); return false; }, false);
-  var LBcutButton = document.getElementById("LBcut");
-  var LBcopyButton = document.getElementById("LBcopy");
-  var LBpasteButton = document.getElementById("LBpaste");
-  var LBdeleteButton = document.getElementById("LBdelete");
-
-  lightShow = function(contextmenu, obj) {
-    var diagram = this.diagram;
-    if (diagram === null) return;
-
-    // hide any other existing context menu
-    if (contextmenu !== this.currentContextMenu) {
-      this.hideContextMenu();
-    }
-
-    // An object or a selection to paste means we have something to show
-    if (obj !== null || diagram.commandHandler.canPasteSelection()) {
-      // Show only the relevant buttons
-      // This would be easier with a library like jQuery,
-      // but for the samples we don't want to want to assume any other dependencies
-      if (obj !== null) {
-        LBcutButton.style.display = "block";
-        LBcopyButton.style.display = "block";
-        LBpasteButton.style.display = "none";
-        LBdeleteButton.style.display = "block";
-      } else {
-        LBcutButton.style.display = "none";
-        LBcopyButton.style.display = "none";
-        LBdeleteButton.style.display = "none";
-        LBpasteButton.style.display = "block";
-      }
-      LBlight.style.display = "block";
-      LBblack.style.display = "block";
-    }
-
-    // Remember
-    this.currentContextMenu = contextmenu;
-    // Save for button interaction
-    myContextMenu = this;
-  }
-
-  lightHide = function() {
-    if (this.currentContextMenu === null) return;
-    LBlight.style.display = "none";
-    LBblack.style.display = "none";
-    this.currentContextMenu = null;
-    // Save for button interaction
-    myContextMenu = null;
-  }
-
-  cxMenu.showContextMenu = cxShow;
-  cxMenu.hideContextMenu = cxHide;
 }
 
+// This is the general menu command handler, parameterized by the name of the command.
 function cxcommand(val) {
-  if (myContextMenu === null) return;
-  var diagram = myContextMenu.diagram;
-  switch(val) {
+  var diagram = myDiagram;
+  if (!(diagram.currentTool instanceof go.ContextMenuTool)) return;
+  switch (val) {
     case "Cut": diagram.commandHandler.cutSelection(); break;
     case "Copy": diagram.commandHandler.copySelection(); break;
     case "Paste": diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); break;
     case "Delete": diagram.commandHandler.deleteSelection(); break;
+    case "Color": changeColor(diagram); break;
   }
-  myContextMenu.stopTool();
+  diagram.currentTool.stopTool();
 }
 
-function changeContext(val) {
-  cxMenu.stopTool();
-  if (val === "Traditional") {
-    cxMenu.showContextMenu = cxShow;
-    cxMenu.hideContextMenu = cxHide;
-  } else { // Lightbox
-    cxMenu.showContextMenu = lightShow;
-    cxMenu.hideContextMenu = lightHide;
-  }
+// A custom command, for changing the color of the selected node(s).
+function changeColor(diagram) {
+  // Always make changes in a transaction, except when initializing the diagram.
+  diagram.startTransaction("change color");
+  diagram.selection.each(function(node) {
+    if (node instanceof go.Node) {  // ignore any selected Links and simple Parts
+      // Examine and modify the data, not the Node directly.
+      var data = node.data;
+      if (data.color === "red") {
+        // Call setDataProperty to support undo/redo as well as
+        // automatically evaluating any relevant bindings.
+        diagram.model.setDataProperty(data, "color", go.Brush.randomColor());
+      } else {
+        diagram.model.setDataProperty(data, "color", "red");
+      }
+    }
+  });
+  diagram.commitTransaction("change color");
 }
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <p>Context menu <b>GoJS</b> Sample</p>
+  <p>HTML Context menu <b>GoJS</b> Sample</p>
 
   <div style="display: inline-block;">
     <!-- We make a div to contain both the Diagram div and the context menu (such that they are siblings)
          so that absolute positioning works easily.
          This DIV containing both MUST have a non-static CSS position (we use position: relative)
-         so that our context menu's absolute coordinates work correctly.
-    -->
-    <div style="position: relative; float: left;">
+         so that our context menu's absolute coordinates work correctly. -->
+    <div style="position: relative;"  >
       <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
       <div id="contextMenu">
         <ul>
@@ -316,37 +194,18 @@ function changeContext(val) {
           <li><a href="#" id="copy" onclick="cxcommand(this.textContent)">Copy</a></li>
           <li><a href="#" id="paste" onclick="cxcommand(this.textContent)">Paste</a></li>
           <li><a href="#" id="delete" onclick="cxcommand(this.textContent)">Delete</a></li>
+          <li><a href="#" id="color" onclick="cxcommand('Color')">Color</a></li>
         </ul>
       </div>
     </div>
 
-    <div id="controls" style="float: left;">
-      <div style="border: solid 1px gray; float: left;  padding: 2px;">
-        <p style="text-align: center;">Custom context menu</p>
-        <hr/>
-        <input type="radio" name="menu" onchange="changeContext(this.id)" id="Traditional" checked/>
-        <label for="Traditional">Traditional</label><br/>
-        <input type="radio" name="menu" onchange="changeContext(this.id)" id="Lightbox" />
-        <label for="Lightbox">Lightbox</label><br/>
-      </div>
-
-      <div id="description" style="float: left;">
-        <p>This sample gives an example of a Diagram interacting with other HTML elements on the page.</p>
-        <p>There are two custom context menus defined using HTML elements.</p>
-        <p>Right-click or tap-hold on a Node to bring up a context menu. If you have a selection copied in the cliboard, you can bring up a context menu anywhere to paste.</p>
-      </div>
+    <div id="description">
+      <p>This demonstrates the implementation of a custom HTML context menu.</p>
+      <p>For a light-box style HTML context menu implementation, see the <a href="htmlLightBoxContextMenu.html">LightBox Context Menu</a> sample.</p>
+      <p>Right-click or tap-hold on a Node to bring up a context menu.
+      If you have a selection copied in the clipboard, you can bring up a context menu anywhere to paste.</p>
     </div>
   </div>
-
-  <div id="LBlight">
-    <ul>
-      <li><a href="#" id="LBcut" onclick="cxcommand(this.textContent)">Cut</a></li>
-      <li><a href="#" id="LBcopy" onclick="cxcommand(this.textContent)">Copy</a></li>
-      <li><a href="#" id="LBpaste" onclick="cxcommand(this.textContent)">Paste</a></li>
-      <li><a href="#" id="LBdelete" onclick="cxcommand(this.textContent)">Delete</a></li>
-    </ul>
-  </div>
-  <div id="LBblack"></div>
 </div>
 </body>
 </html>

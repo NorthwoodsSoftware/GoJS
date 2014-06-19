@@ -3,9 +3,9 @@
 <head>
 <title>Friend Wheel</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function WheelLayout() {
     go.CircularLayout.call(this);
@@ -15,12 +15,9 @@
   // override makeNetwork to set the diameter of each node and ignore the TextBlock label
   WheelLayout.prototype.makeNetwork = function(coll) {
     var net = go.CircularLayout.prototype.makeNetwork.call(this, coll);
-    var dia = 20; // because our desiredSize for nodes is (20, 20)
-    var vit = net.vertexes.iterator;
-    while (vit.next()) {
-      var cv = vit.value;
-      cv.diameter = dia;
-    }
+    net.vertexes.each(function(cv) {
+      cv.diameter = 20;  // because our desiredSize for nodes is (20, 20)
+    });
     return net;
   }
 
@@ -28,12 +25,9 @@
   // and flip text if it would be upside-down
   WheelLayout.prototype.commitNodes = function() {
     go.CircularLayout.prototype.commitNodes.call(this);
-    var vit = this.network.vertexes.iterator;
-    var v;
-    while (vit.next()) {
-      v = vit.value;
+    this.network.vertexes.each(function(v) {
       var node = v.node;
-      if (node === null) continue;
+      if (node === null) return;
       // get the angle of the node towards the center, and rotate it accordingly
       var a = v.actualAngle;
       if (a > 90 && a < 270) {  // make sure the text isn't upside down
@@ -41,9 +35,8 @@
         textBlock.angle = 180;
       }
       node.angle = a;
-    }
+    });
   };
-
   // end WheelLayout class
 
 
@@ -55,59 +48,91 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram", // must be the ID or reference to div
-        { autoScale: go.Diagram.Uniform,
+        {
+          autoScale: go.Diagram.Uniform,
           padding: 10,
           contentAlignment: go.Spot.Center,
+          layout:
+            $(WheelLayout,  // set up a custom CircularLayout
+              // set some properties appropriate for this sample
+              {
+                arrangement: go.CircularLayout.ConstantDistance,
+                nodeDiameterFormula: go.CircularLayout.Circular,
+                spacing: 10,
+                aspectRatio: 0.7,
+                sorting: go.CircularLayout.Optimized
+              }),
           isReadOnly: true,
-          maxSelectionCount: 1 });
+          click: function(e) {  // background click clears any remaining highlighteds
+            e.diagram.startTransaction("clear");
+            e.diagram.clearHighlighteds();
+            e.diagram.commitTransaction("clear");
+          }
+        });
 
     // define the Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Horizontal",
-        { locationSpot: go.Spot.Center,  // Node.location is the center of the Shape
-          locationObjectName: "SHAPE",
+        {
           selectionAdorned: false,
-          selectionChanged: nodeSelectionChanged },
+          locationSpot: go.Spot.Center,  // Node.location is the center of the Shape
+          locationObjectName: "SHAPE",
+          mouseEnter: function(e, node) {
+            node.diagram.clearHighlighteds();
+            node.linksConnected.each(function(l) { highlightLink(l, true); });
+            node.isHighlighted = true;
+            var tb = node.findObject("TEXTBLOCK");
+            if (tb !== null) tb.stroke = highlightColor;
+          },
+          mouseLeave: function(e, node) {
+            node.diagram.clearHighlighteds();
+            var tb = node.findObject("TEXTBLOCK");
+            if (tb !== null) tb.stroke = "black";
+          }
+        },
         new go.Binding("text", "text"),  // for sorting the nodes
         $(go.Shape, "Ellipse",
-          { name: "SHAPE",  // for searching when highlighting
+          {
+            name: "SHAPE",
             fill: "lightgray",  // default value, but also data-bound
             stroke: "transparent",  // modified by highlighting
             strokeWidth: 2,
             desiredSize: new go.Size(20, 20),
-            portId: "" },  // so links will go to the shape, not the whole node
-          new go.Binding("fill", "color")),
+            portId: ""
+          },  // so links will go to the shape, not the whole node
+          new go.Binding("fill", "color"),
+          new go.Binding("stroke", "isHighlighted",
+                         function(h) { return h ? highlightColor : "transparent"; })
+                        .ofObject()),
         $(go.TextBlock,
           { name: "TEXTBLOCK" },  // for search
           new go.Binding("text", "text"))
       );
 
+    function highlightLink(link, show) {
+      link.isHighlighted = show;
+      link.fromNode.isHighlighted = show;
+      link.toNode.isHighlighted = show;
+    }
+
     // define the Link template
     myDiagram.linkTemplate =
       $(go.Link,
-        { routing: go.Link.Normal,
+        {
+          routing: go.Link.Normal,
           curve: go.Link.Bezier,
           selectionAdorned: false,
-          mouseEnter: linkMouseEnter,
-          mouseLeave: linkMouseLeave,
-          selectionChanged: linkSelectionChanged },
+          mouseEnter: function(e, link) { highlightLink(link, true); },
+          mouseLeave: function(e, link) { highlightLink(link, false); }
+        },
         $(go.Shape,
-          { name: "LINKSHAPE",  // for searching in mouseEnter/Leave
-            isPanelMain: true,
-            stroke: "black",  // default value, but is data-bound
-            strokeWidth: 1 },
-          new go.Binding("stroke", "color"))
+          new go.Binding("stroke", "isHighlighted",
+                         function(h, shape) { return h ? highlightColor : shape.part.data.color; })
+                        .ofObject(),
+          new go.Binding("strokeWidth", "isHighlighted",
+                         function(h) { return h ? 2 : 1; })
+                        .ofObject())
       );
-
-    // set up a customize CircularLayout
-    myDiagram.layout =
-      $(WheelLayout,
-        // set some properties appropriate for this sample
-        { arrangement: go.CircularLayout.ConstantDistance,
-          nodeDiameterFormula: go.CircularLayout.Circular,
-          spacing: 10,
-          aspectRatio: 0.7,
-          sorting: go.CircularLayout.Optimized });
 
     generateGraph();
   }
@@ -143,98 +168,11 @@
 
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }
-
-  // When the mouse is over a Link, select it.
-  function linkMouseEnter(e, obj) {
-    var link = obj.part;
-    if (link !== null) {
-      myDiagram.select(link);  // the only selection
-    }
-  }
-
-  // When the mouse moves off of a Link, deselect it.
-  function linkMouseLeave(e, obj) {
-    var link = obj.part;
-    if (link !== null) {
-      link.isSelected = false;
-    }
-  }
-
-  // When a Link is selected, highlight it and both connected Nodes.
-  function linkSelectionChanged(link) {
-    if (link.isSelected) {
-      highlightLink(link, highlightColor);
-      highlightNode(link.fromNode, highlightColor);
-      highlightNode(link.toNode, highlightColor);
-    } else {
-      highlightLink(link);
-      highlightNode(link.fromNode);
-      highlightNode(link.toNode);
-    }
-  }
-
-  // Highlight a Link by changing its Shape.stroke and strokeWidth.
-  function highlightLink(link, color) {
-    if (link === null) return;
-    var shape = link.findObject("LINKSHAPE");
-    if (shape === null) return;
-    if (color !== undefined) {
-      if (!shape.previousStroke) shape.previousStroke = shape.stroke;
-      shape.strokeWidth = 2;
-      shape.stroke = color;
-    } else {  // restore previous color
-      shape.strokeWidth = 1;
-      shape.stroke = shape.previousStroke;
-    }
-  }
-
-  // When a Node is selected, show the selection and highlight all connected Links and Nodes.
-  function nodeSelectionChanged(node) {
-    var shape = node.findObject("SHAPE");
-    if (shape === null) return;
-    if (node.isSelected) {
-      // indicate selected node by changing fill color
-      if (!shape.previousFill) shape.previousFill = shape.fill;
-      shape.fill = highlightColor;
-      // use highlight color
-      highlightNode(node, highlightColor);
-      highlightConnectedNodes(node, highlightColor);
-    } else {  // restore previous colors
-      shape.fill = shape.previousFill;
-      highlightNode(node);
-      highlightConnectedNodes(node);
-    }
-  }
-
-  // Highlight a Node by changing its Shape.stroke.
-  function highlightNode(node, color) {
-    if (node === null) return;
-    var shape = node.findObject("SHAPE");
-    if (shape === null) return;
-    if (color !== undefined) {
-      if (!shape.previousStroke) shape.previousStroke = shape.stroke;
-      shape.stroke = color;
-    } else {  // restore previous color
-      shape.stroke = shape.previousStroke;
-    }
-  }
-
-  function highlightConnectedNodes(node, color) {
-    if (node === null) return;
-    var lit = node.findLinksConnected();
-    while (lit.next()) {
-      highlightLink(lit.value, color);
-    }
-    var nit = node.findNodesConnected();
-    while (nit.next()) {
-      highlightNode(nit.value, color);
-    }
-  }
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 600px" />
+  <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 600px" ></div>
   <p>
   This "friend wheel" demonstrates the use of <a>CircularLayout</a>.
   The layout has been customized to make sure each node is considered to have a fixed diameter,
@@ -248,12 +186,11 @@
   text is not upside-down.
   </p>
   <p>
-  A <a>Part.selectionChanged</a> event handler on the <a>Node</a> template highlights both the Node and
-  all of the Links that connect with the Node.
-  </p>
-  <p>
-  This sample also adds <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers on the links,
-  so that it can highlight the link and the two nodes connected by the link.
+  <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers on the <a>Node</a> template
+  highlight both the Node and all of the Links that connect with the Node.
+  The same event handlers on the <a>Link</a>s highlight that Link and both connected Nodes.
+  Changes made in these event handlers automatically are not recorded in the <a>UndoManager</a>,
+  although this sample does not enable the UndoManager anyway.
   </p>
 </div>
 </body>

@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Printing -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+
+  <style type="text/css">
+  @media screen {
+    img {
+      border: 1px solid rgba(255,0,0,.4);
+    }
+  }
+
+  /* @media print specifies CSS rules that only apply when printing */
+  @media print {
+    /* CSS reset to clear styles for printing */
+    html, body, div {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      font-size: 100%;
+      font: inherit;
+      vertical-align: baseline;
+    }
+
+    /* Hide everything on the page */
+    body * {
+      display: none;
+    }
+
+    #content, #myImages, #myImages * {
+      /* Only display the images we want printed */
+      /* all of the image's parent divs
+         leading up to the body must be un-hidden (displayed) too
+      */
+      display: block;
+      /* CSS reset to clear the specific visible divs for printing */
+      margin: 0;
+      padding: 0;
+      border: 0;
+      font-size: 100%;
+      font: inherit;
+      vertical-align: baseline;
+    }
+
+    /* We have line breaks in the DIV
+       to separate the images in the browser,
+       but do not want those line breaks when printing
+    */
+    #myImages br {
+      display: none;
+    }
+
+    img {
+      /* Only some browsers respect this rule: */
+      page-break-inside: avoid;
+      /* Almost all browsers respect this rule: */
+      page-break-after:always;
+    }
+  }
+
+  /* The @page rules specify additional printing directives that browsers may respect
+     Here we suggest printing in landscape (instead of portrait) with a small margin.
+     Browsers, however, are free to ignore or override these suggestions.
+     See also:
+      https://developer.mozilla.org/en-US/docs/CSS/@page
+      http://dev.w3.org/csswg/css3-page/#at-page-rule
+  */
+  @page {
+    /* Some browsers respect rules such as size: landscape */
+    margin: 1cm;
+  }
+  </style>
+
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Printing</h2>
+<p>
+Printing a Diagram is typically accomplished by making several images of the Diagram and either saving them, inserting them into a PDF or other document, or printing them directly from the browser. On this page we will create several images out of a large Diagram and prepare some CSS so that printing this page prints only those images.
+</p>
+<p>
+This page uses <a>Diagram.makeImage</a>, which has its own introduction page: <a href="makingImages.html">Making Images with GoJS</a>.
+</p>
+
+<p class="box note">
+Depending on your situation, you may want to use SVG to print instead, and there is also a page on <a href="makingSVG.html">Making SVG with GoJS</a>, which is nearly identical to making images. In this page's examples you could substitute <a>Diagram.makeSvg</a> for the same result.
+</p>
+
+<p>
+  Below is the Diagram we are going to prepare for print.
+</p>
+<!-- Don't bother showing this source -->
+<pre data-language="javascript" id="diag" style="display: none;">
+  diagram.initialContentAlignment = go.Spot.Center;
+  window.myDiagram = diagram;
+  myDiagram.autoScale = go.Diagram.Uniform;
+
+
+  // define the Node template
+  myDiagram.nodeTemplate =
+    $(go.Node, "Spot",
+      { locationSpot: go.Spot.Center },
+      $(go.Shape, "Rectangle",
+        { fill: "lightgray",  // the initial value, but data-binding may provide different value
+          stroke: "black",
+          desiredSize: new go.Size(30, 30) },
+        new go.Binding("fill", "fill")),
+      $(go.TextBlock,
+        new go.Binding("text", "text"))
+    );
+
+  // define the Link template to be minimal
+  myDiagram.linkTemplate =
+    $(go.Link,
+      { selectable: false },
+      $(go.Shape));
+
+  myDiagram.layout = new go.LayeredDigraphLayout();
+
+  var minNodes = 125, maxNodes = 125;
+  myDiagram.startTransaction("generateDigraph");
+  // replace the diagram's model's nodeDataArray
+  var nodeArray = [];
+  // get the values from the fields and create a random number of nodes within the range
+  var min = parseInt(minNodes, 10);
+  var max = parseInt(maxNodes, 10);
+  if (isNaN(min)) min = 0;
+  if (isNaN(max) || max &lt; min) max = min;
+  var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
+  var i;
+  for (i = 0; i &lt; numNodes; i++) {
+    nodeArray.push({
+      key: i,
+      text: i.toString(),
+      fill: go.Brush.randomColor()
+    });
+  }
+
+  // randomize the node data
+  for (i = 0; i &lt; nodeArray.length; i++) {
+    var swap = Math.floor(Math.random() * nodeArray.length);
+    var temp = nodeArray[swap];
+    nodeArray[swap] = nodeArray[i];
+    nodeArray[i] = temp;
+  }
+
+  // set the nodeDataArray to this array of objects
+  myDiagram.model.nodeDataArray = nodeArray;
+  // replace the diagram's model's linkDataArray
+  var linkArray = [];
+  var nit = myDiagram.nodes;
+  var nodes = new go.List(go.Node);
+  nodes.addAll(nit);
+  for (var i = 0; i &lt; nodes.count - 1; i++) {
+    var from = nodes.elt(i);
+    var numto = Math.floor(1 + (Math.random() * 3) / 2);
+    for (var j = 0; j &lt; numto; j++) {
+      var idx = Math.floor(i + 5 + Math.random() * 10);
+      if (idx &gt;= nodes.count) idx = i + (Math.random() * (nodes.count - i)) | 0;
+      var to = nodes.elt(idx);
+      linkArray.push({ from: from.data.key, to: to.data.key });
+    }
+  }
+  myDiagram.model.linkDataArray = linkArray;
+  myDiagram.commitTransaction("generateDigraph");
+
+  window.goCode3 = function(pre) {
+    if (diagramclass === undefined) diagramclass = go.Diagram;
+    if (typeof pre === "string") pre = document.getElementById(pre);
+    var f = eval("(function () {" + pre.textContent + "})");
+    f();
+  }
+</pre>
+<script>goCode("diag", 500, 500)</script>
+
+<p>
+  Our code for print preparation contains a <code>generateImages</code> function that cuts the Diagram into several images of a given width and height. On this page it is called by default with (700, 960), but the width and height can be modified dynamically with HTML inputs below.
+</p>
+<pre data-language="javascript" id="manyImgCode">
+    // if width or height are below 50, they are set to 50
+    function generateImages(width, height) {
+      // sanitize input
+      width = parseInt(width);
+      height = parseInt(height);
+      if (isNaN(width)) width = 100;
+      if (isNaN(height)) height = 100;
+      // Give a minimum size of 50x50
+      width = Math.max(width, 50);
+      height = Math.max(height, 50);
+
+
+
+      var imgDiv = document.getElementById('myImages');
+      imgDiv.innerHTML = ''; // clear out the old images, if any
+      var db = myDiagram.documentBounds.copy();
+      var boundswidth = db.width;
+      var boundsheight = db.height;
+      var imgWidth = width;
+      var imgHeight = height;
+      var p = db.position.copy();
+      for (var i = 0; i &lt; boundsheight; i += imgHeight) {
+        for (var j = 0; j &lt; boundswidth; j += imgWidth) {
+          img = myDiagram.makeImage({
+            scale: 1,
+            position: new go.Point(p.x + j, p.y + i),
+            size: new go.Size(imgWidth, imgHeight)
+          });
+          // Append the new HTMLImageElement to the #myImages div
+          img.className = 'images';
+          imgDiv.appendChild(img);
+          imgDiv.appendChild(document.createElement('br'));
+        }
+      }
+    }
+
+    var button = document.getElementById('makeImages');
+    button.addEventListener('click', function() {
+      var width = parseInt(document.getElementById('widthInput').value);
+      var height = parseInt(document.getElementById('heightInput').value);
+      generateImages(width, height);
+    }, false);
+
+    // Call it with some default values
+    generateImages(700, 960);
+</pre>
+
+<p>
+  We want to show nothing but the images when this HTML page is printed, so we must use CSS rules to hide all page elements except the images themselves and the DOM parents of the images leading up to the body (#content, #myImages).
+</p>
+<p>
+  With the CSS below, printing this page will give yield nothing but the generated images that have been added to the end of this page. Typically the image or images used for printing may be hidden from the user completely, except when printing, or else added to a separate page in a new window.
+</p>
+<pre data-language="css">
+/* @media print specifies CSS rules that only apply when printing */
+@media print {
+  /* CSS reset to clear styles for printing */
+  html, body, div {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+
+  /* Hide everything on the page */
+  body * {
+    display: none;
+  }
+
+  #content, #myImages, #myImages * {
+    /* Only display the images we want printed */
+    /* all of the image's parent divs
+       leading up to the body must be un-hidden (displayed) too
+    */
+    display: block;
+    /* CSS reset to clear the specific visible divs for printing */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+
+  /* We have line breaks in the DIV
+     to separate the images in the browser,
+     but do not want those line breaks when printing
+  */
+  #myImages br {
+    display: none;
+  }
+
+  img {
+    /* Only some browsers respect this rule: */
+    page-break-inside: avoid;
+    /* Almost all browsers respect this rule: */
+    page-break-after:always;
+  }
+}
+
+/* The @page rules specify additional printing directives that browsers may respect
+   Here we suggest printing in landscape (instead of portrait) with a small margin.
+   Browsers, however, are free to ignore or override these suggestions.
+   See also:
+    https://developer.mozilla.org/en-US/docs/CSS/@page
+    http://dev.w3.org/csswg/css3-page/#at-page-rule
+*/
+@page {
+  /* Some browsers respect rules such as size: landscape */
+  margin: 1cm;
+}
+</pre>
+<p>
+  The images at the end of this page are generated by calling <code>generateImages(700, 960)</code>. Using the inputs below the images can be replaced with those of a different size. Different papers, page orientations, and margins will require different sized images if they are to fill the paper, and (700, 960) is a suggested size for 8.5 inch by 11 paper in portrait orientation, with minimal margins.
+</p>
+<div style="border: 1px solid gray; padding: 10px; margin-bottom: 20px;">
+Width: <input id="widthInput" value="700" />
+Height: <input id="heightInput" value="960" />
+<button id="makeImages">Generate images for printing</button>
+</div>
+<div id="myImages">
+</div>
+<script>goCode3('manyImgCode');</script>
+
+</div>
+</body>
+</html>

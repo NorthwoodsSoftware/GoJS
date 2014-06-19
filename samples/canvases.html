@@ -3,9 +3,7 @@
 <head>
 <title>Canvases</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <style type="text/css">
-
   #optionsBox {
     z-index: 300;
     position: absolute;
@@ -59,13 +57,13 @@
 <script src="assets/webGL/angeles.js"></script>
 
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
 var myDiagram = null;
 
 function init() {
   if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-
 
   // Internet Explorer 9 and 10 (and many mobile platforms) do not support WebGL,
   // and in unsupported browsers no WebGL node will be displayed.
@@ -130,24 +128,23 @@ function init() {
 
   // For the d3 stack charts we create a new random chart every time
   myDiagram.addDiagramListener("ExternalObjectsDropped", function(event) {
-    var s = event.subject;
-    var itr = s.iterator;
-    while (itr.next()) {
-      var obj = itr.value;
-      var picture = obj.findObject("PIC");
-      if (picture === null) continue;
-      switch (obj.category) {
-        case "d3-stack-chart":
-          if (picture !== null) picture.element = makeChart();
-          break;
-        case "peity-pie-chart":
-          if (picture !== null) picture.element = makePie("pie");
-          break;
-        case "peity-line-chart":
-          if (picture !== null) picture.element = makePie("line");
-          break;
+    // event.subject is the myDiagram.selection, the collection of just dropped Parts
+    event.subject.each(function(node) {
+      var picture = node.findObject("PIC");
+      if (picture !== null) {
+        switch (node.category) {
+          case "d3-stack-chart":
+            if (picture !== null) picture.element = makeChart();
+            break;
+          case "peity-pie-chart":
+            if (picture !== null) picture.element = makePie("pie");
+            break;
+          case "peity-line-chart":
+            if (picture !== null) picture.element = makePie("line");
+            break;
+        }
       }
-    }
+    });
   });
 
 
@@ -230,7 +227,7 @@ function makeChart(num) {
     }
   }
 
-  document.getElementById("canvases").appendChild(canvas);;
+  document.getElementById("canvases").appendChild(canvas);
   return canvas;
 }
 
@@ -244,7 +241,6 @@ function makePie(type) {
   var span = document.createElement("span");
   var id = "peity" + numPeityCharts;
   span.id = id;
-
 
   if (type === "pie") {
     var slices = (Math.random()*4+2 | 0);
@@ -262,11 +258,6 @@ function makePie(type) {
     }
   }
 
-
-
-
-
-
   span.textContent = spantext;
   document.getElementById("canvases").appendChild(span);
 
@@ -275,8 +266,6 @@ function makePie(type) {
   } else {
     $("#" + id).peity("line", { width: 150, height: 32 });
   }
-
-
 
   return $(".peity")[numPeityCharts];
 }
@@ -297,18 +286,29 @@ var numPeityCharts = 1; // count starts from zero
   </div>
   <div style="max-width: 600px;">
   <p>
-    This sample shows how HTML5 Canvas Elements, such as those created from other libraries, can be used inside of GoJS as <a>Picture</a>s. The ability of Picture to use other Canvas elements allows you to use any Canvas graphing or charting library in conjunction with GoJS.
+    This sample shows how HTML5 Canvas Elements, such as those created from other libraries,
+    can be used inside of GoJS as <a>Picture</a>s.
+    The ability of Picture to use other Canvas elements allows you to use any Canvas
+    graphing or charting library in conjunction with GoJS.
   </p>
   <p>
-    All of the Nodes in this sample consist of a single <a>Picture</a>, and that Picture's <a>Picture.element</a> property is set to a HTML5 Canvas Element that has its image generated from a (non-GoJS) Canvas visualization library or WebGL demo.
+    All of the Nodes in this sample consist of a single <a>Picture</a>,
+    and that Picture's <a>Picture.element</a> property is set to a HTML5 Canvas Element
+    that has its image generated from a (non-GoJS) Canvas visualization library or WebGL demo.
   </p>
 
-  <p>The WebGL demo is from the <a href="http://www.khronos.org/webgl/wiki/Demo_Repository">WebGL Demo Repository</a>. The WebGL node is animated by calling myDiagram.redraw() every animation frame.</p>
-  <a href="http://handhelds.freshmeat.net/projects/sanogles">Original demo</a> by Jetro Lauha<br>
-  WebGL port by Kenneth Waters
+  <p>
+    The WebGL demo is from the
+    <a href="http://www.khronos.org/webgl/wiki/Demo_Repository">WebGL Demo Repository</a>.
+    The WebGL node is animated by calling myDiagram.redraw() every animation frame.
   </p>
   <p>
-    Internet Explorer 9 and 10 (and many mobile platforms) do not support WebGL, and in unsupported browsers no WebGL node will be displayed.
+    <a href="http://handhelds.freshmeat.net/projects/sanogles">Original demo</a> by Jetro Lauha<br>
+    WebGL port by Kenneth Waters
+  </p>
+  <p>
+    Internet Explorer 9 and 10 (and many mobile platforms) do not support WebGL,
+    and in unsupported browsers no WebGL node will be displayed.
   </p>
   <p>
     The data behind the nodes is randomly generated.

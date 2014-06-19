@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Grid Patterns -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Grid Patterns</h2>
+<p>
+It is common to want to display a grid of lines drawn at regular intervals.
+You may also want to force dragged parts to be aligned on grid points, and to resize parts to be multiples of the grid cell size.
+</p>
+
+<h3>Default Grid</h3>
+<p>
+To display a grid pattern in the background of the diagram, you can just make the <a>Diagram.grid</a> visible:
+</p>
+<pre data-language="javascript" id="defaultGrid">
+  diagram.grid.visible = true;
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+</pre>
+<script>goCode("defaultGrid", 600, 150)</script>
+
+<h3>Grid Snapping</h3>
+<p>
+The <a>DraggingTool</a> and <a>ResizingTool</a> can change their behavior based on the background grid pattern,
+if you set the <a>DraggingTool.isGridSnapEnabled</a> and/or <a>ResizingTool.isGridSnapEnabled</a> properties to true.
+</p>
+<pre data-language="javascript" id="gridSnapping">
+  diagram.grid.visible = true;
+  diagram.toolManager.draggingTool.isGridSnapEnabled = true;
+  diagram.toolManager.resizingTool.isGridSnapEnabled = true;
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { resizable: true },
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+</pre>
+<script>goCode("gridSnapping", 600, 150)</script>
+
+<h3>Simple Grid Customization</h3>
+<p>
+You can change the size of the grid cell by setting <a>Panel.gridCellSize</a>:
+</p>
+<pre data-language="javascript" id="biggerGrid">
+  diagram.grid.visible = true;
+  diagram.grid.gridCellSize = new go.Size(30, 20);
+  diagram.toolManager.draggingTool.isGridSnapEnabled = true;
+  diagram.toolManager.resizingTool.isGridSnapEnabled = true;
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { resizable: true },
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+</pre>
+<script>goCode("biggerGrid", 600, 150)</script>
+
+<p>
+The cell size used when snapping the locations of Parts during a drag need not be exactly
+the same as the background grid's cell size.
+The value of <a>DraggingTool.gridSnapCellSize</a> takes precedence over the <a>Panel.gridCellSize</a>.
+</p>
+<pre data-language="javascript" id="gridSnapping2">
+  diagram.grid.visible = true;
+  diagram.toolManager.draggingTool.isGridSnapEnabled = true;
+  diagram.toolManager.resizingTool.isGridSnapEnabled = true;
+
+  // snap to every other point both vertically and horizontally
+  // (the default background grid has a cell size of 10x10)
+  diagram.toolManager.draggingTool.gridSnapCellSize = new go.Size(20, 20);
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { resizable: true },
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+</pre>
+<script>goCode("gridSnapping2", 600, 150)</script>
+
+<h3>Custom Grids</h3>
+<p>
+Grid patterns are implemented by the <a>Panel</a> class when its <a>Panel.type</a> is <a>Panel.Grid</a>.
+The elements of a Grid Panel must be <a>Shape</a>s whose <a>Shape.figure</a> is one of a small set of known kinds of figures.
+</p>
+<pre data-language="javascript" id="customBackground">
+  diagram.grid =
+    $(go.Panel, go.Panel.Grid,  // or "Grid"
+      { gridCellSize: new go.Size(25, 25) },
+      $(go.Shape, "LineH", { stroke: "blue" }),
+      $(go.Shape, "LineV", { stroke: "green" })
+    );
+</pre>
+<script>goCode("customBackground", 600, 150)</script>
+
+<p>
+The <a>Shape.interval</a> property is also used by a Grid Panel to determine how frequently a line should be drawn.
+The value should be a positive integer specifying how many cells there are between drawings of this particular line.
+</p>
+<pre data-language="javascript" id="customBackground2">
+  diagram.grid =
+    $(go.Panel, "Grid",
+      { gridCellSize: new go.Size(10, 10) },
+      $(go.Shape, "LineH", { stroke: "lightblue" }),
+      $(go.Shape, "LineV", { stroke: "lightgreen" }),
+      $(go.Shape, "LineH", { stroke: "blue", interval: 5 }),
+      $(go.Shape, "LineV", { stroke: "green", interval: 5 })
+      );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { resizable: true },
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+  var nodeDataArray = [
+    { key: "Alpha" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+</pre>
+<script>goCode("customBackground2", 600, 150)</script>
+
+</div>
+</body>
+</html>

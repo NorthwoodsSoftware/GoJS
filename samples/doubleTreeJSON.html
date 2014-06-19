@@ -3,9 +3,9 @@
 <head>
 <title>Double Tree</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script id="code">
   function init() {
@@ -56,7 +56,8 @@
 
     // The top-level object has three properties, two of which we ignore.
     // This example assumes that the "nodes" property has the array of node data objects in it.
-    // But your data is certainly going to be in a different structure, so you need to figure out how to get an array of node data objects.
+    // But your data is certainly going to be in a different structure,
+    // so you need to figure out how to get an array of node data objects.
 
     // create the model for the double tree
     myDiagram.model = new go.TreeModel(jsondata["nodes"]);
@@ -94,17 +95,15 @@
     leftParts.add(root);
     rightParts.add(root);
     // look at all of the immediate children of the ROOT node
-    var it = root.findTreeChildrenNodes();
-    while (it.next()) {
-      var child = it.value;
-      // in what direction is this child growing?
-      var dir = child.data.dir;
-      var coll = (dir === "left") ? leftParts : rightParts;
-      // add the whole subtree starting with this child node
-      coll.addAll(child.findTreeParts());
-      // and also add the link from the ROOT node to this child node
-      coll.add(child.findTreeParentLink());
-    }
+    root.findTreeChildrenNodes().each(function(child) {
+        // in what direction is this child growing?
+        var dir = child.data.dir;
+        var coll = (dir === "left") ? leftParts : rightParts;
+        // add the whole subtree starting with this child node
+        coll.addAll(child.findTreeParts());
+        // and also add the link from the ROOT node to this child node
+        coll.add(child.findTreeParentLink());
+      });
   }
 </script>
 </head>

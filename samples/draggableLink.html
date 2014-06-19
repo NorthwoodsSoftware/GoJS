@@ -3,9 +3,9 @@
 <head>
 <title>Draggable Link</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -36,12 +36,12 @@
           rotatingTool: $(TopRotatingTool),  // defined below
           "rotatingTool.snapAngleMultiple": 15,
           "rotatingTool.snapAngleEpsilon": 15,
+          // don't set some properties until after a new model has been loaded
+          "InitialLayoutCompleted": loadDiagramProperties,  // this DiagramEvent listener is defined below
           "undoManager.isEnabled": true
         });
 
-    // set these kinds of Diagram properties after initialization, not now
-    myDiagram.addDiagramListener("InitialLayoutCompleted", loadDiagramProperties);
-
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -49,7 +49,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -59,11 +59,11 @@
     // control whether the user can draw links from or to the port.
     function makePort(name, spot, output, input) {
       // the port is basically just a small transparent square
-      return $(go.Shape, "Rectangle",
+      return $(go.Shape, "Circle",
                {
-                  fill: "transparent",  // not null, so that it responds to mouse events
+                  fill: null,  // not seen, by default; set to a translucent gray by showSmallPorts, defined below
                   stroke: null,
-                  desiredSize: new go.Size(6, 6),
+                  desiredSize: new go.Size(7, 7),
                   alignment: spot,  // align the port on the main Shape
                   alignmentFocus: spot,  // just inside the Shape
                   portId: name,  // declare this object to be a "port"
@@ -115,8 +115,11 @@
           { name: "PANEL" },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           $(go.Shape, "Rectangle",  // default figure
-            { portId: "" },  // if no spot on link data, use closest side
-            { fill: "white" },  // default color
+            {
+              portId: "", // the default port: if no spot on link data, use closest side
+              fromLinkable: true, toLinkable: true, cursor: "pointer",
+              fill: "white"  // default color
+            },
             new go.Binding("figure"),
             new go.Binding("fill")),
           $(go.TextBlock,
@@ -129,12 +132,24 @@
             },
             new go.Binding("text").makeTwoWay())
         ),
-        // four named ports, one on each side:
+        // four small named ports, one on each side:
         makePort("T", go.Spot.Top, false, true),
         makePort("L", go.Spot.Left, true, true),
         makePort("R", go.Spot.Right, true, true),
-        makePort("B", go.Spot.Bottom, true, false)
+        makePort("B", go.Spot.Bottom, true, false),
+        { // handle mouse enter/leave events to show/hide the ports
+          mouseEnter: function(e, node) { showSmallPorts(node, true); },
+          mouseLeave: function(e, node) { showSmallPorts(node, false); }
+        }
       );
+
+    function showSmallPorts(node, show) {
+      node.ports.each(function(port) {
+        if (port.portId !== "") {  // don't change the default port, which is the big shape
+          port.fill = show ? "rgba(0,0,0,.3)" : null;
+        }
+      });
+    }
 
     var linkSelectionAdornmentTemplate =
       $(go.Adornment, "Link",

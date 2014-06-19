@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Initial Viewport -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+<div>
+
+<h2>Initial and Automatic Viewport Management</h2>
+<p>
+Once you have created and assigned a model to cause some Parts to appear in your Diagram,
+you can control where your parts initially appear in the viewport, and you can control
+where they are shown after the diagram has been modified.
+</p>
+
+<h3>Initial viewport</h3>
+<p>
+You can very easily set the <a>Diagram.initialPosition</a> and/or <a>Diagram.initialScale</a> properties
+at any time, even before assigning the model.  This will cause the <a>Diagram.position</a> and/or <a>Diagram.scale</a>
+properties to be set to the specified initial value(s) once all of the Parts have been created and any initial layout has been performed.
+</p>
+<p>
+But what if you do not know how big your diagram document will be?
+If you want to show a particular area of the document, you will not know what position to set.
+If you want to show a big document at the largest scale that shows all of it, you will not know what scale to set.
+</p>
+<p>
+One solution to this problem is to set the <a>Diagram.initialContentAlignment</a> or <a>Diagram.initialAutoScale</a> properties.
+For example it is fairly common to want to make sure that small documents appear centered within the diagram window --
+just set <a>Diagram.initialContentAlignment</a> to <a>Spot.Center</a>.
+Or if you want to "zoom-to-fit" the diagram, just set <a>Diagram.initialAutoScale</a> to <a>Diagram.Uniform</a>.
+</p>
+<p>
+More generally, you may want to try to center a particular <a>Node</a>.
+Here is how you can do that:
+</p>
+<pre data-language="javascript" id="centernode">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc"),
+      $(go.Shape, { fill: "lightyellow" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "loc",
+                       function (p) { return p.x.toFixed() + ", " + p.y.toFixed(); }))
+    );
+
+  var nodeDataArray = [];
+  for (var i = 0; i &lt; 20; i++ ) {
+    nodeDataArray.push({ loc: new go.Point(Math.random() * 600, Math.random() * 300) });
+  }
+
+  diagram.model.nodeDataArray = nodeDataArray;
+
+  // this event handler is called when the diagram is first ready
+  diagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+    // pick a random node data
+    var data = nodeDataArray[Math.floor(Math.random()*nodeDataArray.length)];
+    // find the corresponding Node
+    var node = diagram.findNodeForData(data);
+    // and center it and select it
+    diagram.centerRect(node.actualBounds);
+    diagram.select(node);
+  });
+</pre>
+<script>goCode("centernode", 300, 150)</script>
+<p>
+Note: because by default one cannot scroll past any edge of the document,
+if the selected node happens to be at or near an edge, the node cannot actually be centered in the viewport.
+</p>
+
+<h3>Automatic viewport management</h3>
+<p>
+There are also times when you will want to control the viewport (i.e. the <a>Diagram.position</a> and <a>Diagram.scale</a>)
+after every change to the diagram.
+For example, if you always want to keep the document centered after the user has moved or deleted or inserted nodes,
+set <a>Diagram.contentAlignment</a> (rather than <a>Diagram.initialContentAlignment</a>).
+</p>
+<p>
+Or if you always want to keep the document "zoomed-to-fit", set <a>Diagram.autoScale</a> to <a>Diagram.Uniform</a>.
+As an example, the <a>Overview</a> diagram does this.
+</p>
+
+</div>
+</div>
+</body>
+</html>

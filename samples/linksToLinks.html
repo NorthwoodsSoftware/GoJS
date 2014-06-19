@@ -3,9 +3,9 @@
 <head>
 <title>Links to Links</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,7 +13,12 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
-        { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
+        {
+          initialContentAlignment: go.Spot.Center,
+          "LinkDrawn": maybeChangeLinkCategory,     // these two DiagramEvents call a
+          "LinkRelinked": maybeChangeLinkCategory,  // function that is defined below
+          "undoManager.isEnabled": true
+        });
 
     // the regular node template, which supports user-drawn links from the main Shape
     myDiagram.nodeTemplate =
@@ -73,8 +78,6 @@
       var linktolink = (link.fromNode.isLinkLabel || link.toNode.isLinkLabel);
       e.diagram.model.setCategoryForLinkData(link.data, (linktolink ? "linkToLink" : ""));
     }
-    myDiagram.addDiagramListener("LinkDrawn", maybeChangeLinkCategory);
-    myDiagram.addDiagramListener("LinkRelinked", maybeChangeLinkCategory);
 
     load();
   }
@@ -92,7 +95,8 @@
 <body onload="init()">
   <p>
     This demonstrates the ability for a <a>Link</a> to appear to connect with another Link.
-    Regular links are blue.  Link-connecting links are green.  Try moving a node around to see how the links adapt.
+    Regular links are blue.  Link-connecting links are green.
+    Try moving a node around to see how the links adapt.
     Initially the "Alpha" node connects with the link between Gamma and Delta.
     There is also a link between the two horizontal links.
   </p>

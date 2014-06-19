@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Resizing Diagrams -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Resizing Diagrams</h2>
+<p>
+Sometimes it may be necessary to resize the div that contains a GoJS Diagram. GoJS does not listen or attempt to detect changes in the div's size, so you must manually tell each Diagram when you perform an action that resizes its containing div.
+</p>
+
+<h3>Using Diagram.requestUpdate() to resize a div</h3>
+<p>
+The following example has a button that enlarges the Diagram's div. When it is clicked, the div is visibly resized but the Diagram remains the same size.
+</p>
+
+<pre data-language="javascript" id="first">
+    // A minimal Diagram
+    diagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },  // some room around the text
+          new go.Binding("text", "key"))
+      );
+
+    diagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+
+    // Resize the diagram with this button
+    var button1 = document.getElementById('button1');
+    button1.addEventListener('click', function() {
+      var div = diagram.div;
+      div.style.width = '200px';
+    });
+</pre>
+<div id="dia1"></div>
+<button id="button1">Expand div</button>
+<script>goCode("first", 100, 100, go.Diagram, "dia1")</script>
+
+<p>
+Typically we will want the Diagram to resize to its div at the same time that the div resizes. To do this we add a call to <code>diagram.requestUpdate()</code> <em>after</em> we have resized the div. This checks to see if the Diagram's div has changed size, and if so, redraws the diagram at the appropriate new dimensions.
+</p>
+<p>
+Below is nearly identical code, except that a call to <code>diagram.requestUpdate()</code> has been added.
+</p>
+
+<pre data-language="javascript" id="second">
+    // A minimal Diagram
+    diagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },  // some room around the text
+          new go.Binding("text", "key"))
+      );
+
+    diagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+
+    // Resize the diagram with this button
+    var button2 = document.getElementById('button2');
+    button2.addEventListener('click', function() {
+      var div = diagram.div;
+      div.style.width = '200px';
+      diagram.requestUpdate(); // Needed!
+    });
+</pre>
+<div id="dia2"></div>
+<button id="button2">Expand div</button>
+<script>goCode("second", 100, 100, go.Diagram, "dia2")</script>
+
+
+</div>
+</body>
+</html>

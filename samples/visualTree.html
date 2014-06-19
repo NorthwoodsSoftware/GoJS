@@ -3,9 +3,9 @@
 <head>
   <title>GoJS Visual Tree</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css" />
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,15 +13,18 @@
 
       myDiagram =
         $(go.Diagram, "myDiagram",
-          { "undoManager.isEnabled": true });
-
+          {
+            // start everything in the middle of the viewport
+            initialContentAlignment: go.Spot.Center, 
+            "undoManager.isEnabled": true 
+          });
       // define the "sample" Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           // define the node's outer shape
           $(go.Shape, "RoundedRectangle",
-            { fill: "white",
-              stroke: "black" },
+
+            { fill: "white", stroke: "black" },
             new go.Binding("fill", "color")),
           // define the node's text
           $(go.TextBlock,
@@ -46,15 +49,18 @@
           {
             isReadOnly: true,  // do not allow users to modify or select in this view
             allowSelect: false,
-            layout: $(go.TreeLayout, { nodeSpacing: 5 })
+            layout: $(go.TreeLayout, { nodeSpacing: 5 })  // automatically laid out as a tree
           });
 
       myVisualTree.nodeTemplate =
         $(go.Node, "Auto",
           $(go.Shape, { fill: "darkkhaki", stroke: null }),  // assume a dark background
           $(go.TextBlock,
-            { font: "bold 13px Helvetica, bold Arial, sans-serif",
-              stroke: "black", margin: 3 },
+            {
+              font: "bold 13px Helvetica, bold Arial, sans-serif",
+              stroke: "black",
+              margin: 3
+            },
             // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
             new go.Binding("text", "", function(x) { return x.toString(); } ))
         );
@@ -70,6 +76,7 @@
     function drawVisualTree() {
       var visualNodeDataArray = [];
 
+      // recursively walk the visual tree, collecting objects as we go
       function traverseVisualTree(obj, parent) {
         obj.key = visualNodeDataArray.length;
         visualNodeDataArray.push(obj);
@@ -93,8 +100,10 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
       myVisualTree.model =
         $(go.TreeModel,
-          { nodeParentKeyProperty: "parentKey",
-            nodeDataArray: visualNodeDataArray });
+          {
+            nodeParentKeyProperty: "parentKey",
+            nodeDataArray: visualNodeDataArray
+          });
     }
   </script>
 </head>

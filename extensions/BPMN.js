@@ -9,8 +9,10 @@ function init() {
     currentFile.textContent = "Sorry! No web storage support.\nIf you're using Internet Explorer, you must load the page from a server for local storage to work.";
   }
 
+  // hides open HTML Element
   var openDocument = document.getElementById("openDocument");
   openDocument.style.visibility = "hidden";
+  // hides remove HTML Element
   var removeDocument = document.getElementById("removeDocument");
   removeDocument.style.visibility = "hidden";
 
@@ -58,33 +60,43 @@ function init() {
     $(go.Diagram, "myDiagram",
       {
         allowDrop: true,  // accept drops from palette
+
+        commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
+        // default to having arrow keys move selected nodes
+        "commandHandler.arrowKeyBehavior": "move",
+
         mouseDrop: function(e) {
           // when the selection is dropped in the diagram's background,
           // make sure the selected Parts no longer belong to any Group
           var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
           if (!ok) myDiagram.currentTool.doCancel();
-        }
+        },
+
+        linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
+        "linkingTool.linkValidation": sameLevel,  // defined below
+        "relinkingTool.linkValidation": sameLevel,
+
+        // set these kinds of Diagram properties after initialization, not now
+        "InitialLayoutCompleted": loadDiagramProperties  // defined below
       });
-  myDiagram.commandHandler = new DrawCommandHandler();
-  myDiagram.commandHandler.arrowKeyBehavior = "move";
 
   // Custom Figures for Shapes
 
-  go.Shape.FigureGenerators["Empty"] = function(shape, w, h) {
+  go.Shape.defineFigureGenerator("Empty", function(shape, w, h) {
     return new go.Geometry();
-  };
+  });
 
   var annotationStr = "M 150,0L 0,0L 0,600L 150,600 M 800,0";
   var annotationGeo = go.Geometry.parse(annotationStr);
   annotationGeo.normalize();
-  go.Shape.FigureGenerators["Annotation"] = function(shape, w, h) {
+  go.Shape.defineFigureGenerator("Annotation", function(shape, w, h) {
     var geo = annotationGeo.copy();
     // calculate how much to scale the Geometry so that it fits in w x h
     var bounds = geo.bounds;
     var scale = Math.min(w / bounds.width, h / bounds.height);
     geo.scale(scale, scale);
     return geo;
-  };
+  });
 
   var gearStr = "F M 391,5L 419,14L 444.5,30.5L 451,120.5L 485.5,126L 522,141L 595,83L 618.5,92L 644,106.5" +
     "L 660.5,132L 670,158L 616,220L 640.5,265.5L 658.122,317.809L 753.122,322.809L 770.122,348.309L 774.622,374.309" +
@@ -98,7 +110,7 @@ function init() {
   var gearGeo = go.Geometry.parse(gearStr);
   gearGeo.normalize();
 
-  go.Shape.FigureGenerators["BpmnTaskService"] = function(shape, w, h) {
+  go.Shape.defineFigureGenerator("BpmnTaskService", function(shape, w, h) {
     var geo = gearGeo.copy();
     // calculate how much to scale the Geometry so that it fits in w x h
     var bounds = geo.bounds;
@@ -108,7 +120,7 @@ function init() {
     geo.spot1 = new go.Spot(0, 0.6, 10, 0);
     geo.spot2 = new go.Spot(1, 1);
     return geo;
-  };
+  });
 
   var handGeo = go.Geometry.parse("F1M18.13,10.06 C18.18,10.07 18.22,10.07 18.26,10.08 18.91," +
     "10.20 21.20,10.12 21.28,12.93 21.36,15.75 21.42,32.40 21.42,32.40 21.42," +
@@ -125,7 +137,7 @@ function init() {
     "10.75 17.42,10.04 18.13,10.06z ");
   handGeo.rotate(90, 0, 0);
   handGeo.normalize();
-  go.Shape.FigureGenerators["BpmnTaskManual"] = function(shape, w, h) {
+  go.Shape.defineFigureGenerator("BpmnTaskManual", function(shape, w, h) {
     var geo = handGeo.copy();
     // calculate how much to scale the Geometry so that it fits in w x h
     var bounds = geo.bounds;
@@ -135,7 +147,7 @@ function init() {
     geo.spot1 = new go.Spot(0, 0.6, 10, 0);
     geo.spot2 = new go.Spot(1, 1);
     return geo;
-  };
+  });
 
 
   // sets the qualities of the tooltip
@@ -639,7 +651,7 @@ function init() {
 
   var privateProcessNodeTemplate =
     $(go.Node, "Auto",
-      { resizable: true, resizeObjectName: "LANE" },
+      { layerName: "Background", resizable: true, resizeObjectName: "LANE" },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Shape, "Rectangle",
         { fill: null }),
@@ -803,12 +815,11 @@ function init() {
     var model = myDiagram.model;
     model.setDataProperty(obj.data, "isDefault", true);
     // Set all other links from the fromNode to be isDefault=null
-    var itr = obj.fromNode.findLinksOutOf();
-    while (itr.next()) {
-      var link = itr.value;
-      if (link === obj) continue;
-      if (link.data.isDefault === true) model.setDataProperty(link.data, "isDefault", null);
-    }
+    obj.fromNode.findLinksOutOf().each(function(link) {
+      if (link !== obj && link.data.isDefault) {
+        model.setDataProperty(link.data, "isDefault", null);
+      }
+    });
     myDiagram.commitTransaction("setSequenceLinkDefaultFlow");
   }
 
@@ -857,13 +868,6 @@ function init() {
     return fromnode.containingGroup === tonode.containingGroup;
   }
 
-  myDiagram.toolManager.linkingTool = new BPMNLinkingTool(); // Defined in BPMNClasses.js
-  myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
-  myDiagram.toolManager.linkingTool.direction = go.LinkingTool.ForwardsOnly;      // don't allow user to create link starting on the To node
-  myDiagram.toolManager.linkingTool.linkValidation = sameLevel;
-
-  myDiagram.toolManager.relinkingTool.linkValidation = sameLevel;
-
   var linkTemplateMap = new go.Map("string", go.Link);
   linkTemplateMap.add("msg", messageFlowLinkTemplate);
   linkTemplateMap.add("annotation", annotationAssociationLinkTemplate);
@@ -871,6 +875,40 @@ function init() {
   linkTemplateMap.add("", sequenceLinkTemplate);  // default
 
   myDiagram.linkTemplateMap = linkTemplateMap;
+
+  //------------------------------------------  Diagram Listeners   ----------------------------------------------
+
+  myDiagram.addDiagramListener("LinkDrawn", function(e) {
+    if (e.subject.fromNode.category === "annotation") {
+      e.subject.category = "annotation"; // annotation association
+    } else if (e.subject.fromNode.category === "dataobject" || e.subject.toNode.category === "dataobject") {
+      e.subject.category = "data"; // data association
+    } else if (e.subject.fromNode.category === "datastore" || e.subject.toNode.category === "datastore") {
+      e.subject.category = "data"; // data association
+    }
+  });
+
+  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
+    // e.subject is the collection that was just dropped
+    e.subject.each(function(part) {
+        if (part instanceof go.Node && part.data.item === "end") {
+          part.data.loc.x = part.data.loc.x + 350;
+        }
+      });
+    myDiagram.commandHandler.expandSubGraph();
+  });
+
+  // change the title to indicate that the diagram has been modified
+  myDiagram.addDiagramListener("Modified", function(e) {
+    var currentFile = document.getElementById("currentFile");
+    var idx = currentFile.textContent.indexOf("*");
+    if (myDiagram.isModified) {
+      if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
+    } else {
+      if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+    }
+  });
+
 
   //------------------------------------------  Palette   ----------------------------------------------
 
@@ -1055,6 +1093,7 @@ function init() {
     myPalette.model.addNodeData(debugPalette[i]);
   }
 
+
   //------------------------------------------  Overview   ----------------------------------------------
 
   var myOverview =
@@ -1063,91 +1102,15 @@ function init() {
   // change color of viewport border in Overview
   myOverview.box.elt(0).stroke = "dodgerblue";
 
-  //------------------------------------------  Diagram Listeners   ----------------------------------------------
-
-  // change the title to indicate that the diagram has been modified
-  myDiagram.addDiagramListener("Modified", function(e) {
-    var currentFile = document.getElementById("currentFile");
-    var idx = currentFile.textContent.indexOf("*");
-    if (myDiagram.isModified) {
-      if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
-    } else {
-      if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
-    }
-  });
-
-  // set these kinds of Diagram properties after initialization, not now
-  myDiagram.addDiagramListener("InitialLayoutCompleted", loadDiagramProperties);
-
-  myDiagram.addDiagramListener("LinkDrawn", function(e) {
-    if (e.subject.fromNode.category === "annotation") {
-      e.subject.category = "annotation"; // annotation association
-    } else if (e.subject.fromNode.category === "dataobject" || e.subject.toNode.category === "dataobject") {
-      e.subject.category = "data"; // data association
-    } else if (e.subject.fromNode.category === "datastore" || e.subject.toNode.category === "datastore") {
-      e.subject.category = "data"; // data association
-    }
-  });
-
-  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-    var newgroup = e.subject;
-    if (newgroup) {
-      var itr = newgroup.iterator;
-      while (itr.next()) {
-        var part = itr.value;
-        if (part instanceof go.Node && part.data.item === "end") {
-          part.data.loc.x = part.data.loc.x + 350;
-        }
-      }
-    }
-    myDiagram.commandHandler.expandSubGraph();
-  });
 
   // start with a blank canvas:
+  // myDiagram.isModified = false;
   // newDocument();
 
   // start with a simple preset model:
   loadModel();
 } // end init
 
-
-
-
-
-//------------------------------------------  Commands for this application  ----------------------------------------------
-
-// Add a port to the specified side of the selected nodes.   name is beN  (be0, be1)
-function addActivityNodeBoundaryEvent(evType) {
-  myDiagram.startTransaction("addBoundaryEvent");
-  var it = myDiagram.selection.iterator;
-  while (it.next()) {
-    var node = it.value;
-    if (node.data.category === "activity" || node.data.category === "subprocess") {
-      // skip any selected Links
-      if (!(node instanceof go.Node)) continue;
-      // compute the next available index number for the side
-      var i = 0;
-      var defaultPort = node.findPort("");
-      while (node.findPort("be" + i.toString()) !== defaultPort) i++;           // now this new port name is unique within the whole Node because of the side prefix
-      var name = "be" + i.toString();
-      // get the Array of port data to be modified
-      var arr = node.data["boundaryEventArray"];
-      if (arr) {
-        // create a new port data object
-        var newportdata = {
-          portId: name,
-          eventType: evType,
-          color: "white",
-          alignmentIndex: i
-          // if you add port data properties here, you should copy them in copyPortData above
-        };
-        // and add it to the Array of port data
-        myDiagram.model.insertArrayItem(arr, -1, newportdata);
-      }
-    }
-  }
-  myDiagram.commitTransaction("addBoundaryEvent");
-}
 
 // When copying a node, we need to copy the data that the node is bound to.
 // This JavaScript object includes properties for the node as a whole, and
@@ -1207,6 +1170,40 @@ function copyBoundaryEventData(data) {
   return copy;
 }
 
+
+//------------------------------------------  Commands for this application  ----------------------------------------------
+
+// Add a port to the specified side of the selected nodes.   name is beN  (be0, be1)
+function addActivityNodeBoundaryEvent(evType) {
+  myDiagram.startTransaction("addBoundaryEvent");
+  myDiagram.selection.each(function(node) {
+    // skip any selected Links
+    if (!(node instanceof go.Node)) return;
+    if (node.data.category === "activity" || node.data.category === "subprocess") {
+      // compute the next available index number for the side
+      var i = 0;
+      var defaultPort = node.findPort("");
+      while (node.findPort("be" + i.toString()) !== defaultPort) i++;           // now this new port name is unique within the whole Node because of the side prefix
+      var name = "be" + i.toString();
+      // get the Array of port data to be modified
+      var arr = node.data["boundaryEventArray"];
+      if (arr) {
+        // create a new port data object
+        var newportdata = {
+          portId: name,
+          eventType: evType,
+          color: "white",
+          alignmentIndex: i
+          // if you add port data properties here, you should copy them in copyPortData above
+        };
+        // and add it to the Array of port data
+        myDiagram.model.insertArrayItem(arr, -1, newportdata);
+      }
+    }
+  });
+  myDiagram.commitTransaction("addBoundaryEvent");
+}
+
 // changes the item of the object
 function rename(obj) {
   myDiagram.startTransaction("rename");
@@ -1220,7 +1217,7 @@ function rename(obj) {
 function updateGridOption() {
   myDiagram.startTransaction("grid");
   var grid = document.getElementById("grid");
-  myDiagram.grid.visible = (grid.checked === true);
+  myDiagram.grid.visible = grid.checked;
   myDiagram.commitTransaction("grid");
 }
 
@@ -1228,7 +1225,7 @@ function updateGridOption() {
 function updateSnapOption() {
   // no transaction needed, because we are modifying tools for future use
   var snap = document.getElementById("snap");
-  if (snap.checked === true) {
+  if (snap.checked) {
     myDiagram.toolManager.draggingTool.isGridSnapEnabled = true;
     myDiagram.toolManager.resizingTool.isGridSnapEnabled = true;
   } else {
@@ -1268,8 +1265,8 @@ function newDocument() {
       saveDocument();
     }
   }
-  // loads a blank diagram
   setCurrentFileName(UnsavedFileName);
+  // loads an empty diagram
   myDiagram.model = new go.GraphLinksModel();
   myDiagram.model.undoManager.isEnabled = true;
   myDiagram.isModified = false;
@@ -1295,12 +1292,12 @@ function checkLocalStorage() {
 // saves the current floor plan to local storage
 function saveDocument() {
   if (checkLocalStorage()) {
-    if (getCurrentFileName() === UnsavedFileName) {
+    var saveName = getCurrentFileName();
+    if (saveName === UnsavedFileName) {
       saveDocumentAs();
     } else {
-      myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
-      var str = myDiagram.model.toJson();
-      window.localStorage.setItem(getCurrentFileName(), str);
+      saveDiagramProperties()
+      window.localStorage.setItem(saveName, myDiagram.model.toJson());
       myDiagram.isModified = false;
     }
   }
@@ -1312,9 +1309,8 @@ function saveDocumentAs() {
     var saveName = prompt("Save file as...", getCurrentFileName());
     if (saveName && saveName !== UnsavedFileName) {
       setCurrentFileName(saveName);
-      myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
-      var str = myDiagram.model.toJson();
-      window.localStorage.setItem(saveName, str);
+      saveDiagramProperties()
+      window.localStorage.setItem(saveName, myDiagram.model.toJson());
       myDiagram.isModified = false;
     }
   }
@@ -1340,21 +1336,6 @@ function removeDocument() {
   }
 }
 
-// save a model to and load a model from Json text, displayed below the Diagram
-function saveModel() {
-  var str = myDiagram.model.toJson();
-  document.getElementById("mySavedModel").value = str;
-}
-function loadModel() {
-  var str = document.getElementById("mySavedModel").value;
-  if (str !== "") {
-    myDiagram.model = go.Model.fromJson(str);
-    // moving and linking Nodes, and deletions, can be undone with ctrl-z
-    myDiagram.undoManager.isEnabled = true;
-    ModelReset();
-  }
-}
-
 // these functions are called when panel buttons are clicked
 
 function loadFile() {
@@ -1372,15 +1353,25 @@ function loadFile() {
     myDiagram.model = go.Model.fromJson(savedFile);
     myDiagram.model.undoManager.isEnabled = true;
     myDiagram.isModified = false;
+    // eventually loadDiagramProperties will be called to finish
+    // restoring shared saved model/diagram properties
   }
   closeElement("openDocument");
 }
 
-// Called by myDiagram.addDiagramListener("InitialLayoutCompleted" ...
+// Store shared model state in the Model.modelData property
+// (will be loaded by loadDiagramProperties)
+function saveDiagramProperties() {
+  myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
+}
+
+// Called by myDiagram.addDiagramListener("InitialLayoutCompleted" ...,
+// NOT directly by loadFile.
 function loadDiagramProperties(e) {
   var pos = myDiagram.model.modelData.position;
   if (pos) myDiagram.position = go.Point.parse(pos);
 }
+
 
 // deletes the selected file from local storage
 function removeFile() {
@@ -1428,5 +1419,21 @@ function closeElement(id) {
   var panel = document.getElementById(id);
   if (panel.style.visibility === "visible") {
     panel.style.visibility = "hidden";
+  }
+}
+
+
+// save a model to and load a model from Json text, displayed below the Diagram
+function saveModel() {
+  var str = myDiagram.model.toJson();
+  document.getElementById("mySavedModel").value = str;
+}
+function loadModel() {
+  var str = document.getElementById("mySavedModel").value;
+  if (str !== "") {
+    myDiagram.model = go.Model.fromJson(str);
+    // moving and linking Nodes, and deletions, can be undone with ctrl-z
+    myDiagram.undoManager.isEnabled = true;
+    ModelReset();
   }
 }

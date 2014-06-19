@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Item Arrays-- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Panel Item Arrays</h2>
+<p>
+How does one display a variable number of elements in a node by data binding to a JavaScript Array?
+The answer is simple: just bind (or set) <a>Panel.itemArray</a>.
+The <a>Panel</a> will contain as many elements as there are values in the bound Array.
+</p>
+
+<h3>Simple item lists</h3>
+<p>
+Here is a very simple example demonstrating the standard way of binding <a>Panel.itemArray</a> to a data property whose value is an Array.
+</p>
+<pre data-language="javascript" id="simple">
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      new go.Binding("itemArray", "items"));
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: 1, items: [ "Alpha", "Beta", "Gamma", "Delta" ] },
+          { key: 2, items: [ "first", "second", "third" ] }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 }
+        ]
+      });
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("simple", 450, 200)</script>
+<p>
+Note that the <a>Panel.itemArray</a> property is almost always bound to some data property that always has an Array as its value.
+One does not use a literal or constructed Array as the initial value for the Panel.itemArray property in a template,
+unless you expect all parts copied from the template will always have exactly the same unchanging list of items.
+</p>
+<p>
+As with most data bindings, the name of the data property does not really matter.
+In this example, the property name is "items", but you can use whatever name seems appropriate to your app.
+You can also have more than one item array in a node or link.
+</p>
+
+<h3>Item templates</h3>
+<p>
+You can customize the elements created for each array item by specifying the <a>Panel.itemTemplate</a>.
+The template must be an instance of <a>Panel</a>.
+Each item in the bound Array will get a copy of this Panel that is added to the Panel with the <a>Panel.itemArray</a>.
+The <a>Panel.data</a> will be the item in the Array, so all of the normal data binding functionality is available to customize each item Panel.
+</p>
+<p>
+This use of templates and data binding is similar to the way <a>Node</a>s are created automatically in a <a>Diagram</a> based on an Array of node data in the model.
+The value of <a>Diagram.nodeTemplate</a> must always be a <a>Node</a> or a simple <a>Part</a>;
+the value of <a>Panel.itemTemplate</a> must always be a <a>Panel</a> and cannot be a <a>Part</a>.
+</p>
+<p>
+Note that each item in the <a>Panel.itemArray</a> can be any JavaScript value, including strings and numbers.
+This is different than the values held by the <a>Model.nodeDataArray</a>, which must all be JavaScript Objects.
+The item <a>Panel.data</a> value may be a string, as it is in this example;
+the <a>Part.data</a> value will always be an Object.
+</p>
+<p>
+Here is a simple customization of the <a>Panel.itemTemplate</a>, working with the same model as above.
+Note that the second argument to the <a>Binding</a> constructor in this case is the empty string,
+because strings (and numbers) do not have many useful properties.
+</p>
+<pre data-language="javascript" id="vertical">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "#3AA7A3" }),
+      $(go.Panel, "Vertical",
+        new go.Binding("itemArray", "items"),
+        {
+          itemTemplate:
+            $(go.Panel, "Auto",
+              { margin: 2 },
+              $(go.Shape, "RoundedRectangle",
+                { fill: "#91E3E0" }),
+              $(go.TextBlock, new go.Binding("text", ""),
+                { margin: 2 })
+            )  // end of itemTemplate
+        })
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: 1, items: [ "Alpha", "Beta", "Gamma", "Delta" ] },
+          { key: 2, items: [ "first", "second", "third" ] }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 }
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("vertical", 450, 200)</script>
+<p>
+However even when binding to strings or numbers one could make the use of converters to get the desired binding values.
+</p>
+
+<p>
+Of course if the array items are Objects, you can refer to their properties just as you can in a <a>Diagram.nodeTemplate</a>.
+As with node data, you can have as many properties on your item data as your app demands, using whatever property names you prefer.
+Use data binding to automatically use those property values to customize the appearance and behavior of your item Panels.
+</p>
+<pre data-language="javascript" id="verticalobjects">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "#3AA7A3" }),
+      $(go.Panel, "Vertical",
+        new go.Binding("itemArray", "items"),
+        {
+          itemTemplate:
+            $(go.Panel, "Auto",
+              { margin: 2 },
+              $(go.Shape, "RoundedRectangle",
+                { fill: "#91E3E0" },
+                new go.Binding("fill", "c")),
+              $(go.TextBlock, new go.Binding("text", "t"),
+                { margin: 2 })
+            )
+        })
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          {
+            key: 1,
+            items: [
+              { t: "Alpha", c: "orange" },
+              { t: "Beta" },
+              { t: "Gamma", c: "green" },
+              { t: "Delta", c: "yellow" }
+            ]
+          },
+          {
+            key: 2,
+            items: [
+              { t: "first", c: "red" },
+              { t: "second", c: "cyan" },
+              { t: "third" }
+            ]
+          }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 }
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("verticalobjects", 450, 200)</script>
+
+<h3>Different Panel types</h3>
+<p>
+Although <a>Panel</a>s that have an item array are often of type <a>Panel.Vertical</a>,
+you can use other panel types that support a variable number of elements.
+The most common types are <a>Panel.Vertical</a>, <a>Panel.Horizontal</a>, <a>Panel.Table</a>, and <a>Panel.Position</a>.
+It does not make sense to use a <a>Panel.Viewbox</a> panel, because that panel type only supports a single element.
+</p>
+<p>
+If the panel type is <a>Panel.Spot</a>, <a>Panel.Auto</a>, or <a>Panel.Link</a>,
+the first child element of the Panel is assumed to be the "main" object and is kept as the first child
+in addition to all of the nested panels created for the values in the <a>Panel.itemArray</a>.
+</p>
+<p>
+Here is an example of a horizontal Panel:
+</p>
+<pre data-language="javascript" id="horizontal">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "gold" }),
+      $(go.Panel, "Horizontal",
+        { margin: 4 },
+        new go.Binding("itemArray", "a"),
+        {
+          itemTemplate:
+            $(go.Panel, "Auto",
+              { margin: 2 },
+              $(go.Shape, "RoundedRectangle",
+                { fill: "white" }),
+              $(go.TextBlock, new go.Binding("text", ""),
+                { margin: 2 })
+            )  // end of itemTemplate
+        })
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: "n1", a: [ 23, 17, 45, 21 ] },
+          { key: "n2", a: [ 1, 2, 3, 4, 5 ] }
+        ],
+        linkDataArray: [
+          { from: "n1", to: "n2" }
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("horizontal", 450, 200)</script>
+
+<p>
+When using a <a>Panel</a> of type <a>Panel.Table</a> as the container, it is commonplace
+to use an item template that is of type <a>Panel.TableRow</a> or <a>Panel.TableColumn</a>.
+This is the only way to specify the individual column or row indexes for the elements inside the template.
+</p>
+<pre data-language="javascript" id="table">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, { fill: "lightgray" }),
+      $(go.Panel, "Table",
+        new go.Binding("itemArray", "people"),
+        { margin: 4,
+          defaultAlignment: go.Spot.Left,
+          itemTemplate:
+            $(go.Panel, "TableRow",
+              new go.Binding("background", "back"),
+              $(go.TextBlock, new go.Binding("text", "name"),
+                { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
+              $(go.TextBlock, new go.Binding("text", "phone"),
+                { column: 1, margin: 2 }),
+              $(go.TextBlock, new go.Binding("text", "loc"),
+                { column: 2, margin: 2 })
+            )  // end of itemTemplate
+        })
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: "group1",
+            people: [
+              { name: "Alice", phone: "2345", loc: "C4-E18" },
+              { name: "Bob", phone: "9876", loc: "E1-B34", back: "red" },
+              { name: "Carol", phone: "1111", loc: "C4-E23" },
+              { name: "Ted", phone: "2222", loc: "C4-E197" }
+            ] },
+          { key: "group2",
+            people: [
+              { name: "Robert", phone: "5656", loc: "B1-A27" },
+              { name: "Natalie", phone: "5698", loc: "B1-B6" }
+            ] }
+        ],
+        linkDataArray: [
+          { from: "group1", to: "group2" }
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("table", 450, 200)</script>
+
+<h3>Arrays in Models</h3>
+<p>
+When a data-bound Part is copied, the Part's <a>Part.data</a>, which must be a JavaScript Object, is copied too.
+The normal copying method, <a>Model.copyNodeData</a>, make a shallow copy of the original data object.
+</p>
+<p>
+However that is probably not the desired behavior for arrays.
+When you use item Arrays, you normally do <em>not</em> want to share those Arrays between copies of the Node.
+If your node data is not copied correctly, unexpected behavior may occur.
+So when you are using item Arrays and permit users to copy nodes, you will want to implement your own node data copier function
+and assign it to <a>Model.copyNodeDataFunction</a>.
+</p>
+<p>
+This is demonstrated by the <a href="../samples/dynamicPorts.html">Dynamic Ports</a> sample,
+which not only needs to copy the four item Arrays that each node data holds,
+but also each Object that is in each of those Arrays.
+</p>
+<p>
+If you need to dynamically modify the value of a property of an item data, call <a>Model.setDataProperty</a>,
+just as you would for node data or link data.
+</p>
+<p>
+If you need to add or remove items from an item Array, call the <a>Model.insertArrayItem</a> or <a>Model.removeArrayItem</a> methods.
+</p>
+
+</div>
+</body>
+</html>

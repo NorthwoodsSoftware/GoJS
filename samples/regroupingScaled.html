@@ -3,9 +3,9 @@
 <head>
   <title>Regrouping Demo with shrinking members</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -37,6 +37,7 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("saveModel");
       if (button) button.disabled = !myDiagram.isModified;
@@ -53,24 +54,19 @@
     // this function is used to highlight a Group that the selection may be dropped into
     function highlightGroup(e, grp, show) {
       if (!grp) return;
-      var shp = grp.placeholder;
-      if (shp) {
-        if (show) {
-          // cannot depend on the grp.diagram.selection in the case of external drag-and-drops;
-          // instead depend on the DraggingTool.draggedParts or .copiedParts
-          var tool = grp.diagram.toolManager.draggingTool;
-          var map = tool.draggedParts != null ? tool.draggedParts : tool.copiedParts;  // this is a Map
-          // now we can check to see if the Group will accept membership of the dragged Parts
-          if (grp.canAddMembers(map.toKeySet())) {
-            shp.background = "red";
-          } else {
-            shp.background = "transparent";
-          }
-        } else {
-          shp.background = "transparent";
+      e.handled = true;
+      if (show) {
+        // cannot depend on the grp.diagram.selection in the case of external drag-and-drops;
+        // instead depend on the DraggingTool.draggedParts or .copiedParts
+        var tool = grp.diagram.toolManager.draggingTool;
+        var map = tool.draggedParts || tool.copiedParts;  // this is a Map
+        // now we can check to see if the Group will accept membership of the dragged Parts
+        if (grp.canAddMembers(map.toKeySet())) {
+          grp.isHighlighted = true;
+          return;
         }
       }
-      e.handled = true;
+      grp.isHighlighted = false;
     }
 
     // upon a drop onto a Group, we try to add the selection as members of the Group;
@@ -118,7 +114,8 @@
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
-            { padding: 5 })
+            { padding: 5, alignment: go.Spot.TopLeft },
+            new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
         ),  // end Vertical Panel
         $(go.Shape, "RoundedRectangle",
           {
@@ -163,7 +160,8 @@
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
-            { padding: 5 })
+            { padding: 5, alignment: go.Spot.TopLeft },
+            new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
         ),  // end Vertical Panel
         $(go.Shape, "RoundedRectangle",
           {

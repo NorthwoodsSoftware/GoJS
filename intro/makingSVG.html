@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Making SVG -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+
+  <style type="text/css">
+  .images {
+    border: 1px solid rgba(255,0,0,.4);
+  }
+
+  /* make HRs thicker to set them apart from the code section borders */
+  hr {
+      height: 3px;
+      background: #333;
+  }
+  </style>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Making SVG</h2>
+<p>
+<b>GoJS</b> has one function for creating SVG: <a>Diagram.makeSvg</a>, which returns a new SVGElement with a representation of a GoJS Diagram. The method has a single argument, a JavaScript Object that contains several definable properties, enumerated in the documentation.
+</p>
+<p>
+  This page is almost identical to the page on <a href="makingImages.html">Making Images</a>, which shows how to render PNG images instead of SVG elements.
+</p>
+<p>
+Below are several examples of using <a>Diagram.makeSvg</a> on the following diagram:
+</p>
+<!-- Don't bother showing this source -->
+<pre data-language="javascript" id="diag" style="display: none;">
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  // define a simple Node template (but use the default Link template)
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        // Shape.fill is bound to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding("text", "key"))
+    );
+
+  // create the model data that will be represented by Nodes and Links
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  window.myDiagram = diagram;
+
+ window.goCode2 = function(pre) {
+  if (diagramclass === undefined) diagramclass = go.Diagram;
+  if (typeof pre === "string") pre = document.getElementById(pre);
+  var f = eval("(function () {window.img = " + pre.textContent + "})");
+  f();
+  img.className = "images";
+  pre.parentElement.insertBefore(img, pre.nextSibling)
+}
+
+ window.goCode3 = function(pre) {
+  if (diagramclass === undefined) diagramclass = go.Diagram;
+  if (typeof pre === "string") pre = document.getElementById(pre);
+  var f = eval("(function () {" + pre.textContent + "})");
+  f();
+}
+
+  window.addSVG = function(img) {
+    obj = document.getElementById("severalImages");
+    img.className = "images";
+    obj.appendChild(img)
+  }
+</pre>
+<script>goCode("diag", 300, 150)</script>
+
+<hr/>
+<p>
+Calling makeSvg with no arguments or with an empty properties object results in a scene that is the same size as the Diagram's viewport.
+</p>
+<pre data-language="javascript" id="code0">
+myDiagram.makeSvg();
+</pre>
+<script>goCode2("code0");</script>
+
+<hr/>
+<p>
+Calling makeSvg with an object that has the "scale" property set to 1 results in a scene that includes the whole diagram,
+not just the area visible in the viewport.  However, the empty areas around the document bounds are trimmed away.
+</p>
+<pre data-language="javascript" id="codeA">
+myDiagram.makeSvg({
+  scale: 1
+});
+</pre>
+<script>goCode2("codeA");</script>
+
+<hr/>
+<p>
+Setting the scale property will create a scaled SVG Scene that is precisely large enough to contain the Diagram. The following SVG is created with a scale of 2.
+</p>
+<pre data-language="javascript" id="code1">
+myDiagram.makeSvg({
+  scale: 2
+});
+</pre>
+<script>goCode2("code1");</script>
+
+<p>
+  <em>Note how, unlike an image, you can select the text.</em>
+</p>
+
+<hr/>
+
+<p>
+The following SVG is created by setting the size option of makeSvg. Note that the canvas is scaled uniformly and any extra space is placed on the bottom or right side of the SVG.
+</p>
+<pre data-language="javascript" id="code2">
+myDiagram.makeSvg({
+  size: new go.Size(100,100)
+});
+</pre>
+<script>goCode2("code2");</script>
+
+<hr/>
+
+<p>The following SVG is also created by setting the size option of makeSvg, but only the width is set. The height will be whatever size is needed to uniformly contain the Diagram.</p>
+<pre data-language="javascript" id="code3">
+myDiagram.makeSvg({
+  size: new go.Size(100,NaN)
+});
+</pre>
+<script>goCode2("code3");</script>
+
+<hr/>
+
+<p>The parts option allows us to specify an <a>Iterable</a> collection of Parts to draw. This is useful if you only want to make an image of part of the diagram, such as a selection of nodes.</p>
+<pre data-language="javascript" id="code4a">
+  myPartsList = new go.List();
+  myPartsList.add(myDiagram.findNodeForKey("Beta"));
+  myPartsList.add(myDiagram.findNodeForKey("Delta"));
+</pre>
+<script>goCode3("code4a");</script>
+<pre data-language="javascript" id="code4">
+myDiagram.makeSvg({
+  parts: myPartsList
+});
+</pre>
+<script>goCode2("code4");</script>
+<p>Or drawing only the links:</p>
+<pre data-language="javascript" id="code4-2">
+myDiagram.makeSvg({
+  parts: myDiagram.links
+});
+</pre>
+<script>goCode2("code4-2");</script>
+
+<hr/>
+
+<p>Setting both scale and size creates an image that is scaled specifically and cropped to the given size, as in the following image.</p>
+<pre data-language="javascript" id="code5">
+myDiagram.makeSvg({
+  scale: 1.5,
+  size: new go.Size(100,100)
+});
+</pre>
+<script>goCode2("code5");</script>
+
+<hr/>
+
+<p>We may want a very large, scaled image that has a limit on its size, and we can use the maxSize property to constrain one or both dimensions. The following image has a very large scale applied but is limited in size horizontally, so some horizontal cropping will occur.</p>
+<p>The default value for maxSize is <code>go.Size(2000, 2000)</code>, and specifying <code>go.Size(600, NaN)</code> is equivalent to specifying <code>go.Size(600, 2000)</code>. If we wanted no cropping on the height we could instead write <code>go.Size(600, Infinity)</code>.</p>
+<pre data-language="javascript" id="code6">
+myDiagram.makeSvg({
+  scale: 9,
+  maxSize: new go.Size(600, NaN)
+});
+</pre>
+<script>goCode2("code6");</script>
+
+<hr/>
+
+<p>Setting both position and size creates a diagram image that is positioned specifically and cropped to the given size. When a position is set but no scale is set, the scale defaults to 1.</p>
+<pre data-language="javascript" id="code7">
+myDiagram.makeSvg({
+  position: new go.Point(20,20),
+  size: new go.Size(50,50)
+});
+</pre>
+<script>goCode2("code7");</script>
+
+<p>Setting the background to a CSS color string will replace the transparent Diagram background with the given color.</p>
+<pre data-language="javascript" id="code8">
+myDiagram.makeSvg({
+  size: new go.Size(NaN,250),
+  background: "rgba(0, 255, 0, 0.5)" // semi-transparent green background
+});
+</pre>
+<script>goCode2("code8");</script>
+
+<hr/>
+
+<p>In the following code we use the document bounds to split the Diagram into four equal parts, making four images out of each part. In this way we can prepare images for pagination, making a gallery, or printing purposes. The four images created are shown below.</p>
+<pre data-language="javascript" id="manyImgCode">
+    var d = myDiagram.documentBounds;
+    var halfWidth = d.width / 2;
+    var halfHeight = d.height / 2;
+    svg = myDiagram.makeSvg({
+            position: new go.Point(d.x, d.y),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addSVG(svg); // Adds the SVG to a DIV below
+
+    svg = myDiagram.makeSvg({
+            position: new go.Point(d.x + halfWidth, d.y),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addSVG(svg);
+
+    svg = myDiagram.makeSvg({
+            position: new go.Point(d.x, d.y+ halfHeight),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addSVG(svg);
+
+    svg = myDiagram.makeSvg({
+            position: new go.Point(d.x + halfWidth, d.y + halfHeight),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addSVG(svg);
+</pre>
+<div id="severalImages"></div>
+<script>goCode3("manyImgCode");</script>
+
+<hr />
+
+<p>
+  You can open the SVG in a new window by appending it to the DOM of a new page:
+</p>
+
+<button id="openSVG">Open SVG</button>
+
+<pre data-language="javascript" id="codea1">
+var button = document.getElementById('openSVG');
+button.addEventListener('click', function() {
+  var svg = myDiagram.makeSvg({
+    scale: 9,
+    maxSize: new go.Size(600, NaN)
+  });
+  var myWindow = window.open("","myWindow");
+  myWindow.document.body.appendChild(svg);
+}, false);
+
+</pre>
+<script>goCode("codea1");</script>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Tooltips -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>ToolTips</h2>
+<p>
+<b>GoJS</b> provides a way to create customized tooltips for any object or for the diagram background.
+</p>
+<p>
+A tooltip is an <a>Adornment</a> that is shown when the mouse hovers over an object that has its <a>GraphObject.toolTip</a> set.
+The tooltip part is bound to the same data as the part itself.
+</p>
+<p>
+In this example each <a>Node</a> has its <a>GraphObject.toolTip</a> property set to a Part that shows the
+data.color property via a normal data binding.
+The diagram gets its own tooltip by setting <a>Diagram.toolTip</a>.
+</p>
+<pre data-language="javascript" id="tooltips">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key")),
+      {
+        toolTip:  // define a tooltip for each node that displays the color as text
+          $(go.Adornment, "Auto",
+            $(go.Shape, { fill: "#FFFFCC" }),
+            $(go.TextBlock, { margin: 4 },
+              new go.Binding("text", "color"))
+          )  // end of Adornment
+      }
+    );
+
+  // a function that produces the content of the diagram tooltip
+  function diagramInfo(model) {
+    return "Model:\n" + model.nodeDataArray.length + " nodes, " + model.linkDataArray.length + " links";
+  }
+
+  // provide a tooltip for the background of the Diagram, when not over any Part
+  diagram.toolTip =
+    $(go.Adornment, "Auto",
+      $(go.Shape, { fill: "#CCFFCC" }),
+      $(go.TextBlock, { margin: 4 },
+        // use a converter to display information about the diagram model
+        new go.Binding("text", "", diagramInfo))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("tooltips", 250, 100)</script>
+<p>
+Try pausing the mouse over each of the nodes or in the background of the diagram.
+If you copy some parts, you will see that the tooltip for the diagram displays newer information about the diagram.
+</p>
+<p>
+You can change how long for the mouse has to wait motionless before a tooltip appears by setting <a>ToolManager.hoverDelay</a>.
+For example: <code>myDiagram.toolManager.hoverDelay = 600;</code> changes the delay to be 6/10ths of one second.
+</p>
+
+</div>
+</body>
+</html>

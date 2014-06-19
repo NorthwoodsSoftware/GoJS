@@ -3,9 +3,9 @@
 <head>
 <title>Decision Tree</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -19,40 +19,39 @@
                     layout: $(go.TreeLayout)
                   });
 
-
     // custom behavior for expanding/collapsing half of the subtree from a node
-    function buttonExpandCollapse(obj, shapename) {
-      var node = obj.part;
-      var shape = node.findObject(shapename);
-      var portid = shape.portId;
-      var lit = node.findLinksOutOf(portid);
-      while (lit.next()) {
-        var l = lit.value;
-        if (l.visible) {
-          // collapse whole subtree recursively
-          collapseTree(node, portid);
-        } else {
-          // only expands immediate children and their links
-          l.visible = true;
-          var n = l.getOtherNode(node);
-          if (n !== null) n.visible = true;
-        }
-      }
+    function buttonExpandCollapse(port) {
+      var node = port.part;
+      node.diagram.startTransaction("expand/collapse");
+      var portid = port.portId;
+      node.findLinksOutOf(portid).each(function(l) {
+          if (l.visible) {
+            // collapse whole subtree recursively
+            collapseTree(node, portid);
+          } else {
+            // only expands immediate children and their links
+            l.visible = true;
+            var n = l.getOtherNode(node);
+            if (n !== null) {
+              n.location = node.getDocumentPoint(go.Spot.TopRight);
+              n.visible = true;
+            }
+          }
+        });
       myDiagram.toolManager.hideToolTip();
+      node.diagram.commitTransaction("expand/collapse");
     }
 
     // recursive function for collapsing complete subtree
     function collapseTree(node, portid) {
-      var lit = node.findLinksOutOf(portid);
-      while (lit.next()) {
-        var l = lit.value;
-        l.visible = false;
-        var n = l.getOtherNode(node);
-        if (n !== null) {
-          n.visible = false;
-          collapseTree(n, null);  // null means all links, not just for a particular portId
-        }
-      }
+      node.findLinksOutOf(portid).each(function(l) {
+          l.visible = false;
+          var n = l.getOtherNode(node);
+          if (n !== null) {
+            n.visible = false;
+            collapseTree(n, null);  // null means all links, not just for a particular portId
+          }
+        });
     }
 
     // get the text for the tooltip from the data on the object being hovered over
@@ -73,14 +72,15 @@
     var tooltipTemplate =
       $(go.Adornment, "Auto",
         $(go.Shape, "Rectangle",
-          { fill: "whitesmoke",
-            stroke: "lightgray" }),
+          { fill: "whitesmoke", stroke: "lightgray" }),
         $(go.TextBlock,
-          { font: "8pt sans-serif",
+          {
+            font: "8pt sans-serif",
             wrap: go.TextBlock.WrapFit,
             desiredSize: new go.Size(200, NaN),
             alignment: go.Spot.Center,
-            margin: 6 },
+            margin: 6
+          },
           new go.Binding("text", "", tooltipTextConverter))
       );
 
@@ -90,28 +90,30 @@
         new go.Binding("text", "key"),
         // define the node's outer shape, which will surround the Horizontal Panel
         $(go.Shape, "Cloud",
-          { fill: "whitesmoke",
-            stroke: "lightgray" }),
+          { fill: "whitesmoke", stroke: "lightgray" }),
         // define a horizontal Panel to place the node's text alongside the buttons
         $(go.Panel, "Horizontal",
           $(go.TextBlock,
-            { font: "26pt sans-serif",
-              margin: 5 },
+            { font: "26pt sans-serif", margin: 5 },
             new go.Binding("text", "key")),
           // define a vertical panel to place the node's two buttons one above the other
           $(go.Panel, "Vertical",
               $("Button",  // button A
-                { name: "ButtonA",
-                  click: function (e, obj) { buttonExpandCollapse(obj, "ButtonA"); },
-                  toolTip: tooltipTemplate },
+                {
+                  name: "ButtonA",
+                  click: function (e, obj) { buttonExpandCollapse(obj); },
+                  toolTip: tooltipTemplate
+                },
                 new go.Binding("portId", "a"),
                 $(go.TextBlock,
                   new go.Binding("text", "aText"))
               ),  // end button A
               $("Button",  // button B
-                { name: "ButtonB",
-                  click: function (e, obj) { buttonExpandCollapse(obj, "ButtonB"); },
-                  toolTip: tooltipTemplate },
+                {
+                  name: "ButtonB",
+                  click: function (e, obj) { buttonExpandCollapse(obj); },
+                  toolTip: tooltipTemplate
+                },
                 new go.Binding("portId", "b"),
                 $(go.TextBlock,
                   new go.Binding("text", "bText"))
@@ -125,12 +127,9 @@
       $(go.Node, "Auto",
         new go.Binding("text", "key"),
         $(go.Shape, "Rectangle",
-          { fill: "whitesmoke",
-            stroke: "lightgray" }),
+          { fill: "whitesmoke", stroke: "lightgray" }),
         $(go.TextBlock,
-          { wrap: go.TextBlock.WrapFit,
-            desiredSize: new go.Size(200, NaN),
-            margin: 5 },
+          { wrap: go.TextBlock.WrapFit, desiredSize: new go.Size(200, NaN), margin: 5 },
           new go.Binding("text", "text"))
       ));
 
@@ -140,9 +139,7 @@
         { fromPortId: "" },
         new go.Binding("fromPortId", "fromport"),
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "red",
-            strokeWidth: 2 })
+          { isPanelMain: true, stroke: "red", strokeWidth: 2 })
       );
 
     // create the model for the decision tree
@@ -155,16 +152,12 @@
     myDiagram.model = model;
 
     // make all but the start node invisible
-    var nit = myDiagram.nodes;
-    while (nit.next()) {
-      var n = nit.value;
-      if (n.text !== "Start") n.visible = false;
-    }
-    var lit = myDiagram.links;
-    while (lit.next()) {
-      var l = lit.value;
-      l.visible = false;
-    }
+    myDiagram.nodes.each(function(n) {
+        if (n.text !== "Start") n.visible = false;
+      });
+    myDiagram.links.each(function(l) {
+        l.visible = false;
+      });
   }
 
   function makeNodes(model) {

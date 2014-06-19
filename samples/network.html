@@ -3,9 +3,9 @@
 <head>
 <title>Network Configuration</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -19,6 +19,7 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("saveModel");
       if (button) button.disabled = !myDiagram.isModified;
@@ -120,18 +121,14 @@
 
     // remove cursors on all ports in the Palette
     // make TextBlocks invisible, to reduce size of Nodes
-    var nit = myPalette.nodes;
-    while (nit.next()) {
-      var pit = nit.value.ports;
-      while (pit.next()) {
-        pit.value.cursor = "";
-      }
-      var eit = nit.value.elements;
-      while (eit.next()) {
-        var tb = eit.value;
-        if (tb instanceof go.TextBlock) tb.visible = false;
-      }
-    }
+    myPalette.nodes.each(function(node) {
+        node.ports.each(function(port) {
+            port.cursor = "";
+          });
+        node.elements.each(function(tb) {
+            if (tb instanceof go.TextBlock) tb.visible = false;
+          });
+      });
 
     // initialize Overview
     myOverview =

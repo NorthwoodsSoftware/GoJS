@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Validation -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Validation</h2>
+<p>
+Some operations require more sophisticated controls than the binary permission flags discussed in the previous <a href="permissions.html">section</a>.
+When the user tries to draw a new link or reconnect an existing link, your application may want to restrict which links may be made,
+depending on the data.
+When the user tries to add a node to a group, your application may want to control whether it is permitted for that particular
+node in that particular group.
+When the user edits some text, your application may want to limit the kinds of strings that they enter.
+</p>
+
+<h3>Linking Validation</h3>
+<p>
+There are a number of <a>GraphObject</a> properties that let you control what links the user may draw or reconnect.
+These properties apply to each port element and affect the links that may connect with that port.
+</p>
+
+<h4>Linkable properties</h4>
+<p>
+The primary properties are <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>.
+If you do not have a <a>Node</a> containing an element with fromLinkable: true and another node
+with toLinkable: true, the user will not be able to draw a new link between the nodes.
+</p>
+<pre data-language="javascript" id="linkable">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Ellipse",
+        { fill: "green", portId: "", cursor: "pointer" },
+        new go.Binding("fromLinkable", "from"),
+        new go.Binding("toLinkable", "to")),
+      $(go.TextBlock,
+        { stroke: "white", margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "From1", loc: "0 0", from: true },
+    { key: "From2", loc: "0 100", from: true },
+    { key: "To1", loc: "150 0", to: true },
+    { key: "To2", loc: "150 100", to: true }
+  ];
+  var linkDataArray = [
+    // initially no links
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("linkable", 600, 150)</script>
+<p>
+Mouse down on the green ellipse (the cursor changes to a "pointer") and drag to start drawing a new link.
+Note how the only permitted links are those going from a "From" node to a "To" node.
+This is true even if you start the linking gesture on a "To" node.
+</p>
+
+<h4>Span of Linkable properties</h4>
+<p>
+Because the <a>TextBlock</a> in the above example is not declared to be a port (i.e. there is no value for <a>GraphObject.portId</a>),
+mouse events on the TextBlock do not start the <a>LinkingTool</a>.
+This allows users the ability to select and move the node as well as any number of other operations.
+</p>
+<p>
+You can certainly declare a <a>Panel</a> to have <a>GraphObject.fromLinkable</a> or <a>GraphObject.toLinkable</a> be true.
+This will cause all elements inside that panel to behave as part of the port, including starting a linking operation.
+Sometimes you will want to make the whole <a>Node</a> linkable.
+If you still want the user to be able to select and drag the node, you will need to make some easy-to-click elements not-"linkable" within the node.
+You can do that by explicitly setting <a>GraphObject.fromLinkable</a> and/or <a>GraphObject.toLinkable</a> to false.
+The default value for those two properties is null, which means the "linkable"-ness is inherited from the containing panel.
+</p>
+
+<h3>Other linking permission properties</h3>
+<p>
+Just because you have set <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>
+to true on the desired port objects
+does not mean that you want to allow users to create a link from every such port/node to every other port/node.
+There are other <a>GraphObject</a> properties governing linkability for both the "from" and the "to" ends.
+</p>
+
+<h4>LinkableDuplicates properties</h4>
+<p>
+One restriction that you may have noticed before is that the user cannot draw a second link between the same pair
+of nodes in the same direction.
+This example sets <a>GraphObject.fromLinkableDuplicates</a> or <a>GraphObject.toLinkableDuplicates</a> to true,
+in order to permit such duplicate links between nodes.
+</p>
+<pre data-language="javascript" id="linkableDuplicates">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Ellipse",
+        { fill: "green", portId: "", cursor: "pointer",
+          fromLinkableDuplicates: true, toLinkableDuplicates: true },
+        new go.Binding("fromLinkable", "from"),
+        new go.Binding("toLinkable", "to")),
+      $(go.TextBlock,
+        { stroke: "white", margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "From1", loc: "0 0", from: true },
+    { key: "From2", loc: "0 100", from: true },
+    { key: "To1", loc: "150 0", to: true },
+    { key: "To2", loc: "150 100", to: true }
+  ];
+  var linkDataArray = [
+    // initially no links
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("linkableDuplicates", 600, 150)</script>
+<p>
+Now try drawing multiple links between "From1" and "To1".
+You can see how the links are automatically spread apart.
+Try dragging one of the nodes to see what happens with the link routing.
+A similar effect occurs also when the link's <a>Link.curve</a> is <a>Link.Bezier</a>.
+</p>
+
+<h4>LinkableSelfNode properties</h4>
+<p>
+Another standard restriction is that the user cannot draw a link from a node to itself.
+Again it is easy to remove that restriction: just set <a>GraphObject.fromLinkableSelfNode</a>
+and <a>GraphObject.toLinkableSelfNode</a> to true.
+Note though that each node has to be both <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>.
+</p>
+<pre data-language="javascript" id="linkableSelfNodes">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Ellipse",
+        { fill: "green", portId: "", cursor: "pointer",
+          fromLinkable: true, toLinkable: true,
+          fromLinkableDuplicates: true, toLinkableDuplicates: true,
+          fromLinkableSelfNode: true, toLinkableSelfNode: true }),
+      $(go.TextBlock,
+        { stroke: "white", margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Node1", loc: "0 0" },
+    { key: "Node2", loc: "150 50" }
+  ];
+  var linkDataArray = [
+    // initially no links
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("linkableSelfNodes", 600, 150)</script>
+<p>
+To draw a reflexive link, start drawing a new link but stay near the node when you release the mouse button.
+This example also sets the "Duplicates" properties to true, so that you can draw multiple reflexive links.
+</p>
+
+<p>
+In these examples there is only one port per node.
+When there are multiple ports in a node, the restrictions actually apply per port, not per node.
+But the restrictions of the "LinkableSelfNode" properties do span the whole node,
+so they must be applied to both ports within a node for a link to connect to its own node.
+</p>
+
+<h4>MaxLinks properties</h4>
+<p>
+The final linking restriction properties control how many links may connect to a node/port.
+This example sets the <a>GraphObject.toMaxLinks</a> property to 2,
+even though <a>GraphObject.toLinkableDuplicates</a> is true,
+to limit how many links may go into "to" nodes.
+</p>
+<pre data-language="javascript" id="linkableMax">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Ellipse",
+        { fill: "green", portId: "", cursor: "pointer",
+          fromLinkableDuplicates: true, toLinkableDuplicates: true,
+          toMaxLinks: 2 },  // at most TWO links can come into this node
+        new go.Binding("fromLinkable", "from"),
+        new go.Binding("toLinkable", "to")),
+      $(go.TextBlock,
+        { stroke: "white", margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "From1", loc: "0 0", from: true },
+    { key: "From2", loc: "0 100", from: true },
+    { key: "To1", loc: "150 0", to: true },
+    { key: "To2", loc: "150 100", to: true }
+  ];
+  var linkDataArray = [
+    // initially no links
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("linkableMax", 600, 150)</script>
+<p>
+This example has no limit on the number of links that may come out of "from" nodes.
+</p>
+<p>
+If this property is set, it is most commonly set to one.
+Of course it depends on the nature of the application.
+</p>
+
+<h3>Cycles in graphs</h3>
+<p>
+If you want to make sure that the graph structure that your users create never have any cycles of links,
+or that the graph is always tree-structured, <b>GoJS</b> makes that easy to enforce.
+Just set <a>Diagram.validCycle</a> to <a>Diagram.CycleNotDirected</a> or <a>Diagram.CycleDestinationTree</a>.
+The default value is <a>Diagram.CycleAll</a>, which imposes no restrictions -- all kinds of link cycles are allowed.
+</p>
+<p>
+This example has nodes that allow links both to and from each node.
+However the assignment of <a>Diagram.validCycle</a> will prevent the user from drawing
+a second incoming link to any node and also ensures that the user draw no cycles in the graph.
+</p>
+<pre data-language="javascript" id="tree">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse",
+        { fill: "green", portId: "", cursor: "pointer",
+          fromLinkable: true, toLinkable: true }),
+      $(go.TextBlock,
+        { stroke: "white", margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Node1" }, { key: "Node2" }, { key: "Node3" },
+    { key: "Node4" }, { key: "Node5" }, { key: "Node6" },
+    { key: "Node7" }, { key: "Node8" }, { key: "Node9" }
+  ];
+  var linkDataArray = [
+    // initially no links
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+  diagram.validCycle = go.Diagram.CycleDestinationTree;  // only allow links that maintain tree-structure
+</pre>
+<script>goCode("tree", 600, 250)</script>
+<p>
+As you draw more links you can see how the set of potential linking destinations keeps getting smaller.
+</p>
+
+<h3>General linking validation</h3>
+<p>
+It may be the case that the semantics of your application will cause the set of valid link destinations to depend
+on the node data (i.e. at the node and port at which the link started from and at the possible destination node/port)
+in a manner that can only be implemented using code: a predicate function.
+</p>
+<p>
+You can implement such domain-specific validation by setting <a>LinkingBaseTool.linkValidation</a> or <a>Node.linkValidation</a>.
+These predicates, if supplied, are called for each pair of ports that the linking tool considers.
+If the predicate returns false, the link may not be made.
+Setting the property on the <a>LinkingTool</a> or <a>RelinkingTool</a>causes the predicate to be applied to all linking operations,
+whereas setting the property on the <a>Node</a> only applies to linking operations involving that node.
+The predicates are called only if all of the standard link checks pass, based on the properties discussed above.
+</p>
+<p>
+In this example there are nodes of three different colors.
+The <a>LinkingTool</a> and <a>RelinkingTool</a> are customized to use a function, <code>sameColor</code>,
+to make sure the links only connect nodes of the same color.
+Mouse-down and drag on the ellipses (where the cursor changes to a "pointer") to start drawing a new link.
+You will see that the only permitted link destinations are nodes of the same color that do not already have a link to it from the same node.
+</p>
+<pre data-language="javascript" id="linking">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse",
+        { cursor: "pointer", portId: "",
+          fromLinkable: true, toLinkable: true },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { stroke: "white", margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { curve: go.Link.Bezier, relinkableFrom: true, relinkableTo: true },
+      $(go.Shape, { strokeWidth: 2 },
+        new go.Binding("stroke", "fromNode", function(n) { return n.data.color; }).ofObject()),
+      $(go.Shape, { toArrow: "Standard", stroke: null},
+        new go.Binding("fill", "fromNode", function(n) { return n.data.color; }).ofObject())
+    );
+
+  // this predicate is true if both nodes have the same color
+  function sameColor(fromnode, fromport, tonode, toport) {
+    return fromnode.data.color === tonode.data.color;
+    // this could look at the fromport.fill and toport.fill instead,
+    // assuming that the ports are Shapes, which they are because portID was set on them,
+    // and that there is a data Binding on the Shape.fill
+  }
+
+  // only allow new links between ports of the same color
+  diagram.toolManager.linkingTool.linkValidation = sameColor;
+
+  // only allow reconnecting an existing link to a port of the same color
+  diagram.toolManager.relinkingTool.linkValidation = sameColor;
+
+  var nodeDataArray = [
+    { key: "Red1", color: "red" },
+    { key: "Blue1", color: "blue" },
+    { key: "Green1", color: "green" },
+    { key: "Green2", color: "green" },
+    { key: "Red2", color: "red" },
+    { key: "Blue2", color: "blue" },
+    { key: "Red3", color: "red" },
+    { key: "Green3", color: "green" },
+    { key: "Blue3", color: "blue" }
+  ];
+  var linkDataArray = [
+    // initially no links
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("linking", 600, 250)</script>
+<p>
+To emphasize the color restriction, links have their colors bound to the "from" node data.
+</p>
+
+
+<h3>Grouping validation</h3>
+<p>
+When you want to limit the kinds of nodes that the user may add to a particular group,
+you can implement a predicate as the <a>CommandHandler.memberValidation</a> or <a>Group.memberValidation</a> property.
+Setting the property on the <a>CommandHandler</a> causes the predicate to be applied to all Groups,
+whereas setting the property on the <a>Group</a> only applies to that group.
+</p>
+<p>
+In this example the <code>samePrefix</code> predicate is used to determine if a Node
+may be dropped into a Group.
+Try dragging the simple textual nodes on the left side into either of the groups on the right side.
+Only when dropping the node onto a group that is highlit "green" will the node be added as a member of the group.
+You can verify that by moving the group to see if the textual node moves too.
+</p>
+<pre data-language="javascript" id="grouping">
+  // this predicate is true if both node data keys start with the same letter
+  function samePrefix(group, node) {
+    if (group === null) return true;  // when maybe dropping a node in the background
+    if (node instanceof Group) return false;  // don't add Groups to Groups
+    return group.data.key.charAt(0) === node.data.key.charAt(0);
+  };
+
+  diagram.nodeTemplate =
+    $(go.Node,
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.groupTemplate =
+    $(go.Group, "Vertical",
+      {
+        // only allow those simple nodes that have the same data key prefix:
+        memberValidation: samePrefix,
+        // support highlighting of Groups when allowing a drop to add a member
+        mouseDragEnter: function(e, grp, prev) {
+          // this will call samePrefix; it is true if any node has the same key prefix
+          if (grp.canAddMembers(grp.diagram.selection)) {
+            var shape = grp.findObject("SHAPE");
+            if (shape) shape.fill = "green";
+            grp.diagram.currentCursor = "";
+          } else {
+            grp.diagram.currentCursor = "not-allowed";
+          }
+        },
+        mouseDragLeave: function(e, grp, next) {
+          var shape = grp.findObject("SHAPE");
+          if (shape) shape.fill = "rgba(128,128,128,0.33)";
+          grp.diagram.currentCursor = "";
+        },
+        // actually add permitted new members when a drop occurs
+        mouseDrop: function(e, grp) {
+          if (grp.canAddMembers(grp.diagram.selection)) {
+            // this will only add nodes with the same key prefix
+            grp.addMembers(grp.diagram.selection, true);
+          } else {  // and otherwise cancel the drop
+            grp.diagram.currentTool.doCancel();
+          }
+        }
+      },
+      // make sure all Groups are behind all regular Nodes
+      { layerName: "Background" },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.TextBlock,
+        { alignment: go.Spot.Left, font: "Bold 12pt Sans-Serif" },
+        new go.Binding("text", "key")),
+      $(go.Shape,
+        { name: "SHAPE", width: 100, height: 100,
+          fill: "rgba(128,128,128,0.33)" })
+    );
+
+  diagram.mouseDrop = function(e) {
+    // dropping in diagram background removes nodes from any group
+    diagram.commandHandler.addTopLevelParts(diagram.selection, true);
+  };
+
+  var nodeDataArray = [
+    { key: "A group", isGroup: true, loc: "100 10" },
+    { key: "B group", isGroup: true, loc: "100 140" },
+    { key: "A1", loc: "10 30" },  // can be added to "A" group
+    { key: "A2", loc: "10 60" },
+    { key: "B1", loc: "10 90" },  // can be added to "B" group
+    { key: "B2", loc: "10 120" },
+    { key: "C1", loc: "10 150" }  // cannot be added to either group
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, []);
+</pre>
+<script>goCode("grouping", 600, 300)</script>
+<p>
+These groups are fixed size groups -- they do not use <a>Placeholder</a>s.
+So when a node is dropped into them the group does not automatically resize itself to surround its member nodes.
+But that is also a benefit when dragging a node out of a group.
+</p>
+<p>
+The validation predicate is also called when dragging a node that is already a member of a group.
+You can see how it is acceptable to drop the node into its existing containing group.
+And when it is dragged outside of the group into the diagram's background, the predicate is called with null as the "group" argument.
+</p>
+<p>
+In this example it is always OK to drop a node in the background of the diagram rather than into a group.
+If you want to disallow dropping in the background, you can call <code>myDiagram.currentTool.doCancel()</code>
+in the <a>Diagram.mouseDrop</a> event handler.
+If you want to show feedback during the drag in the background, you can implement a <a>Diagram.mouseDragOver</a> event handler that sets
+<code>myDiagram.currentCursor = "not-allowed"</code>.
+This would be behavior similar to that implemented above when dragging inside a Group.
+</p>
+
+
+<h3>Text editing validation</h3>
+<p>
+You can also limit what text the user enters when they do in-place text editing of a <a>TextBlock</a>.
+First, to enable any editing at all, you will need to set <a>TextBlock.editable</a> to true.
+There may be many TextBlocks within a Part, but you might want to limit text editing to particular TextBlocks.
+</p>
+<p>
+Normally there is no limitation on what text the user may enter.
+If you want to provide a predicate to approve the input when the user finishes editing,
+set the <a>TextEditingTool.textValidation</a> or <a>TextBlock.textValidation</a> property.
+Setting the property on the <a>TextEditingTool</a> causes the predicate to be applied to all TextBlocks,
+whereas setting the property on the <a>TextBlock</a> only applies to that text object.
+</p>
+<pre data-language="javascript" id="textEditing">
+  // this predicate is true if the new string has at least three characters and has a vowel in it
+  function okName(textblock, oldstr, newstr) {
+    return newstr.length >= 3 && /[aeiouy]/i.test(newstr);
+  };
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, { fill: "lightyellow" }),
+      $(go.Panel, "Vertical",
+        { margin: 3 },
+        $(go.TextBlock,
+          { editable: true },  // no validation predicate
+          new go.Binding("text", "text1")),
+        $(go.TextBlock,
+          { editable: true,
+            isMultiline: false,  // don't allow embedded newlines
+            textValidation: okName },  // new string must be an OK name
+          new go.Binding("text", "text2"))
+      )
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  var nodeDataArray = [
+    { key: 1, text1: "Hello", text2: "Dolly!" },
+    { key: 2, text1: "Goodbye", text2: "Mr. Chips" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, []);
+</pre>
+<script>goCode("textEditing", 600, 100)</script>
+<p>
+  Note how editing the top TextBlock accepts text without any vowels,
+  but the bottom one does not accept it and instead leaves the text editor open.
+</p>
+<p>
+  If you want to execute code after a text edit completes, implement a "TextEdited"
+  <a>DiagramEvent</a> listener by calling <a>Diagram.addDiagramListener</a>.
+</p>
+
+</div>
+</body>
+</html>

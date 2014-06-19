@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS TextBlocks -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>TextBlocks</h2>
+<p>
+Use the <a>TextBlock</a> class to display text.
+</p>
+<p>
+Setting the <a>TextBlock.text</a> property is the only way to show a text string.
+Because TextBlock inherits from <a>GraphObject</a>, some GraphObject properties will affect text.
+But there are additional text-only options regarding how that text is formatted and drawn.
+</p>
+
+<h3>Font and colors</h3>
+<p>
+The size and stylistic appearance of the text is specified by the <a>TextBlock.font</a>.
+The value may be any CSS font specifier string.
+</p>
+<p>
+The text is drawn using the <a>TextBlock.stroke</a> brush.
+The value may be any CSS color string or a <a>Brush</a>.
+By default the stroke is "black".
+</p>
+<p>
+You can also specify the brush to use as the background: <a>GraphObject.background</a>.
+This defaults to no brush at all, which results in a transparent background.
+The background is always rectangular.
+</p>
+<p>
+In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
+Once you learn about models and data binding you will generally not create parts (nodes or links) programmatically.
+</p>
+<pre data-language="javascript" id="basicTextBlocks">
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.TextBlock, { text: "a Text Block" }),
+      $(go.TextBlock, { text: "a Text Block", stroke: "red" }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightblue" }),
+      $(go.TextBlock, { text: "a Text Block", font: "bold 14pt serif" })
+    ));
+</pre>
+<script>goCode("basicTextBlocks", 600, 100)</script>
+
+<h3>Sizing and Clipping</h3>
+<p>
+The natural size of a <a>TextBlock</a> is just big enough to render the text string with the given font.
+However the actual size of the TextBlock can be larger or smaller in either dimension.
+Larger dimensions result in areas with no text; smaller dimensions result in clipping.
+</p>
+<p>
+To demonstrate this, the examples below start with a naturally sized TextBlock,
+followed by ones with decreasing explicit sizes.
+To better show the actual size of the TextBlocks below, we have given them lightgreen backgrounds.
+</p>
+<pre data-language="javascript" id="sizingTextBlocks">
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2 }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 100, height: 33 }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 60, height: 33 }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 50, height: 22 }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 40, height: 9 })
+    ));
+</pre>
+<script>goCode("sizingTextBlocks", 600, 160)</script>
+
+<h3>Natural Sizing of TextBlocks Varies by Browser</h3>
+<p>
+Because different browsers measure canvas text differently,
+TextBlocks are the only objects in <b>GoJS</b> that may have inconsistent natural sizes per browser.
+For this reason, if you need objects to measure precisely and consistently across all browsers,
+TextBlocks without an explicit size (<a>GraphObject.desiredSize</a>) should not be used to dictate
+the size of any objects (ie, a TextBlock with no explicit size should not be the main element
+of a <a>Panel</a> of type <a>Panel.Auto</a>).
+</p>
+
+<h3>Wrapping</h3>
+<p>
+Text can also be automatically wrapped onto additional lines.
+In order for wrapping to happen, the <a>TextBlock.wrap</a> property must not be None,
+and there must be some constraint on the width to be narrower than it would naturally be.
+</p>
+<p>
+In the following examples, the first TextBlock gets its natural size,
+the second is limited to 50 wide but is not allowed to wrap, and the
+other examples are limited to the same width but are allowed to wrap.
+</p>
+<pre data-language="javascript" id="wrappingTextBlocks">
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2 }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 50, wrap: go.TextBlock.None }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 50, wrap: go.TextBlock.WrapDesiredSize }),
+      $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2,
+                        width: 50, wrap: go.TextBlock.WrapFit })
+    ));
+</pre>
+<script>goCode("wrappingTextBlocks", 600, 120)</script>
+
+<h3>Text Alignment</h3>
+<p>
+The <a>TextBlock.textAlign</a> property specifies where to draw the characters within the size of the <a>TextBlock</a>.
+</p>
+<p>
+This is different than the <a>GraphObject.alignment</a> property,
+which controls where to place the object within the area allocated by the parent <a>Panel</a>.
+</p>
+<pre data-language="javascript" id="textAlignTextBlocks">
+  diagram.add(
+    $(go.Part, "Horizontal",
+      $(go.Panel, "Vertical",
+        { width: 150, defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, { text: "textAlign: 'left'", background: "lightgreen", margin: 2,
+                          textAlign: "left" }),
+        $(go.TextBlock, { text: "textAlign: 'center'", background: "lightgreen", margin: 2,
+                          textAlign: "center" }),
+        $(go.TextBlock, { text: "textAlign: 'right'", background: "lightgreen", margin: 2,
+                          textAlign: "right" })
+      ),
+      $(go.Panel, "Vertical",
+        { width: 150, defaultStretch: go.GraphObject.None },
+        $(go.TextBlock, { text: "alignment: Left", background: "lightgreen", margin: 2,
+                          alignment: go.Spot.Left }),
+        $(go.TextBlock, { text: "alignment: Center", background: "lightgreen", margin: 2,
+                          alignment: go.Spot.Center }),
+        $(go.TextBlock, { text: "alignment: Right", background: "lightgreen", margin: 2,
+                          alignment: go.Spot.Right })
+      )
+    ));
+</pre>
+<script>  goCode("textAlignTextBlocks", 600, 100)</script>
+
+<h3>TextAlign and Multiline or Wrapping</h3>
+<p>
+The <a>TextBlock.textAlign</a> property is useful even when the TextBlock has its natural size.
+This occurs when the text occupies multiple lines, whether by embedded newlines causing line breaks or by wrapping.
+You can control whether text starting with the first newline character is ignored by setting the <a>TextBlock.isMultiline</a>.
+By default both multiline and wrapping are enabled.
+</p>
+<pre data-language="javascript" id="multilineTextBlocks">
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.TextBlock, { text: "a Text Block\nwith three logical lines\nof text",
+                        background: "lightgreen", margin: 2,
+                        isMultiline: false }),
+      $(go.TextBlock, { text: "a Text Block\nwith three logical lines\nof text",
+                        background: "lightgreen", margin: 2,
+                        isMultiline: true }),
+      $(go.TextBlock, { text: "a Text Block\nwith three logical lines\nof centered text",
+                        background: "lightgreen", margin: 2,
+                        isMultiline: true, textAlign: "center" }),
+      $(go.TextBlock, { text: "a single line of centered text that should wrap because we will limit the width",
+                        background: "lightgreen", margin: 2, width: 80,
+                        wrap: go.TextBlock.WrapFit, textAlign: "center" })
+    ));
+</pre>
+<script>goCode("multilineTextBlocks", 600, 230)</script>
+
+<h3>Editing</h3>
+<p>
+<b>GoJS</b> also supports the in-place editing of text by the user.
+You just need to set the <a>TextBlock.editable</a> property to true.
+</p>
+<p>
+If you want to provide text validation of the user's input, you can set the <a>TextBlock.textValidation</a> property to a function.
+You can also provide a more customized or sophisticated text editor by setting the <a>TextBlock.textEditor</a> property.
+</p>
+<pre data-language="javascript" id="editingTextBlocks">
+  diagram.add(
+    $(go.Part,
+      $(go.TextBlock,
+        { text: "select and then click to edit",
+          background: "lightblue",
+          editable: true, isMultiline: false })
+    ));
+  diagram.add(
+    $(go.Part,
+      $(go.TextBlock,
+        { text: "this one allows embedded newlines",
+          background: "lightblue",
+          editable: true })
+    ));
+</pre>
+<script>goCode("editingTextBlocks", 600, 100)</script>
+
+</div>
+</body>
+</html>

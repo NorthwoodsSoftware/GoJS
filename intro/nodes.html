@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Nodes -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Nodes</h2>
+<p>
+You can customize your nodes to have exactly the appearance and behavior that you want.
+So far you have only seen very simple nodes.
+But if you have seen the <a href="../samples/index.html">Sample Applications</a>,
+you have seen many other kinds of nodes.
+</p>
+<p>
+In this page we demonstrate some of the choices you can make when designing your nodes.
+</p>
+
+<h3>Surrounding Content</h3>
+<p>
+It is common to surround interesting information with a border or other background.
+</p>
+<h4>Simple borders</h4>
+<p>
+Many of the simplest nodes just consist of a <a>Panel</a> of type <a>Panel.Auto</a> with a <a>Shape</a>
+surrounding a <a>TextBlock</a>.
+</p>
+<pre data-language="javascript" id="border">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle",
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", color: "lightblue" }
+  ];
+</pre>
+<script>goCode("border", 300, 150)</script>
+
+<h4>Shaped nodes</h4>
+<p>
+The Shape surrounding the content need not be rectangular.
+This example demonstrates a number of shapes.
+</p>
+<pre data-language="javascript" id="shapes">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        new go.Binding("figure", "fig"),
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", color: "lightblue", fig: "RoundedRectangle" },
+    { key: "Beta", color: "lightblue", fig: "Ellipse" },
+    { key: "Gamma", color: "lightblue", fig: "Hexagon" },
+    { key: "Delta", color: "lightblue", fig: "FramedRectangle" },
+    { key: "Epsilon", color: "lightblue", fig: "Cloud" },
+    { key: "Zeta", color: "lightblue", fig: "Procedure" }
+  ];
+</pre>
+<script>goCode("shapes", 300, 150)</script>
+<p>
+The surrounding/background object need not be a <a>Shape</a>.
+You could use a <a>Picture</a> or even a more complex object such as a <a>Panel</a>.
+</p>
+
+<h4>Complex contents</h4>
+<p>
+The content of an Auto <a>Panel</a> need not be limited to a single <a>TextBlock</a> --
+you can have arbitrarily complex panels of objects.
+In this example the content is a Table Panel with three rows of TextBlocks.
+</p>
+<pre data-language="javascript" id="borderedtable">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { fill: $(go.Brush, go.Brush.Linear, { 0: "white", 1: "lightblue" }),
+          stroke: "darkblue", strokeWidth: 2 }),
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left, margin: 4 },
+        $(go.RowColumnDefinition, { column: 1, width: 4 }),
+        $(go.TextBlock,
+          { row: 0, column: 0, columnSpan: 3, alignment: go.Spot.Center },
+          { font: "bold 12pt sans-serif" },
+          new go.Binding("text", "key")),
+        $(go.TextBlock, "First: ",
+          { row: 1, column: 0 }),
+        $(go.TextBlock,
+          { row: 1, column: 2 },
+          new go.Binding("text", "prop1")),
+        $(go.TextBlock, "Second: ",
+          { row: 2, column: 0 }),
+        $(go.TextBlock,
+          { row: 2, column: 2 },
+          new go.Binding("text", "prop2"))
+      )
+    );
+
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", prop1: "value of 'prop1'", prop2: "the other property" }
+  ];
+</pre>
+<script>goCode("borderedtable", 300, 150)</script>
+
+<h3>Stacked Content</h3>
+<p>
+Many simple nodes consist of a few objects positioned above each other or next to each other.
+</p>
+
+<h4>Icons</h4>
+<p>
+Perhaps the most commonly seen kind of node can be implemented using a Vertical <a>Panel</a>.
+</p>
+<pre data-language="javascript" id="icons">
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      $(go.Picture,
+        { maxSize: new go.Size(50, 50) },
+        new go.Binding("source", "img")),
+      $(go.TextBlock,
+        { margin: new go.Margin(3, 0, 0, 0),
+          maxSize: new go.Size(100, 30),
+          editable: true, isMultiline: false },
+        new go.Binding("text", "text"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { text: "kitten", img: "images/50x40.png" }
+  ];
+</pre>
+<script>goCode("icons", 300, 150)</script>
+<p>
+Of course you are not limited to just two objects in a panel.
+</p>
+
+<h4>Small icons</h4>
+<p>
+Another commonly seen kind of node can be implemented using a Horizontal <a>Panel</a>.
+</p>
+<pre data-language="javascript" id="smallicons">
+  diagram.nodeTemplate =
+    $(go.Node, "Horizontal",
+      $(go.Picture,
+        { maxSize: new go.Size(16, 16) },
+        new go.Binding("source", "img")),
+      $(go.TextBlock,
+        { margin: new go.Margin(0, 0, 0, 2) },
+        new go.Binding("text", "text"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { text: "kitten", img: "images/50x40.png" }
+  ];
+</pre>
+<script>goCode("smallicons", 300, 150)</script>
+
+<h3>Decorated Content</h3>
+<p>
+Sometimes you want to have a simple node that sometimes displays additional visuals
+to indicate what state it is in.
+</p>
+
+<p>
+One way to implement this is to use a Spot <a>Panel</a>, where the main element is a Panel
+containing the elements that you always want to display, and additional objects located at spots around the main element.
+</p>
+<pre data-language="javascript" id="spotdecorations">
+  diagram.nodeTemplate =
+    $(go.Node, "Spot",
+      // the main content:
+      $(go.Panel, "Vertical",
+        $(go.Picture,
+          { maxSize: new go.Size(50, 50) },
+          new go.Binding("source", "img")),
+        $(go.TextBlock,
+          { margin: new go.Margin(3, 0, 0, 0) },
+          new go.Binding("text", "text"),
+          new go.Binding("stroke", "error", function(err) { return err ? "red" : "black" }))
+      ),
+      // decorations:
+      $(go.Shape, "TriangleUp",
+        { alignment: go.Spot.TopLeft,
+          fill: "yellow", width: 14, height: 14,
+          visible: false },
+        new go.Binding("visible", "info", function(i) { return i ? true : false; })),
+      $(go.Shape, "StopSign",
+        { alignment: go.Spot.TopRight,
+          fill: "red", width: 14, height: 14,
+          visible: false },
+        new go.Binding("visible", "error")),
+      {
+        toolTip:
+          $(go.Adornment, "Auto",
+            $(go.Shape, { fill: "#FFFFCC" },
+              new go.Binding("visible", "info", function(i) { return i ? true : false; })),
+            $(go.TextBlock, { margin: 4 },
+              new go.Binding("text", "info"))
+          )
+      }
+    );
+
+  diagram.model.nodeDataArray = [
+    { text: "kitten", img: "images/50x40.png", info: "" },
+    { text: "kitten", img: "images/50x40.png", error: true, info: "shredded curtains" }
+  ];
+</pre>
+<script>goCode("spotdecorations", 300, 150)</script>
+
+</div>
+</body>
+</html>

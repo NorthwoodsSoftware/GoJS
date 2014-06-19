@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Link Labels -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Labels on Links</h2>
+<p>
+It is common to add annotations or decorations on a link, particularly text.
+</p>
+
+<h3>Simple Link labels</h3>
+<p>
+By default if you add a <a>GraphObject</a> to a <a>Link</a>, it will be positioned at the middle of the link.
+In this example, we just add a <a>TextBlock</a> to the link and bind its <a>TextBlock.text</a> property
+to the link data's "text" property.
+</p>
+<pre data-language="javascript" id="simple">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),                           // this is the link shape (the line)
+      $(go.Shape, { toArrow: "Standard" }),  // this is an arrowhead
+      $(go.TextBlock,                        // this is a Link label
+        new go.Binding("text", "text"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta", text: "a label" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("simple", 600, 100)</script>
+<p>
+Note that clicking on the text label results in selection of the whole Link.
+</p>
+
+<p>
+Although it is commonplace to use a <a>TextBlock</a> as the link label, it can be any <a>GraphObject</a>
+such as a <a>Shape</a> or an arbitrarily complex <a>Panel</a>.  Here is a simple Panel label:
+</p>
+<pre data-language="javascript" id="labels">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.Panel, "Auto",  // this whole Panel is a link label
+        $(go.Shape, "TenPointedStar", { fill: "yellow", stroke: "gray" }),
+        $(go.TextBlock, { margin: 3 },
+          new go.Binding("text", "text"))
+      )
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta", text: "hello!" }  // added information for link label
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("labels", 600, 100)</script>
+
+<p>
+This also works if the link is orthogonally routed or bezier-curved.
+</p>
+<pre data-language="javascript" id="simpleOrtho">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, { textAlign: "center" },  // centered multi-line text
+        new go.Binding("text", "text"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta", text: "a label\non an\northo link" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("simpleOrtho", 600, 100)</script>
+
+<p>
+Although positioning the label at the middle of the link is the default behavior,
+you can set <a>GraphObject</a> properties that start with "segment" to specify exactly
+where and how to arrange the object along the route of the link.
+</p>
+
+<h3>Link label segmentIndex and segmentFraction</h3>
+<p>
+Set the <a>GraphObject.segmentIndex</a> property in order to specify which segment of the link route
+the object should be on.
+Set the <a>GraphObject.segmentFraction</a> property to control how far the object should be, as a fraction
+from the start of the segment (zero) to the end of the segment (one).
+</p>
+<p>
+In the case of a link that comes from a node with no <a>GraphObject.fromSpot</a> (i.e. <a>Spot.None</a>)
+and goes to a node with no <a>GraphObject.toSpot</a>, there may be only one segment in the link, segment number zero.
+</p>
+<pre data-language="javascript" id="fraction">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, "from", { segmentIndex: 0, segmentFraction: 0.2 }),
+      $(go.TextBlock, "mid", { segmentIndex: 0, segmentFraction: 0.5 }),
+      $(go.TextBlock, "to", { segmentIndex: 0, segmentFraction: 0.8 })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("fraction", 600, 100)</script>
+
+<p>
+In the case of a link that has many segments in it, you will want to specify different segment numbers.
+Orthogonal links, for example, typically have 6 points in the route, which means five segments numbered from 0 to 4.
+</p>
+<pre data-language="javascript" id="fractionOrtho">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, "from", { segmentIndex: 1, segmentFraction: 0.5 }),
+      $(go.TextBlock, "mid", { segmentIndex: 2, segmentFraction: 0.5 }),
+      $(go.TextBlock, "to", { segmentIndex: 3, segmentFraction: 0.5 })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("fractionOrtho", 600, 100)</script>
+
+<p>
+However, you can also count segments backwards from the "to" end of the link.
+-1 is the last segment, -2 is the next to last, etc.
+When you use a negative segment index, the segment fraction goes from 0 closest to the "to" end
+to 1 for the end of that segment that is farthest back along the route from the "to" end.
+Thus a segmentIndex of -1 with a segmentFraction of 0 is the very end point of the link route.
+A segmentIndex of -1 with a segmentFraction of 1 is the same point as segmentIndex -2 and segmentFraction 0.
+</p>
+<p>
+For labels that belong near the "to" end of a link, you will normally use negative values for <a>GraphObject.segmentIndex</a>.
+This convention works better when the number of segments in a link is unknown or may vary.
+</p>
+
+<h3>Link label segmentOffset and alignmentFocus</h3>
+<p>
+There are two ways of making small adjustments to the position of a label object given a particular point on a link segment
+specified by the segment index and fractional distance.
+</p>
+<p>
+The <a>GraphObject.segmentOffset</a> property controls where to position the object relative to the point
+on a link segment determined by the <a>GraphObject.segmentIndex</a> and <a>GraphObject.segmentFraction</a> properties.
+The offset is not a simple offset of the point -- it is rotated according to the angle of that link segment.
+A positive value for the Y offset moves the label element towards the right side of the
+link, as seen going in the direction of the link.  Naturally a negative value for the Y offset moves it towards
+the left side.
+</p>
+<pre data-language="javascript" id="offset">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, "left", { segmentOffset: new go.Point(0, -10) }),
+      $(go.TextBlock, "right", { segmentOffset: new go.Point(0, 10) })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("offset", 600, 200)</script>
+<p>
+If you drag one node around in a circle around the other one,
+you will see how the "left" and "right" labels are positioned.
+</p>
+
+<p>
+Another way to change the effective offset is by changing the spot in the object that is being
+positioned relative to the link segment point.
+You can do that by setting the <a>GraphObject.alignmentFocus</a>, which as you have seen above defaults to <a>Spot.Center</a>.
+(<a>GraphObject.alignmentFocus</a> is also used by other <a>Panel</a> types, which is why its name does not start with "segment".)
+</p>
+<pre data-language="javascript" id="alignmentFocus">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, "left", { alignmentFocus: new go.Spot(1, 0.5, 3, 0) }),
+      $(go.TextBlock, "right", { alignmentFocus: new go.Spot(0, 0.5, -3, 0) })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("alignmentFocus", 600, 200)</script>
+<p>
+Yet you may instead want to control the angle of the individual labels based on the angle of the link segment.
+</p>
+
+<h3>Link label segmentOrientation</h3>
+<p>
+The <a>GraphObject.segmentOrientation</a> property controls the angle of the label object relative
+to the angle of the link segment.
+There are several possible values that you can use.
+The default orientation is <a>Link.None</a>, meaning no rotation at all.
+<a>Link.OrientAlong</a> is commonly used to have the object always rotated at the same angle as the link segment.
+<a>Link.OrientUpright</a> is like "OrientAlong", but is often used when there is text in the label, to make it easier to read.
+</p>
+<pre data-language="javascript" id="orient">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, "left",
+        { segmentOffset: new go.Point(0, -10),
+          segmentOrientation: go.Link.OrientUpright }),
+      $(go.TextBlock, "middle",
+        { segmentOffset: new go.Point(0, 0),
+          segmentOrientation: go.Link.OrientUpright }),
+      $(go.TextBlock, "right",
+        { segmentOffset: new go.Point(0, 10),
+          segmentOrientation: go.Link.OrientUpright })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("orient", 600, 200)</script>
+<p>
+Now if you move a node around you will always be able to read the label texts,
+and yet each label stays on its intended side of the link, as seen going in the direction of the link.
+</p>
+<p>
+This points out a difference between a segmentIndex/segmentFraction pair of 0/1 and 1/0.
+Although they both refer to the same point, the angle associated with the first pair is the angle of the first segment (segment 0),
+whereas the angle associated with the second pair is the angle of the second segment.
+</p>
+
+<h3>Link labels near the ends</h3>
+<p>
+For labels that are near either end of a link, it may be convenient to set the <a>GraphObject.segmentOffset</a> to
+Point(NaN, NaN).  This causes the offset to be half the width and half the height of the label object.
+</p>
+<pre data-language="javascript" id="nearEnds">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" }),
+      $(go.TextBlock, "from",
+        { segmentIndex: 0, segmentOffset: new go.Point(NaN, NaN),
+          segmentOrientation: go.Link.OrientUpright }),
+      $(go.TextBlock, "to",
+        { segmentIndex: -1, segmentOffset: new go.Point(NaN, NaN),
+          segmentOrientation: go.Link.OrientUpright })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("nearEnds", 600, 200)</script>
+
+<h3>Arrowheads</h3>
+<p>
+Now that you know more about the <a>GraphObject</a> "segment..." properties for controlling the position and angle of objects in a <a>Link</a>,
+it is easy to explain how arrowheads are defined.  Arrowheads are just labels: <a>Shape</a>s that are initialized in a convenient manner.
+</p>
+<p>
+Here are the equivalent settings for initializing an arrowhead <a>Shape</a> by setting <a>Shape.toArrow</a> to "Standard".
+</p>
+
+<pre data-language="javascript" id="arrowheads">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape,
+        // the following are the same as { toArrow: "Standard" }:
+        { segmentIndex: -1,
+          segmentOrientation: go.Link.OrientAlong,
+          alignmentFocus: go.Spot.Right,
+          geometry: go.Geometry.parse("F1 m0 0 l8 4  -8 4  2 -4 z") })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("arrowheads", 600, 200)</script>
+
+</div>
+</body>
+</html>

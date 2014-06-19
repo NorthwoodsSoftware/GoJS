@@ -3,9 +3,9 @@
 <head>
   <title>Pipe Tree</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,19 +13,21 @@
 
       myDiagram =
         $(go.Diagram, "myDiagram",  // Diagram refers to its DIV HTML element by id
-          { initialContentAlignment: go.Spot.Center,
-            isReadOnly: true });
-
-      // define a TreeLayout where alternating layers of nodes grow in different directions
-      // child and parent nodes have no space between them.
-      myDiagram.layout =
-        $(go.TreeLayout,
-          { treeStyle: go.TreeLayout.StyleAlternating,
-            angle: 90,
-            layerSpacing: 0,
-            alternateAngle: 0,
-            alternateLayerSpacing: 0
-          });
+          {
+            initialContentAlignment: go.Spot.Center,
+            isReadOnly: true,
+            // define a TreeLayout where alternating layers of nodes grow in different directions
+            // child and parent nodes have no space between them.
+            layout:
+              $(go.TreeLayout,
+                {
+                  treeStyle: go.TreeLayout.StyleAlternating,
+                  angle: 90,
+                  layerSpacing: 0,
+                  alternateAngle: 0,
+                  alternateLayerSpacing: 0
+                })
+        });
 
       // the node template
       // the shape will be resized appropriately when the model is set up
@@ -70,13 +72,12 @@
 
     // give all shapes the appropriate dimensions and text color, size, and orientation.
     function updatePipes() {
-      var nodes = myDiagram.nodes.iterator;
       var updated = 1;  // when this is 0, no more nodes are in need of updating
       while (updated !== 0) {
         // have layout determine node positions first
         myDiagram.layoutDiagram();
         updated = 0;
-        nodes.reset();
+        var nodes = myDiagram.nodes.iterator;
         while (nodes.next()) {
           var node = nodes.value;
           var shape = node.findObject("SHAPE");
@@ -85,7 +86,9 @@
             // this allows its size to be determined based on its childrens' positions once they have been updated and repositioned
           else updated++;
           // depending on the lightness of the node's color, make the text black or white
-          var colorBrightness = parseInt(shape.fill.substring(1, 3), 16) + parseInt(shape.fill.substring(3, 5), 16) + parseInt(shape.fill.substring(5, 7), 16);
+          var colorBrightness = parseInt(shape.fill.substring(1, 3), 16) +
+                                parseInt(shape.fill.substring(3, 5), 16) +
+                                parseInt(shape.fill.substring(5, 7), 16);
           if (colorBrightness <= 384) { node.findObject("TEXTBLOCK").stroke = "white"; }
           var horiz;
           var linkIn = node.findTreeParentLink();
@@ -119,8 +122,7 @@
             shape.width = long;
             // the horizontal side is longer
             // set the shape's size
-          }
-          else {
+          } else {
             var min = node.location.y;
             var max = min;
             while (chl.next()) {
@@ -142,11 +144,9 @@
     // check if the children of this node have all had their sizes changed from the initial one
     // if they have been updated, their widths and heights cannot be equal
     function areChildrenUpdated(node) {
-      var chld = node.findTreeChildrenNodes();
-      while (chld.next()) {
-        if (chld.value.findObject("SHAPE").width === chld.value.findObject("SHAPE").height) return false;
-      }
-      return true;
+      return node.findTreeChildrenNodes().all(function(child) {
+        return (child.findObject("SHAPE").width !== child.findObject("SHAPE").height);
+      });
     }
   </script>
 </head>
@@ -155,11 +155,14 @@
   <div id="myDiagram" style="width:100%;height:600px;border:1px solid black;"></div>
   <p>
   This diagram does not display <a>Link</a>s.
-  Instead the <a>TreeLayout.layerSpacing</a> is set to 0, so that each node and its children have no space between them.
+  Instead the <a>TreeLayout.layerSpacing</a> is set to 0,
+  so that each node and its children have no space between them.
   </p>
   <p>
-  The <a>TreeLayout.treeStyle</a> is set to StyleAlternating, so that alternating layers of the tree grow in each of two directions.
-  Each node's <a>TextBlock</a> is angled according to the direction of the layer of the tree that it is in, and the <a>Shape</a>'s
+  The <a>TreeLayout.treeStyle</a> is set to StyleAlternating,
+  so that alternating layers of the tree grow in each of two directions.
+  Each node's <a>TextBlock</a> is angled according to the direction
+  of the layer of the tree that it is in, and the <a>Shape</a>'s
   size is set according to direction and the position of the node's children.
   </p>
 </div>

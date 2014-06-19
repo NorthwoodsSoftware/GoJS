@@ -3,9 +3,9 @@
 <head>
   <title>Logic Circuit</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
 
     var red = "orangered";
@@ -24,6 +24,7 @@
             "undoManager.isEnabled": true
           });
 
+      // when the document is modified, add a "*" to the title and enable the "Save" button
       myDiagram.addDiagramListener("Modified", function(e) {
         var button = document.getElementById("saveModel");
         if (button) button.disabled = !myDiagram.isModified;
@@ -54,9 +55,9 @@
       // node template helpers
       var sharedToolTip =
         $(go.Adornment, "Auto",
-          $(go.Shape, "RoundedRectangle", { fill: "rgb(230,240,250)" }),
+          $(go.Shape, "RoundedRectangle", { fill: "lightyellow" }),
           $(go.TextBlock, { margin: 2 },
-            new go.Binding("text",  "" , getCategory)));
+            new go.Binding("text",  "" , function(d) { return d.category; })));
 
       // define some common property settings
       function nodeStyle() {
@@ -135,9 +136,9 @@
         $(go.Node, "Spot", nodeStyle(),
           $(go.Shape, "OrGate", shapeStyle()),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in1", alignment: new go.Spot(0, 0.3) }),
+            { portId: "in1", alignment: new go.Spot(0.16, 0.3) }),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in2", alignment: new go.Spot(0, 0.7) }),
+            { portId: "in2", alignment: new go.Spot(0.16, 0.7) }),
           $(go.Shape, "Rectangle", portStyle(false),
             { portId: "out", alignment: new go.Spot(1, 0.5) })
         );
@@ -146,9 +147,9 @@
         $(go.Node, "Spot", nodeStyle(),
           $(go.Shape, "XorGate", shapeStyle()),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in1", alignment: new go.Spot(0, 0.3) }),
+            { portId: "in1", alignment: new go.Spot(0.26, 0.3) }),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in2", alignment: new go.Spot(0, 0.7) }),
+            { portId: "in2", alignment: new go.Spot(0.26, 0.7) }),
           $(go.Shape, "Rectangle", portStyle(false),
             { portId: "out", alignment: new go.Spot(1, 0.5) })
         );
@@ -157,9 +158,9 @@
         $(go.Node, "Spot", nodeStyle(),
           $(go.Shape, "NorGate", shapeStyle()),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in1", alignment: new go.Spot(0, 0.3) }),
+            { portId: "in1", alignment: new go.Spot(0.16, 0.3) }),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in2", alignment: new go.Spot(0, 0.7) }),
+            { portId: "in2", alignment: new go.Spot(0.16, 0.7) }),
           $(go.Shape, "Rectangle", portStyle(false),
             { portId: "out", alignment: new go.Spot(1, 0.5) })
         );
@@ -168,9 +169,9 @@
         $(go.Node, "Spot", nodeStyle(),
           $(go.Shape, "XnorGate", shapeStyle()),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in1", alignment: new go.Spot(0, 0.3) }),
+            { portId: "in1", alignment: new go.Spot(0.26, 0.3) }),
           $(go.Shape, "Rectangle", portStyle(true),
-            { portId: "in2", alignment: new go.Spot(0, 0.7) }),
+            { portId: "in2", alignment: new go.Spot(0.26, 0.7) }),
           $(go.Shape, "Rectangle", portStyle(false),
             { portId: "out", alignment: new go.Spot(1, 0.5) })
         );
@@ -201,10 +202,10 @@
       myDiagram.nodeTemplateMap.add("and", andTemplate);
       myDiagram.nodeTemplateMap.add("or", orTemplate);
       myDiagram.nodeTemplateMap.add("xor", xorTemplate);
-      myDiagram.nodeTemplateMap.add("nor", norTemplate);
-      myDiagram.nodeTemplateMap.add("xnor", xnorTemplate);
       myDiagram.nodeTemplateMap.add("not", notTemplate);
       myDiagram.nodeTemplateMap.add("nand", nandTemplate);
+      myDiagram.nodeTemplateMap.add("nor", norTemplate);
+      myDiagram.nodeTemplateMap.add("xnor", xnorTemplate);
 
       // share the template map with the Palette
       palette.nodeTemplateMap = myDiagram.nodeTemplateMap;
@@ -237,129 +238,86 @@
     function updateStates() {
       var oldskip = myDiagram.skipsUndoManager;
       myDiagram.skipsUndoManager = true;
-      var nodes = myDiagram.nodes.iterator;
-      var inputs = new go.List(go.Node);
-      while (nodes.next()) if (nodes.value.category === "input") inputs.add(nodes.value);
-      var inputsIt = inputs.iterator;
-      while (inputsIt.next()) doInput(inputsIt.value);
-
-      nodes.reset();
-      while (nodes.next()) {
-        if (nodes.value.linksConnected.count !== 0)
-          switch (nodes.value.category) {
-            case "and":       doAnd(nodes.value); break;
-            case "nand":     doNand(nodes.value); break;
-            case "or":         doOr(nodes.value); break;
-            case "not":       doNot(nodes.value); break;
-            case "nor":       doNor(nodes.value); break;
-            case "xor":       doXor(nodes.value); break;
-            case "xnor":     doXnor(nodes.value); break;
-            case "output": doOutput(nodes.value); break;
-            case "input": break;
+      // do all "input" nodes first
+      myDiagram.nodes.each(function(node) {
+          if (node.category === "input") {
+            doInput(node);
           }
-      }
+        });
+      // now we can do all other kinds of nodes
+      myDiagram.nodes.each(function(node) {
+          switch (node.category) {
+            case "and":       doAnd(node); break;
+            case "or":         doOr(node); break;
+            case "xor":       doXor(node); break;
+            case "not":       doNot(node); break;
+            case "nand":     doNand(node); break;
+            case "nor":       doNor(node); break;
+            case "xnor":     doXnor(node); break;
+            case "output": doOutput(node); break;
+            case "input": break;  // doInput already called, above
+          }
+        });
       myDiagram.skipsUndoManager = oldskip;
+    }
+
+    // helper predicate
+    function linkIsTrue(link) {  // assume the given Link has a Shape named "SHAPE"
+      return link.findObject("SHAPE").stroke === green;
+    }
+
+    // helper function for propagating results
+    function setOutputLinks(node, color) {
+      node.findLinksOutOf().each(function(link) { link.findObject("SHAPE").stroke = color; });
     }
 
     // update nodes by the specific function for its type
     // determine the color of links coming out of this node based on those coming in and node type
+
     function doInput(node) {
-      var links = node.linksConnected;
-      while (links.next()) links.value.findObject("SHAPE").stroke = node.findObject("NODESHAPE").fill;
-    }
-    function doAnd(node) {
-      var val = false;
-      var temp = false;
-      var inputs = node.findLinksInto();
-      while (inputs.next())
-        if (inputs.value.findObject("SHAPE").stroke === green) {
-          val = temp; temp = true;
-        }
-      var color = val ? green : red;
-      var out = node.findLinksOutOf();
-      while (out.next()) out.value.findObject("SHAPE").stroke = color;
-    }
-    function doNand(node) {
-      var val = false;
-      var inputs = node.findLinksInto();
-      while (inputs.next())
-        if (inputs.value.findObject("SHAPE").stroke !== green) {
-          val = true;
-        }
-      var color = val ? green : red;
-      var out = node.findLinksOutOf();
-      while (out.next()) out.value.findObject("SHAPE").stroke = color;
-    }
-    function doNot(node) {
-        var val = false;
-        var inputs = node.findLinksInto();
-        while (inputs.next())
-          if (inputs.value.findObject("SHAPE").stroke !== green) {
-            val = true;
-          }
-        var color = val ? green : red;
-        var out = node.findLinksOutOf();
-        while (out.next()) out.value.findObject("SHAPE").stroke = color;
-      }
-    function doNor(node) {
-        var val = false;
-        var temp = false;
-        var inputs = node.findLinksInto();
-        while (inputs.next())
-          if (inputs.value.findObject("SHAPE").stroke !== green) {
-            val = temp; temp = true;
-          }
-        var color = val ? green : red;
-        var out = node.findLinksOutOf();
-        while (out.next()) out.value.findObject("SHAPE").stroke = color;
-      }
-    function doXnor(node) {
-        var val = false;
-        var tempT = false;
-        var tempF = false;
-        var inputs = node.findLinksInto();
-        while (inputs.next())
-          if (inputs.value.findObject("SHAPE").stroke === green) {
-            tempT = true;
-          } else tempF = true;
-        val = !(tempT && tempF);
-        var color = val ? green : red;
-        var out = node.findLinksOutOf();
-        while (out.next()) out.value.findObject("SHAPE").stroke = color;
-      }
-    function doOr(node) {
-        var val = false;
-        var inputs = node.findLinksInto();
-        while (inputs.next())
-          if (inputs.value.findObject("SHAPE").stroke === green) {
-            val = true;
-          }
-        var color = val ? green : red;
-        var out = node.findLinksOutOf();
-        while (out.next()) out.value.findObject("SHAPE").stroke = color;
-      }
-    function doXor(node) {
-        var val = false;
-        var tempT = false;
-        var tempF = false;
-        var inputs = node.findLinksInto();
-        while (inputs.next())
-          if (inputs.value.findObject("SHAPE").stroke === green) {
-            tempT = true;
-          } else tempF = true;
-        val = tempT && tempF;
-        var color = val ? green : red;
-        var out = node.findLinksOutOf();
-        while (out.next()) out.value.findObject("SHAPE").stroke = color;
-      }
-    function doOutput(node) {
-        var links = node.linksConnected;
-        while (links.next()) node.findObject("NODESHAPE").fill = links.value.findObject("SHAPE").stroke;
+      // the output is just the node's Shape.fill
+      setOutputLinks(node, node.findObject("NODESHAPE").fill);
     }
 
-    // return the name of the Node's category for its tooltip
-    function getCategory(model, txbl) {
-      return txbl.panel.adornedPart.category;
+    function doAnd(node) {
+      var color = node.findLinksInto().all(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doNand(node) {
+      var color = !node.findLinksInto().all(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doNot(node) {
+      var color = !node.findLinksInto().all(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+
+    function doOr(node) {
+      var color = node.findLinksInto().any(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doNor(node) {
+      var color = !node.findLinksInto().any(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+
+    function doXor(node) {
+      var truecount = 0;
+      node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
+      var color = truecount % 2 === 0 ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doXnor(node) {
+      var truecount = 0;
+      node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
+      var color = truecount % 2 !== 0 ? green : red;
+      setOutputLinks(node, color);
+    }
+
+    function doOutput(node) {
+      // assume there is just one input link
+      // we just need to update the node's Shape.fill
+      node.linksConnected.each(function(link) { node.findObject("NODESHAPE").fill = link.findObject("SHAPE").stroke; });
     }
 
     // save a model to and load a model from Json text, displayed below the Diagram
@@ -384,9 +342,10 @@
     </span>
   </div>
   <div id="description">
-    The Logic Circuit sample allows the user to make circuits using gates and wires, which are updated whenever a Link
-    is modified and at intervals by a looped setTimeout function.  The <code>updateStates</code> function calls a function to update each node
-    according to type, which uses the color of the links into the node to determine the color of those exiting it.
+    The Logic Circuit sample allows the user to make circuits using gates and wires,
+    which are updated whenever a Link is modified and at intervals by a looped setTimeout function.
+    The <code>updateStates</code> function calls a function to update each node according to type,
+    which uses the color of the links into the node to determine the color of those exiting it.
     Mouse over a node to see its category.
   </div>
   <div id="buttons">

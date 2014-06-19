@@ -3,16 +3,13 @@
 <head>
 <title>State Chart</title>
 <!-- /* Copyright � 1998-2014 by Northwoods Software Corporation. */ -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
-
-    var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" });
-    var radgrad = $(go.Brush, go.Brush.Radial, { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" });
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
@@ -45,12 +42,24 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         // define the node's outer shape, which will surround the TextBlock
         $(go.Shape, "RoundedRectangle",
-          { parameter1: 20,
-            fill: yellowgrad, stroke: "black",
-            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
+          {
+            parameter1: 20,  // the corner has a large radius
+            fill: $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
+            stroke: "black",
+            portId: "",
+            fromLinkable: true,
+            fromLinkableSelfNode: true,
+            fromLinkableDuplicates: true,
+            toLinkable: true,
+            toLinkableSelfNode: true,
+            toLinkableDuplicates: true,
+            cursor: "pointer"
+          }),
         $(go.TextBlock,
-          { font: "bold 11pt helvetica, bold arial, sans-serif",
-            editable: true },  // editing the text automatically updates the model data
+          {
+            font: "bold 11pt helvetica, bold arial, sans-serif",
+            editable: true  // editing the text automatically updates the model data
+          },
           new go.Binding("text", "text").makeTwoWay())
       );
 
@@ -59,12 +68,14 @@
       $(go.Adornment, "Spot",
         $(go.Panel, "Auto",
           $(go.Shape, { fill: null, stroke: "blue", strokeWidth: 2 }),
-          $(go.Placeholder)
+          $(go.Placeholder)  // this represents the selected Node
         ),
         // the button to create a "next" node, at the top-right corner
         $("Button",
-          { alignment: go.Spot.TopRight,
-            click: addNodeAndLink },  // this function is defined below
+          {
+            alignment: go.Spot.TopRight,
+            click: addNodeAndLink  // this function is defined below
+          },
           $(go.Shape, "PlusLine", { desiredSize: new go.Size(6, 6) })
         ) // end button
       ); // end Adornment
@@ -76,6 +87,7 @@
       e.handled = true;
       var diagram = adorn.diagram;
       diagram.startTransaction("Add State");
+
       // get the node data for which the user clicked the button
       var fromNode = adorn.adornedPart;
       var fromData = fromNode.data;
@@ -87,17 +99,22 @@
       // add the new node data to the model
       var model = diagram.model;
       model.addNodeData(toData);
+      
       // create a link data from the old node data to the new node data
       var linkdata = {
         from: model.getKeyForNodeData(fromData),
-        to: model.getKeyForNodeData(toData)
+        to: model.getKeyForNodeData(toData),
+        text: "transition"
       };
       // and add the link data to the model
       model.addLinkData(linkdata);
+      
       // select the new Node
       var newnode = diagram.findNodeForData(toData);
       diagram.select(newnode);
+      
       diagram.commitTransaction("Add State");
+      
       // if the new node is off-screen, scroll the diagram to show the new node
       diagram.scrollToRect(newnode.actualBounds);
     }
@@ -109,13 +126,16 @@
         new go.Binding("points").makeTwoWay(),
         new go.Binding("curviness", "curviness"),
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "black", strokeWidth: 1.5 }),
+          { isPanelMain: true, stroke: "black", strokeWidth: 1.5 }),
         $(go.Shape,  // the arrowhead
           { toArrow: "standard", stroke: null }),
         $(go.Panel, "Auto",
           $(go.Shape,  // the link shape
-            { fill: radgrad, stroke: null }),
+            {
+              fill: $(go.Brush, go.Brush.Radial,
+                      { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
+              stroke: null
+            }),
           $(go.TextBlock, "transition",  // the label
             {
               textAlign: "center",
@@ -146,13 +166,22 @@
 <div id="sample">
   <div id="myDiagram" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
   <p>
-  This sample creates state charts. The text is editable for both the nodes and the links. The user can draw at most one link from one node to another node, and the links can be reshaped or deleted when selected.
+  This sample creates state charts.
+  The text is editable for both the nodes and the links.
+  The user can draw at most one link from one node to another node,
+  and the links can be reshaped or deleted when selected.
   </p>
   <p>
-  This sample customizes the <a>Part.selectionAdornmentTemplate</a> of the node to a template that contains a button. The button is positioned to be at the Top-Right corner of the node by being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
+  This sample customizes the <a>Part.selectionAdornmentTemplate</a>
+  of the node to a template that contains a button
+  The button is positioned to be at the Top-Right corner of the node by
+  being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
   </p>
   <p>
-  The Button's <a>GraphObject.click</a> method creates a new node data, adds it to the model, and creates a link from the original node data to the new node data. All of this is done inside a transaction, so that it can be undone by the user (Ctrl+Z and Ctrl+Y will undo and redo transactions).
+  The Button's <a>GraphObject.click</a> method creates a new node data,
+  adds it to the model, and creates a link from the original node data to the new node data.
+  All of this is done inside a transaction, so that it can be undone by the user
+  (Ctrl+Z and Ctrl+Y will undo and redo transactions).
   </p>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>

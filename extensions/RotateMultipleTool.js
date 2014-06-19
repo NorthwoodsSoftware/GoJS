@@ -38,18 +38,18 @@ RotateMultipleTool.prototype.doActivate = function() {
   this.initialAngle = this.centerPoint.directionPoint(diagram.lastInput.documentPoint);
 
   // remember initial angle and distance for each Part
-  this.initialInfo = new go.Map(go.Part, PartInfo);
-  var itr = diagram.selection.iterator;
-  while (itr.next()) {
-    var part = itr.value;
-    if (part instanceof go.Link || part instanceof go.Group) continue;  // only Nodes and simple Parts
+  var infos = new go.Map(go.Part, PartInfo);
+  var tool = this;
+  diagram.selection.each(function(part) {
+    if (part instanceof go.Link || part instanceof go.Group) return;  // only Nodes and simple Parts
     // distance from centerPoint to locationSpot of part
-    var dist = Math.sqrt(this.centerPoint.distanceSquaredPoint(part.location));
+    var dist = Math.sqrt(tool.centerPoint.distanceSquaredPoint(part.location));
     // calculate initial relative angle
-    var dir = this.centerPoint.directionPoint(part.location);
+    var dir = tool.centerPoint.directionPoint(part.location);
     // saves part-angle combination in array
-    this.initialInfo.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
-  }
+    infos.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
+  });
+  this.initialInfo = infos;
 }
 
 /**
@@ -82,15 +82,14 @@ RotateMultipleTool.prototype.rotate = function(newangle) {
   var e = this.diagram.lastInput;
   // when rotating individual parts, remember the original angle difference
   var angleDiff = newangle - this.adornedObject.part.rotateObject.angle;
-  var itr = diagram.selection.iterator;
-  while (itr.next()) {
-    var part = itr.value;
-    if (part instanceof go.Link || part instanceof go.Group) continue; // only Nodes and simple Parts
+  var tool = this;
+  diagram.selection.each(function(part) {
+    if (part instanceof go.Link || part instanceof go.Group) return; // only Nodes and simple Parts
     // rotate every selected non-Link Part
     // find information about the part set in RotateMultipleTool.initialInformation
-    var partInfo = this.initialInfo.getValue(part);
+    var partInfo = tool.initialInfo.getValue(part);
     if (e.control || e.meta) {
-      if (this.adornedObject.part === part) {
+      if (tool.adornedObject.part === part) {
         part.rotateObject.angle = newangle;
       } else {
         part.rotateObject.angle += angleDiff;
@@ -101,11 +100,11 @@ RotateMultipleTool.prototype.rotate = function(newangle) {
       var offsetX = partInfo.distance * Math.cos(radAngle + partInfo.placementAngle);
       var offsetY = partInfo.distance * Math.sin(radAngle + partInfo.placementAngle);
       // move part
-      part.location = new go.Point(this.centerPoint.x + offsetX, this.centerPoint.y + offsetY);
+      part.location = new go.Point(tool.centerPoint.x + offsetX, tool.centerPoint.y + offsetY);
       // rotate part
       part.rotateObject.angle = partInfo.rotationAngle + newangle;
     }
-  }
+  });
 }
 
 /**

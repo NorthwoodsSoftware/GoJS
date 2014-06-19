@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS SubGraphs -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Groups as SubGraphs</h2>
+<p>
+There are some common ways of treating the nodes and links that are the members of a group as if it were its own graph.
+A <a>Group</a> has its own <a>Group.layout</a> that is responsible for the positioning of member <a>Node</a>s
+and the routing of member <a>Link</a>s.
+One way to declutter a diagram is to "collapse" a <a>Group</a> to hide the subgraph that it holds.
+</p>
+
+<h3>Layouts of SubGraphs</h3>
+<p>
+You can specify a <a>Layout</a> that applies to a group's subgraph by setting the <a>Group.layout</a> property.
+This operates on the group's member nodes and links as if it were its own diagram.
+A diagram layout of nodes that include groups with their own layout will treat those groups
+as if they were simple nodes, albeit probably larger than normal nodes.
+</p>
+<p>
+In this example the group has a different layout than the layout for the whole diagram.
+In this case the only difference is the direction in which the layout works,
+but you could use a completely different layout algorithm.
+</p>
+<p>
+For simplicity these examples use the default templates for nodes and links.
+</p>
+
+<pre data-language="javascript" id="layouts">
+  diagram.groupTemplate =
+    $(go.Group, "Auto",
+      // declare the Group.layout:
+      { layout: $(go.LayeredDigraphLayout,
+                  { direction: 0, columnSpacing: 10 }) },
+      $(go.Shape, "RoundedRectangle",  // surrounds everything
+        { parameter1: 10, fill: "rgba(128,128,128,0.33)" }),
+      $(go.Panel, "Vertical",  // position header above the subgraph
+        $(go.TextBlock,     // group title near top, next to button
+          { font: "Bold 12pt Sans-Serif" },
+          new go.Binding("text", "key")),
+        $(go.Placeholder,     // represents area for all member parts
+          { padding: 5, background: "white" })
+      )
+    );
+
+  // declare the Diagram.layout:
+  diagram.layout = $(go.LayeredDigraphLayout,
+                     { direction: 90, layerSpacing: 10 });
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Omega", isGroup: true },
+    { key: "Beta", group: "Omega" },
+    { key: "Gamma", group: "Omega" },
+    { key: "Epsilon", group: "Omega" },
+    { key: "Zeta", group: "Omega" },
+    { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Omega" }, // from a Node to the Group
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Beta", to: "Epsilon" },  // this link is a member of the Group
+    { from: "Gamma", to: "Zeta" },  // this link is a member of the Group
+    { from: "Epsilon", to: "Zeta" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("layouts", 600, 250)</script>
+
+<h3>Collapsing and Expanding Groups</h3>
+<p>
+One common technique to visually simplify a diagram is to hide parts of them by "collapsing" them.
+In the case of <a>Group</a>s, it may make sense to be able to hide the subgraph.
+</p>
+<p>
+To collapse a group, set <a>Group.isSubGraphExpanded</a> to false; to make sure it is expanded,
+set that property to true.
+</p>
+<p>
+It is commonplace to provide a button on a group to allow users to collapse and expand groups as they wish.
+<b>GoJS</b> makes this easy to implement by providing a predefined kind of <a>Panel</a>, named "SubGraphExpanderButton",
+that acts as a button to collapse and expand <a>Group</a>s.
+This button changes the visibility of the member nodes and links but does not change
+the visibility of the group itself.
+When the group's visual tree includes a <a>Placeholder</a>, the placeholder will automatically
+shrink when the member parts become invisible and will inflate when the member parts become visible again.
+</p>
+<p>
+Click on the expander button to collapse or expand the group.
+Clicking the expander button also invalidates the layout that is responsible for positioning the group as a single node.
+Often the size of the group changes greatly, so a layout usually needs to be performed again.
+</p>
+<pre data-language="javascript" id="collapseExpand">
+  diagram.groupTemplate =
+    $(go.Group, "Auto",
+      { layout: $(go.LayeredDigraphLayout,
+                  { direction: 0, columnSpacing: 10 }) },
+      $(go.Shape, "RoundedRectangle", // surrounds everything
+        { parameter1: 10, fill: "rgba(128,128,128,0.33)" }),
+      $(go.Panel, "Vertical",  // position header above the subgraph
+        { defaultAlignment: go.Spot.Left },
+        $(go.Panel, "Horizontal",  // the header
+          { defaultAlignment: go.Spot.Top },
+          $("SubGraphExpanderButton"),  // this Panel acts as a Button
+          $(go.TextBlock,     // group title near top, next to button
+            { font: "Bold 12pt Sans-Serif" },
+            new go.Binding("text", "key"))
+        ),
+        $(go.Placeholder,     // represents area for all member parts
+          { padding: new go.Margin(0, 10), background: "white" })
+      )
+    );
+
+  diagram.layout = $(go.LayeredDigraphLayout,
+                     { direction: 90, layerSpacing: 10 });
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Omega", isGroup: true },
+    { key: "Beta", group: "Omega" },
+    { key: "Gamma", group: "Omega" },
+    { key: "Epsilon", group: "Omega" },
+    { key: "Zeta", group: "Omega" },
+    { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Omega" }, // from a Node to the Group
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Beta", to: "Epsilon" },  // this link is a member of the Group
+    { from: "Gamma", to: "Zeta" },  // this link is a member of the Group
+    { from: "Epsilon", to: "Zeta" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("collapseExpand", 600, 250)</script>
+
+</div>
+</body>
+</html>

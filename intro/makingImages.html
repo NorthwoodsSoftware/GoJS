@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Making Images -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+
+  <style type="text/css">
+  .images {
+    border: 1px solid rgba(255,0,0,.4);
+  }
+
+  /* make HRs thicker to set them apart from the code section borders */
+  hr {
+      height: 3px;
+      background: #333;
+  }
+  </style>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Making Images</h2>
+<p>
+<b>GoJS</b> has two functions for creating images: <a>Diagram.makeImageData</a>, which outputs a Base64 image data string, and <a>Diagram.makeImage</a>, which is a convenience function that calls <a>Diagram.makeImageData</a> and returns a new HTMLImageElement with the image data as its source. Both functions have the same single argument, a JavaScript Object that contains several definable properties, enumerated in the documentation.
+</p>
+<p>
+  This page is almost identical to the page on <a href="makingSVG.html">Making SVG</a>, which shows how to render SVG elements instead of PNG images.
+</p>
+<!-- Don't bother showing this source -->
+<pre data-language="javascript" id="diag" style="display: none;">
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  // define a simple Node template (but use the default Link template)
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        // Shape.fill is bound to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding("text", "key"))
+    );
+
+  // create the model data that will be represented by Nodes and Links
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  window.myDiagram = diagram;
+
+ window.goCode2 = function(pre) {
+  if (diagramclass === undefined) diagramclass = go.Diagram;
+  if (typeof pre === "string") pre = document.getElementById(pre);
+  var f = eval("(function () {window.img = " + pre.textContent + "})");
+  f();
+  img.className = "images";
+  pre.parentElement.insertBefore(img, pre.nextSibling)
+}
+
+ window.goCode3 = function(pre) {
+  if (diagramclass === undefined) diagramclass = go.Diagram;
+  if (typeof pre === "string") pre = document.getElementById(pre);
+  var f = eval("(function () {" + pre.textContent + "})");
+  f();
+}
+
+  window.addImage = function(img) {
+    obj = document.getElementById("severalImages");
+    img.className = "images";
+    obj.appendChild(img)
+  }
+</pre>
+<script>goCode("diag", 300, 150)</script>
+
+<hr/>
+<p>
+Calling makeImage with no arguments or with an empty properties object results in an image that is the same size as the Diagram's viewport.
+</p>
+<pre data-language="javascript" id="code0">
+myDiagram.makeImage();
+</pre>
+<script>goCode2("code0");</script>
+
+<hr/>
+<p>
+Calling makeImage with an object that has the "scale" property set to 1 results in an image that includes the whole diagram,
+not just the area visible in the viewport.  However, the empty areas around the document bounds are trimmed away.
+</p>
+<pre data-language="javascript" id="codeA">
+myDiagram.makeImage({
+  scale: 1
+});
+</pre>
+<script>goCode2("codeA");</script>
+
+<hr/>
+<p>
+Setting the scale property will create a scaled image that is precisely large enough to contain the Diagram. The following image is created with a scale of 2.
+</p>
+<pre data-language="javascript" id="code1">
+myDiagram.makeImage({
+  scale: 2
+});
+</pre>
+<script>goCode2("code1");</script>
+
+<hr/>
+
+<p>
+The following image is created by setting the size option of makeImage. Note that the canvas is scaled uniformly and any extra space is placed on the bottom or right side of the image.
+</p>
+<pre data-language="javascript" id="code2">
+myDiagram.makeImage({
+  size: new go.Size(100,100)
+});
+</pre>
+<script>goCode2("code2");</script>
+
+<hr/>
+
+<p>The following image is also created by setting the size option of makeImage, but only the width is set. The height will be whatever size is needed to uniformly contain the Diagram.</p>
+<pre data-language="javascript" id="code3">
+myDiagram.makeImage({
+  size: new go.Size(100,NaN)
+});
+</pre>
+<script>goCode2("code3");</script>
+
+<hr/>
+
+<p>The parts option allows us to specify an <a>Iterable</a> collection of Parts to draw. This is useful if you only want to make an image of part of the diagram, such as a selection of nodes.</p>
+<pre data-language="javascript" id="code4a">
+  myPartsList = new go.List();
+  myPartsList.add(myDiagram.findNodeForKey("Beta"));
+  myPartsList.add(myDiagram.findNodeForKey("Delta"));
+</pre>
+<script>goCode3("code4a");</script>
+<pre data-language="javascript" id="code4">
+myDiagram.makeImage({
+  parts: myPartsList
+});
+</pre>
+<script>goCode2("code4");</script>
+<p>Or simply drawing only the links:</p>
+<pre data-language="javascript" id="code4-2">
+myDiagram.makeImage({
+  parts: myDiagram.links
+});
+</pre>
+<script>goCode2("code4-2");</script>
+
+<hr/>
+
+<p>Setting both scale and size creates an image that is scaled specifically and cropped to the given size, as in the following image.</p>
+<pre data-language="javascript" id="code5">
+myDiagram.makeImage({
+  scale: 1.5,
+  size: new go.Size(100,100)
+});
+</pre>
+<script>goCode2("code5");</script>
+
+<hr/>
+
+<p>We may want a very large, scaled image that has a limit on its size, and we can use the maxSize property to constrain one or both dimensions. The following image has a very large scale applied but is limited in size horizontally, so some horizontal cropping will occur.</p>
+<p>The default value for maxSize is <code>go.Size(2000, 2000)</code>, and specifying <code>go.Size(600, NaN)</code> is equivalent to specifying <code>go.Size(600, 2000)</code>. If we wanted no cropping on the height we could instead write <code>go.Size(600, Infinity)</code>.</p>
+<pre data-language="javascript" id="code6">
+myDiagram.makeImage({
+  scale: 9,
+  maxSize: new go.Size(600, NaN)
+});
+</pre>
+<script>goCode2("code6");</script>
+
+<hr/>
+
+<p>Setting both position and size creates a diagram image that is positioned specifically and cropped to the given size. When a position is set but no scale is set, the scale defaults to 1.</p>
+<pre data-language="javascript" id="code7">
+myDiagram.makeImage({
+  position: new go.Point(20,20),
+  size: new go.Size(50,50)
+});
+</pre>
+<script>goCode2("code7");</script>
+
+<p>Setting the background to a CSS color string will replace the transparent Diagram background with the given color.</p>
+<pre data-language="javascript" id="code8">
+myDiagram.makeImage({
+  size: new go.Size(NaN,250),
+  background: "rgba(0, 255, 0, 0.5)" // semi-transparent green background
+});
+</pre>
+<script>goCode2("code8");</script>
+
+<hr/>
+
+<p>In the following code we use the document bounds to split the Diagram into four equal parts, making four images out of each part. In this way we can prepare images for pagination, making a gallery, or printing purposes. The four images created are shown below.</p>
+<pre data-language="javascript" id="manyImgCode">
+    var d = myDiagram.documentBounds;
+    var halfWidth = d.width / 2;
+    var halfHeight = d.height / 2;
+    img = myDiagram.makeImage({
+            position: new go.Point(d.x, d.y),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addImage(img); // Adds the image to a DIV below
+
+    img = myDiagram.makeImage({
+            position: new go.Point(d.x + halfWidth, d.y),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addImage(img);
+
+    img = myDiagram.makeImage({
+            position: new go.Point(d.x, d.y+ halfHeight),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addImage(img);
+
+    img = myDiagram.makeImage({
+            position: new go.Point(d.x + halfWidth, d.y + halfHeight),
+            size: new go.Size(halfWidth,halfHeight)
+          });
+    addImage(img);
+</pre>
+<div id="severalImages"></div>
+<script>goCode3("manyImgCode");</script>
+
+<hr/>
+
+<h3>Image Type</h3>
+<p>
+We can set the type and details properties of the argument object in order to retrieve different kinds of images. The only widely supported type is "image/jpeg". The details for a jpeg determine its quality by using values from 0 to 1 inclusive. Jpegs are not commonly used for Diagrams because their lossy compression can render text unreadable.
+</p>
+<p>
+The following image is an outputted jpeg. Note how the transparent background is turned black, because the jpeg format does not support alpha transparency, and the default state of the HTML5 canvas is that of fully transparent black pixels, rgba(0,0,0,0).
+</p>
+<pre data-language="javascript" id="codea1">
+myDiagram.makeImage({
+  scale: 1,
+  type: "image/jpeg"
+});
+</pre>
+<script>
+goCode2("codea1");
+</script>
+
+<hr/>
+
+<p>
+The following image is a jpeg created with an AntiqueWhite background specified.
+</p>
+<pre data-language="javascript" id="codea2">
+myDiagram.makeImage({
+  scale: 1,
+  background: "AntiqueWhite",
+  type: "image/jpeg"
+});
+</pre>
+<script>
+goCode2("codea2");
+</script>
+
+<hr/>
+
+<p>
+The following image is a jpeg created (with an AntiqueWhite background) and the details option, at very low quality.
+</p>
+<pre data-language="javascript" id="codea3">
+myDiagram.makeImage({
+  scale: 1,
+  background: "AntiqueWhite",
+  type: "image/jpeg",
+  details: 0.05
+});
+</pre>
+<script>
+goCode2("codea3");
+</script>
+
+
+
+</div>
+</body>
+</html>

@@ -3,9 +3,9 @@
 <head>
 <title>Update Demo GoJS Sample</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
 // This variable refers to the Model that both Diagrams use.
 // It is here to allow usage by Data property setters.
@@ -45,6 +45,8 @@ function init() {
   var blueDiagram =
     $(go.Diagram, "blueDiagram",
       {
+        // start everything in the middle of the viewport
+        initialContentAlignment: go.Spot.Center,
         "clickCreatingTool.archetypeNodeData": new Data("node")
       });
 
@@ -77,6 +79,8 @@ function init() {
   var greenDiagram =
     $(go.Diagram, "greenDiagram",
       {
+        // start everything in the middle of the viewport
+        initialContentAlignment: go.Spot.Center,
         "clickCreatingTool.archetypeNodeData": new Data("node")
       });
 
@@ -126,14 +130,31 @@ function init() {
 
   var undoDisplay =
     $(go.Diagram, "undoDisplay",
-      { allowMove: false,
-        maxSelectionCount: 1 });
+      {
+        allowMove: false,
+        maxSelectionCount: 1,
+        layout:
+          $(go.TreeLayout,
+            {
+              alignment: go.TreeLayout.AlignmentStart,
+              angle: 0,
+              compaction: go.TreeLayout.CompactionNone,
+              layerSpacing: 16,
+              layerSpacingParentOverlap: 1,
+              nodeIndent: 2,
+              nodeIndentPastParent: 0.88,
+              nodeSpacing: 0,
+              setsPortSpot: false,
+              setsChildPortSpot: false,
+              arrangementSpacing: new go.Size(2, 2)
+            }),
+        "animationManager.isEnabled": false
+      });
 
   undoDisplay.nodeTemplate =
     $(go.Node,
       $("TreeExpanderButton",
-        { width: 14,
-          "ButtonBorder.fill": "whitesmoke" }),
+        { width: 14, "ButtonBorder.fill": "whitesmoke" }),
       $(go.Panel, "Horizontal",
         { position: new go.Point(16, 0) },
         new go.Binding("background", "color"),
@@ -143,21 +164,6 @@ function init() {
     );
 
   undoDisplay.linkTemplate = $(go.Link);  // not really used
-
-  undoDisplay.layout =
-    $(go.TreeLayout,
-      { alignment: go.TreeLayout.AlignmentStart,
-        angle: 0,
-        compaction: go.TreeLayout.CompactionNone,
-        layerSpacing: 16,
-        layerSpacingParentOverlap: 1,
-        nodeIndent: 2,
-        nodeIndentPastParent: 0.88,
-        nodeSpacing: 0,
-        setsPortSpot: false,
-        setsChildPortSpot: false,
-        arrangementSpacing: new go.Size(2, 2)
-      });
 
   var undoModel =
     $(go.GraphLinksModel,  // initially empty
@@ -206,20 +212,18 @@ function init() {
       editList.push(parentNode);
       if (tx !== null) {
         var allChanges = tx.changes;
-      var itr = allChanges.iterator;
-      var odd = true;
-      while (itr.next()) {
-        var change = itr.value;
-        var childData = {
-          color: (odd ? "white" : "#E0FFED"),
-          text: change.toString()
-        }
-        odd = !odd;
-        undoModel.addNodeData(childData)
-        var childKey = undoModel.getKeyForNodeData(childData);
-        undoModel.addLinkData({ from: parentKey, to: childKey });
-      }
-      undoDisplay.commandHandler.collapseTree(parentNode);
+        var odd = true;
+        allChanges.each(function(change) {
+            var childData = {
+              color: (odd ? "white" : "#E0FFED"),
+              text: change.toString()
+            }
+            odd = !odd;
+            undoModel.addNodeData(childData)
+            var childKey = undoModel.getKeyForNodeData(childData);
+            undoModel.addLinkData({ from: parentKey, to: childKey });
+          });
+        undoDisplay.commandHandler.collapseTree(parentNode);
       }
     } else if (e.propertyName === "FinishedUndo" || e.propertyName === "FinishedRedo") {
       var undoManager = model.undoManager;

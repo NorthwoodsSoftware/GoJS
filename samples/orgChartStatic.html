@@ -3,7 +3,6 @@
 <head>
 <title>Org Chart Static</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <style type="text/css">
 
 #myOverview {
@@ -20,7 +19,8 @@
 
 </style>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -28,8 +28,26 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // the DIV HTML element
-        { initialDocumentSpot: go.Spot.TopCenter,
-          initialViewportSpot: go.Spot.TopCenter });
+        {
+          initialDocumentSpot: go.Spot.TopCenter,
+          initialViewportSpot: go.Spot.TopCenter,
+          layout:  // create a TreeLayout
+            $(go.TreeLayout,
+              {
+                treeStyle: go.TreeLayout.StyleLastParents,
+                angle: 90,
+                layerSpacing: 80,
+                alternateAngle: 0,
+                alternateAlignment: go.TreeLayout.AlignmentStart,
+                alternateNodeIndent: 20,
+                alternateNodeIndentPastParent: 1,
+                alternateNodeSpacing: 20,
+                alternateLayerSpacing: 40,
+                alternateLayerSpacingParentOverlap: 1,
+                alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
+                alternateChildPortSpot: go.Spot.Left
+              })
+        });
 
     // define Converters to be used for Bindings
     function theNationFlagConverter(nation) {
@@ -39,11 +57,11 @@
     function theInfoTextConverter(info) {
       var str = "";
       if (info.title) str += "Title: " + info.title;
-      if (info.headOf) str += "\nHead of: " + info.headOf;
+      if (info.headOf) str += "\n\nHead of: " + info.headOf;
       if (typeof info.boss === "number") {
         var bossinfo = myDiagram.model.findNodeDataForKey(info.boss);
         if (bossinfo !== null) {
-          str += "\nReporting to: " + bossinfo.name;
+          str += "\n\nReporting to: " + bossinfo.name;
         }
       }
       return str;
@@ -58,31 +76,40 @@
           { fill: "azure" }),
         // a table to contain the different parts of the node
         $(go.Panel, "Table",
-          { margin: 4, maxSize: new go.Size(140, NaN) },
+          { margin: 4, maxSize: new go.Size(150, NaN) },
           // the two TextBlocks in column 0 both stretch in width
           // but align on the left side
           $(go.RowColumnDefinition,
-            { column: 0,
+            {
+              column: 0,
               stretch: go.GraphObject.Horizontal,
-              alignment: go.Spot.Left }),
+              alignment: go.Spot.Left
+            }),
           // the name
           $(go.TextBlock,
-            { row: 0, column: 0,
-              maxSize: new go.Size(110, NaN),
+            {
+              row: 0, column: 0,
+              maxSize: new go.Size(120, NaN),
+              margin: 2,
               font: "bold 8pt sans-serif",
-              alignment: go.Spot.Top },
+              alignment: go.Spot.Top
+            },
             new go.Binding("text", "name")),
           // the country flag
           $(go.Picture,
-            { row: 0, column: 1, margin: 2,
+            {
+              row: 0, column: 1, margin: 2,
               desiredSize: new go.Size(34, 26),
               imageStretch: go.GraphObject.Uniform,
-              alignment: go.Spot.TopRight },
+              alignment: go.Spot.TopRight
+            },
             new go.Binding("source", "nation", theNationFlagConverter)),
           // the additional textual information
           $(go.TextBlock,
-            { row: 1, column: 0, columnSpan: 2,
-              font: "8pt sans-serif" },
+            {
+              row: 1, column: 0, columnSpan: 2,
+              font: "8pt sans-serif"
+            },
             new go.Binding("text", "", theInfoTextConverter))
         )  // end Table Panel
       );  // end Node
@@ -91,7 +118,8 @@
     myDiagram.linkTemplate =
       $(go.Link, go.Link.Orthogonal,
         { selectable: false },
-        $(go.Shape));  // the default black link shape
+        $(go.Shape, { stroke: '#222' } ));  // the default black link shape
+
 
     // set up the nodeDataArray, describing each person/position
     var nodeDataArray = [
@@ -142,21 +170,6 @@
         { nodeParentKeyProperty: "boss",  // this property refers to the parent node data
           nodeDataArray: nodeDataArray });
 
-    // create a TreeLayout
-    myDiagram.layout =
-      $(go.TreeLayout,
-        { treeStyle: go.TreeLayout.StyleLastParents,
-          angle: 90,
-          layerSpacing: 80,
-          alternateAngle: 0,
-          alternateAlignment: go.TreeLayout.AlignmentStart,
-          alternateNodeIndent: 20,
-          alternateNodeIndentPastParent: 1,
-          alternateNodeSpacing: 20,
-          alternateLayerSpacing: 40,
-          alternateLayerSpacingParentOverlap: 1,
-          alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
-          alternateChildPortSpot: go.Spot.Left });
 
     // Overview
     myOverview =

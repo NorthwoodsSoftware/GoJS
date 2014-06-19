@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Selection -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Overview Diagrams</h2>
+<p>
+An <a>Overview</a> is a subclass of <a>Diagram</a> that is used to display all of the <a>Part</a>s
+of another diagram and to show where that diagram's viewport is relative to all of those parts.
+The user can also scroll the overviewed diagram by clicking or dragging within the overview.
+</p>
+<p>
+The initialization of an <a>Overview</a> is just a matter of setting <a>Overview.observed</a>
+to refer to the <a>Diagram</a> that you want it to show.  So there needs to be a DIV for your main diagram,
+for which you create a Diagram in the normal manner, and a separate DIV for your overview, for which you
+create the Overview in a very simple manner.
+</p>
+<p>
+The code below first creates a Diagram that we want to view.
+It initializes the diagram with 1000 nodes of random colors.
+</p>
+<p>
+It then creates an <a>Overview</a> and sets <a>Overview.observed</a> to the above Diagram.
+The DIV for the overview is named "myOverviewDiv".
+You can, if you wish, set <a>Overview.observed</a> at a later time.
+</p>
+<pre data-language="javascript" id="diagramPre">
+  // initialize the main Diagram
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  // start off with a lot of nodes
+  var nodeDataArray = [];
+  for (var i = 0; i &lt; 1000; i++) {
+    nodeDataArray.push({ color: go.Brush.randomColor() });
+  }
+  diagram.model.nodeDataArray = nodeDataArray;
+
+  // create the Overview and initialize it to show the main Diagram
+  var myOverview =
+    $(go.Overview, "myOverviewDiv",
+      { observed: diagram });
+</pre>
+<div style="width:100%">
+  <span id="overviewSpan" style="display: inline-block; vertical-align: top;">
+    <b>Overview:</b><br />
+    <div id="myOverviewDiv" style="width:150px; height: 150px" class="diagramContainer"></div>
+  </span>
+  <span id="diagramSpan" style="display: inline-block; vertical-align: top">
+    <b>Diagram:</b><br />
+  </span>
+</div>
+<script>goCode("diagramPre", 500, 300, go.Diagram, "diagramSpan");</script>
+
+</div>
+</body>
+</html>

@@ -3,9 +3,9 @@
 <head>
 <title>Seating Chart</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -25,18 +25,28 @@
 
     myDiagram.nodeTemplateMap.add("",  // default template, for people
       $(go.Node, "Auto",
-        { background: "transparent", layerName: "Foreground" },  // in front of all Tables
+        { background: "transparent" },  // in front of all Tables
+        // when selected is in foreground layer
+        new go.Binding("layerName", "isSelected", function(s) { return s ? "Foreground" : ""; }).ofObject(),
         { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         new go.Binding("text", "key"),
+        { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
+          mouseDragEnter: function(e, node, prev) { highlightSeats(node, true); },
+          mouseDragLeave: function(e, node, next) { highlightSeats(node, false); },
+          mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
+        },
         $(go.Shape, "Rectangle", { fill: "blanchedalmond", stroke: null }),
         $(go.Panel, "Viewbox",
           { desiredSize: new go.Size(50, 36) },
           $(go.TextBlock, { margin: 2, desiredSize: new go.Size(60, NaN), textAlign: "center", stroke: "darkblue" },
-            new go.Binding("text", "", function(data) { var s = data.key; if (data.plus) s += " +" + data.plus.toString(); return s; }))
+            new go.Binding("text", "", function(data) {
+                var s = data.key;
+                if (data.plus) s += " +" + data.plus.toString();
+                return s;
+              }))
         )
       ));
-
 
     // Create a seat element at a particular alignment relative to the table.
     function Seat(number, align, focus) {
@@ -47,7 +57,7 @@
       return $(go.Panel, "Spot",
                { name: number.toString(), alignment: align, alignmentFocus: focus },
                $(go.Shape, "Circle",
-                 { name: "SEATSHAPE", desiredSize: new go.Size(40, 40), fill: "burlywood", stroke: "white" },
+                 { name: "SEATSHAPE", desiredSize: new go.Size(40, 40), fill: "burlywood", stroke: "white", strokeWidth: 2 },
                  new go.Binding("fill")),
                $(go.TextBlock, number.toString(),
                  new go.Binding("angle", "angle", function(n) { return -n; }))
@@ -57,12 +67,12 @@
     function tableStyle() {
       return [
         { background: "transparent" },
+        { layerName: "Background" },  // behind all Persons
         { locationSpot: go.Spot.Center, locationObjectName: "TABLESHAPE" },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         { rotatable: true },
         new go.Binding("angle").makeTwoWay(),
-        {
-          // what to do when a drag-over or a drag-drop occurs on a Node
+        { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
           mouseDragEnter: function(e, node, prev) { highlightSeats(node, true); },
           mouseDragLeave: function(e, node, next) { highlightSeats(node, false); },
           mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
@@ -134,40 +144,37 @@
     myDiagram.mouseDrop = function(e) {
       // when the selection is dropped in the diagram's background,
       // make sure the selected people no longer belong to any table
-      for (var git = e.diagram.selection.iterator; git.next(); ) {
-        var g = git.value;
-        if (g.category !== "") continue;
-        unassignSeat(g.data);
-      }
+      e.diagram.selection.each(function(n) {
+          if (isPerson(n)) unassignSeat(n.data);
+        });
     };
 
-    // To simulate a "move" from the Palette, the source Node must be deleted.
+    // to simulate a "move" from the Palette, the source Node must be deleted.
     myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-      var diagram = e.diagram;
-      for (var nit = diagram.selection.iterator; nit.next(); ) {
-        var n = nit.value;
-        if (n.category !== "") return;  // found a Table
+      // if any Tables were dropped, don't delete from myGuests
+      if (!e.subject.any(isTable)) {
+        myGuests.commandHandler.deleteSelection();
       }
-      myGuests.commandHandler.deleteSelection();
     });
 
+    // put deleted people back in the myGuests diagram
     myDiagram.addDiagramListener("SelectionDeleted", function(e) {
       // no-op if deleted by myGuests' ExternalObjectsDropped listener
       if (myDiagram.disableSelectionDeleted) return;
-      for (var it = e.subject.iterator; it.next() ;) {
-        var n = it.value;
-        if (n.category === "") {
-          myGuests.model.addNodeData(myGuests.model.copyNodeData(n.data));
-        }
-      }
+      // e.subject is the myDiagram.selection collection
+      e.subject.each(function(n) {
+          if (isPerson(n)) {
+            myGuests.model.addNodeData(myGuests.model.copyNodeData(n.data));
+          }
+        });
     });
 
     // create some initial tables
     myDiagram.model = new go.GraphLinksModel([
-      { key: 1, category: "TableR3", name: "Head 1", guests: {}, angle: 180 },
-      { key: 2, category: "TableR3", name: "Head 2", guests: {}, angle: 180 },
-      { key: 3, category: "TableR8", name: "3", guests: {} },
-      { key: 4, category: "TableC8", name: "4", guests: {} }
+      {"key":1, "category":"TableR3", "name":"Head 1", "guests":{}, "loc":"143.5 58"},
+      {"key":2, "category":"TableR3", "name":"Head 2", "guests":{}, "loc":"324.5 58"},
+      {"key":3, "category":"TableR8", "name":"3", "guests":{}, "loc":"121.5 203.5"},
+      {"key":4, "category":"TableC8", "name":"4", "guests":{}, "loc":"364.5 223.5"}
     ]);  // this sample does not make use of any links
 
 
@@ -204,17 +211,22 @@
 
     // To simulate a "move" from the Diagram back to the Palette, the source Node must be deleted.
     myGuests.addDiagramListener("ExternalObjectsDropped", function(e) {
-      for (var nit = e.diagram.selection.iterator; nit.next(); ) {
-        var n = nit.value;
-        if (n.category !== "") {  // dragged a Table
-          myDiagram.currentTool.doCancel();
-          myGuests.currentTool.doCancel();
-          return;
-        }
+      // e.subject is the myGuests.selection collection
+      // if the user dragged a Table to the myGuests diagram, cancel the drag
+      if (e.subject.any(isTable)) {
+        myDiagram.currentTool.doCancel();
+        myGuests.currentTool.doCancel();
+        return;
       }
+      myDiagram.selection.each(function(n) {
+        if (isPerson(n)) unassignSeat(n.data);
+      });
       myDiagram.disableSelectionDeleted = true;
       myDiagram.commandHandler.deleteSelection();
       myDiagram.disableSelectionDeleted = false;
+      myGuests.selection.each(function(n) {
+        if (isPerson(n)) unassignSeat(n.data);
+      });
     });
 
 
@@ -226,12 +238,18 @@
     });
   } // end init
 
+  function isPerson(n) { return n !== null && n.category === ""; }
+
+  function isTable(n) { return n !== null && n.category !== ""; }
 
   // Highlight the empty and occupied seats at a "Table" Node
   function highlightSeats(node, show) {
-    if (node.category === "") throw Error("Trying to highlight seats for a Person, not a Table");
+    if (isPerson(node)) {  // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
     var guests = node.data.guests;
-    for (var sit = node.elements; sit.next() ;) {
+    for (var sit = node.elements; sit.next();) {
       var seat = sit.value;
       if (seat.name) {
         var num = parseFloat(seat.name);
@@ -254,20 +272,17 @@
   // Given a "Table" Node, assign seats for all of the people in the given collection of Nodes;
   // the optional Point argument indicates where the collection of people may have been dropped.
   function assignPeopleToSeats(node, coll, pt) {
-    if (node.category === "") throw Error("Trying to assign seats at a Person, not at a Table");
-    for (var nit = coll.iterator; nit.next() ;) {
-      var g = nit.value;
-      if (g.category !== "") {
-        // if dragging a Table, don't allow it to be dropped onto another table
-        myDiagram.currentTool.doCancel();
-        return;
-      }
+    if (isPerson(node)) {  // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
+    if (coll.any(isTable)) {
+      // if dragging a Table, don't allow it to be dropped onto another table
+      myDiagram.currentTool.doCancel();
+      return;
     }
     // OK -- all Nodes are people, call assignSeat on each person data
-    for (var nit = coll.iterator; nit.next() ;) {
-      var g = nit.value;
-      assignSeat(node, g.data, pt);
-    }
+    coll.each(function(n) { assignSeat(node, n.data, pt); });
     positionPeopleAtSeats(node);
   }
 
@@ -275,7 +290,10 @@
   // Also handles cases where the guest represents multiple people, because guest.plus > 0.
   // This tries to assign the unoccupied seat that is closest to the given point in document coordinates.
   function assignSeat(node, guest, pt) {
-    if (node.category === "") throw Error("Trying to assign seats at a Person, not at a Table");
+    if (isPerson(node)) {  // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
     if (guest instanceof go.GraphObject) throw Error("A guest object must not be a GraphObject: " + guest.toString());
     if (!(pt instanceof go.Point)) pt = node.location;
 
@@ -328,12 +346,15 @@
   // Find the name of the unoccupied seat that is closest to the given Point.
   // This returns null if no seat is available at this table.
   function findClosestUnoccupiedSeat(node, pt) {
-    if (node.category === "") throw Error("Trying to assign seats at a Person, not at a Table");
+    if (isPerson(node)) {  // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
     var guests = node.data.guests;
     var closestseatname = null;
     var closestseatdist = Infinity;
     // iterate over all seats in the Node to find one that is not occupied
-    for (var sit = node.elements; sit.next() ;) {
+    for (var sit = node.elements; sit.next();) {
       var seat = sit.value;
       if (seat.name) {
         var num = parseFloat(seat.name);
@@ -353,7 +374,10 @@
   // Position the nodes of all of the guests that are seated at this table
   // to be at their corresponding seat elements of the given "Table" Node.
   function positionPeopleAtSeats(node) {
-    if (node.category === "") throw Error("Trying to assign seats at a Person, not at a Table");
+    if (isPerson(node)) {  // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
     var guests = node.data.guests;
     var model = node.diagram.model;
     for (var seatname in guests) {
@@ -386,17 +410,17 @@
 
   SpecialDraggingTool.prototype.computeEffectiveCollection = function(parts) {
     var map = go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts);
-    for (var it = parts.iterator; it.next(); ) {
-      var table = it.value;
-      if (table.category === "") continue;
+    // for each Node representing a table, also drag all of the people seated at that table
+    parts.each(function(table) {
+      if (isPerson(table)) return;  // ignore persons
       // this is a table Node, find all people Nodes using the same table key
       for (var nit = this.diagram.nodes; nit.next(); ) {
         var n = nit.value;
-        if (n.category === "" && n.data.table === table.data.key) {
+        if (isPerson(n) && n.data.table === table.data.key) {
           if (!map.contains(n)) map.add(n, { point: n.location });
         }
       }
-    }
+    });
     return map;
   };
 

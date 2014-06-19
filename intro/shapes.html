@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Shapes -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Shapes</h2>
+<p>
+Use the <a>Shape</a> class to paint a geometrical figure.
+You can control what kind of shape is drawn and how it is stroked and filled.
+</p>
+
+<h3>Figures</h3>
+<p>
+You can set the <a>Shape.figure</a> property to commonly named kinds of shapes.
+When using <a>GraphObject.make</a>, you can pass the figure name as a string argument.
+You may also need to set the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a> properties,
+although it is also common to have the size determined by the Panel that the shape is in.
+</p>
+<p>
+In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
+Once you learn about models and data binding you will generally not create parts (nodes or links) programmatically.
+</p>
+<p>
+Here are several of the most often used Shape figures:
+</p>
+<pre data-language="javascript" id="figureShapes">
+  diagram.add(
+    $(go.Part, "Horizontal",
+      $(go.Shape, "Rectangle",
+                  { width: 40, height: 60, margin: 4, fill: null }),
+      $(go.Shape, "RoundedRectangle",
+                  { width: 40, height: 60, margin: 4, fill: null }),
+      $(go.Shape, "Ellipse",
+                  { width: 40, height: 60, margin: 4, fill: null }),
+      $(go.Shape, "Triangle",
+                  { width: 40, height: 60, margin: 4, fill: null }),
+      $(go.Shape, "Diamond",
+                  { width: 40, height: 60, margin: 4, fill: null })
+    ));
+</pre>
+<script>goCode("figureShapes", 600, 100)</script>
+<p>
+You can see all of the named geometrical figures in the
+<a href="../samples/shapes.html" target="samples">shapes</a> sample.
+</p>
+
+<h3>Fill and Strokes</h3>
+<p>
+The <a>Shape.stroke</a> property specifies the brush used to draw the shape's outline.
+The <a>Shape.fill</a> property specifies the brush used to fill the shape's outline.
+Additional "stroke..." properties also control how the shape's outline is drawn.
+The most common such property is <a>Shape.strokeWidth</a>.
+</p>
+<pre data-language="javascript" id="strokedShapes">
+  diagram.add(
+    $(go.Part, "Horizontal",
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4
+                    }),  // default fill and stroke are "black"
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: "green" }),
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: "green", stroke: null }),
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: null, stroke: "green" }),
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: null, stroke: "green", strokeWidth: 3 }),
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: null, stroke: "green", strokeWidth: 6 }),
+      $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: "green", background: "orange" })
+    ));
+</pre>
+<script>goCode("strokedShapes", 600, 80)</script>
+
+<p>
+The <a>Shape.stroke</a> and <a>Shape.fill</a> properties take <a>Brush</a>es
+but most often are given a CSS color string to denote solid color brushes.
+These two properties default to a solid black brush.
+However it is common to assign one of them to be either null or "transparent".
+A null brush means that nothing is drawn for that stroke or fill.
+A transparent brush produces the same appearance but different hit-testing behavior.
+A shape with a null <a>Shape.fill</a> produces a "hollow" shape -- clicking inside
+the shape will not "hit" that shape and thus not select the <a>Node</a> that that shape is in.
+But a shape with a transparent fill produces a "filled" shape -- a mouse event inside the
+shape will "hit" that shape.
+</p>
+<pre data-language="javascript" id="fill">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Shape, { row: 0, column: 0, figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: "green" }),
+      $(go.TextBlock, "green", { row: 1, column: 0 }),
+      $(go.Shape, { row: 0, column: 1, figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: "white" }),
+      $(go.TextBlock, "white", { row: 1, column: 1 }),
+      $(go.Shape, { row: 0, column: 2, figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: "transparent" }),
+      $(go.TextBlock, "transparent", { row: 1, column: 2 }),
+      $(go.Shape, { row: 0, column: 3, figure: "Club", width: 40, height: 40, margin: 4,
+                    fill: null }),
+      $(go.TextBlock, "null", { row: 1, column: 3 })
+    ));
+</pre>
+<script>goCode("fill", 600, 80)</script>
+<p>
+Try clicking inside each of the shapes to see which ones will respond to the click and cause the whole panel to be selected.
+Only the last one, with a null fill, is truly "hollow".
+</p>
+
+<h3>Geometry</h3>
+<p>
+Every <a>Shape</a> gets its "shape" from the <a>Geometry</a> that it uses.
+A Geometry is just a saved description of how to draw some lines given a set of points.
+Setting <a>Shape.figure</a> uses a named predefined geometry.
+</p>
+<p>
+If you want something different from all of the predefined figures in <b>GoJS</b>,
+you can construct your own Geometry and set <a>Shape.geometry</a>.
+One way of building your own <a>Geometry</a> is by building <a>PathFigure</a>s
+consisting of <a>PathSegment</a>s.  But an easier way to create geometries is by
+calling <a>Geometry.parse</a> to read a string that has a geometry-defining path expression,
+or to set <a>Shape.geometryString</a> to such a string.
+These expressions have commands for moving an imaginary "pen".
+The syntax for geometry paths is documented in the <a href="geometry.html">Geometry Path Strings</a> page.
+</p>
+<p>
+This example creates a Geometry that looks like the letter "W"
+and uses it in several Shape objects with different stroke characteristics.
+Geometry objects may be shared by multiple Shapes.
+Note that there may be no need to specify the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a>,
+because the Geometry defines its own sizes.
+If the size is set or imposed by the containing Panel, the effective geometry is determined by the <a>Shape.geometryStretch</a> property.
+</p>
+<pre data-language="javascript" id="geometries">
+  var W_geometry = go.Geometry.parse("M 0,0 L 10,50 20,10 30,50 40,0", false);
+  diagram.add(
+    $(go.Part, "Horizontal",
+      $(go.Shape, { geometry: W_geometry, strokeWidth: 2 }),
+      $(go.Shape, { geometry: W_geometry, stroke: "blue", strokeWidth: 10,
+                    strokeJoin: "miter", strokeCap: "butt" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "blue", strokeWidth: 10,
+                    strokeJoin: "miter", strokeCap: "round" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "blue", strokeWidth: 10,
+                    strokeJoin: "miter", strokeCap: "square" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "green", strokeWidth: 10,
+                    strokeJoin: "bevel", strokeCap: "butt" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "green", strokeWidth: 10,
+                    strokeJoin: "bevel", strokeCap: "round" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "green", strokeWidth: 10,
+                    strokeJoin: "bevel", strokeCap: "square" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "red", strokeWidth: 10,
+                    strokeJoin: "round", strokeCap: "butt" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "red", strokeWidth: 10,
+                    strokeJoin: "round", strokeCap: "round" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "red", strokeWidth: 10,
+                    strokeJoin: "round", strokeCap: "square" }),
+      $(go.Shape, { geometry: W_geometry, stroke: "purple", strokeWidth: 2,
+                    strokeDashArray: [4, 2] }),
+      $(go.Shape, { geometry: W_geometry, stroke: "purple", strokeWidth: 2,
+                    strokeDashArray: [6, 6, 2, 2] })
+    ));
+</pre>
+<script>goCode("geometries", 600, 100)</script>
+
+<h3>Angle and Scale</h3>
+<p>
+Besides setting the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a> to declare the size of a <a>Shape</a>,
+you can also set other properties to affect the appearance.
+For example, you can set the <a>GraphObject.angle</a> and <a>GraphObject.scale</a> properties.
+</p>
+<pre data-language="javascript" id="transformedShapes">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Shape, { row: 0, column: 1,
+                    figure: "Club", fill: "green", width: 40, height: 40,
+                    }),  // default angle is zero; default scale is one
+      $(go.Shape, { row: 0, column: 2,
+                    figure: "Club", fill: "green", width: 40, height: 40,
+                    angle: 30 }),
+      $(go.Shape, { row: 0, column: 3,
+                    figure: "Club", fill: "green", width: 40, height: 40,
+                    scale: 1.5 }),
+      $(go.Shape, { row: 0, column: 4,
+                    figure: "Club", fill: "green", width: 40, height: 40,
+                    angle: 30, scale: 1.5 })
+    ));
+</pre>
+<script>goCode("transformedShapes", 600, 100)</script>
+
+<p>
+The <a>Shape.fill</a> and <a>GraphObject.background</a> brushes scale and rotate along with the shape.
+The <a>GraphObject.areaBackground</a> is drawn in the containing panel's coordinates,
+so it is not affected by the object's scale or angle.
+</p>
+<p>
+The following shapes each use three separate linear gradient brushes, one for each of the three properties.
+Note the unrotated shape on the left.  Because its <a>GraphObject.background</a> brush is opaque,
+you cannot see the <a>GraphObject.areaBackground</a> brush that fills the same area behind it.
+</p>
+<pre data-language="javascript" id="backgrounds">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Shape, { row: 0, column: 0,
+                    figure: "Club", width: 40, height: 40, angle: 0, scale: 1.5,
+                    fill: $(go.Brush, go.Brush.Linear, { 0.0: "blue", 1.0: "red" }),
+                    background: $(go.Brush, go.Brush.Linear, { 0.0: "yellow", 1.0: "green" }),
+                    areaBackground: $(go.Brush, go.Brush.Linear, { 0.0: "gray", 1.0: "lightgray" }) }),
+      $(go.Shape, { row: 0, column: 1, width: 10, fill: null, stroke: null }),
+      $(go.Shape, { row: 0, column: 2,
+                    figure: "Club", width: 40, height: 40, angle: 45, scale: 1.5,
+                    fill: $(go.Brush, go.Brush.Linear, { 0.0: "blue", 1.0: "red" }),
+                    background: $(go.Brush, go.Brush.Linear, { 0.0: "yellow", 1.0: "green" }),
+                    areaBackground: $(go.Brush, go.Brush.Linear, { 0.0: "black", 1.0: "lightgray" }) })
+    ));
+</pre>
+<script>goCode("backgrounds", 600, 120)</script>
+
+</div>
+</body>
+</html>

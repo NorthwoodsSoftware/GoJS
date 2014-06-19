@@ -216,15 +216,13 @@ h1{
   // call this after modifying the diagram's contents
   function updateChairArray() {
     chairArr.length = 0;  // clear the Array
-    var nodeItr = myDiagram.nodes;
-    while (nodeItr.next()) {
-      var node = nodeItr.value;
-      if (node.data === null) continue;
+    myDiagram.nodes.each(function(node) {
+      if (node.data === null) return;
       if (node.data.item === "chair" || node.data.item === "arm chair" || node.data.item === "couch"
           || node.data.item === "queen bed" || node.data.item === "twin bed") {
         chairArr.push(node);
       }
-    }
+    });
   }
 
   // opens the selected floorplan in the diagram

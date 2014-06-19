@@ -3,9 +3,9 @@
 <head>
   <title>GoJS Tree View</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,18 +13,38 @@
 
       myDiagram =
         $(go.Diagram, "myDiagram",
-          { allowMove: false, allowCopy: false, allowDelete: false, allowHorizontalScroll: false });
+          {
+            allowMove: false,
+            allowCopy: false,
+            allowDelete: false,
+            allowHorizontalScroll: false,
+            layout:
+              $(go.TreeLayout,
+                {
+                  alignment: go.TreeLayout.AlignmentStart,
+                  angle: 0,
+                  compaction: go.TreeLayout.CompactionNone,
+                  layerSpacing: 16,
+                  layerSpacingParentOverlap: 1,
+                  nodeIndent: 2,
+                  nodeIndentPastParent: 0.88,
+                  nodeSpacing: 0,
+                  setsPortSpot: false,
+                  setsChildPortSpot: false
+                })
+        });
 
       myDiagram.nodeTemplate =
         $(go.Node,
-          { selectionAdorned: false },  // no Adornment: instead change panel background color by binding to Node.isSelected
+          // no Adornment: instead change panel background color by binding to Node.isSelected
+          { selectionAdorned: false },
           $("TreeExpanderButton",
             { width: 14,
               "ButtonIcon.stroke": "blue",
               "ButtonBorder.fill": "yellow" }),
           $(go.Panel, "Horizontal",
             { position: new go.Point(16, 0) },
-            new go.Binding("background", "isSelected", function (s) { return (s ? "lightblue" : "white"); }).ofObject(""),
+            new go.Binding("background", "isSelected", function (s) { return (s ? "lightblue" : "white"); }).ofObject(),
             $(go.Picture,
               { width: 14, height: 14,
                 margin: new go.Margin(0, 4, 0, 0),
@@ -49,20 +69,6 @@
 //            toSpot: go.Spot.Left },
 //          $(go.Shape,
 //            { stroke: "lightgray" }));
-
-      myDiagram.layout =
-        $(go.TreeLayout,
-          { alignment: go.TreeLayout.AlignmentStart,
-            angle: 0,
-            compaction: go.TreeLayout.CompactionNone,
-            layerSpacing: 16,
-            layerSpacingParentOverlap: 1,
-            nodeIndent: 2,
-            nodeIndentPastParent: 0.88,
-            nodeSpacing: 0,
-            setsPortSpot: false,
-            setsChildPortSpot: false
-          });
 
       var nodeDataArray = [{ key: 0 }];
       var max = 999;

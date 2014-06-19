@@ -128,7 +128,9 @@ FreehandDrawingTool.prototype.doMouseMove = function() {
 * @this {FreehandDrawingTool}
 */
 FreehandDrawingTool.prototype.doMouseUp = function() {
+  var started = false;
   if (this.isActive) {
+    started = true;
     var diagram = this.diagram;
     // the last point
     this.addPoint(diagram.lastInput.documentPoint);
@@ -150,9 +152,9 @@ FreehandDrawingTool.prototype.doMouseUp = function() {
     // assign the Shape.geometry
     var shape = part.findObject("SHAPE");
     if (shape !== null) shape.geometry = geo;
-    diagram.commitTransaction(this.name);
   }
   this.stopTool();
+  if (started) diagram.commitTransaction(this.name);
 };
 
 // Public properties

@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Pictures -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Pictures</h2>
+<p>
+Use the <a>Picture</a> class to display images.
+The most common usage is to set the <a>Picture.source</a> property with a URL string,
+along with the <a>GraphObject.desiredSize</a> or the <a>GraphObject.width</a> and <a>GraphObject.height</a>.
+</p>
+<p>
+If the URL is just a simple constant string, you can pass the string directly as an argument to <a>GraphObject.make</a>,
+rather than assign the "source:" property.  Both techniques have the same effect.
+</p>
+<p>
+In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
+Once you learn about models and data binding you will generally not create parts (nodes or links) programmatically.
+</p>
+<pre data-language="javascript" id="source">
+  diagram.add(
+    $(go.Part,
+      $(go.Picture, "images/100x65.png")
+    ));
+</pre>
+<script>goCode("source", 600, 160)</script>
+<p>
+However for more sophisticated control you can set the <a>Picture.element</a>
+to an <b>HTMLImageElement</b> or an <b>HTMLCanvasElement</b>.
+</p>
+
+<h3>Sizing</h3>
+<p>
+If you do not set the <a>GraphObject.desiredSize</a> of a <a>Picture</a>, it will get the picture's natural size.
+But when you set the desiredSize to be something different than the natural size, the picture may be stretched or compressed to fit.
+</p>
+<p>
+The following pictures all show a picture of kittens that is 100x65 pixels.
+</p>
+<ul>
+<li>The first picture shows the image at its natural size.</li>
+<li>The second picture also shows the image at its natural size, but has its desiredSize set explicitly.</li>
+<li>The third picture increases the size of the Picture, causing the image to be expanded evenly.</li>
+<li>The fourth picture squeezes the 100x65 image into a 50x40 space -- half size.
+This also maintains the original aspect ratio of the image.</li>
+<li>The last picture sets the picture size to be 50x70, which changes the aspect ratio to be taller and thinner than the original.</li>
+</ul>
+<pre data-language="javascript" id="sizedPictures">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Picture, { source: "images/100x65.png", column: 0,
+                      margin: 2 }),
+      $(go.TextBlock, "natural", { row: 1, column: 0 }),
+      $(go.Picture, { source: "images/100x65.png", column: 1,
+                      width: 100, height: 65, margin: 2 }),
+      $(go.TextBlock, "same size", { row: 1, column: 1 }),
+      $(go.Picture, { source: "images/100x65.png", column: 2,
+                      width: 200, height: 130, margin: 2 }),
+      $(go.TextBlock, "bigger", { row: 1, column: 2 }),
+      $(go.Picture, { source: "images/100x65.png", column: 3,
+                      width: 50, height: 32.5, margin: 2 }),
+      $(go.TextBlock, "smaller", { row: 1, column: 3 }),
+      $(go.Picture, { source: "images/100x65.png", column: 4,
+                      width: 50, height: 70, margin: 2 }),
+      $(go.TextBlock, "stretched", { row: 1, column: 4 })
+    ));
+</pre>
+<script>goCode("sizedPictures", 600, 160)</script>
+<p>
+Note that it may take a while for the media to load.
+Until the time that the media has loaded sufficiently to know its natural size, the Picture may have the wrong size, such as 0x0.
+We recommend that you specify the desiredSize (or width and height) so that
+the Panel(s) holding the Picture will not have to rearrange themselves once the media has loaded.
+</p>
+<p>
+However for the times when you cannot know the natural size ahead of time, there are alternative ways of stretching images to fit in a given space.
+</p>
+
+<h3>Image Stretch</h3>
+<p>
+Instead of always stretching or compressing to fill the desiredSize,
+you can set the <a>Picture.imageStretch</a> property to control the size and aspect ratio of the drawn image.
+</p>
+<p>
+The following pictures demonstrate the four possible values for Picture.imageStretch.
+All four Pictures here have the size 60x80 and show the same 100x65 PNG file.
+The Pictures also have a light green background, to show the space available that may be left unused, but is still part of the Picture's bounds.
+</p>
+<ul>
+<li>The first picture demonstrates the default behavior, to stretch in both directions.
+Note how the image is distorted to be narrower than it should be.
+However, all of the image is shown.
+Because the image fills the whole area and the image is not translucent, the background color does not show anywhere.
+</li>
+<li>You can see in the second picture, using an imageStretch of <a>GraphObject.None</a>,
+how it only shows a fraction of the whole kitten image.
+Because the desiredSize is smaller than the natural size of the image,
+parts of the image are clipped.
+</li>
+<li>The third picture shows how a <a>GraphObject.Uniform</a> imageStretch will make sure that all of the image is shown,
+at the expense of reducing the scale and leaving some empty space at the sides or at the top and bottom.
+In this case, because the natural image aspect ratio is wider than the available 60x80 aspect ratio,
+the empty space will be at the top and bottom.
+</li>
+<li>The fourth picture shows how a <a>GraphObject.UniformToFill</a> imageStretch will ensure that the whole area is occupied
+with image, but that not all of the image is shown, since some may be clipped at the sides or at the top and bottom.
+Such images normally have a larger scale than when using Uniform imageStretch.
+In this case what must be clipped is at the sides of the image.
+</li>
+<li>Finally there is a separate Part containing the original image, sized naturally, for comparison.</li>
+</ul>
+<pre data-language="javascript" id="stretchedPictures">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Picture, "images/100x65.png",
+        { column: 0, width: 60, height: 80, margin: 2, background: "chartreuse",
+          imageStretch: go.GraphObject.Fill }),
+      $(go.TextBlock, "Fill", { row: 1, column: 0 }),
+      $(go.Picture, "images/100x65.png",
+        { column: 1, width: 60, height: 80, margin: 2, background: "chartreuse",
+          imageStretch: go.GraphObject.None }),
+      $(go.TextBlock, "None", { row: 1, column: 1 }),
+      $(go.Picture, "images/100x65.png",
+        { column: 2, width: 60, height: 80, margin: 2, background: "chartreuse",
+          imageStretch: go.GraphObject.Uniform }),
+      $(go.TextBlock, "Uniform", { row: 1, column: 2 }),
+      $(go.Picture, "images/100x65.png",
+        { column: 3, width: 60, height: 80, margin: 2, background: "chartreuse",
+          imageStretch: go.GraphObject.UniformToFill }),
+      $(go.TextBlock, "UniformToFill", { row: 1, column: 3 })
+    ));
+
+  // The original image sized naturally, for comparison
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.Picture, "images/100x65.png"),
+      $(go.TextBlock, "Original image,\nsized naturally")
+    ));
+</pre>
+<script>goCode("stretchedPictures", 600, 120)</script>
+
+<h3>Using SVG as a Picture source</h3>
+
+<p>Almost all browsers accept SVG files as a Picture source, but in many browsers you <strong>must</strong>:</p>
+<ul>
+  <li>Assign width and height attributes to the SVG element (necessary for Firefox)</li>
+  <li>Assign the Picture element a desired size (necessary for Internet Explorer).</li>
+</ul>
+
+<p>This first SVG element has a width and height specified in its SVG element, and also has its desired size set. It should display in most browsers:</p>
+
+<pre>
+&lt;svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="580" height="580"&gt;
+  ...
+</pre>
+
+<pre data-language="javascript" id="svg1">
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.Picture, { desiredSize: new go.Size(580, 580), source: "images/tiger.svg" })
+    ));
+  diagram.scale = 0.5;
+</pre>
+<script>goCode("svg1", 300, 300)</script>
+
+<p style="color: red;"><strong>This SVG element does not specify width and height attributes in its SVG element, and as a result some browsers may not render it:</strong></p>
+
+<pre>
+&lt;svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
+  ...
+</pre>
+<pre data-language="javascript" id="svg2">
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.Picture, { source: "images/tiger-noWidthHeightSpecified.svg" })
+    ));
+  diagram.scale = 0.5;
+</pre>
+<script>goCode("svg2", 300, 300)</script>
+
+</div>
+</body>
+</html>

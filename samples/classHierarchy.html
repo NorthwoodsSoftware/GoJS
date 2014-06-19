@@ -3,21 +3,27 @@
 <head>
 <title>GoJS Class Hierarchy</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
-    var diagram = $(go.Diagram, "myDiagram");  // <div id="myDiagram" ...>
+
+    var diagram = $(go.Diagram, "myDiagram",  // <div id="myDiagram" ...>
+                    { // Automatically lay out the diagram as a tree;
+                      // separate trees are arranged vertically above each other.
+                      layout: $(go.TreeLayout, { nodeSpacing: 3 })
+                    });
 
     // Define a node template showing class names.
     // Double-clicking opens up the documentation for that class.
     diagram.nodeTemplate =
       $(go.Node, "Auto",
-        { doubleClick: nodeDoubleClick },  // this function is defined below
-        { toolTip:
+        {
+          doubleClick: nodeDoubleClick,  // this function is defined below
+          toolTip:
             $(go.Adornment, "Auto",
               $(go.Shape, { fill: "lightyellow" }),
               $(go.TextBlock, "double-click\nfor documentation",
@@ -61,30 +67,26 @@
 
     // Now collect all node data that are singletons
     var singlesArray = [];  // for classes that don't inherit from another class
-    var it = diagram.nodes;
-    while (it.next()) {
-      var node = it.value;
-      if (node.linksConnected.count === 0) {
-        singlesArray.push(node.data);
-      }
-    }
+    diagram.nodes.each(function(node) {
+        if (node.linksConnected.count === 0) {
+          singlesArray.push(node.data);
+        }
+      });
 
     // Remove the unconnected class nodes from the main Diagram
     diagram.model.removeNodeDataCollection(singlesArray);
 
-    // Now lay out the diagram as a tree;
-    // separate trees are arranged vertically above each other.
-    diagram.layout = $(go.TreeLayout, { nodeSpacing: 3 });
-
     // Display the unconnected classes in a separate Diagram
     var singletons =
       $(go.Diagram, "mySingletons",
-        { nodeTemplate: diagram.nodeTemplate, // Share the node template with the main Diagram
+        {
+          nodeTemplate: diagram.nodeTemplate, // share the node template with the main Diagram
           layout:
             $(go.GridLayout,
-              { wrappingColumn: 1,  // Put the unconnected nodes in a column
+              { wrappingColumn: 1,  // put the unconnected nodes in a column
                 spacing: new go.Size(3, 3) }),
-          model: new go.Model(singlesArray) });  // Use a separate model
+          model: new go.Model(singlesArray)  // use a separate model
+        });
   }
 
   // When a Node is double clicked, open the documentation for the corresponding class in a new window

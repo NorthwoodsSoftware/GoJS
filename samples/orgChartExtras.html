@@ -3,9 +3,9 @@
 <head>
 <title>Org Chart Editor</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -18,10 +18,28 @@
           validCycle: go.Diagram.CycleDestinationTree,
           // users can select only one part at a time
           maxSelectionCount: 1,
+          layout:
+            $(go.TreeLayout,
+              {
+                treeStyle: go.TreeLayout.StyleLastParents,
+                arrangement: go.TreeLayout.ArrangementHorizontal,
+                // properties for most of the tree:
+                angle: 90,
+                layerSpacing: 35,
+                // properties for the "last parents":
+                alternateAngle: 90,
+                alternateLayerSpacing: 35,
+                alternateAlignment: go.TreeLayout.AlignmentBus,
+                alternateNodeSpacing: 20
+              }),
+          // support editing the properties of the selected person in HTML
+          "ChangedSelection": onSelectionChanged,
+          "TextEdited": onTextEdited,
           // enable undo & redo
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -33,7 +51,8 @@
       }
     });
 
-    var graygrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(125, 125, 125)", 0.5: "rgb(86, 86, 86)", 1: "rgb(86, 86, 86)" });
+    var graygrad = $(go.Brush, go.Brush.Linear,
+                     { 0: "rgb(125, 125, 125)", 0.5: "rgb(86, 86, 86)", 1: "rgb(86, 86, 86)" });
 
     // when a node is double-clicked, add a child to it
     function nodeDoubleClick(e, obj) {
@@ -55,6 +74,11 @@
       if (node1 === node2) return false;  // cannot work for yourself
       if (node2.isInTreeOf(node1)) return false;  // cannot work for someone who works for you
       return true;
+    }
+
+    // this function provides a common style for most of the TextBlocks
+    function textStyle() {
+      return { font: "9pt sans-serif", stroke: "white" };
     }
 
     // define the Node template
@@ -88,7 +112,7 @@
           }
         },
         { // this tooltip Adornment is shared by all nodes
-          toolTip:  //????
+          toolTip:  //??
             $(go.Adornment, "Auto",
               $(go.Shape, { fill: "#FFFFCC" }),
               $(go.TextBlock, { margin: 4 },  // the tooltip shows the result of calling nodeInfo(data)
@@ -102,50 +126,56 @@
         new go.Binding("layerName", "isSelected", function(sel) { return sel ? "Foreground" : ""; }).ofObject(),
         // define the node's outer shape
         $(go.Shape, "RoundedRectangle",
-          { name: "SHAPE",
+          {
+            name: "SHAPE",
             fill: graygrad, stroke: "black",
-            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer"
+          }),
         // define the panel where the text will appear
         $(go.Panel, "Table",
-          { maxSize: new go.Size(150, 999),
+          {
+            maxSize: new go.Size(150, 999),
             margin: new go.Margin(3, 3, 0, 3),
-            defaultAlignment: go.Spot.Left },
+            defaultAlignment: go.Spot.Left
+          },
           $(go.RowColumnDefinition, { column: 2, width: 4 }),
           $(go.TextBlock,  // the name
-            { row: 0, column: 0, columnSpan: 5,
+            {
+              row: 0, column: 0, columnSpan: 5,
               font: "bold 9pt sans-serif",
               editable: true, isMultiline: false,
-              stroke: "white", minSize: new go.Size(10, 14) },
+              stroke: "white", minSize: new go.Size(10, 14)
+            },
             new go.Binding("text", "name").makeTwoWay()),
-          $(go.TextBlock, "Title: ",
-            { row: 1, column: 0,
-              font: "9pt sans-serif", stroke: "white" }),
-          $(go.TextBlock,
-            { row: 1, column: 1, columnSpan: 4,
-              font: "9pt sans-serif",
+          $(go.TextBlock, "Title: ", textStyle(),
+            { row: 1, column: 0 }),
+          $(go.TextBlock, textStyle(),
+            {
+              row: 1, column: 1, columnSpan: 4,
               editable: true, isMultiline: false,
-              stroke: "white", minSize: new go.Size(10, 14),
-              margin: new go.Margin(0, 0, 0, 3) },
+              minSize: new go.Size(10, 14),
+              margin: new go.Margin(0, 0, 0, 3)
+            },
             new go.Binding("text", "title").makeTwoWay()),
-          $(go.TextBlock, "ID: ",  // the ID and the boss
-            { row: 2, column: 0,
-              font: "9pt sans-serif", stroke: "white" }),
-          $(go.TextBlock,
-            { row: 2, column: 1,
-              font: "9pt sans-serif", stroke: "white" },
+          $(go.TextBlock, "ID: ", textStyle(),  // the ID and the boss
+            { row: 2, column: 0 }),
+          $(go.TextBlock, textStyle(),
+            { row: 2, column: 1 },
             new go.Binding("text", "key")),
-          $(go.TextBlock, "Boss: ",
-            { row: 2, column: 3,
-              font: "9pt sans-serif", stroke: "white" }),
-          $(go.TextBlock,
-            { row: 2, column: 4, name: "BOSSTEXTBLOCK",
-              font: "9pt sans-serif", stroke: "white" }),
+          $(go.TextBlock, "Boss: ", textStyle(),
+            { row: 2, column: 3 }),
+          $(go.TextBlock, textStyle(),
+            { row: 2, column: 4, },
+            new go.Binding("text", "parent")),
           $(go.TextBlock,  // the comments
-            { row: 3, column: 0, columnSpan: 5,
+            {
+              row: 3, column: 0, columnSpan: 5,
               font: "italic 9pt sans-serif",
               wrap: go.TextBlock.WrapFit,
               editable: true,  // by default newlines are allowed
-              stroke: "white", minSize: new go.Size(10, 14) },
+              stroke: "white",
+              minSize: new go.Size(10, 14)
+            },
             new go.Binding("text", "comments").makeTwoWay()),
           $("TreeExpanderButton",
             { row: 4, columnSpan: 99, alignment: go.Spot.Center })
@@ -208,24 +238,6 @@
           { stroke: "orange", background: "rgba(255,255,255,0.75)",
             maxSize: new go.Size(80, NaN)
           })));
-
-    myDiagram.layout =
-      $(go.TreeLayout,
-        {
-          treeStyle: go.TreeLayout.StyleLastParents,
-          arrangement: go.TreeLayout.ArrangementHorizontal,
-          // properties for most of the tree:
-          angle: 90,
-          layerSpacing: 35,
-          // properties for the "last parents":
-          alternateAngle: 90,
-          alternateLayerSpacing: 35,
-          alternateAlignment: go.TreeLayout.AlignmentBus,
-          alternateNodeSpacing: 20 });
-
-    // support editing the properties of the selected person in HTML
-    myDiagram.addDiagramListener("ChangedSelection", onSelectionChanged);
-    myDiagram.addDiagramListener("TextEdited", onTextEdited);
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -313,7 +325,8 @@
     You can also draw a link from a node's background to other nodes that have no "boss".
   </p>
   <p>
-    This is the <a href="orgChartEditor.html">Org Chart Editor</a> sample, but each node includes a TreeExpanderButton,
+    This is the <a href="orgChartEditor.html">Org Chart Editor</a> sample,
+    but each node includes a TreeExpanderButton,
     and there are additional non-tree links connecting some of the nodes.
   </p>
   <div>

@@ -3,9 +3,9 @@
 <head>
 <title>Dynamic Ports</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -15,6 +15,7 @@
       $(go.Diagram, "myDiagram",  //Diagram refers to its DIV HTML element by id
         { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -42,7 +43,7 @@
           { click: function (e, obj) { addPort("bottom"); } })
       );
 
-    var portSize = 8;
+    var portSize = new go.Size(8, 8);
 
     var portMenu =  // context menu for each port
       $(go.Adornment, "Vertical",
@@ -84,27 +85,28 @@
         // the Panel holding the left port elements, which are themselves Panels,
         // created for each item in the itemArray, bound to data.leftArray
         $(go.Panel, "Vertical",
+          new go.Binding("itemArray", "leftArray"),
           { row: 1, column: 0,
             itemTemplate:
               $(go.Panel,
-                { _side: "left",
+                { _side: "left",  // internal property to make it easier to tell which side it's on
                   fromSpot: go.Spot.Left, toSpot: go.Spot.Left,
                   fromLinkable: true, toLinkable: true, cursor: "pointer",
                   contextMenu: portMenu },
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
                   { stroke: null,
-                    desiredSize: new go.Size(portSize, portSize),
+                    desiredSize: portSize,
                     margin: new go.Margin(1,0) },
                   new go.Binding("fill", "portColor"))
               )  // end itemTemplate
-          },
-          new go.Binding("itemArray","leftArray")
+          }
         ),  // end Vertical Panel
 
         // the Panel holding the top port elements, which are themselves Panels,
         // created for each item in the itemArray, bound to data.topArray
         $(go.Panel, "Horizontal",
+          new go.Binding("itemArray", "topArray"),
           { row: 0, column: 1,
             itemTemplate:
               $(go.Panel,
@@ -115,17 +117,17 @@
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
                   { stroke: null,
-                    desiredSize: new go.Size(portSize, portSize),
+                    desiredSize: portSize,
                     margin: new go.Margin(0, 1) },
                   new go.Binding("fill", "portColor"))
               )  // end itemTemplate
-          },
-          new go.Binding("itemArray", "topArray")
+          }
         ),  // end Horizontal Panel
 
         // the Panel holding the right port elements, which are themselves Panels,
         // created for each item in the itemArray, bound to data.rightArray
         $(go.Panel, "Vertical",
+          new go.Binding("itemArray", "rightArray"),
           { row: 1, column: 2,
             itemTemplate:
               $(go.Panel,
@@ -136,17 +138,17 @@
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
                   { stroke: null,
-                    desiredSize: new go.Size(portSize, portSize),
+                    desiredSize: portSize,
                     margin: new go.Margin(1, 0) },
                   new go.Binding("fill", "portColor"))
               )  // end itemTemplate
-          },
-          new go.Binding("itemArray", "rightArray")
+          }
         ),  // end Vertical Panel
 
         // the Panel holding the bottom port elements, which are themselves Panels,
         // created for each item in the itemArray, bound to data.bottomArray
         $(go.Panel, "Horizontal",
+          new go.Binding("itemArray", "bottomArray"),
           { row: 2, column: 1,
             itemTemplate:
               $(go.Panel,
@@ -157,27 +159,28 @@
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
                   { stroke: null,
-                    desiredSize: new go.Size(portSize, portSize),
+                    desiredSize: portSize,
                     margin: new go.Margin(0, 1) },
                   new go.Binding("fill", "portColor"))
               )  // end itemTemplate
-          },
-          new go.Binding("itemArray", "bottomArray")
+          }
         )  // end Horizontal Panel
       );  // end Node
 
     // an orthogonal link template, reshapable and relinkable
     myDiagram.linkTemplate =
-      $(go.Link,
-        { routing: go.Link.AvoidsNodes,
+      $(CustomLink,  // defined below
+        {
+          routing: go.Link.AvoidsNodes,
+          corner: 4,
+          curve: go.Link.JumpGap,
           reshapable: true,
           resegmentable: true,
           relinkableFrom: true,
-          relinkableTo: true,
-          corner: 4
+          relinkableTo: true
         },
         new go.Binding("points").makeTwoWay(),
-        $(go.Shape)
+        $(go.Shape)  // just a plain black line
       );
 
     // support double-clicking in the background to add a copy of this data as a node
@@ -193,6 +196,94 @@
     // load the diagram from JSON data
     load();
   }
+
+
+  // This custom-routing Link class tries to separate parallel links from each other.
+  // This assumes that ports are lined up in a row/column on a side of the node.
+  function CustomLink() {
+    go.Link.call(this);
+  };
+  go.Diagram.inherit(CustomLink, go.Link);
+
+  CustomLink.prototype.findSidePortIndexAndCount = function(node, port) {
+    var nodedata = node.data;
+    var portdata = port.data;
+    var side = port._side;
+    var arr = nodedata[side + "Array"];
+    var len = arr.length;
+    for (var i = 0; i < len; i++) {
+      if (arr[i] === portdata) return [i, len];
+    }
+    return [-1, len];
+  };
+
+  /** @override */
+  CustomLink.prototype.computeEndSegmentLength = function(node, port, spot, from) {
+    var esl = go.Link.prototype.computeEndSegmentLength.call(this, node, port, spot, from);
+    var thispt = port.getDocumentPoint(this.computeSpot(from));
+    var otherpt = this.getOtherPort(port).getDocumentPoint(this.computeSpot(!from));
+    if (Math.abs(thispt.x - otherpt.x) > 20 || Math.abs(thispt.y - otherpt.y) > 20) {
+      var info = this.findSidePortIndexAndCount(node, port);
+      var idx = info[0];
+      var count = info[1];
+      if (port._side == "top" || port._side == "bottom") {
+        if (otherpt.x < thispt.x) {
+          return esl + 4 + idx * 8;
+        } else {
+          return esl + (count - idx - 1) * 8;
+        }
+      } else {  // left or right
+        if (otherpt.y < thispt.y) {
+          return esl + 4 + idx * 8;
+        } else {
+          return esl + (count - idx - 1) * 8;
+        }
+      }
+    }
+    return esl;
+  };
+
+  /** @override */
+  CustomLink.prototype.hasCurviness = function() {
+    if (isNaN(this.curviness)) return true;
+    return go.Link.prototype.hasCurviness.call(this);
+  };
+
+  /** @override */
+  CustomLink.prototype.computeCurviness = function() {
+    if (isNaN(this.curviness)) {
+      var fromnode = this.fromNode;
+      var fromport = this.fromPort;
+      var fromspot = this.computeSpot(true);
+      var frompt = fromport.getDocumentPoint(fromspot);
+      var tonode = this.toNode;
+      var toport = this.toPort;
+      var tospot = this.computeSpot(false);
+      var topt = toport.getDocumentPoint(tospot);
+      if (Math.abs(frompt.x - topt.x) > 20 || Math.abs(frompt.y - topt.y) > 20) {
+        if ((fromspot.equals(go.Spot.Left) || fromspot.equals(go.Spot.Right)) &&
+            (tospot.equals(go.Spot.Left) || tospot.equals(go.Spot.Right))) {
+          var fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
+          var toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
+          var c = (fromseglen - toseglen) / 2;
+          if (frompt.x + fromseglen >= topt.x - toseglen) {
+            if (frompt.y < topt.y) return c;
+            if (frompt.y > topt.y) return -c;
+          }
+        } else if ((fromspot.equals(go.Spot.Top) || fromspot.equals(go.Spot.Bottom)) &&
+                   (tospot.equals(go.Spot.Top) || tospot.equals(go.Spot.Bottom))) {
+          var fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
+          var toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
+          var c = (fromseglen - toseglen) / 2;
+          if (frompt.x + fromseglen >= topt.x - toseglen) {
+            if (frompt.y < topt.y) return c;
+            if (frompt.y > topt.y) return -c;
+          }
+        }
+      }
+    }
+    return go.Link.prototype.computeCurviness.call(this);
+  };
 
 
   // When copying a node, we need to copy the data that the node is bound to.
@@ -234,11 +325,9 @@
   // Add a port to the specified side of the selected nodes.
   function addPort(side) {
     myDiagram.startTransaction("addPort");
-    var it = myDiagram.selection.iterator;
-    while (it.next()) {
-      var node = it.value;
+    myDiagram.selection.each(function(node) {
       // skip any selected Links
-      if (!(node instanceof go.Node)) continue;
+      if (!(node instanceof go.Node)) return;
       // compute the next available index number for the side
       var i = 0;
       while (node.findPort(side + i.toString()) !== node) i++;
@@ -256,7 +345,7 @@
         // and add it to the Array of port data
         myDiagram.model.insertArrayItem(arr, -1, newportdata);
       }
-    }
+    });
     myDiagram.commitTransaction("addPort");
   }
 
@@ -336,10 +425,26 @@
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
   "nodeDataArray": [
-{"key":"unit One", "loc":"101 204", "leftArray":[ {"portColor":"#425e5c", "portId":"left0"} ], "topArray":[ {"portColor":"#d488a2", "portId":"top0"} ], "bottomArray":[ {"portColor":"#316571", "portId":"bottom0"} ], "rightArray":[ {"portColor":"#923951", "portId":"right0"},{"portColor":"#ef3768", "portId":"right1"} ] },
-{"key":"unit Two", "loc":"320 152", "leftArray":[ {"portColor":"#7d4bd6", "portId":"left0"},{"portColor":"#cc585c", "portId":"left1"},{"portColor":"#b1273a", "portId":"left2"} ], "topArray":[ {"portColor":"#14abef", "portId":"top0"} ], "bottomArray":[ {"portColor":"#dd45c7", "portId":"bottom0"},{"portColor":"#995aa6", "portId":"bottom1"},{"portColor":"#6b95cb", "portId":"bottom2"} ], "rightArray":[  ] },
-{"key":"unit Three", "loc":"384 319", "leftArray":[ {"portColor":"#bd8f27", "portId":"left0"},{"portColor":"#c14617", "portId":"left1"},{"portColor":"#47fa60", "portId":"left2"} ], "topArray":[ {"portColor":"#d08154", "portId":"top0"} ], "bottomArray":[ {"portColor":"#6cafdb", "portId":"bottom0"} ], "rightArray":[  ] },
-{"key":"unit Four", "loc":"138 351", "leftArray":[ {"portColor":"#491389", "portId":"left0"} ], "topArray":[ {"portColor":"#77ac1e", "portId":"top0"} ], "bottomArray":[ {"portColor":"#e9701b", "portId":"bottom0"} ], "rightArray":[ {"portColor":"#24d05e", "portId":"right0"},{"portColor":"#cfabaa", "portId":"right1"} ] }
+{"key":"unit One", "loc":"101 204",
+ "leftArray":[ {"portColor":"#425e5c", "portId":"left0"} ],
+ "topArray":[ {"portColor":"#d488a2", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#316571", "portId":"bottom0"} ],
+ "rightArray":[ {"portColor":"#923951", "portId":"right0"},{"portColor":"#ef3768", "portId":"right1"} ] },
+{"key":"unit Two", "loc":"320 152",
+ "leftArray":[ {"portColor":"#7d4bd6", "portId":"left0"},{"portColor":"#cc585c", "portId":"left1"},{"portColor":"#b1273a", "portId":"left2"} ],
+ "topArray":[ {"portColor":"#14abef", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#dd45c7", "portId":"bottom0"},{"portColor":"#995aa6", "portId":"bottom1"},{"portColor":"#6b95cb", "portId":"bottom2"} ],
+ "rightArray":[  ] },
+{"key":"unit Three", "loc":"384 319",
+ "leftArray":[ {"portColor":"#bd8f27", "portId":"left0"},{"portColor":"#c14617", "portId":"left1"},{"portColor":"#47fa60", "portId":"left2"} ],
+ "topArray":[ {"portColor":"#d08154", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#6cafdb", "portId":"bottom0"} ],
+ "rightArray":[  ] },
+{"key":"unit Four", "loc":"138 351",
+ "leftArray":[ {"portColor":"#491389", "portId":"left0"} ],
+ "topArray":[ {"portColor":"#77ac1e", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#e9701b", "portId":"bottom0"} ],
+ "rightArray":[ {"portColor":"#24d05e", "portId":"right0"},{"portColor":"#cfabaa", "portId":"right1"} ] }
  ],
   "linkDataArray": [
 {"from":"unit Four", "to":"unit One", "fromPort":"top0", "toPort":"bottom0"},

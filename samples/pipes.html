@@ -3,9 +3,9 @@
 <head>
 <title>Pipes</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -24,6 +24,7 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -117,30 +118,25 @@
       var coll = tool.computeEffectiveCollection(sel).toKeySet();
       var bounds = myDiagram.computePartsBounds(coll);
       var center = bounds.center;
-      for (var it = coll.iterator; it.next();) {
-        var n = it.value;
+      coll.each(function(n) {
         n.angle += angle;
         n.location = n.location.copy().subtract(center).rotate(angle).add(center);
-      }
+      });
       myDiagram.commitTransaction("rotate " + angle.toString());
     }
 
     function detachSelection() {
       myDiagram.startTransaction("detach");
       var coll = new go.Set(go.Link);
-      var it = myDiagram.selection.iterator;
-      while (it.next()) {
-        var node = it.value;
-        if (!(node instanceof go.Node)) continue;
-        var lit = node.linksConnected;
-        while (lit.next()) {
-          var link = lit.value;
+      myDiagram.selection.each(function(node) {
+        if (!(node instanceof go.Node)) return;
+        node.linksConnected.each(function(link) {
           // ignore links to other selected nodes
-          if (link.getOtherNode(node).isSelected) continue;
+          if (link.getOtherNode(node).isSelected) return;
           // disconnect this link
           coll.add(link);
-        }
-      }
+        });
+      });
       myDiagram.removeParts(coll, false);
       myDiagram.commitTransaction("detach");
     }
@@ -202,7 +198,8 @@
           nodeTemplate: myDiagram.nodeTemplate,  // shared with the main Diagram
           "contextMenuTool.isEnabled": false,
           layout: $(go.GridLayout,
-                    { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5), wrappingColumn: 12, comparer: keyCompare }),
+                    { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5),
+                      wrappingColumn: 12, comparer: keyCompare }),
           // initialize the Palette with a few "pipe" nodes
           model: $(go.GraphLinksModel,
             {
@@ -484,12 +481,11 @@
 
           // gather a collection of GraphObjects that are stationary "ports" for this NODE
           nearbyports = new go.Set(go.GraphObject);
-          var nit = nearbyparts.iterator;
-          while (nit.next()) {
-            var n = nit.value;
-            if (!(n instanceof go.Node)) continue;
-            nearbyports.addAll(n.ports);
-          }
+          nearbyparts.each(function(n) {
+            if (n instanceof go.Node) {
+              nearbyports.addAll(n.ports);
+            }
+          });
         }
 
         var pit = nearbyports.iterator;
@@ -531,7 +527,7 @@
     go.DraggingTool.prototype.doDropOnto.call(this, pt, obj);
     var tool = this;
     // Need to iterate over all of the dropped nodes to see which ports happen to be snapped to stationary ports
-    var coll = (this.copiedParts !== null ? this.copiedParts : this.draggedParts);
+    var coll = this.copiedParts || this.draggedParts;
     var it = coll.iterator;
     while (it.next()) {
       var node = it.key;
@@ -583,11 +579,10 @@
     } else {
       var map = new go.Map(go.Part, Object);
       if (parts === null) return map;
-      var it = parts.iterator;
-      while (it.next()) {
-        var n = it.value;
-        this.gatherConnecteds(map, n);
-      }
+      var tool = this;
+      parts.iterator.each(function(n) {
+        tool.gatherConnecteds(map, n);
+      });
       return map;
     }
   };
@@ -599,12 +594,11 @@
     // record the original Node location, for relative positioning and for cancellation
     map.add(node, { point: node.location });
     // now recursively collect all connected Nodes and the Links to them
-    var it = node.findLinksConnected();
-    while (it.next()) {
-      var link = it.value;
+    var tool = this;
+    node.findLinksConnected().each(function(link) {
       map.add(link, { point: new go.Point() });
-      this.gatherConnecteds(map, link.getOtherNode(node));
-    }
+      tool.gatherConnecteds(map, link.getOtherNode(node));
+    });
   };
   // end SnappingTool class
 
@@ -623,13 +617,19 @@
 <div id="sample">
   <div id="myPalette" style="border: solid 1px gray; width:100%; height:160px"></div>
   <div id="myDiagram" style="border: solid 1px gray; width:100%; height:500px"></div>
-  As a part's unconnected port (shown by an X) comes close to a stationary port with which it is compatible, the dragged selection snaps so that those ports coincide.
-  <p />
+  <div id ="description">
+  <p>
+  As a part's unconnected port (shown by an X) comes close to a stationary port
+  with which it is compatible, the dragged selection snaps so that those ports coincide.
+  </p>
   Dragging automatically drags all connected parts.
   Hold down the Shift key before dragging in order to detach a part from the parts it is connected with.
-  <p />
-  Use the context menu on a part to rotate it.  If it is connected with other parts, the whole collection rotates.
-  <p />
+  </p>
+  <p>
+  Use the context menu on a part to rotate it.
+  If it is connected with other parts, the whole collection rotates.
+  </p>
+  </div>
   <button id="SaveButton" type="button" onclick="save()">Save</button>
   <button type="button" onclick="load()">Load</button>
   <br />

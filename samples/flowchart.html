@@ -3,9 +3,9 @@
 <head>
 <title>Flowchart</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -15,9 +15,13 @@
       $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
         {
           allowDrop: true,  // must be true to accept drops from the Palette
+          "LinkDrawn": showLinkLabel,  // this DiagramEvent listener is defined below
+          "LinkRelinked": showLinkLabel,
+          "animationManager.duration": 800, // slightly longer than default (600ms) animation
           "undoManager.isEnabled": true  // enable undo & redo
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -31,25 +35,23 @@
 
     // helper definitions for node templates
 
-    // Don't show shadows on mobile devices for performance reasons
-    var shadows = !("ontouchstart" in window);
-
     function nodeStyle() {
       return [
-              // The Node.location comes from the "loc" property of the node data,
-              // converted by the Point.parse method.
-              // If the Node.location is changed, it updates the "loc" property of the node data,
-              // converting back using the Point.stringify method.
-              new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-              {
-                // the Node.location is at the center of each node
-                locationSpot: go.Spot.Center,
-                //isShadowed: shadows,
-                //shadowColor: "#242424",
-                // handle mouse enter/leave events to show/hide the ports
-                mouseEnter: function (e, obj) { showPorts(obj.part, true); },
-                mouseLeave: function (e, obj) { showPorts(obj.part, false); }
-              }];
+        // The Node.location comes from the "loc" property of the node data,
+        // converted by the Point.parse static method.
+        // If the Node.location is changed, it updates the "loc" property of the node data,
+        // converting back using the Point.stringify static method.
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        {
+          // the Node.location is at the center of each node
+          locationSpot: go.Spot.Center,
+          //isShadowed: true,
+          //shadowColor: "#888",
+          // handle mouse enter/leave events to show/hide the ports
+          mouseEnter: function (e, obj) { showPorts(obj.part, true); },
+          mouseLeave: function (e, obj) { showPorts(obj.part, false); }
+        }
+      ];
     }
 
     // Define a function for creating a "port" that is normally transparent.
@@ -62,7 +64,7 @@
                {
                   fill: "transparent",
                   stroke: null,  // this is changed to "white" in the showPorts function
-                  desiredSize: new go.Size(6, 6),
+                  desiredSize: new go.Size(8, 8),
                   alignment: spot, alignmentFocus: spot,  // align the port on the main Shape
                   portId: name,  // declare this object to be a "port"
                   fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
@@ -71,28 +73,26 @@
                });
     }
 
-    // define the Node template for regular nodes
+    // define the Node templates for regular nodes
 
     var lightText = 'whitesmoke';
-    var darkText = '#454545';
-    var startColor = "#79C900";
-    var mainColor = "#00A9C9";
-    var endColor = "#DC3C00";
 
     myDiagram.nodeTemplateMap.add("",  // the default category
       $(go.Node, "Spot", nodeStyle(),
         // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
         $(go.Panel, "Auto",
           $(go.Shape, "Rectangle",
-            { fill: mainColor, stroke: null },
+            { fill: "#00A9C9", stroke: null },
             new go.Binding("figure", "figure")),
           $(go.TextBlock,
-            { font: "bold 11pt Helvetica, Arial, sans-serif",
+            {
+              font: "bold 11pt Helvetica, Arial, sans-serif",
               stroke: lightText,
               margin: 8,
               maxSize: new go.Size(160, NaN),
               wrap: go.TextBlock.WrapFit,
-              editable: true },
+              editable: true
+            },
             new go.Binding("text", "text").makeTwoWay())
         ),
         // four named ports, one on each side:
@@ -105,12 +105,10 @@
     myDiagram.nodeTemplateMap.add("Start",
       $(go.Node, "Spot", nodeStyle(),
         $(go.Panel, "Auto",
-          $(go.Shape, "Octagon",
-            { minSize: new go.Size(40, 60), fill: startColor, stroke: null }),
+          $(go.Shape, "Circle",
+            { minSize: new go.Size(40, 60), fill: "#79C900", stroke: null }),
           $(go.TextBlock, "Start",
-            { margin: 5,
-                font: "bold 11pt Helvetica, Arial, sans-serif",
-              stroke: lightText })
+            { margin: 5, font: "bold 11pt Helvetica, Arial, sans-serif", stroke: lightText })
         ),
         // three named ports, one on each side except the top, all output only:
         makePort("L", go.Spot.Left, true, false),
@@ -121,12 +119,10 @@
     myDiagram.nodeTemplateMap.add("End",
       $(go.Node, "Spot", nodeStyle(),
         $(go.Panel, "Auto",
-          $(go.Shape, "Octagon",
-            { minSize: new go.Size(40, 60), fill: endColor, stroke: null }),
+          $(go.Shape, "Circle",
+            { minSize: new go.Size(40, 60), fill: "#DC3C00", stroke: null }),
           $(go.TextBlock, "End",
-            { margin: 5,
-              font: "bold 11pt Helvetica, Arial, sans-serif",
-              stroke: lightText })
+            { margin: 5, font: "bold 11pt Helvetica, Arial, sans-serif", stroke: lightText })
         ),
         // three named ports, one on each side except the bottom, all input only:
         makePort("T", go.Spot.Top, false, true),
@@ -139,7 +135,8 @@
         $(go.Shape, "File",
           { fill: "#EFFAB4", stroke: null }),
         $(go.TextBlock,
-          { margin: 5,
+          {
+            margin: 5,
             maxSize: new go.Size(200, NaN),
             wrap: go.TextBlock.WrapFit,
             textAlign: "center",
@@ -155,38 +152,41 @@
     // replace the default Link template in the linkTemplateMap
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
-        { routing: go.Link.AvoidsNodes,
+        {
+          routing: go.Link.AvoidsNodes,
           curve: go.Link.JumpOver,
           corner: 5, toShortLength: 4,
-          relinkableFrom: true, relinkableTo: true, reshapable:true },
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true
+        },
         new go.Binding("points").makeTwoWay(),
         $(go.Shape,  // the link path shape
-          { isPanelMain: true,
-            stroke: "gray", strokeWidth: 2 }),
+          { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
         $(go.Shape,  // the arrowhead
-          { toArrow: "standard",
-          stroke: null, fill: "gray"}),
-        $(go.Panel, "Auto",
+          { toArrow: "standard", stroke: null, fill: "gray"}),
+        $(go.Panel, "Auto",  // the link label, normally not visible
           { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
           new go.Binding("visible", "visible").makeTwoWay(),
-          $(go.Shape, "RoundedRectangle",  // the link shape
+          $(go.Shape, "RoundedRectangle",  // the label shape
             { fill: "#F8F8F8", stroke: null }),
           $(go.TextBlock, "Yes",  // the label
-            { textAlign: "center",
+            {
+              textAlign: "center",
               font: "10pt helvetica, arial, sans-serif",
-              stroke: "#919191",
-              margin: 2, editable: true },
+              stroke: "#333333",
+              editable: true
+            },
             new go.Binding("text", "text").makeTwoWay())
         )
       );
 
-    // make link labels visible if coming out of a "conditional" node
-    myDiagram.addDiagramListener("LinkDrawn", function(e) {
-      if (e.subject.fromNode.data.figure === "Diamond") {
-        var label = e.subject.findObject("LABEL");
-        if (label !== null) label.visible = true;
-      }
-    })
+    // Make link labels visible if coming out of a "conditional" node.
+    // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
+    function showLinkLabel(e) {
+      var label = e.subject.findObject("LABEL");
+      if (label !== null) label.visible = (e.subject.fromNode.data.figure === "Diamond");
+    }
 
     // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
     myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
@@ -198,6 +198,7 @@
     myPalette =
       $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
         {
+          "animationManager.duration": 800, // slightly longer than default (600ms) animation
           nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
           model: new go.GraphLinksModel([  // specify the contents of the Palette
             { category: "Start", text: "Start" },
@@ -214,12 +215,9 @@
   function showPorts(node, show) {
     var diagram = node.diagram;
     if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
-    var it = node.ports;
-    while (it.next()) {
-      var port = it.value;
-      port.stroke = (show ? "white" : null);
-      //port.fill = (show ? "white" : null);
-    }
+    node.ports.each(function(port) {
+        port.stroke = (show ? "white" : null);
+      });
   }
 
 
@@ -234,12 +232,14 @@
 
   // add an SVG rendering of the diagram at the end of this page
   function makeSVG() {
-    var svg = myDiagram.makeSVG({
+    var svg = myDiagram.makeSvg({
         scale: 0.5
       });
     svg.style.border = "1px solid black";
     obj = document.getElementById("SVGArea");
     obj.appendChild(svg);
+    if (obj.children.length > 0) 
+      obj.replaceChild(svg, obj.children[0]);
   }
 
 </script>
@@ -256,11 +256,20 @@
     </span>
   </div>
   <p>
-  The FlowChart sample demonstrates several key features of GoJs, namely <a href="../intro/palette.html">Palette</a>s, <a href="../intro/links.html">Linkable nodes</a>, Drag/Drop behavior, <a href="../intro/textBlocks.html">Text Editing</a>, and the use of <a href="../intro/templateMaps.html">Node Template Maps</a> in Diagrams.
+  The FlowChart sample demonstrates several key features of GoJs,
+  namely <a href="../intro/palette.html">Palette</a>s,
+  <a href="../intro/links.html">Linkable nodes</a>, Drag/Drop behavior,
+  <a href="../intro/textBlocks.html">Text Editing</a>, and the use of
+  <a href="../intro/templateMaps.html">Node Template Maps</a> in Diagrams.
   </p>
-  <p>Mouse-over a Node to view its ports. Drag from these ports to create new Links. Selecting Links allows you to re-shape and re-link them. Selecting a Node and then clicking its TextBlock will allow you to edit text (except on the Start and End Nodes).</p>
   <p>
-    The Diagram Model data is loaded from the JSON below.
+  Mouse-over a Node to view its ports.
+  Drag from these ports to create new Links.
+  Selecting Links allows you to re-shape and re-link them.
+  Selecting a Node and then clicking its TextBlock will allow
+  you to edit text (except on the Start and End Nodes).</p>
+  <p>
+  The Diagram Model data is loaded from the JSON below.
   </p>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
@@ -271,12 +280,12 @@
   "nodeDataArray": [
 {"category":"Comment", "loc":"360 -10", "text":"Kookie Brittle", "key":-13},
 {"key":-1, "category":"Start", "loc":"175 0", "text":"Start"},
-{"key":0, "loc":"0 90", "text":"Preheat oven to 375 F"},
+{"key":0, "loc":"0 77", "text":"Preheat oven to 375 F"},
 {"key":1, "loc":"175 100", "text":"In a bowl, blend: 1 cup margarine, 1.5 teaspoon vanilla, 1 teaspoon salt"},
 {"key":2, "loc":"175 190", "text":"Gradually beat in 1 cup sugar and 2 cups sifted flour"},
 {"key":3, "loc":"175 270", "text":"Mix in 6 oz (1 cup) Nestle's Semi-Sweet Chocolate Morsels"},
 {"key":4, "loc":"175 370", "text":"Press evenly into ungreased 15x10x1 pan"},
-{"key":5, "loc":"350 90", "text":"Finely chop 1/2 cup of your choice of nuts"},
+{"key":5, "loc":"352 85", "text":"Finely chop 1/2 cup of your choice of nuts"},
 {"key":6, "loc":"175 440", "text":"Sprinkle nuts on top"},
 {"key":7, "loc":"175 500", "text":"Bake for 25 minutes and let cool"},
 {"key":8, "loc":"175 570", "text":"Cut into rectangular grid"},
@@ -297,12 +306,11 @@
 {"from":0, "to":4, "fromPort":"B", "toPort":"T"}
  ]}
   </textarea>
-  <p>Click the button below to render the current GoJS Diagram into SVG at one-half scale. The SVG is not interactive like the GoJS diagram, but can be used for printing or display. For more information, see the page on <a href="../intro/makingSVG.html">making SVG</a>.</p>
+  <p>Click the button below to render the current GoJS Diagram into SVG at one-half scale.
+     The SVG is not interactive like the GoJS diagram, but can be used for printing or display.
+     For more information, see the page on <a href="../intro/makingSVG.html">making SVG</a>.</p>
   <button onclick="makeSVG()">Render as SVG</button>
-  <div id="SVGArea">
-  </div>
-
-
+  <div id="SVGArea"></div>
 </div>
 </body>
 </html>

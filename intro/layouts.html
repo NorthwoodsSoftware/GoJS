@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Layouts -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Diagram Layouts</h2>
+<p>
+In general terms, a "layout" is a way of sizing and positioning a collection of objects.
+HTML has its own layouts for its HTML elements.
+In <b>GoJS</b> you have already seen many examples of Panel layout, such as Auto or Table,
+which sizes and positions <a>GraphObject</a>s within a <a>Panel</a>.
+<b>GoJS</b> also provides Diagram layouts, which position <a>Node</a>s and route <a>Link</a>s
+within a <a>Diagram</a> or a <a>Group</a>.
+</p>
+
+<p>
+Naturally the principal purpose of each diagram <a>Layout</a> is to position nodes, typically by calling <a>Part.move</a>.
+But layouts also may also result in custom routing of the links, by setting properties on each <a>Link</a>.
+For example <a>TreeLayout</a> also ensures that links are routed in the expected direction by setting
+<a>Link.fromSpot</a> and <a>Link.toSpot</a> depending on the <a>TreeLayout.angle</a>.
+(However, that behavior can be disabled by setting <a>TreeLayout.setsPortSpot</a> and <a>TreeLayout.setsChildPortSpot</a>.
+The same is true for some other layouts.)
+</p>
+
+<p>
+Diagram layouts can be accomplished in several manners.
+Manual layouts occur because the user moves nodes, thereby establishing new positions for those nodes.
+Such layouts might be saved in some persistent data format and later loaded using data binding or assignments in code.
+Programmatic layouts happen when some code executes to set the <a>Part</a> position or location.
+Automatic layouts are programmatic layouts that are implemented by the <a>Layout</a> class or its subclasses.
+</p>
+
+<h3>Default Layout</h3>
+<p>
+The value of <a>Diagram.layout</a> defaults to an instance of <a>Layout</a>.
+This kind of layout is unlike all of the other layout subclasses, in that it only sets the position of nodes
+that do not already have a position -- i.e. where the X or Y of the <a>GraphObject.actualBounds</a> is NaN.
+It leaves unmodified all nodes that do have a defined position, and it ignores all links.
+</p>
+
+<p>
+Many of the examples you have seen so far do not set <a>Diagram.layout</a> and thus use the default layout.
+Some of the examples data bind the <a>Part.location</a> or <a>GraphObject.position</a> to a data property.
+Those examples are basically using manual layout, but with the node positions coming from the node data rather than from
+arrangement by the user.
+</p>
+
+<p>
+However many of the examples just allow the standard behavior of the <a>Layout</a> class to assign positions to the nodes
+in the order in which they are seen by the layout.
+Those examples are exhibiting automatic layout behavior.
+</p>
+
+<h3>Automatic Layouts</h3>
+<p>
+<b>GoJS</b> offers several kinds of automatic layouts, including:
+</p>
+<ul>
+  <li><a>GridLayout</a></li>
+  <li><a>TreeLayout</a></li>
+  <li><a>ForceDirectedLayout</a></li>
+  <li><a>LayeredDigraphLayout</a></li>
+  <li><a>CircularLayout</a></li>
+</ul>
+
+<p>
+There are samples for each of these layouts, demonstrating the effects of setting various detailed layout properties:
+</p>
+<ul>
+  <li><a href="../samples/gLayout.html" target="samples">GridLayout Sample</a></li>
+  <li><a href="../samples/tLayout.html" target="samples">TreeLayout Sample</a></li>
+  <li><a href="../samples/fdLayout.html" target="samples">ForceDirectedLayout Sample</a></li>
+  <li><a href="../samples/ldLayout.html" target="samples">LayeredDigraphLayout Sample</a></li>
+  <li><a href="../samples/cLayout.html" target="samples">CircularLayout Sample</a></li>
+</ul>
+
+You can set <a>Diagram.layout</a> in a JavaScript statement:
+<pre>diagram.layout = new go.ForceDirectedLayout();</pre>.
+Or you can initialize that property using <a>GraphObject.make</a>:
+<pre>
+var diagram = $(go.Diagram, "myDiagramDiv",
+                {
+                  initialContentAlignment: go.Spot.Center,
+                  layout: $(go.TreeLayout,
+                            { angle: 90, nodeSpacing: 10, layerSpacing: 30 })
+                });
+</pre>
+We recommend using <b>GraphObject.make</b> whenever you can because of the error checking that it does for property names.
+<p>
+In the following pages you will see many examples that make use of automatic layout by setting the <a>Diagram.layout</a> property.
+Search the sources of the samples for many more examples.
+</p>
+
+<h3>Layout Invalidation</h3>
+<p>
+A layout is considered "valid" when it has performed its positioning of its nodes and (perhaps) routed its links.
+However some kinds of changes cause a layout to become "invalid", thereby causing it to be performed again in the near future.
+Because layouts can be computationally expensive, automatic layouts are not performed as soon as a layout is invalidated.
+Instead they are typically performed at the end of a transaction.
+</p>
+<p>
+The most common reasons for a layout to be invalidated are because a node or a link has been added or removed from the collection
+of nodes and links that a layout is responsible for, or because a node or a link has changed visibility, or because a node has changed size.
+If you do not want an automatic layout to happen when such a change occurs, it may be easiest to set <a>Layout.isOngoing</a> to false.
+</p>
+<p>
+But if you do not want a change to a particular Node or Link to cause an automatic layout, yet you do want that for the other Nodes or Links,
+you can set the <a>Part.layoutConditions</a> property to the combination of <a>Part</a> "Layout..." flags that suits your needs.
+It is most common to not want a layout for the <a>Part.LayoutNodeSized</a> condition.
+Parts that are not visible or that are in layers that are <a>Layer.isTemporary</a> also never invalidate any Layout.
+</p>
+<p>
+Finally, you can set <a>Part.isLayoutPositioned</a> to false in order for the Layout to completely ignore that Part.
+</p>
+
+</div>
+</body>
+</html>

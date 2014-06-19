@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Geometry Path Strings -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Geometry Path Strings</h2>
+<p>
+The <b>GoJS</b> <a>Geometry</a> class controls the "shape" of a <a>Shape</a>,
+whereas the <a>Shape.fill</a> and <a>Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a>Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a>Geometry</a> of at least one <a>PathFigure</a> holding some <a>PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a>Geometry.parse</a> or the <a>Shape.geometryString</a> property to transform a geometry path string into a <a>Geometry</a> object.
+</p>
+
+<h3>Geometry Path String Syntax</h3>
+<p>
+The syntax for a geometry path string is an extension of the SVG path string syntax.
+The string consists of a number of commands, each a single letter followed by some command-specific numeric parameters.
+</p>
+<p>
+Below are the possible commands along with the parameters they take.
+The parameter notation <code>(x y)+</code> means that the command requires exactly two parameters,
+but there can be 1 or more sets of parameters for each command.
+For instance, the <code>L (x y)+</code> command can be written as <code>L 10 10 20 20</code> to denote two straight line segments.
+</p>
+<p>
+Commands written with an uppercase letter indicate absolute coordinates;
+lowercase commands specify coordinates relative to the last command.
+Some commands do not care about case because they do not take coordinates as arguments.
+</p>
+
+<ul style="padding-left: 0px; list-style: none;">
+<li><pre>M (x y)+</pre> Move commands begin a new subpath in a <a>PathFigure</a>.
+One is essential to begin a PathFigure and therefore must be the first segment type in the path string,
+with the exception of a Fill command (<code>F</code>) that can precede it.
+<p>Additional sets of parameters for a move command are automatically considered Line commands,
+so <code>M 10 10 20 20</code> is identical to <code>M 10 10 L 20 20</code>.</li>
+
+<li><pre>L (x y)+</pre> Line command adds a straight line segment from the previous point to the new point.</li>
+<li><pre>H (x)+</pre> Horizontal line command specifies only an x value for a straight horizontal line.</li>
+<li><pre>V (y)+</pre> Vertical line command specifies only a y value for a straight vertical line.</li>
+
+<li><pre>Q (x1 y1 x y)+</pre> Quadratic Bezier Curves.
+<code>x1</code>, <code>y1</code> is the control point.
+See <a href="http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands">SVG Quadratic Bezier command</a> for more details.</li>
+<li><pre>T (x y)+</pre> Short-hand Quadratic Bezier Curves.
+The control point is calculated based on <a href="http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands">SVG's path rules.</a></li>
+
+<li><pre>C (x1 y1 x2 y2 x y)+</pre> Cubic Bezier Curves.
+<code>x1</code>, <code>y1</code> and <code>x2</code>, <code>y2</code> are the control points.
+See <a href="http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands">SVG Cubic Bezier command</a> for more details.</li>
+<li><pre>S (x2 y2 x y)+</pre> Short-hand Cubic Bezier Curves.
+The two control points are calculated based on <a href="http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands">SVG's path rules.</a></li>
+
+<li><pre>A (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+</pre> Elliptical Arcs.
+These follow the <a href="http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands">SVG arc conventions</a>.</li>
+
+<li><pre>Z</pre> <code>Z</code> denotes that the current segment is closed.
+This is placed after the last segment of a subpath.
+There are no parameters, and case does not matter with this command.</li>
+</ul>
+<hr />
+<p>
+For detailed information on the SVG path strings, see the <a href="http://www.w3.org/TR/SVG/paths.html">W3C's page on SVG Paths</a>.
+<hr />
+
+<p>
+Additionally there are some tokens specific to <b>GoJS</b>:
+<ul style="padding-left: 0px; list-style: none;">
+<li><pre>B (startAngle, sweepAngle, centerX, centerY, radiusX, radiusY) </pre> Arcs following <b>GoJS</b> canvas arc convention.
+These arcs create a new line from the last point in the subpath to the first point of an arc defined by the five arguments.
+Unlike all other commands with parameters, multiple sets of parameters are not allowed for B-arcs.
+Also, at the current time, the <code>radiusY</code> value must be the same as the <code>radiusX</code> value.</li>
+
+<li><pre>X</pre> Used before <code>M</code> commands to denote separate PathFigures instead of a subpath.
+There are no parameters, and case does not matter with this command.
+Separate PathFigures are important when different fills are desired per figure component.</li>
+
+<li><pre>F</pre> The existence of this command specifies whether the current PathFigure is filled (true if <code>F</code> is present).
+This is placed at the beginning of a figure.
+There is an optional parameter that is currently ignored.
+Case does not matter with this command.</li>
+
+<li><pre>U</pre> The existence of this command specifies whether the current PathFigure is shadowed (<strong>false</strong> if <code>U</code> is present.
+A shadowed PathFigure is the default).
+Shadows on shapes (and therefore PathFigures) only exist if <a>Part.isShadowed</a> is set to true on the containing part.
+This is placed at the beginning of a figure.
+Case does not matter with this command.</li>
+</ul>
+
+<h3>Geometry Path String Examples</h3>
+<p>
+Here is a simple usage of a geometry path string when initializing a <a>Shape</a> without setting <a>Shape.figure</a>:
+</p>
+<pre data-language="javascript" id="s1">
+diagram.add(
+  $(go.Node,
+    $(go.Shape,
+      { geometryString: "F M120 0 L80 80 0 50z",
+        fill: "lightgreen" })));
+</pre>
+<script>  goCode("s1", 600, 140)</script>
+<p>
+Here is a geometry path string that uses quadratic Bezier curves:
+</p>
+<pre data-language="javascript" id="s2">
+diagram.add(
+  $(go.Node,
+    $(go.Shape,
+      { geometryString: "F M0 0 L100 0 Q150 50 100 100 L0 100 Q50 50 0 0z",
+        fill: "lightgreen" })));
+</pre>
+<script>  goCode("s2", 600, 140)</script>
+<p>
+This geometry uses <b>GoJS</b> arcs:
+</p>
+<pre data-language="javascript" id="s3">
+diagram.add(
+  $(go.Node, "Spot",
+    $(go.Shape,
+      { geometryString: "F M0 0 L80 0 B-90 90 80 20 20 20 L100 100 20 100 B90 90 20 80 20 20z",
+        fill: "lightgreen" }),
+    $(go.TextBlock, "custom shape")
+  ));
+</pre>
+<script>  goCode("s3", 600, 140)</script>
+<p>
+  The following geometry uses <b>GoJS</b> arcs.  Because the <a>Shape</a> is stretched to fit around the <a>TextBlock</a>,
+  and because the default value of <a>Shape.geometryStretch</a> causes the <a>Geometry</a> to be stretched too,
+  the custom geometry is also stretched to fit around the text.
+</p>
+<pre data-language="javascript" id="s4">
+diagram.add(
+  $(go.Node, "Auto",
+    $(go.Shape,
+      { geometryString: "F M0 0 L.8 0 B-90 90 .8 .2 .2 .2 L1 1 .2 1 B90 90 .2 .8 .2 .2z",
+        fill: "lightgreen" }),
+    $(go.TextBlock, "custom shape",
+      { margin: 4 })
+  ));
+</pre>
+<script>goCode("s4", 600, 140)</script>
+<p>
+In the following Diagram we use a path string that contains three PathFigures.
+Note the <code>X</code> commands separating the figures and the <code>F</code> commands denoting fill.
+</p>
+<pre data-language="javascript" id="a">
+diagram.add(
+  $(go.Part,
+    $(go.Shape,
+      { geometryString:
+          "F M 0 0 l 30,30 10,10 35,0 0,-35 x m 50 0 l 0,-50 10,0 35,35 x f m 50 0 l 0,-50 10,0 35,35z",
+        strokeWidth: 10, stroke: "lightblue", fill: "gray" })
+  ));
+</pre>
+<script>goCode("a", 600, 140)</script>
+The first two PathFigures are open; the first and third figures are filled.
+The <code>Z</code> command only closes the PathFigure that it ends.
+
+<p>
+In the following Diagram we use a path string that contains four PathFigures, two of which have a shadow.
+Note that figures are shadowed by default if the containing Part has <a>Part.isShadowed</a> set to true.
+To un-shadow specific path figures we use the <code>U</code> command.
+</p>
+<pre data-language="javascript" id="a2">
+diagram.add(
+  $(go.Part,
+    { isShadowed: true, shadowOffset: new go.Point(10, 10) },
+    $(go.Shape,
+      { geometryString:
+          "F M 0 0 l 30,30 10,10 35,0 0,-35 x u m 50 0 l 0,-50 10,0 35,35 x u f m 50 0 l 0,-50 10,0 35,35z x m 70 0 l 0,30 30,0 5,-35z",
+        strokeWidth: 8, stroke: "lightblue", fill: "lightcoral" })
+  ));
+</pre>
+<script>goCode("a2", 600, 140)</script>
+The first and last PathFigures are shadowed; the second and third are unshadowed.
+
+<h4>Geometry.parse</h4>
+<p>
+Use the static method <a>Geometry.parse</a> to convert a <b>GoJS</b> syntax path string into a <a>Geometry</a>.
+</p>
+<pre data-language="javascript" id="s11">
+diagram.add(
+  $(go.Node, "Horizontal",
+    $(go.TextBlock, "Custom Triangle:"),
+    $(go.Shape,
+      { geometry: go.Geometry.parse("M120 0 L80 80 0 50z"),
+        fill: "green", background: "whitesmoke",
+        stroke: "orange", strokeWidth: 2 })
+  ));
+</pre>
+<script>goCode("s11", 600, 140)</script>
+<p>
+Note that even though a <a>Shape.fill</a> is specified, the shape does not appear filled.
+This is because the geometry's one <a>PathFigure</a> is not declared to be filled -- there is no <code>F</code> command.
+Importing SVG path shapes that are filled also requires declaring that the geometry is filled.
+We recommend that you call <a>Geometry.fillPath</a> for converting the SVG string to <b>GoJS</b> syntax before calling <a>Geometry.parse</a>.
+(Alternatively you can modify the Geometry returned by Geometry.parse.)
+</p>
+<p>
+All Geometry objects have bounds that contain the origin,
+so a geometry created with no points at x==0 or y==0 will have extra space to the left of it or above it.
+Note how there is extra space in the following node, causing the shape to appear farther away from the text and shifted down:
+</p>
+<pre data-language="javascript" id="s12">
+diagram.add(
+  $(go.Node, "Horizontal",
+    $(go.TextBlock, "Custom Triangle:"),
+    $(go.Shape,
+      { geometry: go.Geometry.parse("M120 50 L80 80 50 50z"),
+        fill: "green", background: "whitesmoke",
+        stroke: "orange", strokeWidth: 2 })
+  ));
+</pre>
+<script>goCode("s12", 600, 140)</script>
+<p>
+Often when importing SVG shapes created by drawing applications into <b>GoJS</b> we do not want any extra space above or to the left, so we need to normalize the geometry.
+There's a function for this, <a>Geometry.normalize</a>, which modifies the Geometry's points in-place and returns a Point describing the amount they were offset.
+</p>
+
+<h4>Shape.geometryString</h4>
+<p>The <a>Shape.geometryString</a> property setter parses a given string as a Geometry, normalizes it,
+sets the <a>Shape.geometry</a> to this new Geometry and offsets the Shape's position by the amount it was shifted in normalization.
+The positioning is useful when the shape is inside a <a>Panel.Position</a> panel.
+But when the shape is used in any other kind of panel (thus ignoring the <a>GraphObject.position</a>),
+it is still useful to remove the extra space so that the shape fits in well with the other objects in the panel.
+<p>The example below adds three Parts with Shapes to the diagram.
+The first shape uses <a>Geometry.parse</a> to set the Shape's Geometry, the second one uses <a>Geometry.parse</a> and <a>Geometry.normalize</a>.
+The third uses <a>Shape.geometryString</a>.
+Note the difference in size between the first Part and the other two.
+<pre data-language="javascript" id="b">
+var pathstring = "M30 100 C 50 50, 70 20, 100 100, 110, 130, 45, 150, 65, 100";
+
+// Just parsing the geometry
+diagram.add(
+  $(go.Part, "Vertical",
+    $(go.Shape,
+      { geometry: go.Geometry.parse(pathstring),
+        strokeWidth: 10, stroke: "lightcoral",
+        background: "whitesmoke" }),
+    $(go.TextBlock, "parse")
+  ));
+
+// Parsing the geometry and normalizing it
+var geo = go.Geometry.parse(pathstring);
+geo.normalize();
+diagram.add(
+  $(go.Part, "Vertical",
+    $(go.Shape,
+      { geometry: geo,
+        strokeWidth: 10, stroke: "lightgreen",
+        background: "whitesmoke" }),
+    $(go.TextBlock, "parse & normalize")
+  ));
+
+// Using geometryString to parse and normalize the geometry
+diagram.add(
+  $(go.Part, "Vertical",
+    $(go.Shape,
+      { geometryString: pathstring,
+        strokeWidth: 10, stroke: "lightblue",
+        background: "whitesmoke" }),
+    $(go.TextBlock, "geometryString")
+  ));
+
+diagram.layout = $(go.GridLayout);
+
+// Select them all to more easily see their sizes
+diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("b", 600, 180)</script>
+
+<h3>Converting Path Strings</h3>
+<p>
+The static method <a>Geometry.stringify</a> can be used to output a Geometry as a string.
+This string will have the <b>GoJS</b> path string syntax.
+You can use Geometry.stringify and Geometry.parse to data bind custom shape geometries.
+<p>
+<code>Geometry.parse(Geometry.stringify(myGeometry))</code> will return a geometry equal to <code>myGeometry</code>,
+though if myGeometry was created from a string, the string itself is not guaranteed to be the same.
+If you merely want to copy a Geometry you should use <a>Geometry.copy</a>.
+<p>
+<pre data-language="javascript">
+// These path strings represent identical geometries:
+var a = "m0 0 t 50 50, q 40 20, 50 10 h 10 v -23 l 45, 5, 65, 100"
+var b = "M0 0 Q0 0 50 50 Q90 70 100 60 L110 60 L110 37 L155 42 L220 142"
+go.Geometry.stringify(Geometry.parse(a)); // returns the string in b
+go.Geometry.stringify(Geometry.parse(b)); // returns the string in b
+</pre>
+
+<p>
+Because of the additional non-SVG commands, a string generated from <a>Geometry.stringify</a> will not necessarily be a valid SVG path.
+</p>
+<p>
+The static method <a>Geometry.fillPath</a> takes a path string of either syntax and adds <code>F</code> tokens before each PathFigure that does not have them.
+Because SVG path strings are not considered to be "filled" by themselves,
+if you are converting an SVG Path shape to <b>GoJS</b> you will want to call <a>Geometry.fillPath</a> on the SVG string.
+</p>
+<pre data-language="javascript">
+go.Geometry.fillPath("M0 0 L20 20 L20 0");
+// returns           "F M0 0 L20 20 L20 0"
+</pre>
+The result can then be passed to <a>Geometry.parse</a> or <a>Shape.geometryString</a>.
+
+</div>
+</body>
+</html>

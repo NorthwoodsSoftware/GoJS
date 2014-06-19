@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Coordinate Systems-- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Coordinate Systems</h2>
+<p>
+A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s in a Canvas element: document and view coordinates.
+(<a>Panel</a>s have their own coordinate systems.)
+</p>
+
+<h3>View and document coordinates</h3>
+<p>
+The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates.
+Thus the <a>Point</a>s that may be saved in the model's node data are normally in document coordinates:
+</p>
+<pre>
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+</pre>
+<p>
+But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn at the top-left corner of
+the Canvas element that the user sees.
+When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas.
+And if the user zooms in to make the parts appear larger, the parts will be drawn at different points in the canvas.
+Points in the canvas are in view coordinates: distances from the top-left corner in device-independent pixels.
+</p>
+<p>
+The differences between document coordinates and view coordinates are primarily controlled by two <a>Diagram</a> properties:
+<a>Diagram.position</a> and <a>Diagram.scale</a>.
+Scrolling and panning change the Diagram.position.
+Zooming in or out changes the Diagram.scale.
+You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and <a>Diagram.transformViewToDoc</a>.
+</p>
+<p>
+The <i>viewport</i> is the area of the document that is visible in the canvas.
+That area is available as the <a>Diagram.viewportBounds</a>.
+The top-left corner of the viewport is (0,0) in view coordinates but is at <a>Diagram.position</a> in document coordinates.
+The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates.
+The bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
+</p>
+
+<h3>Coordinate systems example</h3>
+<p>
+This example shows three Parts at three different locations in document coordinates.
+Pass the mouse over each of the parts to see where those locations are in view coordinates.
+Initially you will see that the only difference between document and view coordinates are a constant offset.
+That offset is due to the <a>Diagram.padding</a> that puts a little space between the edge of the canvas and
+the edge of where the diagram's objects are.
+It is also due to <a>Part.locationSpot</a> having the location be at the center of the "+" Shape,
+not at the top-left corner of the whole Part.
+</p>
+<pre data-language="javascript" id="coordsystems">
+  diagram.isReadOnly = true;  // read-only to avoid accidentally moving any Part in document coordinates
+
+  diagram.nodeTemplate =
+    $(go.Part,  // no links or grouping, so use the simpler Part class instead of Node
+      { locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+        layerName: "Background",
+        mouseOver: function (e, obj) { showPoint(obj.part.location); } },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "PlusLine",
+        { name: "SHAPE", width: 8, height: 8 }),
+      $(go.TextBlock,
+        { position: new go.Point(6, 6), font: "8pt" },
+        new go.Binding("text", "loc"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { loc: "0 0" },
+    { loc: "100 0" },
+    { loc: "100 50" }
+  ];
+
+  function showPoint(loc) {
+    var docloc = diagram.transformDocToView(loc);
+    var elt = document.getElementById("Message1");
+    elt.textContent = "document: " + loc.x.toFixed(2) + " " + loc.y.toFixed(2) +
+                      "  view: " + docloc.x.toFixed(2) + " " + docloc.y.toFixed(2);
+  }
+
+  myDiagram = diagram;  // make accessible to the HTML buttons
+</pre>
+<script>goCode("coordsystems", 300, 150)</script>
+<input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
+<input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
+<span id="Message1">(object location in document and in view coordinates)</span>
+<p>
+Then try zooming in and looking at the locations of those parts in view coordinates.
+Zooming in increases the <a>Diagram.scale</a> by a small factor.
+That changes the locations in view coordinates, even though the locations in document coordinates did not change.
+</p>
+
+<h3>Document bounds</h3>
+<p>
+All of the <a>Part</a>s of a diagram have positions and sizes (i.e. their <a>GraphObject.actualBounds</a>) in document coordinates.
+The union of all of those parts' actualBounds constitutes the <a>Diagram.documentBounds</a>.
+If all of the parts are close together, the document bounds might be small.
+If some or all of the parts are far apart from each other, the document bounds might be large, even if there are only two parts
+or if there is just one really large part.
+The <a>Diagram.documentBounds</a> value is independent of the <a>Diagram.viewportBounds</a>.
+The former only depends on the bounds of the parts; the latter only depends on the size of the canvas and the diagram's
+position and scale.
+</p>
+<p>
+<a>Diagram.computeBounds</a>, which is responsible for the bounds computation,
+also adds the <a>Diagram.padding</a> Margin so that no Parts appear directly up against the edge of the diagram.
+You may want to keep some parts, particularly background decorations, from being included in the document bounds computation.
+Just set <a>Part.isInDocumentBounds</a> to false for such parts.
+</p>
+<p>
+The diagram does not compute a new value for <a>Diagram.documentBounds</a> immediately upon any change to any part
+or the addition or removal of a part.
+Thus the <a>Diagram.documentBounds</a> property value may not be up-to-date until after a transaction completes.
+</p>
+<p>
+The relative sizes of the <a>Diagram.documentBounds</a> and <a>Diagram.viewportBounds</a> control whether or not
+scrollbars are needed.
+You can set <a>Diagram.hasHorizontalScrollbar</a> and/or <a>Diagram.hasVerticalScrollbar</a> to false to
+make sure no scrollbar appears even when needed.
+</p>
+<p>
+If you do not want the <a>Diagram.documentBounds</a> to always reflect the sizes and locations of all of the nodes and links,
+you can set the <a>Diagram.fixedBounds</a> property.
+However if there are any nodes that are located beyond the fixedBounds, the user may be unable to scroll the diagram to see them.
+</p>
+<p>
+When scrolling, the <a>Diagram.position</a> will be limited to the range specified by the <a>Diagram.documentBounds</a>.
+The short or "line" scrolling distance is controlled by <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a>.
+The long or "page" scrolling distance is controlled by the size of the viewport.
+</p>
+<p>
+When zooming in or out, the <a>Diagram.scale</a> will be limited to the range given by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>.
+</p>
+
+</div>
+</body>
+</html>

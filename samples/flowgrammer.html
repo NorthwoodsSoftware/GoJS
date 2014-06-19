@@ -3,9 +3,9 @@
 <head>
   <title>Flowgrammer</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -22,9 +22,12 @@
             maxSelectionCount: 1,
             allowDrop: true,
             allowCopy: false,
+            "SelectionDeleting": relinkOnDelete,  // these two DiagramEvent listeners are
+            "SelectionDeleted": deleteLoneNodes,  // defined below
             "undoManager.isEnabled": true
           });
 
+      // when the document is modified, add a "*" to the title and enable the "Save" button
       myDiagram.addDiagramListener("Modified", function(e) {
         var button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
@@ -53,11 +56,19 @@
                   locationSpot: go.Spot.Center,
                   layoutConditions: go.Part.LayoutAdded | go.Part.LayoutRemoved,
                   // If a node from the pallette is dragged over this node, its outline will turn green
-                  mouseDragEnter: dragEnterHighlight,
-                  mouseDragLeave: dragLeaveHighlight,
+                  mouseDragEnter: function(e, node) { node.isHighlighted = true; },
+                  mouseDragLeave: function(e, node) { node.isHighlighted = false; },
                   // A node dropped onto this will draw a link from itself to this node
                   mouseDrop: dropOntoNode
                 }];
+      }
+
+      function shapeStyle() {
+        return [
+          { stroke: "rgb(63,63,63)", strokeWidth: 2 },
+          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "chartreuse" : "rgb(63,63,63)"; }).ofObject(),
+          new go.Binding("strokeWidth", "isHighlighted", function(h) { return h ? 4 : 2; }).ofObject()
+        ];
       }
 
       // define Node templates for various categories of nodes
@@ -71,7 +82,6 @@
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           $(go.Shape, "Ellipse",
             {
-              name: "SHAPE",
               fill: greenBrush,
               strokeWidth: 2,
               stroke: "green",
@@ -84,22 +94,15 @@
       myDiagram.nodeTemplateMap.add("End",
         $(go.Node, "Auto", nodeStyle(),  // use common properties and bindings
           { deletable: false },  // do not allow this node to be removed by the user
-          $(go.Shape, "StopSign",
-            {
-              name: "SHAPE",
-              fill: redBrush,
-              strokeWidth: 2,
-              width: 40,
-              height: 40,
-              stroke: "rgb(63,63,63)"
-            }),
+          $(go.Shape, "StopSign", shapeStyle(),
+            { fill: redBrush, width: 40, height: 40 }),
           $(go.TextBlock, "End")
         ));
 
       myDiagram.nodeTemplateMap.add("Action",
         $(go.Node, "Auto", nodeStyle(),
-          $(go.Shape, "Rectangle",
-            { name: "SHAPE", fill: yellowBrush, strokeWidth: 2, stroke: "rgb(63,63,63)" }),
+          $(go.Shape, "Rectangle", shapeStyle(),
+            { fill: yellowBrush }),
           $(go.TextBlock,
             { margin: 5, editable: true },
             // user can edit node text by clicking on it
@@ -108,8 +111,8 @@
 
       myDiagram.nodeTemplateMap.add("Effect",
         $(go.Node, "Auto", nodeStyle(),
-          $(go.Shape, "Rectangle",
-            { name: "SHAPE", fill: blueBrush, strokeWidth: 2, stroke: "rgb(63,63,63)" }),
+          $(go.Shape, "Rectangle", shapeStyle(),
+            { fill: blueBrush }),
           $(go.TextBlock,
             { margin: 5, editable: true },
             new go.Binding("text", "text").makeTwoWay())
@@ -117,8 +120,8 @@
 
       myDiagram.nodeTemplateMap.add("Output",
         $(go.Node, "Auto", nodeStyle(),
-          $(go.Shape, "RoundedRectangle",
-            { name: "SHAPE", fill: pinkBrush, strokeWidth: 2, stroke: "rgb(63,63,63)" }),
+          $(go.Shape, "RoundedRectangle", shapeStyle(),
+            { fill: pinkBrush }),
           $(go.TextBlock,
             { margin: 5, editable: true },
             new go.Binding("text", "text").makeTwoWay())
@@ -126,8 +129,8 @@
 
       myDiagram.nodeTemplateMap.add("Condition",
         $(go.Node, "Auto", nodeStyle(),
-          $(go.Shape, "Diamond",
-            { name: "SHAPE", fill: lightBrush, strokeWidth: 2, stroke: "rgb(63,63,63)" }),
+          $(go.Shape, "Diamond", shapeStyle(),
+            { fill: lightBrush }),
           $(go.TextBlock,
             { margin: 5, editable: true },
             new go.Binding("text", "text").makeTwoWay())
@@ -145,32 +148,27 @@
             layoutConditions: go.Part.LayoutAdded | go.Part.LayoutRemoved,
             // links cannot be selected, so they cannot be deleted
             // If a node from the pallette is dragged over this node, its outline will turn green
-            mouseDragEnter: dragEnterHighlight,
-            mouseDragLeave: dragLeaveHighlight,
+            mouseDragEnter: function(e, link) { link.isHighlighted = true; },
+            mouseDragLeave: function(e, link) { link.isHighlighted = false; },
             // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
             mouseDrop: dropOntoLink
           },
+          $(go.Shape, shapeStyle()),
           $(go.Shape,
-            { name: "SHAPE",
-              isPanelMain: true,
-              strokeWidth: 2,
-              stroke: "rgb(63,63,63)" }),
-          $(go.Shape,
-            { toArrow: "standard",
-              stroke: null, fill: "black" }),
+            { toArrow: "standard", stroke: null, fill: "black" }),
           $(go.Panel, "Auto",
             { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: .5, segmentOffset: new go.Point(0, -10) },
             $(go.TextBlock, "False",
-              { textAlign: "center",
+              {
+                textAlign: "center",
                 font: "10pt helvetica, arial, sans-serif",
                 stroke: "black",
-                margin: 2, editable: true })
+                margin: 2,
+                editable: true
+              })
           )
         );
 
-      // link nodes and delete those not linked to "Start" when a node is deleted
-      myDiagram.addDiagramListener("SelectionDeleting", function (e) { relinkOnDelete(e); })
-      myDiagram.addDiagramListener("SelectionDeleted", function (e) { deleteLoneNodes(); });
       myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
         var newnode = myDiagram.selection.first();
         if (newnode.linksConnected.count === 0) {
@@ -213,7 +211,7 @@
       myPalette.nodeTemplateMap.add("Condition",
         $(go.Node, "Auto",
           $(go.Shape, "Diamond",
-            { name: "SHAPE", fill: lightBrush, strokeWidth: 2 }),
+            { fill: lightBrush, strokeWidth: 2 }),
           $(go.TextBlock,
             { margin: 5 },
             new go.Binding("text", "text"))
@@ -242,24 +240,6 @@
           });
 
       load();  // read model from textarea and initialize myDiagram
-    }
-
-    // Dragging a Node over a Part causes the Shape to be drawn in a thicker green stroke
-    function dragEnterHighlight(e, obj, prevobj) {
-      var shape = obj.findObject("SHAPE");
-      if (shape !== null) {
-        shape.stroke = "chartreuse";
-        shape.strokeWidth = 4;
-      }
-    }
-
-    // Restore the Shape's stroke upon leaving the Part.
-    function dragLeaveHighlight(e, obj, prevobj) {
-      var shape = obj.findObject("SHAPE");
-      if (shape !== null) {
-        shape.stroke = "rgb(63,63,63)";
-        shape.strokeWidth = 2;
-      }
     }
 
     function dropOntoNode(e, obj) {
@@ -458,7 +438,7 @@
     }
 
     // Delete Nodes if all Nodes linking to them have been deleted.
-    function deleteLoneNodes() {
+    function deleteLoneNodes(e) {
       var nodes = myDiagram.nodes.iterator;
       var nodesToDelete = new go.List(Node);
       while (nodes.next()) {
@@ -469,7 +449,7 @@
       }
       nDelIt = nodesToDelete.iterator;
       while (nDelIt.next()) myDiagram.remove(nDelIt.value);
-      if (nodesToDelete.count !== 0) deleteLoneNodes();
+      if (nodesToDelete.count !== 0) deleteLoneNodes(e);
     }
 
     // Find the parents of the "end" node to ensure that it remains linked to "start".

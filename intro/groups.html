@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Groups -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Groups</h2>
+<p>
+Use the <a>Group</a> class to treat a collection of <a>Node</a>s and <a>Link</a>s as if they were a single <a>Node</a>.
+Those nodes and links are members of the group; together they constitute a subgraph.
+</p>
+
+<p>
+The member parts of a group are available via the <a>Group.memberParts</a> property.
+Conversely, the <a>Part.containingGroup</a> property refers to the group, if the part belongs to one.
+A part can be member of at most one group at a time.
+You can set that property in order to add that part to a group.
+However you must make sure that no group contains itself, either directly or indirectly through other groups.
+</p>
+
+<p>
+Because every <a>Group</a> is a <a>Node</a>, you can have nested groups.
+Although member <a>Node</a>s and <a>Link</a>s belong to the <a>Group</a> that contains them,
+they are not in the visual tree of the group -- their <a>GraphObject.panel</a> is null and no member part
+is in the group's <a>Panel.elements</a> collection.
+No <a>Part</a> can be in the visual tree of another <a>Part</a>.
+Parts normally do belong directly to one <a>Layer</a>.
+</p>
+
+<h3>Simple Groups</h3>
+<p>
+In a <a>GraphLinksModel</a> the <a>Model.nodeDataArray</a> holds node data, each of which might be
+represented by a <a>Group</a> rather than by a regular <a>Node</a>.
+You can declare that it should be a group by setting the isGroup data property to true.
+You can declare that a node data be a member of a group by referring to the group's key as
+the group data property value.
+</p>
+<p>
+Here is a group containing two nested groups as well as two regular nodes.
+If you move a group, its member parts move along.
+If you copy a group, its member parts are copied too.
+If you delete a group, its member parts are deleted too.
+If you move a member node, its containing group inflates or shrinks to cover the area occupied by all of the members.
+</p>
+<pre data-language="javascript" id="simple">
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", isGroup: true },
+    { key: "Beta", group: "Alpha" },
+    { key: "Gamma", group: "Alpha", isGroup: true },
+    { key: "Delta", group: "Gamma" },
+    { key: "Epsilon", group: "Gamma" },
+    { key: "Zeta", group: "Alpha" },
+    { key: "Eta", group: "Alpha", isGroup: true},
+    { key: "Theta", group: "Eta" }
+  ];
+</pre>
+<script>goCode("simple", 600, 200)</script>
+
+<h3 id="GroupsLinks">Groups and Links</h3>
+<p>
+Because <a>Group</a>s are <a>Node</a>s, a <a>Link</a> may connect with a group as well as with a plain node.
+</p>
+<p>
+Here is a simple example of four regular nodes and one group node.
+In this example the link from "Alpha" goes directly to the "Beta" node,
+but the link to "Delta" actually comes from the "Omega" group rather than from any particular member of the group.
+</p>
+<pre data-language="javascript" id="links">
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta", group: "Omega" },
+    { key: "Gamma", group: "Omega" },
+    { key: "Omega", isGroup: true },
+    { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("links", 600, 150)</script>
+<p>
+If you drag the "Delta" node around you can see how the link from the "Omega" group appears to come from the center
+of the group and start at the group's edge rather than at any member node.
+This is different than for the link from "Alpha" to "Beta".
+</p>
+<p>
+Note also how the link from "Beta" to "Gamma" is effectively owned by the "Omega" group because
+both of the nodes are owned by that group.  Copying the group automatically copies the link too.
+</p>
+<p>
+This example did not set any of the following properties:
+<a>Diagram.nodeTemplate</a>, <a>Diagram.groupTemplate</a>, and <a>Diagram.linkTemplate</a>,
+in order to demonstrate the default templates for all kinds of node data and link data.
+</p>
+
+<h3>Group Templates</h3>
+<p>
+Here is an example of how one might define templates for nodes and for groups.
+The node template is very simple: some text inside an ellipse.
+The group template is different from a node template in several aspects.
+</p>
+<p>
+First, the group template builds a go.Group, not a go.Node or go.Part.
+The group can use a number of the panel types, just as a node may use various panel types.
+</p>
+<p>
+Second, the group template includes a <a>Placeholder</a> object.
+This object, of which you may have at most one within the visual tree of a group,
+gets the size and position of the union of the bounds of the member parts, plus some padding.
+The use of a Placeholder results in the Group surrounding the collection of group members,
+no matter where the member nodes are placed.
+</p>
+<pre data-language="javascript" id="groupTemplates">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.groupTemplate =
+    $(go.Group, "Vertical",
+      $(go.Panel, "Auto",
+        $(go.Shape, "RoundedRectangle",  // surrounds the Placeholder
+          { parameter1: 14,
+            fill: "rgba(128,128,128,0.33)" }),
+        $(go.Placeholder,    // represents the area of all member parts,
+          { padding: 5})  // with some extra padding around them
+      ),
+      $(go.TextBlock,         // group title
+        { alignment: go.Spot.Right, font: "Bold 12pt Sans-Serif" },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta", group: "Omega" },
+    { key: "Gamma", group: "Omega" },
+    { key: "Omega", isGroup: true },
+    { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("groupTemplates", 600, 200)</script>
+<p>
+Note how when you move the "Beta" or "Gamma" nodes the "Omega" group automatically resizes so that the
+TextBlock on the group stays below and on the right side of the "RoundedRectangle" shape.
+</p>
+
+</div>
+</body>
+</html>

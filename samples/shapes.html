@@ -3,9 +3,9 @@
 <head>
 <title>GoJS Shapes</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,13 +13,14 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // create the Diagram for the HTML DIV element
-        // customize the Diagram.layout to be a GridLayout with a particular cell size
-        { layout: $(go.GridLayout, { cellSize: new go.Size(50, 10) }) });
+        { // customize the Diagram.layout to be a GridLayout with a particular cell size
+          layout: $(go.GridLayout, { cellSize: new go.Size(50, 10) })
+        });
 
     myDiagram.nodeTemplate =
       $(go.Node, "Vertical",
         {
-          locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+          locationSpot: go.Spot.Center, locationObjectName: "SHAPE",  // the location is the center of the Shape
           selectionAdorned: false,  // no selection handle when selected
           resizable: true, resizeObjectName: "SHAPE",  // user can resize the Shape
           rotatable: true, rotateObjectName: "SHAPE",  // user can rotate the Shape without rotating the label
@@ -41,11 +42,11 @@
     // initialize the model
     var figs = [];
     // for each kind of figure, create a Shape using that figure
-    for (var k in go.Shape.FigureGenerators) {
+    for (var f in go.Shape.FigureGenerators) {
       // ignore all-lower-case figure names
-      if (k.toLowerCase() === k) continue;
+      if (f.toLowerCase() === f) continue;
       // the node data just has a single property whose value is the figure name
-      figs.push({ key: k });
+      figs.push({ key: f });
     }
     myDiagram.model.nodeDataArray = figs;
   }

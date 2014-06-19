@@ -3,9 +3,9 @@
 <head>
   <title>Virtualized Graph with ForceDirectedLayout</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css" />
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -259,21 +259,9 @@
         if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
           // even if the node is out of the viewport, keep it if it is selected or
           // if any link connecting with the node is still in the viewport
-          var vis = false;
-          var lit = n.linksConnected;
-          while (lit.next()) {
-            var l = lit.value;
-            if (l.actualBounds.intersectsRect(viewb)) {
-              vis = true;
-              break;
-            }
-          }
-          if (!vis) {
+          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) {
             remove.push(d);
-            lit.reset();
-            while (lit.next()) {
-              removeLinks.add(lit.value.data);
-            }
+            removeLinks.addAll(n.linksConnected);
           }
         }
       }
@@ -287,10 +275,10 @@
     // This function is only used in this sample to demonstrate the effects of the virtualization.
     // In a real application you would delete this function and all calls to it.
     function updateCounts() {
-      document.getElementById("myMessage1").textContent = myGraphModel.nodeDataArray.length;
-      document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
+      document.getElementById("myMessage1").textContent = myDiagram.nodes.count;
+      document.getElementById("myMessage2").textContent = myGraphModel.nodeDataArray.length;
       document.getElementById("myMessage3").textContent = myDiagram.links.count;
-      document.getElementById("myMessage4").textContent = myDiagram.model.linkDataArray.length;
+      document.getElementById("myMessage4").textContent = myGraphModel.linkDataArray.length;
     }
 
     // The normal mechanism for determining the size of the document depends on all of the
@@ -338,9 +326,9 @@
       // can't depend on regular bounds computation that depends on all Nodes existing
       this.diagram.fixedBounds = computeDocumentBounds(this.model);
       // update the positions of any existing Nodes
-      for (var it = this.diagram.nodes.iterator; it.next(); ) {
-        it.value.updateTargetBindings();
-      }
+      this.diagram.nodes.each(function(node) {
+        node.updateTargetBindings();
+      });
     };
 
 
@@ -431,12 +419,14 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  This uses a <a>GraphLinksModel</a> and a virtualized <a>ForceDirectedLayout</a>.
-  Node data in Model: <span id="myMessage1"></span>.
-  Actual Nodes in Diagram: <span id="myMessage2"></span>.
-  Actual Links in Diagram: <span id="myMessage3"></span>.
-  Actual link data in model: <span id="myMessage4"></span>.
   <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
+  <div id="description">
+  <p>This uses a <a>GraphLinksModel</a> and a virtualized <a>ForceDirectedLayout</a>.</p>
+  Actual Nodes in Diagram: <span id="myMessage1"></span>.
+  Node data in Model: <span id="myMessage2"></span>.
+  Actual Links in Diagram: <span id="myMessage3"></span>.
+  Link data in model: <span id="myMessage4"></span>.
+  </div>
 </div>
 </body>
 </html>

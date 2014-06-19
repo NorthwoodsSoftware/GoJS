@@ -3,9 +3,9 @@
 <head>
 <title>Flow Builder</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -15,10 +15,19 @@
           {
             allowCopy: false,
             initialContentAlignment: go.Spot.Center,
+            layout:
+              $(go.LayeredDigraphLayout,
+                {
+                  setsPortSpots: false,  // Links already know their fromSpot and toSpot
+                  columnSpacing: 5,
+                  isInitial: false,
+                  isOngoing: false
+                }),
             validCycle: go.Diagram.CycleNotDirected,
             "undoManager.isEnabled": true
           });
 
+      // when the document is modified, add a "*" to the title and enable the "Save" button
       myDiagram.addDiagramListener("Modified", function(e) {
         var button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
@@ -260,10 +269,8 @@
       myDiagram.addDiagramListener("SelectionMoved", shiftNodesToEmptySpaces);
 
       function shiftNodesToEmptySpaces() {
-        var it = myDiagram.selection.iterator;
-        while (it.next()) {
-          var node = it.value;
-          if (!(node instanceof go.Node)) continue;
+        myDiagram.selection.each(function(node) {
+          if (!(node instanceof go.Node)) return;
           // look for Parts overlapping the node
           while (true) {
             var exist = myDiagram.findObjectsIn(node.actualBounds,
@@ -277,24 +284,15 @@
             // try shifting down beyond the existing node to see if there's empty space
             node.position = new go.Point(node.actualBounds.x, exist.actualBounds.bottom+10);
           }
-        }
+        });
       }
-
-      myDiagram.layout =
-        $(go.LayeredDigraphLayout,
-          { setsPortSpots: false,  // Links already know their fromSpot and toSpot
-            columnSpacing: 5,
-            isInitial: false,
-            isOngoing: false });
 
       // prevent nodes from being dragged to the left of where the layout placed them
       myDiagram.addDiagramListener("LayoutCompleted", function(e) {
-        var it = myDiagram.nodes;
-        while (it.next()) {
-          var node = it.value;
-          if (node.category === "Recycle") continue;
+        myDiagram.nodes.each(function(node) {
+          if (node.category === "Recycle") return;
           node.minLocation = new go.Point(node.location.x, -Infinity);
-        }
+        });
       });
 
       load();  // load initial diagram from the mySavedModel textarea
@@ -344,7 +342,6 @@
         go.DraggingTool.prototype.doActivate.call(this);
       }
     };
-
     // end DragLinkingTool
   </script>
 </head>

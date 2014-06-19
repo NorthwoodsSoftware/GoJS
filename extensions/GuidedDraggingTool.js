@@ -67,7 +67,7 @@ go.Diagram.inherit(GuidedDraggingTool, go.DraggingTool);
 * Removes all of the guidelines from the grid. 
 * @this {GuidedDraggingTool}
 */
-GuidedDraggingTool.prototype.reset = function() {
+GuidedDraggingTool.prototype.clearGuidelines = function() {
   this.diagram.remove(this.guidelineHbottom);
   this.diagram.remove(this.guidelineHcenter);
   this.diagram.remove(this.guidelineHtop);
@@ -84,15 +84,15 @@ GuidedDraggingTool.prototype.reset = function() {
 GuidedDraggingTool.prototype.doDeactivate = function() {
   go.DraggingTool.prototype.doDeactivate.call(this);
   // clear any guidelines when dragging is done
-  this.reset();
+  this.clearGuidelines();
 };
 
 GuidedDraggingTool.prototype.doDragOver = function(pt, obj) {
   // clear all existing guidelines in case either show... method decides to show a guideline
-  this.reset();
+  this.clearGuidelines();
 
   // gets the selected part
-  var partItr = (this.copiedParts ? this.copiedParts : this.draggedParts).iterator;
+  var partItr = (this.copiedParts || this.draggedParts).iterator;
   partItr.next();
   var part = partItr.key;
 
@@ -108,7 +108,7 @@ GuidedDraggingTool.prototype.doDragOver = function(pt, obj) {
 */
 GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
   // gets the selected (perhaps copied) Part
-  var partItr = (this.copiedParts ? this.copiedParts : this.draggedParts).iterator;
+  var partItr = (this.copiedParts || this.draggedParts).iterator;
   partItr.next();
   var part = partItr.key;
 
@@ -151,10 +151,8 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
   var bestSpot;
   var bestOtherSpot;
   // horizontal line -- comparing y-values
-  var otherItr = otherParts.iterator;
-  while (otherItr.next()) {
-    var other = otherItr.value;
-    if (other === part) continue; // ignore itself
+  otherParts.each(function(other) {
+    if (other === part) return; // ignore itself
 
     var otherBounds = other.actualBounds;
     var q0 = otherBounds.y;
@@ -171,7 +169,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
     // compare bottom side with top and bottom sides of OTHER part
     if (Math.abs(p2-q0) < bestDiff) { bestDiff = Math.abs(p2-q0); bestPart = other; bestSpot = go.Spot.Bottom; bestOtherSpot = go.Spot.Top; }
     else if (Math.abs(p2-q2) < bestDiff) { bestDiff = Math.abs(p2-q2); bestPart = other; bestSpot = go.Spot.Bottom; bestOtherSpot = go.Spot.Bottom; }
-  }
+  });
 
   if (bestPart !== null) {
     var bestBounds = bestPart.actualBounds;
@@ -243,10 +241,8 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
   var bestSpot;
   var bestOtherSpot;
   // vertical line -- comparing x-values
-  var otherItr = otherParts.iterator;
-  while (otherItr.next()) {
-    var other = otherItr.value;
-    if (other === part) continue; // ignore itself
+  otherParts.each(function(other) {
+    if (other === part) return; // ignore itself
 
     var otherBounds = other.actualBounds;
     var q0 = otherBounds.x;
@@ -263,7 +259,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
     // compare right side with left and right sides of OTHER part
     if (Math.abs(p2-q0) < bestDiff) { bestDiff = Math.abs(p2-q0); bestPart = other; bestSpot = go.Spot.Right; bestOtherSpot = go.Spot.Left; }
     else if (Math.abs(p2-q2) < bestDiff) { bestDiff = Math.abs(p2-q2); bestPart = other; bestSpot = go.Spot.Right; bestOtherSpot = go.Spot.Right; }
-  }
+  });
 
   if (bestPart !== null) {
     var bestBounds = bestPart.actualBounds;

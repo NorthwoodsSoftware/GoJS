@@ -3,9 +3,9 @@
 <head>
 <title>Tapered Links</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script>
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -21,39 +21,41 @@
 
     // This controls whether links overlap each other at each side of the node,
     // or if the links are spread out on each side of the node.
-    var spreadLinks = true;  // must be set before defining templates!
+    var SPREADLINKS = true;  // must be set before defining templates!
 
     myDiagram.nodeTemplate =
       $(go.Node, go.Panel.Auto,
         { locationSpot: go.Spot.Center },
         $(go.Shape,
-          { figure: "RoundedRectangle",
+          {
+            figure: "RoundedRectangle",
             parameter1: 10,
             fill: "orange",  // default fill color
             portId: "",
             fromLinkable: true,
-            fromSpot: (spreadLinks ? go.Spot.AllSides : go.Spot.None),
+            fromSpot: (SPREADLINKS ? go.Spot.AllSides : go.Spot.None),
             toLinkable: true,
-            toSpot: (spreadLinks ? go.Spot.AllSides : go.Spot.None),
-            cursor: "pointer" },
+            toSpot: (SPREADLINKS ? go.Spot.AllSides : go.Spot.None),
+            cursor: "pointer"
+          },
           new go.Binding("fill", "color")),
         $(go.TextBlock,
-          { margin: 10,
-            font: "bold 12pt sans-serif" },
+          { margin: 10, font: "bold 12pt sans-serif" },
           new go.Binding("text"))
       );
 
     myDiagram.linkTemplate =
       $(TaperedLink,  // subclass of Link, defined below
         go.Link.Bezier,
-        (spreadLinks ? go.Link.None : go.Link.Orthogonal),
-        { fromEndSegmentLength: (spreadLinks ? 50 : 1),
-          toEndSegmentLength: (spreadLinks ? 50 : 1),
+        (SPREADLINKS ? go.Link.None : go.Link.Orthogonal),
+        {
+          fromEndSegmentLength: (SPREADLINKS ? 50 : 1),
+          toEndSegmentLength: (SPREADLINKS ? 50 : 1),
           relinkableFrom: true,
-          relinkableTo: true },
+          relinkableTo: true
+        },
         $(go.Shape,
-          { isPanelMain: true,
-            stroke: null },
+          { isPanelMain: true, stroke: null, strokeWidth: 0 },
           new go.Binding("fill", "color"))
       );
 
@@ -67,8 +69,8 @@
         { key: 6, text: "six", color: "lightgreen" },
         { key: 7, text: "seven" }
       ], [
-        { from: 5, to: 6, color: "aquamarine" },
-        { from: 1, to: 2, color: "aquamarine" },
+        { from: 5, to: 6, color: "orange" },
+        { from: 1, to: 2, color: "red" },
         { from: 1, to: 3, color: "blue" },
         { from: 1, to: 4, color: "goldenrod" },
         { from: 2, to: 5, color: "fuchsia" },
@@ -94,8 +96,8 @@
 
     var p0 = this.getPoint(0);
     var p1 = this.getPoint((numpts > 4) ? 2 : 1);
-    var p2 = this.getPoint((numpts > 4) ? numpts-3 : 2);
-    var p3 = this.getPoint(numpts-1);
+    var p2 = this.getPoint((numpts > 4) ? numpts - 3 : 2);
+    var p3 = this.getPoint(numpts - 1);
     var fromHoriz = Math.abs(p0.y - p1.y) < Math.abs(p0.x - p1.x);
     var toHoriz = Math.abs(p2.y - p3.y) < Math.abs(p2.x - p3.x);
 
@@ -119,7 +121,9 @@
     p2x = p2.x + (toHoriz ? 0 : 2);
     p2y = p2.y + (toHoriz ? 2 : 0);
     p3x = p3.x + (toHoriz ? 0 : 1);
-    p3y = p3.y + (toHoriz ? 1 : 0);
+    p3y = p3.y + (toHoriz ? 1: 0);
+
+    fig.segments.add(new go.PathSegment(go.PathSegment.Line, p3x, p3y));
 
     var seg2 = new go.PathSegment(go.PathSegment.Bezier, p0x, p0y, p2x, p2y, p1x, p1y).close();
     fig.segments.add(seg2);

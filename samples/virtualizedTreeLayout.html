@@ -3,9 +3,9 @@
 <head>
   <title>Virtualized Tree with TreeLayout</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css" />
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     // this controls whether the tree grows deeper towards the right or downwards:
     var HORIZONTAL = true;
@@ -214,16 +214,7 @@
         if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
           // even if the node is out of the viewport, keep it if it is selected or
           // if any link connecting with the node is still in the viewport
-          var vis = false;
-          var lit = n.linksConnected;
-          while (lit.next()) {
-            var l = lit.value;
-            if (l.actualBounds.intersectsRect(viewb)) {
-              vis = true;
-              break;
-            }
-          }
-          if (!vis) remove.push(d);
+          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) remove.push(d);
         }
       }
 
@@ -284,9 +275,9 @@
       // can't depend on regular bounds computation that depends on all Nodes existing
       this.diagram.fixedBounds = computeDocumentBounds(this.model);
       // update the positions of any existing Nodes
-      for (var it = this.diagram.nodes.iterator; it.next();) {
-        it.value.updateTargetBindings();
-      }
+      this.diagram.nodes.each(function(node) {
+        node.updateTargetBindings();
+      });
     };
 
 
@@ -376,10 +367,13 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  This uses a <a>TreeModel</a> and a virtualized <a>TreeLayout</a>.
+  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
+  <div id="description">
+  <p>
+  This uses a <a>TreeModel</a> and a virtualized <a>TreeLayout</a>.</p>
   Node data in TreeModel: <span id="myMessage1"></span>.
   Actual Nodes in Diagram: <span id="myMessage2"></span>.
-  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
+  </div>
 </div>
 </body>
 </html>

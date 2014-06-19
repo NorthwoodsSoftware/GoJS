@@ -1,0 +1,542 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Tools -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Tools</h2>
+<p>
+<a>Tool</a>s handle all of the input events.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a>InputEvent</a>s and
+redirected by the diagram to go to the <a>Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a>ToolManager</a> held as the <a>Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse and keyboard) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a>Diagram.defaultTool</a>, which is normally the ToolManager.
+</p>
+
+<h3>Predefined Tools</h3>
+<p>
+Each <a>Diagram</a> has an instance of most of the tool classes, all managed by the diagram's <a>ToolManager</a>.
+If you want to change the interactive behavior, in many common cases you may be able to do so by setting properties
+on the <a>Diagram</a>, on your <a>Part</a>s, or on individual <a>GraphObject</a>s.
+But more generally you may need to modify one or more of the tools, which are accessible as properties of the <a>Diagram.toolManager</a>.
+</p>
+
+<p>
+Some tools want to run when a mouse-down occurs.  These tools include:
+</p>
+<ul>
+  <li><a>ToolManager.actionTool</a>, an <a>ActionTool</a>, for allowing "buttons" and other <a>GraphObject</a>s to grab events from the regular tools</li>
+  <li><a>ToolManager.relinkingTool</a>, a <a>RelinkingTool</a>, for reconnecting an existing <a>Link</a></li>
+  <li><a>ToolManager.linkReshapingTool</a>, a <a>LinkReshapingTool</a>, for changing the route of a <a>Link</a></li>
+  <li><a>ToolManager.resizingTool</a>, a <a>ResizingTool</a>, for changing the <a>GraphObject.desiredSize</a> of a <a>Part</a> or an object within a <a>Part</a></li>
+  <li><a>ToolManager.rotatingTool</a>, a <a>RotatingTool</a>, for changing the <a>GraphObject.angle</a> of a <a>Part</a> or an object within a <a>Part</a></li>
+</ul>
+
+<p>
+Some tools want to run when a mouse-move occurs after a mouse-down.  These tools include:
+</p>
+<ul>
+  <li><a>ToolManager.linkingTool</a>, a <a>LinkingTool</a>, for drawing a new <a>Link</a></li>
+  <li><a>ToolManager.draggingTool</a>, a <a>DraggingTool</a>, for moving or copying selected <a>Part</a>s</li>
+  <li><a>ToolManager.dragSelectingTool</a>, a <a>DragSelectingTool</a>, for rubber-band selection of some <a>Part</a>s within a rectangular area</li>
+  <li><a>ToolManager.panningTool</a>, a <a>PanningTool</a>, for panning/scrolling the diagram</li>
+</ul>
+
+<p>
+Some tools only want to run upon a mouse-up event after a mouse-down.  These tools include:
+</p>
+<ul>
+  <li><a>ToolManager.contextMenuTool</a>, a <a>ContextMenuTool</a>, for showing a context menu for a <a>GraphObject</a></li>
+  <li><a>ToolManager.textEditingTool</a>, a <a>TextEditingTool</a>, for in-place editing of <a>TextBlock</a>s in selected <a>Part</a>s</li>
+  <li><a>ToolManager.clickCreatingTool</a>, a <a>ClickCreatingTool</a>, for inserting a new <a>Part</a> when the user clicked</li>
+  <li><a>ToolManager.clickSelectingTool</a>, a <a>ClickSelectingTool</a>, for selecting or de-selecting a <a>Part</a></li>
+</ul>
+
+<p>
+To change the behavior of a tool, you may be able to set properties on the tool, on the <a>Diagram</a>, on a particular <a>Part</a>,
+or on a particular <a>GraphObject</a>.
+</p>
+<ul>
+  <li>For example, to disable the rubber-band selection tool (<a>DragSelectingTool</a>), set 
+      <code>diagram.toolManager.dragSelectingTool.isEnabled = false;</code>.</li>
+  <li>You can change the appearance of a selected Part (actually its selection Adornment) by setting <a>Part.selectionAdornmentTemplate</a>.
+      (See <a href="selection.html">Selection</a> for more discussion.)</li>
+  <li>You can enable users to draw new links interactively (<a>LinkingTool</a>) by
+setting <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a> on the port objects of your nodes.</li>
+  <li>You can disable the movement of a <a>Node</a> (<a>DraggingTool</a>) by setting <a>Part.movable</a> to false.</li>
+  <li>You can disable resizing any part (<a>ResizingTool</a>) by setting <a>Diagram.allowResize</a> to false.</li>
+  <li>Tooltips, implemented by the <a>ToolManager</a>, are discussed in <a href="toolTips.html">ToolTips</a>.</li>
+  <li>Context menus, implemented by the <a>ContextMenuTool</a>, are discussed in <a href="contextMenus.html">Context Menus</a>.</li>
+</ul>
+<p>
+More detail is available in the section about <a href="permissions.html">Permissions</a>.
+</p>
+<p>
+Some commonly set properties include:
+</p>
+<ul>
+  <li>Enable inserting parts via double-clicking by the <a>ClickCreatingTool</a> by setting <a>ClickCreatingTool.archetypeNodeData</a> to a node data object.</li>
+  <li>Control what parts become selected by <a>DragSelectingTool</a> by setting <a>DragSelectingTool.isPartialInclusion</a>.</li>
+  <li>Customize the link data that is copied when a new link is drawn by <a>LinkingTool</a> by setting <a>LinkingTool.archetypeLinkData</a>.</li>
+  <li>Limit how parts are resized by the <a>ResizingTool</a> by setting <a>ResizingTool.cellSize</a>,
+    <a>ResizingTool.maxSize</a>, or <a>ResizingTool.minSize</a>.</li>
+  <li>Limit how parts are rotated by the <a>RotatingTool</a> by setting <a>RotatingTool.snapAngleEpsilon</a> or
+    <a>RotatingTool.snapAngleMultiple</a>.</li>
+</ul>
+<p>
+Remember that all of the individual tools are available via the <a>Diagram.toolManager</a>.
+For example, to enable the <a>ClickCreatingTool</a>:
+</p>
+<pre data-language="javascript">
+  myDiagram.toolManager.clickCreatingTool.archetypeNodeData =
+    { key: "Node", text: "some description", color: "green" };
+</pre>
+<p>
+You can also set tool properties when using <a>GraphObject.make</a> to define your <a>Diagram</a>:
+</p>
+<pre data-language="javascript">
+  var diagram =
+    $(go.Diagram, "myDiagramDiv",
+      {
+        initialContentAlignment: go.Spot.Center,
+        allowDrop: true,
+        "grid.visible": true,
+        "grid.gridCellSize": new go.Size(30, 20),
+        "clickCreatingTool.archetypeNodeData":  // a node data JavaScript object
+          { key: "Node", text: "some description", color: "green" },
+        "dragSelectingTool.box":  // an unbound Part
+          $(go.Part, { layerName: "Tool" },
+            $(go.Shape, { name: "SHAPE", fill: null, stroke: "blue", strokeWidth: 3 }) ),
+        "draggingTool.isGridSnapEnabled": true,
+        "linkReshapingTool.handleArchetype":  // a GraphObject that is copied for each handle
+          $(go.Shape, { width: 10, height: 10, fill: "yellow" }),
+        "resizingTool.isGridSnapEnabled": true,
+        "rotatingTool.snapAngleMultiple": 90,
+        "rotatingTool.snapAngleEpsilon": 45
+      }
+    );
+</pre>
+<p>
+At this time the syntax for setting properties on predefined subobjects only works for the <a>Diagram</a> class.
+</p>
+
+<h3>Tools and Adornments</h3>
+<p>
+<a>Adornment</a>s are used for more than indicating that a <a>Part</a> is selected.
+Each <a>Tool</a> that is in the <a>ToolManager.mouseDownTools</a> list
+(in other words, any mode-less tool that is started with a mouse-down event)
+gets the opportunity to add its own Adornments for its own purposes when a Part is selected.
+</p>
+
+<h4>ResizingTool</h4>
+<p>
+When a <a>Part</a> is resizable, the <a>ResizingTool</a> adds an <a>Adornment</a> containing eight
+resize handles, four at the corners and four at the side middles.
+</p>
+<p>
+If you want to let the user resize the whole node, just set <a>Part.resizable</a> to true.
+</p>
+<pre data-language="javascript" id="resizing">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Auto",
+      { resizable: true },
+      $(go.Shape, "RoundedRectangle", { fill: "orange" }),
+      $(go.TextBlock, "Hello!", { margin: 5 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("resizing", 600, 100)</script>
+
+<p>
+If you want the user to resize a particular object within the node,
+you need to name that object and assign <a>Part.resizeObjectName</a>.
+</p>
+<pre data-language="javascript" id="resizingObject">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Vertical",
+      { resizable: true, resizeObjectName: "SHAPE",
+        selectionObjectName: "SHAPE" },
+      $(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: "orange", width: 50, height: 30 }),
+      $(go.TextBlock, "Hello!", { margin: 3 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("resizingObject", 600, 100)</script>
+
+<p>
+You can limit the minimum and maximum size for the resized object by setting
+<a>GraphObject.maxSize</a> and <a>GraphObject.minSize</a>.
+</p>
+<pre data-language="javascript" id="resizingMaxMin">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Vertical",
+      { resizable: true, resizeObjectName: "SHAPE",
+        selectionObjectName: "SHAPE" },
+      $(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: "orange", width: 50, height: 30,
+          maxSize: new go.Size(100, 40), minSize: new go.Size(20, 20) }),
+      $(go.TextBlock, "Hello!", { margin: 3 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("resizingMaxMin", 600, 100)</script>
+
+<p>
+You can also cause resizing to be multiples of a given size by setting <a>Part.resizeCellSize</a>.
+</p>
+<pre data-language="javascript" id="resizingCellSize">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Vertical",
+      { resizable: true, resizeObjectName: "SHAPE", resizeCellSize: new go.Size(10, 10),
+        selectionObjectName: "SHAPE" },
+      $(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: "orange", width: 50, height: 30,
+          maxSize: new go.Size(100, 40), minSize: new go.Size(20, 20) }),
+      $(go.TextBlock, "Hello!", { margin: 3 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("resizingCellSize", 600, 100)</script>
+
+<p>
+You can customize the resize handles by setting <a>Part.resizeAdornmentTemplate</a>.
+For example, to allow the user to only change the width of a Shape in a Node,
+the <a>Adornment</a> should have only two resize handles: one at the left and one at the right.
+The Adornment is implemented as a Spot Panel that surrounds a <a>Placeholder</a>,
+representing the adorned Shape, with two cyan rectangular Shapes, each representing a handle. 
+</p>
+<pre data-language="javascript" id="resizingTemplate">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Vertical",
+      { resizable: true, resizeObjectName: "SHAPE",
+        resizeAdornmentTemplate:
+          $(go.Adornment, "Spot",
+            $(go.Placeholder),  // takes size and position of adorned object
+            $(go.Shape,  // left resize handle
+              { alignment: go.Spot.Left, cursor: "col-resize",
+                desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "dodgerblue" }),
+            $(go.Shape,  // right resize handle
+              { alignment: go.Spot.Right, cursor: "col-resize",
+                desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "dodgerblue" })),
+        selectionAdorned: false },
+      $(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: "orange", width: 50, height: 30,
+          maxSize: new go.Size(100, 40), minSize: new go.Size(20, 20) }),
+      $(go.TextBlock, "Hello!", { margin: 3 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("resizingTemplate", 600, 100)</script>
+<p>
+Note also that because <a>Part.selectionAdorned</a> is false, there is no blue rectangle default selection adornment.
+</p>
+
+<h4>RotatingTool</h4>
+<p>
+When a <a>Part</a> is rotatable, the <a>RotatingTool</a> adds an <a>Adornment</a> containing one
+rotate handle a short distance from the object at the object's angle.
+Since the default <a>GraphObject.angle</a> is zero, the rotate handle typically starts to the right of the object.
+</p>
+<p>
+If you want to let the user rotate the whole node, just set <a>Part.rotatable</a> to true.
+</p>
+<pre data-language="javascript" id="rotating">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Auto",
+      { rotatable: true, locationSpot: go.Spot.Center },
+      $(go.Shape, "RoundedRectangle", { fill: "orange" }),
+      $(go.TextBlock, "Hello!", { margin: 5 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("rotating", 600, 150)</script>
+
+<p>
+If you want the user to rotate a particular object within the node,
+you need to name that object and assign <a>Part.rotateObjectName</a>.
+</p>
+<pre data-language="javascript" id="rotatingObject">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Vertical",
+      { rotatable: true, rotateObjectName: "SHAPE",
+        locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+        selectionObjectName: "SHAPE" },
+      $(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: "orange", width: 50, height: 30 }),
+      $(go.TextBlock, "Hello!", { margin: 3 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("rotatingObject", 600, 150)</script>
+
+<p>
+You can customize the rotate handle by setting <a>Part.rotateAdornmentTemplate</a>.
+</p>
+<pre data-language="javascript" id="rotatingTemplate">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.add(
+    $(go.Node, "Vertical",
+      { rotatable: true, rotateObjectName: "SHAPE",
+        locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+        rotateAdornmentTemplate:
+          $(go.Adornment,
+            { locationSpot: go.Spot.Center, background: "transparent" },
+            $(go.Shape, "BpmnActivityLoop",
+              { width: 12, height: 12, stroke: "blue", strokeWidth: 2 })),
+        selectionObjectName: "SHAPE" },
+      $(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: "orange", width: 50, height: 30 }),
+      $(go.TextBlock, "Hello!", { margin: 3 })
+    ));
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("rotatingTemplate", 600, 150)</script>
+
+<h4>RelinkingTool</h4>
+<p>
+When a <a>Link</a> is <a>Link.relinkableFrom</a> and/or <a>Link.relinkableTo</a>,
+the <a>RelinkingTool</a> adds one or two <a>Adornment</a>s,
+a diamond at each relinkable end of a selected link.
+The user can drag a relinking handle to reconnect that end of the link to another node.
+</p>
+<pre data-language="javascript" id="relinking">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle",
+        { fill: "lightgray", portId: "", fromLinkable: true, toLinkable: true }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { relinkableFrom: true, relinkableTo: true },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+  diagram.select(diagram.findLinkForData(linkDataArray[0]));
+</pre>
+<script>goCode("relinking", 600, 150)</script>
+<p>
+The relinking handles can be customized by setting <a>RelinkingTool.fromHandleArchetype</a>
+and <a>RelinkingTool.toHandleArchetype</a>.
+At the current time they cannot be customized by setting a property on the Link.
+</p>
+
+<h4>LinkReshapingTool</h4>
+<p>
+When a <a>Link</a> is <a>Part.reshapable</a>, the <a>LinkReshapingTool</a> adds an <a>Adornment</a>
+with several reshape handles at the interior points of a selected link's route.
+</p>
+<pre data-language="javascript" id="linkReshaping">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { reshapable: true, routing: go.Link.Orthogonal },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  diagram.model = new go.GraphLinksModel([
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ], [
+    { from: "Alpha", to: "Beta" }
+  ]);
+
+  diagram.select(diagram.findLinkForData(diagram.model.linkDataArray[0]));
+</pre>
+<script>goCode("linkReshaping", 600, 150)</script>
+<p>
+The reshape handles are small blue squares.
+The reshape handles can be customized by setting <a>LinkReshapingTool.handleArchetype</a>.
+At the current time they cannot be customized by setting a property on the Link.
+</p>
+<pre data-language="javascript" id="linkResegmenting">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { reshapable: true, resegmentable: true, routing: go.Link.Orthogonal },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  diagram.model = new go.GraphLinksModel([
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ], [
+    { from: "Alpha", to: "Beta" }
+  ]);
+
+  diagram.select(diagram.findLinkForData(diagram.model.linkDataArray[0]));
+</pre>
+<script>goCode("linkResegmenting", 600, 150)</script>
+<p>
+The resegmenting handles are even smaller blue diamonds.
+They can be customized by setting <a>LinkReshapingTool.midHandleArchetype</a>.
+At the current time they cannot be customized by setting a property on the Link.
+</p>
+
+
+<h3>Tools and Tool Parts</h3>
+<p>
+Some tools make use of special <a>Part</a>s that they add to the "Tool" <a>Layer</a> as feedback during the tool's operation.
+</p>
+
+<h4>DragSelectingTool</h4>
+<p>
+The <a>DragSelectingTool</a> uses the <a>DragSelectingTool.box</a> to show the area in which it will select Parts.
+Normally this is a simple magenta rectangular shape.  You can change it.  For example here is a drag-selecting box
+that is in the shape of a blue-outlined cloud.
+</p>
+<pre data-language="javascript" id="DragSelectingTool">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.toolManager.dragSelectingTool.isPartialInclusion = true;
+  diagram.toolManager.dragSelectingTool.box =
+    $(go.Part,
+      { layerName: "Tool" },
+      $(go.Shape, "Cloud",
+        { name: "SHAPE", fill: null, stroke: "dodgerblue", strokeWidth: 2 })
+    );
+
+  diagram.model = new go.GraphLinksModel([
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" }
+  ], [
+    { from: "Alpha", to: "Beta" }
+  ]);
+</pre>
+<script>goCode("DragSelectingTool", 600, 200)</script>
+<p>
+Note that it expects that the object to be resized by the tool to be named "SHAPE".
+The object should be rectangular too, or else the user might be misled by the area in which parts will be selected.
+Finally note also that the box is not an Adornment because it does not "adorn" any Part.
+It is just an unbound Part that is used temporarily by the DragSelectingTool.
+</p>
+
+<h4>LinkingTool and RelinkingTool</h4>
+<p>
+The linking tools, <a>LinkingTool</a> and <a>RelinkingTool</a>, inherit from a base class, <a>LinkingBaseTool</a>,
+that uses several Parts as a temporary Link and as temporary "to" and "from" Nodes.
+</p>
+<p>
+To customize the appearance and behavior of the temporary Link that is shown during a linking operation,
+you need to modify or replace the <a>LinkingBaseTool.temporaryLink</a>.
+The default temporary link is a blue line with a standard arrowhead.
+The originating port and the potential target port are shown by the <a>LinkingBaseTool.temporaryFromNode</a>
+and <a>LinkingBaseTool.temporaryToNode</a>.
+The default temporary ports are magenta rectangles.
+</p>
+<pre data-language="javascript" id="LinkingTools">
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Spot",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle",
+        { width: 100, height: 40, fill: "lightyellow",
+          portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.toolManager.linkingTool.temporaryLink =
+    $(go.Link,
+      { layerName: "Tool" },
+      $(go.Shape,
+        { stroke: "red", strokeWidth: 2, strokeDashArray: [4, 2] })
+    );
+
+  var tempfromnode =
+    $(go.Node,
+      { layerName: "Tool" },
+      $(go.Shape, "RoundedRectangle",
+        { stroke: "chartreuse", strokeWidth: 3, fill: null,
+          portId: "", width: 1, height: 1 })
+    );
+  diagram.toolManager.linkingTool.temporaryFromNode = tempfromnode;
+  diagram.toolManager.linkingTool.temporaryFromPort = tempfromnode.port;
+
+  var temptonode =
+    $(go.Node,
+      { layerName: "Tool" },
+      $(go.Shape, "RoundedRectangle",
+        { stroke: "cyan", strokeWidth: 3, fill: null,
+          portId: "", width: 1, height: 1 })
+    );
+  diagram.toolManager.linkingTool.temporaryToNode = temptonode;
+  diagram.toolManager.linkingTool.temporaryToPort = temptonode.port;
+
+  diagram.model = new go.GraphLinksModel([
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "200 50" },
+    { key: "Gamma", loc: "400 0" }
+  ]);  // start off with no links
+</pre>
+<script>goCode("LinkingTools", 600, 150)</script>
+<p>
+Try drawing a link from one node to the other.
+You will notice that the nodes (actually the ports) are highlit by the temporary nodes in chartreuse and cyan.
+The temporary link is a dashed red line without an arrowhead.
+</p>
+<p>
+If your app also supports relinking you will probably want to do the same customizations on the <a>RelinkingTool</a>.
+</p>
+
+</div>
+</body>
+</html>

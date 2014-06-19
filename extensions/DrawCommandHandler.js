@@ -41,19 +41,15 @@ DrawCommandHandler.prototype.canAlignSelection = function() {
 DrawCommandHandler.prototype.alignLeft = function() {
   var diagram = this.diagram;
   diagram.startTransaction("aligning left");
-  var itr = diagram.selection.iterator;
   var minPosition = Infinity;
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     minPosition = Math.min(current.position.x, minPosition);
-  }
-  itr.reset();
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  });
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     current.move(new go.Point(minPosition, current.position.y));
-  }
+  });
   diagram.commitTransaction("aligning left");
 };
 
@@ -62,22 +58,19 @@ DrawCommandHandler.prototype.alignLeft = function() {
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignRight = function() {
-  myDiagram.startTransaction("aligning right");
-  var itr = myDiagram.selection.iterator;
+  var diagram = this.diagram;
+  diagram.startTransaction("aligning right");
   var maxPosition = -Infinity;
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     var rightSideLoc = current.actualBounds.x + current.actualBounds.width;
     maxPosition = Math.max(rightSideLoc, maxPosition);
-  }
-  itr.reset();
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  });
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     current.move(new go.Point(maxPosition - current.actualBounds.width, current.position.y));
-  }
-  myDiagram.commitTransaction("aligning right");
+  });
+  diagram.commitTransaction("aligning right");
 };
 
 /**
@@ -85,21 +78,18 @@ DrawCommandHandler.prototype.alignRight = function() {
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignTop = function() {
-  myDiagram.startTransaction("alignTop");
-  var itr = myDiagram.selection.iterator;
+  var diagram = this.diagram;
+  diagram.startTransaction("alignTop");
   var minPosition = Infinity;
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     minPosition = Math.min(current.position.y, minPosition);
-  }
-  itr.reset();
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  });
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     current.move(new go.Point(current.position.x, minPosition));
-  }
-  myDiagram.commitTransaction("alignTop");
+  });
+  diagram.commitTransaction("alignTop");
 };
 
 /**
@@ -107,22 +97,19 @@ DrawCommandHandler.prototype.alignTop = function() {
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignBottom = function() {
-  myDiagram.startTransaction("aligning bottom");
-  var itr = myDiagram.selection.iterator;
+  var diagram = this.diagram;
+  diagram.startTransaction("aligning bottom");
   var maxPosition = -Infinity;
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     var bottomSideLoc = current.actualBounds.y + current.actualBounds.height;
     maxPosition = Math.max(bottomSideLoc, maxPosition);
-  }
-  itr.reset();
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  });
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     current.move(new go.Point(current.actualBounds.x, maxPosition - current.actualBounds.height));
-  }
-  myDiagram.commitTransaction("aligning bottom");
+  });
+  diagram.commitTransaction("aligning bottom");
 };
 
 /**
@@ -130,17 +117,16 @@ DrawCommandHandler.prototype.alignBottom = function() {
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignCenterX = function() {
-  myDiagram.startTransaction("aligning Center X");
-  var itr = myDiagram.selection.iterator;
-  itr.next();
-  var firstSelection = itr.value;
+  var diagram = this.diagram;
+  var firstSelection = diagram.selection.first();
+  if (!firstSelection) return;
+  diagram.startTransaction("aligning Center X");
   var centerX = firstSelection.actualBounds.x + firstSelection.actualBounds.width / 2;
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     current.move(new go.Point(centerX - current.actualBounds.width / 2, current.actualBounds.y));
-  }
-  myDiagram.commitTransaction("aligning Center X");
+  });
+  diagram.commitTransaction("aligning Center X");
 };
 
 
@@ -149,17 +135,16 @@ DrawCommandHandler.prototype.alignCenterX = function() {
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignCenterY = function() {
-  myDiagram.startTransaction("aligning Center Y");
-  var itr = myDiagram.selection.iterator;
-  itr.next();
-  var firstSelection = itr.value;
+  var diagram = this.diagram;
+  var firstSelection = diagram.selection.first();
+  if (!firstSelection) return;
+  diagram.startTransaction("aligning Center Y");
   var centerY = firstSelection.actualBounds.y + firstSelection.actualBounds.height / 2;
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     current.move(new go.Point(current.actualBounds.x, centerY - current.actualBounds.height / 2));
-  }
-  myDiagram.commitTransaction("aligning Center Y");
+  });
+  diagram.commitTransaction("aligning Center Y");
 };
 
 
@@ -170,16 +155,15 @@ DrawCommandHandler.prototype.alignCenterY = function() {
 * @param {number} distance 
 */
 DrawCommandHandler.prototype.alignColumn = function(distance) {
-  myDiagram.startTransaction("align Column");
+  var diagram = this.diagram;
+  diagram.startTransaction("align Column");
   if (distance === undefined) distance = 0; // for aligning edge to edge
   distance = parseFloat(distance);
-  var itr = myDiagram.selection.iterator;
   var selectedParts = new Array();
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     selectedParts.push(current);
-  }
+  });
   for (var i = 0; i < selectedParts.length - 1; i++) {
     var current = selectedParts[i];
     // adds distance specified between parts
@@ -187,7 +171,7 @@ DrawCommandHandler.prototype.alignColumn = function(distance) {
     var next = selectedParts[i + 1];
     next.move(new go.Point(current.actualBounds.x, curBottomSideLoc));
   }
-  myDiagram.commitTransaction("align Column");
+  diagram.commitTransaction("align Column");
 };
 
 /**
@@ -199,14 +183,13 @@ DrawCommandHandler.prototype.alignColumn = function(distance) {
 DrawCommandHandler.prototype.alignRow = function(distance) {
   if (distance === undefined) distance = 0; // for aligning edge to edge
   distance = parseFloat(distance);
-  myDiagram.startTransaction("align Row");
-  var itr = myDiagram.selection.iterator;
+  var diagram = this.diagram;
+  diagram.startTransaction("align Row");
   var selectedParts = new Array();
-  while (itr.next()) {
-    var current = itr.value;
-    if (current instanceof go.Link) continue; // skips over go.Link
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link) return; // skips over go.Link
     selectedParts.push(current);
-  }
+  });
   for (var i = 0; i < selectedParts.length - 1; i++) {
     var current = selectedParts[i];
     // adds distance specified between parts
@@ -214,9 +197,26 @@ DrawCommandHandler.prototype.alignRow = function(distance) {
     var next = selectedParts[i + 1];
     next.move(new go.Point(curRightSideLoc, current.actualBounds.y));
   }
-  myDiagram.commitTransaction("align Row");
+  diagram.commitTransaction("align Row");
 };
 
+
+/**
+* This controls whether or not the user can invoke the {@link #rotate} command.
+* @this {DrawCommandHandler}
+* @param {number=} angle the positive (clockwise) or negative (counter-clockwise) change in the rotation angle of each Part, in degrees.
+* @return {boolean}
+* This returns true:
+* if the diagram is not {@link Diagram#isReadOnly},
+* if the model is not {@link Model#isReadOnly}, and
+* if there is at least one selected {@link Part}.
+*/
+DrawCommandHandler.prototype.canRotate = function(number) {
+  var diagram = this.diagram;
+  if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;
+  if (diagram.selection.count < 1) return false;
+  return true;
+};
 
 /**
 * Change the angle of the parts connected with the given part. This is in the command handler
@@ -226,15 +226,14 @@ DrawCommandHandler.prototype.alignRow = function(distance) {
 */
 DrawCommandHandler.prototype.rotate = function(angle) {
   if (angle === undefined) angle = 90;
-  myDiagram.startTransaction("rotate " + angle.toString());
   var diagram = this.diagram;
-  var itr = diagram.selection.iterator;
-  while (itr.next()) {
-    var p = itr.value;
-    if (p instanceof go.Link || p instanceof go.Group) continue;  // can't do Links!
-    p.angle += angle;
-  }
-  myDiagram.commitTransaction("rotate " + angle.toString());
+  diagram.startTransaction("rotate " + angle.toString());
+  var diagram = this.diagram;
+  diagram.selection.each(function(current) {
+    if (current instanceof go.Link || current instanceof go.Group) return; // skips over Links and Groups
+    current.angle += angle;
+  });
+  diagram.commitTransaction("rotate " + angle.toString());
 };
 
 
@@ -275,14 +274,8 @@ DrawCommandHandler.prototype.doKeyDown = function() {
 */
 DrawCommandHandler.prototype._getAllParts = function() {
   var allParts = new Array();
-  var itr = this.diagram.nodes;
-  while (itr.next()) {
-    allParts.push(itr.value);
-  }
-  itr = this.diagram.parts;
-  while (itr.next()) {
-    allParts.push(itr.value);
-  }
+  this.diagram.nodes.each(function(node) { allParts.push(node); });
+  this.diagram.parts.each(function(part) { allParts.push(part); });
   // note that this ignores Links
   return allParts;
 };
@@ -307,9 +300,7 @@ DrawCommandHandler.prototype._arrowKeyMove = function() {
     vdistance = cellsize.height;
   }
   diagram.startTransaction("arrowKeyMove");
-  var itr = diagram.selection.iterator;
-  while (itr.next()) {
-    var part = itr.value;
+  diagram.selection.each(function(part) {
     if (e.key === "Up") {
       part.move(new go.Point(part.actualBounds.x, part.actualBounds.y - vdistance));
     } else if (e.key === "Down") {
@@ -319,7 +310,7 @@ DrawCommandHandler.prototype._arrowKeyMove = function() {
     } else if (e.key === "Right") {
       part.move(new go.Point(part.actualBounds.x + hdistance, part.actualBounds.y));
     }
-  }
+  });
   diagram.commitTransaction("arrowKeyMove");
 };
 

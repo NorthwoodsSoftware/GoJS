@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Commands -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Commands</h2>
+<p>
+Commands such as <b>Delete</b> or <b>Paste</b> or <b>Undo</b> are implemented by the <a>CommandHandler</a> class.
+</p>
+<p>
+Keyboard events, like mouse events, always go to the <a>Diagram.currentTool</a>.
+The current tool, when the user is not performing some gesture, is the same as the <a>Diagram.defaultTool</a>, which normally is the <a>Diagram.toolManager</a>.
+The <a>ToolManager</a> handles keyboard events by delegating them to the <a>Diagram.commandHandler</a>.
+</p>
+<p>
+Basically, the diagram handles a keyboard event, creates an <a>InputEvent</a> describing it,
+and then calls <a>ToolManager.doKeyDown</a>.  That in turn just calls <a>CommandHandler.doKeyDown</a>.
+The same sequence happens for key-up events.
+</p>
+
+<h3>Keyboard command bindings</h3>
+<p>
+The <a>CommandHandler</a> implements the following command bindings for keyboard input:
+</p>
+<ul>
+  <li>Del invokes <a>CommandHandler.deleteSelection</a></li>
+  <li>Ctrl-X &amp; Shift-Del invoke <a>CommandHandler.cutSelection</a></li>
+  <li>Ctrl-C &amp; Ctrl-Insert invoke <a>CommandHandler.copySelection</a></li>
+  <li>Ctrl-V &amp; Shift-Insert invoke <a>CommandHandler.pasteSelection</a></li>
+  <li>Ctrl-A invokes <a>CommandHandler.selectAll</a></li>
+  <li>Ctrl-Z &amp; Alt-Backspace invoke <a>CommandHandler.undo</a></li>
+  <li>Ctrl-Y &amp; Alt-Shift-Backspace invoke <a>CommandHandler.redo</a></li>
+  <li>Up &amp; Down &amp; Left &amp; Right (arrow keys) invoke <a>Diagram.scroll</a></li>
+  <li>PageUp &amp; PageDown invoke <a>Diagram.scroll</a></li>
+  <li>Home &amp; End set <a>Diagram.position</a></li>
+  <li>Keypad-- (minus) invokes <a>CommandHandler.decreaseZoom</a></li>
+  <li>Keypad-+ (plus) invokes <a>CommandHandler.increaseZoom</a></li>
+  <li>Ctrl-0 invokes <a>CommandHandler.resetZoom</a></li>
+  <li>Shift-Z invokes <a>CommandHandler.zoomToFit</a>; repeat to return to the original scale and position</li>
+  <li>Ctrl-G invokes <a>CommandHandler.groupSelection</a></li>
+  <li>Ctrl-Shift-G invokes <a>CommandHandler.ungroupSelection</a></li>
+  <li>F2 invokes <a>CommandHandler.editTextBlock</a></li>
+  <li>Menu Key invokes <a>CommandHandler.showContextMenu</a></li>
+  <li>Esc invokes <a>CommandHandler.stopCommand</a></li>
+</ul>
+<p>
+On a Macintosh the Command key is used as the modifier instead of the Control key.
+At the current time there are no keyboard bindings for commands such as <a>CommandHandler.collapseSubGraph</a>,
+<a>CommandHandler.collapseTree</a>, <a>CommandHandler.expandSubGraph</a>, or <a>CommandHandler.expandTree</a>.
+</p>
+<p>
+If you want to have a different behavior for the arrow keys, consider using the sample extended <a>CommandHandler</a>:
+<a href="../extensions/DrawCommandHandler.js">DrawCommandHandler</a>, which implements options for having
+the arrow keys move the selection or change the selection.
+</p>
+
+<h3>CommandHandler</h3>
+<p>
+The <a>CommandHandler</a> class implements pairs of methods:
+a method to execute a command and a predicate that is true when the command may be executed.
+For example, for the <b>Copy</b> command, there is a <a>CommandHandler.copySelection</a> method
+and a <a>CommandHandler.canCopySelection</a> method.
+</p>
+<p>
+Keyboard event handling always calls the "can..." predicate first.
+Only if that returns true does it actually call the method to execute the command.
+</p>
+<p>
+There are a number of properties that you can set to affect the CommandHandler's standard behavior.
+For example, if you want to allow the user to group selected parts together with the <a>CommandHandler.groupSelection</a>,
+you will need to set <a>CommandHandler.archetypeGroupData</a> to a group node data object:
+</p>
+<pre data-language="javascript">
+  diagram.commandHandler.archetypeGroupData =
+    { key: "Group", isGroup: true, color: "blue" };
+</pre>
+<p>
+That data object is copied and added to the model as the new group data object by <a>CommandHandler.groupSelection</a>.
+</p>
+<p>
+If you want to add your own keyboard bindings, you can override the <a>CommandHandler.doKeyDown</a> method.
+For example, to support using the "T" key to collapse or expand the currently selected <a>Group</a>:
+</p>
+<pre data-language="javascript">
+    myDiagram.commandHandler.doKeyDown = function() {
+      var e = myDiagram.lastInput;
+      var cmd = myDiagram.commandHandler;
+      if (e.key === "T") {  // could also check for e.control or e.shift
+        if (cmd.canCollapseSubGraph()) {
+          cmd.collapseSubGraph();
+        } else if (cmd.canExpandSubGraph()) {
+          cmd.expandSubGraph();
+        }
+      } else {
+        go.CommandHandler.prototype.doKeyDown.call(cmd);  // call base method with no arguments
+      }
+    };
+</pre>
+<p>
+Do not forget to call the base method in order to handle all of the keys that your method does not handle.
+</p>
+<p class="box">
+Note that calling the base method involves getting the base class's prototype's method.
+If the base method takes arguments, be sure to pass arguments to the call to the base method.
+</p>
+<p>
+It also calls that function passing the CommandHandler as the "this" value but does not evaluate "this" inside the anonymous function that is the override method.
+(This is due to JavaScript's interpretation of "this" in functions.  Actually, evaluating "this" might work in this situation, but might not in more complex code, so it is wiser to have careful habits.)
+</p>
+
+<h3>Updating command UI</h3>
+<p>
+It is common to have HTML elements outside of the diagram that invoke commands.
+You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable UI that would invoke the command.
+</p>
+<pre data-language="javascript" id="commands">
+  // allow the group command to execute
+  diagram.commandHandler.archetypeGroupData =
+    { key: "Group", isGroup: true, color: "blue" };
+  // modify the default group template to allow ungrouping
+  diagram.groupTemplate.ungroupable = true;
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta" },
+    { key: "Delta", group: "Epsilon" },
+    { key: "Gamma", group: "Epsilon" },
+    { key: "Epsilon", isGroup: true }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+  // enable or disable a particular button
+  function enable(name, ok) {
+    var button = document.getElementById(name);
+    if (button) button.disabled = !ok;
+  }
+  // enable or disable all command buttons
+  function enableAll() {
+    var cmdhnd = diagram.commandHandler;
+    enable("SelectAll", cmdhnd.canSelectAll());
+    enable("Cut", cmdhnd.canCutSelection());
+    enable("Copy", cmdhnd.canCopySelection());
+    enable("Paste", cmdhnd.canPasteSelection());
+    enable("Delete", cmdhnd.canDeleteSelection());
+    enable("Group", cmdhnd.canGroupSelection());
+    enable("Ungroup", cmdhnd.canUngroupSelection());
+    enable("Undo", cmdhnd.canUndo());
+    enable("Redo", cmdhnd.canRedo());
+  }
+  // notice whenever the selection may have changed
+  diagram.addDiagramListener("ChangedSelection", function(e) {
+    enableAll();
+  });
+  // notice when the Paste command may need to be reenabled
+  diagram.addDiagramListener("ClipboardChanged", function(e) {
+    enableAll();
+  });
+  // notice whenever a transaction or undo/redo has occurred
+  diagram.model.addChangedListener(function(e) {
+    if (e.isTransactionFinished) enableAll();
+  });
+
+  myDiagram = diagram;  // make the diagram accessible to button onclick handlers
+
+  // later, once the buttons are defined and have IDs, we can update them all:
+  // myDiagram.undoManager.isEnabled = true;  // this calls enableAll() due to Model.changed listener
+</pre>
+<script>goCode("commands", 600, 150)</script>
+<input id="SelectAll" type="button" onclick="myDiagram.commandHandler.selectAll()" value="Select All" />
+<input id="Cut" type="button" onclick="myDiagram.commandHandler.cutSelection()" value="Cut" />
+<input id="Copy" type="button" onclick="myDiagram.commandHandler.copySelection()" value="Copy" />
+<input id="Paste" type="button" onclick="myDiagram.commandHandler.pasteSelection()" value="Paste" />
+<input id="Delete" type="button" onclick="myDiagram.commandHandler.deleteSelection()" value="Delete" />
+<input id="Group" type="button" onclick="myDiagram.commandHandler.groupSelection()" value="Group" />
+<input id="Ungroup" type="button" onclick="myDiagram.commandHandler.ungroupSelection()" value="Ungroup" />
+<input id="Undo" type="button" onclick="myDiagram.commandHandler.undo()" value="Undo" />
+<input id="Redo" type="button" onclick="myDiagram.commandHandler.redo()" value="Redo" />
+<script>
+  // once the buttons are defined and have IDs, we can update them all
+  myDiagram.undoManager.isEnabled = true;  // this calls enableAll() due to Model.changed listener
+</script>
+<p>
+Each button is implemented in the following fashion:
+</p>
+<pre>
+&lt;input id="SelectAll" type="button" onclick="myDiagram.commandHandler.selectAll()" value="Select All" /&gt;
+</pre>
+<p>
+Whenever the selection changes or whenever a transaction or undo or redo occurs,
+the enableAll function is called to update the disabled property of each of the buttons.
+</p>
+
+<h3>Accessibility</h3>
+<p>
+Since <b>GoJS</b> is based on the HTML Canvas element, making an app that is accessible to screen-readers or other accessibility devices
+is a matter of generating fallback content outside of GoJS, just as you would generate fallback content separate from any HTML Canvas application.
+</p>
+<p>
+Although much of the predefined functionality of the <a>CommandHandler</a> is accessible with keyboard commands or the default context menu,
+not all of it is, and the functionality of the <a>Tool</a>s mostly depends on mouse or touch events.
+We recommend that you implement alternative mechanisms specific to your application for those tools that you want your users to access without a pointing device.
+</p>
+</div>
+</body>
+</html>

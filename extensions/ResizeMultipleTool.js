@@ -23,16 +23,12 @@ go.Diagram.inherit(ResizeMultipleTool, go.ResizingTool);
 ResizeMultipleTool.prototype.resize = function(newr) {
   var diagram = this.diagram;
   if (diagram === null) return;
-  var itr = diagram.selection.iterator;
-  while (itr.next()) {
-    var part = itr.value;
-    if (part instanceof go.Link || part instanceof go.Group) continue; // only Nodes and simple Parts
+  diagram.selection.each(function(part) {
+    if (part instanceof go.Link || part instanceof go.Group) return; // only Nodes and simple Parts
     var obj = part.resizeObject;
 
     // calculate new location
-    var part = obj.part;
     var pos = part.position.copy();
-
     var angle = obj.getDocumentAngle();
     var sc = obj.getDocumentScale();
 
@@ -53,5 +49,5 @@ ResizeMultipleTool.prototype.resize = function(newr) {
 
     obj.desiredSize = newr.size;
     part.position = pos;
-  }
+  });
 }

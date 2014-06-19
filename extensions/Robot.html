@@ -3,12 +3,14 @@
 <head>
 <title>Simulating Input Events</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script src="Robot.js"></script>
 
 <script id="code">
+  var robot;  // this global variable will hold an instance of the Robot class for myDiagram
+
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -17,20 +19,29 @@
       var node = obj.part.adornedPart;
       var msg = "Context clicked: " + node.data.key + ". ";
       msg += "Selection includes:";
-      for (var it = myDiagram.selection.iterator; it.next(); ) {
-        var part = it.value;
-        msg += " " + part.toString();
-      }
+      myDiagram.selection.each(function(part) {
+          msg += " " + part.toString();
+        });
+      document.getElementById("myStatus").textContent = msg;
+    }
+
+    function nodeClicked(e, obj) {  // executed by click and doubleclick handlers
+      var evt = e.copy();
+      var node = obj.part;
+      var type = evt.clickCount === 2 ? "Double-Clicked: " : "Clicked: ";
+      var msg = type + node.data.key + ". ";
       document.getElementById("myStatus").textContent = msg;
     }
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
         {
-          allowDrop: true,
+          allowDrop: true,  // must be true to accept drops from the Palette
           nodeTemplate:
             $(go.Node, "Auto",
               {
+                click: nodeClicked,
+                doubleClick: nodeClicked,
                 contextMenu:
                   $(go.Adornment, "Vertical",
                     $("ContextMenuButton",
@@ -51,7 +62,10 @@
               { from: "Lambda", to: "Mu" }
             ]),
           "undoManager.isEnabled": true
-        });  // must be true to accept drops from the Palette
+        });
+
+    // a shared Robot that can be used by all commands for this one Diagram
+    robot = new Robot(myDiagram);  // defined in Robot.js
 
     // initialize the Palette that is on the left side of the page
     myPalette =
@@ -68,7 +82,6 @@
   }
 
   function dragFromPalette() {
-    var robot = new Robot(myDiagram);
     // simulate a drag-and-drop between Diagrams:
     var dragdrop = { sourceDiagram: myPalette, targetDiagram: myDiagram };
     robot.mouseDown(5, 5, 0, dragdrop);  // this should be where the Alpha node is in the source myPalette
@@ -84,7 +97,6 @@
     var loc = alpha.actualBounds.center;
 
     // Simulate a mouse drag to move the Alpha node:
-    var robot = new Robot(myDiagram);
     robot.mouseDown(loc.x, loc.y, 0, { control: true });
     robot.mouseMove(loc.x+80, loc.y+50, 50, { control: true });
     robot.mouseMove(loc.x+20, loc.y+100, 100, { control: true });
@@ -109,7 +121,6 @@
 
     // Simulate dragging in the background around the two Alpha nodes.
     // This uses timestamps to pretend to wait a while to avoid activating the PanningTool.
-    var robot = new Robot(myDiagram);
     // Hopefully this mouse down does not hit any Part, but in the Diagram's background:
     robot.mouseDown(area.x, area.y, 0);
     // NOTE that this mouseMove timestamp needs to be > myDiagram.toolManager.dragSelectingTool.delay:
@@ -122,15 +133,17 @@
     // alpha2.isSelected = true;
   }
 
-  function contextmenuclick() {
+  function clickContextMenu() {
     var alpha = myDiagram.findNodeForKey("Alpha");
     if (alpha === null) return;
     var loc = alpha.location;
 
-    var robot = new Robot(myDiagram);
     // right click on Alpha
     robot.mouseDown(loc.x + 10, loc.y + 10, 0, { right: true });
     robot.mouseUp(loc.x + 10, loc.y + 10, 100, { right: true });
+
+    // Alternatively you could invoke the Show Context Menu command directly:
+    // myDiagram.commandHandler.showContextMenu(alpha);
 
     // move mouse over first context menu button
     robot.mouseMove(loc.x + 20, loc.y + 20, 200);
@@ -143,7 +156,6 @@
 
   function deleteSelection() {
     // Simulate clicking the "Del" key:
-    var robot = new Robot(myDiagram);
     robot.keyDown("Del");
     robot.keyUp("Del");
     // Now the selected Nodes are deleted.
@@ -151,6 +163,32 @@
     // Alternatively you could invoke the Delete command directly:
     // myDiagram.commandHandler.deleteSelection();
   }
+
+  function clickLambda() {
+    var lambda = myDiagram.findNodeForKey("Lambda");
+    if (lambda === null) return;
+    var loc = lambda.location;
+
+    // click on Lambda
+    robot.mouseDown(loc.x + 10, loc.y + 10, 0, { });
+    robot.mouseUp(loc.x + 10, loc.y + 10, 100, { });
+
+    // Clicking is just a sequence of input events.
+    // There is no command in CommandHandler for such a basic gesture.
+  }
+
+  function doubleClickLambda() {
+    var lambda = myDiagram.findNodeForKey("Lambda");
+    if (lambda === null) return;
+    var loc = lambda.location;
+
+    // double-click on Lambda
+    robot.mouseDown(loc.x + 10, loc.y + 10, 0, { });
+    robot.mouseUp(loc.x + 10, loc.y + 10, 100, { });
+    robot.mouseDown(loc.x + 10, loc.y + 10, 200, { clickCount: 2 });
+    robot.mouseUp(loc.x + 10, loc.y + 10, 300, { clickCount: 2 });
+  }
+
 </script>
 </head>
 <body onload="init()">
@@ -170,10 +208,15 @@
   <button onclick="dragFromPalette()">Drag From Palette</button><br />
   <button onclick="copyNode()">Copy Node</button><br />
   <button onclick="dragSelectNodes()">Drag Select Nodes</button><br />
-  <button onclick="contextmenuclick()">Context Menu Click</button><br />
+  <button onclick="clickContextMenu()">Context Menu Click Alpha</button><br />
   <button onclick="deleteSelection()">Delete</button><br />
+  <p>Clicking operations:</p>
+  <button onclick="clickLambda()">Click Lambda</button><br />
+  <button onclick="doubleClickLambda()">Double Click Lambda</button><br />
+  <p>
   The <a>UndoManager</a> has been enabled in the main Diagram.
   Give focus to the Diagram and you can undo everything and then redo everything to confirm what was executed by the Robot.
+  </p>
   <div id="myStatus" style="color:green"></div>
 </div>
 </body>

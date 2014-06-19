@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Link Connection Points on Nodes -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Link Connection Points on Nodes</h2>
+<p>
+There is flexibility in controlling exactly how and where a link connects to a node.
+In the previous examples the link has always ended at the edge of the node.
+But you can specify the <a>Spot</a> on a node at which a link terminates.
+</p>
+
+<h3>Non-rectangular Nodes</h3>
+<p>
+When a <a>Node</a> does not have a rectangular shape, by default links will end
+where the line toward the center of the node intersects with the edge of the node.
+</p>
+<p>
+Here is a demonstration of that -- drag one of the nodes around and watch how the link always
+connects to the nearest intersection or to the center of the node.
+This example includes arrowheads at both ends of the link, to make it clear that the link route
+really ends right at the edge of the node.
+</p>
+<pre data-language="javascript" id="nonRectangular">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { width: 90, height: 90,
+        selectionAdorned: false },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "FivePointedStar", { fill: "lightgray" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape,   // the "from" end arrowhead
+        { fromArrow: "Chevron" }),
+      $(go.Shape,   // the "to" end arrowhead
+        { toArrow: "StretchedDiamond", fill: "red" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("nonRectangular", 600, 150)</script>
+
+<h3>ToSpot and FromSpot</h3>
+<p>
+You can easily require links to end at a particular point within the bounds of the node,
+rather than at the nearest edge intersection.
+Set the <a>GraphObject.toSpot</a> to a <a>Spot</a> value other than <a>Spot.None</a>
+to cause links coming into the node to end at that spot within the node.
+Similarly, set the <a>GraphObject.fromSpot</a> for the ends of links coming out of the node.
+</p>
+
+<p>
+The following examples all display the same graph but use different templates
+to demonstrate how links can connect to nodes.
+They all call this common function to define some nodes and links.
+</p>
+<pre data-language="javascript" id="makeGraph">
+function makeGraph(diagram) {
+  var $ = go.GraphObject.make;
+
+  diagram.layout =
+    $(go.LayeredDigraphLayout,  // this will be discussed in a later section
+      { columnSpacing: 5,
+        setsPortSpots: false });
+
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" },
+    { key: "Epsilon" }, { key: "Zeta" }, { key: "Eta" }, { key: "Theta" }
+  ];
+  var linkDataArray = [
+    { from: "Beta", to: "Alpha" },
+    { from: "Gamma", to: "Alpha" },
+    { from: "Delta", to: "Alpha" },
+    { from: "Alpha", to: "Epsilon" },
+    { from: "Alpha", to: "Zeta" },
+    { from: "Alpha", to: "Eta" },
+    { from: "Alpha", to: "Theta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+}
+</pre>
+<script>eval(document.getElementById("makeGraph").textContent)</script>
+
+<p>
+Let us specify that links coming into a node connect at the middle of the left side, and that links going out
+of a node connect at the middle of the right side.  Such a convention is appropriate for diagrams that have
+a general sense of direction to them, such as the following one which goes from left to right.
+</p>
+<pre data-language="javascript" id="leftright">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { fromSpot: go.Spot.Right,  // coming out from middle-right
+        toSpot: go.Spot.Left },   // going into at middle-left
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock,
+        { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  makeGraph(diagram);
+</pre>
+<script>goCode("leftright", 600, 150)</script>
+
+<p>
+You can also specify that the links go into a node not at a single spot but spread out along one side.
+Instead of <a>Spot.Right</a> use <a>Spot.RightSide</a>, and similarly for the left side.
+</p>
+<pre data-language="javascript" id="leftrightSides">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { fromSpot: go.Spot.RightSide,  // coming out from right side
+        toSpot: go.Spot.LeftSide },   // going into at left side
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock,
+        { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  makeGraph(diagram);
+</pre>
+<script>goCode("leftrightSides", 600, 150)</script>
+<p>
+Of course this only looks good when the nodes are basically rectangular.
+</p>
+
+<p>
+You can use a different kind of <a>Link.routing</a>:
+</p>
+<pre data-language="javascript" id="leftrightSidesOrthogonal">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { fromSpot: go.Spot.RightSide,  // coming out from right side
+        toSpot: go.Spot.LeftSide },   // going into at left side
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock,
+        { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal,  // Orthogonal routing
+        corner: 10 },                 // with rounded corners
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  makeGraph(diagram);
+</pre>
+<script>goCode("leftrightSidesOrthogonal", 600, 150)</script>
+
+<p>
+Or you can use a different kind of <a>Link.curve</a>:
+</p>
+<pre data-language="javascript" id="leftrightSidesBezier">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { fromSpot: go.Spot.RightSide,  // coming out from right side
+        toSpot: go.Spot.LeftSide },   // going into at left side
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock,
+        { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { curve: go.Link.Bezier },  // Bezier curve
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  makeGraph(diagram);
+</pre>
+<script>  goCode("leftrightSidesBezier", 600, 150)</script>
+
+<p>
+But you need to be careful to specify sensible spots for how the graph is arranged.
+</p>
+<pre data-language="javascript" id="leftrightSidesBad">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { fromSpot: go.Spot.TopSide,    // coming out from top side -- BAD!
+        toSpot: go.Spot.RightSide },  // going into at right side -- BAD!
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock,
+        { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  makeGraph(diagram);
+
+  diagram.add($(go.Part,  // this is just a comment
+                { location: new go.Point(300, 50) },
+                $(go.TextBlock, "Bad Spots",
+                  { font: "16pt bold", stroke: "red" })
+              ));
+</pre>
+<script>goCode("leftrightSidesBad", 600, 150)</script>
+
+<h3>Spots for Individual Links</h3>
+<p>
+Setting the <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a> properties specifies
+the default link connection point for all links connected to the node.
+What if you want some links to go to the middle-top spot but some other links to go to the middle-left spot of the same node?
+You can achieve this by setting the <a>Link.fromSpot</a> and <a>Link.toSpot</a> properties,
+which take precedence over the correspondingly named properties of what the link connects with.
+</p>
+<pre data-language="javascript" id="customSpots">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.TextBlock,
+        { margin: 5},
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      new go.Binding("fromSpot", "fromSpot", go.Spot.parse),  // get the link spots from the link data
+      new go.Binding("toSpot", "toSpot", go.Spot.parse),
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta", fromSpot: "TopRight", toSpot: "Left" },
+    { from: "Alpha", to: "Gamma", fromSpot: "Left", toSpot: "Left" },
+    { from: "Alpha", to: "Delta", fromSpot: "None", toSpot: "Top" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("customSpots", 600, 150)</script>
+
+</div>
+</body>
+</html>

@@ -3,27 +3,35 @@
 <head>
   <title>Grouping</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-      myDiagram = new go.Diagram("myDiagram");  // Diagram refers to its DIV HTML element by id
-
-      // the layout for the entire diagram
-      myDiagram.layout =
-        $(go.TreeLayout,
-          { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false });
+      myDiagram =
+        $(go.Diagram, "myDiagram",  // Diagram refers to its DIV HTML element by id
+          {
+            // start everything in the middle of the viewport
+            initialContentAlignment: go.Spot.Center,
+            layout: $(go.TreeLayout,  // the layout for the entire diagram
+                      {
+                        angle: 90,
+                        arrangement: go.TreeLayout.ArrangementHorizontal,
+                        isRealtime: false
+                      })
+          });
 
       // define the node template for non-groups
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          $(go.Shape, "Ellipse",
+          $(go.Shape, "Rectangle",
+            { stroke: null, strokeWidth: 0 },
             new go.Binding("fill", "key")),
           $(go.TextBlock,
+            { margin: 7, font: "Bold 14px Sans-Serif" },
             //the text, color, and key are all bound to the same property in the node data
             new go.Binding("text", "key"))
         );
@@ -43,17 +51,24 @@
                       { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
             // the group begins unexpanded;
             // upon expansion, a Diagram Listener will generate contents for the group
-            isSubGraphExpanded: false },
-          $(go.Shape, "RoundedRectangle",
-            { fill: null }),
+            isSubGraphExpanded: false,
+            // when a group is expanded, if it contains no parts, generate a subGraph inside of it
+            subGraphExpandedChanged: function(group) {
+              if (group.memberParts.count === 0) {
+                randomGroup(group.data.key);
+              }
+            }
+          },
+          $(go.Shape, "Rectangle",
+            { fill: null, stroke: "gray", strokeWidth: 2 }),
           $(go.Panel, "Vertical",
-            { defaultAlignment: go.Spot.Left },
+            { defaultAlignment: go.Spot.Left, margin: 4 },
             $(go.Panel, "Horizontal",
               { defaultAlignment: go.Spot.Top },
               // the SubGraphExpanderButton is a panel that functions as a button to expand or collapse the subGraph
               $("SubGraphExpanderButton"),
               $(go.TextBlock,
-                { font: "Bold 12pt Sans-Serif" },
+                { font: "Bold 18px Sans-Serif", margin: 4 },
                 new go.Binding("text", "key"))
             ),
             // create a placeholder to represent the area where the contents of the group are
@@ -61,14 +76,6 @@
               { padding: new go.Margin(0, 10) })
           )  // end Vertical Panel
         );  // end Group
-
-      // when a group is expanded, if it contains no parts, generate a subGraph inside of it
-      myDiagram.addDiagramListener("SubGraphExpanded", function (e) {
-        var group = e.subject.first(); //the expanded group
-        if (group.memberParts.count === 0) {
-          randomGroup(group.data.key);
-        }
-      });
 
       // generate the initial model
       randomGroup();
@@ -81,10 +88,9 @@
       myDiagram.startTransaction("addGroupContents");
       var addedKeys = [];  // this will contain the keys of all nodes created
       var groupCount = 0;  // the number of groups in the diagram, to determine the numbers in the keys of new groups
-      var nodes = myDiagram.nodes;
-      while (nodes.next()) {
-        if (nodes.value instanceof go.Group) groupCount++;
-      }
+      myDiagram.nodes.each(function(node) {
+        if (node instanceof go.Group) groupCount++;
+      });
       // create a random number of groups
       // ensure there are at least 10 groups in the diagram
       var groups = Math.floor(Math.random() * 2);
@@ -126,14 +132,14 @@
   This sample demonstrates subgraphs that are created only as groups are expanded.
   </p>
   <p>
-  The model is initially a random number of nodes, including some groups, in a force-directed layout.
+  The model is initially a random number of nodes, including some groups, in a tree layout.
   When a group is expanded, a "SubGraphExpanded" Diagram Listener calls a function to generate a random number of nodes
-  in a layered digraph layout inside the group if it contains none already.
+  in a tree layout inside the group if it contains none already.
   Each non-group node added has a unique random color, and links are added by giving each node one link to another node.
   </p>
   <p>
   The addition of nodes and links is performed within a transaction to ensure that the diagram updates itself properly.
-  The diagram's force-directed layout and the layered digraph layouts within each group are performed again when a sub-graph is expanded or collapsed.
+  The diagram's tree layout and the tree layouts within each group are performed again when a sub-graph is expanded or collapsed.
   </p>
 </div>
 </body>

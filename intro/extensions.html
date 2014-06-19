@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Introduction -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+  <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Extending GoJS</h2>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a>GraphObject</a>, <a>Diagram</a>, <a>CommandHandler</a>, <a>Tool</a>, or <a>Layout</a>.
+  But when no such properties exist, you might need to override methods of CommandHandler, Tool, or Layout.
+  Methods that you can override are documented in the API reference.
+  This page describes how to override methods, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+
+<p class="box">
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../extensions/">extensions gallery</a></strong>, showcasing the creation of custom tools and layouts.
+</p>
+
+<h3>Command Handler</h3>
+<p>
+  Overriding the <a>CommandHandler</a> allows you to alter default functionality and create your own key bindings.
+  See the <a href="commands.html">intro page on Commands</a> for more.
+  However, the techniques shown below for overriding methods on Tools and Layouts also applies to the CommandHandler.
+</p>
+
+<h3>Tools and Layouts</h3>
+<p>
+  <b>GoJS</b> operates on nodes and links using many tools and layouts, all of which are subclasses of the <a>Tool</a> and <a>Layout</a> classes.
+  See the <a href="tools.html">intro page on Tools</a> for more about Tools, and the <a href="layouts.html">intro page on Layouts</a> for more about Layouts.
+</p>
+<p>
+  Tools can be modified, or they can be replaced in or added to the <a>Diagram.toolManager</a>.
+  All tools must inherit from the <a>Tool</a> class or from a class that inherits from Tool.
+</p>
+
+<p class="box">
+  Some of our samples, such as the <a href="../samples/pipes.html">Pipes sample</a>, contain examples of custom tools.
+  More custom tool examples are available in the <a href="../extensions/">extensions gallery</a>.
+</p>
+
+<p>
+  Layouts can be modified, or they can be used by setting <a>Diagram.layout</a> or <a>Group.layout</a>.
+  All Layouts must inherit from the <a>Layout</a> class or a class that inherits from Layout.
+</p>
+
+<p class="box">
+  Some of our samples, such as the <a href="../samples/parseTree.html">Parse Tree sample</a>, contain examples of custom layouts.
+  More custom layout examples are available in the <a href="../extensions/">extensions gallery</a>.
+</p>
+
+<h3>Overriding a Method Without Defining a Subclass</h3>
+<p>
+  Often we can avoid subclassing a Tool in its entirety and merely override a single method.
+  This is common when we want to make a small change to the behavior of a method.
+  Here we show how to override the <code>ClickSelectingTool.standardMouseSelect</code> method by modifying the tool instance of a particular Diagram.
+</p>
+
+<p>
+  One can override Layout methods in this manner also, but that is rarely done -- layouts are almost always subclassed.
+  It cannot be done for layouts that are the value of <a>Group.layout</a> because those layouts may be copied and cannot be shared.
+</p>
+
+<p>
+  Since we are not creating a new (sub)class, we set the method directly on the Diagram's <a>ClickSelectingTool</a>, which is referenced through its <a>ToolManager</a>.
+  Typical scaffolding for overriding a method in such a manner is as follows:
+</p>
+
+<pre data-language="javascript">
+  var tool = diagram.toolManager.clickSelectingTool;
+  tool.standardMouseSelect = function() {
+    // Maybe do something else before
+    // ...
+
+    // Be careful about using 'this' within such functions!
+    // We recommend that you refer to the Tool with a variable declared outside of the function.
+
+    // In cases where you want normal behavior, call the base functionality.
+    // Note the reference to the prototype and the call to 'call' passing it what 'this' should be.
+    go.ClickSelectingTool.prototype.standardMouseSelect.call(tool);
+
+    // Maybe do something else after
+    // ...
+  }
+</pre>
+
+<p>
+  As a concrete example, we will override <a>Tool.standardMouseSelect</a> to select only Nodes and Links that have a width and height of less than 50 diagram units.
+  This means that we must find the to-be-selected object using <code>diagram.findPartAt</code>, check its bounds, and quit if the bounds are too large.
+  Otherwise, we call the base functionality to select as we normally might.
+</p>
+
+<pre data-language="javascript" id="tool">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  var tool = diagram.toolManager.clickSelectingTool;
+  tool.standardMouseSelect = function() {
+    var diagram = tool.diagram;
+    var e = diagram.lastInput;
+    // to select containing Group if Part.canSelect() is false
+    var curobj = diagram.findPartAt(e.documentPoint, false);
+    if (curobj !== null) {
+      var bounds = curobj.actualBounds;
+      // End the selection process if the bounds are greater than 50 width or height
+      if (bounds.width > 50 || bounds.height > 50) {
+        // If this was a left click with no modifier, we want to act the same as if
+        // we are clicking on the Diagram background, so we clear the selection
+        if (e.left && !e.control && !e.shift) {
+          diagram.clearSelection();
+        }
+        // Then return, so that we do not call the base functionality
+        return;
+      }
+    }
+    // otherwise, call the base functionality
+    go.ClickSelectingTool.prototype.standardMouseSelect.call(tool);
+  }
+
+  diagram.model = new go.Model([
+    { key: "Alpha", color: "lightblue" },
+    { key: "Epsilon", color: "thistle" },
+    { key: "Psi", color: "lightcoral" },
+    { key: "Gamma", color: "lightgreen" }
+  ]);
+</pre>
+<p>
+  Running this code, we see that the "Epsilon" and "Gamma" nodes are not selectable, because they are both wider than 50.
+  Note that this custom tool does not change the behavior of other tools that might select, such as the <a>DraggingTool</a> or the <a>DragSelectingTool</a>.
+</p>
+<script>goCode("tool", 300, 130)</script>
+
+
+<h3>Overriding Methods by Subclassing a Layout</h3>
+<p>
+  Layouts can be subclassed to create custom Layouts that inherit the properties and methods of an existing layout.
+  Subclassing in <b>GoJS</b> requires a few key steps:
+</p>
+
+<ul>
+  <li>Create a new class (function), and call the base class constructor.
+  <li>Call <a>Diagram.inherit</a> with the new class and the base class.
+  <li>Modify the prototype of your derived class to add new functionality.
+</ul>
+
+<p>
+  To create a new Layout, called <code>CascadeLayout</code>, we would start with the following scaffolding:
+</p>
+
+<pre data-language="javascript">
+  function CascadeLayout() {
+    go.Layout.call(this);  // Note the direct constructor call, no use of "prototype"
+    // new properties go here, on "this"
+  }
+  go.Diagram.inherit(CascadeLayout, go.Layout);
+
+  CascadeLayout.prototype.doLayout = function(coll) {  // Note setting the method on the prototype
+    // layout logic goes here
+    // You can reliably use "this" to refer to the instance on which this method was called
+  }
+</pre>
+
+<p>
+  Layouts commonly need additional properties that act as layout options.
+  To add a "spacing" property to <code>CascadeLayout</code>, we will use the convention that an underscore member is private, and will set a default value in the constructor:
+</p>
+
+<pre data-language="javascript">
+  function CascadeLayout() {
+    go.Layout.call(this);
+    this._spacing = new go.Size(12, 12);
+  }
+</pre>
+
+<p>
+  Then, we use <code>Object.defineProperty</code> to make a "public" getter and setter.
+  Getters and setters allow us to do type checking and have side effects.
+  This setter makes sure the spacing value is a <code>go.Size</code> object and invalidates the layout only if the value has changed.
+</p>
+
+<pre data-language="javascript">
+  Object.defineProperty(CascadeLayout.prototype, "spacing", {
+    get: function() { return this._spacing; },
+    set: function(val) {
+      if (!(val instanceof go.Size)) throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+      if (!this._spacing.equals(val)) {
+        this._spacing = val;
+        this.invalidateLayout();
+      }
+    }
+  });
+</pre>
+
+<p>
+  Lastly we'll define a <a>Layout.doLayout</a>, being sure to look at the documentation and accomodate all possible input, as doLayout has one argument that can either be a <a>Diagram</a>, or a <a>Group</a>, or an <a>Iterable</a> collection.
+</p>
+<p>
+  All together, we can see the cascade layout in action:
+</p>
+
+<pre data-language="javascript" id="example">
+  /**
+  * @constructor
+  * @extends Layout
+  * @class
+  * This layout arranges nodes in a cascade specified by the spacing property
+  */
+  function CascadeLayout() {
+    go.Layout.call(this);
+    this._spacing = new go.Size(12, 12);
+  }
+  go.Diagram.inherit(CascadeLayout, go.Layout);
+
+  Object.defineProperty(CascadeLayout.prototype, "spacing", {
+    get: function() { return this._spacing; },
+    set: function(val) {
+      if (!(val instanceof go.Size)) throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+      if (!this._spacing.equals(val)) {
+        this._spacing = val;
+        this.invalidateLayout();
+      }
+    }
+  });
+
+  /**
+  * This method positions all Nodes and ignores all Links.
+  * @this {CascadeLayout}
+  * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
+  */
+  CascadeLayout.prototype.doLayout = function(coll) {
+    if (coll === this.diagram) {
+      coll = this.diagram.nodes;
+    } else if (coll === this.group) {
+      coll = this.group.memberParts;
+    }
+
+    // Start the layout at the arrangement origin, a property inherited from Layout
+    var x = this.arrangementOrigin.x;
+    var y = this.arrangementOrigin.y;
+    var spacing = this.spacing;
+
+    var it = coll.iterator;
+    while (it.next()) {
+      var node = it.value;
+      if (!(node instanceof go.Node)) continue;
+      node.move(new go.Point(x, y));
+      x += spacing.width;
+      y += spacing.height;
+    }
+  }
+  // end of CascadeLayout
+
+  // Regular diagram setup:
+
+  diagram.layout = new CascadeLayout();
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.model = new go.Model([
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "thistle" },
+    { key: "Delta", color: "lightcoral" },
+    { key: "Gamma", color: "lightgreen" }
+  ]);
+</pre>
+<script>goCode("example", 300, 200)</script>
+
+</div>
+</body>
+</html>

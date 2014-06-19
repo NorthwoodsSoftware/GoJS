@@ -25,11 +25,13 @@
     float: left;
   }
 </style>
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
     // *********************************************************
     // First, set up the infrastructure to do HTML drag-and-drop
     // *********************************************************
@@ -107,11 +109,12 @@
         var mx = event.clientX - bbox.left * (can.width / bbox.width);
         var my = event.clientY - bbox.top * (can.height / bbox.height);
         var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
-
+        myDiagram.startTransaction('new node');
         myDiagram.model.addNodeData({
           location: point,
           text: dragged.textContent
         });
+        myDiagram.commitTransaction('new node');
 
         // remove dragged element from its old location
         if (remove.checked) dragged.parentNode.removeChild(dragged);
@@ -129,7 +132,6 @@
     // Second, set up a GoJS Diagram
     // *********************************************************
 
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
@@ -148,7 +150,7 @@
           // Shape.fill is bound to Node.data.color
           new go.Binding("fill", "color")),
         $(go.TextBlock,
-          { margin: 3, font: "bold 16px sans-serif", width: 140, textAlign: 'center' },  // some room around the text
+          { margin: 3, font: "bold 16px sans-serif", width: 140, textAlign: 'center' },
           // TextBlock.text is bound to Node.data.key
           new go.Binding("text"))
       );
@@ -187,7 +189,9 @@
   <input id="remove" type="checkbox" /><label for="remove">Remove HTML item after drag</label>
 
   <p>
-  The "Palette" in this sample is not a Palette (or GoJS control) at all. It is a collection of HTML elements with draggable attributes using the <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop">HTML Drag and Drop API</a>.
+  The "Palette" in this sample is not a Palette (or GoJS control) at all.
+  It is a collection of HTML elements with draggable attributes using the
+  <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop">HTML Drag and Drop API</a>.
   <p></p>
   This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes.
   </p>

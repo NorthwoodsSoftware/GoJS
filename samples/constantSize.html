@@ -3,9 +3,9 @@
 <head>
   <title>Kitten Monitor</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -72,10 +72,9 @@
         oldscale = newscale;
         myDiagram.skipsUndoManager = true;
         myDiagram.startTransaction("scale Nodes");
-        for (var it = myDiagram.nodes; it.next(); ) {
-          var node = it.value;
-          node.scale = origscale / newscale;
-        }
+        myDiagram.nodes.each(function(node) {
+            node.scale = origscale / newscale;
+          });
         myDiagram.commitTransaction("scale Nodes");
         myDiagram.skipsUndoManager = false;
       });

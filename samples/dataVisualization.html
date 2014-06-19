@@ -3,7 +3,6 @@
 <head>
 <title>Data Visualization GoJS Sample</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <!--
 The div needs an explicit size or else we won't see anything.
 Lets also add a border to help see the edges.
@@ -74,16 +73,17 @@ Lets also add a border to help see the edges.
 </style>
 
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <!-- we also link to a file that contains some data on the iris flower -->
 <script src="dataVisualization.js"></script>
 <script id="code">
   var myDiagram;
-  var myLocation = {
+  var myLocation = {  // this controls the data properties used by data binding conversions
     x: "sepalLength",
     y: "sepalWidth"
   }
-  var lastStroked = null;
+  var lastStroked = null;  // this remembers the last highlit Shape
 
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -91,27 +91,32 @@ Lets also add a border to help see the edges.
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
-        { contentAlignment: go.Spot.Center,
-          initialContentAlignment: go.Spot.Center,
-          autoScale: go.Diagram.Uniform,
-          isReadOnly: true });
+        {
+          "animationManager.isEnabled": false,
+          contentAlignment: go.Spot.Center,  // content is always centered in the viewport
+          autoScale: go.Diagram.Uniform,  // scale always has all content fitting in the viewport
+          isReadOnly: true,
+          mouseOver: doMouseOver  // this event handler is defined below
+        });
 
-    // define a simple Node template (but use the default Link template)
+    // define a simple Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
-        { selectable: false,
-          mouseOver: function(e, obj) { highlightNode(e, obj) }
+        {
+          selectable: false,
+          mouseOver: highlightNode  // this event handler is defined below
         },
         new go.Binding("location", "", function(nothing, elt) {
-            return new go.Point(
-              elt.data[myLocation.x]*200,
-              elt.data[myLocation.y]*200)
+            return new go.Point(elt.data[myLocation.x]*200,
+                                elt.data[myLocation.y]*200)
           }),
 
         $(go.Shape, "Hexagon",
-          { name: "SHAPE",
+          {
+            name: "SHAPE",
             width: 20, height: 20,
-            strokeWidth: 4, stroke: null },
+            strokeWidth: 4, stroke: null
+          },
           new go.Binding("fill", "species", function(name) {
               switch (name) {
                 case "Iris-setosa":     return "rgba(240, 120,  50, .6)";
@@ -137,32 +142,23 @@ Lets also add a border to help see the edges.
       array.push(data);
     }
 
-    myDiagram.model = new go.Model(array);;
-
-
-    myDiagram.mouseOver = function(e) {
-      doMouseOver(e);
-    }
+    myDiagram.model = new go.Model(array);
 
     function doMouseOver(e) {
       if (e === undefined) e = myDiagram.lastInput;
       var doc = e.documentPoint;
-      var list = myDiagram.findObjectsNear(
-        doc,
-        100,
-        null,
-        function(x) { return x instanceof go.Part; });
+      // find all Nodes that are within 100 units
+      var list = myDiagram.findObjectsNear(doc, 100, null, function(x) { return x instanceof go.Node; });
+      // now find the one that is closest to e.documentPoint
       var closest = null;
       var closestDist = 999999999;
-      var itr = list.iterator;
-      while (itr.next()) {
-        var val = itr.value;
-        var dist = doc.distanceSquaredPoint(val.getDocumentPoint(go.Spot.Center));
+      list.each(function(node) {
+        var dist = doc.distanceSquaredPoint(node.getDocumentPoint(go.Spot.Center));
         if (dist < closestDist) {
           closestDist = dist;
-          closest = val;
+          closest = node;
         }
-      }
+      });
       highlightNode(e, closest);
     }
 
@@ -209,7 +205,8 @@ Lets also add a border to help see the edges.
 
   } // end init
 
-  //
+  // This function is called to update the tooltip information
+  // depending on the bound data of the Node that is closest to the pointer.
   function updateInfoBox(mousePt, data) {
     var x =
     "<div id='infoBox'>" +
@@ -229,10 +226,9 @@ Lets also add a border to help see the edges.
     box.style.top = mousePt.y+20 + "px";
   }
 
-  // This function is called which a radio button is pressed
-  // It changes the value of a variable that the node template's
-  // location conversion function uses.
-  // It then updates all target bindings,
+  // This function is called which a radio button is pressed.
+  // It changes the value of a variable that the node template's location conversion function uses.
+  // It then updates all target bindings, causing all node locations to change.
   function changeAxes(e) {
     var value = e.value;
     if (e.name === "X") {
@@ -288,7 +284,8 @@ Lets also add a border to help see the edges.
     <div id="description" style="float: left;">
       <p>This sample gives an example of a Diagram interacting with other HTML elements on the page.</p>
       <p>As the mouse moves over the diagram, a formatted div displays information about the nearest Node.</p>
-      <p>The data displayed is from the <a href="http://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>, describing the variations in dimensions of three related flower species.</p>
+      <p>The data displayed is from the <a href="http://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>,
+      describing the variations in dimensions of three related flower species.</p>
     </div>
   </div>
   </div>

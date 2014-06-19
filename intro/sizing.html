@@ -1,0 +1,287 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Sizing of GraphObjects -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Sizing GraphObjects</h2>
+<p>
+The size of a <a>GraphObject</a> is determined by the values of the <a>GraphObject.desiredSize</a>,
+<a>GraphObject.minSize</a>, <a>GraphObject.maxSize</a> and <a>GraphObject.stretch</a> properties.
+The actual size of an object after its containing panel measures and arranges it is given by several
+read-only properties: <a>GraphObject.naturalBounds</a>, <a>GraphObject.measuredBounds</a>, and <a>GraphObject.actualBounds</a>.
+</p>
+
+<h4>DesiredSize, MinSize, and MaxSize</h4>
+<p>
+When the <a>GraphObject.desiredSize</a> property is set it normally gets that size.
+When the desiredSize property is not set but there is a <a>GraphObject.stretch</a> value,
+it will get the size of the available space.
+When desiredSize is not set and there is no stretch,
+an object prefers being its natural size,
+based on the type of object that it is and the other properties that it has.
+</p>
+<p>
+But the effective width and effective height, whether given by desiredSize or computed,
+are each constrained by the <a>GraphObject.maxSize</a> and by the <a>GraphObject.minSize</a>.
+The minimum size takes precedence over the maximum size in case of conflict.
+</p>
+<p>
+The size for a GraphObject in a Table <a>Panel</a> may also be constrained by the width
+of the column and the height of the row that the object is in.
+</p>
+
+<pre data-language="javascript" id="shapeSizes">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left },
+        $(go.RowColumnDefinition, { column: 0, width: 200 }),
+        $(go.RowColumnDefinition, { column: 1, width: 15 }),
+        $(go.Shape, "Rectangle",
+          { row: 0, column: 0, fill: "green",
+            width: 100, height: 20 }),
+        $(go.TextBlock, { row: 0, column: 2, text: "desiredSize: 100x20, no minSize, no maxSize" }),
+        $(go.Shape, "Rectangle",
+          { row: 1, column: 0, fill: "red",
+            width: 100, height: 20,
+            minSize: new go.Size(150, 10) }),
+        $(go.TextBlock, { row: 1, column: 2, text: "desired: 100x20, min: 150x10" }),
+        $(go.Shape, "Rectangle",
+          { row: 2, column: 0, fill: "yellow",
+            width: 100, height: 20,
+            maxSize: new go.Size(50, 300) }),
+        $(go.TextBlock, { row: 2, column: 2, text: "desired: 100x20, max: 50x300" }),
+        $(go.Shape, "Rectangle",
+          { row: 3, column: 0, fill: "red",
+            width: 100, height: 20,
+            minSize: new go.Size(150, 10), maxSize: new go.Size(50, 300) }),
+        $(go.TextBlock, { row: 3, column: 2, text: "desired: 100x20, min: 150x10, max: 50x300" })
+      )
+    ));
+</pre>
+<script>goCode("shapeSizes", 600, 120)</script>
+
+<h4>Measured and Actual Sizes</h4>
+<p>
+Every GraphObject also has a <a>GraphObject.measuredBounds</a>,
+which describes how big the object seems to be, and a <a>GraphObject.actualBounds</a>,
+which describes the position and size of an object.
+These read-only properties take into account any non-zero <a>GraphObject.angle</a> or non-unitary <a>GraphObject.scale</a>.
+These measurements are in the containing <a>Panel</a>'s coordinate system.
+</p>
+<pre data-language="javascript" id="sizedShapes">
+  function getSizeString(s) {
+    return s.width.toFixed(2) + "x" + s.height.toFixed(2);
+  }
+  var table =
+    $(go.Part, "Table",
+      $(go.Shape, { name: "A", row: 0, column: 1,
+                    figure: "Club", fill: "green", background: "lightgray", width: 40, height: 40,
+                    }),  // default angle is zero; default scale is one
+      $(go.Shape, { name: "B", row: 0, column: 2,
+                    figure: "Club", fill: "green", background: "lightgray", width: 40, height: 40,
+                    angle: 30 }),
+      $(go.Shape, { name: "C", row: 0, column: 3,
+                    figure: "Club", fill: "green", background: "lightgray", width: 40, height: 40,
+                    scale: 1.5 }),
+      $(go.Shape, { name: "D", row: 0, column: 4,
+                    figure: "Club", fill: "green", background: "lightgray", width: 40, height: 40,
+                    angle: 30, scale: 1.5 }),
+      $(go.TextBlock, { row: 1, column: 1, margin: 4 },
+        new go.Binding("text", "naturalBounds", getSizeString).ofObject("A")),
+      $(go.TextBlock, { row: 1, column: 2, margin: 4 },
+        new go.Binding("text", "naturalBounds", getSizeString).ofObject("B")),
+      $(go.TextBlock, { row: 1, column: 3, margin: 4 },
+        new go.Binding("text", "naturalBounds", getSizeString).ofObject("C")),
+      $(go.TextBlock, { row: 1, column: 4, margin: 4 },
+        new go.Binding("text", "naturalBounds", getSizeString).ofObject("D")),
+      $(go.TextBlock, { row: 2, column: 1, margin: 4 },
+        new go.Binding("text", "measuredBounds", getSizeString).ofObject("A")),
+      $(go.TextBlock, { row: 2, column: 2, margin: 4 },
+        new go.Binding("text", "measuredBounds", getSizeString).ofObject("B")),
+      $(go.TextBlock, { row: 2, column: 3, margin: 4 },
+        new go.Binding("text", "measuredBounds", getSizeString).ofObject("C")),
+      $(go.TextBlock, { row: 2, column: 4, margin: 4 },
+        new go.Binding("text", "measuredBounds", getSizeString).ofObject("D")),
+      $(go.TextBlock, { row: 3, column: 1, margin: 4 },
+        new go.Binding("text", "actualBounds", getSizeString).ofObject("A")),
+      $(go.TextBlock, { row: 3, column: 2, margin: 4 },
+        new go.Binding("text", "actualBounds", getSizeString).ofObject("B")),
+      $(go.TextBlock, { row: 3, column: 3, margin: 4 },
+        new go.Binding("text", "actualBounds", getSizeString).ofObject("C")),
+      $(go.TextBlock, { row: 3, column: 4, margin: 4 },
+        new go.Binding("text", "actualBounds", getSizeString).ofObject("D")),
+      $(go.TextBlock, "naturalBounds:", { row: 1, column: 0, alignment: go.Spot.Left }),
+      $(go.TextBlock, "measuredBounds:", { row: 2, column: 0, alignment: go.Spot.Left }),
+      $(go.TextBlock, "actualBounds:", { row: 3, column: 0, alignment: go.Spot.Left })
+    );
+  diagram.add(table);
+  setTimeout(function() {
+    table.data = {};  // cause bindings to be evaluated after Shapes are measured and arranged
+  }, 500);
+</pre>
+<script>goCode("sizedShapes", 600, 180)</script>
+<p>
+Note that the size of the regular 40x40 shape is 41x41.
+The additional size is due to the thickness of the pen (<a>Shape.strokeWidth</a>) used to outline the shape.
+Rotating or increasing the scale causes the 40x40 shape to actually take up significantly more space.
+</p>
+<p>
+To summarize: the <a>GraphObject.desiredSize</a> (a.k.a. <a>GraphObject.width</a> and <a>GraphObject.height</a>)
+and the <a>GraphObject.naturalBounds</a> are in the object's local coordinate system.
+The <a>GraphObject.minSize</a>, <a>GraphObject.maxSize</a>, <a>GraphObject.margin</a>, <a>GraphObject.measuredBounds</a>, and
+<a>GraphObject.actualBounds</a> are all in the containing <a>Panel</a>'s coordinate system, or in document
+coordinates if there is no such panel because it is a <a>Part</a>.
+</p>
+
+<h4>Stretching of GraphObjects</h4>
+<p>
+When you specify a <a>GraphObject.stretch</a> value other than <a>GraphObject.None</a>,
+the object will stretch or contract to fill the available space.
+However, the <a>GraphObject.maxSize</a> and <a>GraphObject.minSize</a> properties still limit the size.
+</p>
+<p>
+But setting the <a>GraphObject.desiredSize</a> (or equivalently, the <a>GraphObject.width</a> and/or <a>GraphObject.height</a>)
+will cause any stretch value to be ignored.
+</p>
+<p>
+In the following examples the left column is constrained to have a width of 200.
+</p>
+<pre data-language="javascript" id="stretchSizes">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left },
+        $(go.RowColumnDefinition, { column: 0, width: 200 }),
+        $(go.RowColumnDefinition, { column: 1, width: 15 }),
+        $(go.Shape, "Rectangle",
+          { row: 0, column: 0, fill: "green",
+            stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, { row: 0, column: 2, text: "stretch: Fill, no minSize, no maxSize" }),
+        $(go.Shape, "Rectangle",
+          { row: 1, column: 0, fill: "red",
+            stretch: go.GraphObject.Fill,
+            minSize: new go.Size(150, 10) }),
+        $(go.TextBlock, { row: 1, column: 2, text: "stretch: Fill, min: 150x10" }),
+        $(go.Shape, "Rectangle",
+          { row: 2, column: 0, fill: "yellow",
+            stretch: go.GraphObject.Fill,
+            maxSize: new go.Size(50, 300) }),
+        $(go.TextBlock, { row: 2, column: 2, text: "stretch: Fill, max: 50x300" }),
+        $(go.Shape, "Rectangle",
+          { row: 3, column: 0, fill: "red",
+            stretch: go.GraphObject.Fill,
+            minSize: new go.Size(150, 10), maxSize: new go.Size(50, 300) }),
+        $(go.TextBlock, { row: 3, column: 2, text: "stretch: Fill, min: 150x10, max: 50x300" }),
+        $(go.Shape, "Rectangle",
+          { row: 4, column: 0, fill: "red",
+            width: 100, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, { row: 4, column: 2, text: "desired width & stretch: ignore stretch" })
+      )
+    ));
+</pre>
+<script>goCode("stretchSizes", 600, 120)</script>
+<p>
+To summarize, if <a>GraphObject.desiredSize</a> is set, any <a>GraphObject.stretch</a> is ignored.
+If <a>GraphObject.maxSize</a> conflicts with that value, it takes precedence.
+And if <a>GraphObject.minSize</a> conflicts with those values, it takes precedence.
+The width values are constrained independently of the height values.
+</p>
+
+<h3>Stretch and Alignment</h3>
+<p>
+The size of a <a>GraphObject</a> in a <a>Panel</a> is determined by many factors.
+The <a>GraphObject.stretch</a> property specifies whether the width and/or height should take up all
+of the space given to it by the Panel.
+When the width and/or height is not stretched to fill the given space,
+the <a>GraphObject.alignment</a> property controls where the object is placed if it is smaller than available space.
+One may also stretch the width while aligning vertically, just as one may also
+stretch vertically while aligning along the X axis.
+</p>
+<p>
+The alignment value for a GraphObject, if not given by the value of <a>GraphObject.alignment</a>, may be inherited.
+If the object is in a Table Panel, the value may inherit from the RowColumnDefinitions of
+the row and of the column that the object is in.
+Finally the value may be inherited from the <a>Panel.defaultAlignment</a> property.
+</p>
+<p>
+If you specify a fill stretch (horizontal or vertical or both) and an alignment, the alignment will be ignored.
+</p>
+
+<h4>Alignment of Shapes</h4>
+
+<pre data-language="javascript" id="shapeAlignment">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left },
+        $(go.RowColumnDefinition, { column: 0, width: 200 }),
+        $(go.RowColumnDefinition, { column: 1, width: 15 }),
+        $(go.Shape, "Rectangle",
+          { row: 0, column: 0, fill: "lightblue",
+            width: 100, height: 20, alignment: go.Spot.Left }),
+        $(go.TextBlock, { row: 0, column: 2, text: "alignment: Left" }),
+        $(go.Shape, "Rectangle",
+          { row: 1, column: 0, fill: "lightblue",
+            width: 100, height: 20, alignment: go.Spot.Center }),
+        $(go.TextBlock, { row: 1, column: 2, text: "alignment: Center" }),
+        $(go.Shape, "Rectangle",
+          { row: 2, column: 0, fill: "lightblue",
+            width: 100, height: 20, alignment: go.Spot.Right }),
+        $(go.TextBlock, { row: 2, column: 2, text: "alignment: Right" }),
+        $(go.Shape, "Rectangle",
+          { row: 3, column: 0, fill: "yellow",
+            height: 20, stretch: go.GraphObject.Horizontal }),
+        $(go.TextBlock, { row: 3, column: 2, text: "stretch: Horizontal" }),
+        $(go.Shape, "Rectangle",
+          { row: 4, column: 0, fill: "yellow",
+            height: 20, stretch: go.GraphObject.Horizontal, alignment: go.Spot.Right }),
+        $(go.TextBlock, { row: 4, column: 2, text: "stretch: Horizontal, ignore alignment" })
+      )
+    ));
+</pre>
+<script>goCode("shapeAlignment", 600, 120)</script>
+
+<p>
+When the element is larger than the available space, the <a>GraphObject.alignment</a>
+property still controls where the element is positioned.
+However the element will be clipped to fit.
+</p>
+<p>
+To make things clearer in the following examples we have made the shape stroke thicker
+and added a margin to separate the shapes.
+</p>
+<pre data-language="javascript" id="bigShapeAlignment">
+  diagram.add(
+    $(go.Part,
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Left },
+        $(go.RowColumnDefinition, { column: 0, width: 200 }),
+        $(go.RowColumnDefinition, { column: 1, width: 15 }),
+        $(go.Shape, "Rectangle",
+          { row: 0, column: 0, fill: "lightblue", strokeWidth: 2,
+            width: 300, height: 20, margin: 2, alignment: go.Spot.Left }),
+        $(go.TextBlock, { row: 0, column: 2, text: "big obj alignment: Left" }),
+        $(go.Shape, "Rectangle",
+          { row: 1, column: 0, fill: "lightblue", strokeWidth: 2,
+            width: 300, height: 20, margin: 2, alignment: go.Spot.Center }),
+        $(go.TextBlock, { row: 1, column: 2, text: "big obj alignment: Center" }),
+        $(go.Shape, "Rectangle",
+          { row: 2, column: 0, fill: "lightblue", strokeWidth: 2,
+            width: 300, height: 20, margin: 2, alignment: go.Spot.Right }),
+        $(go.TextBlock, { row: 2, column: 2, text: "big obj alignment: Right" })
+      )
+    ));
+</pre>
+<script>goCode("bigShapeAlignment", 600, 100)</script>
+
+</div>
+</body>
+</html>

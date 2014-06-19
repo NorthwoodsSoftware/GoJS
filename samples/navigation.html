@@ -3,40 +3,41 @@
 <head>
   <title>Navigation of Graphs</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
-    /* sets up the diagram
-    makes updateHighlights called when selection changes
-    disables multiple part selection
-    shapes in templates are named so they can be accessed for highlighting */
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagram",  // Diagram refers to its DIV HTML element by id
-          { initialContentAlignment: go.Spot.Center,
-            maxSelectionCount: 1 }); // no more than 1 element can be selected at a time.
+          {
+            initialContentAlignment: go.Spot.Center,
+            maxSelectionCount: 1 // no more than 1 element can be selected at a time
+          });
 
       // define the node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           new go.Binding("location", "loc"),
+          { locationSpot: go.Spot.Center },
           $(go.Shape, "Rectangle",
-            { name: "OBJSHAPE",
+            {
+              name: "OBJSHAPE",
               fill: "white",
               desiredSize: new go.Size(30, 30)
             }),
           $(go.TextBlock,
             { margin: 4 },
             new go.Binding("text", "key")),
-          { toolTip:  //  define a tooltip for each node that displays its information
+          {
+            toolTip:  //  define a tooltip for each node that displays its information
               $(go.Adornment, "Auto",
                 $(go.Shape, { fill: "#EFEFCC" }),
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" ,getInfo))
+                  new go.Binding("text",  "" , getInfo))
               )
           }
         );
@@ -44,7 +45,8 @@
       // define the link template
       myDiagram.linkTemplate =
         $(go.Link,
-          { selectionAdornmentTemplate:
+          {
+            selectionAdornmentTemplate:
               $(go.Adornment,
                 $(go.Shape,
                   { isPanelMain: true, stroke: "dodgerblue", strokeWidth: 3 }),
@@ -59,11 +61,12 @@
             { name: "OBJSHAPE", isPanelMain: true }),
           $(go.Shape,  //  the arrowhead
             { name: "ARWSHAPE", toArrow: "Standard" }),
-          { toolTip:  //  define a tooltip for each link that displays its information
+          {
+            toolTip:  //  define a tooltip for each link that displays its information
               $(go.Adornment, "Auto",
                 $(go.Shape, { fill: "#EFEFCC" }),
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" ,getInfo))
+                  new go.Binding("text",  "" , getInfo))
               )
           }
         );
@@ -71,7 +74,8 @@
       // define the group template
       myDiagram.groupTemplate =
         $(go.Group, "Spot",
-          { selectionAdornmentTemplate: // adornment when a group is selected
+          {
+            selectionAdornmentTemplate: // adornment when a group is selected
               $(go.Adornment, "Auto",
                 $(go.Shape, "Rectangle",
                   { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
@@ -81,24 +85,29 @@
           },
           $(go.Panel, "Auto",
             $(go.Shape, "Rectangle",
-              { name: "OBJSHAPE",
+              {
+                name: "OBJSHAPE",
                 parameter1: 14,
-                fill: "rgba(255,0,0,0.10)" },
-                new go.Binding("desiredSize", "ds")),
+                fill: "rgba(255,0,0,0.10)"
+              },
+              new go.Binding("desiredSize", "ds")),
             $(go.Placeholder,
               { padding: 16 })
           ),
           $(go.TextBlock,
-            { name: "GROUPTEXT",
+            {
+              name: "GROUPTEXT",
               alignment: go.Spot.TopLeft,
               alignmentFocus: new go.Spot(0,0,4,4),
-              font: "Bold 10pt Sans-Serif" },
+              font: "Bold 10pt Sans-Serif"
+            },
             new go.Binding("text", "key")),
-          { toolTip:  //  define a tooltip for each group that displays its information
+          {
+            toolTip:  //  define a tooltip for each group that displays its information
               $(go.Adornment, "Auto",
                 $(go.Shape, { fill: "#EFEFCC" }),
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" ,getInfo))
+                  new go.Binding("text",  "" , getInfo))
               )
           }
         );
@@ -133,20 +142,20 @@
         { from: "F", to: "G" }
       ]);
 
-      myDiagram.addDiagramListener("ChangedSelection", function() { updateHighlights(getRadioButton()); } ); // whenever selection changes, run updateHighlights
+      // whenever selection changes, run updateHighlights
+      myDiagram.addDiagramListener("ChangedSelection",
+                                   function() { updateHighlights(getRadioButton()); } );
     }
 
-    /* update function highlights all graph objects that should be highlighted
-    called whenever a radio button is checked or selection changes
-    parameter e is the checked radio button */
-    function updateHighlights(e) { // currently will only happen when a radio button is clicked
-      // set highlight to 0 for everything before updating
-      allNodes = myDiagram.nodes;
-      allLinks = myDiagram.links;
-      while (allNodes.next()) { allNodes.value.highlight = 0; }
-      while (allLinks.next()) { allLinks.value.highlight = 0; }
+    // This highlights all graph objects that should be highlighted
+    // whenever a radio button is checked or selection changes.
+    // Parameter e is the checked radio button.
+    function updateHighlights(e) {
+      // Set highlight to 0 for everything before updating
+      myDiagram.nodes.each(function(node) { node.highlight = 0; });
+      myDiagram.links.each(function(link) { link.highlight = 0; });
 
-      // Get the selected graphObject and run the appropriate method
+      // Get the selected GraphObject and run the appropriate method
       var sel = myDiagram.selection.first();
       if (sel !== null) {
         switch (e.id) {
@@ -166,180 +175,197 @@
         }
       }
 
-      // iterators containing all nodes and links in the diagram
-      allNodes2 = myDiagram.nodes;
-      allLinks2 = myDiagram.links;
-
-      // give everything the appropriate highlighting ( color and width of stroke )
+      // Give everything the appropriate highlighting ( color and width of stroke )
       // nodes, including groups
-      while (allNodes2.next()) {
-        var shp = allNodes2.value.findObject("OBJSHAPE");
-        var grp = allNodes2.value.findObject("GROUPTEXT");
-        var hl = allNodes2.value.highlight;
+      myDiagram.nodes.each(function(node) {
+        var shp = node.findObject("OBJSHAPE");
+        var grp = node.findObject("GROUPTEXT");
+        var hl = node.highlight;
         highlight(shp, grp, hl);
-      }
+      });
       // links
-      while (allLinks2.next()) {
-        var hl = allLinks2.value.highlight;
-        var shp = allLinks2.value.findObject("OBJSHAPE");
-        var arw = allLinks2.value.findObject("ARWSHAPE");
+      myDiagram.links.each(function(link) {
+        var hl = link.highlight;
+        var shp = link.findObject("OBJSHAPE");
+        var arw = link.findObject("ARWSHAPE");
         highlight(shp, arw, hl);
-      }
+      });
 }
 
-    /*functions for highlighting, called by updateHighlights. x in each case is the selected object or the object being treated as such
-    most have return functions for use by each other or for tooltips */
+    // Functions for highlighting, called by updateHighlights.
+    // x in each case is the selected object or the object being treated as such.
+    // Some have return values for use by each other or for tooltips.
 
     // if the link connects to this node, highlight it
     function linksTo(x, i) {
-        if (x instanceof go.Node) {
-          var links = x.findLinksInto();
-          while (links.next()) links.value.highlight = i; }
+      if (x instanceof go.Node) {
+        x.findLinksInto().each(function(link) { link.highlight = i; });
+      }
     }
 
     // if the link comes from this node, highlight it
     function linksFrom(x, i) {
-        if (x instanceof go.Node) {
-          var links = x.findLinksOutOf();
-          while (links.next()) links.value.highlight = i; }
+      if (x instanceof go.Node) {
+        x.findLinksOutOf().each(function(link) { link.highlight = i; });
+      }
     }
 
     // highlight all links connected to this node
     function linksAll(x, i) {
-        if (x instanceof go.Node) {
-          var links = x.linksConnected;
-          while (links.next()) links.value.highlight = i; }
+      if (x instanceof go.Node) {
+        x.linksConnected.each(function(link) { link.highlight = i; });
+      }
     }
 
-    // if selected object is a link, highlight its fromNode, otherwise, highlight the fromNode of each link coming into the selected node
-    // return a List of the keys of the nodes
+    // If selected object is a link, highlight its fromNode.
+    // Otherwise highlight the fromNode of each link coming into the selected node.
+    // Return a List of the keys of the nodes.
     function nodesTo(x, i) {
       var nodesToList = new go.List("string");
-      if (x instanceof go.Link) { x.fromNode.highlight = i; nodesToList.add(x.data.from); }
-      else {
-        var nodes = x.findNodesInto();
-        while (nodes.next()) {
-          nodes.value.highlight = i;
-          nodesToList.add(nodes.value.data.key);
-        }
+      if (x instanceof go.Link) {
+        x.fromNode.highlight = i;
+        nodesToList.add(x.data.from);
+      } else {
+        x.findNodesInto().each(function(node) {
+          node.highlight = i;
+          nodesToList.add(node.data.key);
+        });
       }
       return nodesToList;
     }
 
-    // same as nodesTo, but from instead of to
+    // same as nodesTo, but 'from' instead of 'to'
     function nodesFrom(x, i) {
-        var nodesFromList = new go.List("string");
-        if (x instanceof go.Link) { x.toNode.highlight = i; nodesFromList.add(x.data.to); }
-        else {
-          var nodes = x.findNodesOutOf();
-          while (nodes.next()) {
-            nodes.value.highlight = i;
-            nodesFromList.add(nodes.value.data.key);
-          }
-        }
-        return nodesFromList;
+      var nodesFromList = new go.List("string");
+      if (x instanceof go.Link) {
+        x.toNode.highlight = i;
+        nodesFromList.add(x.data.to);
+      } else {
+        x.findNodesOutOf().each(function(node) {
+          node.highlight = i;
+          nodesFromList.add(node.data.key);
+        });
+      }
+      return nodesFromList;
     }
 
-    // if x is a link, highlight its toNode, or if it is a node, the node(s) it links to, and then call nodesReach on the highlighted node(s), with the next color
-    // do not highlight any node that has already been highlighted with a color indicating a closer relationship to the original node
+    // If x is a link, highlight its toNode, or if it is a node, the node(s) it links to,
+    // and then call nodesReach on the highlighted node(s), with the next color.
+    // Do not highlight any node that has already been highlit with a color
+    // indicating a closer relationship to the original node.
     function nodesReach(x, i) {
-          if (x instanceof go.Link) { x.toNode.highlight = i; nodesReach(x.toNode, i+1); }
-          else {
-            var nodes = x.findNodesOutOf();
-            while (nodes.next()) {
-              if (nodes.value.highlight === 0 || nodes.value.highlight > i) {
-                nodes.value.highlight = i; nodesReach(nodes.value, i+1);
-              }
-            }
+      if (x instanceof go.Link) {
+        x.toNode.highlight = i;
+        nodesReach(x.toNode, i+1);
+      } else {
+        x.findNodesOutOf().each(function(node) {
+          if (node.highlight === 0 || node.highlight > i) {
+            node.highlight = i;
+            nodesReach(node, i+1);
           }
+        });
+      }
     }
 
     // highlight all nodes linked to this one
     function nodesConnect(x, i) {
-      if (x instanceof go.Node) {
-        var nodes = x.findNodesConnected();
-          while (nodes.next()) nodes.value.highlight = i; }
+      if (x instanceof go.Link) {
+        x.toNode.highlight = i;
+        x.fromNode.highlight = i;
+      } else {
+        x.findNodesConnected().each(function(node) { node.highlight = i; });
+      }
     }
 
     // highlights the group containing this object, specific method for links
     // returns the containing group of x
     function containing(x, i) {
-          var it = myDiagram.nodes;
-          if (x instanceof go.Link) { return containingGroupForLinks(x, i); }
-          else {
-            if (x.containingGroup !== null) x.containingGroup.highlight = i;
-            return x.containingGroup;
-          }
+      if (x instanceof go.Link) return containingGroupForLinks(x, i);
+      if (x.containingGroup !== null) x.containingGroup.highlight = i;
+      return x.containingGroup;
     }
 
-    // var container is the group that contains this node and will be the parameter x for the next call of this function
-    // function containing(x,i) highlights each group the appropriate color
+    // container is the group that contains this node and
+    // will be the parameter x for the next call of this function.
+    // Calling containing(x,i) highlights each group the appropriate color
     function containingAll(x, i) {
-          var container;
-          if (x instanceof go.Node) { container = x.containingGroup; containing(x, i); }
-          else { container = containingGroupForLinks(x, i); }
-          if (container !== null) { containingAll(container, i+1); }
+      var container;
+      if (x instanceof go.Node) {
+        container = x.containingGroup;
+        containing(x, i);
+      } else {
+        container = containingGroupForLinks(x, i);
+      }
+      if (container !== null) containingAll(container, i+1);
     }
 
     // if the Node"s containingGroup is x, highlight it
     function childNodes(x, i) {
-          var childLst = new go.List("string");
-          if (x instanceof go.Group) {
-          var it = myDiagram.nodes;
-          while (it.next()) {
-            if (it.key.containingGroup !== null && it.key.containingGroup === x) {
-              it.key.highlight = i; childLst.add(it.key.data.key); }
-            }
+      var childLst = new go.List("string");
+      if (x instanceof go.Group) {
+        myDiagram.nodes.each(function(node) {
+          if (node.containingGroup !== null && node.containingGroup === x) {
+            node.highlight = i;
+            childLst.add(node.data.key);
           }
+        });
+      }
       return childLst;
     }
 
     // same as childNodes, then run allMemberNodes for each child Group with the next color
     function allMemberNodes(x, i) {
-        if (x instanceof go.Group) {
-          var it = myDiagram.nodes;
-          while (it.next()) {
-            if (it.key.containingGroup !== null && it.key.containingGroup === x) {
-              it.key.highlight = i; allMemberNodes(it.key, i+1);
-          }}}
+      if (x instanceof go.Group) {
+        myDiagram.nodes.each(function(node) {
+          if (node.containingGroup !== null && node.containingGroup === x) {
+            node.highlight = i;
+            allMemberNodes(node, i+1);
+          }
+        });
+      }
     }
 
     // if the link"s containing Group is x, highlight it
     function childLinks(x, i) {
-        var childLst = new go.List(go.Link);
-        var it = myDiagram.links;
-        while (it.next()) {
-          if (containingGroupForLinks(it.value, 0) === x) {
-            it.value.highlight = i; childLst.add(it.value);
-          } }
+      var childLst = new go.List(go.Link);
+      myDiagram.links.each(function(link) {
+        if (containingGroupForLinks(link, 0) === x) {
+          link.highlight = i;
+          childLst.add(link);
+        }
+      });
       return childLst;
     }
 
     // same as childLinks, then run allMemberLinks for each child Group with the next color
     function allMemberLinks(x, i) {
-        childLinks(x, i);
-        var it = myDiagram.nodes;
-        while (it.next()) {
-          if (it.value instanceof go.Group && it.value.containingGroup === x) {
-            allMemberLinks(it.value, i+1);
-          } }
+      childLinks(x, i);
+      myDiagram.nodes.each(function(node) {
+        if (node instanceof go.Group && node.containingGroup === x) {
+          allMemberLinks(node, i+1);
+        }
+      });
     }
 
-    //   return the Group containing this Link and highlight it according to i
-    // the containing Group is the lowest level Group containing (or being) both ends of the Link
+    // Return the Group containing this Link and highlight it according to i.
+    // The containing Group is the lowest level Group containing both ends of the Link.
     function containingGroupForLinks(x, i) {
-          if (x.fromNode.containingGroup === x.toNode) {
-            x.toNode.highlight = i; return x.toNode;
-          }
-          else if (x.toNode.containingGroup === x.fromNode) {
-            x.fromNode.highlight = i; return x.fromNode;
-          }
-          var frG = x.fromNode.containingGroup;
-          while (frG !== null) { var toG = x.toNode.containingGroup;
-          while (toG !== null) { if (frG === toG) { toG.highlight = i; return toG; } toG = toG.containingGroup; }
-          frG = frG.containingGroup; } return null;
+      if (x.fromNode.containingGroup === x.toNode) {
+        x.toNode.highlight = i; return x.toNode;
+      } else if (x.toNode.containingGroup === x.fromNode) {
+        x.fromNode.highlight = i; return x.fromNode;
+      }
+      var frG = x.fromNode.containingGroup;
+      while (frG !== null) {
+        var toG = x.toNode.containingGroup;
+        while (toG !== null) {
+          if (frG === toG) { toG.highlight = i; return toG; }
+          toG = toG.containingGroup;
+        }
+        frG = frG.containingGroup;
+      }
+      return null;
     }
-
 
     // perform the actual highlighting
     function highlight(shp, obj2, hl) {
@@ -371,31 +397,28 @@
       var x = obj.panel.adornedPart; // the object that the mouse is over
       var text = ""; // what will be displayed
       if (x instanceof go.Node) {
-        if (x instanceof go.Group) text += "Group: ";
-        else text += "Node: ";
+        if (x instanceof go.Group) text += "Group: "; else text += "Node: ";
         text += x.data.key;
         var toLst = nodesTo(x, 0); // display names of nodes going into this node
         if (toLst.count > 0) {
           toLst.sort(function(a, b) {return a<b ? -1 : 1});
-          var toIt = toLst.iterator;
           text += "\nNodes into: ";
-          while (toIt.next()) {
-            if (toIt.value !== text.substring(text.length-3, text.length-2)) {
-              text+= toIt.value + ", ";
+          toLst.each(function(key) {
+            if (key !== text.substring(text.length-3, text.length-2)) {
+              text+= key + ", ";
             }
-          }
+          });
           text = text.substring(0, text.length-2);
         }
         var frLst = nodesFrom(x, 0); // display names of nodes coming out of this node
         if (frLst.count > 0) {
           frLst.sort(function(a, b) {return a<b ? -1 : 1});
-          var frIt = frLst.iterator;
           text += "\nNodes out of: ";
-          while (frIt.next()) {
-            if (frIt.value !== text.substring(text.length-3, text.length-2)) {
-              text+= frIt.value + ", ";
+          frLst.each(function(key) {
+            if (key !== text.substring(text.length-3, text.length-2)) {
+              text+= key + ", ";
             }
-          }
+          });
           text = text.substring(0, text.length-2);
         }
         var grpC = containing(x, 0); // if the node is in a group, display its name
@@ -405,288 +428,91 @@
           text += "\nMember nodes: ";
           var children = childNodes(x, 0);
           children.sort(function(a, b) {return a<b ? -1 : 1});
-          var chIt = children.iterator;
-          while (chIt.next()) {
-            if (chIt.value !== text.substring(text.length-3, text.length-2)) {
-              text += chIt.value + ", ";
+          children.each(function(key) {
+            if (key !== text.substring(text.length-3, text.length-2)) {
+              text += key + ", ";
             }
-          }
+          });
           text = text.substring(0, text.length-2);
 
           var linkChildren = childLinks(x, 0);
           if (linkChildren.count > 0) {
             text += "\nMember links: ";
             var linkStrings = new go.List("string");
-            var chLIt = linkChildren.iterator;
-            while (chLIt.next()) linkStrings.add(chLIt.value.data.from + " --> " + chLIt.value.data.to);
+            linkChildren.each(function(link) {
+              linkStrings.add(link.data.from + " --> " + link.data.to);
+            });
             linkStrings.sort(function(a, b) {return a<b ? -1 : 1});
-            var it = linkStrings.iterator;
-            while (it.next()) {
-              text += it.value + ", ";
-            }
+            linkStrings.each(function(str) {
+              text += str + ", ";
+            });
             text = text.substring(0, text.length-2);
           }
         }
-      }
-      else if (x instanceof go.Link) {
+      } else if (x instanceof go.Link) {
           // if it"s a link, display its to and from nodes
         text += "Link: " + x.data.from + " --> " + x.data.to +
           "\nNode To: " + x.data.to + "\nNode From: " + x.data.from;
         var grp = containingGroupForLinks(x, 0); // and containing group, if it has one
         if (grp !== null) {
           text += "\nContaining SubGraph: " + grp.data.key;
+        }
       }
-
-    }
-    return text;
-    }
-
-    // scroll the description to the part matching the button that was pressed
-    function scrollInfoTo(button) {
-      var box = document.getElementById("description");
-      var off = 0;
-      switch (button.id) {
-        case "None":              off = document.getElementById("d1").offsetTop; break;
-        case "Links in":          off = document.getElementById("d2").offsetTop; break;
-        case "Links out":         off = document.getElementById("d3").offsetTop; break;
-        case "Links all":         off = document.getElementById("d4").offsetTop; break;
-        case "Nodes in":          off = document.getElementById("d5").offsetTop; break;
-        case "Nodes out":         off = document.getElementById("d6").offsetTop; break;
-        case "Nodes connect":     off = document.getElementById("d7").offsetTop; break;
-        case "Nodes reach":       off = document.getElementById("d8").offsetTop; break;
-        case "Group":             off = document.getElementById("d9").offsetTop; break;
-        case "Groups all":        off = document.getElementById("d10").offsetTop; break;
-        case "Nodes member":      off = document.getElementById("d11").offsetTop; break;
-        case "Nodes members all": off = document.getElementById("d12").offsetTop; break;
-        case "Links member":      off = document.getElementById("d13").offsetTop; break;
-        case "Links members all": off = document.getElementById("d14").offsetTop; break;
-      }
-      box.scrollTop = off - box.offsetTop;
+      return text;
     }
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
   <div id="displays" style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; width: 80%;">
+    <span style="display: inline-block; vertical-align: top; width: 70%;">
       <div id="myDiagram" style="border: solid 1px black; height: 560px;"></div>
     </span>
     <span style="display: inline-block; vertical-align: top; width:200px;">
       <div id="controls" style="border: solid 1px black; height: 560px;">
         <div id="buttons" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Related Parts Highlighted</b> <br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="None" checked="checked">Unhighlight All</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Links in">Links Into</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Links out">Links Out Of</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Links all">Links Connected</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Nodes in">Nodes Into</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Nodes out">Nodes Out Of</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Nodes connect">Nodes Connected</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Nodes reach">Nodes Reachable</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Group">Containing Group (Parent)</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Groups all">Containing Groups (All)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Nodes member">Member Nodes (Children)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Nodes members all">Member Nodes (All)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Links member">Member Links (Children)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this), scrollInfoTo(this)" id="Links members all">Member Links (All)</label><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="None" checked="checked">Unhighlight All</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links in">Links Into</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links out">Links Out Of</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links all">Links Connected</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes in">Nodes Into</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes out">Nodes Out Of</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes connect">Nodes Connected</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes reach">Nodes Reachable</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Group">Containing Group (Parent)</input><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Groups all">Containing Groups (All)</label><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes member">Member Nodes (Children)</label><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes members all">Member Nodes (All)</label><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links member">Member Links (Children)</label><br />
+          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links members all">Member Links (All)</label><br />
         </div>
         <div id="colorKey" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Relationship Colors</b>
           <table>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: black;"/> </td><td>Not related            </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: blue;"/>  </td><td>Directly related       </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: green;"/> </td><td>2 relationships apart  </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: orange;"/></td><td>3 relationships apart  </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: red;"/>   </td><td>4 relationships apart  </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: purple;"/></td><td>Very indirectly related</td></tr>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: black;"/> </td>
+                <td>Not related            </td></tr>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: blue;"/>  </td>
+                <td>Directly related       </td></tr>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: green;"/> </td>
+                <td>2 relationships apart  </td></tr>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: orange;"/></td>
+                <td>3 relationships apart  </td></tr>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: red;"/>   </td>
+                <td>4 relationships apart  </td></tr>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: purple;"/></td>
+                <td>Very indirectly related</td></tr>
           </table>
         </div>
       </div>
     </span>
   </div>
-  <div id="description" style="border:1px solid black; width: 100%; height: 250px; overflow:scroll;">
-    <p id="d1">This sample displays relationships between different parts of a diagram.</p>
+  <div>
+    <p>This sample displays relationships between different parts of a diagram.</p>
     <p>
       Select a node or link and one of the radio buttons to highlight parts with a certain relationship to the one selected.
       The highlighting color depends on the "distance" between the parts.
-      <br />
-      In the code, the variable <code>x</code> refers to the selected part, and the variable <code>i</code> is the "logical distance", initially 1, when the functions are called for highlighting.
     </p>
-    <b id="d2">Links Into</b>
-    <p>These are all the Links leading into the selected Node.</p>
-    <pre>
-  if (x instanceof go.Node) {
-    var it = x.findLinksInto();
-    while (it.next()) it.value.highlight = i;
-  }
-    </pre>
-    <b id="d3">Links Out Of</b>
-    <p>These are all the Links leading out of the selected Node.</p>
-    <pre>
-  if (x instanceof go.Node) {
-    var it = x.findLinksOutOf();
-    while (it.next()) it.value.highlight = i;
-  }
-    </pre>
-    <b id="d4">Links Connected</b>
-    <p>These are all the links leading into or out of the selected Node.</p>
-    <pre>
-  if (x instanceof go.Node) {
-    var it = x.linksConnected;
-    while (it.next()) it.value.highlight = i;
-  }
-    </pre>
-    <b id="d5">Nodes Into</b>
-    <p>These are all the Nodes with links leading into the selected Node or the Node that the selected Link leads out of.</p>
-    <pre>
-  if (x instanceof go.Link) {
-    x.fromNode.highlight = i;
-  } else {
-    var it = x.findNodesInto();
-    while (it.next()) {
-      it.value.highlight = i;
-    }
-  }
-    </pre>
-    <b id="d6">Nodes Out Of</b>
-    <p>These are all the Nodes that the selected Node"s Links lead into, or the Node that the selected Link leads into.</p>
-    <pre>
-  if (x instanceof go.Link) {
-    x.toNode.highlight = i;
-  } else {
-    var it = x.findNodesOutOf();
-    while (it.next()) {
-      it.value.highlight = i;
-    }
-  }
-    </pre>
-    <b id="d7">Nodes Connected</b>
-    <p>These are the Nodes linked to the selected Node.</p>
-    <pre>
-  if (x instanceof go.Link) {
-    x.fromNode.highlight = i;
-    x.toNode.highlight = i;
-  } else {
-    var it = x.findNodesConnected();
-    while (it.next()) it.value.highlight = i;
-  }
-    </pre>
-    <b id="d8">Nodes Reachable</b>
-    <p>These are all the Nodes that can be reached from the selected part by following Links.  The colors indicate the number of Links apart from the selected part each Node is.</p>
-    <pre>
-  if (x instanceof go.Link) {
-    x.toNode.highlight = i;
-    nodesReach(x.toNode, i+1);
-  } else {
-    var it = x.findNodesOutOf();
-    while (it.next()) {
-      if (it.value.highlight === 0 || it.value.highlight > i) {
-        it.value.highlight = i;
-        nodesReach(it.value, i+1);
-      }
-    }
-  }
-    </pre>
-    <b id="d9">Containing Group (Parent)</b>
-    <p>This is the group that directly contains the selected part (see method containingGroupForLinks below):</p>
-    <pre>
-  if (x instanceof go.Link) {
-    return containingGroupForLinks(x, i);
-  } else {
-    if (x.containingGroup !== null) x.containingGroup.highlight = i;
-    return x.containingGroup;
-  }
-    </pre>
-    <b id="d10">Containing Groups (All)</b>
-    <p>These are all groups that contain the selected part.  The color shows how closely it contains the selected part.</p>
-    <pre>
-  var container;
-  if (x instanceof go.Node) {
-    container = x.containingGroup;
-    containing(x, i);
-  } else {
-    container = containingGroupForLinks(x, i);
-  }
-  if (container !== null) containingAll(container, i+1);
-    </pre>
-    <b id="d11">Member Nodes (Children)</b>
-    <p>These are the Nodes directly contained by the selected Group.</p>
-    <pre>
-  var childLst = new go.List("string");
-  if (x instanceof go.Group) {
-    var it = myDiagram.nodes;
-    while (it.next()) {
-      if (it.key.containingGroup !== null && it.key.containingGroup === x) {
-        it.key.highlight = i;
-        childLst.add(it.key.data.key);
-      }
-    }
-  }
-  return childLst;
-    </pre>
-    <b id="d12">Member Nodes (All)</b>
-    <p>These are all the Nodes contained within the selected Group.  The colors indicate how directly they are contained.</p>
-    <pre>
-  if (x instanceof go.Group) {
-    var it = myDiagram.nodes;
-    while (it.next()) {
-      if (it.key.containingGroup !== null && it.key.containingGroup === x) {
-        it.key.highlight = i;
-        allMemberNodes(it.key, i+1);
-      }
-    }
-  }
-    </pre>
-    <b id="d13">Member Links (Children)</b>
-    <p>These are all the Links contained directly by the selected Group.</p>
-    <pre>
-  var childLst = new go.List(go.Link);
-  var it = myDiagram.links;
-  while (it.next()) {
-    if (containingGroupForLinks(it.value, 0) === x) {
-      it.value.highlight = i;
-      childLst.add(it.value);
-    }
-  }
-  return childLst;
-    </pre>
-    <b id="d14">Member Links (All)</b>
-    <p>These are all the Links contained by the selected Group.  The colors indicate how directly they are contained.</p>
-    <pre>
-  childLinks(x, i);
-  var it = myDiagram.nodes;
-  while (it.next()) {
-    if (it.value instanceof go.Group && it.value.containingGroup === x) {
-      allMemberLinks(it.value, i+1);
-    }
-  }
-    </pre>
-    <p id="d15">The following method is used in several of those above:</p>
-    <pre>
-  function containingGroupForLinks(x, i) {
-    if (x.fromNode.containingGroup === x.toNode) {
-        x.toNode.highlight = i;
-        return x.toNode;
-      } else if (x.toNode.containingGroup === x.fromNode) {
-        x.fromNode.highlight = i;
-        return x.fromNode;
-      }
-      var frG = x.fromNode.containingGroup;
-      while (frG !== null) {
-        var toG = x.toNode.containingGroup;
-        while (toG !== null) {
-          if (frG === toG) {
-            toG.highlight = i;
-            return toG;
-          }
-          toG = toG.containingGroup;
-        }
-        frG = frG.containingGroup;
-      }
-      return null;
-    }
-  }
-    </pre>
   </div>
 </div>
 </body>

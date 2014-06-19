@@ -3,9 +3,9 @@
 <head>
 <title>HTML DOM Tree</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css" />
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   var names = {}; // hash to keep track of what names have been used
 
@@ -15,12 +15,16 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",
-        { initialAutoScale: go.Diagram.UniformToFill });
+        {
+          initialAutoScale: go.Diagram.UniformToFill,
+          // define the layout for the diagram
+          layout: $(go.TreeLayout, { nodeSpacing: 5, layerSpacing: 30 })
+        });
 
     // Define a simple node template consisting of text followed by an expand/collapse button
     myDiagram.nodeTemplate =
       $(go.Node, "Horizontal",
-        { selectionChanged: nodeSelectionChanged },
+        { selectionChanged: nodeSelectionChanged },  // this event handler is defined below
         $(go.Panel, "Auto",
           $(go.Shape, { fill: "darkslategray", stroke: null }),
           $(go.TextBlock,
@@ -37,10 +41,6 @@
         { selectable: false },
         $(go.Shape));  // the link shape
 
-    // Define the layout for the diagram
-    myDiagram.layout =
-      $(go.TreeLayout,
-        { nodeSpacing: 5, layerSpacing: 30 });
 
     var nodeDataArray = [];
 

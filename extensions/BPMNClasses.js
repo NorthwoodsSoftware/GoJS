@@ -55,6 +55,9 @@ PoolLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from
 
 function BPMNLinkingTool() {
   go.LinkingTool.call(this);
+  // don't allow user to create link starting on the To node
+  this.direction = go.LinkingTool.ForwardsOnly;
+  this.temporaryLink.routing = go.Link.Orthogonal;
 }
 go.Diagram.inherit(BPMNLinkingTool, go.LinkingTool);
 
@@ -62,8 +65,8 @@ BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, topo
   var lsave = null;
   // maybe temporarily change the link data that is copied to create the new link
   if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") {
-    lsave = myDiagram.toolManager.linkingTool.archetypeLinkData;
-    myDiagram.toolManager.linkingTool.archetypeLinkData = { category: "msg" };
+    lsave = this.archetypeLinkData;
+    this.archetypeLinkData = { category: "msg" };
   }
 
   // create the link in the standard manner by calling the base method
@@ -76,6 +79,6 @@ BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, topo
   }
 
   // maybe restore the original archetype link data
-  if (lsave !== null) myDiagram.toolManager.linkingTool.archetypeLinkData = lsave;
+  if (lsave !== null) this.archetypeLinkData = lsave;
   return newlink;
 };

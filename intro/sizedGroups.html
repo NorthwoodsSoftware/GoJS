@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Sized Groups -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Groups Without Placeholders</h2>
+<p>
+Although it is very common to use a <a>Placeholder</a> inside a <a>Group</a>, it is not required.
+Using a <a>Shape</a>, for example, instead of a <a>Placeholder</a> permits features such as
+having a group maintain a fixed size, independent of the sizes and positions of its member nodes,
+and even when there are no member nodes at all.
+It also may allow the user to resize the "area" if that functionality is desired.
+</p>
+
+<h3>Fixed size Groups</h3>
+<p>
+Not using a <a>Placeholder</a> in a <a>Group</a> means that you have to maintain the size and position of the group,
+because it cannot depend on the size and position of its member nodes.
+In these examples we will explicitly set and/or bind the <a>Part.location</a> of the nodes, including the groups.
+The <a>Shape</a> that replaces the Placeholder in the group's template should also get its <a>GraphObject.desiredSize</a> set or bound.
+</p>
+<pre data-language="javascript" id="fixedSize">
+  diagram.nodeTemplate =
+    $(go.Node,
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.groupTemplate =
+    $(go.Group, "Vertical",
+      { selectionObjectName: "PH",
+        locationObjectName: "PH" },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.TextBlock,  // group title
+        { font: "Bold 12pt Sans-Serif" },
+        new go.Binding("text", "key")),
+      $(go.Shape,  // using a Shape instead of a Placeholder
+        { name: "PH",
+          fill: "lightyellow" },
+        new go.Binding("desiredSize", "size", go.Size.parse))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", group: "Omega", loc: "75 75" },
+    { key: "Gamma", group: "Omega", loc: "125 75" },
+    { key: "Omega", isGroup: true, loc: "50 50", size: "150 50" },
+    { key: "Delta", loc: "200 0" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  diagram.select(diagram.findNodeForKey("Omega"));
+</pre>
+<script>goCode("fixedSize", 600, 150)</script>
+<p>
+Note that moving the "Beta" or "Gamma" nodes does <i>not</i> change the size or position of the "Omega" group.
+However moving or copying or deleting the group includes those member nodes in the operation.
+</p>
+<p>
+One can control where the user may drag member nodes.
+For example, the <a href="../samples/swimlanes.html" target="_blank">Swim Lanes</a> sample
+demonstrates a custom <a>Part.dragComputation</a> function that limits the
+motion of a member node to stay within its containing group.
+</p>
+
+<h3>Resizable Groups</h3>
+<p>
+You can make the main shape resizable by the user.
+(At the current time groups are not rotatable.)
+</p>
+<p>
+This example also makes the <a>Part.location</a> and <a>GraphObject.desiredSize</a> data bindings TwoWay,
+so that as the user moves groups or resizes their main shapes, the data in the model is updated automatically.
+</p>
+<pre data-language="javascript" id="resizable">
+  diagram.nodeTemplate =
+    $(go.Node,
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.groupTemplate =
+    $(go.Group, "Vertical",
+      { selectionObjectName: "PH",
+        locationObjectName: "PH",
+        resizable: true,
+        resizeObjectName: "PH" },
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.TextBlock,  // group title
+        { font: "Bold 12pt Sans-Serif" },
+        new go.Binding("text", "key")),
+      $(go.Shape,  // using a Shape instead of a Placeholder
+        { name: "PH",
+          fill: "lightyellow" },
+        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", group: "Omega", loc: "75 75" },
+    { key: "Gamma", group: "Omega", loc: "125 75" },
+    { key: "Omega", isGroup: true, loc: "50 50", size: "150 50" },
+    { key: "Delta", loc: "200 0" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
+    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
+    { from: "Omega", to: "Delta" }  // from the Group to a Node
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  diagram.select(diagram.findNodeForKey("Omega"));
+</pre>
+<script>goCode("resizable", 600, 150)</script>
+<p>
+It is also possible to control how the user resizes a group.
+For example, the <a href="../samples/swimlanes.html" target="_blank">Swim Lanes</a> sample
+demonstrates a custom <a>ResizingTool</a> that limits how small each lane can go.
+It also demonstrates a custom <a>Adornment</a> that has only two resize handles.
+</p>
+
+</div>
+</body>
+</html>

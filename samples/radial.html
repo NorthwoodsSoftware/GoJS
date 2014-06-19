@@ -3,9 +3,9 @@
 <head>
   <title>Radial Layout</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
 
   var showCircles = true;  // show a circle behind the nodes in each layer
@@ -18,11 +18,13 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram", // must be the ID or reference to div
-        { initialAutoScale: go.Diagram.Uniform,
+        {
+          initialAutoScale: go.Diagram.Uniform,
           initialContentAlignment: go.Spot.Center,
           padding: 10,
           //isReadOnly: true,
-          maxSelectionCount: 1 });
+          maxSelectionCount: 1
+        });
 
     var commonToolTip =
       $(go.Adornment, "Auto",
@@ -150,11 +152,9 @@
     var diagram = source.diagram;
     // keep track of distances from the source node
     var distances = new go.Map(go.Node, "number");
-    var nit = diagram.nodes;
-    while (nit.next()) {
-      var n = nit.value;
+    diagram.nodes.each(function(n) {
       distances.add(n, Infinity);
-    }
+    });
     // the source node starts with distance 0
     distances.add(source, 0);
     // keep track of nodes for we have set a non-Infinity distance,
@@ -189,12 +189,10 @@
       seen.remove(least);
       finished.add(least);
       // look at all Links connected with this node
-      var it = least.linksConnected;
-      while (it.next()) {
-        var link = it.value;
+      least.linksConnected.each(function(link) {
         var neighbor = link.getOtherNode(least);
         // skip nodes that we have finished
-        if (finished.contains(neighbor)) continue;
+        if (finished.contains(neighbor)) return;
         var neighbordist = distances.getValue(neighbor);
         // assume "distance" along a link is unitary, but could be any non-negative number.
         var dist = leastdist + 1;  //Math.sqrt(least.location.distanceSquaredPoint(neighbor.location));
@@ -206,7 +204,7 @@
           // record the new best distance so far to that node
           distances.add(neighbor, dist);
         }
-      }
+      });
     }
 
     return distances;
@@ -237,13 +235,12 @@
     // need to remove any old ones first
     var gridlayer = root.diagram.findLayer("Grid");
     var circles = new go.Set(go.Part);
-    for (var git = gridlayer.parts; git.next(); ) {
-      var circle = git.value;
-      if (circle.name === "CIRCLE") circles.add(circle);
-    }
-    for (var cit = circles.iterator; cit.next(); ) {
-      root.diagram.remove(cit.value);
-    }
+    gridlayer.parts.each(function(circle) {
+        if (circle.name === "CIRCLE") circles.add(circle);
+      });
+    circles.each(function(circle) {
+        root.diagram.remove(circle);
+      });
     // add circles centered at the root
     if (showCircles) {
       var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -275,12 +272,10 @@
   function radlay1(node, layer, angle, sweep, distances) {
     if (layer > maxCircles) return;
     var nodes = [];
-    var it = node.findNodesConnected();
-    while (it.next()) {
-      var n = it.value;
-      if (n._laid) continue;
+    node.findNodesConnected().each(function(n) {
+      if (n._laid) return;
       if (distances.getValue(n) === layer) nodes.push(n);
-    }
+    });
     var found = nodes.length;
     if (found === 0) return;
 

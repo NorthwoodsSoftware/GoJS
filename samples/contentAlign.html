@@ -3,45 +3,47 @@
 <head>
 <title>Content Alignment examples</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram = $(go.Diagram, "myDiagram",  // Must be the ID or reference to div
-                  { "undoManager.isEnabled": true });
+    {
+      // start everything in the middle of the viewport
+      initialContentAlignment: go.Spot.Center, 
+      "undoManager.isEnabled": true 
+    });
 
-    var layer = myDiagram.findLayer("");
     for (var i = 0; i < 15; i++) {
-      myDiagram.add( // add a new Node to the diagram's default layer
+      myDiagram.add( // add an unbound Node to the diagram at a random position
         $(go.Node,
           { position: new go.Point(Math.random() * 251, Math.random() * 251) },
           $(go.Shape, "Circle",
-            { // light blue-greens:
-              fill: "rgba(0," + (Math.floor((256-150)*Math.random()) + 150) + "," + (Math.floor((256-150)*Math.random()) + 150) + ",.5)",
-              strokeWidth: 3,
-              desiredSize: new go.Size(30,30) })
+            { fill: go.Brush.randomColor(150), strokeWidth: 2, desiredSize: new go.Size(30,30) })
         ));
     }
+
+    // automatically update information in the panel
+    myDiagram.addDiagramListener("DocumentBoundsChanged", updateDOM);
+    myDiagram.addDiagramListener("ViewportBoundsChanged", updateDOM);
 
     var myPosX = document.getElementById("positionX");
     var myPosY = document.getElementById("positionY");
     var myScale = document.getElementById("scale");
-    myDiagram.addDiagramListener("DocumentBoundsChanged", function (e) {
-      updateDOM(e.diagram);
-    });
-    myDiagram.addDiagramListener("ViewportBoundsChanged", function (e) {
-      updateDOM(e.diagram);
-    });
+    var myDocBounds = document.getElementById("docBounds");
 
-    function updateDOM(d) {
+    function updateDOM(e) {
+      var d = e.diagram;
       var pos = d.position;
       myPosX.value = Math.round(pos.x, 2);
       myPosY.value = Math.round(pos.y, 2);
       myScale.value = d.scale;
+      var b = d.documentBounds;
+      myDocBounds.textContent = b.x.toFixed(2) + ", " + b.y.toFixed(2) + "  " + b.width.toFixed(2) + " x " + b.height.toFixed(2);
     }
   }
 
@@ -89,30 +91,6 @@
     myDiagram.commitTransaction("");
   }
 
-  function changeHorizScroll(checked) {
-    myDiagram.startTransaction("");
-    myDiagram.allowHorizontalScroll = checked;
-    myDiagram.commitTransaction("");
-  }
-
-  function changeVertScroll(checked) {
-    myDiagram.startTransaction("");
-    myDiagram.allowVerticalScroll = checked;
-    myDiagram.commitTransaction("");
-  }
-
-  function hasHorizScroll(checked) {
-    myDiagram.startTransaction("");
-    myDiagram.hasHorizontalScrollbar = checked;
-    myDiagram.commitTransaction("");
-  }
-
-  function hasVertScroll(checked) {
-    myDiagram.startTransaction("");
-    myDiagram.hasVerticalScrollbar = checked;
-    myDiagram.commitTransaction("");
-  }
-
   function changeAutoScale(scaleType) {
     myDiagram.startTransaction("");
     myDiagram.autoScale = go.Diagram[scaleType];
@@ -131,26 +109,28 @@
 
   <div style="display: inline-block; vertical-align: top; width:50%">
     <div style="border: solid 1px gray; padding:5px">
-      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="None" checked/><label for="None">None</label><br/>
-      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Left"/><label for="Left">Left</label><br/>
-      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Right"/><label for="Right">Right</label><br/>
-      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Top"/><label for="Top">Top</label><br/>
-      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Bottom"/><label for="Bottom">Bottom</label><br/>
-      <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Center"/><label for="Center">Center</label><br/>
+      Diagram.documentBounds: <div id="docBounds" style="display: inline-block"></div>
 
-      <p>Diagram's Position:
+      <p>Diagram.contentAlignment:<br />
+        <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="None" checked/><label for="None">None</label>
+        <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Center"/><label for="Center">Center</label><br/>
+        <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Left"/><label for="Left">Left</label>
+        <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Right"/><label for="Right">Right</label><br/>
+        <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Top"/><label for="Top">Top</label>
+        <input type="radio" name="contentAlign" onclick="changeContentAlign(this.id)" id="Bottom"/><label for="Bottom">Bottom</label><br/>
+      </p>
+      <p>Diagram.position:<br />
         <input type="text" size="2" id="positionX" value="NaN"/>
         <input type="text" size="2" id="positionY" value="NaN"/>
         <input type="button" onclick="changePosition(positionX.value, positionY.value)" value="Change"/>
       </p>
 
-      <p>Diagram's scale:
+      <p>Diagram.scale:<br />
         <input type="text" size="2" id="scale" value="1"/>
         <input type="button" onclick="changeScale(scale.value)" value="Change"/>
       </p>
 
-      <p>Diagram's fixedBounds (x, y, width, height):</p>
-      <p>
+      <p>Diagram.fixedBounds (x, y, width, height):<br />
         <input type="text" size="2" id="fixedX" value="NaN"/>
         <input type="text" size="2" id="fixedY" value="NaN"/>
         <input type="text" size="2" id="fixedW" value="NaN"/>
@@ -158,8 +138,7 @@
         <input type="button" onclick="changeFixedBounds(fixedX.value, fixedY.value, fixedW.value, fixedH.value)" value="Set"/>
       </p>
 
-      <p>Diagram's padding (top, right, bottom, left):</p>
-      <p>
+      <p>Diagram.padding (top, right, bottom, left):<br />
         <input type="text" size="2" id="padT" value="5"/>
         <input type="text" size="2" id="padR" value="5"/>
         <input type="text" size="2" id="padB" value="5"/>
@@ -167,14 +146,13 @@
         <input type="button" onclick="changePadding(padT.value, padR.value, padB.value, padL.value)" value="Set"/>
       </p>
 
-      <p>Diagram's autoScale:</p>
-      <p>
+      <p>Diagram.autoScale:<br />
         <input type="radio" name="autoScale" onclick="changeAutoScale(this.value)" id="DiagramNone" value="None" checked /><label for="DiagramNone">Diagram.None</label><br/>
         <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="Uniform" /><label for="Uniform">Diagram.Uniform</label><br/>
         <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="UniformToFill" /><label for="UniformToFill">Diagram.UniformToFill</label><br/>
+        (but no greater than CommandHandler.defaultScale)
       </p>
-
-      <input type="button" onclick="myDiagram.zoomToFit()" value="Zoom to Fit"/> (but scale no greater than 1)
+      <input type="button" onclick="myDiagram.commandHandler.zoomToFit()" value="Zoom to Fit"/>
     </div>
   </div>
 </div>

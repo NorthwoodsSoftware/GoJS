@@ -3,9 +3,9 @@
 <head>
 <title>Planogram</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -72,28 +72,23 @@
     // if you want the racks to remain "fixed".
     // Groups provide feedback when the user drags nodes onto them.
 
+    function highlightGroup(grp, show) {
+      if (!grp) return;
+      if (show) {  // check that the drop may really happen into the Group
+        var tool = grp.diagram.toolManager.draggingTool;
+        var map = tool.draggedParts || tool.copiedParts;  // this is a Map
+        if (grp.canAddMembers(map.toKeySet())) {
+          grp.isHighlighted = true;
+          return;
+        }
+      }
+      grp.isHighlighted = false;
+    }
+
     var groupFill = "rgba(128,128,128,0.2)";
     var groupStroke = "gray";
     var dropFill = "rgba(128,255,255,0.2)";
     var dropStroke = "red";
-
-    function highlightGroup(grp, show) {
-      if (!grp) return;
-      var shape = grp.findObject("SHAPE");
-      if (shape) {
-        if (show) {  // check that the drop may really happen into the Group
-          var tool = grp.diagram.toolManager.draggingTool;
-          var map = tool.draggedParts != null ? tool.draggedParts : tool.copiedParts;  // this is a Map
-          if (grp.canAddMembers(map.toKeySet())) {
-            shape.fill = dropFill;
-            shape.stroke = dropStroke;
-            return;
-          }
-        }
-        shape.fill = groupFill;
-        shape.stroke = groupStroke;
-      }
-    }
 
     myDiagram.groupTemplate =
       $(go.Group,
@@ -113,10 +108,13 @@
         },
         $(go.Shape, "Rectangle",  // the rectangular shape around the members
           { name: "SHAPE",
-            fill: groupFill, stroke: "gray",
+            fill: groupFill,
+            stroke: groupStroke,
             minSize: new go.Size(cellSize.width*2, cellSize.height*2)
           },
-          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify))
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          new go.Binding("fill", "isHighlighted", function(h) { return h ? dropFill : groupFill; }).ofObject(),
+          new go.Binding("stroke", "isHighlighted", function(h) { return h ? dropStroke: groupStroke; }).ofObject())
       );
 
     // decide what kinds of Parts can be added to a Group or to top-level

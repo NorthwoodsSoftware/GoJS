@@ -1,11 +1,11 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
 <title>Org Chart Editor</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -18,10 +18,28 @@
           validCycle: go.Diagram.CycleDestinationTree,
           // users can select only one part at a time
           maxSelectionCount: 1,
+          layout:
+            $(go.TreeLayout,
+              {
+                treeStyle: go.TreeLayout.StyleLastParents,
+                arrangement: go.TreeLayout.ArrangementHorizontal,
+                // properties for most of the tree:
+                angle: 90,
+                layerSpacing: 35,
+                // properties for the "last parents":
+                alternateAngle: 90,
+                alternateLayerSpacing: 35,
+                alternateAlignment: go.TreeLayout.AlignmentBus,
+                alternateNodeSpacing: 20
+              }),
+          // support editing the properties of the selected person in HTML
+          "ChangedSelection": onSelectionChanged,
+          "TextEdited": onTextEdited,
           // enable undo & redo
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -33,7 +51,23 @@
       }
     });
 
-    var graygrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(125, 125, 125)", 0.5: "rgb(86, 86, 86)", 1: "rgb(86, 86, 86)" });
+    var levelColors = ["#AC193D/#BF1E4B", "#2672EC/#2E8DEF", "#8C0095/#A700AE", "#5133AB/#643EBF",
+                       "#008299/#00A0B1", "#D24726/#DC572E", "#008A00/#00A600", "#094AB2/#0A5BC4"];
+
+    // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
+    myDiagram.layout.commitNodes = function() {
+      go.TreeLayout.prototype.commitNodes.call(myDiagram.layout);  // do the standard behavior
+      // then go through all of the vertexes and set their corresponding node's Shape.fill
+      // to a brush dependent on the TreeVertex.level value
+      myDiagram.layout.network.vertexes.each(function(v) {
+        if (v.node) {
+          var level = v.level % (levelColors.length);
+          var colors = levelColors[level].split("/");
+          var shape = v.node.findObject("SHAPE");
+          if (shape) shape.fill = $(go.Brush, go.Brush.Linear, { 0: colors[0], 1: colors[1], start: go.Spot.Left, end: go.Spot.Right });
+        }
+      });
+    }
 
     // when a node is double-clicked, add a child to it
     function nodeDoubleClick(e, obj) {
@@ -56,6 +90,18 @@
       return true;
     }
 
+    // This function provides a common style for most of the TextBlocks.
+    // Some of these values may be overridden in a particular TextBlock.
+    function textStyle() {
+      return { font: "9pt  Segoe UI,san-serif", stroke: "white" };
+    }
+
+    // This converter is used by the Picture.
+    function findHeadShot(key) {
+      return "images/HS" + key + ".png"
+    };
+
+
     // define the Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
@@ -66,11 +112,16 @@
             var selnode = diagram.selection.first();
             if (!mayWorkFor(selnode, node)) return;
             var shape = node.findObject("SHAPE");
-            if (shape) shape.fill = "darkred";
+            if (shape) {
+              shape._prevFill = shape.fill;  // remember the original brush
+              shape.fill = "darkred";
+            }
           },
           mouseDragLeave: function (e, node, next) {
             var shape = node.findObject("SHAPE");
-            if (shape) shape.fill = graygrad;
+            if (shape && shape._prevFill) {
+              shape.fill = shape._prevFill;  // restore the original brush
+            }
           },
           mouseDrop: function (e, node) {
             var diagram = node.diagram;
@@ -91,79 +142,73 @@
         // bind the Part.layerName to control the Node's layer depending on whether it isSelected
         new go.Binding("layerName", "isSelected", function(sel) { return sel ? "Foreground" : ""; }).ofObject(),
         // define the node's outer shape
-        $(go.Shape, "RoundedRectangle",
-          { name: "SHAPE",
-            fill: graygrad, stroke: "black",
-            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
-        // define the panel where the text will appear
-        $(go.Panel, "Table",
-          { maxSize: new go.Size(150, 999),
-            margin: new go.Margin(3, 3, 0, 3),
-            defaultAlignment: go.Spot.Left },
-          $(go.RowColumnDefinition, { column: 2, width: 4 }),
-          $(go.TextBlock,  // the name
-            { row: 0, column: 0, columnSpan: 5,
-              font: "bold 9pt sans-serif",
-              editable: true, isMultiline: false,
-              stroke: "white", minSize: new go.Size(10, 14) },
-            new go.Binding("text", "name").makeTwoWay()),
-          $(go.TextBlock, "Title: ",
-            { row: 1, column: 0,
-              font: "9pt sans-serif", stroke: "white" }),
-          $(go.TextBlock,
-            { row: 1, column: 1, columnSpan: 4,
-              font: "9pt sans-serif",
-              editable: true, isMultiline: false,
-              stroke: "white", minSize: new go.Size(10, 14),
-              margin: new go.Margin(0, 0, 0, 3) },
-            new go.Binding("text", "title").makeTwoWay()),
-          $(go.TextBlock, "ID: ",  // the ID and the boss
-            { row: 2, column: 0,
-              font: "9pt sans-serif", stroke: "white" }),
-          $(go.TextBlock,
-            { row: 2, column: 1,
-              font: "9pt sans-serif", stroke: "white" },
-            new go.Binding("text", "key")),
-          $(go.TextBlock, "Boss: ",
-            { row: 2, column: 3,
-              font: "9pt sans-serif", stroke: "white" }),
-          $(go.TextBlock,
-            { row: 2, column: 4,
-              font: "9pt sans-serif", stroke: "white" },
-            new go.Binding("text", "parent")),
-          $(go.TextBlock,  // the comments
-            { row: 3, column: 0, columnSpan: 5,
-              font: "italic 9pt sans-serif",
-              wrap: go.TextBlock.WrapFit,
-              editable: true,  // by default newlines are allowed
-              stroke: "white", minSize: new go.Size(10, 14) },
-            new go.Binding("text", "comments").makeTwoWay())
-        )  // end Table Panel
+        $(go.Shape, "Rectangle",
+          {
+            name: "SHAPE", fill: "white", stroke: null,
+            // set the port properties:
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer"
+          }),
+        $(go.Panel, "Horizontal",
+          $(go.Picture, 
+            {
+              maxSize: new go.Size(39, 50),
+              margin: new go.Margin(6, 8, 6, 10),
+            },
+            new go.Binding("source", "key", findHeadShot)),
+          // define the panel where the text will appear
+          $(go.Panel, "Table",
+            {
+              maxSize: new go.Size(150, 999),
+              margin: new go.Margin(6, 10, 0, 3),
+              defaultAlignment: go.Spot.Left
+            },
+            $(go.RowColumnDefinition, { column: 2, width: 4 }),
+            $(go.TextBlock, textStyle(),  // the name
+              {
+                row: 0, column: 0, columnSpan: 5,
+                font: "12pt Segoe UI,sans-serif",
+                editable: true, isMultiline: false,
+                minSize: new go.Size(10, 16)
+              },
+              new go.Binding("text", "name").makeTwoWay()),
+            $(go.TextBlock, "Title: ", textStyle(),
+              { row: 1, column: 0 }),
+            $(go.TextBlock, textStyle(),
+              {
+                row: 1, column: 1, columnSpan: 4,
+                editable: true, isMultiline: false,
+                minSize: new go.Size(10, 14),
+                margin: new go.Margin(0, 0, 0, 3)
+              },
+              new go.Binding("text", "title").makeTwoWay()),
+            $(go.TextBlock, "ID: ", textStyle(),  // the ID and the boss
+              { row: 2, column: 0 }),
+            $(go.TextBlock, textStyle(),
+              { row: 2, column: 1 },
+              new go.Binding("text", "key")),
+            $(go.TextBlock, "Boss: ", textStyle(),
+              { row: 2, column: 3 }),
+            $(go.TextBlock, textStyle(),
+              { row: 2, column: 4, },
+              new go.Binding("text", "parent")),
+            $(go.TextBlock, textStyle(),  // the comments
+              {
+                row: 3, column: 0, columnSpan: 5,
+                font: "italic 9pt sans-serif",
+                wrap: go.TextBlock.WrapFit,
+                editable: true,  // by default newlines are allowed
+                minSize: new go.Size(10, 14)
+              },
+              new go.Binding("text", "comments").makeTwoWay())
+          )  // end Table Panel
+        ) // end Horizontal Panel
       );  // end Node
 
     // define the Link template
     myDiagram.linkTemplate =
       $(go.Link, go.Link.Orthogonal,
         { corner: 5, relinkableFrom: true, relinkableTo: true },
-        $(go.Shape, { strokeWidth: 2 }));  // the link shape
-
-    myDiagram.layout =
-      $(go.TreeLayout,
-        {
-          treeStyle: go.TreeLayout.StyleLastParents,
-          arrangement: go.TreeLayout.ArrangementHorizontal,
-          // properties for most of the tree:
-          angle: 90,
-          layerSpacing: 35,
-          // properties for the "last parents":
-          alternateAngle: 90,
-          alternateLayerSpacing: 35,
-          alternateAlignment: go.TreeLayout.AlignmentBus,
-          alternateNodeSpacing: 20 });
-
-    // support editing the properties of the selected person in HTML
-    myDiagram.addDiagramListener("ChangedSelection", onSelectionChanged);
-    myDiagram.addDiagramListener("TextEdited", onTextEdited);
+        $(go.Shape, { strokeWidth: 4, stroke: "#00a4a4" }));  // the link shape
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -235,7 +280,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="background-color: white; border: solid 1px black; height: 500px"></div>
+  <div id="myDiagram" style="background-color: #696969; border: solid 1px black; height: 500px"></div>
   <div>
     <div id="propertiesPanel" style="display: none; background-color: aliceblue; border: solid 1px black">
       <b>Properties</b><br />
@@ -258,17 +303,22 @@
     <textarea id="mySavedModel" style="width:100%;height:250px">
 { "class": "go.TreeModel",
   "nodeDataArray": [
-{"key":"1", "name":"Corrado 'Junior' Soprano", "title":"The Boss"},
-{"key":"2", "parent":"1", "name":"Tony Soprano", "title":"Underboss"},
-{"key":"3", "parent":"1", "name":"Herman 'Hesh' Rabkin", "title":"Advisor"},
-{"key":"4", "parent":"2", "name":"Paulie Walnuts", "title":"Capo"},
-{"key":"5", "parent":"2", "name":"Ralph Cifaretto", "title":"Capo MIA"},
-{"key":"6", "parent":"2", "name":"Silvio Dante", "title":"Consigliere"},
-{"key":"7", "parent":"2", "name":"Bobby Baccilien", "title":"Capo"},
-{"key":"8", "parent":"4", "name":"Sal Bonpensiero", "title":"MIA"},
-{"key":"9", "parent":"4", "name":"Christopher Moltisanti", "title":"Made Man"},
-{"key":"10", "parent":"4", "name":"Furio Giunta", "title":"Muscle"},
-{"key":"11", "parent":"4", "name":"Patsy Parisi", "title":"Accountant"}
+{"key":"1", "name":"Stella Payne Diaz", "title":"CEO"}, 
+{"key":"2", "name":"Luke Warm", "title":"VP Marketing/Sales", "parent":"1"}, 
+{"key":"3", "name":"Meg Meehan Hoffa", "title":"Sales", "parent":"2"}, 
+{"key":"4", "name":"Peggy Flaming", "title":"VP Engineering", "parent":"1"}, 
+{"key":"5", "name":"Saul Wellingood", "title":"Manufacturing", "parent":"4"}, 
+{"key":"6", "name":"Al Ligori", "title":"Marketing", "parent":"2"}, 
+{"key":"7", "name":"Dot Stubadd", "title":"Sales Rep", "parent":"3"},
+{"key":"8", "name":"Les Ismore", "title":"Project Mgr", "parent":"5"},
+{"key":"9", "name":"April Lynn Parris", "title":"Events Mgr", "parent":"6"},
+{"key":"10", "name":"Xavier Breath", "title":"Engineering", "parent":"4"},
+{"key":"11", "name":"Anita Hammer", "title":"Process", "parent":"5"},
+{"key":"12", "name":"Billy Aiken", "title":"Software", "parent":"10"},
+{"key":"13", "name":"Stan Wellback", "title":"Testing", "parent":"10"},
+{"key":"14", "name":"Marge Innovera", "title":"Hardware", "parent":"10"},
+{"key":"15", "name":"Evan Elpus", "title":"Quality", "parent":"5"},
+{"key":"16", "name":"Lotta B. Essen", "title":"Sales Rep", "parent":"3"} 
  ]
 }
     </textarea>

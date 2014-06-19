@@ -3,29 +3,28 @@
 <head>
 <title>Minimal GoJS Sample</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    // rename this variable if you want to use jQuery's "$" in this function, rather than "jQuery".
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    var $$ = go.GraphObject.make;  // for conciseness in defining templates, avoid $ due to jQuery
 
-    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
-                  {
-                    initialContentAlignment: go.Spot.Center,  // center the content
-                    "undoManager.isEnabled": true  // enable undo & redo
-                  });
+    myDiagram = $$(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                   {
+                     initialContentAlignment: go.Spot.Center,  // center the content
+                     "undoManager.isEnabled": true  // enable undo & redo
+                   });
 
     // define a simple Node template
     myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        $(go.Shape, "RoundedRectangle",
+      $$(go.Node, "Auto",  // the Shape will go around the TextBlock
+        $$(go.Shape, "RoundedRectangle",
           // Shape.fill is bound to Node.data.color
           new go.Binding("fill", "color")),
-        $(go.TextBlock,
+        $$(go.TextBlock,
           { margin: 3 },  // some room around the text
           // TextBlock.text is bound to Node.data.key
           new go.Binding("text", "key"))
@@ -34,8 +33,7 @@
     // but use the default Link template, by not setting Diagram.linkTemplate
 
     // The previous initialization is the same as the minimal.html sample.
-    // Here we request JSON-format text data from the server,
-    // in this case from a static file so that you can view its contents separately.
+    // Here we request JSON-format text data from the server, in this case from a static file.
     jQuery.getJSON("minimal.json", load);
   }
 
@@ -47,7 +45,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <p>Minimal <b>GoJS</b> Sample</p>
+  <p>Minimal <b>GoJS</b> Sample, reading JSON data</p>
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
   <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>

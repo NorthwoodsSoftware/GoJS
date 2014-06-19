@@ -3,9 +3,9 @@
 <head>
 <title>Beat Paths</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css" />
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -16,8 +16,18 @@
       $(go.Diagram, "myDiagram",
         { // automatically scale the diagram to fit the viewport's size
           autoScale: go.Diagram.Uniform,
+          // start everything in the middle of the viewport
+          initialContentAlignment: go.Spot.Center,
           // disable user copying of parts
-          allowCopy: false });
+          allowCopy: false,
+          // position all of the nodes and route all of the links
+          layout:
+            $(go.LayeredDigraphLayout,
+              { direction: 90,
+                layerSpacing: 10,
+                columnSpacing: 15,
+                setsPortSpots: false })
+      });
 
     // replace the default Node template in the nodeTemplateMap
     myDiagram.nodeTemplate =
@@ -100,14 +110,6 @@
     // process all of the link relationship data
     model.linkDataArray = linkDataArray;
     myDiagram.model = model;
-
-    // position all of the nodes and route all of the links
-    myDiagram.layout =
-      $(go.LayeredDigraphLayout,
-        { direction: 90,
-          layerSpacing: 10,
-          columnSpacing: 15,
-          setsPortSpots: false });
   }
 
   function convertKeyImage(key) {

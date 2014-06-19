@@ -3,9 +3,9 @@
 <head>
 <title>Parse Tree</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -18,6 +18,10 @@
             allowMove: false,
             initialContentAlignment: go.Spot.Center,
             initialAutoScale: go.Diagram.Uniform,
+            layout:
+              $(FlatTreeLayout,  // custom Layout, defined below
+                { angle: 90,
+                  compaction: go.TreeLayout.CompactionNone }),
             "undoManager.isEnabled": true
           });
 
@@ -42,11 +46,6 @@
         $(go.Link,
           $(go.Shape, { strokeWidth: 1.5 }));
 
-      myDiagram.layout =
-        $(FlatTreeLayout,
-          { angle: 90,
-            compaction: go.TreeLayout.CompactionNone });
-
       load();
     }
 
@@ -65,20 +64,18 @@
       go.TreeLayout.prototype.commitLayout.call(this);  // call base method first
       // find maximum Y position of all Nodes
       var y = -Infinity;
-      var it = this.network.vertexes.iterator;
-      while (it.next()) {
-        var node = it.value.node;
-        y = Math.max(y, node.position.y);
-      }
+      this.network.vertexes.each(function(v) {
+          y = Math.max(y, v.node.position.y);
+        });
       // move down all leaf nodes to that Y position, but keeping their X position
-      it.reset();
-      while (it.next()) {
-        var node = it.value.node;
-        if (node.isTreeLeaf) {
-          node.position = new go.Point(node.position.x, y);
-        }
-      }
+      this.network.vertexes.each(function(v) {
+          var node = v.node;
+          if (node.isTreeLeaf) {
+            node.position = new go.Point(node.position.x, y);
+          }
+        });
     };
+    // end FlatTreeLayout
   </script>
 </head>
 <body onload="init()">
@@ -90,8 +87,81 @@
   <textarea id="mySavedModel" style="width:100%;height:300px">
 {
   "class": "go.GraphLinksModel",
-  "nodeDataArray":[{"key":1,"text":"Sentence","fill":"#f68c06","stroke":"#4d90fe"},{"key":2,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},{"key":3,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},{"key":4,"text":"A","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":5,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},{"key":6,"text":"rare","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":7,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},{"key":8,"text":"black","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":9,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},{"key":10,"text":"squirrel","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":11,"text":"VP","fill":"#f68c06","stroke":"#4d90fe"},{"key":12,"text":"VBZ","fill":"#ccc","stroke":"#4d90fe"},{"key":13,"text":"has","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":14,"text":"VP","fill":"#f68c06","stroke":"#4d90fe"},{"key":15,"text":"VBN","fill":"#ccc","stroke":"#4d90fe"},{"key":16,"text":"become","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":17,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},{"key":18,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},{"key":19,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},{"key":20,"text":"a","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":21,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},{"key":22,"text":"regular","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":23,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},{"key":24,"text":"visitor","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":25,"text":"PP","fill":"#f68c06","stroke":"#4d90fe"},{"key":26,"text":"TO","fill":"#ccc","stroke":"#4d90fe"},{"key":27,"text":"to","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":28,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},{"key":29,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},{"key":30,"text":"a","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":31,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},{"key":32,"text":"suburban","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":33,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},{"key":34,"text":"garden","fill":"#f8f8f8","stroke":"#4d90fe"},{"key":35,"text":".","fill":"#ccc","stroke":"#4d90fe"},{"key":36,"text":".","fill":"#f8f8f8","stroke":"#4d90fe"}],
-  "linkDataArray":[{"from":1,"to":2},{"from":2,"to":3},{"from":3,"to":4},{"from":2,"to":5},{"from":5,"to":6},{"from":2,"to":7},{"from":7,"to":8},{"from":2,"to":9},{"from":9,"to":10},{"from":1,"to":11},{"from":11,"to":12},{"from":12,"to":13},{"from":11,"to":14},{"from":14,"to":15},{"from":15,"to":16},{"from":14,"to":17},{"from":17,"to":18},{"from":18,"to":19},{"from":19,"to":20},{"from":18,"to":21},{"from":21,"to":22},{"from":18,"to":23},{"from":23,"to":24},{"from":17,"to":25},{"from":25,"to":26},{"from":26,"to":27},{"from":25,"to":28},{"from":28,"to":29},{"from":29,"to":30},{"from":28,"to":31},{"from":31,"to":32},{"from":28,"to":33},{"from":33,"to":34},{"from":1,"to":35},{"from":35,"to":36}]
+  "nodeDataArray":[
+{"key":1,"text":"Sentence","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":2,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":3,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},
+{"key":4,"text":"A","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":5,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
+{"key":6,"text":"rare","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":7,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
+{"key":8,"text":"black","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":9,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},
+{"key":10,"text":"squirrel","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":11,"text":"VP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":12,"text":"VBZ","fill":"#ccc","stroke":"#4d90fe"},
+{"key":13,"text":"has","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":14,"text":"VP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":15,"text":"VBN","fill":"#ccc","stroke":"#4d90fe"},
+{"key":16,"text":"become","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":17,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":18,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":19,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},
+{"key":20,"text":"a","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":21,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
+{"key":22,"text":"regular","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":23,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},
+{"key":24,"text":"visitor","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":25,"text":"PP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":26,"text":"TO","fill":"#ccc","stroke":"#4d90fe"},
+{"key":27,"text":"to","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":28,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
+{"key":29,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},
+{"key":30,"text":"a","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":31,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
+{"key":32,"text":"suburban","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":33,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},
+{"key":34,"text":"garden","fill":"#f8f8f8","stroke":"#4d90fe"},
+{"key":35,"text":".","fill":"#ccc","stroke":"#4d90fe"},
+{"key":36,"text":".","fill":"#f8f8f8","stroke":"#4d90fe"}
+  ],
+  "linkDataArray":[
+{"from":1,"to":2},
+{"from":2,"to":3},
+{"from":3,"to":4},
+{"from":2,"to":5},
+{"from":5,"to":6},
+{"from":2,"to":7},
+{"from":7,"to":8},
+{"from":2,"to":9},
+{"from":9,"to":10},
+{"from":1,"to":11},
+{"from":11,"to":12},
+{"from":12,"to":13},
+{"from":11,"to":14},
+{"from":14,"to":15},
+{"from":15,"to":16},
+{"from":14,"to":17},
+{"from":17,"to":18},
+{"from":18,"to":19},
+{"from":19,"to":20},
+{"from":18,"to":21},
+{"from":21,"to":22},
+{"from":18,"to":23},
+{"from":23,"to":24},
+{"from":17,"to":25},
+{"from":25,"to":26},
+{"from":26,"to":27},
+{"from":25,"to":28},
+{"from":28,"to":29},
+{"from":29,"to":30},
+{"from":28,"to":31},
+{"from":31,"to":32},
+{"from":28,"to":33},
+{"from":33,"to":34},
+{"from":1,"to":35},
+{"from":35,"to":36}
+  ]
 }
   </textarea>
 </div>

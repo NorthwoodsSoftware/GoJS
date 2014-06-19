@@ -3,9 +3,9 @@
 <head>
   <title>Fishbone</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -120,16 +120,18 @@
 
     // make the layout a basic tree layout
     function layoutNormal() {
+      myDiagram.startTransaction("normal layout");
       undoFishbone();
       myDiagram.layout = go.GraphObject.make(go.TreeLayout, { angle: 180, alignment: go.TreeLayout.AlignmentStart });
-      myDiagram.layoutDiagram();
+      myDiagram.commitTransaction("normal layout");
     }
 
     // make the layout a branching tree layout
     function layoutBranching() {
+      myDiagram.startTransaction("branching layout");
       undoFishbone();
       myDiagram.layout = go.GraphObject.make(go.TreeLayout, { angle: 180, alignment: go.TreeLayout.AlignmentBusBranching });
-      myDiagram.layoutDiagram()
+      myDiagram.commitTransaction("branching layout");
     }
 
     // remove the extra nodes and links, add curved corners to links, and change node categories

@@ -3,9 +3,9 @@
 <head>
 <title>Concept Map</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,18 +13,20 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
-        { autoScale: go.Diagram.Uniform,
-          contentAlignment: go.Spot.Center });
-
-    var radgrad = $(go.Brush, go.Brush.Radial, { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" });
-    var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" });
+        {
+          autoScale: go.Diagram.Uniform,
+          contentAlignment: go.Spot.Center,
+          layout:
+            $(go.ForceDirectedLayout,
+              { defaultSpringLength: 30, defaultElectricalCharge: 100 })
+        });
 
     // define the Node template for non-terminal nodes
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",  // the whole node panel
         // define the node's outer shape, which will surround the TextBlock
         $(go.Shape, "Rectangle",
-          { fill: yellowgrad,
+          { fill: $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
             stroke: "black" }),
         $(go.TextBlock,
           { font: "bold 10pt helvetica, bold arial, sans-serif",
@@ -43,11 +45,12 @@
             stroke: null }),
         $(go.Panel, "Auto",
           $(go.Shape,  // the link shape
-            { fill: radgrad, stroke: null }),
+            { fill: $(go.Brush, go.Brush.Radial, { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
+              stroke: null }),
           $(go.TextBlock,  // the label
             { textAlign: "center",
               font: "10pt helvetica, arial, sans-serif",
-              stroke: "#919191",
+              stroke: "#555555",
               margin: 4 },
             new go.Binding("text", "text"))
         )
@@ -103,11 +106,6 @@
       { from: 18, to: 20, text: "between" }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-
-    myDiagram.layout =
-      $(go.ForceDirectedLayout,
-        { defaultSpringLength: 30,
-          defaultElectricalCharge: 100 });
   }
 </script>
 </head>

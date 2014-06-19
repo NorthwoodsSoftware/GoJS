@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Trees -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Trees and TreeLayout</h2>
+<p>
+There is no limit to the kinds of graphs that you can build in <b>GoJS</b>.
+But the most common kind of graph forms a "tree".
+A tree is a graph where each node may have at most one "tree parent" and at most one link connecting to that parent node,
+and where there are no cycles within the graph.
+</p>
+<p>
+Because trees occur so frequently in diagrams,
+there is also a tree layout that offers many customizations specifically for trees.
+</p>
+
+<h3>Manual layout of a tree structure</h3>
+<p>
+You can of course position the nodes manually, either by hand or programmatically.
+In this first example, the node locations are stored in the node data,
+and there is a Binding of <a>Part.location</a> to the node data property.
+</p>
+<pre data-language="javascript" id="tree">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape));
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 60" },
+    { key: "Beta", loc: "100 15" },
+    { key: "Gamma", loc: "200 0" },
+    { key: "Delta", loc: "200 30" },
+    { key: "Epsilon", loc: "100 90" },
+    { key: "Zeta", loc: "200 60" },
+    { key: "Eta", loc: "200 90" },
+    { key: "Theta", loc: "200 120" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Beta", to: "Gamma" },
+    { from: "Beta", to: "Delta" },
+    { from: "Alpha", to: "Epsilon" },
+    { from: "Epsilon", to: "Zeta" },
+    { from: "Epsilon", to: "Eta" },
+    { from: "Epsilon", to: "Theta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("tree", 600, 200)</script>
+<p>
+You can also get the same results by using a <a>TreeModel</a>.
+</p>
+<pre data-language="javascript" id="tree2">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape));
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 60" },
+    { key: "Beta", loc: "100 15", parent: "Alpha" },
+    { key: "Gamma", loc: "200 0", parent: "Beta" },
+    { key: "Delta", loc: "200 30", parent: "Beta" },
+    { key: "Epsilon", loc: "100 90", parent: "Alpha" },
+    { key: "Zeta", loc: "200 60", parent: "Epsilon" },
+    { key: "Eta", loc: "200 90", parent: "Epsilon" },
+    { key: "Theta", loc: "200 120", parent: "Epsilon" }
+  ];
+  diagram.model = new go.TreeModel(nodeDataArray);
+</pre>
+<script>goCode("tree2", 600, 200)</script>
+
+<h3>Automatic TreeLayout</h3>
+<p>
+It is most common to use <a>TreeLayout</a> for laying out trees.
+Just assign <a>Diagram.layout</a> to a new instance of <a>TreeLayout</a>.
+This example also defines the <code>setupTree</code> function that is used in later examples on this page.
+</p>
+<pre data-language="javascript" id="treeLayout">
+function setupTree(diagram) {
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape));
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta", parent: "Alpha" },
+    { key: "Gamma", parent: "Beta" },
+    { key: "Delta", parent: "Beta" },
+    { key: "Epsilon", parent: "Alpha" },
+    { key: "Zeta", parent: "Epsilon" },
+    { key: "Eta", parent: "Epsilon" },
+    { key: "Theta", parent: "Epsilon" }
+  ];
+  diagram.model = new go.TreeModel(nodeDataArray);
+}
+
+  setupTree(diagram);
+  diagram.layout = $(go.TreeLayout);  // automatic tree layout
+</pre>
+<script>goCode("treeLayout", 600, 200)</script>
+
+<script>
+function setupTree(diagram) {
+  var $ = go.GraphObject.make;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse", { fill: "white" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape));
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta", parent: "Alpha" },
+    { key: "Gamma", parent: "Beta" },
+    { key: "Delta", parent: "Beta" },
+    { key: "Epsilon", parent: "Alpha" },
+    { key: "Zeta", parent: "Epsilon" },
+    { key: "Eta", parent: "Epsilon" },
+    { key: "Theta", parent: "Epsilon" }
+  ];
+  diagram.model = new go.TreeModel(nodeDataArray);
+}
+</script>
+
+<h3>Common TreeLayout properties</h3>
+<p>
+The <a>TreeLayout.angle</a> property controls the general direction of tree growth.
+This must be zero (towards the right), 90 (downward), 180 (leftward), or 270 (upward).
+</p>
+<pre data-language="javascript" id="angle">
+  setupTree(diagram);
+  diagram.layout = $(go.TreeLayout, { angle: 90 });
+</pre>
+<script>goCode("angle", 600, 200)</script>
+
+<p>
+The <code>setupTree</code> function was defined above.
+</p>
+
+<p>
+The <a>TreeLayout.alignment</a> property controls how the parent node is positioned relative to its children.
+This must be one of the Alignment... constants defined on <a>TreeLayout</a>.
+</p>
+<pre data-language="javascript" id="alignment">
+  setupTree(diagram);
+  diagram.layout = $(go.TreeLayout, { angle: 90, alignment: go.TreeLayout.AlignmentStart });
+</pre>
+<script>goCode("alignment", 600, 200)</script>
+
+<p>
+For tree layouts, all of the nodes are placed into "layers" according to the length of the chain of links from the root node.
+These layers are not to be confused with Diagram <a>Layer</a>s, which control the Z-ordering of the nodes.
+The <a>TreeLayout.layerSpacing</a> property controls how close the layers are to each other.
+The <a>TreeLayout.nodeSpacing</a> property controls how close nodes are to each other in the same layer.
+</p>
+<pre data-language="javascript" id="spacing">
+  setupTree(diagram);
+  diagram.layout = $(go.TreeLayout, { layerSpacing: 20, nodeSpacing: 0 });
+</pre>
+<script>goCode("spacing", 600, 200)</script>
+
+<p>
+The children of each node can be sorted.  By default the <a>TreeLayout.comparer</a> function compares the
+<a>Part.text</a> property.  So if that property is data bound by the node template, and if you set the
+<a>TreeLayout.sorting</a> property to sort in either ascending or descending order,
+each parent node will have all of its children sorted in that order by their text strings.
+(In this example that means alphabetical ordering of the English names of the letters of the Greek alphabet.)
+</p>
+<pre data-language="javascript" id="sort">
+  setupTree(diagram);
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("text", "key"),  // bind Part.text to support sorting
+      $(go.Shape, "Ellipse", { fill: "lightblue" }),
+      $(go.TextBlock,
+        new go.Binding("text", "key"))
+    );
+  diagram.layout = $(go.TreeLayout, { sorting: go.TreeLayout.SortingAscending });
+</pre>
+<script>goCode("sort", 600, 200)</script>
+
+</div>
+</body>
+</html>

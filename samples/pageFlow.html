@@ -2,10 +2,10 @@
 <html>
 <head>
 <title>Page Flow</title>
-<!-- /* Copyright � 1998-2014 by Northwoods Software Corporation. */ -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<!-- Copyright � 1998-2014 by Northwoods Software Corporation. -->
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -44,6 +44,7 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
@@ -58,12 +59,13 @@
     var defaultAdornment =
       $(go.Adornment, "Spot",
         $(go.Panel, "Auto",
-          $(go.Shape, { fill: null, stroke: "blue", strokeWidth: 2 }),
+          $(go.Shape, { fill: null, stroke: "dodgerblue", strokeWidth: 4 }),
           $(go.Placeholder)),
         // the button to create a "next" node, at the top-right corner
         $("Button",
           { alignment: go.Spot.TopRight,
             click: addNodeAndLink },  // this function is defined below
+          new go.Binding("visible", "", function(a) { return !a.diagram.isReadOnly; }).ofObject(),
           $(go.Shape, "PlusLine", { desiredSize: new go.Size(6, 6) })
         )
       );
@@ -76,7 +78,8 @@
         // define the node's outer shape, which will surround the TextBlock
         $(go.Shape, "Rectangle",
           { fill: yellowgrad, stroke: "black",
-            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+            toEndSegmentLength: 50, fromEndSegmentLength: 40 }),
         $(go.TextBlock, "Page",
           { margin: 6,
             font: bigfont,
@@ -88,7 +91,7 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "RoundedRectangle",
           { fill: bluegrad,
-            portId: "", fromLinkable: true, cursor: "pointer"  }),
+          portId: "", fromLinkable: true, cursor: "pointer", fromEndSegmentLength: 40}),
         $(go.TextBlock, "Source", textStyle(),
           new go.Binding("text", "text").makeTwoWay())
         ));
@@ -97,7 +100,7 @@
       $(go.Node, "Auto",
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "RoundedRectangle",
-          { fill: greengrad, portId: "", toLinkable: true }),
+          { fill: greengrad, portId: "", toLinkable: true, toEndSegmentLength: 50 }),
         $(go.TextBlock, "Success!", textStyle(),
           new go.Binding("text", "text").makeTwoWay())
         ));
@@ -106,12 +109,13 @@
     var UndesiredEventAdornment =
       $(go.Adornment, "Spot",
         $(go.Panel, "Auto",
-          $(go.Shape, { fill: null, stroke: "blue", strokeWidth: 2 }),
+          $(go.Shape, { fill: null, stroke: "dodgerblue", strokeWidth: 4 }),
           $(go.Placeholder)),
         // the button to create a "next" node, at the top-right corner
         $("Button",
           { alignment: go.Spot.BottomRight,
             click: addReason },  // this function is defined below
+          new go.Binding("visible", "", function(a) { return !a.diagram.isReadOnly; }).ofObject(),
           $(go.Shape, "TriangleDown", { desiredSize: new go.Size(10, 10) })
         )
       );
@@ -135,7 +139,7 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         { selectionAdornmentTemplate: UndesiredEventAdornment },
         $(go.Shape, "RoundedRectangle",
-          { fill: redgrad, portId: "", toLinkable: true }),
+          { fill: redgrad, portId: "", toLinkable: true, toEndSegmentLength: 50 }),
         $(go.Panel, "Vertical", {defaultAlignment: go.Spot.TopLeft},
 
           $(go.TextBlock, "Drop", textStyle(),
@@ -274,16 +278,27 @@
     </span>
   </div>
   <p>
-    This sample uses the Layered Digraph Layout to display some data about the flow of a fictional web site. You can add to the Diagram by dragging Nodes from the Palette and by buttons that appear when clicking on the Page (yellow) and Drop (red) Nodes.
+    This sample uses the Layered Digraph Layout to display some data about the flow of a fictional web site.
+    You can add to the Diagram by dragging Nodes from the Palette and by buttons that
+    appear when clicking on the Page (yellow) and Drop (red) Nodes.
   </p>
   <p>
-    All nodes in this sample have editable text. To activate the TextEditingTool, click on a node to select it and click on its text once selected.
+    All nodes in this sample have editable text.
+    To activate the TextEditingTool, click on a node to select it and click on its text once selected.
   </p>
   <p>
-    Several Link relationships are defined. Hovering over the sides of many nodes changes the mouse cursor to a pointer. Clicking and dragging in these areas creates a new link with the <a>LinkingTool</a>. The node definitions contain several rules, for instance you cannot drag links to Source (blue) Nodes, only from them, and you cannot have multiple links between the same two nodes, among others.
+    Several Link relationships are defined.
+    Hovering over the sides of many nodes changes the mouse cursor to a pointer.
+    Clicking and dragging in these areas creates a new link with the <a>LinkingTool</a>.
+    The node definitions contain several rules, for instance you cannot drag links to Source (blue) Nodes,
+    only from them, and you cannot have multiple links between the same two nodes, among others.
   </p>
   <p>
-    Most of the source code for this sample is in defining pleasing Node templates. Much of the functionality seen is done with built-in GoJS components. This is by no means an exhaustive sample, so be sure to check out the other samples to the left, or take a look at the <a href="../intro/">Introductory Documents</a> for a more structured tutorial on different GoJS concepts.
+    Most of the source code for this sample is in defining pleasing Node templates.
+    Much of the functionality seen is done with built-in GoJS components.
+    This is by no means an exhaustive sample, so be sure to check out the other samples to the left,
+    or take a look at the <a href="../intro/">Introductory Documents</a> for
+    a more structured tutorial on different GoJS concepts.
   </p>
   <button onclick="layout()">Re-layout Diagram</button>
   <button id="SaveButton" onclick="save()">Save</button>

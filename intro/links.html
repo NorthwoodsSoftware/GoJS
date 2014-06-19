@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Links -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Links</h2>
+<p>
+Use the <a>Link</a> class to implement a visual relationship between nodes.
+</p>
+
+<h3>Non-directional Links</h3>
+<p>
+The simplest links are those without arrowheads to indicate a visual direction.
+Either the relationship really is non-directional, or the direction is implicit in the organization of the diagram.
+</p>
+<p>
+The template just contains a <a>Shape</a> as the main element, as the line that is drawn between nodes.
+After the link's route is computed the main Shape will get a <a>Geometry</a> based on the points in the route.
+</p>
+<pre data-language="javascript" id="noArrowheads">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,       // the whole link panel
+      $(go.Shape));  // the link shape, default black stroke
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("noArrowheads", 600, 100)</script>
+<p>
+By default the way that the model and diagram know about the node data references of a link data is
+by looking at its from and to properties.
+If you want to use a different properties on the link data, set <a>GraphLinksModel.linkFromKeyProperty</a> to be the name
+of the property that results in the node data's key, and similarly for the <a>GraphLinksModel.linkToKeyProperty</a>.
+</p>
+
+<h3>Arrowheads</h3>
+<p>
+Many links do want to indicate directionality by using arrowheads.
+<b>GoJS</b> makes it easy to create common arrowheads: just add a Shape and set its <a>Shape.toArrow</a> property.
+Setting that property will automatically assign a <a>Geometry</a> to the <a>Shape.geometry</a>
+and will set other properties so that the arrowhead is positioned at the head of the link and is pointing in the correct direction.
+Of course you can set the other Shape properties such as <a>Shape.fill</a> in order to customize the appearance of the arrowhead.
+</p>
+<p>
+You can also have an arrowhead at the end of the link: set the <a>Shape.fromArrow</a> property.
+</p>
+<pre data-language="javascript" id="arrowheads">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape),  // the link shape
+      $(go.Shape,   // the arrowhead
+        { toArrow: "OpenTriangle", fill: null })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("arrowheads", 600, 100)</script>
+<p>
+You can see all of the predefined arrowhead types in the <a href="../samples/arrowheads.html" target="samples">Arrowheads Sample</a>.
+</p>
+
+<h3>Routing</h3>
+<p>
+If you want to customize the path that each <a>Link</a> takes, you need to set properties on the link.
+The property that has the most general effect on the points that the link's route follows is <a>Link.routing</a>.
+</p>
+<p>
+This example shows the two most common routing values: <a>Link.Normal</a> (the default) and <a>Link.Orthogonal</a>.
+</p>
+<pre data-language="javascript" id="routing">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      new go.Binding("routing", "routing"),
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "50 50" },
+    { key: "Gamma", loc: "100 25" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta", routing: go.Link.Normal },
+    { from: "Alpha", to: "Gamma", routing: go.Link.Orthogonal }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("routing", 600, 100)</script>
+
+<p>
+Note that the computed route also depends on the properties of the node, including its shape.
+There are other properties, including <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a>, that affect the route.
+Furthermore some <a>Layout</a>s set properties on links to control their routing according to what the layout expects.
+</p>
+
+<p>
+You can also set <a>Link.routing</a> to <a>Link.AvoidsNodes</a>:
+</p>
+<pre data-language="javascript" id="avoidsNodes">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.AvoidsNodes },  // link route should avoid nodes
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "250 40" },
+    { key: "Gamma", loc: "100 0" },
+    { key: "Delta", loc: "75 50" },
+    { key: "Epsilon", loc: "150 30" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("avoidsNodes", 600, 100)</script>
+<p>
+If you move the nodes interactively, you can see how the link's route adjusts to avoid crossing over nodes.
+Notice that a small gap between nodes might not be considered wide enough for links to go through.
+</p>
+<p>
+If a node is very close to or overlaps with either the link's <a>Link.fromNode</a> or <a>Link.toNode</a>
+and would block the link's route, it ignores that node, treating it as if it were just an extension of the connected node.
+Also if no node-avoiding route exists because there is a ring of nodes around one of the connected nodes,
+the routing algorithm will give up and cross over some nodes anyway.
+</p>
+<p>
+You can declare that it's OK to route through a node by setting <a>Node.avoidable</a> to false.
+</p>
+
+<h3>Curve, Curviness, Corner</h3>
+<p>
+Once the <a>Link.routing</a> determines the route (i.e., the sequence of points) that the link takes,
+other properties control the details of how the link shape gets its path geometry.
+The first such property is <a>Link.curve</a>, which controls whether the link shape has basically straight segments
+or is a big curve.
+</p>
+<p>
+The default value for <a>Link.curve</a> is <a>Link.None</a>, which produces link shapes with straight segments
+as you see above.
+</p>
+<p>
+A value of <a>Link.Bezier</a> produces a naturally curved path for the link shape.
+</p>
+
+<pre data-language="javascript" id="bezier">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { curve: go.Link.Bezier },  // Bezier curve
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>  goCode("bezier", 600, 100)</script>
+<p>
+You can control how curved it is by setting the <a>Link.curviness</a> property.
+The default produces a slight curve.
+</p>
+
+<p>
+If there are multiple links, it will automatically compute reasonable values for the curviness of each link,
+unless you assign <a>Link.curviness</a> explicitly.
+</p>
+<pre data-language="javascript" id="beziers">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // multiple links between the same nodes
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("beziers", 600, 100)</script>
+
+<p>
+Another kind of curviness comes from rounded corners when the <a>Link.routing</a> is Orthogonal or AvoidsNodes.
+</p>
+<pre data-language="javascript" id="corners">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.AvoidsNodes,
+        corner: 10 },                  // rounded corners
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "250 40" },
+    { key: "Gamma", loc: "100 0" },
+    { key: "Delta", loc: "75 50" },
+    { key: "Epsilon", loc: "150 30" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("corners", 600, 100)</script>
+
+<p>
+Another kind of curviness comes from setting <a>Link.curve</a> to <a>Link.JumpOver</a>.
+This causes little "hops" in the path of an orthogonal link that crosses another orthogonal link
+that also has a JumpOver curve.
+</p>
+<pre data-language="javascript" id="jumpOvers">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { locationSpot: go.Spot.Center },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal,  // may be either Orthogonal or AvoidsNodes
+        curve: go.Link.JumpOver },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 50" },
+    { key: "Beta", loc: "100 50" },
+    { key: "Alpha2", loc: "50 0" },
+    { key: "Beta2", loc: "50 100" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // these two links will cross
+    { from: "Alpha2", to: "Beta2" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("jumpOvers", 600, 150)</script>
+
+<p>
+Another kind of curviness (or actually lack of it) comes from setting <a>Link.curve</a> to <a>Link.JumpGap</a>.
+This causes little "gaps" in the path of an orthogonal link that crosses another orthogonal link
+that also has a JumpGap curve.
+</p>
+<pre data-language="javascript" id="jumpGaps">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { locationSpot: go.Spot.Center },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal,  // may be either Orthogonal or AvoidsNodes
+        curve: go.Link.JumpGap },
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 50" },
+    { key: "Beta", loc: "100 50" },
+    { key: "Alpha2", loc: "50 0" },
+    { key: "Beta2", loc: "50 100" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },  // these two links will cross
+    { from: "Alpha2", to: "Beta2" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("jumpGaps", 600, 150)</script>
+
+</div>
+</body>
+</html>

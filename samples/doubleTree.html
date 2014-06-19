@@ -3,9 +3,9 @@
 <head>
 <title>Double Tree</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -27,8 +27,7 @@
         { isShadowed: true },
         // define the node's outer shape
         $(go.Shape, "RoundedRectangle",
-          { fill: graygrad,
-            stroke: "#D8D8D8" },
+          { fill: graygrad, stroke: "#D8D8D8" },
           new go.Binding("fill", "color")),
         // define the node's text
         $(go.TextBlock,
@@ -101,17 +100,15 @@
     leftParts.add(root);
     rightParts.add(root);
     // look at all of the immediate children of the ROOT node
-    var it = root.findTreeChildrenNodes();
-    while (it.next()) {
-      var child = it.value;
-      // in what direction is this child growing?
-      var dir = child.data.dir;
-      var coll = (dir === "left") ? leftParts : rightParts;
-      // add the whole subtree starting with this child node
-      coll.addAll(child.findTreeParts());
-      // and also add the link from the ROOT node to this child node
-      coll.add(child.findTreeParentLink());
-    }
+    root.findTreeChildrenNodes().each(function(child) {
+        // in what direction is this child growing?
+        var dir = child.data.dir;
+        var coll = (dir === "left") ? leftParts : rightParts;
+        // add the whole subtree starting with this child node
+        coll.addAll(child.findTreeParts());
+        // and also add the link from the ROOT node to this child node
+        coll.add(child.findTreeParentLink());
+      });
   }
 </script>
 </head>

@@ -3,9 +3,9 @@
 <head>
   <title>Gantt chart</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -33,7 +33,8 @@
           $(go.TextBlock,
             { margin: 2, alignment: go.Spot.Left },
             new go.Binding("text", "key")),
-          // using a function in the Binding allows the value to change when Diagram.updateAllTargetBindings is called
+          // using a function in the Binding allows the value to
+          // change when Diagram.updateAllTargetBindings is called
           new go.Binding("location", "loc",
                          function (l) { return new go.Point(scaleWidth(l.x), l.y); })
         ));
@@ -56,7 +57,10 @@
             { height: 15, width: 15 }),
           // make the location of the end node (with location.x < 0) scalable
           new go.Binding("location", "loc",
-                         function(l) { if (l.x >= 0) return new go.Point(scaleWidth(l.x), l.y); else return l; })
+                         function(l) {
+                           if (l.x >= 0) return new go.Point(scaleWidth(l.x), l.y);
+                           else return l;
+                         })
         ));
 
       // create the template for the nodes displaying dates
@@ -73,9 +77,11 @@
       //create the link template
       myDiagram.linkTemplate =
         $(go.Link,
-          { routing: go.Link.Orthogonal,
+          {
+            routing: go.Link.Orthogonal,
             corner: 3, toShortLength: 2,
-            selectable: false },
+            selectable: false
+          },
           $(go.Shape,
             { isPanelMain: true, strokeWidth: 2 }),
           $(go.Shape,
@@ -118,7 +124,8 @@
       return num * myDiagram._widthFactor;
     }
 
-    // change the grid's cell size and the widthFactor, then update Bindings to scale the widths and positions of nodes
+    // change the grid's cell size and the widthFactor,
+    // then update Bindings to scale the widths and positions of nodes
     function rescale() {
       var val = parseFloat(document.getElementById("widthSlider").value);
       myDiagram.startTransaction("rescale");
@@ -141,7 +148,8 @@
     This sample demonstrates a simple Gantt chart.
   </p>
   <p>
-    You can zoom in on the diagram by changing the "Spacing" value, which scales the diagram using a data binding function for nodes' widths and locations.
+    You can zoom in on the diagram by changing the "Spacing" value,
+    which scales the diagram using a data binding function for nodes' widths and locations.
     This is in place of changing the <a>Diagram.scale</a>.
   </p>
 </div>

@@ -3,9 +3,9 @@
 <head>
   <title>Genogram</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css" />
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -21,9 +21,12 @@
                 { layerName: "Grid" },  // the predefined layer that is behind everything else
                 $(go.Shape, "Circle", { fill: "yellow", stroke: null }),
                 $(go.Placeholder)
-              )
+              ),
+            layout:  // use a custom layout, defined below
+              $(GenogramLayout, { direction: 90, layerSpacing: 30, columnSpacing: 10 })
           });
 
+      // determine the color for each attribute shape
       function attrFill(a) {
         switch (a) {
           case "A": return "green";
@@ -38,36 +41,43 @@
           case "J": return "chartreuse";
           case "K": return "lightgray";
           case "L": return "magenta";
+          case "S": return "red";
           default: return "transparent";
         }
       }
 
-      var tlpt = new go.Point(1, 1);
-      var trpt = new go.Point(20, 1);
-      var brpt = new go.Point(20, 20);
-      var blpt = new go.Point(1, 20);
-      function malePosition(a) {
+      // determine the geometry for each attribute shape in a male;
+      // except for the slash these are all squares at each of the four corners of the overall square
+      var tlsq = go.Geometry.parse("F M1 1 l19 0 0 19 -19 0z");
+      var trsq = go.Geometry.parse("F M20 1 l19 0 0 19 -19 0z");
+      var brsq = go.Geometry.parse("F M20 20 l19 0 0 19 -19 0z");
+      var blsq = go.Geometry.parse("F M1 20 l19 0 0 19 -19 0z");
+      var slash = go.Geometry.parse("F M38 0 L40 0 40 2 2 40 0 40 0 38z");
+      function maleGeometry(a) {
         switch (a) {
-          case "A": return tlpt;
-          case "B": return tlpt;
-          case "C": return tlpt;
-          case "D": return trpt;
-          case "E": return trpt;
-          case "F": return trpt;
-          case "G": return brpt;
-          case "H": return brpt;
-          case "I": return brpt;
-          case "J": return blpt;
-          case "K": return blpt;
-          case "L": return blpt;
-          default: return tlpt;
+          case "A": return tlsq;
+          case "B": return tlsq;
+          case "C": return tlsq;
+          case "D": return trsq;
+          case "E": return trsq;
+          case "F": return trsq;
+          case "G": return brsq;
+          case "H": return brsq;
+          case "I": return brsq;
+          case "J": return blsq;
+          case "K": return blsq;
+          case "L": return blsq;
+          case "S": return slash;
+          default: return tlsq;
         }
       }
 
-      var tlarc = go.Geometry.parse("M20 20 B 180 90 20 20 19 19 z", true);
-      var trarc = go.Geometry.parse("M20 20 B 270 90 20 20 19 19 z", true);
-      var brarc = go.Geometry.parse("M20 20 B 0 90 20 20 19 19 z", true);
-      var blarc = go.Geometry.parse("M20 20 B 90 90 20 20 19 19 z", true);
+      // determine the geometry for each attribute shape in a female;
+      // except for the slash these are all pie shapes at each of the four quadrants of the overall circle
+      var tlarc = go.Geometry.parse("F M20 20 B 180 90 20 20 19 19 z");
+      var trarc = go.Geometry.parse("F M20 20 B 270 90 20 20 19 19 z");
+      var brarc = go.Geometry.parse("F M20 20 B 0 90 20 20 19 19 z");
+      var blarc = go.Geometry.parse("F M20 20 B 90 90 20 20 19 19 z");
       function femaleGeometry(a) {
         switch (a) {
           case "A": return tlarc;
@@ -82,6 +92,7 @@
           case "J": return blarc;
           case "K": return blarc;
           case "L": return blarc;
+          case "S": return slash;
           default: return tlarc;
         }
       }
@@ -94,16 +105,16 @@
           { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
           $(go.Panel,
             { name: "ICON" },
-            $(go.Shape, "Rectangle",
+            $(go.Shape, "Square",
               { width: 40, height: 40, strokeWidth: 2, fill: "white", portId: "" }),
             $(go.Panel,
-              {
+              { // for each attribute show a Shape at a particular place in the overall square
                 itemTemplate:
                   $(go.Panel,
-                    $(go.Shape, "Rectangle",
-                      { width: 19, height: 19, stroke: null, strokeWidth: 0 },
+                    $(go.Shape,
+                      { stroke: null, strokeWidth: 0 },
                       new go.Binding("fill", "", attrFill),
-                      new go.Binding("position", "", malePosition))
+                      new go.Binding("geometry", "", maleGeometry))
                   ),
                 margin: 1
               },
@@ -120,10 +131,10 @@
           { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
           $(go.Panel,
             { name: "ICON" },
-            $(go.Shape, "Ellipse",
+            $(go.Shape, "Circle",
               { width: 40, height: 40, strokeWidth: 2, fill: "white", portId: "" }),
             $(go.Panel,
-              {
+              { // for each attribute show a Shape at a particular place in the overall circle
                 itemTemplate:
                   $(go.Panel,
                     $(go.Shape,
@@ -162,9 +173,6 @@
       ));
 
 
-      myDiagram.layout =
-        $(GenogramLayout, { direction: 90, layerSpacing: 30, columnSpacing: 10 });
-
       // n: name, s: sex, m: mother, f: father, ux: wife, vir: husband, a: attributes/markers
       setupDiagram(myDiagram, [
           { key: 0, n: "Aaron", s: "M", m:-10, f:-11, ux: 1, a: ["C", "F", "K"] },
@@ -183,8 +191,8 @@
           { key: 13, n: "David", s: "M", m: 5, f: 4, a: ["B", "H"] },
           { key: 14, n: "Emma", s: "F", m: 5, f: 4, a: ["E", "G"] },
           { key: 15, n: "Evan", s: "M", m: 8, f: 9, a: ["F", "H"] },
-          { key: 16, n: "Ethan", s: "M", m: 8, f: 9, a: ["D", "K"] },
-          { key: 17, n: "Eve", s: "F", vir: 16, a: ["B", "F", "L"] },
+          { key: 16, n: "Ethan", s: "M", m: 8, f: 9, a: ["D", "K", "S"] },
+          { key: 17, n: "Eve", s: "F", vir: 16, a: ["B", "F", "L", "S"] },
           { key: 18, n: "Emily", s: "F", m: 8, f: 9 },
           { key: 19, n: "Fred", s: "M", m: 17, f: 16, a: ["B"] },
           { key: 20, n: "Faith", s: "F", m: 17, f: 16, a: ["L"] },
@@ -234,15 +242,13 @@
       var node = diagram.findNodeForKey(focusId);
       if (node !== null) {
         diagram.select(node);
-        var it = node.linksConnected;
-        while (it.next()) {
-          var l = it.value;
-          if (!l.isLabeledLink) continue;
+        node.linksConnected.each(function(l) {
+          if (!l.isLabeledLink) return;
           l.opacity = 0;
           var spouse = l.getOtherNode(node);
           spouse.opacity = 0;
           spouse.pickable = false;
-        }
+        });
       }
     }
 
@@ -335,6 +341,7 @@
     }
 
 
+    // A custom layout that shows the two families related to a person's parents
     function GenogramLayout() {
       go.LayeredDigraphLayout.call(this);
     }
@@ -377,18 +384,10 @@
           vertex.height = Math.max(spouseA.actualBounds.height, spouseB.actualBounds.height);
           vertex.focus = new go.Point(spouseA.actualBounds.width + 30/2, vertex.height/2);
         } else {
-          var anymarriage = false;
-          var mit = node.linksConnected;
-          while (mit.next()) {
-            var link = mit.value;
-            if (link.isLabeledLink) {  // assume a marriage Link has a label Node
-              anymarriage = true;
-              break;
-            }
-          }
           // don't add a vertex for any married person!
           // instead, code above adds label node for marriage link
-          if (!anymarriage) {
+          // assume a marriage Link has a label Node
+          if (!node.linksConnected.any(function(l) { return l.isLabeledLink; })) {
             var vertex = net.addNode(node);
           }
         }
@@ -407,10 +406,8 @@
           if (child !== null) {  // an unmarried child
             net.linkVertexes(parent, child, link);
           } else {  // a married child
-            var mit = link.toNode.linksConnected;
-            while (mit.next()) {
-              var l = mit.value;
-              if (l.data.category !== "Marriage") continue;
+            link.toNode.linksConnected.each(function(l) {
+              if (!l.isLabeledLink) return;  // if it has no label node, it's a parent-child link
               // found the Marriage Link, now get its label Node
               var mlab = l.labelNodes.first();
               // parent-child link should connect with the label node,
@@ -419,7 +416,7 @@
               if (mlabvert !== null) {
                 net.linkVertexes(parent, mlabvert, link);
               }
-            }
+            });
           }
         }
       }
@@ -430,18 +427,16 @@
       var horiz = this.direction == 0.0 || this.direction == 180.0;
       // for every vertex, record the maximum vertex width or height for the vertex's layer
       var maxsizes = [];
-      for (var it = this.network.vertexes.iterator; it.next(); ) {
-        var v = it.value;
+      this.network.vertexes.each(function(v) {
         var lay = v.layer;
         var max = maxsizes[lay];
         if (max === undefined) max = 0;
         var sz = (horiz ? v.width : v.height);
         if (sz > max) maxsizes[lay] = sz;
-      }
+      });
       // now make sure every vertex has the maximum width or height according to which layer it is in,
       // and aligned on the left (if horizontal) or the top (if vertical)
-      for (it = this.network.vertexes.iterator; it.next(); ) {
-        var v = it.value;
+      this.network.vertexes.each(function(v) {
         var lay = v.layer;
         var max = maxsizes[lay];
         if (horiz) {
@@ -451,7 +446,7 @@
           v.focus = new go.Point(v.width / 2, 0);
           v.height = max;
         }
-      }
+      });
       // from now on, the LayeredDigraphLayout will think that the Node is bigger than it really is
       // (other than the ones that are the widest or tallest in their respective layer).
     };
@@ -459,26 +454,23 @@
     GenogramLayout.prototype.commitNodes = function() {
       go.LayeredDigraphLayout.prototype.commitNodes.call(this);
       // position regular nodes
-      var it = this.network.vertexes.iterator;
-      while (it.next()) {
-        var v = it.value;
-        if (v.node === null) continue;
-        if (v.node.isLinkLabel) continue;
-        v.node.position = new go.Point(v.x, v.y);
-      }
+      this.network.vertexes.each(function(v) {
+        if (v.node !== null && !v.node.isLinkLabel) {
+          v.node.position = new go.Point(v.x, v.y);
+        }
+      });
       // position the spouses of each marriage vertex
-      it.reset();
-      while (it.next()) {
-        var v = it.value;
-        if (v.node === null) continue;
-        if (!v.node.isLinkLabel) continue;
+      var layout = this;
+      this.network.vertexes.each(function(v) {
+        if (v.node === null) return;
+        if (!v.node.isLinkLabel) return;
         var labnode = v.node;
         var lablink = labnode.labeledLink;
         var spouseA = lablink.fromNode;
         var spouseB = lablink.toNode;
         // see if the parents are on the desired sides, to avoid a link crossing
-        var aParentsNode = this.findParentsMarriageLabelNode(spouseA);
-        var bParentsNode = this.findParentsMarriageLabelNode(spouseB);
+        var aParentsNode = layout.findParentsMarriageLabelNode(spouseA);
+        var bParentsNode = layout.findParentsMarriageLabelNode(spouseB);
         if (aParentsNode !== null && bParentsNode !== null && aParentsNode.position.x > bParentsNode.position.x) {
           // swap the spouses
           spouseA = lablink.toNode;
@@ -495,7 +487,7 @@
           spouseA.position = pos;
           spouseB.position = pos;
         }
-      }
+      });
     };
 
     GenogramLayout.prototype.findParentsMarriageLabelNode = function(node) {
@@ -532,8 +524,8 @@
     { key: 13, n: "David", s: "M", m: 5, f: 4, a: ["B", "H"] },
     { key: 14, n: "Emma", s: "F", m: 5, f: 4, a: ["E", "G"] },
     { key: 15, n: "Evan", s: "M", m: 8, f: 9, a: ["F", "H"] },
-    { key: 16, n: "Ethan", s: "M", m: 8, f: 9, a: ["D", "K"] },
-    { key: 17, n: "Eve", s: "F", vir: 16, a: ["B", "F", "L"] },
+    { key: 16, n: "Ethan", s: "M", m: 8, f: 9, a: ["D", "K", "S"] },
+    { key: 17, n: "Eve", s: "F", vir: 16, a: ["B", "F", "L", "S"] },
     { key: 18, n: "Emily", s: "F", m: 8, f: 9 },
     { key: 19, n: "Fred", s: "M", m: 17, f: 16, a: ["B"] },
     { key: 20, n: "Faith", s: "F", m: 17, f: 16, a: ["L"] },

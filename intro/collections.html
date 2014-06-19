@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Collections -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Collections</h2>
+<p>
+<b>GoJS</b> provides its own collection classes: <a>List</a>, <a>Set</a>, and <a>Map</a>.
+You can iterate over a collection by using an <a>Iterator</a>.
+</p>
+<p>
+These collection classes have several advantages over using JavaScript arrays as lists or objects as maps.
+They optionally enforce type checking of the item types.
+They raise an error when trying to get the next item of an iterator if the collection has been modified since getting the iterator.
+They can be made read-only to avoid unexpected modifications.
+They offer methods not found on simple arrays or objects, such as <a>Iterator.any</a>, <a>Iterator.all</a>, and <a>Iterator.each</a>.
+</p>
+<p>
+In <b>GoJS</b> most of the properties and methods that return collections describing the structure of the diagram return an <a>Iterator</a>.
+That is because the implementation of the collections are internal -- you only need to know how to iterate over the result collection.
+Other methods or properties will allow you to modify the diagram.
+An example is <a>Diagram.nodes</a>, which returns the current collection of <a>Node</a>s and <a>Group</a>s in the diagram as an <a>Iterator</a>.
+The collection is automatically modified as the programmer adds or removes node data in the model or by direct calls to
+<a>Diagram.add</a> or <a>Diagram.remove</a>.
+</p>
+<p>
+However there are a few properties that return collections that are allowed to be modified.
+Examples include collections on classes that are usually frozen after initialization:
+<a>Geometry.figures</a>, <a>PathFigure.segments</a>, and <a>Brush.colorStops</a>.
+Other examples include collections that are modified very infrequently, usually only upon diagram initialization:
+<a>ToolManager.mouseDownTools</a> (and the other lists of tools) and <a>Diagram.nodeTemplateMap</a>
+(and other template maps).
+</p>
+
+<h3>List</h3>
+<p>
+A <a>List</a> is an ordered collection of values that are indexed by integers from zero to one less than the count.
+</p>
+<p>
+The optional argument to the <a>List</a> constructor specifies the type of the items that may be added to the list.
+</p>
+<pre data-language="javascript">
+  var l = new go.List("string");
+  l.add("A");
+  l.add("B");
+  l.add("C");
+
+  assert(l.count === 3);
+  assert(l.elt(0) === "A");
+  assert(l.contains("B"));
+  assert(l.indexOf("B") === 1);
+
+  l.setElt(1, "z");  // replace an item
+  assert(l.elt(1) === "z");
+
+  l.removeAt(1);  // remove an item
+  assert(l.count === 2);
+  assert(l.elt(1) === "C");
+
+  l.add(23);  // throws an error when debugging
+  l.add({});  // throws an error when debugging
+</pre>
+
+<p>
+To iterate over a <a>List</a>, get its <a>List.iterator</a> and call <a>Iterator.next</a>
+on it to advance its position in the list.  Its <a>Iterator.value</a> will be a list item;
+its <a>Iterator.key</a> will be the corresponding index in the list.
+</p>
+<pre data-language="javascript">
+  var l = new go.List("string");
+  l.add("A");
+  l.add("B");
+  l.add("C");
+
+  var it = l.iterator;
+  while (it.next()) {
+    console.log(it.key + ": " + it.value);
+  }
+  // This outputs:
+  // 0: A
+  // 1: B
+  // 2: C
+</pre>
+
+<h3>Set</h3>
+<p>
+A <a>Set</a> is an unordered collection of values that does not allow duplicate values.
+</p>
+<p>
+The optional argument to the <a>Set</a> constructor specifies the type of the items that may be added to the set.
+</p>
+<pre data-language="javascript">
+  var s = new go.Set("string");
+  s.add("A");
+  s.add("B");
+  s.add("C");
+  s.add("B");  // duplicate is ignored
+
+  assert(s.count === 3);
+  assert(s.contains("B"));
+
+  s.remove("B");  // remove an item
+  assert(s.count === 2);
+  assert(!s.contains("B"));
+
+  s.add(23);  // throws an error when debugging
+  s.add({});  // throws an error when debugging
+</pre>
+
+<p>
+Iterating over the items in a <a>Set</a> is just like iterating over a <a>List</a>,
+except that the order of the items may vary.
+</p>
+<pre data-language="javascript">
+  var s = new go.Set("string");
+  s.add("A");
+  s.add("B");
+  s.add("C");
+  s.add("B");  // duplicate is ignored
+
+  var it = s.iterator;
+  while (it.next()) {
+    console.log(it.value);
+  }
+  // This might output, but the order may vary:
+  // A
+  // B
+  // C
+</pre>
+
+<h3>Map</h3>
+<p>
+A <a>Map</a> is an unordered collection of key-value pairs that are indexed by the keys.
+</p>
+<p>
+The two optional arguments to the <a>Map</a> constructor specifies the types of the keys and the types of the item values that may be added to the map.
+</p>
+<pre data-language="javascript">
+  var m = new go.Map("string", "number");
+  m.add("A", 1);  // associate "A" with 1
+  m.add("B", 2);
+  m.add("C", 3);
+
+  assert(s.count === 3);
+  assert(s.contains("B"));
+  assert(s.getValue("B") === 2);
+
+  m.add("B", 222);  // replace the value for "B"
+  assert(s.getValue("B") === 222);
+
+  s.remove("B");  // remove an item
+  assert(s.count === 2);
+  assert(!s.contains("B"));
+  assert(s.getValue("B") === null);
+
+  s.add(23, 23);  // throws an error when debugging
+  s.add({}, 23);  // throws an error when debugging
+</pre>
+
+<p>
+Iterating over the items in a <a>Map</a> is just like iterating over a <a>List</a>,
+except that the order of the items may vary.
+</p>
+<pre data-language="javascript">
+  var m = new go.Map("string", "number");
+  m.add("A", 1);  // associate "A" with 1
+  m.add("B", 2);
+  m.add("C", 3);
+  m.add("B", 222);  // replace the value for "B"
+
+  var it = m.iterator;
+  while (it.next()) {
+    console.log(it.key + ": " + it.value);
+  }
+  // This might output, but the order may vary:
+  // A: 1
+  // B: 222
+  // C: 3
+</pre>
+
+<h3>More Iteration Examples</h3>
+
+<p>
+It is commonplace to iterate over the selected <a>Part</a>s of a <a>Diagram</a>:
+<pre>
+  for (var it = diagram.selection.iterator; it.next(); ) {
+    var part = it.value;  // part is now a Node or a Group or a Link or maybe a simple Part
+    if (part instanceof go.Node) { . . . }
+    else if (part instanceof go.Link) { . . . }
+  }
+</pre>
+Alternatively:
+<pre>
+  diagram.selection.each(function(part) {
+    // part is now a Node or a Group or a Link or maybe a simple Part
+    if (part instanceof go.Node) { . . . }
+    else if (part instanceof go.Link) { . . . }
+  });
+</pre>
+</p>
+
+<p>
+Sometimes one needs to iterate over the <a>Node</a>s in a <a>Diagram</a>:
+<pre>
+  for (var it = diagram.nodes; it.next(); ) {
+    var n = it.value;  // n is now a Node or a Group
+    if (n.category === "Special") { . . . }
+  }
+</pre>
+</p>
+
+<p>
+You can also iterate over the port elements in a <a>Node</a>, or the <a>Link</a>s connected to a port element:
+<pre>
+  for (var pit = node.ports; pit.next(); ) {
+    var port = pit.value;  // port is now a GraphObject within the node
+    for (var lit = node.findLinksConnected(port.portId); lit.next(); ) {
+      var link = lit.value;  // link is now a Link connected with the port
+      if (link.data.xyz === 17) { . . . }
+    }
+  }
+</pre>
+</p>
+
+<p>
+Or perhaps you need to iterate over the elements of a <a>Panel</a>:
+<pre>
+  for (var it = panel.elements; it.next(); ) {
+    var elt = it.value;  // elt is now a GraphObject that is an immediate child of the Panel
+    if (elt instanceof go.TextBlock) { . . . }
+    else if (elt instanceof go.Panel) { . . . recurse . . . }
+  }
+</pre>
+</p>
+
+<p>
+If you want to find <a>Node</a>s that are immediate members of a <a>Group</a>:
+<pre>
+  for (var mit = group.memberParts; mit.next(); ) {
+    var part = mit.value;  // part is now a Part within the Group
+    if (part instanceof go.Node) { . . . maybe work with part.data . . . }
+  }
+</pre>
+</p>
+
+
+</div>
+</body>
+</html>

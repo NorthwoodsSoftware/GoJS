@@ -3,9 +3,9 @@
 <head>
 <title>Tree Layout</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -29,6 +29,7 @@
           { fill: "lightgray",  // the initial value, but data-binding may provide different value
             stroke: "black",
             desiredSize: new go.Size(30, 30) },
+          new go.Binding("desiredSize", "size"),
           new go.Binding("fill", "fill")),
         $(go.TextBlock,
           new go.Binding("text", "text"))
@@ -80,6 +81,7 @@
         // "parent" is set by code below that assigns children
         text: i.toString(),  // some text to be shown by the node template
         fill: go.Brush.randomColor()  // a color to be shown by the node template
+        , size: new go.Size(Math.random()*50 + 20, Math.random()*50 + 20)
       });
     }
 
@@ -130,6 +132,11 @@
     else if (style === "Alternating") lay.treeStyle = go.TreeLayout.StyleAlternating;
     else if (style === "LastParents") lay.treeStyle = go.TreeLayout.StyleLastParents;
     else if (style === "RootOnly") lay.treeStyle = go.TreeLayout.StyleRootOnly;
+
+    var layerStyle = document.getElementById("layerStyle").value;
+    if (layerStyle === "Individual") lay.layerStyle = go.TreeLayout.LayerIndividual;
+    else if (layerStyle === "Siblings") lay.layerStyle = go.TreeLayout.LayerSiblings;
+    else if (layerStyle === "Uniform") lay.layerStyle = go.TreeLayout.LayerUniform;
 
     var angle = getRadioValue("angle");
     angle = parseFloat(angle, 10);
@@ -277,6 +284,13 @@
         <option value="Alternating">Alternating</option>
         <option value="LastParents">LastParents</option>
         <option value="RootOnly">RootOnly</option>
+      </select>
+      <br />
+      <b>Layer Style</b><br />
+      <select name="layerStyle" id="layerStyle" onchange="layout()">
+        <option value="Individual" selected="selected">Individual</option>
+        <option value="Siblings">Siblings</option>
+        <option value="Uniform">Uniform</option>
       </select>
       <br />
       <br />

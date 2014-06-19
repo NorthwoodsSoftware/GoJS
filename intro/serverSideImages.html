@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Server-Side Images with GoJS -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Creating Images on the Server</h2>
+<p>
+  It may be useful for many applications to create images of Diagrams with <b>GoJS</b>, and this page details some of the options for such a task.
+</p>
+<h3>PhantomJS</h3>
+<p>
+One of the best options for creating images server-side (or anywhere) is <a href="http://phantomjs.org/">PhantomJS</a>,
+a platform-agnostic "headless" implementation of WebKit.
+<b>PhantomJS</b> allows us to run anything we would normally run inside of a browser in a command shell (terminal, command prompt),
+creating screen captures or image output as we go.
+</p>
+<p>
+The following code is a small example using <b>PhantomJS</b>.
+If you saved the JavaScript as <code>createImage.js</code> and ran it with phantom (<code>phantomjs createImage.js</code>)
+it would create an image of a Diagram called <code>myDiagramImage.png</code>.
+It has the requirement that <code>go.js</code> is in the same folder, though this path can be modified as appropriate.
+The Diagram code in the sample is the same as that in the <a href="../samples/minimal.html">Minimal sample</a>.
+</p>
+<pre data-language="javascript">
+// Example of (server-side or headless) image creation using PhantomJS
+// PhantomJS can be found at: https://github.com/ariya/phantomjs
+
+// Our page will contain nothing but a div tag and an img tag.
+// We will create our Diagram on the div and use Diagram.makeImageData to give the img a source.
+// Then we will render only the image created.
+var page = require('webpage').create();
+page.content = '&lt;html&gt;&lt;body&gt;&lt;div id="myDiagram"&gt;&lt;/div&gt; &lt;img id="myImg" /&gt;&lt;/body&gt;&lt;/html&gt;';
+
+// We include go.js before acting on our page, assuming it is in the same directory
+page.injectJs('go.js');
+
+page.evaluate(function() {
+  // GoJS is loaded, now we set up a diagram and make the image we want
+
+  // This example GoJS code is taken from the Minimal.html sample
+  var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+  myDiagram = new go.Diagram("myDiagram");  // create a Diagram for the DIV HTML element
+  myDiagram.initialContentAlignment = go.Spot.Center;
+
+  // define a simple Node template (but use the default Link template)
+  myDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        // Shape.fill is bound to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding("text", "key"))
+    );
+
+  // create the model data that will be represented by Nodes and Links
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ];
+  myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  // end of code from Minimal.html sample
+
+  var img = document.getElementById('myImg');
+  img.src = myDiagram.makeImageData({
+    scale: 1,
+    // PhantomJS tends to handle transparency poorly in the images it renders,
+    // so we prefer to use a white background:
+    background: "white"
+  })
+
+  document.body.style.margin = '0px';
+});
+
+// We want to ensure that the image is done loading before we render
+setInterval(function() {
+  var imgComplete = page.evaluate(function() {
+    return document.getElementById('myImg').complete
+  });
+
+  if (imgComplete) {
+    // PhantomJS renders the entire page, and we just want to output the &lt;img&gt;,
+    // so we must clip to its bounding rect:
+    var clipRect = page.evaluate(function() {
+      return document.getElementById('myImg').getBoundingClientRect();
+    });
+    page.clipRect = {
+      top:    clipRect.top,
+      left:   clipRect.left,
+      width:  clipRect.width,
+      height: clipRect.height
+    }
+    page.render('myDiagramImage.png');
+    phantom.exit();
+  }
+}, 100);
+</pre>
+<p>
+Since <b>PhantomJS</b> contains a full, native DOM implementation,
+any work you wish to do with <b>GoJS</b> server-side (such as complex layouts or positioning) is also entirely possible.
+</p>
+
+<h3>Using <b>GoJS</b> with <b>Node.js</b></h3>
+<p>
+  <b>GoJS</b> can also be used with <a href="http://nodejs.org">Node.js</a> for server-side image creation,
+  though <b>Node.js</b> does not have native support for DOM, CSS, or the canvas element.
+  Therefore using <b>Node.js</b> with <b>GoJS</b> requires the installation of Node packages for DOM and canvas simulation that are not guaranteed to work.
+  To use the <b>GoJS</b> library with <b>Node.js</b>, you must install the following:
+</p>
+<ul>
+<li>NodeJS: <a href="http://nodejs.org/download/">http://nodejs.org/download/</a></li>
+<li>node-canvas: <a href="https://github.com/LearnBoost/node-canvas/wiki">https://github.com/LearnBoost/node-canvas/wiki</a></li>
+<li>JSDom: <a href="https://github.com/tmpvar/jsdom">https://github.com/tmpvar/jsdom</a></li>
+</ul>
+<p>
+We recommend that you follow the installation instructions for each of these carefully,
+as there are a few dependencies, such as Python for Node's package manager.
+</p>
+<p>
+  The following code gives a complete example of create a Diagram inside of <b>Node.js</b> and outputting it to a site.
+  The Diagram code in the sample is the same as that in the <a href="../samples/minimal.html">Minimal sample</a>.
+</p>
+<pre data-language="javascript">
+// Example of server-side image creation using Node.js
+// Node.js can be found at http://nodejs.org
+
+// Module dependencies
+var http = require("http");
+var fs = require("fs");
+var Canvas = require('canvas'); // https://github.com/LearnBoost/node-canvas
+var jsdom = require('jsdom');  // https://github.com/tmpvar/jsdom
+
+
+// Navigating to lochalhost:8888 will show an image of a Diagram made server-side with Node.js
+http.createServer(function(request, response) {
+  writeResponse(response);
+}).listen(8888);
+
+function writeResponse(response) {
+  // In writing our response, we use jsdom to create a fake window and DOM,
+  // create a Diagram in that environment, and
+  jsdom.env(
+    '&lt;html&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;', // we create an empty HTML page
+    ["go.js"], // assuming go.js is in the same folder as this file
+    function(errors, window) {
+      // Necessary in this environment, as typing simply "go" will not find "window.go"
+      // Alternatively, we could have written this statement in makeDiagramAndData, or made it global here
+      var go = window.go;
+
+      var data = makeDiagramAndData(window, go);
+
+      if (response) {
+        response.writeHeader(200, {"Content-Type": "text/html"});
+        response.write('&lt;img src="' + data + '" /&gt;');
+        response.end();
+      }
+    }
+  );
+}
+
+// All GoJS specific code is in this function
+function makeDiagramAndData(window, go) {
+  // This example GoJS code is taken from the Minimal.html sample
+  var $ = go.GraphObject.make;  // for conciseness in defining templates
+  myDiagram = new go.Diagram(); // Note that no DIV is supplied
+
+  // define a simple Node template (but use the default Link template)
+  myDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        // Shape.fill is bound to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding("text", "key"))
+    );
+
+  // create the model data that will be represented by Nodes and Links
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ];
+  myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  // end of code from Minimal.html sample
+
+  // Create image data
+  return myDiagram.makeImageData({
+    scale: 1
+  });
+}
+</pre>
+
+<h4>Known issue with <b>Node.js</b> and node-canvas</h4>
+<p>
+  As of December 2012, <i>node-canvas</i> does not parse named CSS colors unless the names are all lowercase.
+  This means that "Blue" may not parse correctly, but "blue" will.
+</p>
+
+</div>
+</body>
+</html>

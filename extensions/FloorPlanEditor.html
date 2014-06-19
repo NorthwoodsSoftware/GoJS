@@ -3,7 +3,7 @@
 <head>
 <title>Floor Plan Editor</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
 <script src="DrawCommandHandler.js"></script>
 <script src="RotateMultipleTool.js"></script>
@@ -190,30 +190,41 @@
       $(go.Diagram, "myDiagram",
         {
           allowDrop: true,  // accept drops from palette
-          allowLink: false  // no user-drawn links
+          allowLink: false,  // no user-drawn links
+
+          commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
+          // default to having arrow keys move selected nodes
+          "commandHandler.arrowKeyBehavior": "move",
+          // allow Ctrl-G to call groupSelection()
+          "commandHandler.archetypeGroupData": { text: "Group", isGroup: true },
+
+          rotatingTool: new RotateMultipleTool(),  // defined in RotateMultipleTool.js
+
+          resizingTool: new ResizeMultipleTool(),  // defined in ResizeMultipleTool.js
+
+          draggingTool: new GuidedDraggingTool(),  // defined in GuidedDraggingTool.js
+          "draggingTool.horizontalGuidelineColor": "blue",
+          "draggingTool.verticalGuidelineColor": "blue",
+          "draggingTool.centerGuidelineColor": "green",
+          "draggingTool.guidelineWidth": 1,
+
+          // set these kinds of Diagram properties after initialization, not now
+          "InitialLayoutCompleted": loadDiagramProperties,  // defined below
+
+          // notice whenever the selection may have changed
+          "ChangedSelection": enableAll,  // defined below, to enable/disable commands
+
+          // notice when the Paste command may need to be reenabled
+          "ClipboardChanged": enableAll,
+
+          // notice when an object has been dropped from the palette
+          "ExternalObjectsDropped": function(e) {
+              document.getElementById("myDiagram").focus();  // assume keyboard focus should be on myDiagram
+              myDiagram.toolManager.draggingTool.clearGuidelines();  // remove any guidelines
+          }
+
         });
 
-    myDiagram.commandHandler = new DrawCommandHandler();
-    myDiagram.commandHandler.arrowKeyBehavior = "move";
-
-    myDiagram.toolManager.rotatingTool = new RotateMultipleTool();
-
-    myDiagram.toolManager.resizingTool = new ResizeMultipleTool();
-
-    myDiagram.toolManager.draggingTool = new GuidedDraggingTool();
-    myDiagram.toolManager.draggingTool.horizontalGuidelineColor = "blue";
-    myDiagram.toolManager.draggingTool.verticalGuidelineColor = "blue";
-    myDiagram.toolManager.draggingTool.centerGuidelineColor = "green";
-    myDiagram.toolManager.draggingTool.guidelineWidth = 1;
-
-    // allow Ctrl-G to call groupSelection()
-    myDiagram.commandHandler.archetypeGroupData = { text: "Group", isGroup: true };
-
-    // converts data about the part into a string
-    function tooltipTextConverter(data) {
-      if (data.item != undefined) return data.item;
-      return "(unnamed item)";
-    }
 
     // sets the qualities of the tooltip
     var tooltiptemplate =
@@ -222,7 +233,12 @@
           { fill: "whitesmoke", stroke: "gray" }),
         $(go.TextBlock,
           { margin: 3, editable: true },
-          new go.Binding("text", "", tooltipTextConverter)));
+          // converts data about the part into a string
+          new go.Binding("text", "", function(data) {
+              if (data.item != undefined) return data.item;
+              return "(unnamed item)";
+            }))
+      );
 
     // Define the generic furniture and structure Nodes.
     // The Shape gets it Geometry from a geometry path string in the bound data.
@@ -283,6 +299,7 @@
             $(go.TextBlock, "Rename", { margin: 3 }),
             { click: function(e, obj) { rename(obj); } }));
 
+
     // group settings from basic.html to lock things together
     myDiagram.groupTemplate =
       $(go.Group, go.Panel.Auto,
@@ -295,6 +312,50 @@
         $(go.Placeholder)
       );
 
+    // make grouped Parts unselectable
+    myDiagram.addDiagramListener("SelectionGrouped", function(e) {
+      // e.subject should be the new Group
+      e.subject.memberParts.each(function(part) { part.selectable = false; });
+    });
+
+    myDiagram.addDiagramListener("SelectionUngrouped", function(e) {
+      // e.parameter should be collection of ungrouped former members
+      e.parameter.each(function(part) {
+        part.selectable = true;
+        part.isSelected = true;
+      });
+    });
+
+    myDiagram.addDiagramListener("SelectionCopied", function(e) {
+      // selection collection will be modified during this loop,
+      // so make a copy of it first
+      var sel = myDiagram.selection.toArray();
+      for (var i = 0; i < sel.length; i++) {
+        var part = sel[i];
+        // don't have any members of Groups be selected or selectable
+        if (part instanceof go.Group) {
+          var mems = new go.Set().addAll(part.memberParts);
+          mems.each(function(member) {
+            member.isSelected = false;
+            member.selectable = false;
+          });
+        }
+      }
+    });
+
+    // change the title to indicate that the diagram has been modified
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var currentFile = document.getElementById("currentFile");
+      var idx = currentFile.textContent.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
+      } else {
+        if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+      }
+    });
+
+
+    // the Palette
 
     // brushes for furniture structures
     var wood = $(go.Brush, go.Brush.Linear, { 0: "#964514", 1: "#5E2605" });
@@ -427,102 +488,54 @@
             })  // end model
         });  // end Palette
 
+
+    // the Overview
+
     myOverview =
       $(go.Overview, "myOverview",
         { observed: myDiagram, maxScale: 0.5 });
+
     // change color of viewport border in Overview
     myOverview.box.elt(0).stroke = "dodgerblue";
 
 
-    // enable or disable a particular button
-    function enable(name, ok) {
-        var button = document.getElementById(name);
-        if (button) button.disabled = !ok;
-    }
-
-    // enable or disable all command buttons
-    function enableAll() {
-        var cmdhnd = myDiagram.commandHandler;
-        enable("AlignLeft", cmdhnd.canAlignSelection());
-        enable("AlignRight", cmdhnd.canAlignSelection());
-        enable("AlignTop", cmdhnd.canAlignSelection());
-        enable("AlignBottom", cmdhnd.canAlignSelection());
-        enable("AlignCenterX", cmdhnd.canAlignSelection());
-        enable("AlignCenterY", cmdhnd.canAlignSelection());
-        enable("AlignRow", cmdhnd.canAlignSelection());
-        enable("AlignColumn", cmdhnd.canAlignSelection());
-        enable("AlignGrid", cmdhnd.canAlignSelection());
-    }
-
-    // change the title to indicate that the diagram has been modified
-    myDiagram.addDiagramListener("Modified", function(e) {
-      var currentFile = document.getElementById("currentFile");
-      var idx = currentFile.textContent.indexOf("*");
-      if (myDiagram.isModified) {
-        if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
-      } else {
-        if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
-      }
-    });
-
-    // set these kinds of Diagram properties after initialization, not now
-    myDiagram.addDiagramListener("InitialLayoutCompleted", loadDiagramProperties);
-
-    // notice whenever the selection may have changed
-    myDiagram.addDiagramListener("ChangedSelection", function(e) {
-        enableAll();
-    });
-    // notice when the Paste command may need to be reenabled
-    myDiagram.addDiagramListener("ClipboardChanged", function(e) {
-        enableAll();
-    });
-    // notice whenever a transaction or undo/redo has occurred
-    myDiagram.model.addChangedListener(function(e) {
-        if (e.isTransactionFinished) enableAll();
-    });
-    // notice when an object has been dropped from the palette
-    myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-        document.getElementById("myDiagram").focus();
-        myDiagram.toolManager.draggingTool.reset();  // remove any guidelines
-    });
-
-    // make grouped Parts unselectable
-    myDiagram.addDiagramListener("SelectionGrouped", function(e) {
-      var newgroup = e.subject;
-      if (newgroup) {
-        var itr = newgroup.memberParts;
-        while (itr.next()) {
-          var part = itr.value;
-          part.selectable = false;
-        }
-      }
-    });
-    myDiagram.addDiagramListener("SelectionUngrouped", function(e) {
-      var itr = e.parameter.iterator;  // Iterable collection of ungrouped former members
-      while (itr.next()) {
-        var part = itr.value;
-        part.selectable = true;
-        part.isSelected = true;
-      }
-    });
-    myDiagram.addDiagramListener("SelectionCopied", function(e) {
-      var sel = myDiagram.selection.toArray();
-      for (var i = 0; i < sel.length; i++) {
-        var part = sel[i];
-        if (part instanceof go.Group) {
-          var mems = new go.Set();
-          mems.addAll(part.memberParts);
-          var it = mems.iterator;
-          while (it.next()) {
-            var member = it.value;
-            member.isSelected = false;
-            member.selectable = false;
-          }
-        }
-      }
-    });
+    // start off with an empty document
+    myDiagram.isModified = false;
+    newDocument();
   } // end init
 
+
+  // enable or disable a particular button
+  function enable(name, ok) {
+    var button = document.getElementById(name);
+    if (button) button.disabled = !ok;
+  }
+
+  // enable or disable all context-sensitive command buttons
+  function enableAll() {
+    var cmdhnd = myDiagram.commandHandler;
+    enable("Undo", cmdhnd.canUndo());
+    enable("Redo", cmdhnd.canRedo());
+    enable("Cut", cmdhnd.canCutSelection());
+    enable("Copy", cmdhnd.canCopySelection());
+    enable("Paste", cmdhnd.canPasteSelection());
+    enable("Delete", cmdhnd.canDeleteSelection());
+    enable("SelectAll", cmdhnd.canSelectAll());
+    enable("AlignLeft", cmdhnd.canAlignSelection());
+    enable("AlignRight", cmdhnd.canAlignSelection());
+    enable("AlignTop", cmdhnd.canAlignSelection());
+    enable("AlignBottom", cmdhnd.canAlignSelection());
+    enable("AlignCenterX", cmdhnd.canAlignSelection());
+    enable("AlignCenterY", cmdhnd.canAlignSelection());
+    enable("AlignRow", cmdhnd.canAlignSelection());
+    enable("AlignColumn", cmdhnd.canAlignSelection());
+    enable("AlignGrid", cmdhnd.canAlignSelection());
+    enable("Rotate45", cmdhnd.canRotate(45));
+    enable("Rotate_45", cmdhnd.canRotate(-45));
+    enable("Rotate90", cmdhnd.canRotate(90));
+    enable("Rotate_90", cmdhnd.canRotate(-90));
+    enable("Rotate180", cmdhnd.canRotate(180));
+  }
 
   // Commands for this application
 
@@ -588,9 +601,6 @@
     }
   }
 
-  function checkLocalStorage() {
-    return (typeof (Storage) !== "undefined") && (window.localStorage !== undefined);
-  }
 
   var UnsavedFileName = "(Unsaved File)";
 
@@ -617,22 +627,29 @@
         saveDocument();
       }
     }
-    // loads a blank diagram
     setCurrentFileName(UnsavedFileName);
+    // loads an empty diagram
     myDiagram.model = new go.GraphLinksModel();
     myDiagram.model.undoManager.isEnabled = true;
+    myDiagram.model.addChangedListener(function(e) {
+      if (e.isTransactionFinished) enableAll();
+    });
     myDiagram.isModified = false;
+  }
+
+  function checkLocalStorage() {
+    return (typeof (Storage) !== "undefined") && (window.localStorage !== undefined);
   }
 
   // saves the current floor plan to local storage
   function saveDocument() {
     if (checkLocalStorage()) {
-      if (getCurrentFileName() === UnsavedFileName) {
+      var saveName = getCurrentFileName();
+      if (saveName === UnsavedFileName) {
         saveDocumentAs();
       } else {
-        myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
-        var str = myDiagram.model.toJson();
-        window.localStorage.setItem(getCurrentFileName(), str);
+        saveDiagramProperties()
+        window.localStorage.setItem(saveName, myDiagram.model.toJson());
         myDiagram.isModified = false;
       }
     }
@@ -644,9 +661,8 @@
       var saveName = prompt("Save file as...", getCurrentFileName());
       if (saveName && saveName !== UnsavedFileName) {
         setCurrentFileName(saveName);
-        myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
-        var str = myDiagram.model.toJson();
-        window.localStorage.setItem(saveName, str);
+        saveDiagramProperties()
+        window.localStorage.setItem(saveName, myDiagram.model.toJson());
         myDiagram.isModified = false;
       }
     }
@@ -688,12 +704,24 @@
       var savedFile = window.localStorage.getItem(fileName);
       myDiagram.model = go.Model.fromJson(savedFile);
       myDiagram.model.undoManager.isEnabled = true;
+      myDiagram.model.addChangedListener(function(e) {
+        if (e.isTransactionFinished) enableAll();
+      });
       myDiagram.isModified = false;
+      // eventually loadDiagramProperties will be called to finish
+      // restoring shared saved model/diagram properties
     }
     closeElement("openDocument");
   }
 
-  // Called by myDiagram.addDiagramListener("InitialLayoutCompleted" ...
+  // Store shared model state in the Model.modelData property
+  // (will be loaded by loadDiagramProperties)
+  function saveDiagramProperties() {
+    myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
+  }
+
+  // Called by myDiagram.addDiagramListener("InitialLayoutCompleted" ...,
+  // NOT directly by loadFile.
   function loadDiagramProperties(e) {
     var pos = myDiagram.model.modelData.position;
     if (pos) myDiagram.position = go.Point.parse(pos);
@@ -766,38 +794,38 @@
         </li>
         <li><a href="#">Edit</a>
             <ul>
-                <li><a href="#" onclick="myDiagram.commandHandler.undo()">Undo</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.redo()">Redo</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.cutSelection()">Cut</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.copySelection()">Copy</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.pasteSelection()">Paste</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.deleteSelection()">Delete</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.selectAll()">Select All</a></li>
+                <li><a id="Undo" href="#" onclick="myDiagram.commandHandler.undo()">Undo</a></li>
+                <li><a id="Redo" href="#" onclick="myDiagram.commandHandler.redo()">Redo</a></li>
+                <li><a id="Cut" href="#" onclick="myDiagram.commandHandler.cutSelection()">Cut</a></li>
+                <li><a id="Copy" href="#" onclick="myDiagram.commandHandler.copySelection()">Copy</a></li>
+                <li><a id="Paste" href="#" onclick="myDiagram.commandHandler.pasteSelection()">Paste</a></li>
+                <li><a id="Delete" href="#" onclick="myDiagram.commandHandler.deleteSelection()">Delete</a></li>
+                <li><a id="SelectAll" href="#" onclick="myDiagram.commandHandler.selectAll()">Select All</a></li>
             </ul>
         </li>
         <li><a href="#">Align</a>
             <ul >
-                <li><a href="#" onclick="myDiagram.commandHandler.alignLeft()">Left Sides</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.alignRight()">Right Sides</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.alignTop()">Tops</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.alignBottom()">Bottoms</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.alignCenterX()">Center X</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.alignCenterY()">Center Y</a></li>
+                <li><a id="AlignLeft" href="#" onclick="myDiagram.commandHandler.alignLeft()">Left Sides</a></li>
+                <li><a id="AlignRight" href="#" onclick="myDiagram.commandHandler.alignRight()">Right Sides</a></li>
+                <li><a id="AlignTop" href="#" onclick="myDiagram.commandHandler.alignTop()">Tops</a></li>
+                <li><a id="AlignBottom" href="#" onclick="myDiagram.commandHandler.alignBottom()">Bottoms</a></li>
+                <li><a id="AlignCenterX" href="#" onclick="myDiagram.commandHandler.alignCenterX()">Center X</a></li>
+                <li><a id="AlignCenterY" href="#" onclick="myDiagram.commandHandler.alignCenterY()">Center Y</a></li>
             </ul>
         </li>
         <li><a href="#">Space</a>
             <ul >
-                <li><a href="#" onclick="myDiagram.commandHandler.alignRow(askSpace())">In Row...</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.alignColumn(askSpace())">In Column...</a></li>
+                <li><a id="AlignRow" href="#" onclick="myDiagram.commandHandler.alignRow(askSpace())">In Row...</a></li>
+                <li><a id="AlignColumn" href="#" onclick="myDiagram.commandHandler.alignColumn(askSpace())">In Column...</a></li>
             </ul>
         </li>
         <li><a href="#">Rotate</a>
             <ul>
-                <li><a href="#" onclick="myDiagram.commandHandler.rotate(45)">45°</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.rotate(-45)">-45°</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.rotate(90)">90°</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.rotate(-90)">-90°</a></li>
-                <li><a href="#" onclick="myDiagram.commandHandler.rotate(180)">180°</a></li>
+                <li><a id="Rotate45" href="#" onclick="myDiagram.commandHandler.rotate(45)">45°</a></li>
+                <li><a id="Rotate_45" href="#" onclick="myDiagram.commandHandler.rotate(-45)">-45°</a></li>
+                <li><a id="Rotate90" href="#" onclick="myDiagram.commandHandler.rotate(90)">90°</a></li>
+                <li><a id="Rotate_90" href="#" onclick="myDiagram.commandHandler.rotate(-90)">-90°</a></li>
+                <li><a id="Rotate180" href="#" onclick="myDiagram.commandHandler.rotate(180)">180°</a></li>
             </ul>
         </li>
         <li><a href="#">Options</a>

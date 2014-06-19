@@ -3,9 +3,9 @@
 <head>
   <title>Euler Diagram</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,8 +13,7 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",
-        { isReadOnly: true,
-          allowSelect: false });
+        { isReadOnly: true, allowSelect: false });
 
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
@@ -26,10 +25,10 @@
           new go.Binding("strokeWidth", "width"),
           new go.Binding("strokeDashArray", "dash")),
         $(go.TextBlock,
-          { margin: 1,
-            maxSize: new go.Size(80, 80) },
+          { margin: 1, maxSize: new go.Size(80, 80) },
           new go.Binding("text", "text")),
-        { cursor: "pointer",
+        {
+          cursor: "pointer",
           click: function(e, obj) { window.open("https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(obj.part.data.text)); }
         }
       );
@@ -39,34 +38,35 @@
         { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse),
         $(go.Shape, "Circle",
-          { fill: "rgba(128,128,128,0.05)", stroke: null,
+          {
+            fill: "rgba(128,128,128,0.05)", stroke: null,
             width: 550, height: 550
           }),
         $(go.Shape, "Circle",
-          { fill: "rgba(128,128,128,0.05)", stroke: null,
+          {
+            fill: "rgba(128,128,128,0.05)", stroke: null,
             width: 400, height: 400
           }),
         $(go.Shape, "Circle",
-          { fill: "rgba(128,128,128,0.05)", stroke: null,
+          {
+            fill: "rgba(128,128,128,0.05)", stroke: null,
             width: 250, height: 250
           }),
         $(go.Panel, "Spot",
           $(go.Shape, "Circle",
-            { isPanelMain: true,
-              fill: "transparent",
-              portId: "" },
+            { isPanelMain: true, fill: "transparent", portId: "" },
             new go.Binding("stroke", "hicolor"),
             new go.Binding("strokeWidth", "hiwidth")),
           $(go.Shape, "Circle",
-            { isPanelMain: true,
-              fill: "transparent" },
+            { isPanelMain: true, fill: "transparent" },
             new go.Binding("stroke", "color"),
             new go.Binding("strokeWidth", "width"),
             new go.Binding("strokeDashArray", "dash")),
           $(go.TextBlock,
             { maxSize: new go.Size(80, 80) },
             new go.Binding("text", "text")),
-          { cursor: "pointer",
+          {
+            cursor: "pointer",
             click: function(e, obj) { window.open("https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(obj.part.data.text)); }
           }
         )

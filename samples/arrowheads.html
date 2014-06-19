@@ -3,9 +3,9 @@
 <head>
 <title>GoJS Arrowheads</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -13,31 +13,43 @@
 
     var myDiagram =
       $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
-        { isReadOnly: true,  // don't allow move or delete
-          initialContentAlignment: go.Spot.Center });
+        {
+          isReadOnly: true,  // don't allow move or delete
+          initialContentAlignment: go.Spot.Center,
+          layout: $(go.CircularLayout,
+                    {
+                      radius: 100,  // minimum radius
+                      spacing: 0,   // circular nodes will touch each other
+                      nodeDiameterFormula: go.CircularLayout.Circular,  // assume nodes are circular
+                      startAngle: 270  // first node will be at top
+                    }),
+          // define a DiagramEvent listener
+          "LayoutCompleted": function(e) {
+              // now that the CircularLayout has finished, we know where its center is
+              var cntr = myDiagram.findNodeForKey("Center");
+              cntr.location = myDiagram.layout.actualCenter;
+            }
+        });
 
     // construct a shared radial gradient brush
-    var radBrush = $(go.Brush, go.Brush.Radial, { 0: "#969696", 1: "#666666"});
+    var radBrush = $(go.Brush, go.Brush.Radial, { 0: "#969696", 1: "#666666" });
 
     // these are the nodes that are in a circle
     myDiagram.nodeTemplate =
-      $(go.Node, "Spot",
-        new go.Binding("desiredSize", "ds"),
-        new go.Binding("location", "loc"),
+      $(go.Node,
         $(go.Shape, "Circle",
-          { fill: radBrush, // uses a radial brush
-            strokeWidth: 0,
-            stroke: null }), // no outline
-        $(go.TextBlock,
-          { margin: 1, stroke: null },  // some room around the text
-          new go.Binding("stroke", "stroke"), //text color
-          new go.Binding("text", "key")),
-        { click: showArrowInfo,  // defined below
+          {
+            desiredSize: new go.Size(28, 28),
+            fill: radBrush, strokeWidth: 0, stroke: null
+          }), // no outline
+        {
+          locationSpot: go.Spot.Center,
+          click: showArrowInfo,  // defined below
           toolTip:  // define a tooltip for each link that displays its information
               $(go.Adornment, "Auto",
                 $(go.Shape, { fill: "#EFEFCC" }),
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" , infoString).ofObject())
+                  new go.Binding("text", "", infoString).ofObject())
               )
         }
       );
@@ -45,68 +57,68 @@
     // use a special template for the center node
     myDiagram.nodeTemplateMap.add("Center",
       $(go.Node, "Spot",
-        { selectable: false },
-        new go.Binding("desiredSize", "ds"),
-        new go.Binding("location", "loc"),
+        {
+          selectable: false,
+          isLayoutPositioned: false,  // the Diagram.layout will not position this node
+          desiredSize: new go.Size(200, 200),
+          locationSpot: go.Spot.Center
+        },
         $(go.Shape, "Circle",
-          { fill: radBrush, // uses a radial brush
-            strokeWidth: 0,
-            stroke: null }), // no outline
+          { fill: radBrush, strokeWidth: 0, stroke: null }), // no outline
         $(go.TextBlock, "Arrowheads",
-          { margin: 1,
-            stroke: "white",
-            font: "bold 14px sans-serif"})
+          { margin: 1, stroke: "white", font: "bold 14px sans-serif" })
       ));
 
+    // all Links have both "toArrow" and "fromArrow" Shapes,
+    // where both arrow properties are data bound
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
         { routing: go.Link.Normal },
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "gray", strokeWidth: 2 }),
+          { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
         $(go.Shape,  // the "from" arrowhead
           new go.Binding("fromArrow", "fromArrow"),
-          { scale: 2, fill: "red" } ),
+          { scale: 2, fill: "red" }),
         $(go.Shape,  // the "to" arrowhead
-          new go.Binding("toArrow","toArrow"),
-          { scale: 2, fill: "red" } ),
-        { click: showArrowInfo,
+          new go.Binding("toArrow", "toArrow"),
+          { scale: 2, fill: "red" }),
+        {
+          click: showArrowInfo,
           toolTip:  // define a tooltip for each link that displays its information
               $(go.Adornment, "Auto",
                 $(go.Shape, { fill: "#EFEFCC" }),
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" , infoString).ofObject())
+                  new go.Binding("text", "", infoString).ofObject())
               )
         }
       );
 
-    var arrowheads = []; // array of all arrowhead names
-    for (var x in go.Shape.ArrowheadGeometries) {
-      var arrowname = go.Shape.ArrowheadGeometries[x];
-      if (typeof arrowname === "string" && arrowname !== "None") {
-        arrowheads.push(arrowname);
-      }
+    // collect all of the predefined arrowhead names
+    var arrowheads = [];
+    for (var a in go.Shape.ArrowheadGeometries) {
+      // ignore all-lower-case arrowhead names
+      if (a.toLowerCase() === a) continue;
+      arrowheads.push(a);
     }
+    if (arrowheads.length % 2 === 1) arrowheads.push("");  // make sure there's an even number
 
-    var arL = []; // collect link data
+    // create all of the link data, two arrowheads per link
+    var linkdata = [];
     var i = 0;
     for (var j = 0; j < arrowheads.length; j = j + 2) {
-      arL.push({to: i++, from: "Center", toArrow: arrowheads[j], fromArrow: arrowheads[j+1]});
+      linkdata.push({ from: "Center", to: i++, toArrow: arrowheads[j], fromArrow: arrowheads[j + 1] });
     }
 
-    var arN = [];  // collect node data
-    var angleOffset = -Math.PI/2;
-    // the big central node
-    arN.push({ category: "Center", key: "Center", ds: new go.Size(200, 200), loc: new go.Point(200, 150) });
-    // fill the array of nodes that was created earlier
-    for (var i = 0; i < arL.length; i++) {
-      var angle = i*Math.PI*2/arL.length + angleOffset;
-      var x = 286+180*Math.cos(angle);
-      var y = 236+180*Math.sin(angle);
-      arN.push({ stroke: null, key: i, ds: new go.Size(28, 28), loc: new go.Point(x, y) });
-    }
-
-    myDiagram.model = new go.GraphLinksModel(arN, arL);
+    myDiagram.model =
+      $(go.GraphLinksModel,
+        { // this gets copied automatically when there's a link data reference to a new node key
+          // and is then added to the nodeDataArray
+          archetypeNodeData: {},
+          // the node array starts with just the special Center node
+          nodeDataArray: [{ category: "Center", key: "Center"}],
+          // the link array was created above
+          linkDataArray: linkdata
+        });
   }
 
   // a conversion function used to get arrowhead information for a Part

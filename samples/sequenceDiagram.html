@@ -3,9 +3,9 @@
 <head>
 <title>Sequence Diagram</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-<link href="goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="go.js"></script>
-<script src="goSamples.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -20,6 +20,9 @@
           "resizingTool.isGridSnapEnabled": true,
           "draggingTool.gridSnapCellSize": new go.Size(1, MessageSpacing/4),
           "draggingTool.isGridSnapEnabled": true,
+          // automatically extend Lifelines as Activities are moved or resized
+          "SelectionMoved": ensureLifelineHeights,
+          "PartResized": ensureLifelineHeights,
           "undoManager.isEnabled": true
         });
 
@@ -113,14 +116,14 @@
         $(go.Shape,
           { toArrow: "OpenTriangle", stroke: "black" }),
         $(go.TextBlock,
-          { segmentIndex: 0, segmentOffset: new go.Point(NaN, NaN),
-            isMultiline: false, editable: true },
+          {
+            segmentIndex: 0,
+            segmentOffset: new go.Point(NaN, NaN),
+            isMultiline: false,
+            editable: true
+          },
           new go.Binding("text", "text").makeTwoWay())
       );
-
-    // automatically extend Lifelines as Activities are moved or resized
-    myDiagram.addDiagramListener("PartResized", ensureLifelineHeights);
-    myDiagram.addDiagramListener("SelectionMoved", ensureLifelineHeights);
 
     // create the graph by reading the JSON data saved in "mySavedModel" textarea element
     load();
@@ -206,16 +209,12 @@
     var aw = ActivityWidth;
     if (node instanceof go.Group) {
       // see if there is an Activity Node at this point -- if not, connect the link directly with the Group's lifeline
-      var found = false;
-      var mit = node.memberParts;
-      while (mit.next()) {
-        var act = mit.value.data;
-        if (act !== null && act.start <= time && time <= act.start + act.duration) {
-          found = true;
-          break;
-        }
+      if (!node.memberParts.any(function(mem) {
+              var act = mem.data;
+              return (act !== null && act.start <= time && time <= act.start + act.duration);
+            })) {
+        aw = 0;
       }
-      if (!found) aw = 0;
     }
     var x = (op.x > p.x ? p.x + aw/2 : p.x - aw/2);
     var y = convertTimeToY(time);

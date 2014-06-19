@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Using Models -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Using Models and Templates</h2>
+<p>
+You can build a diagram of nodes and links programmatically.
+But <b>GoJS</b> offers a way to build diagrams in a more declarative manner.
+You only provide the node and link data (i.e. the model) necessary for the diagram
+and instances of parts (i.e. the templates) that are automatically copied into the diagram.
+Those templates may be parameterized by properties of the node and link data.
+</p>
+
+<h3>Building diagrams with code</h3>
+<p>
+Let us try to build two nodes and connect them with a link.
+Here is one way of doing that:
+</p>
+<pre data-language="javascript" id="twoNodesOneLinkCode">
+  var node1 =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { figure: "RoundedRectangle",
+          fill: "lightblue" }),
+      $(go.TextBlock,
+        { text: "Alpha",
+          margin: 5 })
+    )
+  diagram.add(node1);
+
+  var node2 =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { figure: "RoundedRectangle",
+          fill: "pink" }),
+      $(go.TextBlock,
+        { text: "Beta",
+          margin: 5 })
+    );
+  diagram.add(node2);
+
+  diagram.add(
+    $(go.Link,
+      { fromNode: node1, toNode: node2 },
+      $(go.Shape)
+    ));
+</pre>
+<script>goCode("twoNodesOneLinkCode", 250, 150)</script>
+<p>
+This produces a nice, simple diagram.
+If you drag one of the nodes, you will see that the link remains connected to it.
+</p>
+<p>
+Although this way of building a diagram will work, it will not scale up well when creating large diagrams.
+Normally you will want a varying number of nodes each of which is very similar to the others.
+It would be better to share the construction of the node but parameterize a few things where the values should vary.
+</p>
+<p>
+This diagram-building code is also more cumbersome than it needs to be
+to manage references to nodes so that you can link them up.
+This is similar to the earlier problem when building a node's visual tree in code
+of having to use temporary named variables and referring to them when needed.
+</p>
+<p>
+What we are looking for is the separation of the appearance, definition, and construction
+of all of the nodes from the data needed to describe the unique aspects of each particular node.
+</p>
+
+<h3>Using a Model and Templates</h3>
+<p>
+One way of achieving the separation of node appearance from node data is to use a data model and node templates.
+A model is basically just a collection of data that holds the essential information for each node and each link.
+A template is basically just a <a>Part</a> that can be copied; you would have different templates for <a>Node</a>s and for <a>Link</a>s.
+</p>
+<p>
+In fact, a <a>Diagram</a> already has very simple default templates for Nodes and Links.
+If you want to customize the appearance of the nodes in your diagram,
+you can replace the default node template by setting <a>Diagram.nodeTemplate</a>.
+</p>
+<p>
+To automatically make use of templates, provide the diagram a model holding the data for each node and the data for each link.
+A <a>GraphLinksModel</a> holds the collections (actually arrays) of node data and link data as the values of
+<a>GraphLinksModel.nodeDataArray</a> and <a>GraphLinksModel.linkDataArray</a>.
+You then set the <a>Diagram.model</a> property so that the diagram can create <a>Node</a>s for all of the node data
+and <a>Link</a>s for all of the link data.
+</p>
+<p>
+Models interpret and maintain references between the data.
+Each node data is expected to have a unique key value so that references to node data can be resolved reliably.
+Models also manage dynamically adding and removing data.
+</p>
+<p>
+The node data and the link data in models can be any JavaScript object.
+You get to decide what properties those objects have -- add as many as you need for your app.
+Since this is JavaScript, you can even add properties dynamically.
+There are several properties that <b>GoJS</b> models assume exist on the data,
+such as "key" (on node data) and "category" and "from" and "to" (the latter two on link data).
+However you can tell the model to use different property names by setting the model
+properties whose names end in "...Property".
+</p>
+<p>
+A node data object normally has its node's unique key value in the "key" property.
+Currently node data keys must be strings or numbers.
+</p>
+<p>
+Let us create a diagram providing the minimal amount of necessary information.
+The particular node data has been put into an array of JavaScript objects.
+We declare the link relationships in a separate array of link data objects.
+Each link data holds references to the node data by using their keys.
+Normally the references are the values of the "from" and "to" properties.
+</p>
+<pre data-language="javascript" id="simpleModelNoTemplates">
+  var nodeDataArray = [
+    { key: "Alpha"},
+    { key: "Beta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("simpleModelNoTemplates", 250, 150)</script>
+<p>
+This results in two nodes and a link, but the nodes do not appear the way we want.
+So we define the node template to be a generalization of the particular node constructions that we did above.
+</p>
+<pre data-language="javascript" id="simpleModelNoBind">
+  diagram.nodeTemplate =  // provide custom Node appearance
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { figure: "RoundedRectangle",
+          fill: "white" }),
+      $(go.TextBlock,
+        { text: "hello!",
+          margin: 5 })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("simpleModelNoBind", 250, 150)</script>
+<p>
+Now the graph looks better, but the nodes have not been parameterized -- they are all identical!
+We can achieve that parameterization by using data binding.
+</p>
+
+<h3>Parameterizing Nodes using data binding</h3>
+<p>
+A data binding is a declarative statement that the value of the property of one object
+should be used to set the value of a property of another object.
+</p>
+<p>
+In this case, we want to make sure that the <a>TextBlock.text</a> property gets the
+"key" value of the corresponding node data.
+And we want to make sure that the <a>Shape.fill</a> property gets set to the color/brush given
+by the "color" property value of the corresponding node data.
+</p>
+<p>
+We can declare such data-bindings by creating <a>Binding</a> objects and associating them with the target <a>GraphObject</a>.
+Programmatically you do this by calling <a>GraphObject.bind</a>.
+But when using <b>go.GraphObject.make</b>, this happens automatically when you pass in a <a>Binding</a>.
+</p>
+<pre data-language="javascript" id="simpleModelWithBind">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { figure: "RoundedRectangle",
+          fill: "white" },  // default Shape.fill value
+        new go.Binding("fill", "color")),  // binding to get fill from nodedata.color
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))  // binding to get TextBlock.text from nodedata.key
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },  // note extra property for each node data: color
+    { key: "Beta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("simpleModelWithBind", 250, 150)</script>
+<p>
+Now we have the same diagram result as before, but it is implemented in much more general manner.
+You can easily add more node and link data to build bigger diagrams.
+And you can easily change the appearance of all of the nodes without modifying the data.
+</p>
+<p>
+Actually, you may notice that the <a>Link</a> is different: it has an arrowhead.
+No arrowhead was included when we first built this diagram using code.
+But the default <a>Diagram.linkTemplate</a> includes an arrowhead
+and we did not replace the link template with a custom one in this example.
+</p>
+<p>
+Notice that the value of <a>Shape.fill</a> in the template above gets a value twice.
+First it is set to "white".  Then the binding sets it to whatever value the node data's "color" property has.
+It may be useful to be able to specify an initial value that remains in case the node data does
+not have a "color" property or if there is an error getting that value.
+</p>
+<p>
+At this point we can also be a bit more precise about what a template is.
+A template is a <a>Part</a> that may have some data <a>Binding</a>s and that is not itself in a diagram
+but may be copied to create parts that are added to a diagram.
+</p>
+
+<h3>Kinds of Models</h3>
+<p>
+A model is a way of interpreting a collection of data objects as an abstract graph
+with various kinds of relationships determined by data properties and the assumptions that the model makes.
+The simplest kind of model, <a>Model</a>, can only hold "parts" without any relationships between them --
+no links or groups.  But that model class acts as the base class for other kinds of models.
+</p>
+<h4>GraphLinksModel</h4>
+<p>
+The kind of model you have seen above, <a>GraphLinksModel</a>, is actually the most general kind.
+It supports link relationships using a separate link data object for each <a>Link</a>.
+There is no inherent limitation on which <a>Nodes</a> a Link may connect, so reflexive and duplicate links are allowed.
+Links might also result in cycles in the graph.
+However you may prevent the user from drawing such links by setting various properties, such as <a>Diagram.validCycle</a>.
+And if you want to have a link appear to connect with a link rather than with a node,
+this is possible by having special nodes, known as "label nodes", that belong to links and are arranged along the
+path of a link in the same manner as text labels are arranged on a link.
+</p>
+<p>
+Furthermore a <a>GraphLinksModel</a> also supports identifying logically and physically different connection objects,
+known as "ports", within a <a>Node</a>.
+Thus an individual link may connect with a particular port rather than with the node as a whole.
+The <a href="connectionPoints.html">Link Points</a> and <a href="ports.html">Ports</a> pages discuss this topic in more depth.
+</p>
+<p>
+A <a>GraphLinksModel</a> also supports the group-membership relationship.
+Any <a>Part</a> can belong to at most one <a>Group</a>; no group can be contained in itself, directly or indirectly.
+You can learn more about grouping in other pages, such as <a href="groups.html">Groups</a>.
+</p>
+<h4>TreeModel</h4>
+<p>
+A simpler kind of model, the <a>TreeModel</a>, only supports link relationships that form a tree-structured graph.
+There is no separate link data, so there is no "linkDataArray".
+The parent-child relationship inherent in trees is determined by an extra property on the child node data which refers to the parent node by its key.
+If that property, whose name defaults to "parent", is undefined, then that data's corresponding node is a tree root.
+Each <a>Link</a> is still data bound, but the link's data is the child node data.
+</p>
+<pre data-language="javascript" id="simpleTree">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { figure: "Ellipse" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", parent: "Alpha", color: "yellow" },  // note the "parent" property
+    { key: "Gamma", parent: "Alpha", color: "orange" },
+    { key: "Delta", parent: "Alpha", color: "lightgreen" }
+  ];
+  diagram.model = new go.TreeModel(nodeDataArray);
+</pre>
+<script>goCode("simpleTree", 250, 150)</script>
+<p>
+Many of the tree-oriented samples make use of a TreeModel instead of a GraphLinksModel.
+But just because your graph is tree-structured does not mean you have to use a TreeModel.
+You may find that your data is organized with a separate "table" defining the link relationships,
+so that using a GraphLinksModel is most natural.
+Or you may want to use other features that TreeModel does not support.
+</p>
+<p>
+Other pages such as <a href="trees.html">Trees</a> discuss tree-oriented features of <b>GoJS</b> in more detail.
+</p>
+
+<h3>Modifying Models</h3>
+<p>
+If you want to add or remove nodes programmatically, you will probably want to call the
+<a>Model.addNodeData</a> and <a>Model.removeNodeData</a> methods.
+Use the <a>Model.findNodeDataForKey</a> method to find a particular node data object if you only have its unique key value.
+You may also call <a>Model.copyNodeData</a> to make a copy of a node data object that you can then modify and pass to <a>Model.addNodeData</a>.
+</p>
+<p>
+It does not work to simply modify the <a>Model.nodeDataArray</a>, because the <b>GoJS</b> software
+will not be notified about any change to any JavaScript Array and thus will not have a chance to
+add or remove <a>Node</a>s or other <a>Part</a>s as needed.
+</p>
+<p>
+Similarly, it does not work to simply modify a property of a node data object.
+Any <a>Binding</a> that depends on the property will not be notified about any changes,
+so it will not be able to update its target <a>GraphObject</a> property.
+For example, setting the color property will not cause the <a>Shape</a> to change color.
+</p>
+<pre>
+    var data = myDiagram.model.findNodeDataForKey("Delta");
+    // This will NOT change the color of the "Delta" Node
+    if (data !== null) data.color = "red";
+</pre>
+<p>
+Instead you need to call <a>Model.setDataProperty</a> to modify an object in the model.
+</p>
+<pre>
+    var data = myDiagram.model.findNodeDataForKey("Delta");
+    // This will update the color of the "Delta" Node
+    if (data !== null) myDiagram.model.setDataProperty(data, "color", "red");
+</pre>
+<p>
+Calling model methods such as <a>Model.addNodeData</a> or <a>Model.setDataProperty</a> is required
+when the JavaScript Array or Object is already part of the Model.
+When first building the Array of Objects for the <a>Model.nodeDataArray</a>
+or when initializing a JavaScript Object as a new node data object, such calls are not necessary.
+But once the data is part of the Model, calling the model's methods to effect changes is necessary.
+</p>
+
+<h3>Saving and Loading Models</h3>
+<p>
+<b>GoJS</b> does not require you to save models in any particular medium or format.
+But because this is JavaScript and JSON is the most popular data-interchange format,
+we do make it easy to write and read models as text in JSON format.
+</p>
+<p>
+Just call <a>Model.toJson</a> to generate a string representing your model.
+Call the static method <a>Model.fromJson</a> to construct and initialize a model given a string produced by <a>Model.toJson</a>.
+Many of the samples demonstrate this -- search for JavaScript functions named "save" and "load".
+Most of those functions write and read a TextArea on the page itself, so that you can see and modify the JSON text and then load it to get a new diagram.
+But please be cautious when editing because JSON syntax is very strict, and any syntax errors will cause those "load" functions to fail.
+</p>
+<p>
+JSON formatted text has strict limits on the kinds of data that you can represent without additional assumptions.
+To save and load any data properties that you set on your node data (or link data), they need to meet the following requirements:
+</p>
+<ul>
+  <li>the property is enumerable and its name does not start with an underscore (you can use property names that do start with an underscore, but they won't be saved)</li>
+  <li>the property value is not undefined and is not a function (JSON cannot faithfully hold functions)</li>
+  <li>the model knows how to convert the property value to JSON format (numbers, strings, JavaScript Arrays, or plain JavaScript Objects)</li>
+  <li>property values that are Objects or Arrays form a tree structure -- no shared or cyclical references</li>
+</ul>
+<p>
+<a>Model.toJson</a> and <a>Model.fromJson</a> will also handle instances of
+<a>Point</a>, <a>Size</a>, <a>Rect</a>, <a>Spot</a>, <a>Margin</a>, <a>Geometry</a>, and non-pattern <a>Brush</a>es.
+However we recommend that you store those objects in their string representations, using those classes' <code>parse</code> and <code>stringify</code> static functions.
+</p>
+<p>
+Because you are using JavaScript, it is trivial for you to add data properties to your node data.
+This allows you to associate whatever information you need with each node.
+But if you need to associate some information with the model, which will be present even if there is no node data at all,
+you can add properties to the <a>Model.modelData</a> object.
+This object's properties will be written by <a>Model.toJson</a> and read by <a>Model.fromJson</a>, just as node data objects are written and read.
+</p>
+
+</div>
+</body>
+</html>

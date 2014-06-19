@@ -3,9 +3,9 @@
 <head>
 <title>Interactive Voice Response Tree</title>
   <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
-  <link href="goSamples.css" rel="stylesheet" type="text/css"/>
   <script src="go.js"></script>
-  <script src="goSamples.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -17,9 +17,13 @@
             initialContentAlignment: go.Spot.Center,
             "draggingTool.dragsTree": true,
             "commandHandler.deletesTree": true,
+            layout:
+              $(go.TreeLayout,
+                { angle: 90, arrangement: go.TreeLayout.ArrangementFixedRoots }),
             "undoManager.isEnabled": true
           });
 
+      // when the document is modified, add a "*" to the title and enable the "Save" button
       myDiagram.addDiagramListener("Modified", function(e) {
         var button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
@@ -32,22 +36,26 @@
       });
 
       // Define a new kind of button, used to toggle the visibility of a GraphObject named "COLLAPSIBLE".
-      // Caution: you can only control the visibility of one element in a Part at a time, due to the hard-coding of the "COLLAPSIBLE" name.
-      go.GraphObject.Builders.add("PanelExpanderButton", function() {
+      // Caution: you can only control the visibility of one element in a Part at a time,
+      // due to the hard-coding of the "COLLAPSIBLE" name.
+      go.GraphObject.defineBuilder("PanelExpanderButton", function() {
         return $("Button",
-              { "ButtonBorder.stroke": null,
+              {
+                "ButtonBorder.stroke": null,
                 "ButtonBorder.fill": "transparent",
                 click: function(e, obj) {
-                  var elt = obj.part.findObject("COLLAPSIBLE");
-                  if (elt !== null) {
-                    obj.diagram.startTransaction("Collapse/Expand Panel");
-                    elt.visible = !elt.visible;
-                    obj.diagram.commitTransaction("Collapse/Expand Panel");
-                  }
-                } },
+                        var elt = obj.part.findObject("COLLAPSIBLE");
+                        if (elt !== null) {
+                          obj.diagram.startTransaction("Collapse/Expand Panel");
+                          elt.visible = !elt.visible;
+                          obj.diagram.commitTransaction("Collapse/Expand Panel");
+                        }
+                      }
+              },
               $(go.Shape, "TriangleUp",
                 { desiredSize: new go.Size(6, 4) },
-                new go.Binding("figure", "visible", function(vis) { return vis ? "TriangleUp" : "TriangleDown"; }).ofObject("COLLAPSIBLE")));  // end Button
+                new go.Binding("figure", "visible", function(vis) { return vis ? "TriangleUp" : "TriangleDown"; })
+                              .ofObject("COLLAPSIBLE")));  // end Button
         });
 
       var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "skyblue" });
@@ -87,7 +95,7 @@
                 { stretch: go.GraphObject.Horizontal,
                   visible: false },  // not visible unless there is more than one action
                 new go.Binding("visible", "actions", function(acts) {
-                     return (acts instanceof Array && acts.length > 0);
+                     return (Array.isArray(acts) && acts.length > 0);
                    }),
                 // headered by a label and a PanelExpanderButton
                 $(go.TextBlock, "Steps", { row: 0, alignment: go.Spot.Left }),
@@ -141,10 +149,6 @@
             new go.Binding("visible", "answer", function(a) { return (a ? true : false); }))
         );
 
-      myDiagram.layout =
-        $(go.TreeLayout,
-          { angle: 90, arrangement: go.TreeLayout.ArrangementFixedRoots });
-
       load();
     }
 
@@ -177,18 +181,37 @@
 {"key":"3", "question":"How much?"},
 {"key":"4", "question":"other choices",
  "actions":[
-   {"text":"a much longer string", "figure":"FireHazard", "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"yellow", "1":"orange"}}},
-   {"text":"last", "figure":"IrritationHazard", "fill":"yellow"}
+   {"text":"a much longer string",
+    "figure":"FireHazard",
+    "fill":{"class":"go.Brush", "type":"Linear",
+            "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0},
+            "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0},
+            "colorStops":{"0":"yellow", "1":"orange"}}},
+   {"text":"last","figure":"IrritationHazard", "fill":"yellow"}
  ],
- "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"yellow", "1":"orange"}}},
+ "fill":{"class":"go.Brush",
+         "type":"Linear",
+         "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0},
+         "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0},
+         "colorStops":{"0":"yellow", "1":"orange"}}},
 {"key":"5", "question":"hi!"},
 {"key":"6", "question":"more?"},
 {"key":"7", "question":"less?"},
 {"key":"8", "question":"do something"},
 {"key":"9", "question":"do something else"},
 {"key":"10", "question":"last action"},
-{"key":"11", "category":"Terminal", "text":"OK", "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"white", "1":"green"}}, "stroke":"green"},
-{"key":"12", "category":"Terminal", "text":"stop", "fill":{"class":"go.Brush", "type":"Linear", "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0}, "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0}, "colorStops":{"0":"white", "1":"red"}}, "stroke":"red"}
+{"key":"11", "category":"Terminal", "text":"OK",
+ "fill":{"class":"go.Brush", "type":"Linear",
+         "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0},
+         "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0},
+         "colorStops":{"0":"white", "1":"green"}},
+ "stroke":"green"},
+{"key":"12", "category":"Terminal", "text":"stop",
+ "fill":{"class":"go.Brush", "type":"Linear",
+         "start":{"class":"go.Spot", "x":0.5, "y":0, "offsetX":0, "offsetY":0},
+         "end":{"class":"go.Spot", "x":0.5, "y":1, "offsetX":0, "offsetY":0},
+         "colorStops":{"0":"white", "1":"red"}},
+ "stroke":"red"}
  ],
   "linkDataArray": [ 
 {"from":"1", "to":"2", "answer":"Yes"},

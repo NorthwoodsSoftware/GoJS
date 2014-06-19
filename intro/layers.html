@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Layers -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Layers</h2>
+<p>
+All <a>Part</a>s that are in a <a>Diagram</a> actually belong to a <a>Layer</a> in the diagram.
+You can control the visibility, Z-order, and various user permissions for all of the parts in each layer.
+</p>
+
+<h3>Standard Layers</h3>
+<p>
+Every Diagram starts off with several standard layers.
+These are their <a>Layer.name</a>s, in order from furthest behind to most in front:
+</p>
+<ul>
+  <li><b>"Grid"</b></li>
+  <li><b>"Background"</b></li>
+  <li><b>""</b>, the default layer</li>
+  <li><b>"Foreground"</b></li>
+  <li><b>"Adornment"</b></li>
+  <li><b>"Tool"</b></li>
+</ul>
+<p>
+Each Part is placed in a Layer according to its <a>Part.layerName</a>.
+The default value is the empty string.
+Use <a>Diagram.findLayer</a> to find a Layer given a layer name.
+Change which layer a part is in by setting <a>Part.layerName</a>.
+</p>
+<p>
+Changes to Parts in the "Grid", "Adornment", and "Tool" Layers are automatically ignored by the <a>UndoManager</a>,
+because <a>Layer.isTemporary</a> is true.
+</p>
+<p>
+Parts in the "Grid" Layer are not selectable, because <a>Layer.allowSelect</a> is false.
+This prevents the user from selecting the background grid when it is visible.
+</p>
+
+<h3>Layers Example</h3>
+<p>
+This example adds several <a>Layer</a>s to the diagram, each named by a color,
+and then creates a bunch of colored parts at random locations.
+Every <a>Part.layerName</a> is data-bound to the "color" property of the node data.
+</p>
+<p>
+In addition there are checkboxes for each layer, controlling the visibility of the respective layer.
+You can see how all of the parts of the same color appear and disappear according to the value of the checkbox.
+Furthermore you can see how they all have the same depth in the Z-ordering.
+</p>
+<p>
+Finally, each Part has a <a>Part.selectionChanged</a> function which puts the part in the "Foreground"
+layer when it is selected and back in its normal color layer when it is not selected.
+</p>
+<pre data-language="javascript" id="layers">
+  // These new layers come in front of the standard regular layers,
+  // but behind the "Foreground" layer:
+  var forelayer = diagram.findLayer("Foreground");
+  diagram.addLayerBefore($(go.Layer, { name: "blue" }), forelayer);
+  diagram.addLayerBefore($(go.Layer, { name: "green" }), forelayer);
+  diagram.addLayerBefore($(go.Layer, { name: "orange" }), forelayer);
+
+  diagram.nodeTemplate =
+    $(go.Part,  // no links or grouping, so can use the simpler Part class
+      new go.Binding("layerName", "color"),
+      new go.Binding("location", "loc"),
+      $(go.Shape,
+        { width: 100, height: 100 },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        new go.Binding("text", "", function(x) { return x.layer.name; }).ofObject()),
+      {
+        selectionChanged: function(p) {
+          if (p.isSelected) p.layerName = "Foreground"; else p.layerName = p.data.color;
+        }
+      }
+    );
+
+  var array = [];
+  for (var i = 0; i &lt; 12; i++) {
+    var data = { loc: new go.Point(Math.random()*500, Math.random()*150) };
+    switch (Math.floor(Math.random()*3)) {
+      case 0: data.color = "blue"; break;
+      case 1: data.color = "green"; break;
+      case 2: data.color = "orange"; break;
+      default: data.color = "Foreground"; break;
+    }
+    array.push(data);
+  }
+  diagram.model.nodeDataArray = array;
+  diagram.undoManager.isEnabled = true;
+
+  // define this function so that the checkbox event handlers can call it
+  toggleVisible = function(layername, e) {
+    var layer = diagram.findLayer(layername);
+    if (layer !== null) layer.visible = e.currentTarget.checked;
+  };
+</pre>
+<script>goCode("layers", 610, 260)</script>
+Layer visibility:<br />
+<input type="checkbox" checked="checked" onclick="toggleVisible('blue', event)" />blue
+<input type="checkbox" checked="checked" onclick="toggleVisible('green', event)" />green
+<input type="checkbox" checked="checked" onclick="toggleVisible('orange', event)" />orange
+<input type="checkbox" checked="checked" onclick="toggleVisible('Foreground', event)" />Foreground
+<script>
+</script>
+
+</div>
+</body>
+</html>

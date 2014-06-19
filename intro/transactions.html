@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Transactions -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Transactions and the UndoManager</h2>
+<p>
+<b>GoJS</b> models and diagrams make use of an <a>UndoManager</a> that can record all changes and support
+undoing and redoing those changes.
+Each state change is recorded in a <a>ChangedEvent</a>, which includes enough information about both before and after
+to be able to reproduce the state change in either direction, backward (undo) or forward (redo).
+Such changes are grouped together into <a>Transaction</a>s so that a user action, which may result in many changes,
+can be undone and redone as a single operation.
+</p>
+<p>
+Not all state changes result in <a>ChangedEvent</a>s that can be recorded by the UndoManager.
+Some properties are considered transient, such as <a>Diagram.position</a>, <a>Diagram.scale</a>,
+<a>Diagram.currentTool</a>, <a>Diagram.currentCursor</a>, or <a>Diagram.isModified</a>.
+Some changes are structural or considered unchanging, such as <a>Diagram.model</a>, any property of <a>CommandHandler</a>,
+or any of the tool or layout properties.
+But most <a>GraphObject</a> and model properties do raise a ChangedEvent on the Diagram or Model, respectively,
+when a property value has been changed.
+</p>
+
+<h3>Transactions</h3>
+<p>
+Whenever you modify a model or its data programmatically, you should wrap the code in a transaction.
+Call <a>Diagram.startTransaction</a> or <a>Model.startTransaction</a>, make the changes,
+and then call <a>Diagram.commitTransaction</a> or <a>Model.commitTransaction</a>.
+Although the primary benefit from using transactions is to group together side-effects for undo/redo,
+you should use transactions even if your application does not support undo/redo by the user.
+</p>
+<p>
+As with database transactions, you will want to perform transactions that are short and infrequent.
+Do not leave transactions ongoing between user actions.
+Consider whether it would be better to have a single transaction surrounding a loop
+instead of starting and finishing a transaction repeatedly within a loop.
+</p>
+<p>
+However, unlike database transactions, you do not need to conduct a transaction in order to access any state.
+All JavaScript objects are in memory, so you can look at their properties at any time that it would make sense to do so.
+But when you want to make state changes to a <a>Diagram</a> or a <a>GraphObject</a> or a <a>Model</a> or a JavaScript object in a model,
+do so within a transaction.
+The only exception is that transactions are unnecessary when initializing a model before assigning the model to the <a>Diagram.model</a>.
+Furthermore many event handlers and listeners are executed within transactions that are conducted by <a>Tool</a>s or <a>CommandHandler</a> commands,
+so you often will not need to start and commit a transaction within such functions.
+Read the documentation for details about whether a function is called within a transaction.
+</p>
+<p>
+Both model changes and diagram changes are recorded in the <a>UndoManager</a>
+only if the model's <a>UndoManager.isEnabled</a> has been set to true.
+</p>
+<p>
+A typical case is where some command makes a change to the model.
+In this example the addChild function adds a link connecting the selected node to a new node.
+When no Node is selected, nothing happens.
+</p>
+<pre data-language="javascript" id="transaction">
+  // define a function named "addChild" that is invoked by a button click
+  addChild = function() {
+    var selnode = diagram.selection.first();
+    if (!(selnode instanceof go.Node)) return;
+    diagram.startTransaction("add node and link");
+    // have the Model add a new node data
+    var newnode = { key: "N" };
+    diagram.model.addNodeData(newnode);  // this makes sure the key is unique
+    // and then add a link data connecting the original node with the new one
+    var newlink = { from: selnode.data.key, to: newnode.key };
+    // add the new link to the model
+    diagram.model.addLinkData(newlink);
+    // finish the transaction
+    diagram.commitTransaction("add node and link");
+  };
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.layout = $(go.TreeLayout);
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  diagram.model.undoManager.isEnabled = true;
+</pre>
+<p>
+
+</p>
+<input type="button" onclick="addChild()" value="addChild() to selected Node" />
+<script>goCode("transaction", 600, 200)</script>
+
+<h3>Supporting the UndoManager</h3>
+<p>
+Changes to JavaScript data properties do not automatically result in any notifications that can be observed.
+Thus when you want to change the value of a property in a manner that can be undone and redone,
+you should call <a>Model.setDataProperty</a>.
+This will get the previous value for the property, set the property to the new value, and
+call <a>Model.raiseDataChanged</a>, which will also automatically update any target bindings in the Node
+corresponding to the data.
+</p>
+<pre data-language="javascript" id="changingData">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "someValue"))  // bind to the "someValue" data property
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", someValue: 1 }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+  diagram.model.undoManager.isEnabled = true;
+
+  incrementData = function() {  // define a function named "incrementData" callable by onclick
+    var model = diagram.model;
+    model.startTransaction("increment");  // all model changes should happen in a transaction
+    var data = model.nodeDataArray[0];  // get the first node data
+    model.setDataProperty(data, "someValue", data.someValue + 1);
+    model.commitTransaction("increment");  // all model changes should happen in a transaction
+  };
+</pre>
+<p>
+Move the node around.
+Click on the button to increase the value of the "someValue" property on the data.
+Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
+</p>
+<input type="button" onclick="incrementData()" value="incrementData()" />
+<script>goCode("changingData", 250, 150)</script>
+
+</div>
+</body>
+</html>
