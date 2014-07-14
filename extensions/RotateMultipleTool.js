@@ -79,7 +79,7 @@ RotateMultipleTool.prototype.doDeactivate = function() {
 */
 RotateMultipleTool.prototype.rotate = function(newangle) {
   var diagram = this.diagram;
-  var e = this.diagram.lastInput;
+  var e = diagram.lastInput;
   // when rotating individual parts, remember the original angle difference
   var angleDiff = newangle - this.adornedObject.part.rotateObject.angle;
   var tool = this;
@@ -115,12 +115,28 @@ RotateMultipleTool.prototype.rotate = function(newangle) {
 */
 RotateMultipleTool.prototype.computeRotate = function(newPoint) {
   var diagram = this.diagram;
-  var e = this.diagram.lastInput;
+  var angle;
+  var e = diagram.lastInput;
   if (e.control || e.meta) {  // relative to the center of the Node whose handle we are rotating
     var part = this.adornedObject.part;
     var rotationPoint = part.getDocumentPoint(part.locationSpot);
-    return rotationPoint.directionPoint(newPoint);
+    angle = rotationPoint.directionPoint(newPoint);
   } else {  // relative to the center of the whole selection
-    return this.centerPoint.directionPoint(newPoint) - this.initialAngle;
+    angle = this.centerPoint.directionPoint(newPoint) - this.initialAngle;
   }
+  if (angle >= 360) angle -= 360;
+  else if (angle < 0) angle += 360;
+  var interval = Math.min(Math.abs(this.snapAngleMultiple), 180);
+  var epsilon = Math.min(Math.abs(this.snapAngleEpsilon), interval / 2);
+  // if it's close to a multiple of INTERVAL degrees, make it exactly so
+  if (!diagram.lastInput.shift && interval > 0 && epsilon > 0) {
+    if (angle % interval < epsilon) {
+      angle = Math.floor(angle / interval) * interval;
+    } else if (angle % interval > interval - epsilon) {
+      angle = (Math.floor(angle / interval) + 1) * interval;
+    }
+    if (angle >= 360) angle -= 360;
+    else if (angle < 0) angle += 360;
+  }
+  return angle;
 };

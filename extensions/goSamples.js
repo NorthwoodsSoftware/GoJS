@@ -136,7 +136,9 @@ var myMenu = '\
     <a href="FreehandDrawing.html"><li>Freehand Drawing</li></a>\
     <a href="PolygonDrawing.html"><li>Polygon Drawing</li></a>\
     <a href="PolylineLinking.html"><li>Polyline Linking</li></a>\
+    <a href="LinkShifting.html"><li>Link Shifting</li></a>\
     <a href="LinkLabelDragging.html"><li>Link Label Dragging</li></a>\
+    <a href="NodeLabelDragging.html"><li>Node Label Dragging</li></a>\
     <a href="Serpentine.html"><li>Serpentine Layout</li></a>\
     <hr />\
     <a href="FloorPlanEditor.html"><li>Floor Plan Editor</li></a>\

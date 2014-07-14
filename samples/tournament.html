@@ -44,12 +44,12 @@
               wrap: go.TextBlock.None, margin: 5, width: 90,
               isMultiline: false, textAlign: 'left' },
             new go.Binding("text", "player2").makeTwoWay()),
-          $(go.TextBlock, "-",
+          $(go.TextBlock, "",
             { column: 1, row: 0,
               wrap: go.TextBlock.None, margin: 2, width: 25,
               isMultiline: false, editable: true, textAlign: 'right' },
             new go.Binding("text", "score1").makeTwoWay()),
-          $(go.TextBlock, "-",
+          $(go.TextBlock, "",
             { column: 1, row: 1,
               wrap: go.TextBlock.None, margin: 2, width: 25,
               isMultiline: false, editable: true, textAlign: 'right' },
@@ -146,10 +146,8 @@
 
 
   function isValidScore(textblock, oldstr, newstr) {
-    // If the new string is not a number or a single hypen, disallow it
-    if (isNaN(newstr) && newstr !== "-") return false;
-    // Otherwise, allow the score
-    return true;
+    if (newstr === "" || newstr[0] === '-' || newstr.length > 3) return false;
+    return !isNaN(parseInt(newstr, 10));
 
     // Here it would also be possible to disallow entering
     // the same score for two players, if that is desired.
@@ -164,6 +162,7 @@
   <div id="myDiagram" style="border: solid 1px black; width:700px; height:600px"></div>
   <p>
     Click on the empty score boxes next to names to fill in scores for each player.
+    The scores must be non-negative numbers with at most 3 digits.
     When two players in a bracket have a score, one of them will automatically advance to the next bracket.
   </p>
 </div>

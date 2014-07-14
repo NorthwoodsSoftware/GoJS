@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+<title>Layer Bands using a Background Part</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+
+  // Perform a TreeLayout where commitLayers is overridden to modify the Part whose key is "_BANDS".
+  function LayeredTreeLayout() {
+    go.TreeLayout.call(this);
+    this.layerStyle = go.TreeLayout.LayerUniform;  // needed for straight layers
+  }
+  go.Diagram.inherit(LayeredTreeLayout, go.TreeLayout);
+
+  LayeredTreeLayout.prototype.commitLayers = function(layerRects, offset) {
+    // update the background object holding the visual "bands"
+    var bands = this.diagram.findPartForKey("_BANDS");
+    if (bands) {
+      var model = this.diagram.model;
+      bands.location = this.arrangementOrigin.copy().add(offset);
+
+      // make each band visible or not, depending on whether there is a layer for it
+      for (var it = bands.elements; it.next(); ) {
+        var idx = it.key;
+        var elt = it.value;  // the item panel representing a band
+        elt.visible = idx < layerRects.length;
+      }
+
+      // set the bounds of each band via data binding of the "bounds" property
+      var arr = bands.data.itemArray;
+      for (var i = 0; i < layerRects.length; i++) {
+        var itemdata = arr[i];
+        if (itemdata) {
+          model.setDataProperty(itemdata, "bounds", layerRects[i]);
+        }
+      }
+    }
+  };
+  // end LayeredTreeLayout
+
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    // this controls whether the layout is horizontal and the layer bands are vertical, or vice-versa:
+    var HORIZONTAL = true;  // this constant parameter can only be set here, not dynamically
+
+    myDiagram = $(go.Diagram, "myDiagram",
+                  {
+                    initialContentAlignment: go.Spot.Center,
+                    layout: $(LayeredTreeLayout,  // custom layout is defined above
+                              {
+                                angle: HORIZONTAL ? 0 : 90,
+                                arrangement: HORIZONTAL ? go.TreeLayout.ArrangementVertical : go.TreeLayout.ArrangementHorizontal
+                              })
+                  });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, go.Panel.Auto,
+        $(go.Shape, "Rectangle",
+          { fill: "white" }),
+        $(go.TextBlock, { margin: 5 },
+          new go.Binding("text", "key")));
+
+    // There should be at most a single object of this category.
+    // This Part will be modified by LayeredTreeLayout.commitLayers to display visual "bands"
+    // where each "layer" is a layer of the tree.
+    // This template is parameterized at load time by the HORIZONTAL parameter.
+    // You also have the option of showing rectangles for the layer bands or
+    // of showing separator lines between the layers, but not both at the same time,
+    // by commenting in/out the indicated code.
+    myDiagram.nodeTemplateMap.add("Bands",
+      $(go.Part, "Position",
+        new go.Binding("itemArray"),
+        {
+          isLayoutPositioned: false,  // but still in document bounds
+          locationSpot: new go.Spot(0, 0, HORIZONTAL ? 0 : 16, HORIZONTAL ? 16 : 0),  // account for header height
+          layerName: "Grid",  // if it is in "Grid" Layer it is in the background and is not pickable or selectable
+          itemTemplate:
+            $(go.Panel, HORIZONTAL ? "Vertical" : "Horizontal",
+              new go.Binding("position", "bounds", function(b) { return b.position; }),
+              $(go.TextBlock,
+                {
+                  angle: HORIZONTAL ? 0 : 270,
+                  textAlign: "center",
+                  wrap: go.TextBlock.None,
+                  font: "bold 11pt sans-serif",
+                  background: $(go.Brush, go.Brush.Linear, { 0: "lightgray", 1: "whitesmoke" })
+                },
+                new go.Binding("text"),
+                // always bind "width" because the angle does the rotation
+                new go.Binding("width", "bounds", function(r) { return HORIZONTAL ? r.width : r.height; })
+              ),
+              // option 1: rectangular bands:
+              $(go.Shape,
+                { stroke: null, strokeWidth: 0 },
+                new go.Binding("desiredSize", "bounds", function(r) { return r.size; }),
+                new go.Binding("fill", "itemIndex", function(i) { return i % 2 == 0 ? "white" : "lightgray"; }).ofObject())
+              // option 2: separator lines:
+              //(HORIZONTAL
+              //  ? $(go.Shape, "LineV",
+              //      { stroke: "gray", alignment: go.Spot.TopLeft, width: 1 },
+              //      new go.Binding("height", "bounds", function(r) { return r.height; }),
+              //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
+              //  : $(go.Shape, "LineH",
+              //      { stroke: "gray", alignment: go.Spot.TopLeft, height: 1 },
+              //      new go.Binding("width", "bounds", function(r) { return r.width; }),
+              //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
+              //  )
+            )
+        }
+      ));
+
+    myDiagram.linkTemplate =
+      $(go.Link,
+        $(go.Shape));  // simple black line, no arrowhead needed
+
+    // define the tree node data
+    var nodearray = [
+      { // this is the information needed for the headers of the bands
+        key: "_BANDS",
+        category: "Bands",
+        itemArray: [
+          { text: "Zero" },
+          { text: "One" },
+          { text: "Two" },
+          { text: "Three" },
+          { text: "Four" }
+        ]
+      },
+      // these are the regular nodes in the TreeModel
+      { key: "root" },
+      { key: "oneB", parent: "root" },
+      { key: "twoA", parent: "oneB" },
+      { key: "twoC", parent: "root" },
+      { key: "threeC", parent: "twoC" },
+      { key: "threeD", parent: "twoC" },
+      { key: "fourB", parent: "threeD" },
+      { key: "fourC", parent: "twoC" },
+      { key: "fourD", parent: "fourB" },
+      { key: "twoD", parent: "root" }
+    ];
+
+    myDiagram.model = new go.TreeModel(nodearray);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:600px;"></div>
+  <p>
+    Unlike swim lane diagrams where the nodes are supposed to stay in their lanes,
+    layer bands run perpendicular to the growth direction of the layout.
+  </p>
+  <p>
+    This sample uses a custom <a>TreeLayout</a> that overrides the <a>TreeLayout.commitLayers</a> method
+    in order to specify the position and size of each "band" that surrounds a layer of the tree.
+    The "bands" are held in a single Part that is bound to a particular node data object whose key is "_BANDS".
+    The headers, and potentially any other information that you might want to display in the headers,
+    are stored in this "_BANDS" object in an Array.
+  </p>
+  <p>
+    This sample can be adapted to use a <a>GraphLinksModel</a> instead of a <a>TreeModel</a>
+    and a <a>LayeredDigraphLayout</a> instead of a <a>TreeLayout</a>.
+  </p>
+</div>
+</body>
+</html>

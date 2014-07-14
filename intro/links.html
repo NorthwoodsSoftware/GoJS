@@ -372,6 +372,33 @@ that also has a JumpGap curve.
 </pre>
 <script>goCode("jumpGaps", 600, 150)</script>
 
+<h3>Disconnected Links</h3>
+<p>
+The normal expectation is that one cannot have a link relationship unless it connects two nodes.
+However <b>GoJS</b> does support the creation and manipulation of links that have either or both of
+the <a>Link.fromNode</a> and <a>Link.toNode</a> properties with null values.
+This is demonstrated by the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
+</p>
+<p>
+Both ends of the link must be connected to nodes in order for the standard link routing to operate.
+If a link does not know where to start or where to end, it cannot compute a route or a position for the link.
+However, you can provide a route by setting or binding <a>Link.points</a> to a list of two or more Points.
+That will automatically give the link a position so that it can be seen in the diagram.
+</p>
+<p>
+The linking tools, <a>LinkingTool</a> and <a>RelinkingTool</a>, normally do not permit the creation
+or reconnection of links that connect with "nothing".
+However, you can set <a>LinkingBaseTool.isUnconnectedLinkValid</a> to true to allow the user to do so,
+as the Draggable Link sample demonstrates.
+</p>
+<p>
+Links cannot normally be dragged unless they are part of a collection that includes the connected nodes.
+However, you can set <a>DraggingTool.dragsLink</a> to true to allow the user to drag a solitary <a>Link</a>.
+This mode allows the user to disconnect a link by dragging it away from the node(s)/port(s) to which it was attached.
+It also allows the user to reconnect one or both ends of the link by dropping it so that the end(s) are at valid port(s).
+This too is demonstrated by the Draggable Link sample.
+</p>
+
 </div>
 </body>
 </html>

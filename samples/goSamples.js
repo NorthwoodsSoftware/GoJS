@@ -183,6 +183,7 @@ var myMenu = '\
     <a href="kittenMonitor.html"><li>Kitten Monitor</li></a>\
     <!--<a href="constantSize.html"><li>Constant Size</li></a>-->\
     <a href="grouping.html"><li>Grouping</li></a>\
+    <a href="swimbands.html"><li>Layer Bands</li></a>\
     <a href="swimlanes.html"><li>Swim Lanes</li></a>\
     <!--<a href="virtualizedTree.html"><li>Virtualized Tree</li></a>-->\
     <!--<a href="virtualizedTreeLayout.html"><li>Virtualized TreeLayout</li></a>-->\

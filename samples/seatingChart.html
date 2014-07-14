@@ -17,6 +17,7 @@
         {
           allowDragOut: true,  // to myGuests
           allowDrop: true,  // from myGuests
+          allowClipboard: false,
           initialContentAlignment: go.Spot.Center,
           draggingTool: $(SpecialDraggingTool),
           rotatingTool: $(HorizontalTextRotatingTool),
@@ -405,6 +406,7 @@
   // Automatically drag people Nodes along with the table Node at which they are seated.
   function SpecialDraggingTool() {
     go.DraggingTool.call(this);
+    this.isCopyEnabled = false;  // don't want to copy people except between Diagrams
   }
   go.Diagram.inherit(SpecialDraggingTool, go.DraggingTool);
 
@@ -414,7 +416,7 @@
     parts.each(function(table) {
       if (isPerson(table)) return;  // ignore persons
       // this is a table Node, find all people Nodes using the same table key
-      for (var nit = this.diagram.nodes; nit.next(); ) {
+      for (var nit = table.diagram.nodes; nit.next(); ) {
         var n = nit.value;
         if (isPerson(n) && n.data.table === table.data.key) {
           if (!map.contains(n)) map.add(n, { point: n.location });

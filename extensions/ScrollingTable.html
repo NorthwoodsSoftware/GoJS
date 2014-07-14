@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<title>Scrolling Table</title>
+<!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+<script src="go.js"></script>
+<script src="ScrollingTable.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        { initialContentAlignment: go.Spot.Center });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Vertical",
+        {
+          selectionObjectName: "SCROLLING",
+          resizable: true, resizeObjectName: "SCROLLING"
+        },
+        $(go.TextBlock,
+          { font: "bold 14px sans-serif" },
+          new go.Binding("text", "key")),
+        $(go.Panel, "Auto",
+          $(go.Shape, { fill: "white" }),
+          $("ScrollingTable",
+            new go.Binding("TABLE.itemArray", "items"),
+            {
+              name: "SCROLLING",
+              desiredSize: new go.Size(NaN, 60),
+              "TABLE.itemTemplate":
+                $(go.Panel, "TableRow",
+                  $(go.TextBlock, { column: 0 }, new go.Binding("text", "name")),
+                  $(go.TextBlock, { column: 1 }, new go.Binding("text", "value"))
+                ),
+              "TABLE.rowSizing": go.RowColumnDefinition.None,
+              "TABLE.defaultColumnSeparatorStroke": "gray",
+              "TABLE.defaultColumnSeparatorStrokeWidth": 0.5,
+              "TABLE.defaultRowSeparatorStroke": "gray",
+              "TABLE.defaultRowSeparatorStrokeWidth": 0.5,
+              "TABLE.defaultSeparatorPadding": new go.Margin(1, 3, 0, 3)
+            }
+          )
+        )
+      );
+
+    myDiagram.model = new go.GraphLinksModel([
+      { key: "Alpha", items:
+        [
+          { name: "Only", value: "Item" }
+        ]
+      },
+      {
+        key: "Beta", items: [
+          { name: "A", value: 1 },
+          { name: "B", value: 2 },
+          { name: "C", value: 3 },
+          { name: "D", value: 4 },
+          { name: "E", value: 5 },
+          { name: "F", value: 6 },
+          { name: "G", value: 7 }
+        ]
+      },
+      {
+        key: "Gamma", items: []
+      }
+    ],[
+      { from: "Alpha", to: "Beta" }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+  This makes use of the "ScrollingTable" Panel defined in <a href="ScrollingTable.js">ScrollingTable.js</a>.
+</div>
+</body>
+</html>

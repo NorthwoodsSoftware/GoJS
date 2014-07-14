@@ -22,6 +22,8 @@ function NodeLabelDraggingTool() {
   this.label = null;
   /** @type {Point} */
   this._originalAlignment = null;
+  /** @type {Point} */
+  this._originalCenter = null;
 }
 go.Diagram.inherit(NodeLabelDraggingTool, go.Tool);
 
@@ -74,6 +76,8 @@ NodeLabelDraggingTool.prototype.doActivate = function() {
   this.label = this.findLabel();
   if (this.label !== null) {
     this._originalAlignment = this.label.alignment.copy();
+    var main = this.label.panel.findMainElement();
+    this._originalCenter = main.getDocumentPoint(go.Spot.Center);
   }
   go.Tool.prototype.doActivate.call(this);
 }
@@ -135,9 +139,7 @@ NodeLabelDraggingTool.prototype.doMouseUp = function() {
 */
 NodeLabelDraggingTool.prototype.updateAlignment = function() {
   if (this.label === null) return;
-  var panel = this.label.panel;
-  if (panel === null) return;
   var last = this.diagram.lastInput.documentPoint;
-  var mid = panel.getDocumentPoint(go.Spot.Center);
-  this.label.alignment = new go.Spot(0.5, 0.5, last.x-mid.x, last.y-mid.y);
+  var cntr = this._originalCenter;
+  this.label.alignment = new go.Spot(0.5, 0.5, last.x - cntr.x, last.y - cntr.y);
 }

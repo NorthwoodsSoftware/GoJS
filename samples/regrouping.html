@@ -7,153 +7,158 @@
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+      function init() {
+          if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+          var $ = go.GraphObject.make;
 
-    myDiagram =
-      $(go.Diagram, "myDiagram",
-        {
-          allowDrop: true,
-          // what to do when a drag-drop occurs in the Diagram's background
-          mouseDrop:
-            function(e) {
-              // when the selection is dropped in the diagram's background,
-              // make sure the selected Parts no longer belong to any Group
-              var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
-              if (!ok) myDiagram.currentTool.doCancel();
-            },
-          layout:
-            $(go.GridLayout,
-              { wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-                cellSize: new go.Size(1, 1) }),
-          initialContentAlignment: go.Spot.Center,
-          groupSelectionAdornmentTemplate:  // this applies to all Groups
-            $(go.Adornment, go.Panel.Auto,
-              $(go.Shape, "RoundedRectangle",
-                { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
-              $(go.Placeholder)),
-          "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
-          "undoManager.isEnabled": true
-        });
+          myDiagram =
+            $(go.Diagram, "myDiagram",
+              {
+                  allowDrop: true,
+                  // what to do when a drag-drop occurs in the Diagram's background
+                  mouseDrop:
+                    function(e) {
+                        // when the selection is dropped in the diagram's background,
+                        // make sure the selected Parts no longer belong to any Group
+                        var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
+                        if (!ok) myDiagram.currentTool.doCancel();
+                    },
+                  layout:
+                    $(go.GridLayout,
+                      { wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+                          cellSize: new go.Size(1, 1) }),
+                  initialContentAlignment: go.Spot.Center,
+                  groupSelectionAdornmentTemplate:  // this applies to all Groups
+                    $(go.Adornment, go.Panel.Auto,
+                      $(go.Shape, "Rectangle",
+                        { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
+                      $(go.Placeholder)),
+                  "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
+                  "undoManager.isEnabled": true
+              });
 
-    // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", function(e) {
-      var button = document.getElementById("saveModel");
-      if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf("*");
-      if (myDiagram.isModified) {
-        if (idx < 0) document.title += "*";
-      } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
-      }
-    });
+          // when the document is modified, add a "*" to the title and enable the "Save" button
+          myDiagram.addDiagramListener("Modified", function(e) {
+              var button = document.getElementById("saveModel");
+              if (button) button.disabled = !myDiagram.isModified;
+              var idx = document.title.indexOf("*");
+              if (myDiagram.isModified) {
+                  if (idx < 0) document.title += "*";
+              } else {
+                  if (idx >= 0) document.title = document.title.substr(0, idx); 
+              }
+          });
 
-    // There are two templates for Groups, "OfGroups" and "OfNodes".
+          // There are two templates for Groups, "OfGroups" and "OfNodes".
 
-    // this function is used to highlight a Group that the selection may be dropped into
-    function highlightGroup(e, grp, show) {
-      if (!grp) return;
-      e.handled = true;
-      if (show) {
-        // cannot depend on the grp.diagram.selection in the case of external drag-and-drops;
-        // instead depend on the DraggingTool.draggedParts or .copiedParts
-        var tool = grp.diagram.toolManager.draggingTool;
-        var map = tool.draggedParts || tool.copiedParts;  // this is a Map
-        // now we can check to see if the Group will accept membership of the dragged Parts
-        if (grp.canAddMembers(map.toKeySet())) {
-          grp.isHighlighted = true;
-          return;
-        }
-      }
-      grp.isHighlighted = false;
-    }
+          // this function is used to highlight a Group that the selection may be dropped into
+          function highlightGroup(e, grp, show) {
+              if (!grp) return;
+              e.handled = true;
+              if (show) {
+                  // cannot depend on the grp.diagram.selection in the case of external drag-and-drops;
+                  // instead depend on the DraggingTool.draggedParts or .copiedParts
+                  var tool = grp.diagram.toolManager.draggingTool;
+                  var map = tool.draggedParts || tool.copiedParts;  // this is a Map
+                  // now we can check to see if the Group will accept membership of the dragged Parts
+                  if (grp.canAddMembers(map.toKeySet())) {
+                      grp.isHighlighted = true;
+                      return;
+                  }
+              }
+              grp.isHighlighted = false;
+          }
 
-    // upon a drop onto a Group, we try to add the selection as members of the Group;
-    // if this is OK, we're done; otherwise we cancel the operation to rollback everything
-    function finishDrop(e, grp) {
-      var ok = grp !== null && grp.addMembers(grp.diagram.selection, true);
-      if (!ok) grp.diagram.currentTool.doCancel();
-    }
+          // upon a drop onto a Group, we try to add the selection as members of the Group;
+          // if this is OK, we're done; otherwise we cancel the operation to rollback everything
+          function finishDrop(e, grp) {
+              var ok = grp !== null && grp.addMembers(grp.diagram.selection, true);
+              if (!ok) grp.diagram.currentTool.doCancel();
+          }
 
-    myDiagram.groupTemplateMap.add("OfGroups",
-      $(go.Group, go.Panel.Auto,
-        {
-          background: "transparent",
-          // highlight when dragging into the Group
-          mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
-          mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
-          computesBoundsAfterDrag: true,
-          // when the selection is dropped into a Group, add the selected Parts into that Group;
-          // if it fails, cancel the tool, rolling back any changes
-          mouseDrop: finishDrop,
-          // Groups containing Groups lay out their members horizontally
-          layout:
-            $(go.GridLayout,
-              { wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) })
-        },
-        $(go.Panel, go.Panel.Vertical,
-          $(go.Panel, go.Panel.Horizontal,
-            { stretch: go.GraphObject.Horizontal, background: "orange" },
-            $("SubGraphExpanderButton",
-              { alignment: go.Spot.Right, margin: 2 }),
-            $(go.TextBlock,
-              { alignment: go.Spot.Left, editable: true,
-                margin: 2, wrap: go.TextBlock.None },
-              new go.Binding("text", "text").makeTwoWay())
-          ),  // end Horizontal Panel
-          $(go.Placeholder,
-            { padding: 5, alignment: go.Spot.TopLeft },
-            new go.Binding("background", "isHighlighted", function(h) { return h ? "red": "transparent"; }).ofObject())
-        ),  // end Vertical Panel
-        $(go.Shape, "RoundedRectangle",
-          {
-            isPanelMain: true,  // the RoundedRectangle Shape is in front of the Vertical Panel
-            fill: null,
-            spot1: new go.Spot(0, 0, 1, 1),   // the Vertical Panel is placed
-            spot2: new go.Spot(1, 1, -1, -1)  // slightly inside the rounded rectangle
-          })
-        ));  // end Group and call to add to template Map
+          myDiagram.groupTemplateMap.add("OfGroups",
+            $(go.Group, go.Panel.Auto,
+              {
+                  background: "transparent",
+                  // highlight when dragging into the Group
+                  mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
+                  mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
+                  computesBoundsAfterDrag: true,
+                  // when the selection is dropped into a Group, add the selected Parts into that Group;
+                  // if it fails, cancel the tool, rolling back any changes
+                  mouseDrop: finishDrop,
+                  // Groups containing Groups lay out their members horizontally
+                  layout:
+                    $(go.GridLayout,
+                      { wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+                          cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) })
+              },
+              $(go.Panel, go.Panel.Vertical,
+                $(go.Panel, go.Panel.Horizontal,
+                  { stretch: go.GraphObject.Horizontal, background: "#FFDD33" },
+                  $("SubGraphExpanderButton",
+                    { alignment: go.Spot.Right, margin: 5 }),
+                  $(go.TextBlock,
+                    { alignment: go.Spot.Left, editable: true,
+                        margin: 5,
+                        font: "bold 18px sans-serif",
+                        stroke: "#9A6600"
+                    },
+                    new go.Binding("text", "text").makeTwoWay())
+                ),  // end Horizontal Panel
+                $(go.Placeholder,
+                  { padding: 5, alignment: go.Spot.TopLeft },
+                  new go.Binding("background", "isHighlighted", function(h) { return h ? "red": "transparent"; }).ofObject())
+              ),  // end Vertical Panel
+              $(go.Shape, "Rectangle",
+                {
+                    isPanelMain: true,  // the Rectangle Shape is in front of the Vertical Panel
+                    fill: null,
+                    stroke: "#E69900",
+                    strokeWidth: 2,
+                })
+              ));  // end Group and call to add to template Map
 
-    myDiagram.groupTemplateMap.add("OfNodes",
-      $(go.Group, go.Panel.Auto,
-        {
-          background: "transparent",
-          ungroupable: true,
-          // highlight when dragging into the Group
-          mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
-          mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
-          computesBoundsAfterDrag: true,
-          // when the selection is dropped into a Group, add the selected Parts into that Group;
-          // if it fails, cancel the tool, rolling back any changes
-          mouseDrop: finishDrop,
-          // Groups containing Nodes lay out their members vertically
-          layout:
-            $(go.GridLayout,
-              { wrappingColumn: 1, alignment: go.GridLayout.Position,
-                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) })
-        },
-        $(go.Panel, go.Panel.Vertical,
-          $(go.Panel, go.Panel.Horizontal,
-            { stretch: go.GraphObject.Horizontal, background: "turquoise" },
-            $("SubGraphExpanderButton",
-              { alignment: go.Spot.Right, margin: 2 }),
-            $(go.TextBlock,
-              { alignment: go.Spot.Left, editable: true,
-                margin: 2, wrap: go.TextBlock.None },
+          myDiagram.groupTemplateMap.add("OfNodes",
+            $(go.Group, go.Panel.Auto,
+              {
+                  background: "transparent",
+                  ungroupable: true,
+                  // highlight when dragging into the Group
+                  mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
+                  mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
+                  computesBoundsAfterDrag: true,
+                  // when the selection is dropped into a Group, add the selected Parts into that Group;
+                  // if it fails, cancel the tool, rolling back any changes
+                  mouseDrop: finishDrop,
+                  // Groups containing Nodes lay out their members vertically
+                  layout:
+                    $(go.GridLayout,
+                      { wrappingColumn: 1, alignment: go.GridLayout.Position,
+                          cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) })
+              },
+              $(go.Panel, go.Panel.Vertical,
+                $(go.Panel, go.Panel.Horizontal,
+                  { stretch: go.GraphObject.Horizontal, background: "#33D3E5" },
+                  $("SubGraphExpanderButton",
+                    { alignment: go.Spot.Right, margin: 2 }),
+                  $(go.TextBlock,
+                    { alignment: go.Spot.Left, editable: true,
+                        margin: 5,
+                        font: "bold 16px sans-serif",
+                        stroke: "#006080"},
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
             { padding: 5, alignment: go.Spot.TopLeft },
             new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
         ),  // end Vertical Panel
-        $(go.Shape, "RoundedRectangle",
+        $(go.Shape, "Rectangle",
           {
             isPanelMain: true,
             fill: null,
-            spot1: new go.Spot(0, 0, 1, 1),
-            spot2: new go.Spot(1, 1, -1, -1)
+            stroke: "#0099CC",
+            strokeWidth: 2,
           })
       ));  // end Group and call to add to template Map
 
@@ -168,11 +173,14 @@
           // dropping on a Node is the same as dropping on its containing Group, if any
           mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
         },
-        $(go.Shape, "RoundedRectangle",
-          { fill: "lightgreen" },
+        $(go.Shape, "Rectangle",
+          { fill: "#ACE600", stroke: "#558000", strokeWidth: 2 },
           new go.Binding("fill", "color")),
         $(go.TextBlock,
-          { margin: 3, editable: true },
+          {   margin: 5, editable: true,
+          font: "bold 13px sans-serif",
+          stroke: "#446700"
+          },
           new go.Binding("text", "text").makeTwoWay())
       );
 
@@ -185,9 +193,9 @@
           layout: $(go.GridLayout, { wrappingColumn: 1, alignment: go.GridLayout.Position })
         });
     myPalette.model = new go.GraphLinksModel([
-      { text: "lightgreen", color: "lightgreen" },
-      { text: "yellow", color: "yellow" },
-      { text: "lightblue", color: "lightblue" }
+      { text: "lightgreen", color: "#ACE600" },
+      { text: "yellow", color: "#FFDD33" },
+      { text: "lightblue", color: "#33D3E5" }
     ]);
 
     load();

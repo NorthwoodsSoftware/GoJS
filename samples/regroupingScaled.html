@@ -30,8 +30,8 @@
           initialContentAlignment: go.Spot.Center,
           groupSelectionAdornmentTemplate:  // this applies to all Groups
             $(go.Adornment, go.Panel.Auto,
-              $(go.Shape, "RoundedRectangle",
-                { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
+              $(go.Shape, "Rectangle",
+                { fill: null, stroke: "dodgerblue", strokeWidth: 2 }),
               $(go.Placeholder)),
           "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
           "undoManager.isEnabled": true
@@ -105,24 +105,26 @@
         $(go.Panel, go.Panel.Vertical,
           $(go.Panel, go.Panel.Horizontal,
             { name: "HEADER" },
-            { stretch: go.GraphObject.Horizontal, background: "orange" },
+            { stretch: go.GraphObject.Horizontal, background: "#FFDD33" },
             $("SubGraphExpanderButton",
-              { alignment: go.Spot.Right, margin: 2 }),
+              { alignment: go.Spot.Right, margin: 5 }),
             $(go.TextBlock,
               { alignment: go.Spot.Left, editable: true,
-                margin: 2, wrap: go.TextBlock.None },
+              margin: 5,
+              font: "bold 18px sans-serif",
+              stroke: "#9A6600"},
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
             { padding: 5, alignment: go.Spot.TopLeft },
             new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
         ),  // end Vertical Panel
-        $(go.Shape, "RoundedRectangle",
+        $(go.Shape, "Rectangle",
           {
-            isPanelMain: true,  // the RoundedRectangle Shape is in front of the Vertical Panel
+            isPanelMain: true,  // the Rectangle Shape is in front of the Vertical Panel
             fill: null,
-            spot1: new go.Spot(0, 0, 1, 1),   // the Vertical Panel is placed
-            spot2: new go.Spot(1, 1, -1, -1)  // slightly inside the rounded rectangle
+            stroke: "#E69900",
+            strokeWidth: 1.75,
           })
       ));  // end Group and call to add to template Map
 
@@ -151,24 +153,26 @@
         $(go.Panel, go.Panel.Vertical,
           $(go.Panel, go.Panel.Horizontal,
             { name: "HEADER" },
-            { stretch: go.GraphObject.Horizontal, background: "turquoise" },
+            { stretch: go.GraphObject.Horizontal, background: "#33D3E5" },
             $("SubGraphExpanderButton",
-              { alignment: go.Spot.Right, margin: 2 }),
+              { alignment: go.Spot.Right, margin: 5}),
             $(go.TextBlock,
               { alignment: go.Spot.Left, editable: true,
-                margin: 2, wrap: go.TextBlock.None },
+              margin: 5,
+              font: "bold 16px sans-serif",
+              stroke: "#006080"},
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
             { padding: 5, alignment: go.Spot.TopLeft },
             new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
         ),  // end Vertical Panel
-        $(go.Shape, "RoundedRectangle",
+        $(go.Shape, "Rectangle",
           {
             isPanelMain: true,
             fill: null,
-            spot1: new go.Spot(0, 0, 1, 1),
-            spot2: new go.Spot(1, 1, -1, -1)
+            stroke: "#0099CC",
+            strokeWidth: 1.5,
           })
       ));  // end Group and call to add to template Map
 
@@ -187,11 +191,14 @@
           containingGroupChanged:
             function(part, oldgroup, newgroup) { part.scale = 1 / computeLevel(part); }
         },
-        $(go.Shape, "RoundedRectangle",
-          { fill: "lightgreen" },
+        $(go.Shape, "Rectangle",
+          { fill: "#ACE600", stroke: "#558000", strokeWidth: 2 },
           new go.Binding("fill", "color")),
         $(go.TextBlock,
-          { margin: 3, editable: true },
+          {
+              margin: 5, editable: true,
+              font: "bold 13px sans-serif",
+              stroke: "#446700"},
           new go.Binding("text", "text").makeTwoWay())
       );
 
@@ -204,9 +211,9 @@
           layout: $(go.GridLayout, { wrappingColumn: 1, alignment: go.GridLayout.Position })
         });
     myPalette.model = new go.GraphLinksModel([
-      { text: "lightgreen", color: "lightgreen" },
-      { text: "yellow", color: "yellow" },
-      { text: "lightblue", color: "lightblue" }
+      { text: "lightgreen", color: "#ACE600" },
+      { text: "yellow", color: "#FFDD33" },
+      { text: "lightblue", color: "#33D3E5" }
     ]);
 
     load();
