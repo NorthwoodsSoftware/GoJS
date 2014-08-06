@@ -13,7 +13,6 @@ link.rel = "stylesheet";
 link.href = "../assets/css/highlight.css";
 document.getElementsByTagName("head")[0].appendChild(link);
 
-
 /* Copyright (C) 1998-2014 by Northwoods Software Corporation. All Rights Reserved. */
 
 function goSamples() {
@@ -135,8 +134,7 @@ ga('send', 'pageview');
 //<![CDATA[
 var myMenu = '\
   <ul id="sections">\
-    <a href="../index.html" target="home"><li>GoJS Home</li></a>\
-    <hr />\
+    <a href="index.html"><li><h2 class="index"><span class="glyphicon glyphicon-th"></span>Index</li></h2></a>\
     <a href="minimal.html"><li>Minimal</li></a>\
     <!--<a href="minimalJSON.html"><li>Minimal (JSON)</li></a>-->\
     <!--<a href="minimalXML.html"><li>Minimal (XML)</li></a>-->\
@@ -147,7 +145,7 @@ var myMenu = '\
     <a href="DOMTree.html"><li>DOM Tree</li></a>\
     <a href="visualTree.html"><li>Visual Tree</li></a>\
     <a href="shapes.html"><li>Shapes</li></a>\
-    <a href="tiger.html"><li>Tiger</li></a>\
+    <a href="icons.html"><li>SVG Icons</li></a>\
     <a href="arrowheads.html"><li>Arrowheads</li></a>\
     <!--<a href="taperedLinks.html"><li>Tapered Links</li></a>-->\
     <a href="navigation.html"><li>Navigation</li></a>\
@@ -235,3 +233,5 @@ var myMenu = '\
   </ul>';
 //]]>
 // commented out sample pages are listed in unlisted.html
+
+

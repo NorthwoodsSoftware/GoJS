@@ -6,6 +6,11 @@
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<style type="text/css">
+input[type="number"] {
+   width:40px;
+}
+</style>
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -40,7 +45,8 @@
       $(go.Link,
         { routing: go.Link.Orthogonal,
           selectable: false },
-        $(go.Shape));
+        $(go.Shape,
+          { strokeWidth: 3, stroke: "#333" }));
 
     // generate a tree with the default values
     rebuildGraph();
@@ -59,8 +65,10 @@
     var maxChil = document.getElementById("maxChil").value;
     maxChil = parseInt(maxChil, 10);
 
+    var hasRandomSizes = document.getElementById("randomSizes").checked;
+
     // create and assign a new model
-    var nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil);
+    var nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes);
     myDiagram.model = new go.TreeModel(nodeDataArray);
 
     // update the diagram layout customized by the various control values
@@ -68,7 +76,7 @@
   }
 
   // Creates a random number (between MIN and MAX) of randomly colored nodes.
-  function generateNodeData(minNodes, maxNodes, minChil, maxChil) {
+  function generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes) {
     var nodeArray = [];
     if (minNodes === undefined || isNaN(minNodes) || minNodes < 1) minNodes = 1;
     if (maxNodes === undefined || isNaN(maxNodes) || maxNodes < minNodes) maxNodes = minNodes;
@@ -80,8 +88,8 @@
         key: i,  // the unique identifier
         // "parent" is set by code below that assigns children
         text: i.toString(),  // some text to be shown by the node template
-        fill: go.Brush.randomColor()  // a color to be shown by the node template
-        , size: new go.Size(Math.random()*50 + 20, Math.random()*50 + 20)
+        fill: go.Brush.randomColor(),  // a color to be shown by the node template
+        size: (hasRandomSizes) ? new go.Size(Math.random()*50 + 20, Math.random()*50 + 20) : new go.Size(30, 30)
       });
     }
 
@@ -295,10 +303,11 @@
       <br />
       <br />
       <b>New Tree</b><br />
-      MinNodes: <input type="text" size="2" id="minNodes" value="20" /><br />
-      MaxNodes: <input type="text" size="2" id="maxNodes" value="100" /><br />
-      MinChildren: <input type="text" size="2" id="minChil" value="3" /><br />
-      MaxChildren: <input type="text" size="2" id="maxChil" value="5" /><br />
+      MinNodes: <input type="number" width="2" id="minNodes" value="20" /><br />
+      MaxNodes: <input type="number" width="2" id="maxNodes" value="100" /><br />
+      MinChildren: <input type="number" width="2" id="minChil" value="1" /><br />
+      MaxChildren: <input type="number" width="2" id="maxChil" value="3" /><br />
+      Random Sizes: <input type="checkbox" id="randomSizes" /><br />
       <button type="button" onclick="rebuildGraph()">Generate Tree</button>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px">
@@ -320,11 +329,11 @@
           <option value="BottomRightBus">BottomRightBus</option>
         </select>
         <br />
-      NodeSpacing: <input type="text" size="2" id="nodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
-      NodeIndent: <input type="text" size="2" id="nodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
-      NodeIndentPastParent: <input type="text" size="2" id="nodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
-      LayerSpacing: <input type="text" size="2" id="layerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
-      LayerSpacingParentOverlap: <input type="text" size="2" id="layerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      NodeSpacing: <input type="number" size="2" id="nodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
+      NodeIndent: <input type="number" size="2" id="nodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
+      NodeIndentPastParent: <input type="number" size="2" id="nodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      LayerSpacing: <input type="number" size="2" id="layerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
+      LayerSpacingParentOverlap: <input type="number" size="2" id="layerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
       Sorting:
         <select name="sorting" id="sorting" onchange="layout()">
           <option value="Forwards" selected="selected">Forwards</option>
@@ -336,9 +345,9 @@
       Compaction:
         <input type="radio" name="compaction" onclick="layout()" value="Block" checked="checked" /> Block
         <input type="radio" name="compaction" onclick="layout()" value="None" /> None<br />
-      BreadthLimit: <input type="text" size="2" id="breadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
-      RowSpacing: <input type="text" size="2" id="rowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
-      RowIndent: <input type="text" size="2" id="rowIndent" value="10" onchange="layout()" /> (>= 0)<br />
+      BreadthLimit: <input type="number" size="2" id="breadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
+      RowSpacing: <input type="number" size="2" id="rowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
+      RowIndent: <input type="number" size="2" id="rowIndent" value="10" onchange="layout()" /> (>= 0)<br />
       SetsPortSpot: <input type="checkbox" id="setsPortSpot" checked="checked" onclick="layout()" />
       SetsChildPortSpot: <input type="checkbox" id="setsChildPortSpot" checked="checked" onclick="layout()" /><br />
     </span>
@@ -363,11 +372,11 @@
           <option value="BottomRightBus">BottomRightBus</option>
         </select>
         <br />
-      NodeSpacing: <input type="text" size="2" id="altNodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
-      NodeIndent: <input type="text" size="2" id="altNodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
-      NodeIndentPastParent: <input type="text" size="2" id="altNodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
-      LayerSpacing: <input type="text" size="2" id="altLayerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
-      LayerSpacingParentOverlap: <input type="text" size="2" id="altLayerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      NodeSpacing: <input type="number" size="2" id="altNodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
+      NodeIndent: <input type="number" size="2" id="altNodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
+      NodeIndentPastParent: <input type="number" size="2" id="altNodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
+      LayerSpacing: <input type="number" size="2" id="altLayerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
+      LayerSpacingParentOverlap: <input type="number" size="2" id="altLayerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
       Sorting:
         <select name="altSorting" id="altSorting" onchange="layout()">
           <option value="Forwards" selected="selected">Forwards</option>
@@ -379,9 +388,9 @@
       Compaction:
         <input type="radio" name="altCompaction" onclick="layout()" value="Block" checked="checked" /> Block
         <input type="radio" name="altCompaction" onclick="layout()" value="None" /> None<br />
-      BreadthLimit: <input type="text" size="2" id="altBreadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
-      RowSpacing: <input type="text" size="2" id="altRowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
-      RowIndent: <input type="text" size="2" id="altRowIndent" value="10" onchange="layout()" /> (>= 0)<br />
+      BreadthLimit: <input type="number" size="2" id="altBreadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
+      RowSpacing: <input type="number" size="2" id="altRowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
+      RowIndent: <input type="number" size="2" id="altRowIndent" value="10" onchange="layout()" /> (>= 0)<br />
       SetsPortSpot: <input type="checkbox" id="altSetsPortSpot" checked="checked" onclick="layout()" />
       SetsChildPortSpot: <input type="checkbox" id="altSetsChildPortSpot" checked="checked" onclick="layout()" /><br />
     </span>
