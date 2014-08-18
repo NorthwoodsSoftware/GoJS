@@ -31,7 +31,7 @@ function goSamples() {
   hdr.appendChild(p);
   var p1 = document.createElement("p");
   var samplename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-  p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS-Samples/blob/master/samples/" + samplename + "' target='_blank'>View this sample page's source on GitHub</a>";
+  p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/" + samplename + "' target='_blank'>View this sample page's source on GitHub</a>";
   hdr.appendChild(p1);
 
   var samplediv = document.getElementById("sample") || document.body;
