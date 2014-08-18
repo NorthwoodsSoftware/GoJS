@@ -1,4 +1,4 @@
-GoJS-Samples
+GoJS Samples
 ============
 
 This repository contains the code for all [GoJS](http://gojs.net) samples and extensions.
