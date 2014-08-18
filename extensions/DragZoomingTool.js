@@ -21,14 +21,14 @@
 * If the value is null, the tool zooms its own {@link Tool#diagram}.
 * <p/>
 * You can use this tool in a modal manner by executing:
-* <code><br/>
-*   diagram.currentTool = new DragZoomingTool();<br/>
-* </code>
+* <pre><code>
+*   diagram.currentTool = new DragZoomingTool();
+* </code></pre>
 * <p/>
 * Use this tool in a mode-less manner by executing:
-* <code><br/>
-*   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool());<br/>
-* </code>
+* <pre><code>
+*   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool());
+* </code></pre>
 * However when used mode-lessly as a mouse-move tool, in {@link ToolManager#mouseMoveTools},
 * this cannot start running unless there has been a motionless delay
 * after the mouse-down event of at least {@link #delay} milliseconds.

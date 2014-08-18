@@ -60,11 +60,17 @@
       function randomMovement() {
         var model = myDiagram.model;
         var arr = model.nodeDataArray;
+        var picture = myDiagram.parts.first();
         for (var i = 0; i < arr.length; i++) {
           var data = arr[i];
           var pt = data.loc;
-          pt.x += 20 * Math.random() - 10;
-          pt.y += 20 * Math.random() - 10;
+          var x = pt.x + 20 * Math.random() - 10;
+          var y = pt.y + 20 * Math.random() - 10;
+          // make sure the kittens stay inside the house
+          if (x > picture.position.x && x < picture.position.x + picture.actualBounds.width)
+            pt.x = x;
+          if (y > picture.position.y && y < picture.position.y + picture.actualBounds.height)
+            pt.y = y;
           model.updateTargetBindings(data);
         }
       }
