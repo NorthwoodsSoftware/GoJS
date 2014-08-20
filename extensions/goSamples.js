@@ -139,12 +139,14 @@ var myMenu = '\
     <a href="LinkShifting.html"><li>Link Shifting</li></a>\
     <a href="LinkLabelDragging.html"><li>Link Label Dragging</li></a>\
     <a href="NodeLabelDragging.html"><li>Node Label Dragging</li></a>\
+    <hr />\
+    <a href="Fishbone.html"><li>Fishbone Layout</li></a>\
     <a href="Serpentine.html"><li>Serpentine Layout</li></a>\
     <hr />\
-    <a href="FloorPlanEditor.html"><li>Floor Plan Editor</li></a>\
-    <a href="FloorPlanMonitor.html"><li>&nbsp;&nbsp;&nbsp;&nbsp;... and Monitor</li></a>\
+    <a target="_blank" href="FloorPlanEditor.html"><li>Floor Plan Editor</li></a>\
+    <a target="_blank" href="FloorPlanMonitor.html"><li>&nbsp;&nbsp;&nbsp;&nbsp;... and Monitor</li></a>\
     <hr />\
-    <a href="BPMN.html"><li>BPMN Editor</li></a>\
+    <a target="_blank" href="BPMN.html"><li>BPMN Editor</li></a>\
     <hr />\
     <a href="Robot.html"><li>Simulating Input</li></a>\
     <hr />\

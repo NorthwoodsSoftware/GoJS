@@ -226,7 +226,6 @@ var myMenu = '\
     <a href="fdLayout.html"><li>Force Directed</li></a>\
     <a href="ldLayout.html"><li>Layered Digraph</li></a>\
     <a href="cLayout.html"><li>Circular Layout</li></a>\
-    <!--<a href="fishbone.html"><li>Fishbone Layout</li></a>-->\
     <hr />\
     <a href="../extensions/index.html"><li>GoJS Extensions</li></a>\
     <a href="unlisted.html"><li>Unlisted Samples</li></a>\
