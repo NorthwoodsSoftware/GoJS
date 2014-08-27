@@ -7,67 +7,41 @@
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
-// This variable refers to the Model that both Diagrams use.
-// It is here to allow usage by Data property setters.
-var myModel;
-
-// define a node data class that automatically notifies when the "loc" property changes value
-function Data(k, p) {
-  this.key = k;
-  if (p !== undefined)
-    this._loc = p;
-  else
-    this._loc = new go.Point();
-}
-
-Data.prototype = {
-  // set the constructor: needed so that the model can construct copies of the Data
-  constructor: Data,
-
-  // define the "loc" property getter and setter
-  get loc() { return this._loc; },
-  set loc(val) {
-    var old = this._loc;
-    if (!old.equals(val)) {
-      this._loc = val.copy();
-      myModel.raiseDataChanged(this, "loc", old, this._loc);
-    }
-  }
-};
-
 function init() {
   if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
   var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-  // define a nice brush
-  var bluegradient = $(go.Brush, go.Brush.Linear, { 0: "#00ACED", 0.5: "#00ACED", 1: "#0079A6" });
-
-  var blueDiagram =
+  blueDiagram =
     $(go.Diagram, "blueDiagram",
       {
         // start everything in the middle of the viewport
         initialContentAlignment: go.Spot.Center,
-        "clickCreatingTool.archetypeNodeData": new Data("node")
+        // double-click in background creates a new node there
+        "clickCreatingTool.archetypeNodeData": { key: "node" }
       });
 
   blueDiagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc").makeTwoWay(),
       $(go.Shape, "RoundedRectangle",
-        { fill: bluegradient, stroke: "#0079A6",
+        {
+          fill: $(go.Brush, go.Brush.Linear, { 0: "#00ACED", 0.5: "#00ACED", 1: "#0079A6" }),
+          stroke: "#0079A6",
           portId: "", cursor: "pointer",  // the node's only port is the Shape
           fromLinkable: true, fromLinkableDuplicates: true, fromLinkableSelfNode: true,
-          toLinkable: true, toLinkableDuplicates: true, toLinkableSelfNode: true }),
+          toLinkable: true, toLinkableDuplicates: true, toLinkableSelfNode: true
+        }),
       $(go.TextBlock,
         { margin: 3, font: "bold 10pt arial", stroke: "whitesmoke" },
         new go.Binding("text", "key"))
     );
 
   blueDiagram.linkTemplate =
-    $(go.Link,  // the whole link panel
-      { curve: go.Link.Bezier, adjusting: go.Link.Stretch,
-        relinkableFrom: true, relinkableTo: true, reshapable: true },
-      new go.Binding("curviness", "curviness"),
+    $(go.Link,
+      {
+        curve: go.Link.Bezier, adjusting: go.Link.Stretch,
+        relinkableFrom: true, relinkableTo: true, reshapable: true
+      },
       $(go.Shape,  // the link shape
         { strokeWidth: 2, stroke: "blue" }),
       $(go.Shape,  // the arrowhead
@@ -76,12 +50,13 @@ function init() {
     );
 
 
-  var greenDiagram =
+  greenDiagram =
     $(go.Diagram, "greenDiagram",
       {
         // start everything in the middle of the viewport
         initialContentAlignment: go.Spot.Center,
-        "clickCreatingTool.archetypeNodeData": new Data("node")
+        // double-click in background creates a new node there
+        "clickCreatingTool.archetypeNodeData": { key: "node" }
       });
 
   greenDiagram.nodeTemplate =
@@ -95,8 +70,7 @@ function init() {
     );
 
   greenDiagram.linkTemplate =
-    $(go.Link,  // the whole link panel
-      new go.Binding("curviness", "curviness"),
+    $(go.Link,
       $(go.Shape,  // the link shape
         { strokeWidth: 2, stroke: "#76C176" }),
       $(go.Shape,  // the arrowhead
@@ -108,13 +82,12 @@ function init() {
   // create the model data that will be represented in both diagrams simultaneously
   var model = new go.GraphLinksModel(
   [
-    new Data("Alpha", new go.Point(20,20)),
-    new Data("Beta", new go.Point(160,120))
+    { key: "Alpha", loc: new go.Point(20,20) },
+    { key: "Beta", loc: new go.Point(160,120) }
   ],
   [
     { from: "Alpha", to: "Beta" }
   ]);
-  myModel = model;  // make accessible to the property setter(s)
 
   // the two Diagrams share the same model
   blueDiagram.model = model;
@@ -124,9 +97,11 @@ function init() {
   model.undoManager.isEnabled = true;
 
 
-  // *********************************************************
-  // A third diagram is on this page to display the undo state
-  // *********************************************************
+  // **********************************************************
+  // A third diagram is on this page to display the undo state.
+  // It functions as a tree view, showing the Transactions
+  // in the UndoManager history.
+  // **********************************************************
 
   var undoDisplay =
     $(go.Diagram, "undoDisplay",
@@ -166,7 +141,7 @@ function init() {
   undoDisplay.linkTemplate = $(go.Link);  // not really used
 
   var undoModel =
-    $(go.GraphLinksModel,  // initially empty
+    $(go.TreeModel,  // initially empty
       { isReadOnly: true });
   undoDisplay.model = undoModel;
 
@@ -192,7 +167,7 @@ function init() {
     changedLog.innerHTML += changes + "<br/>";
     changedLog.scrollTop = changedLog.scrollHeight;
 
-    // Modify the undoDisplay Diagram
+    // Modify the undoDisplay Diagram, the tree view
     if (e.propertyName === "CommittedTransaction") {
       if (editToRedo != null) {
         // remove from the undo display diagram all nodes after editToRedo
@@ -216,12 +191,11 @@ function init() {
         allChanges.each(function(change) {
             var childData = {
               color: (odd ? "white" : "#E0FFED"),
-              text: change.toString()
-            }
-            odd = !odd;
+              text: change.toString(),
+              parent: parentKey
+            };
             undoModel.addNodeData(childData)
-            var childKey = undoModel.getKeyForNodeData(childData);
-            undoModel.addLinkData({ from: parentKey, to: childKey });
+            odd = !odd;
           });
         undoDisplay.commandHandler.collapseTree(parentNode);
       }
@@ -246,6 +220,18 @@ function init() {
       }
     }
   }); // end model changed listener
+
+  model.addChangedListener(function(e) {
+    if (e.isTransactionFinished) {
+      var tx = e.object;
+      if (tx instanceof go.Transaction && console) {
+        console.log(tx.toString());
+        tx.changes.each(function(c) {
+          if (c.model) console.log("  " + c.toString());
+        });
+      }
+    }
+  });
 } // end init
 
 function resetLog() {
@@ -253,11 +239,11 @@ function resetLog() {
 }
 
 function undo() {
-  myModel.undoManager.undo()
+  blueDiagram.undoManager.undo()
 }
 
 function redo() {
-  myModel.undoManager.redo()
+  blueDiagram.undoManager.redo()
 }
 </script>
 </head>
@@ -285,6 +271,46 @@ function redo() {
       </div>
     </div>
   </div>
+  <p>
+  This sample has two Diagrams, named "blueDiagram" and "greenDiagram", that display the same Model.
+  Each diagram uses its own templates for its nodes and links, causing the appearance of each diagram to be different.
+  However making a change in one diagram that changes the model causes those model changes to be reflected in the other diagram.
+  </p>
+  <p>
+  This sample also shows, next to the blue diagram, almost all of the <a>ChangedEvent</a>s that the shared model undergoes.
+  (For clarity it leaves out some of the Transaction-oriented events.)
+  The model Changed listener adds a line for each ChangedEvent to the "modelChangedLog" DIV.
+  Transaction notification events start with an asterisk "*",
+  while property changes and collection insertions and removals start with an exclamation mark "!".
+  </p>
+  <p>
+  Next to the green diagram there is a tree view display of the <a>UndoManager</a>'s history.
+  The <a>UndoManager.history</a> is a <a>List</a> of <a>Transaction</a>s,
+  where each <a>Transaction.changes</a> property holds all of the ChangedEvents that occurred due to some command or tool operation.
+  These ChangedEvents are reflective of both changes to the model (prefixed with "!m") and to the diagram (prefixed with "!d").
+  You will note that there are often several diagram changes for each model change.
+  </p>
+  <p>
+  Many of the other samples demonstrate saving the whole model by calling <a>Model.toJson</a>.
+  If you want to save incrementally, you should do so at the end of each transaction, when <a>ChangedEvent.isTransactionFinished</a>.
+  The <a>ChangedEvent.object</a> may be a <a>Transaction</a>.
+  Look through the <a>Transaction.changes</a> list for the model changes that you want to save.
+  This code demonstrates the basic idea:
+  </p>
+  <pre>
+  model.addChangedListener(function(e) {
+    if (e.isTransactionFinished) {
+      var tx = e.object;
+      if (tx instanceof go.Transaction && console) {
+        console.log(tx.toString());
+        tx.changes.each(function(c) {
+          // consider which ChangedEvents to record
+          if (c.model) console.log("  " + c.toString());
+        });
+      }
+    }
+  });
+  </pre>
 </div>
 </body>
 </html>

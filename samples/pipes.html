@@ -153,34 +153,6 @@
           copyNodeDataFunction: copyNodeData  // copy port data too!
         });
 
-    // When copying a node, we need to copy the data that the node is bound to.
-    // This JavaScript object includes properties for the node as a whole, and
-    // a property that is an Array holding data for each port, which all need copying too.
-    function copyNodeData(data) {
-      var copy = {};
-      copy.key = data.key;  // adding to the Model will make the key value unique
-      copy.angle = data.angle;
-      copy.geo = data.geo;
-
-      var arr = data.ports;
-      var copyarr = [];
-      if (Array.isArray(arr)) {
-        for (var i = 0; i < arr.length; i++) {
-          var port = arr[i];
-          copyarr.push({
-            id: port.id,
-            spot: port.spot,
-            angle: port.angle
-            // if you add port data properties, you should copy them here too
-          });
-        }
-      }
-      copy.ports = copyarr;
-
-      // if you add data properties, you should copy them here too
-      return copy;
-    }
-
     // Make sure the pipes are ordered by their key in the palette inventory
     function keyCompare(a, b) {
       var at = a.data.key;
@@ -383,8 +355,36 @@
               ]  // end nodeDataArray
             })  // end model
         });  // end Palette
-  }
+  } // end init
 
+
+  // When copying a node, we need to copy the data that the node is bound to.
+  // This JavaScript object includes properties for the node as a whole, and
+  // a property that is an Array holding data for each port, which all need copying too.
+  function copyNodeData(data) {
+    var copy = {};
+    copy.key = data.key;  // adding to the Model will make the key value unique
+    copy.angle = data.angle;
+    copy.geo = data.geo;
+
+    var arr = data.ports;
+    var copyarr = [];
+    if (Array.isArray(arr)) {
+      for (var i = 0; i < arr.length; i++) {
+        var port = arr[i];
+        copyarr.push({
+          id: port.id,
+          spot: port.spot,
+          angle: port.angle
+          // if you add port data properties, you should copy them here too
+        });
+      }
+    }
+    copy.ports = copyarr;
+
+    // if you add data properties, you should copy them here too
+    return copy;
+  }
 
   // Define a custom DraggingTool
   function SnappingTool() {

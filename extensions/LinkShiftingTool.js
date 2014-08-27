@@ -18,7 +18,7 @@ function LinkShiftingTool() {
   this.name = "LinkShifting";
 
   // these are archetypes for the two shift handles, one at each end of the Link:
-  var h = new Shape();
+  var h = new go.Shape();
   h.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
   h.fill = null;
   h.stroke = "dodgerblue";
@@ -31,7 +31,7 @@ function LinkShiftingTool() {
   /** @type {GraphObject} */
   this._fromHandleArchetype = h;
 
-  h = new Shape();
+  h = new go.Shape();
   h.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
   h.fill = null;
   h.stroke = "dodgerblue";
