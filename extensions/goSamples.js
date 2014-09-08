@@ -139,6 +139,7 @@ var myMenu = '\
     <a href="LinkShifting.html"><li>Link Shifting</li></a>\
     <a href="LinkLabelDragging.html"><li>Link Label Dragging</li></a>\
     <a href="NodeLabelDragging.html"><li>Node Label Dragging</li></a>\
+    <a href="PortShifting.html"><li>Port Shifting</li></a>\
     <hr />\
     <a href="Fishbone.html"><li>Fishbone Layout</li></a>\
     <a href="Serpentine.html"><li>Serpentine Layout</li></a>\

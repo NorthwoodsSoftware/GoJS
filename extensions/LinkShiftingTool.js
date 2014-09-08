@@ -71,9 +71,6 @@ LinkShiftingTool.prototype.updateAdornments = function(part) {
         if (adornment === null) {
           adornment = this.makeAdornment(selelt, false);
           adornment.category = category;
-        }
-        if (adornment !== null) {
-          adornment.invalidateMeasure();
           link.addAdornment(category, adornment);
         }
       }
@@ -93,9 +90,6 @@ LinkShiftingTool.prototype.updateAdornments = function(part) {
         if (adornment === null) {
           adornment = this.makeAdornment(selelt, true);
           adornment.category = category;
-        }
-        if (adornment !== null) {
-          adornment.invalidateMeasure();
           link.addAdornment(category, adornment);
         }
       }
@@ -111,8 +105,8 @@ LinkShiftingTool.prototype.updateAdornments = function(part) {
 * @return {Adornment}
 */
 LinkShiftingTool.prototype.makeAdornment = function(selelt, toend) {
-  var adornment = new Adornment();
-  adornment.type = Panel.Link;
+  var adornment = new go.Adornment();
+  adornment.type = go.Panel.Link;
   var h = (toend ? this._toHandleArchetype : this._fromHandleArchetype);
   if (h !== null) {
     // add a single handle for shifting at one end

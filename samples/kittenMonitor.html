@@ -59,6 +59,7 @@
       // simulate some real-time position monitoring, once every 2 seconds
       function randomMovement() {
         var model = myDiagram.model;
+        model.startTransaction("update locations");
         var arr = model.nodeDataArray;
         var picture = myDiagram.parts.first();
         for (var i = 0; i < arr.length; i++) {
@@ -67,12 +68,12 @@
           var x = pt.x + 20 * Math.random() - 10;
           var y = pt.y + 20 * Math.random() - 10;
           // make sure the kittens stay inside the house
-          if (x > picture.position.x && x < picture.position.x + picture.actualBounds.width)
-            pt.x = x;
-          if (y > picture.position.y && y < picture.position.y + picture.actualBounds.height)
-            pt.y = y;
-          model.updateTargetBindings(data);
+          var b = picture.actualBounds;
+          if (x < b.x || x > b.right) x = pt.x;
+          if (y < b.y || y > b.bottom) y = pt.y;
+          model.setDataProperty(data, "loc", new go.Point(x, y));
         }
+        model.commitTransaction("update locations");
       }
       function loop() {
         setTimeout(function() { randomMovement(); loop(); }, 2000);
