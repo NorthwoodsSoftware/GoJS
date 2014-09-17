@@ -8,7 +8,10 @@
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
 
-  // Perform a TreeLayout where commitLayers is overridden to modify the Part whose key is "_BANDS".
+  // this controls whether the layout is horizontal and the layer bands are vertical, or vice-versa:
+  var HORIZONTAL = true;  // this constant parameter can only be set here, not dynamically
+
+  // Perform a TreeLayout where commitLayers is overridden to modify the background Part whose key is "_BANDS".
   function LayeredTreeLayout() {
     go.TreeLayout.call(this);
     this.layerStyle = go.TreeLayout.LayerUniform;  // needed for straight layers
@@ -46,9 +49,6 @@
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;
 
-    // this controls whether the layout is horizontal and the layer bands are vertical, or vice-versa:
-    var HORIZONTAL = true;  // this constant parameter can only be set here, not dynamically
-
     myDiagram = $(go.Diagram, "myDiagram",
                   {
                     initialContentAlignment: go.Spot.Center,
@@ -56,7 +56,8 @@
                               {
                                 angle: HORIZONTAL ? 0 : 90,
                                 arrangement: HORIZONTAL ? go.TreeLayout.ArrangementVertical : go.TreeLayout.ArrangementHorizontal
-                              })
+                              }),
+                    "undoManager.isEnabled": true
                   });
 
     myDiagram.nodeTemplate =
@@ -79,7 +80,9 @@
         {
           isLayoutPositioned: false,  // but still in document bounds
           locationSpot: new go.Spot(0, 0, HORIZONTAL ? 0 : 16, HORIZONTAL ? 16 : 0),  // account for header height
-          layerName: "Grid",  // if it is in "Grid" Layer it is in the background and is not pickable or selectable
+          layerName: "Background",
+          pickable: false,
+          selectable: false,
           itemTemplate:
             $(go.Panel, HORIZONTAL ? "Vertical" : "Horizontal",
               new go.Binding("position", "bounds", function(b) { return b.position; }),
@@ -110,7 +113,7 @@
               //      { stroke: "gray", alignment: go.Spot.TopLeft, height: 1 },
               //      new go.Binding("width", "bounds", function(r) { return r.width; }),
               //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
-              //  )
+              //)
             )
         }
       ));
@@ -129,7 +132,8 @@
           { text: "One" },
           { text: "Two" },
           { text: "Three" },
-          { text: "Four" }
+          { text: "Four" },
+          { text: "Five" }
         ]
       },
       // these are the regular nodes in the TreeModel

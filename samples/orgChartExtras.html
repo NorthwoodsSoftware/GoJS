@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html>
 <head>
-<title>Org Chart Editor</title>
+<title>Org Chart Extras</title>
 <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
@@ -27,10 +27,16 @@
                 angle: 90,
                 layerSpacing: 35,
                 // properties for the "last parents":
-                alternateAngle: 90,
+                alternateAngle: 0,
                 alternateLayerSpacing: 35,
-                alternateAlignment: go.TreeLayout.AlignmentBus,
-                alternateNodeSpacing: 20
+                alternateAlignment: go.TreeLayout.AlignmentStart,
+                alternateNodeIndent: 10,
+                alternateNodeIndentPastParent: 1.0,
+                alternateNodeSpacing: 10,
+                alternateLayerSpacing: 30,
+                alternateLayerSpacingParentOverlap: 1.0,
+                alternatePortSpot: new go.Spot(0.01, 1, 10, 0),
+                alternateChildPortSpot: go.Spot.Left
               }),
           // support editing the properties of the selected person in HTML
           "ChangedSelection": onSelectionChanged,
@@ -47,7 +53,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 

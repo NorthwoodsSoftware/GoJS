@@ -3619,14 +3619,14 @@ declare module go {
         * @param {number} qx
         * @param {number} qy
         */
-        projectOntoLineSegment(px, py, qx, qy): Point;
+        projectOntoLineSegment(px: number, py: number, qx: number, qy: number): Point;
 
         /**
         * Modify this point to be the closest point to this point that is on a finite line segment given by P and Q.
         * @param {Point} p
         * @param {Point} q
         */
-        projectOntoLineSegmentPoint(p, q): Point;
+        projectOntoLineSegmentPoint(p: Point, q: Point): Point;
 
         /**
         * Modify this Point so that has been rotated about the origin by the given angle.
@@ -3683,7 +3683,7 @@ declare module go {
         * @param {number} cellwidth
         * @param {number} cellheight
         */
-        snapToGrid(originx, originy, cellwidth, cellheight): Point;
+        snapToGrid(originx: number, originy: number, cellwidth: number, cellheight: number): Point;
 
         /**
         * Modify this point to be at the nearest point on an infinite grid,
@@ -3691,7 +3691,7 @@ declare module go {
         * @param {Point} origin
         * @param {Size} cellsize
         */
-        snapToGridPoint(origin, cellsize): Point;
+        snapToGridPoint(origin: Point, cellsize: Size): Point;
 
         /**
         * This static method can be used to write out a Point as a string that can be read by Point.parse.
@@ -8338,7 +8338,7 @@ declare module go {
         key;
 
         /**This read-only property returns the current item in the collection, assuming .next has just returned true.*/
-        value;
+        value: any;
 
         /**
         * This is true if all invocations of the given predicate on items in the collection are true.
@@ -8463,7 +8463,7 @@ declare module go {
         /**
         * Returns the first item in the collection, or null if there is none.
         */
-        first();
+        first(): any;
 
         /**
         * Returns the index of the given value if it is in this List.
@@ -8619,7 +8619,7 @@ declare module go {
         /**
         * Returns the first key-value pair in the collection, or null if there is none.
         */
-        first();
+        first(): any;
 
         /**
         * Returns the value associated with a key.
@@ -8733,7 +8733,7 @@ declare module go {
         /**
         * Returns the first item in the collection, or null if there is none.
         */
-        first();
+        first(): any;
 
         /**
         * Removes a value (if found) from the Set.
