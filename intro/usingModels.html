@@ -64,6 +64,17 @@ Normally you will want a varying number of nodes each of which is very similar t
 It would be better to share the construction of the node but parameterize a few things where the values should vary.
 </p>
 <p>
+One possibility would be put the code to build a Node into a function that returned a fully constructed Node,
+including all of the Panels and other GraphObjects in its visual tree.
+You would probably want to parameterize the function in order to provide the desired strings and colors and figures and image URLs.
+However such an approach is very ad-hoc: it would be difficult for the system to know how to automatically call such functions
+in order to create new nodes or new links on demand.
+Furthermore as your application data changes dynamically, how would you use such functions to update properties
+of existing objects within existing nodes and links, without inefficiently re-creating everything?
+And if you wanted anything/everything to update automatically as your application data changes,
+how would the system know what to do?
+</p>
+<p>
 This diagram-building code is also more cumbersome than it needs to be
 to manage references to nodes so that you can link them up.
 This is similar to the earlier problem when building a node's visual tree in code
@@ -71,7 +82,7 @@ of having to use temporary named variables and referring to them when needed.
 </p>
 <p>
 What we are looking for is the separation of the appearance, definition, and construction
-of all of the nodes from the data needed to describe the unique aspects of each particular node.
+of all of the nodes from the application data needed to describe the unique aspects of each particular node.
 </p>
 
 <h3>Using a Model and Templates</h3>

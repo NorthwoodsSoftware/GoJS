@@ -151,6 +151,7 @@ var myMenu = '\
     <a href="resizing.html"><li>Resizing Diagrams</li></a>\
     <a href="buttons.html"><li>Buttons</li></a>\
     <a href="templateMaps.html"><li>Template Maps</li></a>\
+    <a href="legends.html"><li>Legends and Titles</li></a>\
     <a href="extensions.html"><li>Extensions</li></a>\
     <a href="geometry.html"><li>Geometry Strings</li></a>\
     <a href="grids.html"><li>Grid Patterns</li></a>\
@@ -161,7 +162,6 @@ var myMenu = '\
     <a href="deployment.html"><li>Deployment</li></a>\
     <!--\
     <a href="updatingDatabase.html"><li>Updating Database</li></a>\
-    <a href="decorativeParts.html"><li>Decorative Parts</li></a>\
     <a href="performance.html"><li>Performance</li></a>\
     -->\
   </ul>';

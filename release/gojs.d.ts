@@ -4306,7 +4306,7 @@ declare module go {
         * @param {function(*,*=) | null=} conv A function converting the data property value to the value to set the target property.
         *   If the function is null or not supplied, no conversion takes place.
         */
-        constructor(targetprop?: string, sourceprop?: string, conv?: (a: any, b?: any) => any);
+        constructor(targetprop?: string, sourceprop?: string, conv?: (a: any, b: any) => any);
 
         /**
         * Gets or sets a converter function to apply to the GraphObject property value
@@ -4325,7 +4325,7 @@ declare module go {
         * If the .sourceProperty is the empty string, the function should
         * modify the second argument, which will be the source data object.
         */
-        backConverter: (a: any, b?: any) => any;
+        backConverter: (a: any, b: any) => any;
 
         /**
         * Gets or sets a converter function to apply to the data property value
@@ -4344,7 +4344,7 @@ declare module go {
         * If the .targetProperty is the empty string, the function should
         * modify the second argument, which will be the target object.
         */
-        converter: (a: any, b?: any) => any;
+        converter: (a: any, b: any) => any;
 
         /**
         * Gets or sets the directions and frequency in which the binding may be evaluated.
@@ -4391,7 +4391,7 @@ declare module go {
         * You should not have a TwoWay binding on a node data object's key property.
         * @param {function(*,*=) | null=} backconv
         */
-        makeTwoWay(backconv?: (a: any, b?: any) => any): Binding;
+        makeTwoWay(backconv?: (a: any, b: any) => any): Binding;
 
         /**
         * Modify this Binding to set its .sourceName property so as to identify

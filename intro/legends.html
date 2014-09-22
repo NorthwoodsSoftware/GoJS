@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Legends and Titles -- Northwoods Software</title>
+  <!-- Copyright 1998-2014 by Northwoods Software Corporation. -->
+    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="content">
+
+<h2>Legends and Titles</h2>
+<p>
+Sometimes in addition to the nodes and links that are the subject of a diagram,
+one also wants to display a "legend" or "key" describing the different kinds of nodes or links.
+Perhaps one also wants there to be "title" for the diagram in large letters.
+</p>
+
+<h3>Outside of Diagram</h3>
+<p>
+First, you must consider whether titles or legends should be part of the diagram or not.
+You can create whatever you want in HTML outside of the diagram.
+</p>
+<script>
+function setupForLegend(diagram) {
+  var $ = go.GraphObject.make;
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.layout = $(go.TreeLayout, { angle: 90 });
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 8 },
+      $(go.Shape, { strokeWidth: 2 }));
+
+  diagram.model = new go.TreeModel([
+    { key: "Alpha", color: "yellow" },
+    { key: "Beta", parent: "Alpha", color: "orange" },
+    { key: "Gamma", parent: "Alpha", color: "lightgreen" },
+  ]);
+}
+</script>
+<pre style="display:none" id="diagramPre">
+  setupForLegend(diagram);
+</pre>
+<div style="width:100%">
+  <span id="diagramSpan" style="display: inline-block">
+    <span style="font: bold 16pt sans-serif; color:green">An HTML Title for a Diagram</span>
+  </span>
+  <div style="display: inline-block; vertical-align: bottom; border: 2px solid green">
+    <b>Color key:</b>
+    <table>
+      <tr><td><span style="color:purple; font-weight:bold">Purple</span> nodes are juicy and sweet</td></tr>
+      <tr><td><span style="color:red; font-weight:bold">Red</span> nodes are very angry</td></tr>
+      <tr><td><span style="color:white;background:gray;font-weight:bold">White</span> nodes sleep well at night</td></tr>
+    </table>
+  </div>
+</div>
+<script>goCode("diagramPre", 300, 200, go.Diagram, "diagramSpan");</script>
+<p>
+Note that anything in HTML will not automatically scroll and zoom along with the diagram's contents shown in the viewport.
+But HTML elements could be positioned in front of or behind the diagram's DIV element.
+</p>
+
+<h3>Unmodeled Parts</h3>
+<p>
+Second, you should consider whether the title or legend should be held in your data model.
+Do you need to save and load that data in your database?
+</p>
+<p>
+If you do not want to these objects to be included in your application's data model,
+you can just create them as simple <a>Part</a>s and <a>Diagram.add</a> them to your diagram
+at explicitly defined <a>Part.location</a>s.
+</p>
+<pre data-language="javascript" id="unmodeled">
+  setupForLegend(diagram);  // this creates a diagram just like the first example
+
+  diagram.add(
+    $(go.Part, { location: new go.Point(0, -40) },
+      $(go.TextBlock, "A Title", { font: "bold 24pt sans-serif", stroke: "green" })));
+</pre>
+<script>goCode("unmodeled", 300, 200);</script>
+<p>
+If you do not assign a location or position for your Parts,
+and if your <a>Diagram.layout</a> (if any) does not assign any <a>Part.location</a>,
+then there might not be a real location for those parts and they might not appear anywhere in the diagram.
+</p>
+<p class="box">
+All of the predefined <a>Layout</a>s that make use of <a>LayoutNetwork</a>s, including <a>TreeLayout</a>, 
+do not operate on simple <a>Part</a>s but only on <a>Node</a>s and <a>Link</a>s.
+If you had added a <a>Node</a> to the diagram it would have been positioned as part of this diagram's normal tree layout,
+even though you explicitly set its location.
+Alternatively it could still be a Node if you set its <a>Part.isLayoutPositioned</a> property to false.
+</p>
+<p>
+You will notice that the title is selectable and movable and copyable and deletable in the diagram above.
+You may want to set properties such as <a>Part.selectable</a> to false.
+</p>
+<p>
+For an example showing a legend, see the <a href="../samples/familyTree.html" target="samples">Family Tree</a> sample.
+</p>
+
+<h4>Modeled Parts</h4>
+<p>
+If on the other hand you do want to store your titles or legends in your model, you can do so using the normal mechanisms.
+Typically you will use <a href="templateMaps.html">node categories and template maps</a>.
+</p>
+<p>
+If you do not want your users to manipulate those objects, you will want to set <a>Part.selectable</a> to false.
+You may want to set <a>Part.layerName</a> to "Grid", so that it is always in the background behind everything else.
+(All Parts in the "Grid" Layer are automatically not selectable, because <a>Layer.allowSelect</a> is false for that <a>Layer</a>.)
+</p>
+
+<h3>Static Parts</h3>
+<p>
+Third, consider whether you want the title or legend to move or scale as the user scrolls or zooms the diagram.
+If you want to keep such a decoration at the same position in the viewport, it might be easiest to do so by implementing
+it as an HTML element that is superimposed with the diagram's DIV element.
+</p>
+<p>
+However if you really want to implement it using a <b>GoJS</b> <a>Part</a>, you can do so by implementing a
+"ViewportBoundsChanged" <a>DiagramEvent</a> listener that continually resets the position and scale to values that
+make them appear not to move as the user scrolls or zooms.
+</p>
+<pre data-language="javascript" id="static">
+  setupForLegend(diagram);  // this creates a diagram just like the first example
+
+  diagram.add(
+    $(go.Part,
+      {
+        layerName: "Grid",  // must be in a Layer that is Layer.isTemporary,
+                            // to avoid being recorded by the UndoManager
+        _viewPosition: new go.Point(0, 0)  // some position in the viewport,
+                                           // not in document coordinates
+      },
+      $(go.TextBlock, "A Title", { font: "bold 24pt sans-serif", stroke: "green" })));
+
+  // Whenever the Diagram.position or Diagram.scale change,
+  // update the position of all simple Parts that have a _viewPosition property.
+  diagram.addDiagramListener("ViewportBoundsChanged", function(e) {
+    var dia = e.diagram;
+    dia.startTransaction("fix Parts");
+    // only iterates through simple Parts in the diagram, not Nodes or Links
+    dia.parts.each(function(part) {
+      // and only on those that have the "_viewPosition" property set to a Point
+      if (part._viewPosition) {
+        part.position = dia.transformViewToDoc(part._viewPosition);
+        part.scale = 1/dia.scale;
+      }
+    });
+    dia.commitTransaction("fix Parts");
+  });
+</pre>
+<script>goCode("static", 300, 200);</script>
+<p>
+Note that as the user pans or scrolls or zooms the diagram, the title remains at the same viewport position
+at apparently the same effective size.
+This example makes use of the "Grid" <a>Layer</a> (see <a href="layers.html">Intro to Layers</a>), which
+is convenient for making sure the title (or legend) stays in the background and does not participate in
+selection or mouse events or the <a>UndoManager</a>.
+</p>
+
+</div>
+</body>
+</html>
