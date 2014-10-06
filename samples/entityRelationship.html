@@ -38,7 +38,7 @@
         $(go.TextBlock,
           { stroke: "#333333",
             font: "bold 14px sans-serif" },
-          new go.Binding("text", "", go.Binding.toString))
+          new go.Binding("text", "name"))
       );
 
     // define the Node template, representing an entity
@@ -60,17 +60,41 @@
           $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }),
           // the table header
           $(go.TextBlock,
-            { row: 0, alignment: go.Spot.Center,
-              font: "bold 16px sans-serif" },
+            {
+              row: 0, alignment: go.Spot.Center,
+              margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
+              font: "bold 16px sans-serif"
+            },
             new go.Binding("text", "key")),
+          // the collapse/expand button
+          $("Button",
+            {
+              row: 0, alignment: go.Spot.TopRight,
+              "ButtonBorder.stroke": null,
+              click: function(e, but) {
+                var list = but.part.findObject("LIST");
+                if (list !== null) {
+                  list.diagram.startTransaction("collapse/expand");
+                  list.visible = !list.visible;
+                  var shape = but.findObject("SHAPE");
+                  if (shape !== null) shape.figure = (list.visible ? "TriangleUp" : "TriangleDown");
+                  list.diagram.commitTransaction("collapse/expand");
+                }
+              } 
+            },
+            $(go.Shape, "TriangleUp",
+              { name: "SHAPE", width: 6, height: 4 })),
           // the list of Panels, each showing an attribute
           $(go.Panel, "Vertical",
-            { row: 1,
+            {
+              name: "LIST",
+              row: 1,
               padding: 3,
               alignment: go.Spot.TopLeft,
               defaultAlignment: go.Spot.Left,
               stretch: go.GraphObject.Horizontal,
-              itemTemplate: itemTempl },
+              itemTemplate: itemTempl
+            },
             new go.Binding("itemArray", "items"))
         )  // end Table Panel
       );  // end Node
@@ -78,31 +102,35 @@
     // define the Link template, representing a relationship
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
-        { selectionAdorned: true,
+        {
+          selectionAdorned: true,
           layerName: "Foreground",
           reshapable: true,
           routing: go.Link.AvoidsNodes,
           corner: 5,
-          curve: go.Link.JumpOver },
+          curve: go.Link.JumpOver
+        },
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "#303B45",
-            strokeWidth: 2.5 }),
+          { stroke: "#303B45", strokeWidth: 2.5 }),
         $(go.TextBlock,  // the "from" label
-          { textAlign: "center",
+          {
+            textAlign: "center",
             font: "bold 14px sans-serif",
             stroke: "#1967B3",
             segmentIndex: 0,
             segmentOffset: new go.Point(NaN, NaN),
-            segmentOrientation: go.Link.OrientUpright },
+            segmentOrientation: go.Link.OrientUpright
+          },
           new go.Binding("text", "text")),
         $(go.TextBlock,  // the "to" label
-          { textAlign: "center",
+          {
+            textAlign: "center",
             font: "bold 14px sans-serif",
             stroke: "#1967B3",
             segmentIndex: -1,
             segmentOffset: new go.Point(NaN, NaN),
-            segmentOrientation: go.Link.OrientUpright },
+            segmentOrientation: go.Link.OrientUpright
+          },
           new go.Binding("text", "toText"))
       );
 

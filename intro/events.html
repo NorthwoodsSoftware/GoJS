@@ -44,7 +44,6 @@ Currently defined diagram event names include:
   <li>"<b>LinkReshaped</b>", when the <a>LinkReshapingTool</a> has finished rerouting a Link, which is the <a>DiagramEvent.subject</a></li>
   <li>"<b>Modified</b>", the <a>Diagram.isModified</a> property has been set to a new value; do not modify the Diagram or its Model in the event listener</li>
   <li>"<b>PartCreated</b>", when the <a>ClickCreatingTool</a> has inserted a new Part, which is the <a>DiagramEvent.subject</a></li>
-  <!--<li>"<b>PartReshaped</b>", when the <a>PartReshapingTool</a> has changed the geometry of a Shape, which is the <a>DiagramEvent.subject</a></li>-->
   <li>"<b>PartResized</b>", when the <a>ResizingTool</a> has resized a GraphObject, which is the <a>DiagramEvent.subject</a></li>
   <li>"<b>PartRotated</b>", when the <a>RotatingTool</a> has rotated a GraphObject, which is the <a>DiagramEvent.subject</a></li>
   <li>"<b>ObjectSingleClicked</b>", when a mouse left-button single-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
@@ -63,15 +62,20 @@ Currently defined diagram event names include:
   <li>"<b>TreeExpanded</b>", when <a>CommandHandler.expandTree</a> has expanded selected Nodes with subtrees, making the subtree nodes and links visible</li>
   <li>"<b>ViewportBoundsChanged</b>", when <a>Diagram.viewportBounds</a> has changed value</li>
 </ul>
+For more details, please read the documentation for <a>DiagramEvent</a>.
 
 <p>
 DiagramEvents do not necessarily correspond to mouse events or keyboard events.
 Nor do they necessarily correspond to changes to the diagram's model --
 for tracking such changes, use <a>Model.addChangedListener</a>.
+DiagramEvents only occur because the user did something, perhaps indirectly.
+</p>
+<p>
 Model <a>ChangedEvent</a>s are more complete and reliable than depending on <a>DiagramEvent</a>s.
 For example, the "LinkDrawn" DiagramEvent is not raised when code adds a link to a diagram.
 That DiagramEvent is only raised when the user draws a new link using the <a>LinkingTool</a>.
-DiagramEvents only occur because the user did something, perhaps indirectly.
+Furthermore the link has not yet been routed, so <a>Link.points</a> will not have been updated.
+In fact, creating a new link may invalidate a <a>Layout</a>, so all of the nodes may be moved in the near future.
 </p>
 
 <p class="box warning">
@@ -132,12 +136,13 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
 <h3>Input Events</h3>
 <p>
 When a low-level HTML DOM event occurs, <b>GoJS</b> canonicalizes the keyboard/mouse event information
-into a new <a>InputEvent</a> that can be passed to and saved for various event-handling methods.
+into a new <a>InputEvent</a> that can be passed to various event-handling methods and saved for later examination.
 </p>
 <p>
 An InputEvent keeps the <a>InputEvent.key</a> for keyboard events,
-the <a>InputEvent.viewPoint</a> and <a>InputEvent.button</a> for mouse events,
-and <a>InputEvent.modifiers</a> for both keyboard and mouse events.
+the <a>InputEvent.button</a> for mouse events,
+the <a>InputEvent.viewPoint</a> for mouse and touch events,
+and <a>InputEvent.modifiers</a> for keyboard and mouse events.
 </p>
 <p>
 The diagram's event handlers also record the <a>InputEvent.documentPoint</a>,
@@ -171,12 +176,17 @@ They also occur when there is no GraphObject -- the event happened in the diagra
 These are all properties that you can set to a function that is the event handler.
 </p>
 <p>
+Mouse-over-like event properties include <a>GraphObject.mouseEnter</a>, <a>GraphObject.mouseOver</a>, and <a>GraphObject.mouseLeave</a>.
+But only <a>Diagram.mouseOver</a> applies to the diagram.
+</p>
+<p>
 Hover-like event properties include <a>GraphObject.mouseHover</a> and <a>GraphObject.mouseHold</a>.
 The equivalent diagram properties are <a>Diagram.mouseHover</a> and <a>Diagram.mouseHold</a>.
 </p>
 <p>
-Finally, mouse-over-like event properties include <a>GraphObject.mouseEnter</a>, <a>GraphObject.mouseOver</a>, and <a>GraphObject.mouseLeave</a>.
-But only <a>Diagram.mouseOver</a> applies to the diagram.
+There are also event properties for dragging operations: <a>GraphObject.mouseDragEnter</a>, <a>GraphObject.mouseDragLeave</a>, and <a>GraphObject.mouseDrop</a>.
+These apply to stationary objects, not the objects being dragged.
+And they occur when dragging by touch events, not just mouse events.
 </p>
 
 <p>
@@ -237,7 +247,7 @@ clicking on nodes and entering/leaving groups.
 
 <h3>Changed Events</h3>
 <p>
-The final category of events in <b>GoJS</b> are notifications of state changes, mostly object property changes.
+The third category of events in <b>GoJS</b> are notifications of state changes, mostly object property changes.
 The <a>ChangedEvent</a> records the kind of change that occurred and enough information to be able to undo and redo them.
 </p>
 <p>
@@ -254,8 +264,14 @@ so that it can record the change history and perform undo and redo.
 <p>
 In addition to the standard listeners there are also circumstances where detecting such changes is common
 enough to warrant having properties that are event handlers.
-The most common such property is <a>Part.selectionChanged</a>, which (if non-null) is called whenever
-<a>Part.isSelected</a> changes.
+Because these events do not correspond to any particular input or diagram event,
+these event handlers have custom arguments that are specific to the situation.
+</p>
+<p>
+The most common such event property is <a>Part.selectionChanged</a>,
+which (if non-null) is called whenever <a>Part.isSelected</a> changes.
+In this case the event hander function is passed a single argument, the Part.
+There is no need for additional arguments because the function can check the current value of <a>Part.isSelected</a> to decide what to do.
 </p>
 
 <h4>Model property changes</h4>
@@ -266,7 +282,9 @@ for that property.
 Property changes are identified by the <a>ChangedEvent.change</a> == <a>ChangedEvent.Property</a>.
 </p>
 <p>
-The following property names for Property <a>ChangedEvent</a>s correspond to structural model data changes:
+Some changes represent structural changes to the model, not just simple model data changes.
+In such cases the <a>ChangedEvent.modelChange</a> property will be a non-empty string naming the kind of change.
+The following names for Property <a>ChangedEvent</a>s correspond to structural model data changes:
 </p>
 <ul>
   <li>"<b>nodeDataArray</b>", when the <a>Model.nodeDataArray</a> Array has been replaced</li>
@@ -288,17 +306,18 @@ The following property names for Property <a>ChangedEvent</a>s correspond to str
 The value of <a>ChangedEvent.modelChange</a> will be one of these strings.
 The value of <a>ChangedEvent.propertyName</a> depends on the name of the actual data property that was modified.
 For example, for the model property change "linkFromKey", the actual property name defaults to "from".
-But you might be using a different property name by setting <a>GraphLinksModel.linkFromKeyProperty</a>.
+But you might be using a different property name by having set <a>GraphLinksModel.linkFromKeyProperty</a> to some other data property name.
 </p>
 <p>
 Any property can be changed on a node data or link data object, by calling <a>Model.setDataProperty</a>.
 Such a call will result in the property name to be recorded as the <a>ChangedEvent.propertyName</a>.
-These cases are treated as normal property changes, not structural model changes, so <a>ChangedEvent.modelChange</a> will be empty.
+These cases are treated as normal property changes, not structural model changes, so <a>ChangedEvent.modelChange</a> will be the empty string.
+The value of <a>ChangedEvent.object</a> will of course be the JavaScript object that was modified.
 </p>
 <p>
 Finally, there are property changes on the model itself.
 For a listing of such properties, see the documentation for <a>Model</a>, <a>GraphLinksModel</a>, and <a>TreeModel</a>.
-These cases are treated as normal property changes, so <a>ChangedEvent.modelChange</a> will be empty.
+These cases are treated as normal property changes, so <a>ChangedEvent.modelChange</a> will be the empty string.
 Both <a>ChangedEvent.model</a> and <a>ChangedEvent.object</a> will be the model itself.
 </p>
 
@@ -326,7 +345,7 @@ These are not strictly object changes in the normal sense, but they do notify wh
 or when an undo or redo starts or finishes.
 </p>
 <p>
-The following property names describe the kind of transaction-related event that just occurred:
+The following values of <a>ChangedEvent.propertyName</a> describe the kind of transaction-related event that just occurred:
 </p>
 <ul>
   <li>"<b>StartingFirstTransaction</b>"</li>
@@ -344,10 +363,11 @@ In each case the <a>ChangedEvent.object</a> is the <a>Transaction</a> holding a 
 The <a>ChangedEvent.oldValue</a> is the name of the transaction --
 the string passed to <a>UndoManager.startTransaction</a> or <a>UndoManager.commitTransaction</a>.
 The various standard commands and tools that perform transactions document the transaction name(s) that they employ.
-But your code can employ as many strings as you have places that execute transactions.
+But your code can employ as many transaction names as you like.
 </p>
 <p>
 It is commonplace to want to update a server database when a transaction has finished.
+Use the <a>ChangedEvent.isTransactionFinished</a> read-only property to detect that case.
 You'll want to implement a Changed listener as follows:
 </p>
 <pre>
