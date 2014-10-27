@@ -92,6 +92,7 @@
     }, false);
 
     var remove = document.getElementById('remove');
+    
     div.addEventListener("drop", function(event) {
       // prevent default action
       // (open as link for some elements in some browsers)
@@ -101,13 +102,14 @@
       // Dragging onto a Diagram
       if (this === myDiagram.div) {
         var can = event.target;
+        var pixelratio = window.PIXELRATIO;
 
         // if the target is not the canvas, we may have trouble, so just quit:
         if (!(can instanceof HTMLCanvasElement)) return;
 
         var bbox = can.getBoundingClientRect();
-        var mx = event.clientX - bbox.left * (can.width / bbox.width);
-        var my = event.clientY - bbox.top * (can.height / bbox.height);
+        var mx = event.clientX - bbox.left * ((can.width/pixelratio) / bbox.width);
+        var my = event.clientY - bbox.top * ((can.height/pixelratio) / bbox.height);
         var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
         myDiagram.startTransaction('new node');
         myDiagram.model.addNodeData({
@@ -139,6 +141,7 @@
                     initialContentAlignment: go.Spot.Center,
                     "undoManager.isEnabled": true
                   });  // center the content
+    window.PIXELRATIO = myDiagram.computePixelRatio(); // constant needed to determine mouse coordinates on the canvas
 
     // define a simple Node template
     myDiagram.nodeTemplate =
