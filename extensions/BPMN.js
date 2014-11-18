@@ -892,7 +892,7 @@ function init() {
     // e.subject is the collection that was just dropped
     e.subject.each(function(part) {
         if (part instanceof go.Node && part.data.item === "end") {
-          part.data.loc.x = part.data.loc.x + 350;
+          part.moveTo(part.location.x  + 350, part.location.y)
         }
       });
     myDiagram.commandHandler.expandSubGraph();
