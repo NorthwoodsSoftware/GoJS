@@ -594,7 +594,11 @@ function init() {
 
   var gatewayNodeTemplateForPalette =
     $(go.Node, "Vertical",
-      { toolTip: tooltiptemplate, resizable: false, resizeObjectName: "SHAPE" },
+      { toolTip: tooltiptemplate,
+        resizable: false,
+        locationObjectName: "SHAPE",
+        locationSpot: go.Spot.Center,
+        resizeObjectName: "SHAPE" },
       $(go.Panel, "Spot",
         $(go.Shape, "Diamond",
           { strokeWidth: 1, fill: gatewayNodeFill, stroke: gatewayNodeStroke, name: "SHAPE",
@@ -678,6 +682,7 @@ function init() {
 
   var privateProcessNodeTemplateForPalette =
     $(go.Node, "Vertical",
+      { locationSpot: go.Spot.Center },
       $(go.Shape, "Process",
         { fill: dataFill, desiredSize: new go.Size(gatewayNodeSize / 2, gatewayNodeSize / 4) }),
       $(go.TextBlock,
