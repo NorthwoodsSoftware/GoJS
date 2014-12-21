@@ -11,5 +11,7 @@ Read more about GoJS: http://gojs.net
 
 ##Support
 
-Northwoods Software Corporation offers free developer-to-developer technical support for GoJS to help you get started on your projec through the official <a href = "http://forum.nwoods.com/forum/forum_topics.asp?FID=8">GoJS forums</a>. Posting through the forum is the fastest and most effective way of obtaining technical support for any GoJS related inquiries. For any nontechical questions about GoJS please visit Northwoods Software's <a href = "http://www.nwoods.com/contact.html">contact form</a>.
+Northwoods Software Corporation offers free developer-to-developer technical support for GoJS to help you get started on your projec through the official <a href = "http://forum.nwoods.com/forum/forum_topics.asp?FID=8">GoJS forums</a>. Posting through the forum is the fastest and most effective way of obtaining technical support for any GoJS related inquiries.
+
+For any nontechical questions about GoJS, please visit Northwoods Software's <a href = "http://www.nwoods.com/contact.html">contact form</a>.
 
