@@ -58,6 +58,8 @@ LinkLabelDraggingTool.prototype.findLabel = function() {
   while (elt.panel !== elt.part) {
     elt = elt.panel;
   }
+  // If it's at an arrowhead segment index, don't consider it a label:
+  if (elt.segmentIndex === 0 || elt.segmentIndex === -1) return null;
   return elt;
 };
 
