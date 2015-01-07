@@ -13,7 +13,7 @@ link.rel = "stylesheet";
 link.href = "../assets/css/highlight.css";
 document.getElementsByTagName("head")[0].appendChild(link);
 
-/* Copyright (C) 1998-2014 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2015 by Northwoods Software Corporation. All Rights Reserved. */
 
 function goSamples() {
   // save the body for goViewSource() before we modify it
@@ -38,7 +38,7 @@ function goSamples() {
   samplediv.appendChild(hdr);
   var ftr = document.createElement("div");
   ftr.className = "footer";
-  var msg = "Copyright &copy; 1998-2014 by Northwoods Software Corporation.";
+  var msg = "Copyright &copy; 1998-2015 by Northwoods Software Corporation.";
   if (window.go && window.go.version) {
     msg = "GoJS&reg; version " + window.go.version + ". " + msg;
   }

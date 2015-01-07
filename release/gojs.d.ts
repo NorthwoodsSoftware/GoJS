@@ -3,7 +3,7 @@
 // Definitions by: Barbara Duckworth <https://github.com/barbara42/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/* Copyright (C) 1998-2014 by Northwoods Software Corporation. */
+/* Copyright (C) 1998-2015 by Northwoods Software Corporation. */
 
 // A number of types have been declared "any" because they would best be described by a union of specific types,
 // not as truly "any" type, and TypeScript does not support union types.  Most of the cases are due to:

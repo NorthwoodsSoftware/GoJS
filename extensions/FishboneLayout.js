@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2014 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2015 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // FishboneLayout is a custom Layout derived from TreeLayout for creating "fishbone" diagrams.
