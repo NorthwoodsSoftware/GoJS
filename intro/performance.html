@@ -11,8 +11,47 @@
 <div id="content">
 
 <h2>Performance Considerations</h2>
+
 <p>
+	This page contains design suggestions to increase the performance of your diagrams.
+	The optimizations available depend on the nature of your diagrams, and we encourage you to experiment.
 </p>
+
+<h3>Give as many GraphObjects as possible static sizes</h3>
+
+<p>
+	In general, setting <a>GraphObject.desiredSize</a> (ones that may be dynamically sized like Pictures, TextBlocks, etc) in your templates will speed up the measure and arrange portion of diagram initialization.
+</p>
+
+<p>
+	If you have Pictures and you know their size beforehand, its best to set a desiredSize so that each of them does not have to re-measure once the image is loaded. This may also avoid re-layouts due to images loading.
+</p>
+
+<h3>Virtualization</h3>
+
+<p>
+	For Diagrams with many nodes and links that only display a fraction of these at a time, you could implement some form of virtualization to optimize your Diagram.
+</p>
+
+<p>
+	The <a href="../samples/virtualizedTree.html">Virtualized Tree sample</a> contains 123,456 total nodes, yet is fairly quick to render, because it only constructs nodes that are visible.
+</p>
+
+<h3>Other considerations</h3>
+
+<p>
+	Shadows and animation slow down rendering and can be turned off. <a>LayeredDigraphLayout</a> is the slowest of the layouts. Templates can be simplified to reduce rendering and re-measuring. The number of TextBlocks, the complexity of shapes, gradient Brushes all impact performance slightly, and reducing their use in aggregate may result in a performance gain.
+</p>
+
+<p>
+	Depening on your app, it may be worthwhile to selectively toggle off some features (like shadows and animation) or to use simpler templates altogether, when slower environments are present, such as on mobile devices.
+</p>
+
+<p>
+	You can use multiple templates depending on your zoom level. If you are zoomed out far enough (and therefore have a lot of nodes on the screen) you can switch to a simplified template so that rendering (when panning, dragging, etc) is faster. The process of switching templates has a performance cost, though, since Parts have to rebuild themselves.
+</p>
+
+
 
 </div>
 </body>
