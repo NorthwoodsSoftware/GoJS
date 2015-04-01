@@ -7798,7 +7798,7 @@ declare module go {
         * Change the size of the selected part's Part.resizeObject to have the given bounds.
         * @param {Rect} newr
         */
-        rezise(newr: Rect);
+        resize(newr: Rect);
 
         /**
         * Show an Adornment with the resize handles at points along the edge of the bounds of the selected Part's Part.resizeObject.

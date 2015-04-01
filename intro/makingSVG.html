@@ -258,17 +258,18 @@ myDiagram.makeSvg({
 <pre data-language="javascript" id="codea1">
 var button = document.getElementById('openSVG');
 button.addEventListener('click', function() {
+  var newWindow = window.open("","newWindow");
+  if (!newWindow) return;
+  var newDocument = newWindow.document;
   var svg = myDiagram.makeSvg({
+    document: newDocument,  // create SVG DOM in new document context
     scale: 9,
     maxSize: new go.Size(600, NaN)
   });
-  var myWindow = window.open("","myWindow");
-  myWindow.document.body.appendChild(svg);
+  newDocument.body.appendChild(svg);
 }, false);
-
 </pre>
 <script>goCode("codea1");</script>
-
 
 </div>
 </body>
