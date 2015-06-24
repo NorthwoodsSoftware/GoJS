@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>GoJS Tree View</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -39,17 +40,23 @@
           // no Adornment: instead change panel background color by binding to Node.isSelected
           { selectionAdorned: false },
           $("TreeExpanderButton",
-            { width: 14,
-              "ButtonIcon.stroke": "blue",
-              "ButtonBorder.fill": "yellow" }),
+            {
+              width: 14,
+              "ButtonBorder.fill": "whitesmoke",
+              "ButtonBorder.stroke": null,
+              "_buttonFillOver": "rgba(0,128,255,0.25)",
+              "_buttonStrokeOver": null
+            }),
           $(go.Panel, "Horizontal",
             { position: new go.Point(16, 0) },
             new go.Binding("background", "isSelected", function (s) { return (s ? "lightblue" : "white"); }).ofObject(),
             $(go.Picture,
-              { width: 14, height: 14,
+              {
+                width: 14, height: 14,
                 margin: new go.Margin(0, 4, 0, 0),
                 imageStretch: go.GraphObject.Uniform,
-                source: "images/50x40.png" }),
+                source: "images/50x40.png"
+              }),
             $(go.TextBlock,
               new go.Binding("text", "key", function(s) { return "item " + s; }))
           )  // end Horizontal Panel
@@ -97,14 +104,17 @@
 <body onload="init()">
 <div id="sample">
   <p>
-  This shows how to create a traditional "TreeView" in a <b>GoJS</b> diagram.
-  There are 500 nodes in the tree.
+    This shows how to create a traditional "TreeView" in a <b>GoJS</b> diagram.
+    There are 500 nodes in the tree.
   </p>
   <p>
-  Look at this page's source code to see how the <a>TreeLayout</a> is customized.
+    Look at this page's source code to see how the <a>TreeLayout</a> is customized.
   </p>
   <p>
-  The node template makes use of a "TreeExpanderButton" panel to implement the expand/collapse button.
+    The node template makes use of a "TreeExpanderButton" panel to implement the expand/collapse button.
+  </p>
+  <p>
+    See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
   </p>
   <div id="myDiagram" style="border: 1px solid blue; width: 300px; height: 500px"></div>
 </div>

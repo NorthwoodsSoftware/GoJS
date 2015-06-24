@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Virtualized Tree with TreeLayout</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -250,6 +251,9 @@
     // end of virtualized Diagram
 
 
+
+    // start of VirtualizedTree[Layout/Network] classes
+
     // Here we try to replace the dependence of TreeLayout on Nodes
     // with depending only on the data in the TreeModel.
     function VirtualizedTreeLayout() {
@@ -259,17 +263,20 @@
     }
     go.Diagram.inherit(VirtualizedTreeLayout, go.TreeLayout);
 
+    /** @override */
     VirtualizedTreeLayout.prototype.createNetwork = function() {
       return new VirtualizedTreeNetwork();  // defined below
     };
 
     // ignore the argument, an (implicit) collection of Parts
+    /** @override */
     VirtualizedTreeLayout.prototype.makeNetwork = function(coll) {
       var net = this.createNetwork();
       net.addData(this.model);  // use the model data, not any actual Nodes and Links
       return net;
     };
 
+    /** @override */
     VirtualizedTreeLayout.prototype.commitLayout = function() {
       go.TreeLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
@@ -279,21 +286,13 @@
         node.updateTargetBindings();
       });
     };
+    // end VirtualizedTreeLayout class
 
 
-    // Use Virtualized versions of TreeVertex and TreeEdge.
     function VirtualizedTreeNetwork() {
       go.TreeNetwork.call(this);
     }
     go.Diagram.inherit(VirtualizedTreeNetwork, go.TreeNetwork);
-
-    VirtualizedTreeNetwork.prototype.createVertex = function() {
-      return new VirtualizedTreeVertex();  // defined below
-    };
-
-    VirtualizedTreeNetwork.prototype.createEdge = function() {
-      return new VirtualizedTreeEdge();  // defined below
-    };
 
     VirtualizedTreeNetwork.prototype.addData = function(model) {
       if (model instanceof go.TreeModel) {
@@ -302,7 +301,7 @@
         for (var i = 0; i < tdata.length; i++) {
           var d = tdata[i];
           var v = this.createVertex();
-          v.data = d;
+          v.data = d;  // associate this Vertex with data, not a Node
           dataVertexMap.add(d, v);
           this.addVertex(v);
         }
@@ -317,7 +316,7 @@
             if (f === null || t === null) continue;  // skip
             // create and add VirtualizedTreeEdge
             var e = this.createEdge();
-            e.data = child;
+            e.data = child;  // associate this Edge with data, not a Link
             e.fromVertex = f;
             e.toVertex = t;
             this.addEdge(e);
@@ -327,42 +326,9 @@
         throw new Error("can only handle TreeModel data");
       }
     };
+    // end VirtualizedTreeNetwork class
 
-
-    // Associate with node data rather than with a Node.
-    function VirtualizedTreeVertex() {
-      go.TreeVertex.call(this);
-      this._data = null;
-    }
-    go.Diagram.inherit(VirtualizedTreeVertex, go.TreeVertex);
-
-    Object.defineProperty(VirtualizedTreeVertex.prototype, "data", {
-      get: function() { return this._data; },
-      set: function(val) {
-        this._data = val;
-        if (val !== null) {
-          this.focus = new go.Point(val.bounds.width/2, val.bounds.height/2);
-          this.bounds = val.bounds;
-        }
-      }
-    });
-
-    VirtualizedTreeVertex.prototype.commit = function() {
-      if (this._data !== null) {
-        this._data.bounds.set(this.bounds);
-      }
-    };
-
-
-    // Associate with link data rather than with a Link.
-    // NOTE: This does not support custom routing of links that is normally done by TreeLayout.
-    function VirtualizedTreeEdge() {
-      go.TreeEdge.call(this);
-      this.data = null;
-    }
-    go.Diagram.inherit(VirtualizedTreeEdge, go.TreeEdge);
-
-    // end of VirtualizedTree[Layout/Network/Vertex/Edge]
+    // end of VirtualizedTree[Layout/Network] classes
   </script>
 </head>
 <body onload="init()">

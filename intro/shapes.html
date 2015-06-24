@@ -77,7 +77,7 @@ The most common such property is <a>Shape.strokeWidth</a>.
                     fill: "green", background: "orange" })
     ));
 </pre>
-<script>goCode("strokedShapes", 600, 80)</script>
+<script>goCode("strokedShapes", 600, 100)</script>
 
 <p>
 The <a>Shape.stroke</a> and <a>Shape.fill</a> properties take <a>Brush</a>es
@@ -92,26 +92,29 @@ But a shape with a transparent fill produces a "filled" shape -- a mouse event i
 shape will "hit" that shape.
 </p>
 <pre data-language="javascript" id="fill">
+  diagram.div.style.background = "lightgray";
   diagram.add(
     $(go.Part, "Table",
-      $(go.Shape, { row: 0, column: 0, figure: "Club", width: 40, height: 40, margin: 4,
+      $(go.Shape, { row: 0, column: 0, figure: "Club", width: 60, height: 60, margin: 4,
                     fill: "green" }),
       $(go.TextBlock, "green", { row: 1, column: 0 }),
-      $(go.Shape, { row: 0, column: 1, figure: "Club", width: 40, height: 40, margin: 4,
+      $(go.Shape, { row: 0, column: 1, figure: "Club", width: 60, height: 60, margin: 4,
                     fill: "white" }),
       $(go.TextBlock, "white", { row: 1, column: 1 }),
-      $(go.Shape, { row: 0, column: 2, figure: "Club", width: 40, height: 40, margin: 4,
+      $(go.Shape, { row: 0, column: 2, figure: "Club", width: 60, height: 60, margin: 4,
                     fill: "transparent" }),
       $(go.TextBlock, "transparent", { row: 1, column: 2 }),
-      $(go.Shape, { row: 0, column: 3, figure: "Club", width: 40, height: 40, margin: 4,
+      $(go.Shape, { row: 0, column: 3, figure: "Club", width: 60, height: 60, margin: 4,
                     fill: null }),
       $(go.TextBlock, "null", { row: 1, column: 3 })
     ));
 </pre>
-<script>goCode("fill", 600, 80)</script>
+<script>goCode("fill", 600, 100)</script>
 <p>
 Try clicking inside each of the shapes to see which ones will respond to the click and cause the whole panel to be selected.
+Note that with the "transparent" fill you can see the diagram background, yet when you click in it you "hit" the Shape.
 Only the last one, with a null fill, is truly "hollow".
+Clicking in the last shape will only result in a click on the diagram background, unless you click on the stroke outline.
 </p>
 
 <h3>Geometry</h3>
@@ -137,6 +140,7 @@ Geometry objects may be shared by multiple Shapes.
 Note that there may be no need to specify the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a>,
 because the Geometry defines its own sizes.
 If the size is set or imposed by the containing Panel, the effective geometry is determined by the <a>Shape.geometryStretch</a> property.
+Depending on the value of the geometryStretch property, this may result in extra empty space or the clipping of the shape.
 </p>
 <pre data-language="javascript" id="geometries">
   var W_geometry = go.Geometry.parse("M 0,0 L 10,50 20,10 30,50 40,0", false);
@@ -209,18 +213,124 @@ you cannot see the <a>GraphObject.areaBackground</a> brush that fills the same a
     $(go.Part, "Table",
       $(go.Shape, { row: 0, column: 0,
                     figure: "Club", width: 40, height: 40, angle: 0, scale: 1.5,
-                    fill: $(go.Brush, go.Brush.Linear, { 0.0: "blue", 1.0: "red" }),
-                    background: $(go.Brush, go.Brush.Linear, { 0.0: "yellow", 1.0: "green" }),
-                    areaBackground: $(go.Brush, go.Brush.Linear, { 0.0: "gray", 1.0: "lightgray" }) }),
+                    fill: $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" }),
+                    background: $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" }),
+                    areaBackground: $(go.Brush, "Linear", { 0.0: "gray", 1.0: "lightgray" })
+                  }),
       $(go.Shape, { row: 0, column: 1, width: 10, fill: null, stroke: null }),
       $(go.Shape, { row: 0, column: 2,
                     figure: "Club", width: 40, height: 40, angle: 45, scale: 1.5,
-                    fill: $(go.Brush, go.Brush.Linear, { 0.0: "blue", 1.0: "red" }),
-                    background: $(go.Brush, go.Brush.Linear, { 0.0: "yellow", 1.0: "green" }),
-                    areaBackground: $(go.Brush, go.Brush.Linear, { 0.0: "black", 1.0: "lightgray" }) })
+                    fill: $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" }),
+                    background: $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" }),
+                    areaBackground: $(go.Brush, "Linear", { 0.0: "black", 1.0: "lightgray" })
+                  })
     ));
 </pre>
 <script>goCode("backgrounds", 600, 120)</script>
+
+<h3>Custom Figures</h3>
+<p>
+As shown above, one can easily create custom shapes just by setting <a>Shape.geometry</a> or <a>Shape.geometryString</a>.
+This is particularly convenient when importing SVG.
+However it is also possible to define additional named figures, which is convenient when you want to be able to easily
+change the geometry of an existing Shape, typically by data binding the <a>Shape.figure</a> property.
+</p>
+<p>
+The static function <a>Shape.defineFigureGenerator</a> can be used to define new figure names.
+The second argument is a function that is called with the <a>Shape</a> and the expected width and height
+in order to generate and return a <a>Geometry</a>.
+This permits parameterization of the geometry based on properties of the Shape and the expected size.
+In particular, the <a>Shape.parameter1</a> and <a>Shape.parameter2</a> properties can be considered
+while producing the Geometry.
+</p>
+<pre data-language="javascript" id="defineFigure">
+  go.Shape.defineFigureGenerator("RoundedTopRectangle", function(shape, w, h) {
+    // this figure takes one parameter, the size of the corner
+    var p1 = 5;  // default corner size
+    if (shape !== null) {
+      var param1 = shape.parameter1;
+      if (!isNaN(param1) && param1 >= 0) p1 = param1;  // can't be negative or NaN
+    }
+    p1 = Math.min(p1, w / 2);
+    p1 = Math.min(p1, h / 2);  // limit by whole height or by half height?
+    var geo = new go.Geometry();
+    // a single figure consisting of straight lines and quarter-circle arcs
+    geo.add(new go.PathFigure(0, p1)
+             .add(new go.PathSegment(go.PathSegment.Arc, 180, 90, p1, p1, p1, p1))
+             .add(new go.PathSegment(go.PathSegment.Line, w - p1, 0))
+             .add(new go.PathSegment(go.PathSegment.Arc, 270, 90, w - p1, p1, p1, p1))
+             .add(new go.PathSegment(go.PathSegment.Line, w, h))
+             .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
+    // don't intersect with two top corners
+    geo.spot1 = new go.Spot(0, 0, 0.3 * p1, 0.3 * p1);
+    geo.spot2 = new go.Spot(1, 1, -0.3 * p1, 0);
+    return geo;
+  });
+
+  go.Shape.defineFigureGenerator("RoundedBottomRectangle", function(shape, w, h) {
+    // this figure takes one parameter, the size of the corner
+    var p1 = 5;  // default corner size
+    if (shape !== null) {
+      var param1 = shape.parameter1;
+      if (!isNaN(param1) && param1 >= 0) p1 = param1;  // can't be negative or NaN
+    }
+    p1 = Math.min(p1, w / 2);
+    p1 = Math.min(p1, h / 2);  // limit by whole height or by half height?
+    var geo = new go.Geometry();
+    // a single figure consisting of straight lines and quarter-circle arcs
+    geo.add(new go.PathFigure(0, 0)
+             .add(new go.PathSegment(go.PathSegment.Line, w, 0))
+             .add(new go.PathSegment(go.PathSegment.Line, w, h - p1))
+             .add(new go.PathSegment(go.PathSegment.Arc, 0, 90, w - p1, h - p1, p1, p1))
+             .add(new go.PathSegment(go.PathSegment.Line, p1, h))
+             .add(new go.PathSegment(go.PathSegment.Arc, 90, 90, p1, h - p1, p1, p1).close()));
+    // don't intersect with two bottom corners
+    geo.spot1 = new go.Spot(0, 0, 0.3 * p1, 0);
+    geo.spot2 = new go.Spot(1, 1, -0.3 * p1, -0.3 * p1);
+    return geo;
+  });
+
+  diagram.nodeTemplate =
+      $(go.Part, "Spot",
+        {
+          selectionAdorned: false,  // don't show the standard selection handle
+          resizable: true, resizeObjectName: "SHAPE",  // user can resize the Shape
+          rotatable: true, rotateObjectName: "SHAPE",  // user can rotate the Shape
+                                                       // without rotating the label
+        },
+        $(go.Shape,
+          {
+            name: "SHAPE",
+            fill: $(go.Brush, "Linear", { 0.0: "white", 1.0: "gray" }),
+            desiredSize: new go.Size(100, 50)
+          },
+          new go.Binding("figure", "fig"),
+          new go.Binding("parameter1", "p1")),
+        $(go.TextBlock,
+          new go.Binding("text", "fig"))
+      );
+
+  diagram.model = new go.Model([
+    { fig: "RoundedTopRectangle" },
+    { fig: "RoundedTopRectangle", p1: 0 },
+    { fig: "RoundedTopRectangle", p1: 3 },
+    { fig: "RoundedTopRectangle", p1: 10 },
+    { fig: "RoundedTopRectangle", p1: 50 },
+    { fig: "RoundedTopRectangle", p1: 250 },
+    { fig: "RoundedBottomRectangle" },
+    { fig: "RoundedBottomRectangle", p1: 0 },
+    { fig: "RoundedBottomRectangle", p1: 3 },
+    { fig: "RoundedBottomRectangle", p1: 10 },
+    { fig: "RoundedBottomRectangle", p1: 50 },
+    { fig: "RoundedBottomRectangle", p1: 250 }
+  ]);
+</pre>
+<script>goCode("defineFigure", 700, 300)</script>
+<p>
+Note how the <a>Shape.parameter1</a> property, data bound to the "p1" property, controls how rounded the corners are.
+The definition of each figure limits the roundedness based on the actual size of the geometry.
+You can see the effects by resizing the last shape -- the curve on the shape with p1==250 can be huge if the shape becomes huge.
+</p>
 
 </div>
 </body>

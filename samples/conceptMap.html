@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Concept Map</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -14,23 +15,21 @@
     myDiagram =
       $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
         {
-          initialAutoScale: go.Diagram.Uniform,
-          contentAlignment: go.Spot.Center,
+          initialAutoScale: go.Diagram.Uniform,  // an initial automatic zoom-to-fit
+          contentAlignment: go.Spot.Center,  // align document to the center of the viewport
           layout:
-            $(go.ForceDirectedLayout,
+            $(go.ForceDirectedLayout,  // automatically spread nodes apart
               { defaultSpringLength: 30, defaultElectricalCharge: 100 })
         });
 
-    // define the Node template for non-terminal nodes
+    // define each Node's appearance
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",  // the whole node panel
         // define the node's outer shape, which will surround the TextBlock
         $(go.Shape, "Rectangle",
-          { fill: $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
-            stroke: "black" }),
+          { fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }), stroke: "black" }),
         $(go.TextBlock,
-          { font: "bold 10pt helvetica, bold arial, sans-serif",
-            margin: 4 },
+          { font: "bold 10pt helvetica, bold arial, sans-serif", margin: 4 },
           new go.Binding("text", "text"))
       );
 
@@ -38,14 +37,12 @@
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "black" }),
+          { stroke: "black" }),
         $(go.Shape,  // the arrowhead
-          { toArrow: "standard",
-            stroke: null }),
+          { toArrow: "standard", stroke: null }),
         $(go.Panel, "Auto",
           $(go.Shape,  // the link shape
-            { fill: $(go.Brush, go.Brush.Radial, { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
+            { fill: $(go.Brush, "Radial", { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
               stroke: null }),
           $(go.TextBlock,  // the label
             { textAlign: "center",
@@ -112,6 +109,10 @@
 <body onload="init()">
 <div id="sample">
   <div id="myDiagram" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 700px"></div>
+  <p>
+    See also the <a href="interactiveForce.html">Interactive Force</a> sample that uses the exact same data
+    but a different node template and a customized <a>ForceDirectedLayout</a>.
+  </p>
 </div>
 </body>
 </html>

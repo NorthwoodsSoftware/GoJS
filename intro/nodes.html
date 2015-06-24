@@ -87,7 +87,7 @@ In this example the content is a Table Panel with three rows of TextBlocks.
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape,
-        { fill: $(go.Brush, go.Brush.Linear, { 0: "white", 1: "lightblue" }),
+        { fill: $(go.Brush, "Linear", { 0: "white", 1: "lightblue" }),
           stroke: "darkblue", strokeWidth: 2 }),
       $(go.Panel, "Table",
         { defaultAlignment: go.Spot.Left, margin: 4 },
@@ -115,6 +115,73 @@ In this example the content is a Table Panel with three rows of TextBlocks.
 </pre>
 <script>goCode("borderedtable", 300, 150)</script>
 
+<h4>Fixed-size nodes</h4>
+  <p>
+    The above examples have the "Auto" Panel surround some content, where the content might be of different sizes.
+    That results in the Nodes having different sizes.
+  </p>
+  <p>
+    If you want a <a>Panel</a> (and thus a Node, because <a>Node</a> inherits from <a>Part</a> which inherits from <a>Panel</a>)
+    to be of fixed size, set <a>GraphObject.desiredSize</a> on that panel.
+    (Equivalently, you can set <a>GraphObject.width</a> and <a>GraphObject.height</a>.)
+    That may result in the clipping of content that is too large,
+    or it may result in extra space if the content is smaller than the available area provided by the "Auto" Panel.
+  </p>
+<pre data-language="javascript" id="fixedsize">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { desiredSize: new go.Size(100, 50) },  // on Panel
+      $(go.Shape,
+        new go.Binding("figure", "fig"),
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", color: "lightblue", fig: "RoundedRectangle" },
+    { key: "Beta", color: "lightblue", fig: "Ellipse" },
+    { key: "Gamma", color: "lightblue", fig: "Hexagon" },
+    { key: "Delta", color: "lightblue", fig: "FramedRectangle" },
+    { key: "Epsilon,Epsilon,Epsilon", color: "lightblue", fig: "Cloud" },
+    { key: "Z", color: "lightblue", fig: "Procedure" }
+  ];
+</pre>
+<script>goCode("fixedsize", 500, 200)</script>
+  <p>
+    Note how the "Epsilon..." TextBlock is measured with the constraint of having a limited width,
+    as imposed by the Panel's width.  That results in the text being wrapped before (maybe) being clipped.
+  </p>
+  <p>
+    You probably do not want to set the desiredSize of the main element, the Shape in this case above.
+    If you did, that would not constrain how the content elements are sized within the Panel.
+  </p>
+<pre data-language="javascript" id="fixedsize2">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { desiredSize: new go.Size(100, 50) },  // on main element, not on Panel
+        new go.Binding("figure", "fig"),
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", color: "lightblue", fig: "RoundedRectangle" },
+    { key: "Beta", color: "lightblue", fig: "Ellipse" },
+    { key: "Gamma", color: "lightblue", fig: "Hexagon" },
+    { key: "Delta", color: "lightblue", fig: "FramedRectangle" },
+    { key: "Epsilon,Epsilon,Epsilon", color: "lightblue", fig: "Cloud" },
+    { key: "Z", color: "lightblue", fig: "Procedure" }
+  ];
+</pre>
+<script>goCode("fixedsize2", 500, 200)</script>
+  <p>
+    Note how the TextBlock is measured without the constraint of having a limited width from the Panel.
+    That results in the text being treated as a single long line, which is then clipped by the Panel.
+  </p>
+
 <h3>Stacked Content</h3>
 <p>
 Many simple nodes consist of a few objects positioned above each other or next to each other.
@@ -133,7 +200,7 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
       $(go.TextBlock,
         { margin: new go.Margin(3, 0, 0, 0),
           maxSize: new go.Size(100, 30),
-          editable: true, isMultiline: false },
+          isMultiline: false },
         new go.Binding("text", "text"))
     );
 
@@ -143,8 +210,32 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
 </pre>
 <script>goCode("icons", 300, 150)</script>
 <p>
-Of course you are not limited to just two objects in a panel.
+  Of course you are not limited to just two objects in a panel.
+  In fact you can have as many GraphObjects in a "Vertical" or a "Horizontal" Panel as you like.
 </p>
+<pre data-language="javascript" id="icons2">
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      $(go.TextBlock,
+        { margin: new go.Margin(3, 0, 0, 0),
+          maxSize: new go.Size(100, 30),
+          isMultiline: false,
+          font: "bold 10pt sans-serif" },
+        new go.Binding("text", "head")),
+      $(go.Picture,
+        { maxSize: new go.Size(50, 50) },
+        new go.Binding("source", "img")),
+      $(go.TextBlock,
+        { margin: new go.Margin(3, 0, 0, 0),
+          maxSize: new go.Size(100, 30),
+          isMultiline: false },
+        new go.Binding("text", "foot"))
+    );
+  diagram.model.nodeDataArray = [
+    { head: "Kitten", foot: "Tantomile", img: "images/50x40.png" }
+  ];
+</pre>
+<script>goCode("icons2", 300, 150)</script>
 
 <h4>Small icons</h4>
 <p>
@@ -169,13 +260,13 @@ Another commonly seen kind of node can be implemented using a Horizontal <a>Pane
 
 <h3>Decorated Content</h3>
 <p>
-Sometimes you want to have a simple node that sometimes displays additional visuals
+Sometimes you want to have a simple node that may display additional visuals
 to indicate what state it is in.
 </p>
 
 <p>
-One way to implement this is to use a Spot <a>Panel</a>, where the main element is a Panel
-containing the elements that you always want to display, and additional objects located at spots around the main element.
+One way to implement this is to use a Spot <a>Panel</a>, where the main element is itself a Panel
+containing the elements that you always want to display, and there are additional objects located at spots around the main element.
 </p>
 <pre data-language="javascript" id="spotdecorations">
   diagram.nodeTemplate =
@@ -219,6 +310,51 @@ containing the elements that you always want to display, and additional objects 
 </pre>
 <script>goCode("spotdecorations", 300, 150)</script>
 
+<p>
+As another example of a node decoration, this implements a "ribbon" at the top right corner of the node.
+The ribbon is implemented by a <a>Panel</a> that contains both a <a>Shape</a> and a <a>TextBlock</a>,
+and the panel is positioned by its <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a> in
+the Spot Panel that also is the <a>Node</a>.
+The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and binding <a>GraphObject.opacity</a>.
+</p>
+<pre data-language="javascript" id="ribbondecorations">
+  diagram.nodeTemplate =
+    $(go.Node, "Spot",
+      { locationSpot: go.Spot.Center, locationObjectName: "BODY" },
+      { selectionObjectName: "BODY" },
+      $(go.Panel, "Auto",
+        { name: "BODY", width: 150, height: 100 },
+        { portId: "" },
+        $(go.Shape,
+          { fill: "lightgray", stroke: null, strokeWidth: 0 }),
+        $(go.TextBlock,
+          new go.Binding("text"))
+      ),
+      $(go.Panel, "Spot",
+        new go.Binding("opacity", "ribbon", function(t) { return t ? 1 : 0; }),
+        // note that the opacity defaults to zero (not visible),
+        // in case there is no "ribbon" property
+        { opacity: 0,
+          alignment: new go.Spot(1, 0, 5, -5),
+          alignmentFocus: go.Spot.TopRight },
+        $(go.Shape,  // the ribbon itself
+          { geometryString: "F1 M0 0 L30 0 70 40 70 70z",
+            fill: "red", stroke: null, strokeWidth: 0 }),
+        $(go.TextBlock,
+          new go.Binding("text", "ribbon"),
+          { alignment: new go.Spot(1, 0, -29, 29),
+            angle: 45, maxSize: new go.Size(100, NaN),
+            stroke: "white", font: "bold 13px sans-serif", textAlign: "center" })
+      )
+    );
+
+  diagram.model = new go.GraphLinksModel([
+    { key: 1, text: "Alpha" },
+    { key: 2, text: "Beta", ribbon: "NEWEST" }
+  ],[
+  ]);
+</pre>
+<script>goCode("ribbondecorations", 500, 150)</script>
 </div>
 </body>
 </html>

@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Spacing rather than Scaling when Zooming</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -50,6 +51,15 @@
       { from: "Gamma", to: "Delta" },
       { from: "Delta", to: "Alpha" }
     ]);
+
+    // the "space" property is kept on the Model.modelData too
+    myDiagram.model.modelData.space = 1.0;
+    // update the SpacingCommandHandler.space from the model at the end of each transaction
+    myDiagram.model.addChangedListener(function(e) {
+      if (e.isTransactionFinished) {
+        myDiagram.commandHandler.space = myDiagram.model.modelData.space;
+      }
+    });
   }
 
 
@@ -84,37 +94,43 @@
   // The custom CommandHandler that avoids changing the Diagram.scale
   function SpacingCommandHandler() {
     go.CommandHandler.call(this);
-    this._space = 1.0;  // replaces Diagram.scale
-    this._spaceCenter = new go.Point(0, 0);
-    this._isYSpaced = true;  // scale Y along with X?
+    this._space = 1.0;  // replaces Diagram.scale; also copied to/from Model.modelData.space
+    this._spaceCenter = new go.Point(0, 0);  // not currently used -- should this be saved on modelData too?
+    this._isYSpaced = true;  // scale Y along with X?  This option is just for demonstration purposes.
     this._isUpdating = false;
   }
   go.Diagram.inherit(SpacingCommandHandler, go.CommandHandler);
 
   // Overrides of commands that scale the diagram -- change the space instead
 
+  /** @override */
   SpacingCommandHandler.prototype.decreaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     this.setSpace(this.space * factor);
   };
+  /** @override */
   SpacingCommandHandler.prototype.canDecreaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     return this.checkSpace(this.space * factor);
   };
 
+  /** @override */
   SpacingCommandHandler.prototype.increaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     this.setSpace(this.space / factor);
   };
+  /** @override */
   SpacingCommandHandler.prototype.canIncreaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     return this.checkSpace(this.space / factor);
   };
 
+  /** @override */
   SpacingCommandHandler.prototype.resetZoom = function(newspace) {
     if (newspace === undefined/*notpresent*/) newspace = 1.0;
     this.setSpace(newspace);
   };
+  /** @override */
   SpacingCommandHandler.prototype.canResetZoom = function(newspace) {
     return this.checkSpace(newspace);
   };
@@ -137,7 +153,12 @@
     set: function(val) {
       if (val !== this._space) {
         this._space = val;
+        var diagram = this.diagram;
+        if (diagram !== null) {  // store in model too, and support undo
+          diagram.model.setDataProperty(diagram.model.modelData, "space", val);
+        }
         this.updateAllLocations();
+        // update the page showing the current value
         document.getElementById("SPACE").textContent = val.toString();
       }
     }
@@ -181,6 +202,7 @@
     diagram.skipsUndoManager = false;
     this._isUpdating = false;
   };
+  // end SpacingCommandHandler class
 
 
   function onIsYSpacedToggled() {
@@ -193,12 +215,12 @@
   <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
   Spacing factor: <span id="SPACE">1.0</span>
   <br />
-  <input type="checkbox" onclick="onIsYSpacedToggled()" checked="checked" />Is Y Axis Spaced?
+  <label><input type="checkbox" onclick="onIsYSpacedToggled()" checked="checked" />Is Y Axis Spaced?</label>
   <br />
   <p>
   Click in the diagram and then try zooming in and out of the diagram by using control-mouse-wheel.
   If you don't want to hold down the control key, click the mouse wheel button in the diagram to
-  cause mouse wheel events to zoom instead of scroll.
+  toggle between mouse wheel events zooming instead of scrolling.
   </p>
   <p>
   This diagram uses a custom <a>CommandHandler</a> to replace the standard zooming behavior.
@@ -220,6 +242,10 @@
   Because the conversion functions are dependent on the particular Diagram,
   and because the node template depends on the conversion functions,
   the template cannot be used by other Diagrams.
+  </p>
+  <p>
+  The SpacingCommandHandler.space property is duplicated on the <a>Model.modelData</a> object, both so that the information
+  is saved in the model as well as to support undo/redo.
   </p>
 </div>
 </body>

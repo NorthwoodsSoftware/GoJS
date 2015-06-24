@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title> Sequential Function Chart</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -27,8 +28,9 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "Rectangle",
           {
-            fill: $(go.Brush, go.Brush.Linear, { 0: "whitesmoke", 1: "pink" }),
+            fill: "whitesmoke",
             stroke: "gray",
+            strokeWidth: 2,
             desiredSize: new go.Size(160, 60),
             portId: "",  // so that links connect to the Shape, not to the whole Node
             fromSpot: go.Spot.BottomSide,
@@ -37,6 +39,7 @@
           }),
         $(go.TextBlock,
           {
+            font: "bold 16px sans-serif",
             alignment: go.Spot.Center,
             wrap: go.TextBlock.WrapFit,
             editable: true
@@ -54,31 +57,31 @@
             name: "BAR",
             fill: "black",
             stroke: null,
-            desiredSize: new go.Size(60, 6),
+            desiredSize: new go.Size(60, 8),
             portId: "",
             fromSpot: go.Spot.BottomSide,
             toSpot: go.Spot.TopSide
           }),
         $(go.TextBlock,
+          { editable: true, margin: 3 },
           new go.Binding("text", "text").makeTwoWay())
       ));
 
     // define the parallel Node template.
     myDiagram.nodeTemplateMap.add("parallel",
-      $(go.Node, "Spot",
+      $(go.Node,
         { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "Rectangle",
           {
-            fill: "transparent",
+            fill: "whitesmoke",
             stroke: "black",
             fromSpot: go.Spot.BottomCenter,
             toSpot: go.Spot.TopCenter,
             desiredSize: new go.Size(200, 6),
             portId: "",
             fromSpot: go.Spot.BottomSide,
-            toSpot: go.Spot.TopSide,
-            alignment: go.Spot.Center
+            toSpot: go.Spot.TopSide
           })
       ));
 
@@ -106,8 +109,16 @@
 </head>
 <body onload="init()" >
 <div id="sample">
-  You can edit text in-place by clicking on the text of a selected node.
   <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
+  <p>
+    Sequential function diagrams are used for programmable logic controllers (PLCs) and other control systems.
+  </p>
+  <p>
+    You can edit text in-place by clicking on the text of a selected node.
+  </p>
+  <p>
+    See also the <a href="grafcet.html">grafcet diagram sample</a>.
+  </p>
   <button onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   Diagram Model saved in JSON format:
@@ -115,14 +126,14 @@
   <textarea id="mySavedModel" style="width:100%;height:400px">
 { "nodeDataArray": [
 {"key":"S1", "category":"step", "text":"Step 1"},
-{"key":"TR1", "category":"transition", "text":"Trans1"},
+{"key":"TR1", "category":"transition", "text":"Transition 1"},
 {"key":"S2", "category":"step", "text":"Step 2"},
-{"key":"TR2", "category":"transition", "text":"Trans2"},
+{"key":"TR2", "category":"transition", "text":"Transition 2"},
 {"key":"BAR1", "category":"parallel", "width":200},
 {"key":"S3", "category":"step", "text":"Step 3"},
 {"key":"S4", "category":"step", "text":"Step 4"},
 {"key":"BAR2", "category":"parallel", "width":200},
-{"key":"TR3", "category":"transition", "text":"Trans3"},
+{"key":"TR3", "category":"transition", "text":"Transition 3"},
 {"key":"S5", "category":"step", "text":"Step 5"}
  ],
   "linkDataArray": [

@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Flowchart</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -159,9 +160,15 @@
           corner: 5, toShortLength: 4,
           relinkableFrom: true,
           relinkableTo: true,
-          reshapable: true
+          reshapable: true,
+          resegmentable: true,
+          // mouse-overs subtly highlight links:
+          mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+          mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; }
         },
         new go.Binding("points").makeTwoWay(),
+        $(go.Shape,  // the highlight shape, normally transparent
+          { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
         $(go.Shape,  // the link path shape
           { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
         $(go.Shape,  // the arrowhead
@@ -206,7 +213,7 @@
             { text: "Step" },
             { text: "???", figure: "Diamond" },
             { category: "End", text: "End" },
-            { category: "Comment", text: "Comment", figure: "RoundedRectangle" }
+            { category: "Comment", text: "Comment" }
           ])
         });
 
@@ -239,10 +246,10 @@
     svg.style.border = "1px solid black";
     obj = document.getElementById("SVGArea");
     obj.appendChild(svg);
-    if (obj.children.length > 0) 
+    if (obj.children.length > 0) {
       obj.replaceChild(svg, obj.children[0]);
+    }
   }
-
 </script>
 </head>
 <body onload="init()">
@@ -268,7 +275,8 @@
   Drag from these ports to create new Links.
   Selecting Links allows you to re-shape and re-link them.
   Selecting a Node and then clicking its TextBlock will allow
-  you to edit text (except on the Start and End Nodes).</p>
+  you to edit text (except on the Start and End Nodes).
+  </p>
   <p>
   The Diagram Model data is loaded from the JSON below.
   </p>

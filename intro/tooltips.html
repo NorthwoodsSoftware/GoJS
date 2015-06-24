@@ -43,7 +43,8 @@ The diagram gets its own tooltip by setting <a>Diagram.toolTip</a>.
 
   // a function that produces the content of the diagram tooltip
   function diagramInfo(model) {
-    return "Model:\n" + model.nodeDataArray.length + " nodes, " + model.linkDataArray.length + " links";
+    return "Model:\n" + model.nodeDataArray.length + " nodes, " +
+                        model.linkDataArray.length + " links";
   }
 
   // provide a tooltip for the background of the Diagram, when not over any Part
@@ -72,6 +73,52 @@ If you copy some parts, you will see that the tooltip for the diagram displays n
 <p>
 You can change how long for the mouse has to wait motionless before a tooltip appears by setting <a>ToolManager.hoverDelay</a>.
 For example: <code>myDiagram.toolManager.hoverDelay = 600;</code> changes the delay to be 6/10ths of one second.
+</p>
+
+<h4>Positioning</h4>
+<p>
+There are two ways to customize the positioning of the tooltip relative to the adorned GraphObject.
+One way is to override <a>ToolManager.positionToolTip</a>.
+Another way is to have the tooltip <a>Adornment</a> include a <a>Placeholder</a>.
+The Placeholder is positioned to have the same size and position as the adorned object.
+</p>
+<pre data-language="javascript" id="tooltipsplaceholder">
+  // this is a normal Node template that also has a toolTip defined for it
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key")),
+      {
+        toolTip:                       // define a tooltip for each node
+          $(go.Adornment, "Spot",      // that has several labels around it
+            { background: "transparent" },  // avoid hiding tooltip when mouse moves
+            $(go.Placeholder, { padding: 5 }),
+            $(go.TextBlock,
+              { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom, stroke: "red" },
+              new go.Binding("text", "key", function(s) { return "key: " + s; })),
+            $(go.TextBlock, "Bottom",
+              { alignment: go.Spot.Bottom, alignmentFocus: go.Spot.Top, stroke: "red" },
+              new go.Binding("text", "color", function(s) { return "color: " + s; }))
+          )  // end Adornment
+      }
+    );
+  diagram.initialContentAlignment = go.Spot.Center;
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightyellow" },
+    { key: "Beta", color: "orange" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("tooltipsplaceholder", 350, 200)</script>
+<p>
+Note how the <a>Adornment</a> implementing the tooltip uses a "transparent" background
+so that the tooltip is not automatically removed when the mouse moves.
 </p>
 
 </div>

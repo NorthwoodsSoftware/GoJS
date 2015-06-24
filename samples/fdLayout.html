@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Force Directed Layout</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -15,6 +16,7 @@
 
   // Override the makeNetwork method to also initialize
   // ForceDirectedVertex.isFixed from the corresponding Node.isSelected.
+  /** @override */
   DemoForceDirectedLayout.prototype.makeNetwork = function(coll) {
     // call base method for standard behavior
     var net = go.ForceDirectedLayout.prototype.makeNetwork.call(this, coll);
@@ -24,7 +26,6 @@
     });
     return net;
   };
-
   // end DemoForceDirectedLayout class
 
 
@@ -35,9 +36,8 @@
     myDiagram =
       $(go.Diagram, "myDiagram",  // must be the ID or reference to div
         {
-          // start everything in the middle of the viewport
-          initialContentAlignment: go.Spot.Center,
-          autoScale: go.Diagram.Uniform,  // zoom to make everything fit in the viewport
+          initialContentAlignment: go.Spot.Center, // start everything in the middle of the viewport
+          initialAutoScale: go.Diagram.Uniform,  // zoom to make everything fit in the viewport
           layout: new DemoForceDirectedLayout()  // use custom layout
           // other Layout properties are set by the layout function, defined below
         });

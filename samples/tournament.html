@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Tournament</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -20,6 +21,13 @@
           layout: $(go.TreeLayout, { angle: 180 }),
           "undoManager.isEnabled": true
         });
+
+    // validation function for editing text
+    function isValidScore(textblock, oldstr, newstr) {
+      if (newstr === "") return true;
+      var num = parseInt(newstr, 10);
+      return !isNaN(num) && num >= 0 && num < 1000;
+    }
 
     // define a simple Node template
     myDiagram.nodeTemplate =
@@ -64,6 +72,7 @@
           selectable: false },
         $(go.Shape));
 
+
     // Generates the original graph from an array of player names
     function createPairs(players) {
       if (players.length % 2 !== 0) players.push('(empty)');
@@ -94,7 +103,9 @@
         if (players !== null) {
           var p1 = players[i*2];
           var p2 = players[(i*2) + 1];
-          totalGroups.push({ key: levelGroups[i], parent: p, player1: p1, player2: p2, parentNumber: parentNumber });
+          totalGroups.push({
+            key: levelGroups[i], parent: p, player1: p1, player2: p2, parentNumber: parentNumber
+          });
         } else {
           totalGroups.push({ key: levelGroups[i], parent: p, parentNumber: parentNumber });
         }
@@ -108,51 +119,49 @@
     }
 
     function makeModel(players) {
-      myDiagram.model = new go.TreeModel(createPairs(players));
+      var model = new go.TreeModel(createPairs(players));
+
+      model.addChangedListener(function(e) {
+        if (e.propertyName !== 'score1' && e.propertyName !== 'score2') return;
+        var data = e.object;
+        if (isNaN(data.score1) || isNaN(data.score2)) return;
+
+        // TODO: What happens if score1 and score2 are the same number?
+
+        // both score1 and score2 are numbers,
+        // set the name of the higher-score'd player in the advancing (parent) node
+        // if the data.parentNumber is 0, then we set player1 on the parent
+        // if the data.parentNumber is 1, then we set player2
+        var parent = myDiagram.findNodeForKey(data.parent);
+        if (parent === null) return;
+
+        var playerName = parseInt(data.score1) > parseInt(data.score2) ? data.player1 : data.player2;
+        if (parseInt(data.score1) === parseInt(data.score2)) playerName = "";
+        myDiagram.model.setDataProperty(parent.data, (data.parentNumber === 0 ? "player1" : "player2"), playerName);
+      });
+
+      myDiagram.model = model;
+
+      // provide initial scores for at most three pairings
+      for (var i = 0; i < Math.min(3, model.nodeDataArray.length); i++) {
+        var d = model.nodeDataArray[i];
+        if (d.player1 && d.player2) {
+          // TODO: doesn't prevent tie scores
+          model.setDataProperty(d, "score1", Math.floor(Math.random() * 100));
+          model.setDataProperty(d, "score2", Math.floor(Math.random() * 100));
+        }
+      }
     }
 
-
-    var myPlayers =
-     ['Adler',
-      'Pollock',
-      'Montgomery',
-      'Lestrade',
-      'Wilson',
-      'Moran',
-      'Bardle',
-      'Edwards'];
-    makeModel(myPlayers);
-
-
-    myDiagram.model.addChangedListener(function(e) {
-      if (e.propertyName !== 'score1' && e.propertyName !== 'score2') return;
-      var data = e.object;
-      if (isNaN(data.score1) || isNaN(data.score2)) return;
-
-      // TODO: What happens if score1 and score2 are the same number?
-
-      // both score1 and score2 are numbers,
-      // set the name of the higher-score'd player in the advancing (parent) node
-      // if the data.parentNumber is 0, then we set player1 on the parent
-      // if the data.parentNumber is 1, then we set player2
-      var parent = myDiagram.findNodeForKey(data.parent);
-      if (parent === null) return;
-
-      var playerName = parseInt(data.score1) > parseInt(data.score2) ? data.player1 : data.player2;
-      if (parseInt(data.score1) === parseInt(data.score2)) playerName = "";
-      myDiagram.model.setDataProperty(parent.data, (data.parentNumber === 0 ? "player1" : "player2"), playerName);
-    })
+    makeModel(['Adler',
+               'Pollock',
+               'Montgomery',
+               'Lestrade',
+               'Wilson',
+               'Moran',
+               'Bardle',
+               'Edwards']);
   } // end init
-
-
-  function isValidScore(textblock, oldstr, newstr) {
-    if (newstr === "" || newstr[0] === '-' || newstr.length > 3) return false;
-    return !isNaN(parseInt(newstr, 10));
-
-    // Here it would also be possible to disallow entering
-    // the same score for two players, if that is desired.
-  }
-
 </script>
 </head>
 <body onload="init()">

@@ -160,7 +160,8 @@ diagram.add(
   $(go.Part,
     $(go.Shape,
       { geometryString:
-          "F M 0 0 l 30,30 10,10 35,0 0,-35 x m 50 0 l 0,-50 10,0 35,35 x f m 50 0 l 0,-50 10,0 35,35z",
+          "F M 0 0 l 30,30 10,10 35,0 0,-35 x m 50 0 l 0,-50 10,0 35,35 x" +
+          "f m 50 0 l 0,-50 10,0 35,35z",
         strokeWidth: 10, stroke: "lightblue", fill: "gray" })
   ));
 </pre>
@@ -179,7 +180,8 @@ diagram.add(
     { isShadowed: true, shadowOffset: new go.Point(10, 10) },
     $(go.Shape,
       { geometryString:
-          "F M 0 0 l 30,30 10,10 35,0 0,-35 x u m 50 0 l 0,-50 10,0 35,35 x u f m 50 0 l 0,-50 10,0 35,35z x m 70 0 l 0,30 30,0 5,-35z",
+          "F M 0 0 l 30,30 10,10 35,0 0,-35 x u m 50 0 l 0,-50 10,0 35,35 x" +
+          "u f m 50 0 l 0,-50 10,0 35,35z x m 70 0 l 0,30 30,0 5,-35z",
         strokeWidth: 8, stroke: "lightblue", fill: "lightcoral" })
   ));
 </pre>
@@ -195,7 +197,7 @@ diagram.add(
   $(go.Node, "Horizontal",
     $(go.TextBlock, "Custom Triangle:"),
     $(go.Shape,
-      { geometry: go.Geometry.parse("M120 0 L80 80 0 50z"),
+      { geometry: go.Geometry.parse("M120 0 L80 80 0 50z"), // Geometry is not filled
         fill: "green", background: "whitesmoke",
         stroke: "orange", strokeWidth: 2 })
   ));
@@ -204,10 +206,32 @@ diagram.add(
 <p>
 Note that even though a <a>Shape.fill</a> is specified, the shape does not appear filled.
 This is because the geometry's one <a>PathFigure</a> is not declared to be filled -- there is no <code>F</code> command.
-Importing SVG path shapes that are filled also requires declaring that the geometry is filled.
-We recommend that you call <a>Geometry.fillPath</a> for converting the SVG string to <b>GoJS</b> syntax before calling <a>Geometry.parse</a>.
-(Alternatively you can modify the Geometry returned by Geometry.parse.)
+Importing SVG path strings that are filled also requires declaring that the geometry is filled.
+There are several ways to do that:
 </p>
+<ul>
+  <li>
+    Call <a>Geometry.fillPath</a> for converting the SVG path string to <b>GoJS</b> syntax before calling <a>Geometry.parse</a>.
+    For literal SVG path strings it is often easiest just to prefix it with "F ".
+  </li>
+  <li>Call <a>Geometry.parse</a> with a second argument that is true.</li>
+  <li>Modify the <a>Geometry</a> returned by <a>Geometry.parse</a>, by setting <a>PathFigure.isFilled</a> to true on the desired PathFigures.</li>
+</ul>
+<p>
+Here is the same example, but using a filled geometry path string.
+</p>
+<pre data-language="javascript" id="s11a">
+diagram.add(
+  $(go.Node, "Horizontal",
+    $(go.TextBlock, "Custom Triangle:"),
+    $(go.Shape,
+      { geometry: go.Geometry.parse("F M120 0 L80 80 0 50z"), // Geometry is filled
+        fill: "green", background: "whitesmoke",
+        stroke: "orange", strokeWidth: 2 })
+  ));
+</pre>
+<script>goCode("s11a", 600, 140)</script>
+
 <p>
 All Geometry objects have bounds that contain the origin,
 so a geometry created with no points at x==0 or y==0 will have extra space to the left of it or above it.
@@ -218,7 +242,7 @@ diagram.add(
   $(go.Node, "Horizontal",
     $(go.TextBlock, "Custom Triangle:"),
     $(go.Shape,
-      { geometry: go.Geometry.parse("M120 50 L80 80 50 50z"),
+      { geometry: go.Geometry.parse("M120 50 L80 80 50 50z", true), // Geometry is filled
         fill: "green", background: "whitesmoke",
         stroke: "orange", strokeWidth: 2 })
   ));
@@ -226,19 +250,37 @@ diagram.add(
 <script>goCode("s12", 600, 140)</script>
 <p>
 Often when importing SVG shapes created by drawing applications into <b>GoJS</b> we do not want any extra space above or to the left, so we need to normalize the geometry.
-There's a function for this, <a>Geometry.normalize</a>, which modifies the Geometry's points in-place and returns a Point describing the amount they were offset.
+There is a function for this, <a>Geometry.normalize</a>, which modifies the Geometry's points in-place and returns a Point describing the amount they were offset.
 </p>
+<pre data-language="javascript" id="s12a">
+var geo = go.Geometry.parse("M120 50 L80 80 50 50z", true);
+geo.normalize();
+
+diagram.add(
+  $(go.Node, "Horizontal",
+    $(go.TextBlock, "Custom Triangle:"),
+    $(go.Shape,
+      { geometry: geo,  // normalized above
+        fill: "green", background: "whitesmoke",
+        stroke: "orange", strokeWidth: 2 })
+  ));
+</pre>
+<script>goCode("s12a", 600, 140)</script>
 
 <h4>Shape.geometryString</h4>
-<p>The <a>Shape.geometryString</a> property setter parses a given string as a Geometry, normalizes it,
-sets the <a>Shape.geometry</a> to this new Geometry and offsets the Shape's position by the amount it was shifted in normalization.
+<p>
+The <a>Shape.geometryString</a> property setter parses a given <b>GoJS</b> path string as a Geometry, normalizes it,
+sets the <a>Shape.geometry</a> to this new Geometry, and offsets the Shape's position by the amount it was shifted in normalization.
 The positioning is useful when the shape is inside a <a>Panel.Position</a> panel.
 But when the shape is used in any other kind of panel (thus ignoring the <a>GraphObject.position</a>),
 it is still useful to remove the extra space so that the shape fits in well with the other objects in the panel.
-<p>The example below adds three Parts with Shapes to the diagram.
+</p>
+<p>
+The example below adds three Parts with Shapes to the diagram.
 The first shape uses <a>Geometry.parse</a> to set the Shape's Geometry, the second one uses <a>Geometry.parse</a> and <a>Geometry.normalize</a>.
 The third uses <a>Shape.geometryString</a>.
 Note the difference in size between the first Part and the other two.
+</p>
 <pre data-language="javascript" id="b">
 var pathstring = "M30 100 C 50 50, 70 20, 100 100, 110, 130, 45, 150, 65, 100";
 
@@ -261,7 +303,7 @@ diagram.add(
       { geometry: geo,
         strokeWidth: 10, stroke: "lightgreen",
         background: "whitesmoke" }),
-    $(go.TextBlock, "parse & normalize")
+    $(go.TextBlock, "parse/normalize")
   ));
 
 // Using geometryString to parse and normalize the geometry

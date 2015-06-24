@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Seating Chart</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -410,6 +411,7 @@
   }
   go.Diagram.inherit(SpecialDraggingTool, go.DraggingTool);
 
+  /** @override */
   SpecialDraggingTool.prototype.computeEffectiveCollection = function(parts) {
     var map = go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts);
     // for each Node representing a table, also drag all of the people seated at that table
@@ -419,12 +421,13 @@
       for (var nit = table.diagram.nodes; nit.next(); ) {
         var n = nit.value;
         if (isPerson(n) && n.data.table === table.data.key) {
-          if (!map.contains(n)) map.add(n, { point: n.location });
+          if (!map.contains(n)) map.add(n, { point: n.location.copy() });
         }
       }
     });
     return map;
   };
+  // end SpecialDraggingTool
 
 
   // Automatically move seated people as a table is rotated, to keep them in their seats.
@@ -435,11 +438,13 @@
   }
   go.Diagram.inherit(HorizontalTextRotatingTool, go.RotatingTool);
 
+  /** @override */
   HorizontalTextRotatingTool.prototype.rotate = function(newangle) {
     go.RotatingTool.prototype.rotate.call(this, newangle);
     var node = this.adornedObject.part;
     positionPeopleAtSeats(node);
   };
+  // end HorizontalTextRotatingTool
 </script>
 </head>
 <body onload="init()">
@@ -456,22 +461,22 @@
   causing the person to be assigned a position at the closest empty seat at that table.
   When a person is dropped into the background of the diagram, that person is no longer assigned a seat.
   People dragged between diagrams are automatically removed from the diagram they came from.
-  <p />
+  <p>
   "Table" nodes are defined by separate templates, to permit maximum customization of the shapes and
   sizes and positions of the tables and chairs.
-  <p />
+  <p>
   "Person" nodes in the <code>myGuests</code> diagram can also represent a group of people,
   for example a named person plus one whose name might not be known.
   When such a person is dropped onto a table, additional nodes are created in <code>myDiagram</code>.
   Those people are seated at the table if there is room.
-  <p />
+  <p>
   Tables can be rotated.  Rotating a table automatically repositions the people seated at that table.
-  <p />
+  <p>
   The <a>UndoManager</a> is shared between the two Diagrams, so that one can undo/redo in either diagram
   and have it automatically handle drags between diagrams, as well as the usual changes within the diagram.
   The JSON shown below is updated automatically as each transaction completes.
   <div style="display: inline">
-    <pre id="savedModel" />
+    <pre id="savedModel"></pre>
   </div>
 </div>
 </body>

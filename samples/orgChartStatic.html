@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Org Chart Static</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <style type="text/css">
 
 #myOverview {
@@ -28,11 +29,11 @@
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // the DIV HTML element
-        {
+        { // put the diagram contents at the top center of the viewport
           initialDocumentSpot: go.Spot.TopCenter,
           initialViewportSpot: go.Spot.TopCenter,
-          layout:  // create a TreeLayout
-            $(go.TreeLayout,
+          layout:
+            $(go.TreeLayout,  // use a TreeLayout to position all of the nodes
               {
                 treeStyle: go.TreeLayout.StyleLastParents,
                 angle: 90,
@@ -73,7 +74,7 @@
         { isShadowed: true },
         // the outer shape for the node, surrounding the Table
         $(go.Shape, "Rectangle",
-          { fill: "azure" }),
+          new go.Binding("fill", "isHighlighted", function(h) { return h ? "red" : "azure"; }).ofObject()),
         // a table to contain the different parts of the node
         $(go.Panel, "Table",
           { margin: 4, maxSize: new go.Size(150, NaN) },
@@ -89,8 +90,7 @@
           $(go.TextBlock,
             {
               row: 0, column: 0,
-              maxSize: new go.Size(120, NaN),
-              margin: 2,
+              maxSize: new go.Size(120, NaN), margin: 2,
               font: "bold 8pt sans-serif",
               alignment: go.Spot.Top
             },
@@ -98,8 +98,8 @@
           // the country flag
           $(go.Picture,
             {
-              row: 0, column: 1, margin: 2,
-              desiredSize: new go.Size(34, 26),
+              row: 0, column: 1,
+              desiredSize: new go.Size(34, 26), margin: 2,
               imageStretch: go.GraphObject.Uniform,
               alignment: go.Spot.TopRight
             },
@@ -158,7 +158,7 @@
           { key: 8, boss: 1, name: "Annebeth Rosenboom", nation: "Netherlands", title: "Treaty Section Chief", headOf: "Treaty Section" },
             { key: 14, boss: 8, name: "Bradford Smith", nation: "United States", title: "Substantive Legal Issues Head", headOf: "Substantive Legal Issues" },
               { key: 29, boss: 14, name: "Other Employees" },
-            { key: 15, boss: 8, name: "Andrei Kolomoets", nation: "Russia", title: "Technical/Legal Issues Head", headOf: "Techinical/Legal Issues" },
+            { key: 15, boss: 8, name: "Andrei Kolomoets", nation: "Russia", title: "Technical/Legal Issues Head", headOf: "Technical/Legal Issues" },
               { key: 30, boss: 15, name: "Other Employees" },
             { key: 16, boss: 8, name: "Other Employees" },
         { key: 2, boss: 0, name: "Heads of Other Offices/Departments" }
@@ -170,11 +170,34 @@
         { nodeParentKeyProperty: "boss",  // this property refers to the parent node data
           nodeDataArray: nodeDataArray });
 
-
     // Overview
     myOverview =
       $(go.Overview, "myOverview",  // the HTML DIV element for the Overview
-        { observed: myDiagram });   // tell it which Diagram to show and pan
+        { observed: myDiagram, contentAlignment: go.Spot.Center });   // tell it which Diagram to show and pan
+  }
+
+  // the Search functionality highlights all of the nodes that have at least one data property match a RegExp
+  function searchDiagram() {  // called by button
+    var input = document.getElementById("mySearch");
+    if (!input) return;
+    input.focus();
+
+    // create a case insensitive RegExp from what the user typed
+    var regex = new RegExp(input.value, "i");
+
+    myDiagram.startTransaction("highlight search");
+    myDiagram.clearHighlighteds();
+
+    // search four different data properties for the string, any of which may match for success
+    var results = myDiagram.findNodesByExample({ name: regex },
+                                               { nation: regex },
+                                               { title: regex },
+                                               { headOf: regex });
+    myDiagram.highlightCollection(results);
+    // try to center the diagram at the first node that was found
+    if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+
+    myDiagram.commitTransaction("highlight search");
   }
 </script>
 </head>
@@ -182,7 +205,16 @@
 <div id="sample" style="position: relative;">
   <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
   <div id="myOverview"></div> <!-- Styled in a <style> tag at the top of the html page -->
-  <p>This sample shows an organizational chart diagram and uses an in-laid GoJS Overview to aid the user in navigation.</p>
+  <p>
+  This sample shows an organizational chart diagram and uses an in-laid GoJS Overview to aid the user in navigation.
+  The data was taken from the UN web site in August 2009.
+  </p>
+  <p>
+  A search box demonstrates one way of finding and highlighting nodes whose data includes particular strings.
+  Note that one can see all of the highlighted nodes in the Overview.
+  </p>
+  <input type="search" id="mySearch" onkeypress="if (event.keyCode === 13) searchDiagram()" />
+  <button onclick="searchDiagram()">Search</button>
 </div>
 </body>
 </html>

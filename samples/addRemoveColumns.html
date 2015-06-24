@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Add or Remove Columns</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        { initialContentAlignment: go.Spot.Center,
+          "undoManager.isEnabled": true
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, { fill: "white" }),
+        $(go.Panel, "Table",
+          new go.Binding("itemArray", "people"),
+          $(go.RowColumnDefinition,
+            { row: 0, background: "lightgray" }),
+          $(go.RowColumnDefinition,
+            { row: 1, separatorStroke: "black" }),
+          // the table headers -- remains even if itemArray is empty
+          $(go.Panel, "TableRow",
+            { isPanelMain: true },
+            new go.Binding("itemArray", "columnDefinitions"),
+            {
+              itemTemplate:  // bound to a column definition object
+                $(go.Panel,
+                  new go.Binding("column"),
+                  $(go.TextBlock,
+                    { margin: new go.Margin(2, 2, 0, 2), font: "bold 10pt sans-serif" },
+                    new go.Binding("text"))
+                )
+            }
+          ),
+          { // the rows for the people
+            defaultAlignment: go.Spot.Left,
+            defaultColumnSeparatorStroke: "black",
+            itemTemplate:  // bound to a person/row data object
+              $(go.Panel, "TableRow",
+                // which in turn consists of a collection of cell objects,
+                // held by the "columns" property in an Array
+                new go.Binding("itemArray", "columns"),
+                // you could also have other Bindings here for the whole row
+                {
+                  itemTemplate:  // bound to a cell object
+                    $(go.Panel,  // each of which as "attr" and "text" properties
+                      { stretch: go.GraphObject.Fill, alignment: go.Spot.TopLeft },
+                      new go.Binding("column", "attr",
+                                     function(a, elt) {  // ELT is this bound item/cell Panel
+                                       // elt.data will be the cell object
+                                       // elt.panel.data will be the person/row data object
+                                       // elt.part.data will be the node data object
+                                       // "columnDefinitions" is on the node data object, so:
+                                       var cd = findColumnDefinitionForName(elt.part.data, a);
+                                       if (cd !== null) return cd.column;
+                                       throw new Error("unknown column name: " + a);
+                                     }),
+                      // you could also have other Bindings here for this cell
+                      $(go.TextBlock, { editable: true },
+                        { margin: new go.Margin(2, 2, 0, 2), wrap: go.TextBlock.None },
+                        new go.Binding("text").makeTwoWay())
+                    )
+                }
+              )
+          }
+        )
+      );
+
+    myDiagram.model =
+      $(go.GraphLinksModel,
+        {
+          copiesArrays: true,
+          copiesArrayObjects: true,
+          nodeDataArray: [
+            { // first node
+              key: 1,
+              columnDefinitions: [
+                // each column definition needs to specify the column used
+                { attr: "name", text: "Name", column: 0 },
+                { attr: "phone", text: "Phone #", column: 1 },
+                { attr: "office", text: "Office", column: 2 }
+              ],
+              people: [  // the table of people
+                // each row is a person with an Array of Objects associating a column name with a text value
+                { columns: [{ attr: "name", text: "Alice" }, { attr: "phone", text: "2345" }, { attr: "office", text: "C4-E18"}] },
+                { columns: [{ attr: "name", text: "Bob" }, { attr: "phone", text: "9876" }, { attr: "office", text: "E1-B34"}] },
+                { columns: [{ attr: "name", text: "Carol" }, { attr: "phone", text: "1111" }, { attr: "office", text: "C4-E23"}] },
+                { columns: [{ attr: "name", text: "Ted" }, { attr: "phone", text: "2222" }, { attr: "office", text: "C4-E197"}] }
+              ]
+            },
+            { // second node
+              key: 2,
+              columnDefinitions: [
+                { attr: "name", text: "Name", column: 0 },
+                { attr: "phone", text: "Phone #", column: 2 },  // note the different order of columns
+                { attr: "office", text: "Office", column: 1 }
+              ],
+              people: [
+                { columns: [{ attr: "name", text: "Robert" }, { attr: "phone", text: "5656" }, { attr: "office", text: "B1-A27"}] },
+                { columns: [{ attr: "name", text: "Natalie" }, { attr: "phone", text: "5698" }, { attr: "office", text: "B1-B6"}] }
+              ]
+            }
+          ],
+          linkDataArray: [
+            { from: 1, to: 2 }
+          ]
+        }
+      );
+  }
+
+  // Add or remove a person row from the selected node's table of people.
+
+  function insertIntoArray() {
+    var n = myDiagram.selection.first();
+    if (n === null) return;
+    var d = n.data;
+    myDiagram.startTransaction("insertIntoTable");
+    // add item as second in the list, at index #1
+    // of course this new data could be more realistic:
+    myDiagram.model.insertArrayItem(d.people, 1, {
+      columns: [{ attr: "name", text: "Elena" },
+                { attr: "phone", text: "456" },
+                { attr: "office", text: "LA" }]
+    });
+    myDiagram.commitTransaction("insertIntoTable");
+  }
+
+  function removeFromArray() {
+    var n = myDiagram.selection.first();
+    if (n === null) return;
+    var d = n.data;
+    myDiagram.startTransaction("removeFromTable");
+    // remove second item of list, at index #1
+    myDiagram.model.removeArrayItem(d.people, 1);
+    myDiagram.commitTransaction("removeFromTable");
+  }
+
+  // add or remove a column from the selected node's table of people
+
+  function findColumnDefinitionForName(nodedata, attrname) {
+    var columns = nodedata.columnDefinitions;
+    for (var i = 0; i < columns.length; i++) {
+      if (columns[i].attr === attrname) return columns[i];
+    }
+    return null;
+  }
+
+  function findColumnDefinitionForColumn(nodedata, idx) {
+    var columns = nodedata.columnDefinitions;
+    for (var i = 0; i < columns.length; i++) {
+      if (columns[i].column === idx) return columns[i];
+    }
+    return null;
+  }
+
+  function addColumn(attrname) {
+    var n = myDiagram.selection.first();
+    if (n === null) return;
+    var d = n.data;
+    // if name is not given, find an unused column name
+    if (attrname === undefined || attrname === "") {
+      attrname = "new";
+      var count = 1;
+      while (findColumnDefinitionForName(d, attrname) !== null) {
+        attrname = "new" + (count++).toString();
+      }
+    }
+    // find an unused column #
+    var col = 3;
+    while (findColumnDefinitionForColumn(d, col) !== null) {
+      col++;
+    }
+    myDiagram.startTransaction("addColumn");
+    var model = myDiagram.model;
+    // add a column definition for the node's whole table
+    model.addArrayItem(d.columnDefinitions, {
+       attr: attrname,
+       text: attrname,
+       column: col
+     });
+    // add cell to each person in the node's table of people
+    var people = d.people;
+    for (var j = 0; j < people.length; j++) {
+      var person = people[j];
+      model.addArrayItem(person.columns, {
+        attr: attrname,
+        text: Math.floor(Math.random() * 1000).toString()
+      });
+    }
+    myDiagram.commitTransaction("addColumn");
+  }
+
+  function removeColumn() {
+    var n = myDiagram.selection.first();
+    if (n === null) return;
+    var d = n.data;
+    var coldef = d.columnDefinitions[3];  // get the fourth column
+    if (coldef === undefined) return;
+    var attrname = coldef.attr;
+    myDiagram.startTransaction("removeColumn");
+    var model = myDiagram.model;
+    model.removeArrayItem(d.columnDefinitions, 3);
+    // update columns for each person in this table
+    var people = d.people;
+    for (var j = 0; j < people.length; j++) {
+      var person = people[j];
+      var columns = person.columns;
+      for (var k = 0; k < columns.length; k++) {
+        var cell = columns[k];
+        if (cell.attr === attrname) {
+          // get rid of this attribute cell from the person.columns Array
+          model.removeArrayItem(columns, k);
+          break;
+        }
+      }
+    }
+    myDiagram.commitTransaction("removeColumn");
+  }
+
+  function swapTwoColumns() {
+    myDiagram.startTransaction("swapColumns");
+    var model = myDiagram.model;
+    myDiagram.selection.each(function(n) {
+      if (!(n instanceof go.Node)) return;
+      var d = n.data;
+      var phonedef = findColumnDefinitionForName(d, "phone");
+      if (phonedef === null) return;
+      var phonecolumn = phonedef.column;  // remember the column number
+      var officedef = findColumnDefinitionForName(d, "office");
+      if (officedef === null) return;
+      var officecolumn = officedef.column;  // and this one too
+      model.setDataProperty(phonedef, "column", officecolumn);
+      model.setDataProperty(officedef, "column", phonecolumn);
+      model.updateTargetBindings(d);  // update all bindings, to get the cells right
+    });
+    myDiagram.commitTransaction("swapColumns");
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; width:100%; height:400px"></div>
+  <p>Add a row or Remove the second row of the table held by the selected node:</p>
+  <button onclick="insertIntoArray()">Insert Into Array</button>
+  <button onclick="removeFromArray()">Remove From Array</button>
+  <p>Add a column or Remove the fourth column from the table of the selected node:</p>
+  <button onclick="addColumn()">Add Column</button>
+  <button onclick="removeColumn()">Remove Column</button>
+  <p>Swap the "phone" and "office" columns for each selected node:</p>
+  <button onclick="swapTwoColumns()">Swap Two Columns</button>
+  <p>See also the <a href="../extensions/ColumnResizing.html">Column and Row Resizing Tools</a></p>
+</div>
+</body>
+</html>

@@ -65,7 +65,7 @@ Currently defined diagram event names include:
 For more details, please read the documentation for <a>DiagramEvent</a>.
 
 <p>
-DiagramEvents do not necessarily correspond to mouse events or keyboard events.
+DiagramEvents do not necessarily correspond to mouse events or keyboard events or touch events.
 Nor do they necessarily correspond to changes to the diagram's model --
 for tracking such changes, use <a>Model.addChangedListener</a>.
 DiagramEvents only occur because the user did something, perhaps indirectly.
@@ -74,7 +74,7 @@ DiagramEvents only occur because the user did something, perhaps indirectly.
 Model <a>ChangedEvent</a>s are more complete and reliable than depending on <a>DiagramEvent</a>s.
 For example, the "LinkDrawn" DiagramEvent is not raised when code adds a link to a diagram.
 That DiagramEvent is only raised when the user draws a new link using the <a>LinkingTool</a>.
-Furthermore the link has not yet been routed, so <a>Link.points</a> will not have been updated.
+Furthermore the link has not yet been routed, so <a>Link.points</a> will not have been computed.
 In fact, creating a new link may invalidate a <a>Layout</a>, so all of the nodes may be moved in the near future.
 </p>
 
@@ -135,7 +135,7 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
 
 <h3>Input Events</h3>
 <p>
-When a low-level HTML DOM event occurs, <b>GoJS</b> canonicalizes the keyboard/mouse event information
+When a low-level HTML DOM event occurs, <b>GoJS</b> canonicalizes the keyboard/mouse/touch event information
 into a new <a>InputEvent</a> that can be passed to various event-handling methods and saved for later examination.
 </p>
 <p>
@@ -174,6 +174,7 @@ Click-like event properties include <a>GraphObject.click</a>, <a>GraphObject.dou
 They also occur when there is no GraphObject -- the event happened in the diagram's background:
 <a>Diagram.click</a>, <a>Diagram.doubleClick</a>, and <a>Diagram.contextClick</a>.
 These are all properties that you can set to a function that is the event handler.
+These events are caused by both mouse events and touch events.
 </p>
 <p>
 Mouse-over-like event properties include <a>GraphObject.mouseEnter</a>, <a>GraphObject.mouseOver</a>, and <a>GraphObject.mouseLeave</a>.
@@ -186,7 +187,7 @@ The equivalent diagram properties are <a>Diagram.mouseHover</a> and <a>Diagram.m
 <p>
 There are also event properties for dragging operations: <a>GraphObject.mouseDragEnter</a>, <a>GraphObject.mouseDragLeave</a>, and <a>GraphObject.mouseDrop</a>.
 These apply to stationary objects, not the objects being dragged.
-And they occur when dragging by touch events, not just mouse events.
+And they also occur when dragging by touch events, not just mouse events.
 </p>
 
 <p>

@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Org Chart Editor</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -65,7 +66,7 @@
           var level = v.level % (levelColors.length);
           var colors = levelColors[level].split("/");
           var shape = v.node.findObject("SHAPE");
-          if (shape) shape.fill = $(go.Brush, go.Brush.Linear, { 0: colors[0], 1: colors[1], start: go.Spot.Left, end: go.Spot.Right });
+          if (shape) shape.fill = $(go.Brush, "Linear", { 0: colors[0], 1: colors[1], start: go.Spot.Left, end: go.Spot.Right });
         }
       });
     }
@@ -99,6 +100,7 @@
 
     // This converter is used by the Picture.
     function findHeadShot(key) {
+      if (key > 16) return ""; // There are only 16 images on the server
       return "images/HS" + key + ".png"
     };
 
@@ -152,7 +154,8 @@
         $(go.Panel, "Horizontal",
           $(go.Picture,
             {
-              maxSize: new go.Size(39, 50),
+              name: 'Picture',
+              desiredSize: new go.Size(39, 50),
               margin: new go.Margin(6, 8, 6, 10),
             },
             new go.Binding("source", "key", findHeadShot)),
@@ -287,9 +290,17 @@
     </div>
   </div>
   <p>
+    This editable organizational chart sample color-codes the Nodes according to the tree level in the hierarchy.
+  </p>
+  <p>
     Double click on a node in order to add a person.
+  </p>
+  <p>
     Drag a node onto another in order to change relationships.
     You can also draw a link from a node's background to other nodes that have no "boss".
+  </p>
+  <p>
+    Select a node to edit/update node data values.
   </p>
   <div>
     <div>

@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Scroll Modes GoJS Sample</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                  {
+                    minScale: 0.25,  // so that the contents and the grid cannot appear too small
+                    grid: $(go.Panel, "Grid",
+                            $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
+                            $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
+                            $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5 }),
+                            $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+                          ),
+                    "draggingTool.isGridSnapEnabled": true,
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },
+          new go.Binding("text", "key"))
+      );
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta",  color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+
+    function positionfunc(diagram, pos) {
+      var size = diagram.grid.gridCellSize;
+      return new go.Point(
+        Math.round(pos.x / size.width) * size.width,
+        Math.round(pos.y / size.height) * size.height);
+    }
+
+    function scalefunc(diagram, scale) {
+      var oldscale = diagram.scale;
+      if (scale > oldscale) {
+        return oldscale + 0.25;
+      } else if (scale < oldscale) {
+        return oldscale - 0.25;
+      }
+      return oldscale;
+    }
+
+    var infscroll = document.getElementById('infscroll');
+    infscroll.addEventListener('change', function(e) {
+      myDiagram.startTransaction('change scroll mode');
+      myDiagram.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
+      myDiagram.commitTransaction('change scroll mode');
+    });
+
+    var poscomp = document.getElementById('poscomp');
+    poscomp.addEventListener('change', function(e) {
+      myDiagram.startTransaction('change position computation');
+      myDiagram.positionComputation = poscomp.checked ? positionfunc : null;
+      myDiagram.commitTransaction('change position computation');
+    });
+
+    var scalecomp = document.getElementById('scalecomp');
+    scalecomp.addEventListener('change', function(e) {
+      myDiagram.startTransaction('change scale computation');
+      myDiagram.scaleComputation = scalecomp.checked ? scalefunc : null;
+      myDiagram.commitTransaction('change scale computation');
+    });
+
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+
+  <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
+  <p>
+    <label><input id="infscroll" type="checkbox" />Enable Infinite Scrolling, setting <a>Diagram.scrollMode</a></label>
+    <pre data-language="javascript"><code>
+      myDiagram.scrollMode = checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
+    </code></pre>
+  </p>
+
+  <p>
+    <label><input id="poscomp" type="checkbox" />Enable <a>Diagram.positionComputation</a> function</label>
+    <pre data-language="javascript"><code>
+      function positionfunc(diagram, pos) {
+        var size = diagram.grid.gridCellSize;
+        return new go.Point(
+          Math.round(pos.x / size.width) * size.width,
+          Math.round(pos.y / size.height) * size.height);
+      }
+    </code></pre>
+  </p>
+
+  <p>
+    <label><input id="scalecomp" type="checkbox" />Enable <a>Diagram.scaleComputation</a> function</label>
+    <pre data-language="javascript"><code>
+      function scalefunc(diagram, scale) {
+        var oldscale = diagram.scale;
+        if (scale > oldscale) {
+          return oldscale + 0.25;
+        } else if (scale < oldscale) {
+          return oldscale - 0.25;
+        }
+        return oldscale;
+      }
+    </code></pre>
+  </p>
+
+  <p>This demonstrates new scrolling and scaling options available in <strong>GoJS 1.5</strong>.</p>
+
+</div>
+</body>
+</html>

@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>State Chart</title>
 <!-- /* Copyright 1998-2015 by Northwoods Software Corporation. */ -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -44,7 +45,7 @@
         $(go.Shape, "RoundedRectangle",
           {
             parameter1: 20,  // the corner has a large radius
-            fill: $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
+            fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
             stroke: "black",
             portId: "",
             fromLinkable: true,
@@ -123,16 +124,16 @@
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
         { curve: go.Link.Bezier, adjusting: go.Link.Stretch, reshapable: true },
-        new go.Binding("points").makeTwoWay(),
         new go.Binding("curviness", "curviness"),
+        new go.Binding("points").makeTwoWay(),
         $(go.Shape,  // the link shape
-          { isPanelMain: true, stroke: "black", strokeWidth: 1.5 }),
+          { strokeWidth: 1.5 }),
         $(go.Shape,  // the arrowhead
           { toArrow: "standard", stroke: null }),
         $(go.Panel, "Auto",
           $(go.Shape,  // the link shape
             {
-              fill: $(go.Brush, go.Brush.Radial,
+              fill: $(go.Brush, "Radial",
                       { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
               stroke: null
             }),
@@ -168,7 +169,7 @@
   <p>
   This sample creates state charts.
   The text is editable for both the nodes and the links.
-  The user can draw at most one link from one node to another node,
+  The user can draw as many links from one node to another node as desired,
   and the links can be reshaped or deleted when selected.
   </p>
   <p>

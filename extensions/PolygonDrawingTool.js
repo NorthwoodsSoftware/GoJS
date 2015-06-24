@@ -96,8 +96,7 @@ PolygonDrawingTool.prototype.addPoint = function(p) {
   // if it's not in the Diagram, re-initialize the Shape's geometry and add the Part to the Diagram
   if (part.diagram === null) {
     var fig = new go.PathFigure(q.x, q.y, true);  // possibly filled, depending on Shape.fill
-    var geo = new go.Geometry();
-    geo.figures.add(fig);  // the Shape.geometry consists of a single PathFigure
+    var geo = new go.Geometry().add(fig);  // the Shape.geometry consists of a single PathFigure
     this.temporaryShape.geometry = geo;
     part.position = viewpt;  // position the Shape's Part
     this.diagram.add(part);
@@ -105,7 +104,7 @@ PolygonDrawingTool.prototype.addPoint = function(p) {
     // must copy whole Geometry in order to add a PathSegment
     var geo = shape.geometry.copy();
     var fig = geo.figures.first();
-    fig.segments.add(new go.PathSegment(go.PathSegment.Line, q.x, q.y));
+    fig.add(new go.PathSegment(go.PathSegment.Line, q.x, q.y));
   }
   shape.geometry = geo;
 };

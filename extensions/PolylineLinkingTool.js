@@ -147,7 +147,7 @@ PolylineLinkingTool.prototype.doMouseUp = function() {
     } else {
       var pts;
       this.removeLastPoint();  // remove temporary point
-      var spot = this.temporaryLink.computeSpot(!this.isForwards);
+      var spot = this.isForwards ? target.toSpot : target.fromSpot;
       if (spot.equals(go.Spot.None)) {
         var pt = this.temporaryLink.getLinkPointFromPoint(target.part, target,
                           target.getDocumentPoint(go.Spot.Center),

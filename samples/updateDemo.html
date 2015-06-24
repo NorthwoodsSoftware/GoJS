@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Update Demo GoJS Sample</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -17,7 +18,7 @@ function init() {
         // start everything in the middle of the viewport
         initialContentAlignment: go.Spot.Center,
         // double-click in background creates a new node there
-        "clickCreatingTool.archetypeNodeData": { key: "node" }
+        "clickCreatingTool.archetypeNodeData": { text: "node" }
       });
 
   blueDiagram.nodeTemplate =
@@ -25,15 +26,15 @@ function init() {
       new go.Binding("location", "loc").makeTwoWay(),
       $(go.Shape, "RoundedRectangle",
         {
-          fill: $(go.Brush, go.Brush.Linear, { 0: "#00ACED", 0.5: "#00ACED", 1: "#0079A6" }),
+          fill: $(go.Brush, "Linear", { 0: "#00ACED", 0.5: "#00ACED", 1: "#0079A6" }),
           stroke: "#0079A6",
           portId: "", cursor: "pointer",  // the node's only port is the Shape
           fromLinkable: true, fromLinkableDuplicates: true, fromLinkableSelfNode: true,
           toLinkable: true, toLinkableDuplicates: true, toLinkableSelfNode: true
         }),
       $(go.TextBlock,
-        { margin: 3, font: "bold 10pt arial", stroke: "whitesmoke" },
-        new go.Binding("text", "key"))
+        { margin: 3, font: "bold 10pt arial", stroke: "whitesmoke", editable: true },
+        new go.Binding("text").makeTwoWay())
     );
 
   blueDiagram.linkTemplate =
@@ -66,7 +67,7 @@ function init() {
         { fill: "lightgreen", width: 20, height: 20, portId: "" }),
       $(go.TextBlock,
         { margin: 3, font: "bold 12px Georgia" },
-        new go.Binding("text", "key"))
+        new go.Binding("text"))
     );
 
   greenDiagram.linkTemplate =
@@ -82,11 +83,11 @@ function init() {
   // create the model data that will be represented in both diagrams simultaneously
   var model = new go.GraphLinksModel(
   [
-    { key: "Alpha", loc: new go.Point(20,20) },
-    { key: "Beta", loc: new go.Point(160,120) }
+    { key: 1, text: "Alpha", loc: new go.Point(20,20) },
+    { key: 2, text: "Beta", loc: new go.Point(160,120) }
   ],
   [
-    { from: "Alpha", to: "Beta" }
+    { from: 1, to: 2 }
   ]);
 
   // the two Diagrams share the same model
@@ -234,16 +235,8 @@ function init() {
   });
 } // end init
 
-function resetLog() {
+function clearLog() {
   var div = document.getElementById("modelChangedLog").innerHTML = "";
-}
-
-function undo() {
-  blueDiagram.undoManager.undo()
-}
-
-function redo() {
-  blueDiagram.undoManager.redo()
 }
 </script>
 </head>
@@ -260,13 +253,13 @@ function redo() {
     </div>
     <div style="display: inline-block; vertical-align: top; width:50%">
       <div style="width:100%; height:300px">
-        <input type="button" onclick="resetLog()" style="height:20px; font-size: 11px;" value="Reset Model log" />
+        <input type="button" onclick="clearLog()" style="height:20px; font-size: 11px;" value="Clear Model log" />
         <div id="modelChangedLog" style="height:280px;border: solid 1px gray; font-family:Monospace; font-size:11px; overflow:scroll"></div>
       </div>
       <div style="width:100%; height:20px"></div>
       <div style="">
-        <input type="button" onclick="undo()" style="height:20px; font-size: 11px;" value="Undo" />
-        <input type="button" onclick="redo()" style="height:20px; font-size: 11px;" value="Redo" />
+        <input type="button" onclick="blueDiagram.commandHandler.undo()" style="height:20px; font-size: 11px;" value="Undo" />
+        <input type="button" onclick="blueDiagram.commandHandler.redo()" style="height:20px; font-size: 11px;" value="Redo" />
         <div id="undoDisplay" style="height:280px; border: solid 1px gray"></div>
       </div>
     </div>
@@ -289,6 +282,10 @@ function redo() {
   where each <a>Transaction.changes</a> property holds all of the ChangedEvents that occurred due to some command or tool operation.
   These ChangedEvents are reflective of both changes to the model (prefixed with "!m") and to the diagram (prefixed with "!d").
   You will note that there are often several diagram changes for each model change.
+  </p>
+  <p>
+  This demo is different from the <a href="twoDiagrams.html">Two Diagrams</a> sample, which is an example of two Diagrams,
+  each sharing/showing a different <a>Model</a>, but sharing the same <a>UndoManager</a>.
   </p>
   <p>
   Many of the other samples demonstrate saving the whole model by calling <a>Model.toJson</a>.

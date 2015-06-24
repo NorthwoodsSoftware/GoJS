@@ -21,12 +21,208 @@ These pages build up a diagram by explicitly creating and adding nodes and links
 Later pages will show how to build diagrams using models rather than using such code.
 </p>
 
-<h3>Building with code</h3>
+<h3>The Visual Structure of Some Nodes and Links</h3>
+<p>
+First, look at a diagram that includes comments about the GraphObjects used to build some example nodes and links:
+</p>
+<pre data-language="javascript" id="commented" style="display:none">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { scale: 2 },  // make it easier to see
+      new go.Binding("location", "loc", go.Point.parse),
+      { locationSpot: go.Spot.Center, portId: "Node" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "Shape" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 4, stroke: "blue", portId: "TextBlock" },
+        new go.Binding("text"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,  // make it easier to see
+      $(go.Shape, { strokeWidth: 3 }),
+      $(go.Shape, { scale: 2, toArrow: "Standard" })
+    );
+
+  // define several shared Brushes
+  var bluegrad = $(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
+  var yellowgrad = $(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
+  var lightgrad = $(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+
+  // the template for each attribute in a node's array of item data
+  var itemTempl =
+    $(go.Panel, "TableRow",
+      new go.Binding("portId", "name", function(n) { return n + "ITEMPANEL"; }),
+      new go.Binding("background", "row", function(i) { return (i === 2) ? "lightgreen" : "transparent"; }).ofObject(),
+      $(go.Shape,
+        new go.Binding("portId", "name", function(n) { return n + "SHAPE"; }),
+        { column: 0, desiredSize: new go.Size(10, 10) },
+        new go.Binding("figure", "figure"),
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        {
+          column: 1,
+          stroke: "#333333",
+          font: "bold 14px sans-serif"
+        },
+        new go.Binding("text", "name"),
+        new go.Binding("portId", "name", function(n) { return n + "TEXTBLOCK"; }))
+    );
+
+  // define the Node template, representing an entity
+  diagram.nodeTemplateMap.add("Complex",
+    $(go.Node, "Auto",  // the whole node panel
+      {
+        locationSpot: go.Spot.Center,
+        scale: 1.5,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        isShadowed: true,
+        shadowColor: "#C5C1AA"
+      },
+      new go.Binding("location", "loc", go.Point.parse),
+      // define the node's outer shape, which will surround the Table
+      $(go.Shape, "Rectangle",
+        { portId: "RECTANGLE" },
+        { fill: lightgrad, stroke: "#756875", strokeWidth: 3 }),
+      $(go.Panel, "Table",
+        { margin: 8, stretch: go.GraphObject.Fill },
+        $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }),
+        // the table header
+        $(go.TextBlock,
+          { portId: "HEADER" },
+          {
+            row: 0, alignment: go.Spot.Center,
+            margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
+            font: "bold 16px sans-serif"
+          },
+          new go.Binding("text", "key")),
+        // the collapse/expand button
+        $("Button",
+          { portId: "BUTTON" },
+          {
+            row: 0, alignment: go.Spot.TopRight,
+            "ButtonBorder.stroke": null,
+            click: function(e, but) {
+              var list = but.part.findObject("LIST");
+              if (list !== null) {
+                list.diagram.startTransaction("collapse/expand");
+                list.visible = !list.visible;
+                var shape = but.findObject("SHAPE");
+                if (shape !== null) shape.figure = (list.visible ? "TriangleUp" : "TriangleDown");
+                list.diagram.commitTransaction("collapse/expand");
+              }
+            }
+          },
+          $(go.Shape, "TriangleUp",
+            { name: "SHAPE", width: 6, height: 4 })),
+        // the list of Panels, each showing an attribute
+        $(go.Panel, "Table",
+          {
+            name: "LIST", background: "pink", portId: "LIST",
+            row: 1,
+            padding: 3,
+            alignment: go.Spot.TopLeft,
+            defaultAlignment: go.Spot.Left,
+            itemTemplate: itemTempl
+          },
+          new go.Binding("itemArray", "items"))
+      )  // end Table Panel
+    ));  // end Node
+
+  // annotations -- brown text
+  diagram.nodeTemplateMap.add("Comment",
+    $(go.Node,
+      new go.Binding("location", "loc", go.Point.parse),
+      { locationSpot: go.Spot.Center },
+      $(go.TextBlock,
+        { stroke: "brown", textAlign: "center" },
+        new go.Binding("text"),
+        new go.Binding("font", "bold", function(b) { return b ? "bold 10pt sans-serif" : "10pt sans-serif"; }))
+    ));
+
+  // so that comments can point at any named GraphObject in a Link
+  diagram.nodeTemplateMap.add("LinkLabel",
+    $(go.Node,
+      new go.Binding("segmentIndex"),
+      new go.Binding("segmentOffset")
+    ));
+
+  // brown curved links connecting with a Comment node
+  diagram.linkTemplateMap.add("Comment",
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      new go.Binding("curviness"),
+      $(go.Shape, { stroke: "brown" }),
+      $(go.Shape, { toArrow: "OpenTriangle", stroke: "brown" })
+    ));
+
+  var model = new go.GraphLinksModel();
+  model.linkToPortIdProperty = "pid";
+  model.linkLabelKeysProperty = "labs";
+  model.nodeDataArray = [
+    { key: 1, text: "Alpha", color: "lightblue", loc: "0 0" },
+    { key: 2, text: "Beta", color: "lightgreen", loc: "200 0" },
+    { key: -1, text: "two Nodes", category: "Comment", bold: true, loc: "100 -60" },
+    { key: -2, text: "a Shape of figure\n'RoundedRectangle',\nwith black stroke\nand lightblue fill", category: "Comment", loc: "-140 0" },
+    { key: -3, text: "a TextBlock with blue stroke\nand no background\nshowing the string 'Alpha'", category: "Comment", loc: "-50 70" },
+    { key: -4, text: "a Link's\nmain path\nShape", category: "Comment", loc: "100 40" },
+    { key: -41, category: "LinkLabel" },
+    { key: -5, text: "a Link's\narrowhead\nShape", category: "Comment", loc: "170 80" },
+    { key: -51, category: "LinkLabel", segmentIndex: -1, segmentOffset: new go.Point(-8, 4) },
+    { key: -6, text: "a Link", category: "Comment", bold: true, loc: "100 -30" },
+    { key: -7, text: "this Node Panel\nalso acts as the\nNode's only port", category: "Comment", loc: "320 0" },
+
+    { key: 11, category: "Complex", loc: "0 230",
+        items: [{ name: "SupplierID", iskey: true, figure: "Decision", color: yellowgrad },
+                { name: "CompanyName", iskey: false, figure: "Cube1", color: bluegrad },
+                { name: "ContactName", iskey: false, figure: "Cube1", color: bluegrad },
+                { name: "Address", iskey: false, figure: "Cube1", color: bluegrad }]
+    },
+    { key: -11, text: "a Rectangle Shape", category: "Comment", loc: "-70 120" },
+    { key: -12, text: "a TextBlock\nacting as a header", category: "Comment", loc: "70 120" },
+    { key: -13, text: "a Button Panel consisting\nof two Shapes", category: "Comment", loc: "200 150" },
+    { key: -14, text: "a Vertical items Panel\nwith pink background,\nholding 4 Panels,\none per item", category: "Comment", loc: "200 220" },
+    { key: -15, text: "a TextBlock\nin a Panel for item #3", category: "Comment", loc: "50 340" },
+    { key: -16, text: "a Shape\nin a Panel for item #3", category: "Comment", loc: "-140 320" },
+    { key: -17, text: "a TableRow Panel\nfor item #2\nwith lightgreen\nbackground", category: "Comment", loc: "-200 250" }
+  ];
+  model.linkDataArray = [
+    { from: 1, to: 2, labs: [-41, -51] },
+    { from: -1, category: "Comment", to: 1, pid: "Node", curviness: -10 },
+    { from: -1, category: "Comment", to: 2, pid: "Node" },
+    { from: -2, category: "Comment", to: 1, pid: "Shape" },
+    { from: -3, category: "Comment", to: 1, pid: "TextBlock", curviness: -10 },
+    { from: -4, category: "Comment", to: -41, curviness: 0 },
+    { from: -5, category: "Comment", to: -51, curviness: 5 },
+    { from: -6, category: "Comment", to: -41, curviness: -5 },
+    { from: -7, category: "Comment", to: 2, pic: "Node", curviness: -10 },
+
+    { from: -11, category: "Comment", to: 11, pid: "RECTANGLE", curviness: 0 },
+    { from: -12, category: "Comment", to: 11, pid: "HEADER" },
+    { from: -13, category: "Comment", to: 11, pid: "BUTTON" },
+    { from: -14, category: "Comment", to: 11, pid: "LIST" },
+    { from: -15, category: "Comment", to: 11, pid: "AddressTEXTBLOCK" },
+    { from: -16, category: "Comment", to: 11, pid: "AddressSHAPE" },
+    { from: -17, category: "Comment", to: 11, pid: "ContactNameITEMPANEL" }
+  ];
+  diagram.model = model;
+</pre>
+<script>goCode("commented", 650, 450)</script>
+<p>
+As you can see, a node or a link can be composed of many GraphObjects, including <a>Panel</a>s that may be nested.
+You can drag around any comment in order to see the area covered by the GraphObject at the end of the comment link to it,
+except for the GraphObjects within the Link itself.
+</p>
+
+<h3>Building with Code</h3>
 <p>
 A <a>GraphObject</a> is a JavaScript object that can be constructed and initialized
 in the same manner as any other object.
 A <a>Node</a> is a <a>GraphObject</a> that contains <a>GraphObject</a>s such as <a>TextBlock</a>s, <a>Shape</a>s,
-and <a>Panel</a>s that may contain yet more GraphObjects.
+<a>Picture</a>s, and <a>Panel</a>s that may contain yet more GraphObjects.
 </p>
 <p>
 A very simple Node might consist of a Shape and a TextBlock.
@@ -55,7 +251,7 @@ the code will become more complicated to read and to maintain.
 Fortunately <b>GoJS</b> has a better way to make Parts out of GraphObjects.
 </p>
 <p>
-Furthermore, later sections will discuss how Nodes and Links should be created automatically using models and data-binding.
+Furthermore, later sections will discuss how Nodes and Links should be created automatically using models, templates, and data-binding.
 Until that time, these pages will create Nodes explicitly and add them to Diagrams directly.
 </p>
 
@@ -112,6 +308,9 @@ This can be simplified a bit by using string arguments:
 </pre>
 <script>goCode("simpleJSAML2", 250, 150)</script>
 <p>
+Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.
+</p>
+<p>
 The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy
 that we will assume its use from now on.
 Having the call to <b>go.GraphObject.make</b> be minimized into a single character
@@ -139,16 +338,13 @@ rather than a <a>GraphObject</a> subclass.
   diagram.add(
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
-        { fill: $(go.Brush, go.Brush.Linear,
+        { fill: $(go.Brush, "Linear",
                   { 0.0: "Violet", 1.0: "Lavender" }) }),
       $(go.TextBlock, "Hello!",
         { margin: 5 })
     ));
 </pre>
 <script>goCode("gradientJSAML", 250, 150)</script>
-<p>
-Notice also how we set the <a>Shape.figure</a> and <a>TextBlock.text</a> by just using the string value.
-</p>
 <p>
 It is also common to use <a>GraphObject.make</a> to build a <a>Diagram</a>.
 In such a use a string argument, which must be the second argument, will name the DIV HTML element that the Diagram should use.
@@ -176,7 +372,7 @@ Here is a moderately extensive usage of GraphObject.make to build a Diagram:
         initialContentAlignment: go.Spot.Center,
 
         // don't initialize some properties until after a new model has been loaded
-        "InitialLayoutCompleted": loadDiagramProperties,  // this DiagramEvent listener is defined below
+        "InitialLayoutCompleted": loadDiagramProperties,  // a DiagramEvent listener
 
         // have mouse wheel events zoom in and out instead of scroll up and down
         "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
@@ -185,15 +381,16 @@ Here is a moderately extensive usage of GraphObject.make to build a Diagram:
         "clickCreatingTool.archetypeNodeData": { text: "new node" }
       });
 
+  // the DiagramEvent listener for "InitialLayoutCompleted"
   function loadDiagramProperties(e) { . . . }
 </pre>
 
 <p>
-All of this initialization is still JavaScript code, so we can call functions
+All of this initialization using <a>GraphObject.make</a> is still JavaScript code, so we can call functions
 and easily share objects such as brushes:
 </p>
 <pre data-language="javascript" id="codeJSAML">
-  var violetbrush = $(go.Brush, go.Brush.Linear, { 0.0: "Violet", 1.0: "Lavender" });
+  var violetbrush = $(go.Brush, "Linear", { 0.0: "Violet", 1.0: "Lavender" });
 
   diagram.add(
     $(go.Node, "Auto",

@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>GoJS Spreadsheet</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram");  // create the Diagram for the HTML DIV element
+
+    function textStyle(big) {
+      return {
+        stroke: "white",
+        font: (big ? "16pt sans-serif" : "10pt sans-serif"),
+        alignment: go.Spot.Left
+      };
+    }
+
+    function borderStyle() {
+      return {
+        fill: "cornflowerblue",
+        stroke: "blue",
+        strokeWidth: 2
+      };
+    }
+
+    var aggregatedValue =
+      $(go.Panel, go.Panel.Auto,
+        { margin: 5 },
+        $(go.Shape, borderStyle()),
+        $(go.TextBlock, textStyle(),
+          { margin: 10, width: 50 },
+          new go.Binding("text", "")));  // assume just a number or a string
+
+    var aggregatedListH =
+      $(go.Panel, go.Panel.Auto,
+        { margin: 4, stretch: go.GraphObject.Fill },
+        $(go.Shape, borderStyle()),
+        $(go.Panel, go.Panel.Table,
+          { padding: 5, alignment: go.Spot.Left, stretch: go.GraphObject.Fill,
+            defaultAlignment: go.Spot.Left, defaultStretch: go.GraphObject.Horizontal },
+          $(go.TextBlock, textStyle(),
+            { row: 0 },
+            new go.Binding("text", "header")),
+          $(go.Panel, go.Panel.Horizontal,
+            { row: 1, itemTemplate: aggregatedValue },
+            new go.Binding("itemArray", "values"))));
+
+    var aggregatedListV =
+      $(go.Panel, go.Panel.Auto,
+        { margin: 4, stretch: go.GraphObject.Fill },
+        $(go.Shape, borderStyle()),
+        $(go.Panel, go.Panel.Vertical,
+          { padding: 5, alignment: go.Spot.Top, defaultAlignment: go.Spot.Left },
+          $(go.TextBlock, textStyle(),
+            { maxSize: new go.Size(70, NaN) },
+            new go.Binding("text", "header")),
+          $(go.Panel, go.Panel.Vertical,
+            { itemTemplate: aggregatedValue },
+            new go.Binding("itemArray", "values"))));
+
+    var checkBoxTemplate =
+      $(go.Panel, go.Panel.Horizontal,
+        { alignment: go.Spot.Left },
+        $("Button",
+          $(go.Shape, borderStyle(),
+            { width: 14, height: 14 }),
+          $(go.Shape, borderStyle(),
+            { name: "CHECK",
+              geometryString: "M0 4 L3 9 9 0",
+              visible: false },  // default not checked, unless bound or set to true
+            new go.Binding("visible", "checked").makeTwoWay()),
+          {
+            click: function(e, obj) {
+              var shape = obj.findObject("CHECK");
+              shape.diagram.startTransaction("checkbox");
+              shape.visible = !shape.visible;
+              shape.diagram.commitTransaction("checkbox");
+            }
+          }),
+        $(go.TextBlock, textStyle(),
+          new go.Binding("text", "label")));
+
+    myDiagram.nodeTemplate =
+      $(go.Part, go.Panel.Table,
+        // the title
+        $(go.Panel, go.Panel.Auto,
+          { row: 0, column: 0, columnSpan: 3, stretch: go.GraphObject.Fill },
+          $(go.Shape, borderStyle()),
+          $(go.TextBlock, textStyle(true),
+            { margin: 10, alignment: go.Spot.Center },
+            new go.Binding("text", "title"))),
+
+        // insert an empty row and an empty column
+        $(go.RowColumnDefinition, { row: 1, height: 8 }),
+        $(go.RowColumnDefinition, { column: 1, width: 8 }),
+
+        // the aggregated values
+        $(go.Panel, go.Panel.Auto,
+          { row: 2, column: 0, stretch: go.GraphObject.Fill },
+          $(go.Shape, borderStyle()),
+          $(go.Panel, go.Panel.Table,
+            { padding: 4 },
+            $(go.TextBlock, textStyle(true),
+              new go.Binding("text", "aggTitle")),
+
+            // The B Aggregated Values
+            $(go.Panel, go.Panel.Auto,
+              { column: 0, row: 1, stretch: go.GraphObject.Fill, margin: new go.Margin(10, 0) },
+              $(go.Shape, borderStyle()),
+              $(go.Panel, go.Panel.Table,
+                { padding: 4, stretch: go.GraphObject.Fill, defaultStretch: go.GraphObject.Fill },
+                $(go.TextBlock, textStyle(true),
+                  { row: 0 },
+                  new go.Binding("text", "aggHeaderB")),
+                $(go.Panel, go.Panel.Horizontal,
+                  { row: 1 },
+                  { itemTemplate: aggregatedValue },
+                  new go.Binding("itemArray", "aggValuesB")))),
+
+            // Now the C Aggregated Values
+            $(go.Panel, go.Panel.Auto,
+              { column: 0, row: 2, alignment: go.Spot.TopLeft },
+              $(go.Shape, borderStyle()),
+              $(go.Panel, go.Panel.Table,
+                { padding: 4, stretch: go.GraphObject.Fill, defaultStretch: go.GraphObject.Fill },
+                $(go.TextBlock, textStyle(true),
+                  { row: 0, column: 0, columnSpan: 2 },
+                  new go.Binding("text", "aggSubtitle")),
+                $(go.Panel, go.Panel.Vertical,
+                  { row: 1, column: 0, alignment: go.Spot.Left },
+                  { itemTemplate: aggregatedListH },
+                  new go.Binding("itemArray", "aggValuesH")),
+                $(go.Panel, go.Panel.Horizontal,
+                  { row: 1, column: 1, alignment: go.Spot.Left },
+                  { itemTemplate: aggregatedListV },
+                  new go.Binding("itemArray", "aggValuesV")))))),
+
+        // the checkboxes
+        $(go.Panel, go.Panel.Auto,
+          { row: 2, column: 2, stretch: go.GraphObject.Fill },
+          $(go.Shape, borderStyle()),
+          $(go.Panel, go.Panel.Vertical,
+            { padding: 4, alignment: go.Spot.Top, stretch: go.GraphObject.Vertical, defaultAlignment: go.Spot.Left },
+            $(go.TextBlock, textStyle(true),
+              new go.Binding("text", "choices")),
+            $(go.Panel, go.Panel.Vertical,
+              { itemTemplate: checkBoxTemplate },
+              new go.Binding("itemArray", "checkBoxes"))))
+        );
+
+    myDiagram.model.nodeDataArray = [
+      {
+        title: "The Main Title",
+
+        aggTitle: "A-Aggregated Values (from B and C)",
+
+        aggHeaderB: "B-Aggregated Values (from B1-B2)",
+        aggValuesB: [101.01, 102.02],
+
+        aggSubtitle: "C-Aggregated Values (from D, E, F, and G)",
+        aggValuesH: [
+          {
+            header: "D-Aggregated Values (from D1..Dx)",
+            values: [1.01, 2.02, 3.03, 4.04]
+          },
+          {
+            header: "E-Aggregated Values (from E1..Ex)",
+            values: [11.01, 12.02]
+          },
+          {
+            header: "F-Aggregated Values (from F1..Fx)",
+            values: [21.01, 22.02, 23.03, 24.04, 25.05]
+          }
+        ],
+
+        aggValuesV: [
+          {
+            header: "G-Aggregated Values (from G1..Gx)",
+            values: [31.01, 32.02, 33.03]
+          }
+        ],
+
+        choices: "Check Boxes",
+        checkBoxes: [
+          { label: "Checkbox 1", checked: true },
+          { label: "Checkbox 2", checked: false },
+          { label: "Checkbox 3", checked: true },
+          { label: "Checkbox 4" }
+        ]
+      }
+    ];
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px blue; width: 100%; height:700px"></div>
+  <p>An example of a single node containing nested Auto Panels surrounding Table Panels whose <a>Panel.itemArray</a> is bound to Arrays of numbers.</p>
+</div>
+</body>
+</html>

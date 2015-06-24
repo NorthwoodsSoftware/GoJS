@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Shared States</title>
+<!-- /* Copyright 1998-2015 by Northwoods Software Corporation. */ -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+        {
+          // start everything in the middle of the viewport
+          initialContentAlignment: go.Spot.Center,
+          allowCopy: false,
+          allowDelete: false,
+          draggingTool: $(CustomDraggingTool),
+          layout: $(CustomLayout),
+          // enable undo & redo
+          "undoManager.isEnabled": true
+        });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, "RoundedRectangle",
+          {
+            fill: "rgb(254, 201, 0)", stroke: "black", parameter1: 20,  // the corner has a large radius
+            portId: "", fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
+          }),
+        $(go.TextBlock,
+          new go.Binding("text", "text").makeTwoWay())
+      );
+
+    myDiagram.nodeTemplateMap.add("Super",
+      $(go.Node, "Auto",
+        { locationObjectName: "BODY" },
+        $(go.Shape, "RoundedRectangle",
+          {
+            fill: "rgba(128, 128, 64, 0.5)", strokeWidth: 1.5, parameter1: 20,
+            spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight, minSize: new go.Size(30, 30)
+          }),
+        $(go.Panel, "Vertical",
+          { margin: 10 },
+          $(go.TextBlock,
+            { font: "bold 10pt sans-serif", margin: new go.Margin(0, 0, 5, 0) },
+            new go.Binding("text")),
+          $(go.Shape,
+            { name: "BODY", opacity: 0 })
+        )
+      ));
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      $(go.Link,  // the whole link panel
+        { routing: go.Link.Orthogonal, corner: 10 },
+        $(go.Shape,  // the link shape
+          { strokeWidth: 1.5 }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "Standard", stroke: null })
+      );
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+  }
+
+  // A custom layout that sizes each "Super" node to be big enough to cover all of it member nodes
+  function CustomLayout() {
+    go.Layout.call(this);
+  }
+  go.Diagram.inherit(CustomLayout, go.Layout);
+
+  /** @override */
+  CustomLayout.prototype.doLayout = function(coll) {
+    if (coll === this.diagram) {
+      coll = this.diagram.nodes;
+    }
+
+    var supers = new go.Set(go.Node);
+    coll.each(function(p) {
+      if (p instanceof go.Node && p.category === "Super") supers.add(p);
+    });
+
+    function membersOf(sup, diag) {
+      var coll = new go.Set(go.Part);
+      var arr = sup.data._members;
+      for (var i = 0; i < arr.length; i++) {
+        var d = arr[i];
+        coll.add(diag.findNodeForData(d));
+      }
+      return coll;
+    }
+
+    function isReady(sup, supers, diag) {
+      var arr = sup.data._members;
+      for (var i = 0; i < arr.length; i++) {
+        var d = arr[i];
+        if (d.category !== "Super") continue;
+        var n = diag.findNodeForData(d);
+        if (supers.contains(n)) return false;
+      }
+      return true;
+    }
+
+    // implementations of doLayout that do not make use of a LayoutNetwork
+    // need to perform their own transactions
+    this.diagram.startTransaction("Custom Layout");
+
+    while (supers.count > 0) {
+      var ready = null;
+      var it = supers.iterator;
+      while (it.next()) {
+        if (isReady(it.value, supers, this.diagram)) {
+          ready = it.value;
+          break;
+        }
+      }
+      supers.remove(ready);
+      var b = this.diagram.computePartsBounds(membersOf(ready, this.diagram));
+      ready.location = b.position;
+      var body = ready.findObject("BODY");
+      if (body) body.desiredSize = b.size;
+    }
+
+    this.diagram.commitTransaction("Custom Layout");
+  };
+  // end CustomLayout
+
+
+  // Define a custom DraggingTool
+  function CustomDraggingTool() {
+    go.DraggingTool.call(this);
+  }
+  go.Diagram.inherit(CustomDraggingTool, go.DraggingTool);
+
+  /** @override */
+  CustomDraggingTool.prototype.moveParts = function(parts, offset, check) {
+    go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
+    this.diagram.layoutDiagram(true);
+  };
+
+  /** @override */
+  CustomDraggingTool.prototype.computeEffectiveCollection = function(parts) {
+    var coll = new go.Set(go.Part).addAll(parts);
+    var tool = this;
+    parts.each(function(p) {
+      tool.walkSubTree(p, coll);
+    });
+    return go.DraggingTool.prototype.computeEffectiveCollection.call(this, coll);
+  };
+
+  // Find other attached nodes.
+  CustomDraggingTool.prototype.walkSubTree = function(sup, coll) {
+    if (sup === null) return;
+    coll.add(sup);
+    if (sup.category !== "Super") return;
+    // recurse through this super state's members
+    var model = this.diagram.model;
+    var mems = sup.data._members;
+    if (mems) {
+      for (var i = 0; i < mems.length; i++) {
+        var mdata = mems[i];
+        this.walkSubTree(this.diagram.findNodeForData(mdata), coll);
+      }
+    }
+  };
+  // end CustomDraggingTool class
+
+  // Show the diagram's model in JSON format
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    
+    // make sure all data have up-to-date "members" collections
+    // this does not prevent any "cycles" of membership, which would result in undefined behavior
+    var arr = myDiagram.model.nodeDataArray;
+    for (var i = 0; i < arr.length; i++) {
+      var data = arr[i];
+      var supers = data.supers;
+      if (supers) {
+        for (var j = 0; j < supers.length; j++) {
+          var sdata = myDiagram.model.findNodeDataForKey(supers[j]);
+          if (sdata) {
+            // update _supers to be an Array of references to node data
+            if (!data._supers) {
+              data._supers = [sdata];
+            } else {
+              data._supers.push(sdata);
+            }
+            // update _members to be an Array of references to node data
+            if (!sdata._members) {
+              sdata._members = [data];
+            } else {
+              sdata._members.push(data);
+            }
+          }
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; width: 100%; height: 400px"></div>
+  <p>
+  This demonstrates the ability to simulate having nodes be members of multiple "groups".
+  Regular <a>Group</a>s only support a single <a>Part.containingGroup</a> for nodes.
+  This sample does not make use of <a>Group</a>s at all, but simulates one possible "grouping" relationship
+  using a custom <a>Layout</a> and a custom <a>DraggingTool</a>.
+  </p>
+  <p>
+  The CustomLayout assumes regular nodes already have real locations, and only assigns <a>Part.location</a> to "Super" nodes.
+  It also sets the <a>GraphObject.desiredSize</a> on the "BODY" element of each "Super" node, based on the area occupied by all of its member nodes.
+  The CustomDraggingTool overrides the <a>DraggingTool.computeEffectiveCollection</a> method to determine what nodes to drag around.
+  </p>
+  <p>
+  This sample does not support dynamic restructuring of the relationships in the graph.
+  </p>
+  <button id="SaveButton" onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  Diagram Model saved in JSON format:
+  <br />
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "nodeDataArray": [
+    { "key": -1, "text": "Operating", "category": "Super" },
+    { "key": -2, "text": "Drying", "category": "Super", "supers": [-1] },
+    { "key": -3, "text": "Non Drying", "category": "Super" },
+
+    { "key": 1, "loc": "100 100", "text": "Starting.End", "supers": [-2] },
+    { "key": 2, "loc": "250 100", "text": "Running", "supers": [-2] },
+    { "key": 3, "loc": "100 200", "text": "Starting.Init", "supers": [-1, -3] },
+    { "key": 4, "loc": "250 200", "text": "Washing", "supers": [-1, -3] },
+    { "key": 5, "loc": "100 300", "text": "Stopped", "supers": [-3] },
+    { "key": 6, "loc": "250 300", "text": "Stopping", "supers": [-3] }
+  ],
+  "linkDataArray": [
+    { "from":  1, "to": 2 },
+    { "from":  3, "to": 1 },
+    { "from":  4, "to": 2 },
+    { "from": -2, "to": 4 },
+    { "from":  5, "to": 3 },
+    { "from":  6, "to": 5 },
+    { "from": -1, "to": 5 }
+  ]
+}
+</textarea></div>
+</body>
+</html>

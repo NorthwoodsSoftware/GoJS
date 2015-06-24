@@ -1,9 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>BPMN Editor</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />
   <script src="DrawCommandHandler.js"></script>
   <link href="BPMN.css" rel="stylesheet" type="text/css" />
@@ -13,8 +17,7 @@
 <body onload="init()">
   <div>
     <div id="currentFile">(Unsaved File)</div>
-    <div id="menuBar">
-      <ul id="nav">
+      <ul id="menuui">
         <li><a href="#">File</a>
           <ul>
             <li><a href="#" onclick="newDocument()">New</a></li>
@@ -60,16 +63,33 @@
           </ul>
         </li>
       </ul>
-    </div>
     <!--END menu bar -->
+      
+ 
 
     <!-- Styling for this portion is in BPMN.css -->
     <div id="PaletteAndDiagram">
       <div id="sideBar">
-        <div class="handle">Palette:</div>
-        <div id="myPalette" ></div>
+
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:100%">
+      <div id="accordion">
+        <h4>Level 1 items</h4>
+        <div>
+          <div id="myPaletteLevel1" class="myPalette" ></div>
+        </div>
+        <h4>Level 2 items</h4>
+        <div>
+          <div id="myPaletteLevel2" class="myPalette"></div>
+        </div>
+        <h4>Other items</h4>
+        <div>
+          <div id="myPaletteLevel3" class="myPalette"></div>
+        </div>
+      </div>
+    </span>          
+          
         <div class="handle">Overview:</div>
-        <div id="myOverview" ></div>
+        <div id="myOverview"></div>
       </div>
       <div id="myDiagram"></div>
       <div id="description">
@@ -84,9 +104,30 @@
           <li><a href="BPMNClasses.js">BPMNClasses.js</a> - Custom PoolLink and BPMNLinkingTool classes
           <li><a href="DrawCommandHandler.js">DrawCommandHandler.js</a> - Custom CommandHandler class
         </ul>
+        <span>
+            <div>
+            <p>Additional sample data files:</p>
+                <figure>
+                    <img src="BPMNdata/BasicOrderProcess.png" onclick='loadJSON("BPMNdata/BasicOrderProcess.json")' title="Basic Order Process"></img>
+                    <figcaption>Basic Order Process</figcaption>
+                </figure>
+                <figure>            
+                    <img src="BPMNdata/OMG BPMN by Example Figure 5.1.png" onclick='loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json")' title="OMG BPMN by Example Figure 5.1"></img>
+                    <figcaption>OMG BPMN by Example Figure 5.1</figcaption>
+                </figure>
+                <figure> 
+                    <img src="BPMNdata/OMG BPMN by Example Figure 5.2.png" onclick='loadJSON("BPMNdata/OMG BPMN by Example Figure 5.2.json")' title="OMG BPMN by Example Figure 5.2"></img>          
+                    <figcaption>OMG BPMN by Example Figure 5.2</figcaption>
+                </figure>
+                <figure> 
+                    <img src="BPMNdata/OMG BPMN by Example Figure 5.3.png" onclick='loadJSON("BPMNdata/OMG BPMN by Example Figure 5.3.json")' title="OMG BPMN by Example Figure 5.3"></img>          
+                    <figcaption>OMG BPMN by Example Figure 5.3</figcaption>
+                </figure>
+          </div>
+        </span>
+      </div>
 
       </div>
-    </div>
 
     <div id="openDocument" class="draggable">
       <div id="openDraggableHandle" class="handle">Open File</div>
@@ -114,27 +155,16 @@
         <button id="saveModel" onclick="saveModel()">Save</button>
       </div>
       <textarea id="mySavedModel" style="width: 100%; height: 300px">
-        { "class": "go.GraphLinksModel",
-          "linkFromPortIdProperty": "fromPort",
-          "linkToPortIdProperty": "toPort",
-          "modelData": {"position":"230 200"},
-          "nodeDataArray": [
-        {"category":"event", "item":"start", "key":101, "loc":"450 540", "text":"Start", "eventType":1, "eventDimension":1},
-        {"category":"event", "item":"End", "key":104, "loc":"1130 540", "text":"End", "eventType":1, "eventDimension":8},
-        {"category":"activity", "item":"generic task", "key":5, "loc":"1010 540", "text":"Send Invoice", "taskType":0, "boundaryEventArray":[  ]},
-        {"category":"activity", "item":"generic task", "key":-4, "loc":"860 540", "text":"Fulfill Order", "taskType":0, "boundaryEventArray":[  ]},
-        {"category":"activity", "item":"generic task", "key":-5, "loc":"710 540", "text":"Credit Check", "taskType":0, "boundaryEventArray":[  ]},
-        {"category":"activity", "item":"generic task", "key":-6, "loc":"560 540", "text":"Receive Order", "taskType":0, "boundaryEventArray":[  ]},
-        {"category":"annotation", "key":701, "loc":"494 434", "text":"Basic Order Process"}
-        ],
-          "linkDataArray": [
-        {"from":101, "to":-6, "fromPort":"", "toPort":""},
-        {"from":-6, "to":-5, "fromPort":"", "toPort":""},
-        {"from":-5, "to":-4, "fromPort":"", "toPort":""},
-        {"from":-4, "to":5, "fromPort":"", "toPort":""},
-        {"from":5, "to":104, "fromPort":"", "toPort":""}
-        ]}
+{ "class": "go.GraphLinksModel", "copiesArrays": true, "copiesArrayObjects": true, "linkFromPortIdProperty": "fromPort", "linkToPortIdProperty": "toPort", "modelData": {"position":"186.6328613281251 -74.57783203125042"}, "nodeDataArray": [ {"category":"event", "item":"start", "key":101, "loc":"265.00756835937545 269.8832519531237", "text":"Goods\nto Ship", "eventType":1, "eventDimension":1, "group":-12}, {"category":"event", "item":"End", "key":104, "loc":"1426.0075683593736 465.3054199218741", "text":"End", "eventType":1, "eventDimension":8, "group":-13}, {"category":"activity", "item":"generic task", "key":5, "loc":"1291.0075683593764 465.3832519531245", "text":"Add paperwork\nand move\npackage to\npick area", "taskType":0, "boundaryEventArray":[ ], "group":-13}, {"category":"activity", "item":"generic task", "key":-4, "loc":"736.0075683593747 137.4610839843746", "text":"Check if extra insurance is necessary", "taskType":0, "boundaryEventArray":[ ], "group":-12}, {"category":"activity", "item":"generic task", "key":-5, "loc":"498.00756835937506 268.88325195312393", "text":"Decide if \nnormal post or\nspecial\nshipment", "taskType":0, "boundaryEventArray":[ ], "group":-12}, {"category":"activity", "item":"generic task", "key":-6, "loc":"534.203125 466.3832519531245", "text":"Package Goods", "taskType":0, "boundaryEventArray":[ ], "group":-13}, {"category":"annotation", "key":701, "loc":"556.9999999999995 -37.00000000000042", "text":"OMG BPMN 2.0 by Example. \nFigure 5.1 Shipment Process of a Hardware Retailer", "group":-11}, {"key":"501", "text":"Hardware Retailer", "isGroup":"true", "category":"Pool", "loc":"217.2106933593751 -69.07783203125042"}, {"category":"Lane", "text":"Logistics\nManager", "color":"white", "isGroup":true, "loc":"217.2106933593751 -69.07783203125042", "group":"501", "key":-11, "size":"1299.992431640625 129"}, {"category":"Lane", "text":"Clerk", "color":"white", "isGroup":true, "loc":"217.2106933593751 60.92216796874958", "group":"501", "key":-12, "size":"1299.992431640625 334"}, {"category":"Lane", "text":"Warehouse\nWorker", "color":"white", "isGroup":true, "loc":"217.2106933593751 395.9221679687496", "group":"501", "key":-13, "size":"1299.992431640625 146.53891601562532"}, {"key":201, "category":"gateway", "text":"", "gatewayType":1, "group":-12, "loc":"363.2031250000004 269.38325195312393"}, {"key":204, "category":"gateway", "text":"Mode of\nDelivery", "gatewayType":4, "group":-12, "loc":"652.2031249999999 269.38325195312393"}, {"key":131, "category":"activity", "text":"Request Quotes from carriers", "item":"generic task", "taskType":0, "group":-12, "loc":"846.2031249999998 268.883251953124"}, {"key":301, "category":"gateway", "gatewayType":2, "text":"", "group":-12, "loc":"879.2031250000001 137.42216796874956"}, {"key":-16, "category":"activity", "text":"Take out extra\ninsurance", "item":"generic task", "taskType":0, "group":-11, "loc":"1000.2031250000001 5.000000000000007"}, {"key":-17, "category":"activity", "text":"Fill in \nPost Label", "item":"generic task", "taskType":0, "group":-12, "loc":"1025.203124999999 137.4610839843746"}, {"key":-19, "category":"gateway", "gatewayType":2, "text":"", "group":-12, "loc":"1179.2031249999993 137.42216796874956"}, {"key":-20, "category":"activity", "text":"Assign a \ncarrier & prepare papperwork", "item":"generic task", "taskType":0, "group":-12, "loc":"1006.2031250000001 268.88325195312393"}, {"key":-21, "category":"gateway", "text":"", "gatewayType":4, "group":-12, "loc":"1179.203125 269.38325195312393"}, {"key":-22, "category":"annotation", "text":"insurance included", "loc":"956.2031249999999 358.9610839843744", "group":-12}, {"key":-23, "category":"gateway", "text":"", "gatewayType":1, "group":-13, "loc":"1157.2031250000005 465.88325195312495"} ], "linkDataArray": [ {"from":5, "to":104, "fromPort":"", "toPort":"", "points":[1351.0075683593757,465.3832519531245,1361.0075683593757,465.3832519531245,1372.007568359375,465.3832519531245,1372.007568359375,465.3054199218741,1383.007568359374,465.3054199218741,1403.007568359374,465.3054199218741]}, {"from":101, "to":201, "fromPort":"", "toPort":"", "points":[286.5075683593755,269.88325195312376,296.5075683593755,269.88325195312376,299.605346679688,269.88325195312376,299.605346679688,269.3832519531243,302.7031250000005,269.3832519531243,322.7031250000005,269.3832519531243]}, {"from":201, "to":-6, "fromPort":"", "toPort":"", "visible":true, "points":[363.2031250000004,309.88325195312393,363.2031250000004,319.88325195312393,363.2031250000004,324,363.2031250000004,324,363.2031250000004,466.3832519531245,454.203125,466.3832519531245,474.203125,466.3832519531245], "text":""}, {"from":201, "to":-5, "fromPort":"", "toPort":"", "visible":true, "points":[403.7031250000005,269.3832519531241,413.7031250000005,269.3832519531241,415.85534667968784,269.3832519531241,415.85534667968784,268.8832519531241,418.0075683593752,268.8832519531241,438.0075683593752,268.8832519531241], "text":""}, {"from":-5, "to":204, "fromPort":"", "toPort":"", "points":[558.0075683593752,268.88325195312405,568.0075683593752,268.88325195312405,579.8553466796876,268.88325195312405,579.8553466796876,269.38325195312405,591.703125,269.38325195312405,611.703125,269.38325195312405]}, {"from":204, "to":-4, "fromPort":"", "toPort":"", "visible":true, "points":[652.203125,228.88325195312424,652.203125,218.88325195312424,652.203125,137.46108398437454,654.1053466796873,137.46108398437454,656.0075683593747,137.46108398437454,676.0075683593747,137.46108398437454], "text":"Normal\nPost"}, {"from":204, "to":131, "fromPort":"", "toPort":"", "visible":true, "points":[692.7031249999999,269.38325195312393,702.7031249999999,269.38325195312393,734.4531249999999,269.38325195312393,734.4531249999999,268.88325195312393,766.2031249999999,268.88325195312393,786.2031249999999,268.88325195312393], "text":"Special\nCarrier"}, {"from":-4, "to":301, "fromPort":"", "toPort":"", "points":[796.0075683593747,137.46108398437454,806.0075683593747,137.46108398437454,812.3553466796874,137.46108398437454,812.3553466796874,137.42216796874956,818.7031250000001,137.42216796874956,838.7031250000001,137.42216796874956]}, {"from":301, "to":-16, "fromPort":"", "toPort":"", "visible":true, "points":[879.2031250000001,96.92216796874956,879.2031250000001,86.92216796874956,879.2031250000001,5.000000000000007,899.7031250000001,5.000000000000007,920.2031250000001,5.000000000000007,940.2031250000001,5.000000000000007], "text":"extra insurance\nrequired"}, {"from":301, "to":-17, "fromPort":"", "toPort":"", "visible":true, "points":[919.7031250000001,137.42216796874956,929.7031250000001,137.42216796874956,937.4531249999999,137.42216796874956,937.4531249999999,137.46108398437454,945.2031249999997,137.46108398437454,965.2031249999997,137.46108398437454], "text":"Always"}, {"from":-17, "to":-19, "fromPort":"", "toPort":"", "points":[1085.2031249999995,137.46108398437454,1095.2031249999995,137.46108398437454,1106.9531249999995,137.46108398437454,1106.9531249999995,137.4221679687496,1118.7031249999993,137.4221679687496,1138.7031249999993,137.4221679687496]}, {"from":-16, "to":-19, "fromPort":"", "toPort":"", "points":[1060.203125,5.000000000000007,1070.203125,5.000000000000007,1179.2031249999993,5.000000000000007,1179.2031249999993,40.96108398437478,1179.2031249999993,76.92216796874956,1179.2031249999993,96.92216796874956]}, {"from":131, "to":-20, "fromPort":"", "toPort":"", "points":[906.2031249999999,268.88325195312393,916.2031249999999,268.88325195312393,921.203125,268.88325195312393,921.203125,268.88325195312393,926.2031250000001,268.88325195312393,946.2031250000001,268.88325195312393]}, {"from":-20, "to":-21, "fromPort":"", "toPort":"", "points":[1066.203125,268.88325195312405,1076.203125,268.88325195312405,1097.453125,268.88325195312405,1097.453125,269.38325195312405,1118.703125,269.38325195312405,1138.703125,269.38325195312405]}, {"from":-19, "to":-21, "fromPort":"", "toPort":"", "visible":true, "points":[1179.2031249999993,177.9221679687496,1179.2031249999993,187.9221679687496,1179.2031249999993,198.4027099609369,1179.2031250000005,198.4027099609369,1179.2031250000005,208.88325195312424,1179.2031250000005,228.88325195312424], "text":""}, {"from":-22, "to":131, "fromPort":"", "toPort":"", "category":"annotation", "points":[896.0004882812499,358.96108398437445,856.0004882812499,358.96108398437445,846.2031249999999,328.88325195312393,846.2031249999999,308.88325195312393]}, {"from":-23, "to":5, "fromPort":"", "toPort":"", "visible":true, "points":[1197.703125,465.8832519531245,1207.703125,465.8832519531245,1209.3553466796873,465.8832519531245,1209.3553466796873,465.3832519531245,1211.0075683593745,465.3832519531245,1231.0075683593745,465.3832519531245], "text":""}, {"from":-6, "to":-23, "fromPort":"", "toPort":"", "points":[594.203125,466.3832519531244,604.203125,466.3832519531244,850.453125,466.3832519531244,850.453125,465.8832519531246,1096.703125,465.8832519531246,1116.703125,465.8832519531246]}, {"from":-21, "to":-23, "fromPort":"", "toPort":"", "visible":true, "points":[1179.203125,309.88325195312393,1179.203125,319.88325195312393,1179.203125,324,1179.203125,324,1179.203125,340,1157.2031250000005,340,1157.2031250000005,405.38325195312495,1157.2031250000005,425.38325195312495], "text":""} ]}
       </textarea>
+        
+        //colors for lanes: lightyellow, lightblue, lavender, lightgray, mistyrose
+        
+<!--  embedded pool data
+        { "key": "Pool2a", "text": "Pool2a", "isGroup": "true", "category": "Pool", "group": "Pool2" },
+            { "key": "Lane5a", "text": "Lane5a", "isGroup": "true", "group": "Pool2a", "color": "pink", "category": "Lane" },
+            { "key": "Lane6a", "text": "Lane6a", "isGroup": "true", "group": "Pool2a", "color": "gray", "category": "Lane" },         
+-->
     </div>
 
   </div>

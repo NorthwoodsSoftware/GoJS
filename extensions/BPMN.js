@@ -9,6 +9,15 @@ function init() {
     currentFile.textContent = "Sorry! No web storage support.\nIf you're using Internet Explorer, you must load the page from a server for local storage to work.";
   }
 
+// setup the menubar    
+jQuery( "#menuui" ).menu();
+jQuery(function() {
+        jQuery( "#menuui" ).menu({ position: { my: "left top", at: "left top+30" } });
+        });    
+jQuery( "#menuui" ).menu({
+  icons: { submenu: "ui-icon-triangle-1-s" }
+});      
+
   // hides open HTML Element
   var openDocument = document.getElementById("openDocument");
   openDocument.style.visibility = "hidden";
@@ -19,10 +28,10 @@ function init() {
   var $ = go.GraphObject.make;  // for more concise visual tree definitions
 
   // constants for design choices
-  var gradYellow = $(go.Brush, go.Brush.Linear, { 0: "LightGoldenRodYellow ", 1: "#FFFF66" });
-  var paper = $(go.Brush, go.Brush.Linear, { 0: "OldLace", 1: "PapayaWhip" });
-  var gradLightGreen = $(go.Brush, go.Brush.Linear, { 0: "#E0FEE0", 1: "PaleGreen" });
-  var gradLightGray = $(go.Brush, go.Brush.Linear, { 0: "White", 1: "#DADADA" });
+  var gradYellow = $(go.Brush, "Linear", { 0: "LightGoldenRodYellow ", 1: "#FFFF66" });
+  var paper = $(go.Brush, "Linear", { 0: "OldLace", 1: "PapayaWhip" });
+  var gradLightGreen = $(go.Brush, "Linear", { 0: "#E0FEE0", 1: "PaleGreen" });
+  var gradLightGray = $(go.Brush, "Linear", { 0: "White", 1: "#DADADA" });
 
   var activityNodeFill = paper;
   var activityNodeStroke = "#CDAA7D";
@@ -49,12 +58,16 @@ function init() {
   var gatewayNodeSize = 80;
   var gatewayNodeSymbolSize = 45;
   var gatewayNodeFill = gradYellow;
-  var gatewayNodeStroke = "gold";
-  var gatewayNodeSymbolStroke = "gold";
+  var gatewayNodeStroke = "darkgoldenrod";
+  var gatewayNodeSymbolStroke = "darkgoldenrod";
   var gatewayNodeSymbolFill = gradYellow;
   var gatewayNodeSymbolStrokeWidth = 3;
 
   var dataFill = gradLightGray;
+
+  // swimlanes
+  var MINLENGTH = 400;  // this controls the minimum length of any swimlane
+  var MINBREADTH = 20;  // this controls the minimum breadth of any non-collapsed swimlane
 
   window.myDiagram =
     $(go.Diagram, "myDiagram",
@@ -71,11 +84,7 @@ function init() {
           var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
           if (!ok) myDiagram.currentTool.doCancel();
         },
-
         linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
-        "linkingTool.linkValidation": sameLevel,  // defined below
-        "relinkingTool.linkValidation": sameLevel,
-
         // set these kinds of Diagram properties after initialization, not now
         "InitialLayoutCompleted": loadDiagramProperties  // defined below
       });
@@ -255,6 +264,7 @@ function init() {
        new go.Binding("alignment", "alignmentIndex", nodeActivityBESpotConverter),
       $(go.Shape, "Circle",
         { desiredSize: new go.Size(eventNodeSize, eventNodeSize) },
+        new go.Binding("strokeDashArray", "eventDimension", function(s) { return (s === 6) ? [4, 2] : null; }),
         new go.Binding("fromSpot", "alignmentIndex",
           function(s) {
             //  nodeActivityBEFromSpotConverter, 0 & 1 go on bottom, all others on top of activity
@@ -263,8 +273,10 @@ function init() {
           }),
         new go.Binding("fill", "color")),
       $(go.Shape, "Circle",
-          { alignment: go.Spot.Center,
-            desiredSize: new go.Size(eventNodeInnerSize, eventNodeInnerSize), fill: null }),
+         { alignment: go.Spot.Center,
+           desiredSize: new go.Size(eventNodeInnerSize, eventNodeInnerSize), fill: null },
+         new go.Binding("strokeDashArray", "eventDimension", function(s) { return (s === 6) ? [4, 2] : null; })
+       ),
       $(go.Shape, "NotAllowed",
           { alignment: go.Spot.Center,
             desiredSize: new go.Size(eventNodeSymbolSize, eventNodeSymbolSize), fill: "white" },
@@ -278,16 +290,22 @@ function init() {
        $(go.Adornment, "Vertical",
          $("ContextMenuButton",
              $(go.TextBlock, "Add Email Event", { margin: 3 }),
-             { click: function(e, obj) { addActivityNodeBoundaryEvent(2); } }),
+             { click: function(e, obj) { addActivityNodeBoundaryEvent(2, 5); } }),
          $("ContextMenuButton",
              $(go.TextBlock, "Add Timer Event", { margin: 3 }),
-             { click: function(e, obj) { addActivityNodeBoundaryEvent(3); } }),
+             { click: function(e, obj) { addActivityNodeBoundaryEvent(3, 5); } }),
          $("ContextMenuButton",
              $(go.TextBlock, "Add Escalation Event", { margin: 3 }),
-             { click: function(e, obj) { addActivityNodeBoundaryEvent(4); } }),
+             { click: function(e, obj) { addActivityNodeBoundaryEvent(4, 5); } }),
          $("ContextMenuButton",
              $(go.TextBlock, "Add Error Event", { margin: 3 }),
-             { click: function(e, obj) { addActivityNodeBoundaryEvent(7); } }),
+             { click: function(e, obj) { addActivityNodeBoundaryEvent(7, 5); } }),
+         $("ContextMenuButton",
+             $(go.TextBlock, "Add Signal Event", { margin: 3 }),
+             { click: function(e, obj) { addActivityNodeBoundaryEvent(10, 5); } }),
+         $("ContextMenuButton",
+             $(go.TextBlock, "Add N-I Escalation Event", { margin: 3 }),
+             { click: function(e, obj) { addActivityNodeBoundaryEvent(4, 6); } }),
          $("ContextMenuButton",
              $(go.TextBlock, "Rename", { margin: 3 }),
              { click: function(e, obj) { rename(obj); } }));
@@ -349,18 +367,20 @@ function init() {
             fill: activityNodeFill, stroke: activityNodeStroke,
             parameter1: 10, // corner size
             portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-            fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
+            fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
           },
           new go.Binding("fill", "color"),
           new go.Binding("strokeWidth", "isCall",
-            function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })),
-        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
-          { margin: 3,
-            stretch: go.GraphObject.Fill,
-            stroke: activityNodeStroke,
-            parameter1: 8, fill: null, visible: false
-          },
-          new go.Binding("visible", "isTransaction")),
+            function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })
+         ),
+//        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
+//          { margin: 3,
+//            stretch: go.GraphObject.Fill,
+//            stroke: activityNodeStroke,
+//            parameter1: 8, fill: null, visible: false
+//          },
+//          new go.Binding("visible", "isTransaction")
+//         ),
         // task icon
         $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
           { alignment: new go.Spot(0, 0, 5, 5), alignmentFocus: go.Spot.TopLeft,
@@ -370,8 +390,7 @@ function init() {
           new go.Binding("figure", "taskType", nodeActivityTaskTypeConverter)
           ), // end Task Icon
         makeMarkerPanel(false, 1) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
-
-      ),  // end main body rectangles spot panel
+        ),  // end main body rectangles spot panel
       $(go.TextBlock,  // the center text
         { alignment: go.Spot.Center, textAlign: "center", margin: 12,
           editable: true
@@ -389,36 +408,34 @@ function init() {
        locationSpot: go.Spot.Center,
        selectionAdorned: false
      },
-    $(go.Panel, "Auto",
+    $(go.Panel, "Spot",
       { name: "PANEL",
         desiredSize: new go.Size(activityNodeWidth / palscale, activityNodeHeight / palscale)
       },
-      $(go.Panel, "Spot",
-        $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
-          { name: "SHAPE",
-            fill: activityNodeFill, stroke: activityNodeStroke,
-            parameter1: 10 / palscale  // corner size (default 10)
-          },
-          new go.Binding("strokeWidth", "isCall",
-            function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })),
-        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
-          { margin: 3,
-            stretch: go.GraphObject.Fill,
-            stroke: activityNodeStroke,
-            parameter1: 8 / palscale, fill: null, visible: false
-          },
-          new go.Binding("visible", "isTransaction")),
-        // task icon
-        $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
-          { alignment: new go.Spot(0, 0, 5, 5), alignmentFocus: go.Spot.TopLeft,
-            width: 22 / palscale, height: 22 / palscale
-          },
-          new go.Binding("fill", "taskType", nodeActivityTaskTypeColorConverter),
-          new go.Binding("figure", "taskType", nodeActivityTaskTypeConverter)),
-        makeMarkerPanel(false, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
-        ) // End Spot panel
-      ), // End Auto Panel
-      $(go.TextBlock,  // the center text
+      $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
+        { name: "SHAPE",
+          fill: activityNodeFill, stroke: activityNodeStroke,
+          parameter1: 10 / palscale  // corner size (default 10)
+        },
+        new go.Binding("strokeWidth", "isCall",
+          function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })),
+      $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
+        { margin: 3,
+          stretch: go.GraphObject.Fill,
+          stroke: activityNodeStroke,
+          parameter1: 8 / palscale, fill: null, visible: false
+        },
+        new go.Binding("visible", "isTransaction")),
+      // task icon
+      $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
+        { alignment: new go.Spot(0, 0, 5, 5), alignmentFocus: go.Spot.TopLeft,
+          width: 22 / palscale, height: 22 / palscale
+        },
+        new go.Binding("fill", "taskType", nodeActivityTaskTypeColorConverter),
+        new go.Binding("figure", "taskType", nodeActivityTaskTypeConverter)),
+      makeMarkerPanel(false, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
+    ), // End Spot panel
+    $(go.TextBlock,  // the center text
         { alignment: go.Spot.Center, textAlign: "center", margin: 2 },
         new go.Binding("text"))
     );  // End Node
@@ -431,53 +448,26 @@ function init() {
        isSubGraphExpanded: false,
        selectionAdorned: false
      },
-    $(go.Panel, "Auto",
+    $(go.Panel, "Spot",
       { name: "PANEL",
         desiredSize: new go.Size(activityNodeWidth / palscale, activityNodeHeight / palscale)
       },
-      $(go.Panel, "Spot",
-        $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
-              { name: "SHAPE",
-                fill: activityNodeFill, stroke: activityNodeStroke,
-                parameter1: 10 / palscale  // corner size (default 10)
-              },
-              new go.Binding("strokeWidth", "isCall", function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })
-            ),
-        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
-          { margin: 3,
-            stretch: go.GraphObject.Fill,
-            stroke: activityNodeStroke,
-            parameter1: 8 / palscale, fill: null, visible: false
-          },
-          new go.Binding("visible", "isTransaction")),
-        $(go.Panel, "Horizontal",
-          { alignment: go.Spot.MiddleBottom, alignmentFocus: go.Spot.MiddleBottom },
-           $(go.Shape, "BpmnActivityLoop",
-              { width: 12 / palscale, height: 12 / palscale, margin: 2, visible: false, strokeWidth: activityMarkerStrokeWidth },
-                 new go.Binding("visible", "isLoop")),
-            $(go.Shape, "BpmnActivityParallel",
-              { width: 12 / palscale, height: 12 / palscale, margin: 2, visible: false, strokeWidth: activityMarkerStrokeWidth },
-                 new go.Binding("visible", "isParallel")),
-            $(go.Shape, "BpmnActivitySequential",
-              { width: 12 / palscale, height: 12 / palscale, margin: 2, visible: false, strokeWidth: activityMarkerStrokeWidth },
-                 new go.Binding("visible", "isSequential")),
-            $(go.Shape, "BpmnActivityAdHoc",
-              { width: 12 / palscale, height: 12 / palscale, margin: 2, visible: false, strokeWidth: activityMarkerStrokeWidth },
-                 new go.Binding("visible", "isAdHoc")),
-            $(go.Shape, "BpmnActivityCompensation",
-              { width: 12 / palscale, height: 12 / palscale, margin: 2, visible: false, strokeWidth: activityMarkerStrokeWidth, fill: null },
-                 new go.Binding("visible", "isCompensation")),
-            // add a fake subgraph button (so we can scale it)
-            $(go.Panel, "Auto", { margin: 2, visible: false },  // don't have a plus with a box around it, so make one from 2 parts
-              $(go.Shape, "Rectangle",
-                { width: 12 / palscale, height: 12 / palscale, strokeWidth: activityMarkerStrokeWidth, fill: null }),
-              $(go.Shape, "PlusLine",
-                { width: 8 / palscale, height: 8 / palscale, strokeWidth: activityMarkerStrokeWidth }),
-                 new go.Binding("visible", "isSubProcess")
-             )
-          ) // end activity markers horizontal panel
-        )
-      ),  // end main body rectangles spot panel
+      $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
+            { name: "SHAPE",
+              fill: activityNodeFill, stroke: activityNodeStroke,
+              parameter1: 10 / palscale  // corner size (default 10)
+            },
+            new go.Binding("strokeWidth", "isCall", function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })
+          ),
+      $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
+        { margin: 3,
+          stretch: go.GraphObject.Fill,
+          stroke: activityNodeStroke,
+          parameter1: 8 / palscale, fill: null, visible: false
+        },
+        new go.Binding("visible", "isTransaction")),
+        makeMarkerPanel(true, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
+      ), // end main body rectangles spot panel
       $(go.TextBlock,  // the center text
         { alignment: go.Spot.Center, textAlign: "center", margin: 2 },
         new go.Binding("text"))
@@ -502,7 +492,8 @@ function init() {
             { strokeWidth: 1,
               name: "SHAPE",
               desiredSize: new go.Size(eventNodeSize, eventNodeSize),
-              portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer"
+              portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+              fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
             },
             // allows the color to be determined by the node data
             new go.Binding("fill", "eventDimension", function(s) { return (s === 8) ? EventEndOuterFillColor : EventBackgroundColor; }),
@@ -517,7 +508,7 @@ function init() {
               new go.Binding("strokeDashArray", "eventDimension", function(s) { return (s === 3 || s === 6) ? [4, 2] : null; }), // dashes for non-interrupting
               new go.Binding("visible", "eventDimension", function(s) { return s > 3 && s <= 7; }) // inner  only visible for 4 thru 7
             ),
-          $(go.Shape, "NotAllowed",
+$(go.Shape, "NotAllowed",
               { alignment: go.Spot.Center, desiredSize: new go.Size(eventNodeSymbolSize, eventNodeSymbolSize), stroke: "black" },
                 new go.Binding("figure", "eventType", nodeEventTypeConverter),
                 new go.Binding("fill", "eventDimension", nodeEventDimensionSymbolFillConverter)
@@ -533,13 +524,13 @@ function init() {
 
   function nodeGatewaySymbolTypeConverter(s) {
     var tasks =  ["NotAllowed",
-                  "ThinCross",      // Parallel
-                  "Circle",         // Inclusive
-                  "AsteriskLine",   // Complex
-                  "ThinX",          // Exclusive
-                  "BpmnTaskManual",
-                  "BpmnTaskUser",
-                  "BpmnTaskMessage"]
+                  "ThinCross",      // 1 - Parallel
+                  "Circle",         // 2 - Inclusive
+                  "AsteriskLine",   // 3 - Complex
+                  "ThinX",          // 4 - Exclusive  (exclusive can also be no symbol, just bind to visible=false for no symbol)
+                  "Pentagon",       // 5 - double cicle event based gateway
+                  "Pentagon",       // 6 - exclusive event gateway to start a process (single circle)
+                  "ThickCross"]     // 7 - parallel event gateway to start a process (single circle)
     if (s < tasks.length) return tasks[s];
     return "NotAllowed"; // error
   }
@@ -550,6 +541,10 @@ function init() {
     if (s === 4) {
       size.width = size.width / 4 * 3;
       size.height = size.height / 4 * 3;
+    }
+    else if (s > 4) {
+      size.width = size.width / 1.6;
+      size.height = size.height / 1.6;
     }
     return size;
   }
@@ -577,14 +572,28 @@ function init() {
               name: "SHAPE",
               desiredSize: new go.Size(gatewayNodeSize, gatewayNodeSize),
               portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-              fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
+              fromSpot: go.Spot.NotLeftSide, toSpot: go.Spot.MiddleLeft
             },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),  // end main shape
           $(go.Shape, "NotAllowed",
-              { alignment: go.Spot.Center, stroke: gatewayNodeSymbolStroke, strokeWidth: gatewayNodeSymbolStrokeWidth, fill: gatewayNodeSymbolFill },
+              { alignment: go.Spot.Center, stroke: gatewayNodeSymbolStroke, fill: gatewayNodeSymbolFill },
                 new go.Binding("figure", "gatewayType", nodeGatewaySymbolTypeConverter),
-                new go.Binding("desiredSize", "gatewayType", nodeGatewaySymbolSizeConverter))
-        ),  // end Auto Panel
+                //new go.Binding("visible", "gatewayType", function(s) { return s !== 4; }),   // comment out if you want exclusive gateway to be X instead of blank.
+                new go.Binding("strokeWidth", "gatewayType", function(s) { return (s <=4 ) ? gatewayNodeSymbolStrokeWidth : 1; }),
+                new go.Binding("desiredSize", "gatewayType", nodeGatewaySymbolSizeConverter)),
+          // the next 2 circles only show up for event gateway
+          $(go.Shape, "Circle",  // Outer circle
+            { strokeWidth: 1, stroke: gatewayNodeSymbolStroke, fill: null, desiredSize: new go.Size(eventNodeSize, eventNodeSize)
+            },
+            new go.Binding("visible", "gatewayType", function(s) { return s >= 5; }) // only visible for > 5
+          ),  // end main shape
+          $(go.Shape, "Circle",  // Inner circle
+              { alignment: go.Spot.Center, stroke: gatewayNodeSymbolStroke,
+                desiredSize: new go.Size(eventNodeInnerSize, eventNodeInnerSize),
+                fill: null },
+              new go.Binding("visible", "gatewayType", function(s) { return s === 5; }) // inner  only visible for == 5
+            )
+         ),
         $(go.TextBlock,
           { alignment: go.Spot.Center, textAlign: "center", margin: 5, editable: true },
           new go.Binding("text").makeTwoWay())
@@ -607,7 +616,23 @@ function init() {
         $(go.Shape, "NotAllowed",
             { alignment: go.Spot.Center, stroke: gatewayNodeSymbolStroke, strokeWidth: gatewayNodeSymbolStrokeWidth, fill: gatewayNodeSymbolFill },
               new go.Binding("figure", "gatewayType", nodeGatewaySymbolTypeConverter),
-              new go.Binding("desiredSize", "gatewayType", nodePalGatewaySymbolSizeConverter))),
+              //new go.Binding("visible", "gatewayType", function(s) { return s !== 4; }),   // comment out if you want exclusive gateway to be X instead of blank.
+              new go.Binding("strokeWidth", "gatewayType", function(s) { return (s <=4 ) ? gatewayNodeSymbolStrokeWidth : 1; }),
+              new go.Binding("desiredSize", "gatewayType", nodePalGatewaySymbolSizeConverter)),
+          // the next 2 circles only show up for event gateway
+          $(go.Shape, "Circle",  // Outer circle
+            { strokeWidth: 1, stroke: gatewayNodeSymbolStroke, fill: null, desiredSize: new go.Size(eventNodeSize/2, eventNodeSize/2)
+            },
+            //new go.Binding("desiredSize", "gatewayType", new go.Size(eventNodeSize/2, eventNodeSize/2)),
+            new go.Binding("visible", "gatewayType", function(s) { return s >= 5; }) // only visible for > 5
+          ),  // end main shape
+          $(go.Shape, "Circle",  // Inner circle
+              { alignment: go.Spot.Center, stroke: gatewayNodeSymbolStroke,
+                desiredSize: new go.Size(eventNodeInnerSize/2, eventNodeInnerSize/2),
+                fill: null },
+              new go.Binding("visible", "gatewayType", function(s) { return s === 5; }) // inner  only visible for == 5
+            )),
+
       $(go.TextBlock,
         { alignment: go.Spot.Center, textAlign: "center", margin: 5, editable: false },
         new go.Binding("text"))
@@ -617,7 +642,7 @@ function init() {
 
   var annotationNodeTemplate =
     $(go.Node, "Auto",
-      { background: gradLightGray },
+      { background: gradLightGray, locationSpot: go.Spot.Center },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Shape, "Annotation", // A left bracket shape
         { portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.Left, strokeWidth: 2, stroke: "gray" }),
@@ -690,10 +715,28 @@ function init() {
         new go.Binding("text"))
     );
 
+  var poolTemplateForPalette =
+    $(go.Group, "Vertical",
+      { locationSpot: go.Spot.Center,
+        isSubGraphExpanded: false
+      },
+      $(go.Shape, "Process",
+        { fill: "white", desiredSize: new go.Size(gatewayNodeSize / 2, gatewayNodeSize / 4) }),
+      $(go.Shape, "Process",
+        { fill: "white", desiredSize: new go.Size(gatewayNodeSize / 2, gatewayNodeSize / 4) }),
+      $(go.TextBlock,
+        { margin: 5, editable: true },
+        new go.Binding("text"))
+    );
+
+  var swimLanesGroupTemplateForPalette =
+    $(go.Group, "Vertical" ); // empty in the palette
+
   var subProcessGroupTemplate =
     $(go.Group, "Spot",
       { locationSpot: go.Spot.Center,
         locationObjectName: "PH",
+        resizable: true, resizeObjectName: "PH",
         //locationSpot: go.Spot.Center,
         isSubGraphExpanded: false,
         mouseDrop:
@@ -713,7 +756,8 @@ function init() {
             {
               name: "PH", fill: subprocessNodeFill, stroke: subprocessNodeStroke,
               minSize: new go.Size(activityNodeWidth, activityNodeHeight),
-              portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer"
+              portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+              fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
             },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
             new go.Binding("strokeWidth", "isCall", function(s) { return s ? activityNodeStrokeWidthIsCall : activityNodeStrokeWidth; })
@@ -722,16 +766,26 @@ function init() {
             { defaultAlignment: go.Spot.Left },
             $(go.TextBlock,  // label
               { margin: 3, editable: true },
-              new go.Binding("text", "text")),
-              new go.Binding("alignment", "isSubGraphExpanded", function(s) { return s ? go.Spot.TopLeft : go.Spot.Center; }),
+              new go.Binding("text", "text").makeTwoWay(),
+              new go.Binding("alignment", "isSubGraphExpanded", function(s) { return s ? go.Spot.TopLeft : go.Spot.Center; })),
             // create a placeholder to represent the area where the contents of the group are
             $(go.Placeholder,
-              { padding: new go.Margin(10, 10) }),
+              { padding: new go.Margin(5, 5) }),
             makeMarkerPanel(true, 1)  // sub-process,  loop, parallel, sequential, ad doc and compensation markers
           )  // end Vertical Panel
         )
       );  // end Group
-
+    
+    //** need this in the subprocess group template above.
+    //        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
+    //          { margin: 3,
+    //            stretch: go.GraphObject.Fill,
+    //            stroke: activityNodeStroke,
+    //            parameter1: 8, fill: null, visible: false
+    //          },
+    //          new go.Binding("visible", "isTransaction")
+    //         ),
+    
   // square off the default button
   function fixExpandBtn(panel, subgraphBtn) {
     var sgBtn = panel.findObject(subgraphBtn);
@@ -743,10 +797,6 @@ function init() {
     }
   }
   fixExpandBtn(subProcessGroupTemplate, "subExpandBtn");
-
-  var grouptemplmap = new go.Map("string", go.Group);
-  grouptemplmap.add("subprocess", subProcessGroupTemplate);
-  myDiagram.groupTemplateMap = grouptemplmap;
 
   //------------------------------------------  Node Template Map   ----------------------------------------------
 
@@ -778,6 +828,8 @@ function init() {
 
   var palGroupTemplateMap = new go.Map("string", go.Group);
   palGroupTemplateMap.add("subprocess", subProcessGroupTemplateForPalette);
+  palGroupTemplateMap.add("Pool", poolTemplateForPalette);
+  palGroupTemplateMap.add("Lane", swimLanesGroupTemplateForPalette);
 
   //------------------------------------------  Link Templates   ----------------------------------------------
 
@@ -794,11 +846,12 @@ function init() {
               // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
               { click: function(e, obj) { setSequenceLinkConditionalFlow(obj.part.adornedObject); } })
            ),
-        routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10,
-        reshapable: true, relinkableFrom: true, relinkableTo: true, toEndSegmentLength: 20
+           routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10,
+           //fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
+           reshapable: true, relinkableFrom: true, relinkableTo: true, toEndSegmentLength: 20
       },
       new go.Binding("points").makeTwoWay(),
-      $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 1 }),
+      $(go.Shape, { stroke: "black", strokeWidth: 1 }),
       $(go.Shape, { toArrow: "Triangle", scale: 1.2, fill: "black", stroke: null }),
       $(go.Shape, { fromArrow: "", scale: 1.5, stroke: "black", fill: "white" },
                   new go.Binding("fromArrow", "isDefault", function(s) {
@@ -839,9 +892,10 @@ function init() {
   var messageFlowLinkTemplate =
      $(PoolLink, // defined in BPMNClasses.js
        { routing: go.Link.Orthogonal, curve: go.Link.JumpGap, corner: 10,
+         fromSpot: go.Spot.TopBottomSides , toSpot: go.Spot.TopBottomSides,
          reshapable: true, relinkableTo: true, toEndSegmentLength: 20 },
        new go.Binding("points").makeTwoWay(),
-       $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 1, strokeDashArray: [6, 2] }),
+       $(go.Shape, { stroke: "black", strokeWidth: 1, strokeDashArray: [6, 2] }),
        $(go.Shape, { toArrow: "Triangle", scale: 1, fill: "white", stroke: "black" }),
        $(go.Shape, { fromArrow: "Circle", scale: 1, visible: true, stroke: "black", fill: "white" }),
        $(go.TextBlock, {
@@ -853,6 +907,7 @@ function init() {
   var dataAssociationLinkTemplate =
     $(go.Link,
       { routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10,
+        fromSpot: go.Spot.AllSides , toSpot: go.Spot.AllSides,
         reshapable: true, relinkableFrom: true, relinkableTo: true },
       new go.Binding("points").makeTwoWay(),
       $(go.Shape, { stroke: "black", strokeWidth: 1, strokeDashArray: [1, 3] }),
@@ -862,16 +917,12 @@ function init() {
   var annotationAssociationLinkTemplate =
     $(go.Link,
       { reshapable: true, relinkableFrom: true, relinkableTo: true,
+        toSpot: go.Spot.AllSides,
         toEndSegmentLength: 20, fromEndSegmentLength: 40 },
       new go.Binding("points").makeTwoWay(),
       $(go.Shape, { stroke: "black", strokeWidth: 1, strokeDashArray: [1, 3] }),
       $(go.Shape, { toArrow: "OpenTriangle", scale: 1, stroke: "black" })
-   );
-
-  // in BPMN, can't like across subprocess boundaries.
-  function sameLevel(fromnode, fromport, tonode, toport) {
-    return fromnode.containingGroup === tonode.containingGroup;
-  }
+   );   
 
   var linkTemplateMap = new go.Map("string", go.Link);
   linkTemplateMap.add("msg", messageFlowLinkTemplate);
@@ -892,16 +943,17 @@ function init() {
       e.subject.category = "data"; // data association
     }
   });
-
-  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-    // e.subject is the collection that was just dropped
-    e.subject.each(function(part) {
-        if (part instanceof go.Node && part.data.item === "end") {
-          part.moveTo(part.location.x  + 350, part.location.y)
-        }
-      });
-    myDiagram.commandHandler.expandSubGraph();
-  });
+    
+//  uncomment this if you want a subprocess to expand on drop.  We decided we didn't like this behavior
+//  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
+//    // e.subject is the collection that was just dropped
+//    e.subject.each(function(part) {
+//        if (part instanceof go.Node && part.data.item === "end") {
+//          part.move(new go.Point(part.location.x  + 350, part.location.y))
+//        }
+//      });
+//    myDiagram.commandHandler.expandSubGraph();
+//  });
 
   // change the title to indicate that the diagram has been modified
   myDiagram.addDiagramListener("Modified", function(e) {
@@ -914,190 +966,556 @@ function init() {
     }
   });
 
+    //------------------------------------------  pools / lanes   ----------------------------------------------
+
+    // some shared functions
+
+    // this may be called to force the lanes to be laid out again
+  function relayoutLanes() {
+      myDiagram.nodes.each(function (lane) {
+          if (!(lane instanceof go.Group)) return;
+          if (lane.category === "Pool") return;
+          lane.layout.isValidLayout = false;  // force it to be invalid
+      });
+      myDiagram.layoutDiagram();
+  }
+
+    // this is called after nodes have been moved or lanes resized, to layout all of the Pool Groups again
+  function relayoutDiagram() {
+      myDiagram.layout.invalidateLayout();
+      myDiagram.findTopLevelGroups().each(function (g) { if (g.category === "Pool") g.layout.invalidateLayout(); });
+      myDiagram.layoutDiagram();
+  }
+   // compute the minimum size of a Pool Group needed to hold all of the Lane Groups
+  function computeMinPoolSize(pool) {
+      // assert(pool instanceof go.Group && pool.category === "Pool");
+      var len = MINLENGTH;
+      pool.memberParts.each(function (lane) {
+          // pools ought to only contain lanes, not plain Nodes
+          if (!(lane instanceof go.Group)) return;
+          var holder = lane.placeholder;
+          if (holder !== null) {
+              var sz = holder.actualBounds;
+              len = Math.max(len, sz.width);
+          }
+      });
+      return new go.Size(len, NaN);
+  }
+
+    // compute the minimum size for a particular Lane Group
+  function computeLaneSize(lane) {
+      // assert(lane instanceof go.Group && lane.category !== "Pool");
+      var sz = computeMinLaneSize(lane);
+      if (lane.isSubGraphExpanded) {
+          var holder = lane.placeholder;
+          if (holder !== null) {
+              var hsz = holder.actualBounds;
+              sz.height = Math.max(sz.height, hsz.height);
+          }
+      }
+      // minimum breadth needs to be big enough to hold the header
+      var hdr = lane.findObject("HEADER");
+      if (hdr !== null) sz.height = Math.max(sz.height, hdr.actualBounds.height);
+      return sz;
+  }
+
+    // determine the minimum size of a Lane Group, even if collapsed
+  function computeMinLaneSize(lane) {
+      if (!lane.isSubGraphExpanded) return new go.Size(MINLENGTH, 1);
+      return new go.Size(MINLENGTH, MINBREADTH);
+  }
+
+    // define a custom ResizingTool to limit how far one can shrink a lane Group
+  function LaneResizingTool() {
+      go.ResizingTool.call(this);
+  }
+  go.Diagram.inherit(LaneResizingTool, go.ResizingTool);
+
+  LaneResizingTool.prototype.isLengthening = function () {
+      return (this.handle.alignment === go.Spot.Right);
+  };
+
+    /** @override */
+  LaneResizingTool.prototype.computeMinSize = function () {
+      var lane = this.adornedObject.part;
+      // assert(lane instanceof go.Group && lane.category !== "Pool");
+      var msz = computeMinLaneSize(lane);  // get the absolute minimum size
+      if (this.isLengthening()) {  // compute the minimum length of all lanes
+          var sz = computeMinPoolSize(lane.containingGroup);
+          msz.width = Math.max(msz.width, sz.width);
+      } else {  // find the minimum size of this single lane
+          var sz = computeLaneSize(lane);
+          msz.width = Math.max(msz.width, sz.width);
+          msz.height = Math.max(msz.height, sz.height);
+      }
+      return msz;
+  };
+
+    /** @override */
+  LaneResizingTool.prototype.canStart = function () {
+      if (!go.ResizingTool.prototype.canStart.call(this)) return false;
+
+      // if this is a resize handle for a "Lane", we can start.
+      var diagram = this.diagram;
+      if (diagram === null) return;
+      var handl = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
+      if (handl === null || handl.part === null || handl.part.adornedObject === null || handl.part.adornedObject.part === null) return false;
+      return (handl.part.adornedObject.part.category === "Lane");
+  }
+
+    /** @override */
+  LaneResizingTool.prototype.resize = function (newr) {
+      var lane = this.adornedObject.part;
+      if (this.isLengthening()) {  // changing the length of all of the lanes
+          lane.containingGroup.memberParts.each(function (lane) {
+              if (!(lane instanceof go.Group)) return;
+              var shape = lane.resizeObject;
+              if (shape !== null) {  // set its desiredSize length, but leave each breadth alone
+                  shape.width = newr.width;
+              }
+          });
+      } else {  // changing the breadth of a single lane
+          go.ResizingTool.prototype.resize.call(this, newr);
+      }
+      relayoutDiagram();  // now that the lane has changed size, layout the pool again
+  };
+    // end LaneResizingTool class
+
+
+    // define a custom grid layout that makes sure the length of each lane is the same
+    // and that each lane is broad enough to hold its subgraph
+  function PoolLayout() {
+      go.GridLayout.call(this);
+      this.cellSize = new go.Size(1, 1);
+      this.wrappingColumn = 1;
+      this.wrappingWidth = Infinity;
+      this.isRealtime = false;  // don't continuously layout while dragging
+      this.alignment = go.GridLayout.Position;
+      // This sorts based on the location of each Group.
+      // This is useful when Groups can be moved up and down in order to change their order.
+      this.comparer = function (a, b) {
+          var ay = a.location.y;
+          var by = b.location.y;
+          if (isNaN(ay) || isNaN(by)) return 0;
+          if (ay < by) return -1;
+          if (ay > by) return 1;
+          return 0;
+      };
+  }
+  go.Diagram.inherit(PoolLayout, go.GridLayout);
+
+    /** @override */
+  PoolLayout.prototype.doLayout = function (coll) {
+      var diagram = this.diagram;
+      if (diagram === null) return;
+      diagram.startTransaction("PoolLayout");
+      var pool = this.group;
+      if (pool !== null && pool.category === "Pool") {
+          // make sure all of the Group Shapes are big enough
+          var minsize = computeMinPoolSize(pool);
+          pool.memberParts.each(function (lane) {
+              if (!(lane instanceof go.Group)) return;
+              if (lane.category !== "Pool") {
+                  var shape = lane.resizeObject;
+                  if (shape !== null) {  // change the desiredSize to be big enough in both directions
+                      var sz = computeLaneSize(lane);
+                      shape.width = (isNaN(shape.width) ? minsize.width : Math.max(shape.width, minsize.width));
+                      shape.height = (!isNaN(shape.height)) ? Math.max(shape.height, sz.height) : sz.height;
+                      var cell = lane.resizeCellSize;
+                      if (!isNaN(shape.width) && !isNaN(cell.width) && cell.width > 0) shape.width = Math.ceil(shape.width / cell.width) * cell.width;
+                      if (!isNaN(shape.height) && !isNaN(cell.height) && cell.height > 0) shape.height = Math.ceil(shape.height / cell.height) * cell.height;
+                  }
+              }
+          });
+      }
+      // now do all of the usual stuff, according to whatever properties have been set on this GridLayout
+      go.GridLayout.prototype.doLayout.call(this, coll);
+      diagram.commitTransaction("PoolLayout");
+  };
+    // end PoolLayout class
+
+  myDiagram.toolManager.mouseDownTools.insertAt(0, new LaneResizingTool());
+    //myDiagram.layout = $(PoolLayout);
+  myDiagram.addDiagramListener("SelectionMoved", relayoutDiagram);
+  myDiagram.addDiagramListener("SelectionCopied", relayoutDiagram);
+
+
+    // this is a Part.dragComputation function for limiting where a Node may be dragged
+  function stayInGroup(part, pt, gridpt) {
+      // don't constrain top-level nodes
+      var grp = part.containingGroup;
+      if (grp === null) return pt;
+      // try to stay within the background Shape of the Group
+      var back = grp.resizeObject;
+      if (back === null) return pt;
+      // allow dragging a Node out of a Group if the Shift key is down
+      if (part.diagram.lastInput.shift) return pt;
+      var p1 = back.getDocumentPoint(go.Spot.TopLeft);
+      var p2 = back.getDocumentPoint(go.Spot.BottomRight);
+      var b = part.actualBounds;
+      var loc = part.location;
+      // find the padding inside the group's placeholder that is around the member parts
+      var m = grp.placeholder.padding;
+      // now limit the location appropriately
+      var x = Math.max(p1.x + m.left, Math.min(pt.x, p2.x - m.right - b.width - 1)) + (loc.x - b.x);
+      var y = Math.max(p1.y + m.top, Math.min(pt.y, p2.y - m.bottom - b.height - 1)) + (loc.y - b.y);
+      return new go.Point(x, y);
+  }
+
+  function groupStyle() {  // common settings for both Lane and Pool Groups
+      return [
+        {
+            layerName: "Background",  // all pools and lanes are always behind all nodes and links
+            background: "transparent",  // can grab anywhere in bounds
+            movable: true, // allows users to re-order by dragging
+            copyable: false,  // can't copy lanes or pools
+            avoidable: false  // don't impede AvoidsNodes routed Links
+        },
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
+      ];
+  }
+
+    // hide links between lanes when either lane is collapsed
+  function updateCrossLaneLinks(group) {
+      group.findExternalLinksConnected().each(function (l) {
+          l.visible = (l.fromNode.isVisible() && l.toNode.isVisible());
+      });
+  }
+
+  var laneEventMenu =  // context menu for each lane
+  $(go.Adornment, "Vertical",
+    $("ContextMenuButton",
+      $(go.TextBlock, "Add Lane"),
+      // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
+      { click: function (e, obj) { addLaneEvent(obj.part.adornedObject); } })
+   );
+
+    // Add a lane to pool (lane parameter is lane above new lane)
+  function addLaneEvent(lane) {
+      myDiagram.startTransaction("addLane");
+      if (lane != null && lane.data.category === "Lane") {
+          // create a new lane data object
+          var shape = lane.findObject("SHAPE");
+          var size = new go.Size(shape.width, MINBREADTH);
+          //size.height = MINBREADTH;
+          var newlanedata = {
+              category: "Lane",
+              text: "New Lane",
+              color: "white",
+              isGroup: true,
+              loc: go.Point.stringify(new go.Point(lane.location.x, lane.location.y + 1)), // place below selection
+              size: go.Size.stringify(size),
+              group: lane.data.group
+          };
+          // and add it to the model
+          myDiagram.model.addNodeData(newlanedata);
+      }
+      myDiagram.commitTransaction("addLane");
+  }
+
+  var swimLanesGroupTemplate =
+  $(go.Group, "Spot", groupStyle(),
+    {
+        name: "Lane",
+        contextMenu: laneEventMenu,
+        minLocation: new go.Point(NaN, -Infinity),  // only allow vertical movement
+        maxLocation: new go.Point(NaN, Infinity),
+        selectionObjectName: "SHAPE",  // selecting a lane causes the body of the lane to be highlit, not the label
+        resizable: true, resizeObjectName: "SHAPE",  // the custom resizeAdornmentTemplate only permits two kinds of resizing
+        layout: $(go.LayeredDigraphLayout,  // automatically lay out the lane's subgraph
+                  {
+                      isInitial: false,  // don't even do initial layout
+                      isOngoing: false,  // don't invalidate layout when nodes or links are added or removed
+                      direction: 0,
+                      columnSpacing: 10,
+                      layeringOption: go.LayeredDigraphLayout.LayerLongestPathSource
+                  }),
+        computesBoundsAfterDrag: true,  // needed to prevent recomputing Group.placeholder bounds too soon
+        computesBoundsIncludingLinks: false,  // to reduce occurrences of links going briefly outside the lane
+        computesBoundsIncludingLocation: true,  // to support empty space at top-left corner of lane
+        handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+        mouseDrop: function (e, grp) {  // dropping a copy of some Nodes and Links onto this Group adds them to this Group
+            // don't allow drag-and-dropping a mix of regular Nodes and Groups
+            if (!e.diagram.selection.any(function (n) { return (n instanceof go.Group && n.category !== "subprocess") || n.category === "privateProcess"; })) {
+                var ok = grp.addMembers(grp.diagram.selection, true);
+                if (ok) {
+                    updateCrossLaneLinks(grp);
+                    relayoutDiagram();
+                } else {
+                    grp.diagram.currentTool.doCancel();
+                }
+            }
+        },
+        subGraphExpandedChanged: function (grp) {
+            var shp = grp.resizeObject;
+            if (grp.diagram.undoManager.isUndoingRedoing) return;
+            if (grp.isSubGraphExpanded) {
+                shp.height = grp._savedBreadth;
+            } else {
+                grp._savedBreadth = shp.height;
+                shp.height = NaN;
+            }
+            updateCrossLaneLinks(grp);
+        }
+    },
+    //new go.Binding("isSubGraphExpanded", "expanded").makeTwoWay(),
+
+    $(go.Shape, "Rectangle",  // this is the resized object
+      { name: "SHAPE", fill: "white", stroke: null },  // need stroke null here or you gray out some of pool border.
+      new go.Binding("fill", "color"),
+      new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
+
+   // the lane header consisting of a Shape and a TextBlock
+      $(go.Panel, "Horizontal",
+      {
+          name: "HEADER",
+          angle: 270,  // maybe rotate the header to read sideways going up
+          alignment: go.Spot.LeftCenter, alignmentFocus: go.Spot.LeftCenter
+      },
+        $(go.TextBlock,  // the lane label
+          { editable: true, margin: new go.Margin(2, 0, 0, 8) },
+          new go.Binding("visible", "isSubGraphExpanded").ofObject(),
+          new go.Binding("text", "text").makeTwoWay()),
+        $("SubGraphExpanderButton", { margin: 4, angle: -270 })  // but this remains always visible!
+       ),  // end Horizontal Panel
+      $(go.Placeholder,
+        { padding: 12, alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.TopLeft }),
+    $(go.Panel, "Horizontal", { alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.TopLeft },
+      $(go.TextBlock,  // this TextBlock is only seen when the swimlane is collapsed
+        {
+            name: "LABEL",
+            editable: true, visible: false,
+            angle: 0, margin: new go.Margin(6, 0, 0, 20)
+        },
+        new go.Binding("visible", "isSubGraphExpanded", function (e) { return !e; }).ofObject(),
+        new go.Binding("text", "text").makeTwoWay())
+     )
+  );  // end swimLanesGroupTemplate
+
+    // define a custom resize adornment that has two resize handles if the group is expanded
+    //myDiagram.groupTemplate.resizeAdornmentTemplate =
+  swimLanesGroupTemplate.resizeAdornmentTemplate =
+    $(go.Adornment, "Spot",
+      $(go.Placeholder),
+      $(go.Shape,  // for changing the length of a lane
+        {
+            alignment: go.Spot.Right,
+            desiredSize: new go.Size(7, 50),
+            fill: "lightblue", stroke: "dodgerblue",
+            cursor: "col-resize"
+        },
+        new go.Binding("visible", "", function (ad) { return ad.adornedPart.isSubGraphExpanded; }).ofObject()),
+      $(go.Shape,  // for changing the breadth of a lane
+        {
+            alignment: go.Spot.Bottom,
+            desiredSize: new go.Size(50, 7),
+            fill: "lightblue", stroke: "dodgerblue",
+            cursor: "row-resize"
+        },
+        new go.Binding("visible", "", function (ad) { return ad.adornedPart.isSubGraphExpanded; }).ofObject())
+    );
+
+ var poolGroupTemplate =
+    $(go.Group, "Auto", groupStyle(),
+      { // use a simple layout that ignores links to stack the "lane" Groups on top of each other
+          layout: $(PoolLayout, { spacing: new go.Size(0, 0) })  // no space between lanes
+      },
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.Shape,
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.Panel, "Table",
+        { defaultColumnSeparatorStroke: "black" },
+        $(go.Panel, "Horizontal",
+          { column: 0, angle: 270 },
+          $(go.TextBlock,
+            { editable: true, margin: new go.Margin(5, 0, 5, 0) },  // margin matches private process (black box pool)
+            new go.Binding("text").makeTwoWay())
+        ),
+        $(go.Placeholder,
+          { background: "darkgray", column: 1 })
+      )
+    ); // end poolGroupTemplate
+
+    var grouptemplmap = new go.Map("string", go.Group);
+    grouptemplmap.add("subprocess", subProcessGroupTemplate);
+    grouptemplmap.add("Lane", swimLanesGroupTemplate);
+    grouptemplmap.add("Pool", poolGroupTemplate);
+    myDiagram.groupTemplateMap = grouptemplmap;
 
   //------------------------------------------  Palette   ----------------------------------------------
 
-  // default structures
-  var myPalette =
-    $(go.Palette, "myPalette",
-      { nodeTemplateMap: palTemplateMap,
-        groupTemplateMap: palGroupTemplateMap,
-        "contextMenuTool.isEnabled": false,  // but disable context menus
-        allowZoom: false,
-        layout: $(go.GridLayout, { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5) })
-      });  // end Palette
+    // Make sure the pipes are ordered by their key in the palette inventory
+    function keyCompare(a, b) {
+      var at = a.data.key;
+      var bt = b.data.key;
+      if (at < bt) return -1;
+      if (at > bt) return 1;
+      return 0;
+    }
 
-  var level1 = $(go.GraphLinksModel,
+    // initialize the first Palette, BPMN Spec Level 1
+    var myPaletteLevel1 =
+      $(go.Palette, "myPaletteLevel1",
+        { // share the templates with the main Diagram
+          nodeTemplateMap: palTemplateMap,
+          groupTemplateMap: palGroupTemplateMap,
+          layout: $(go.GridLayout,
+                    {cellSize: new go.Size(1, 1),
+                     spacing: new go.Size(5, 5),
+                     comparer: keyCompare
+                    })
+        });
+
+    // initialize the second Palette, BPMN Spec Level 2
+    var myPaletteLevel2 =
+      $(go.Palette, "myPaletteLevel2",
+        { // share the templates with the main Diagram
+          nodeTemplateMap: palTemplateMap,
+          groupTemplateMap: palGroupTemplateMap,
+          layout: $(go.GridLayout,
+                    {cellSize: new go.Size(1, 1),
+                     spacing: new go.Size(5, 5),
+                     comparer: keyCompare
+                    })
+        });
+
+    // initialize the third Palette, random other stuff
+    var myPaletteLevel3 =
+      $(go.Palette, "myPaletteLevel3",
+        { // share the templates with the main Diagram
+          nodeTemplateMap: palTemplateMap,
+          groupTemplateMap: palGroupTemplateMap,
+          layout: $(go.GridLayout,
+                    {cellSize: new go.Size(1, 1),
+                     spacing: new go.Size(5, 5),
+                     comparer: keyCompare
+                    })
+        });
+
+   jQuery("#accordion").accordion({
+      activate: function(event, ui) {
+        myPaletteLevel1.requestUpdate();
+        myPaletteLevel2.requestUpdate();
+      }
+    });
+
+  myPaletteLevel1.model = $(go.GraphLinksModel,
     {
+      copiesArrays: true,
+      copiesArrayObjects: true,
       nodeDataArray: [
-        {
-          key: 701,
-          category: "annotation",
-          text: "note"
-        },
       // -------------------------- Event Nodes
-      {
-        key: 101,
-        category: "event",
-        text: "Start",
-        eventType: 1,
-        eventDimension: 1,
-        item: "start"
-      },
-      {
-        key: 102,
-        category: "event",
-        text: "Message",
-        eventType: 2,  // BpmnTaskMessage
-        eventDimension: 2,
-        item: "Message"
-      },
-       {
-         key: 103,
-         category: "event",
-         text: "Timer",
-         eventType: 3,
-         eventDimension: 3,
-         item: "Timer"
-       },
-      {
-        key: 104,
-        category: "event",
-        text: "End",
-        eventType: 1,
-        eventDimension: 8,
-        item: "End"
-      },
-      {
-        key: 105,
-        category: "event",
-        text: "Message",
-        eventType: 2,  // BpmnTaskMessage
-        eventDimension: 8,
-        item: "Message"
-      },
-       {
-         key: 106,
-         category: "event",
-         text: "Timer",
-         eventType: 3,
-         eventDimension: 8,
-         item: "Timer"
-       },
-       {
-         key: 5,
-         category: "activity",
-         text: "Task",
-         item: "generic task",
-         taskType: 0
-       },
-       {
-         key: 6,
-         category: "activity",
-         text: "Service\nTask",
-         item: "service task",
-         taskType: 6
-       },
-       {
-         key: 7,
-         category: "activity",
-         text: "User Task",
-         item: "User task",
-         taskType: 2
-       },
-        {
-          key: 201,
-          category: "gateway",
-          text: "Parallel",
-          gatewayType: 1
-        },
-        {
-          key: 204,
-          category: "gateway",
-          text: "Exclusive",
-          gatewayType: 4
-        },
-        {
-          key: 301,
-          category: "dataobject",
-          text: "Data\nObject"
-        },
-        {
-          key: 302,
-          category: "datastore",
-          text: "Data\nStorage"
-        },
-        {
-          key: 777,
-          category: "privateProcess",
-          text: "Process"
-        },
-        {
-          key: 1,
-          category: "activity",
-          text: "Message",
-          taskType: 1,
-          item: "Message Task",
-          boundaryEventArray: [{ "portId": "be0", alignmentIndex: 0, eventType: 2, color: "white" }]   // portId # and alignmentIndex should match
-        },
-
-        { key: 801, loc: "0 0", text: "Subprocess", isGroup: true, isSubProcess: true, category: "subprocess", taskType: 0 },
-        { key: -802, loc: "0 0", group: 801, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start" },
-        { key: -803, loc: "350 0", group: 801, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end" }
-
+      {key: 101, category: "event", text: "Start",   eventType: 1, eventDimension: 1, item: "start"},
+      {key: 102, category: "event", text: "Message", eventType: 2, eventDimension: 2, item: "Message"}, // BpmnTaskMessage
+      {key: 103, category: "event", text: "Timer",   eventType: 3, eventDimension: 3, item: "Timer"},
+      {key: 104, category: "event", text: "End",     eventType: 1, eventDimension: 8, item: "End"},
+      {key: 107, category: "event", text: "Message", eventType: 2, eventDimension: 8, item: "Message"},// BpmnTaskMessage
+      {key: 108, category: "event", text: "Terminate", eventType: 13, eventDimension: 8, item: "Terminate"},
+      // -------------------------- Task/Activity Nodes
+      {key: 131, category: "activity", text: "Task", item: "generic task", taskType: 0},
+      {key: 132, category: "activity", text: "User Task", item: "User task", taskType: 2},
+      {key: 133, category: "activity", text: "Service\nTask", item: "service task", taskType: 6},
+      // subprocess and start and end
+      {key: 134, category: "subprocess", loc: "0 0", text: "Subprocess", isGroup: true, isSubProcess: true, taskType: 0 },
+        {key: -802, category: "event", loc: "0 0", group: 134,  text: "Start", eventType: 1, eventDimension: 1, item: "start" },
+        {key: -803, category: "event", loc: "350 0", group: 134,  text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end" },
+      // -------------------------- Gateway Nodes, Data, Pool and Annotation
+      {key: 201, category: "gateway", text: "Parallel", gatewayType: 1},
+      {key: 204, category: "gateway", text: "Exclusive", gatewayType: 4},
+      {key: 301, category: "dataobject", text: "Data\nObject"},
+      {key: 302, category: "datastore", text: "Data\nStorage"},
+      {key: 401, category: "privateProcess", text: "Black Box"},
+      {key: "501", "text": "Pool 1", "isGroup": "true", "category": "Pool" },
+        {key: "Lane5", "text": "Lane 1", "isGroup": "true", "group": "501", "color": "lightyellow", "category": "Lane" },
+        {key: "Lane6", "text": "Lane 2", "isGroup": "true", "group": "501", "color": "lightgreen", "category": "Lane" },
+      {key: 701, category: "annotation", text: "note"}
       ]  // end nodeDataArray
     });  // end model
 
-  myPalette.model = level1;
+    // an activity with a boundary event:
+//        {
+//          key: 1,
+//          category: "activity",
+//          text: "Message",
+//          taskType: 1,
+//          item: "Message Task",
+//          boundaryEventArray: [{ "portId": "be0", alignmentIndex: 0, eventType: 2, color: "white" }]   // portId # and alignmentIndex should match
+//        },
 
-  var level2 = [
-    { key: 1, category: "activity", taskType: 1, text: "Message", item: "Message Task" },
-    { key: 2, category: "activity", taskType: 2, isCompensation: true, text: "User", item: "User Task",
-      isCall: true, isLoop: true, isParallel: true, isSequential: true
-    },
-    { key: 811, loc: "0 0", text: "Adhoc\nSubprocess", isGroup: true, isSubProcess: true, category: "subprocess", isAdHoc: true, taskType: 0 },
-    { key: -812, loc: "0 0", group: 811, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start" },
-    { key: -813, loc: "350 0", group: 811, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end" },
+ myPaletteLevel2.model = new go.GraphLinksModel([
+    { key: 1, category: "activity", taskType: 1, text: "Receive Task", item: "Receive Task" },
+    { key: 2, category: "activity", taskType: 5, text: "Send Task", item: "Send Task" },
+    { key: 3, category: "activity", taskType: 7, text: "Business\nRule Task", item: "Business Rule Task" },
+    { key: 4, category: "activity", taskType: 2, text: "User Task", item: "User Task", isCall: true},
 
-    { key: 821, loc: "0 0", text: "Transactional\nSubprocess", isGroup: true, isSubProcess: true, category: "subprocess", isTransaction: true, taskType: 0 },
-    { key: -822, loc: "0 0", group: 821, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start" },
-    { key: -823, loc: "350 0", group: 821, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end" },
+    { key: 101, text: "Adhoc\nSubprocess", isGroup: true, isSubProcess: true, category: "subprocess", isAdHoc: true, taskType: 0, loc: "0 0" },
+    { key: -812, group: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start", loc: "0 0" },
+    { key: -813, group: 101, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end" },
 
-    { key: 831, loc: "0 0", text: "Call Subprocess", isGroup: true, isSubProcess: true, category: "subprocess", isCall: true, taskType: 0 },
-    { key: -832, loc: "0 0", group: 831, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start" },
-    { key: -833, loc: "350 0", group: 831, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end" }
-  ];
+    { key: 102, text: "Transactional\nSubprocess", isGroup: true, isSubProcess: true, category: "subprocess", isTransaction: true, taskType: 0, loc: "0 0" },
+    { key: -822, group: 102, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start", loc: "0 0" },
+    { key: -823, group: 102, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end", loc: "350 0" },
 
-  for (var i = 0; i < level2.length; i++) {
-    myPalette.model.addNodeData(level2[i]);
-  }
+    { key: 103, text: "Looping\nActivity", isGroup: true, isLoop: true,  isSubProcess: true, category: "subprocess", taskType: 0, loc: "0 0" },
+    { key: -831, group: 103, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start", loc: "0 0" },
+    { key: -832, group: 103, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end", loc: "350 0" },
 
-  var debugPalette = [
-    { key: 101, category: "event", eventType: 4, eventDimension: 8, text: "Escalation", item: "BpmnEventEscalation" },
-    { key: 102, category: "event", eventType: 5, eventDimension: 5, text: "Conditional", item: "BpmnEventConditional" },
-    { key: 105, category: "event", eventType: 6, eventDimension: 4, text: "OffPage", item: "BpmnEventOffPage" },
-    { key: 106, category: "event", eventType: 6, eventDimension: 7, text: "OffPage", item: "BpmnEventOffPage" },
-    { key: 107, category: "event", eventType: 7, eventDimension: 8, text: "Error", item: "BpmnEventError" },
+    { key: 104, text: "Multi-Instance\nActivity", isGroup: true, isSubProcess: true, isParallel: true, category: "subprocess", taskType: 0, loc: "0 0" },
+    { key: -841, group: 104, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start", loc: "0 0" },
+    { key: -842, group: 104, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end", loc: "350 0" },
+
+    { key: 105, text: "Call\nSubprocess", isGroup: true, isSubProcess: true, category: "subprocess", isCall: true, taskType: 0, loc: "0 0" },
+    { key: -861, group: 105, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "start", loc: "0 0" },
+    { key: -862, group: 105, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "end", name: "end", loc: "350 0" },
+
+     // gateway nodes
+    { key: 301, category: "gateway", gatewayType: 2, text: "Inclusive" },
+    { key: 302, category: "gateway", gatewayType: 5, text: "Event\nGateway" },
+
+    // events
+    { key: 401, category: "event", eventType: 5, eventDimension: 1, text: "Conditional\nStart", item: "BpmnEventConditional" },
+    { key: 402, category: "event", eventType: 10, eventDimension: 1, text: "Signal\nStart", item: "BpmnEventSignal" },  // start signal
+    { key: 403, category: "event", eventType: 10, eventDimension: 8, text: "Signal\nEnd", item: "end signal" },
+    { key: 404, category: "event", eventType: 7, eventDimension: 8, text: "Error", item: "BpmnEventError" },
+    { key: 405, category: "event", eventType: 4, eventDimension: 8, text: "Escalation", item: "BpmnEventEscalation" },
+     // throwing / catching intermedicate events
+     {key: 502, category: "event", eventType: 6, eventDimension: 4, text: "Catch\nLink", item: "BpmnEventOffPage" },
+     {key: 503, category: "event", eventType: 6, eventDimension: 7, text: "Throw\nLink", item: "BpmnEventOffPage" },
+     {key: 504, category: "event", eventType: 2, eventDimension: 4, text: "Catch\nMessage", item: "Message"},
+     {key: 505, category: "event", eventType: 2, eventDimension: 7, text: "Throw\nMessage", item: "Message"},
+     {key: 506, category: "event", eventType: 5, eventDimension: 4, text: "Catch\nConditional", item: ""},
+     {key: 507, category: "event", eventType: 3, eventDimension: 4, text: "Catch\nTimer", item: ""},
+     {key: 508, category: "event", eventType: 4, eventDimension: 7, text: "Throw\nEscalation", item: "Escalation"},
+     {key: 509, category: "event", eventType: 10, eventDimension: 4, text: "Catch\nSignal", item: "" },
+     {key: 510, category: "event", eventType: 10, eventDimension: 7, text: "Throw\nSignal", item: "" }
+ ]);
+
+  myPaletteLevel3.model = new go.GraphLinksModel([
+
+
+
     { key: 108, category: "event", eventType: 8, eventDimension: 5, text: "Cancel", item: "BpmnEventCancel" },
     { key: 109, category: "event", eventType: 9, eventDimension: 5, text: "Compensation", item: "BpmnEventCompensation"},
-    { key: 110, category: "event", eventType: 10, eventDimension: 8, text: "Signal", item: "Signal" },
+
     { key: 111, category: "event", eventType: 11, eventDimension: 1, text: "Multiple", item: "Multiple" },
     { key: 112, category: "event", eventType: 12, eventDimension: 1, text: "Parallel", item: "Parallel" },
     // activity nodes
-    { key: 3, category: "activity", taskType: 3, isAdHoc: true, text: "Manual", item: "Manual Task" },
-    { key: 4, category: "activity", taskType: 4, isSequential: true, text: "Script", item: "Script Task" },
-    { key: 5, category: "activity", taskType: 5, isParallel: true, text: "Send Msg", item: "Send Msg Task" },
-    { key: 6, category: "activity", taskType: 6, isLoop: true, isSubProcess: true, isTransaction: true, text: "Service", item: "service task" },
-    { key: 7, category: "activity", taskType: 7, isSubProcess: true, text: "Business Rule", item: "Business Rule Task" },
-    // gateway nodes
-    { key: 202, category: "gateway", gatewayType: 2, text: "Inclusive" },
-    { key: 203, category: "gateway", gatewayType: 3, text: "Complex" }
-  ];  // end nodeDataArray
+    { key: 203, category: "activity", taskType: 3, isAdHoc: true, text: "Manual", item: "Manual Task" },
+    { key: 204, category: "activity", taskType: 4, isSequential: true, text: "Script", item: "Script Task" },
+    { key: 205, category: "activity", taskType: 5, isParallel: true, text: "Send Msg", item: "Send Msg Task" },
+    { key: 206, category: "activity", taskType: 6, isLoop: true, isSubProcess: true, isTransaction: true, text: "Service", item: "service task" },
 
-  for (var i = 0; i < debugPalette.length; i++) {
-    myPalette.model.addNodeData(debugPalette[i]);
-  }
 
+    // gateway nodes not in Level 1 or Level 2
+    {key: 603, category: "gateway", text: "Complex", gatewayType: 3 },
+    {key: 606, category: "gateway", text: "Exclusive Start", gatewayType: 6 },
+    {key: 607, category: "gateway", text: "Parallel Start", gatewayType: 7 },
+
+     { key: 4, category: "activity", taskType: 2, text: "User Task", item: "User Task",
+      isCall: true, isLoop: true, isParallel: true, isSequential: true
+    }
+  ]);  // end nodeDataArray
 
   //------------------------------------------  Overview   ----------------------------------------------
 
@@ -1107,103 +1525,38 @@ function init() {
   // change color of viewport border in Overview
   myOverview.box.elt(0).stroke = "dodgerblue";
 
-
-  // start with a blank canvas:
-  // myDiagram.isModified = false;
-  // newDocument();
-
   // start with a simple preset model:
   loadModel();
+        
 } // end init
-
-
-// When copying a node, we need to copy the data that the node is bound to.
-// This JavaScript object includes properties for the node as a whole, and
-// four properties that are Arrays holding data for each port.
-// Those arrays and port data objects need to be copied too.
-
-function copyNodeData(data) {
-  var copy = {};
-  copy.category = data.category;
-  copy.item = data.item;
-  copy.key = data.key; // adding to the Model will make the key value unique
-  copy.loc = data.loc;
-  copy.text = data.text;
-  if (data.isGroup) {
-    copy.isGroup = true;
-  }
-  if (data.category === "event") {
-    copy.eventType = data.eventType;
-    copy.eventDimension = data.eventDimension;
-  }
-  else if (data.category === "activity" || data.category === "subprocess") {
-    copy.taskType = data.taskType;
-    copy.isTransaction = data.isTransaction;
-    copy.isCall = data.isCall;
-    copy.isLoop = data.isLoop;
-    copy.isSubProcess = data.isSubProcess;
-    copy.isParallel = data.isParallel;
-    copy.isSequential = data.isSequential;
-    copy.isAdHoc = data.isAdHoc;
-    copy.isCompensation = data.isCompensation;
-    copy.boundaryEventArray = copyBoundaryEventArray(data.boundaryEventArray);
-  }
-  else if (data.category === "gateway") {
-    copy.gatewayType = data.gatewayType;
-  }
-  // if you add data properties, you should copy them here too
-  return copy;
-}
-
-function copyBoundaryEventArray(arr) {
-  var copy = [];
-  if (Array.isArray(arr)) {
-    for (var i = 0; i < arr.length; i++) {
-      copy.push(copyBoundaryEventData(arr[i]));
-    }
-  }
-  return copy;
-}
-
-function copyBoundaryEventData(data) {
-  var copy = {};
-  copy.portId = data.portId;
-  copy.alignmentIndex = data.alignmentIndex;
-  copy.eventType = data.eventType;
-  copy.color = data.color;
-  // if you add BoundaryEvent data properties, you should copy them here too
-  return copy;
-}
-
 
 //------------------------------------------  Commands for this application  ----------------------------------------------
 
 // Add a port to the specified side of the selected nodes.   name is beN  (be0, be1)
-function addActivityNodeBoundaryEvent(evType) {
+// evDim is 5 for Interrupting, 6 for non-Interrupting
+function addActivityNodeBoundaryEvent(evType, evDim) {
   myDiagram.startTransaction("addBoundaryEvent");
   myDiagram.selection.each(function(node) {
     // skip any selected Links
     if (!(node instanceof go.Node)) return;
-    if (node.data.category === "activity" || node.data.category === "subprocess") {
+    if (node.data && (node.data.category === "activity" || node.data.category === "subprocess")) {
       // compute the next available index number for the side
       var i = 0;
       var defaultPort = node.findPort("");
       while (node.findPort("be" + i.toString()) !== defaultPort) i++;           // now this new port name is unique within the whole Node because of the side prefix
       var name = "be" + i.toString();
-      // get the Array of port data to be modified
-      var arr = node.data["boundaryEventArray"];
-      if (arr) {
-        // create a new port data object
-        var newportdata = {
+      if (!node.data.boundaryEventArray) {myDiagram.model.setDataProperty(node.data, "boundaryEventArray", []);}       // initialize the Array of port data if necessary
+      // create a new port data object
+      var newportdata = {
           portId: name,
           eventType: evType,
+          eventDimension: evDim,
           color: "white",
           alignmentIndex: i
-          // if you add port data properties here, you should copy them in copyPortData above
+          // if you add port data properties here, you should copy them in copyPortData above  ** BUG...  we don't do that.
         };
         // and add it to the Array of port data
-        myDiagram.model.insertArrayItem(arr, -1, newportdata);
-      }
+      myDiagram.model.insertArrayItem(node.data.boundaryEventArray, -1, newportdata);
     }
   });
   myDiagram.commitTransaction("addBoundaryEvent");
@@ -1273,8 +1626,6 @@ function newDocument() {
   setCurrentFileName(UnsavedFileName);
   // loads an empty diagram
   myDiagram.model = new go.GraphLinksModel();
-  myDiagram.model.undoManager.isEnabled = true;
-  myDiagram.isModified = false;
   ModelReset();
 }
 
@@ -1283,11 +1634,9 @@ function ModelReset() {
   myDiagram.model.linkFromPortIdProperty = "fromPort";
   myDiagram.model.linkToPortIdProperty = "toPort";
 
+  myDiagram.model.copiesArrays = true;
+  myDiagram.model.copiesArrayObjects = true;
   myDiagram.isModified = false;
-  // Customize the node data copying function
-  // to avoid sharing of port data arrays and of the port data themselves.
-  // (Functions cannot be written/read in JSON format.)
-  myDiagram.model.copyNodeDataFunction = copyNodeData;
 }
 
 function checkLocalStorage() {
@@ -1363,6 +1712,16 @@ function loadFile() {
   }
   closeElement("openDocument");
 }
+
+function loadJSON(file) {
+    jQuery.getJSON(file, function (jsondata) {
+    // create the model from the data in the JavaScript object parsed from JSON text
+    //myDiagram.model = new go.GraphLinksModel(jsondata["nodes"], jsondata["links"]);
+    myDiagram.model = go.Model.fromJson(jsondata);
+    myDiagram.model.undoManager.isEnabled = true;
+    myDiagram.isModified = false;
+    });
+  }
 
 // Store shared model state in the Model.modelData property
 // (will be loaded by loadDiagramProperties)

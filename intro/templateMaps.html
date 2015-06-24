@@ -35,7 +35,7 @@ type of <a>Part</a>: <a>Node</a>, <a>Group</a>, and <a>Link</a>.
 Each Map associates a "category" name with a template.
 For example, when the diagram wants to create a <a>Node</a> for a particular node data object,
 the diagram uses that node data's category to look up the node template in the <a>Diagram.nodeTemplateMap</a>.
-Similar lookups are done using the <a>Diagram.groupTemplateMap</a> and <a>Diagram.linkTemplateMap</a>.
+Similar lookups are done using the <a>Diagram.groupTemplateMap</a> and the <a>Diagram.linkTemplateMap</a>.
 </p>
 <p>
 Each <a>Diagram</a> initially has its own template maps stocked with predefined categories.
@@ -117,6 +117,158 @@ If you want to use a different property on the data, for example because you wan
 property to mean something different, set <a>Model.nodeCategoryProperty</a> to be the name
 of the property that results in the actual category string value.
 Or set <a>Model.nodeCategoryProperty</a> to be the empty string to cause all nodes to use the default node template.
+</p>
+
+<h3>Example of Item Templates</h3>
+<p>
+For Panels with a value for <a>Panel.itemArray</a>, there is also the <a>Panel.itemTemplateMap</a>.
+As with Nodes and Groups and Links, the <a>Panel.itemTemplate</a> is just a reference to the template named
+with the empty string in the <a>Panel.itemTemplateMap</a>.
+Similarly, the <a>Panel.itemCategoryProperty</a> names the property on the item data that identifies the
+template to use from the itemTemplateMap.
+</p>
+<pre data-language="javascript" id="itemTemplates">
+  // create a template map for items
+  var itemtemplates = new go.Map("string", go.Panel);
+
+  // the template when type == "text"
+  itemtemplates.add("text",
+    $(go.Panel,
+      $(go.TextBlock,
+        new go.Binding("text"))
+    ));
+
+  // the template when type == "button"
+  itemtemplates.add("button",
+    $("Button",
+      $(go.TextBlock,
+        new go.Binding("text")),
+      // convert a function name into a function value,
+      // because functions cannot be represented in JSON format
+      new go.Binding("click", "handler",
+                      function(name) {
+                        if (name === "alert") return raiseAlert;  // defined below
+                        return null;
+                      })
+    ));
+
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      $(go.TextBlock,
+        new go.Binding("text", "key")),
+      $(go.Panel, "Auto",
+        $(go.Shape, { fill: "white" }),
+        $(go.Panel, "Vertical",
+          {
+            margin: 3,
+            defaultAlignment: go.Spot.Left,
+            itemCategoryProperty: "type",  // this property controls the template used
+            itemTemplateMap: itemtemplates  // map was defined above
+          },
+          new go.Binding("itemArray", "info"))
+      )
+    );
+
+  function raiseAlert(e, obj) {  // here OBJ will be the item Panel
+    var node = obj.part;
+    alert(node.data.key + ": " + obj.data.text);
+  }
+
+  // The model data includes item arrays in the node data.
+  diagram.model = new go.GraphLinksModel( [
+    { key: "Alpha",
+      info: [
+              { type: "text", text: "some text" },
+              { type: "button", text: "Click me!", handler: "alert"}
+            ]
+    },
+    { key: "Beta",
+      info: [
+              { type: "text", text: "first line" },
+              { type: "button", text: "First Button", handler: "alert"},
+              { type: "text", text: "second line" },
+              { type: "button", text: "Second Button", handler: "alert" }
+            ]
+    }
+  ],[
+    { from: "Alpha", to: "Beta" }
+  ]);
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("itemTemplates", 600, 150)</script>
+
+<h3>Example of Table Header Showing Item Data</h3>
+<p>
+The natural way to have a distinct header for a Table Panel is to have the first row (i.e. the first item)
+hold the data for the header, but have it be styled differently.
+In this example we define a "Header" item template in the <a>Panel.itemTemplateMap</a>.
+</p>
+<pre data-language="javascript" id="header">
+  var itemTemplateMap = new go.Map();
+  itemTemplateMap.add("",
+    $(go.Panel, "TableRow",
+      $(go.TextBlock, new go.Binding("text", "name"),
+        { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
+      $(go.TextBlock, new go.Binding("text", "phone"),
+        { column: 1, margin: 2 }),
+      $(go.TextBlock, new go.Binding("text", "loc"),
+        { column: 2, margin: 2 })
+    ));
+  itemTemplateMap.add("Header",
+    $(go.Panel, "TableRow",
+      $(go.TextBlock, new go.Binding("text", "name"),
+        { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
+      $(go.TextBlock, new go.Binding("text", "phone"),
+        { column: 1, margin: 2, font: "bold 10pt sans-serif" }),
+      $(go.TextBlock, new go.Binding("text", "loc"),
+        { column: 2, margin: 2, font: "bold 10pt sans-serif" })
+    ));
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, { fill: "white" }),
+      $(go.Panel, "Table",
+        new go.Binding("itemArray", "people"),
+        {
+          defaultAlignment: go.Spot.Left,
+          defaultColumnSeparatorStroke: "black",
+          itemTemplateMap: itemTemplateMap
+        },
+        $(go.RowColumnDefinition,
+          { row: 0, background: "lightgray" }),
+        $(go.RowColumnDefinition,
+          { row: 1, separatorStroke: "black" })
+      )
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: "group1",
+            people: [
+              { name: "Person", phone: "Phone", loc: "Location", category: "Header" },
+              { name: "Alice", phone: "2345", loc: "C4-E18" },
+              { name: "Bob", phone: "9876", loc: "E1-B34" },
+              { name: "Carol", phone: "1111", loc: "C4-E23" },
+              { name: "Ted", phone: "2222", loc: "C4-E197" },
+              { name: "Robert", phone: "5656", loc: "B1-A27" },
+              { name: "Natalie", phone: "5698", loc: "B1-B6" }
+            ] }
+        ],
+        linkDataArray: [
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("header", 600, 200)</script>
+<p>
+If you do not want to have the header data in the itemArray,
+and you want to define the header in the node template rather than as an item template,
+see the example in <a href="itemArrays.html">Item Arrays</a>.
 </p>
 
 <h3>Changing category of a Part</h3>

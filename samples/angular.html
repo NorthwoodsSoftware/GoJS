@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html ng-app="minimal">
 <head>
 <title>Minimal GoJS Sample with AngularJS</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -12,7 +13,7 @@
     .directive('goDiagram', function() {
       return {
         restrict: 'E',
-        template: '<div></div>',  // just a simple DIV element
+        template: '<div></div>',  // just an empty DIV element
         replace: true,
         scope: { model: '=goModel' },
         link: function(scope, element, attrs) {
@@ -30,7 +31,8 @@
                                     fromLinkableSelfNode: true, toLinkableSelfNode: true,
                                     fromLinkableDuplicates: true, toLinkableDuplicates: true
                                   }),
-                                $(go.TextBlock, { margin: 3 }, new go.Binding("text", "key"))
+                                $(go.TextBlock, { margin: 3, editable: true },
+                                  new go.Binding("text", "name").makeTwoWay())
                               ),
                 linkTemplate: $(go.Link,
                                 { relinkableFrom: true, relinkableTo: true },
@@ -40,10 +42,12 @@
                 initialContentAlignment: go.Spot.Center,
                 "undoManager.isEnabled": true
               });
+
           // whenever a GoJS transaction has finished modifying the model, update all Angular bindings
           function updateAngular(e) {
             if (e.isTransactionFinished) scope.$apply();
           }
+
           // notice when the value of "model" changes: update the Diagram.model
           scope.$watch("model", function(newmodel) {
             var oldmodel = diagram.model;
@@ -53,6 +57,20 @@
               diagram.model = newmodel;
             }
           });
+
+          scope.$watch("model.selectedNodeData.name", function(newname) {
+            // disable recursive updates
+            diagram.model.removeChangedListener(updateAngular);
+            // change the name
+            diagram.startTransaction("change name");
+            // the data property has already been modified, so setDataProperty would have no effect
+            var node = diagram.findNodeForData(diagram.model.selectedNodeData);
+            if (node !== null) node.updateTargetBindings("name");
+            diagram.commitTransaction("change name");
+            // re-enable normal updates
+            diagram.model.addChangedListener(updateAngular);
+          });
+
           // update the model when the selection changes
           diagram.addDiagramListener("ChangedSelection", function(e) {
             var selnode = diagram.selection.first();
@@ -65,19 +83,21 @@
     .controller('MinimalCtrl', function($scope) {
       $scope.model = new go.GraphLinksModel(
         [
-          { key: "Alpha", color: "lightblue" },
-          { key: "Beta", color: "orange" },
-          { key: "Gamma", color: "lightgreen" },
-          { key: "Delta", color: "pink" }
+          { key: 1, name: "Alpha", color: "lightblue" },
+          { key: 2, name: "Beta", color: "orange" },
+          { key: 3, name: "Gamma", color: "lightgreen" },
+          { key: 4, name: "Delta", color: "pink" }
         ],
         [
-          { from: "Alpha", to: "Beta" },
-          { from: "Alpha", to: "Gamma" },
-          { from: "Beta", to: "Beta" },
-          { from: "Gamma", to: "Delta" },
-          { from: "Delta", to: "Alpha" }
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 2, to: 2 },
+          { from: 3, to: 4 },
+          { from: 4, to: 1 }
         ]);
+
       $scope.model.selectedNodeData = null;
+
       $scope.replaceModel = function() {
         $scope.model = new go.GraphLinksModel(
             [
@@ -100,13 +120,11 @@
   <go-diagram go-model="model" style="border: solid 1px blue; width:100%; height:400px"></go-diagram>
   Number of node data: {{model.nodeDataArray.length}}
   <br />
-  Alpha node location: {{model.findNodeDataForKey("Alpha").loc}}
+  Alpha node location: {{model.findNodeDataForKey(1).loc}}
   <br />
-  Selected node: {{model.selectedNodeData.key}}
+  Selected node: {{model.selectedNodeData.key}}  <input type="text" ng-model="model.selectedNodeData.name"></input>
   <br />
   Number of link data: {{model.linkDataArray.length}}
-  <br />
-  First link data: {{model.linkDataArray[0].from}} --> {{model.linkDataArray[0].to}}
   <p>
   This defines an AngularJS directive for creating a <b>GoJS</b> <a>Diagram</a> with certain properties.
   It also sets up a controller holding a <a>GraphLinksModel</a> that is passed

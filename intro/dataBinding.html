@@ -17,7 +17,7 @@ The target objects are normally <a>GraphObject</a>s;
 the source objects are usually JavaScript data objects held in a model.
 </p>
 <p>
-One could write code that gets a desired value from the model data,
+You could write code that gets a desired value from the model data,
 searches the <a>Diagram</a> for the appropriate <a>Part</a>, searches for the target <a>GraphObject</a>
 within the visual tree of that Part, and then sets one or more properties on that GraphObject with that value,
 perhaps after modifying or converting the original value in a way appropriate for the individual properties.
@@ -102,7 +102,8 @@ The value of Part.location is a <a>Point</a>, so in this example the data proper
     );
 
   var nodeDataArray = [
-    { key: "Alpha", color: "lightblue", loc: new go.Point(0, 0) },  // specify location using Point values
+    // for each node specify the location using Point values
+    { key: "Alpha", color: "lightblue", loc: new go.Point(0, 0) },
     { key: "Beta", color: "pink", loc: new go.Point(100, 50) }
   ];
   var linkDataArray = [
@@ -138,7 +139,7 @@ Trying to read/write classes of objects would take extra space and would require
 <pre data-language="javascript" id="bindLocationString">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
-      new go.Binding("location", "loc", go.Point.parse),  // convert the string into a Point value
+      new go.Binding("location", "loc", go.Point.parse),  // convert string into a Point value
       $(go.Shape, "RoundedRectangle",
         { fill: "white" },
         new go.Binding("fill", "color")),
@@ -175,9 +176,9 @@ This makes it trivial to control the appearance of each node from the data by se
       $(go.Shape, "RoundedRectangle",
         { // default values if the data.highlight is undefined:
           fill: "yellow", stroke: "orange", strokeWidth: 2 },
-        new go.Binding("fill", "highlight", function(v) { if (v) return "pink"; else return "lightblue"; }),
-        new go.Binding("stroke", "highlight", function(v) { if (v) return "red"; else return "blue"; }),
-        new go.Binding("strokeWidth", "highlight", function(v) { if (v) return 3; else return 1; })),
+        new go.Binding("fill", "highlight", function(v) { return v ? "pink" : "lightblue"; }),
+        new go.Binding("stroke", "highlight", function(v) { return v ? "red" : "blue"; }),
+        new go.Binding("strokeWidth", "highlight", function(v) { return v ? 3 : 1; })),
       $(go.TextBlock,
         { margin: 5 },
         new go.Binding("text", "key"))
@@ -186,7 +187,7 @@ This makes it trivial to control the appearance of each node from the data by se
   var nodeDataArray = [
     { key: "Alpha", loc: "0 0", highlight: false },
     { key: "Beta", loc: "100 50", highlight: true },
-    { key: "Gamma", loc: "0 100" }  // no highlight: use defaults
+    { key: "Gamma", loc: "0 100" }  // highlight property undefined: use defaults
   ];
   var linkDataArray = [
     { from: "Alpha", to: "Beta" }
@@ -230,9 +231,9 @@ For fun, this modification occurs about twice a second.
       $(go.Shape, "RoundedRectangle",
         { // default values if the data.highlight is undefined:
           fill: "yellow", stroke: "orange", strokeWidth: 2 },
-        new go.Binding("fill", "highlight", function(v) { if (v) return "pink"; else return "lightblue"; }),
-        new go.Binding("stroke", "highlight", function(v) { if (v) return "red"; else return "blue"; }),
-        new go.Binding("strokeWidth", "highlight", function(v) { if (v) return 3; else return 1; })),
+        new go.Binding("fill", "highlight", function(v) { return v ? "pink" : "lightblue"; }),
+        new go.Binding("stroke", "highlight", function(v) { return v ? "red" : "blue"; }),
+        new go.Binding("strokeWidth", "highlight", function(v) { return v ? 3 : 1; })),
       $(go.TextBlock,
         { margin: 5 },
         new go.Binding("text", "key"))
@@ -244,10 +245,11 @@ For fun, this modification occurs about twice a second.
 
   function flash() {
     var model = diagram.model;
-    model.startTransaction("flash");  // all model changes should happen in a transaction
+    // all model changes should happen in a transaction
+    model.startTransaction("flash");
     var data = model.nodeDataArray[0];  // get the first node data
     model.setDataProperty(data, "highlight", !data.highlight);
-    model.commitTransaction("flash");  // all model changes should happen in a transaction
+    model.commitTransaction("flash");
   }
   function loop() {
     setTimeout(function() { flash(); loop(); }, 500);
@@ -305,13 +307,14 @@ connect to a different node.
 
   function switchTo() {
     var model = diagram.model;
-    model.startTransaction("reconnect link");  // all model changes should happen in a transaction
+    // all model changes should happen in a transaction
+    model.startTransaction("reconnect link");
     var data = model.linkDataArray[0];  // get the first link data
     if (model.getToKeyForLinkData(data) === "Beta")
       model.setToKeyForLinkData(data, "Gamma");
     else
       model.setToKeyForLinkData(data, "Beta");
-    model.commitTransaction("reconnect link");  // all model changes should happen in a transaction
+    model.commitTransaction("reconnect link");
   }
   function loop() {
     setTimeout(function() { switchTo(); loop(); }, 1000);
@@ -395,7 +398,8 @@ but also from the target object back to the source data.
   diagram.model = new go.GraphLinksModel(nodeDataArray);
 
   shiftNode = (function() {  // define a function named "shiftNode" callable by onclick
-    diagram.startTransaction("shift node");  // all model changes should happen in a transaction
+    // all model changes should happen in a transaction
+    diagram.startTransaction("shift node");
     var data = diagram.model.nodeDataArray[0];  // get the first node data
     var node = diagram.findNodeForData(data);   // find the corresponding Node
     var p = node.location.copy();  // make a copy of the location, a Point
@@ -405,7 +409,7 @@ but also from the target object back to the source data.
     node.location = p;
     // show the updated location held by the "loc" property of the node data
     document.getElementById("bindTwoWayData").textContent = data.loc.toString();
-    diagram.commitTransaction("shift node");  // all model changes should happen in a transaction
+    diagram.commitTransaction("shift node");
   });
   shiftNode();  // initialize everything
 </pre>
@@ -424,7 +428,7 @@ you can supply a conversion function to <a>Binding.makeTwoWay</a> for going from
 For example, to represent the location as a string instead of as a <a>Point</a>:
 </p>
 <pre>
-// preferred storage representation of Points/Sizes/Rects/Margins/Spots is as strings, not objects:
+// storage representation of Points/Sizes/Rects/Margins/Spots is as strings, not objects:
 new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
 </pre>
 <p>
@@ -432,6 +436,49 @@ However, you must not have a TwoWay binding on the node data property that is th
 (That defaults to the name "key" but is actually the value of <a>Model.nodeKeyProperty</a>.)
 That property value must always be unique among all node data within the model and is known by the Model.
 A TwoWay binding might change the value, causing a multitude of problems.
+</p>
+
+<h3>Reasons for TwoWay Bindings</h3>
+<p>
+The basic reason for using a TwoWay <a>Binding</a> on a settable property is to make sure that any changes to that property
+will be copied to the corresponding model data.
+By making sure that the <a>Model</a> is up-to-date, you can easily "save the diagram" just by saving the model
+and "loading a diagram" is just a matter of loading a model into memory and setting <a>Diagram.model</a>.
+If you are careful to only hold JSON-serializable data in the model data, you can just use the <a>Model.toJson</a>
+and <a>Model.fromJson</a> methods for converting a model to and from a textual representation.
+</p>
+<p>
+Most bindings do not need to be TwoWay.
+For performance reasons you should not make a Binding be TwoWay unless you actually need to propagate changes back to the data.
+Most settable properties are only set on initialization and then never change.
+</p>
+<p>
+Settable properties only change value when some code sets them.
+That code might be in code that you write as part of your app.
+Or it might be in a command (see <a href="commands.html">Commands</a>) or a tool (see <a href="tools.html">Tools</a>).
+Here is a list of properties for which a TwoWay Binding is plausible because one of the predefined commands or tools modify them:
+</p>
+<ul>
+<li><a>Part.location</a>, by <a>DraggingTool</a> if it is enabled</li>
+<li><a>Link.points</a>, by <a>LinkReshapingTool</a> if it is enabled</li>
+<li><a>GraphObject.desiredSize</a>, by <a>ResizingTool</a> if it is enabled</li>
+<li><a>GraphObject.angle</a>, by <a>RotatingTool</a> if it is enabled</li>
+<li><a>TextBlock.text</a>, by <a>TextEditingTool</a> if it is enabled</li>
+<li><a>Part.isSelected</a>, by many tools and commands</li>
+<li><a>Node.isTreeExpanded</a> and <a>Node.wasTreeExpanded</a>, by <a>CommandHandler.collapseTree</a> and <a>CommandHandler.expandTree</a>, called by a "TreeExpanderButton"</li>
+<li><a>Group.isSubGraphExpanded</a> and <a>Group.wasSubGraphExpanded</a>, by <a>CommandHandler.collapseSubGraph</a> and <a>CommandHandler.expandSubGraph</a>, called by a "SubGraphExpanderButton"</li>
+</ul>
+<p>
+You will not need to use a TwoWay binding on a property if the Tool that modifies it cannot run,
+or if the command that modifies it cannot be invoked.
+You probably will not need a TwoWay binding on any other properties unless you write code to modify them.
+And even then it is sometimes better to write the code to modify the model data directly by calling <a>Model.setDataProperty</a>,
+depending on a OneWay Binding to update the GraphObject property.
+</p>
+<p>
+It is also possible to use TwoWay Bindings where the source is a GraphObject rather than model data.
+This is needed less frequently, when you do <em>not</em> want to have the state stored in the model,
+but you do want to synchronize properties of GraphObjects within the same Part.
 </p>
 
 </div>

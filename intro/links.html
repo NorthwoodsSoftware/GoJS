@@ -15,6 +15,29 @@
 Use the <a>Link</a> class to implement a visual relationship between nodes.
 </p>
 
+<h3>Creating Links</h3>
+<p>
+Links are normally created by the presence of link data objects in the <a>GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a>TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a>TreeModel</a>.
+</p>
+<p>
+You can create new links programmatically by modifying the model.
+It is most common to operate directly on the model by either calling <a>GraphLinksModel.addLinkData</a>
+or by calling <a>TreeModel.setParentKeyForNodeData</a>.
+Such changes are observed by all diagrams that are displaying the model so that they can automatically
+create the corresponding <a>Link</a>s.
+You can find examples of calls to <a>GraphLinksModel.addLinkData</a> in the samples.
+</p>
+<p>
+It is also possible to create new links without detailed knowledge of the diagram's model by calling
+<a>LinkingTool.insertLink</a>.  That is how the user's actions to draw a new link actually create it.
+That method knows how to modify the <a>GraphLinksModel</a> or the <a>TreeModel</a> appropriately,
+while respecting the additional functionality offered by the <a>LinkingTool.archetypeLinkData</a>
+and other properties of the <a>LinkingTool</a>.
+You can find examples of calls to <a>LinkingTool.insertLink</a> in the samples.
+</p>
+
 <h3>Non-directional Links</h3>
 <p>
 The simplest links are those without arrowheads to indicate a visual direction.
@@ -181,7 +204,7 @@ Also if no node-avoiding route exists because there is a ring of nodes around on
 the routing algorithm will give up and cross over some nodes anyway.
 </p>
 <p>
-You can declare that it's OK to route through a node by setting <a>Node.avoidable</a> to false.
+You can declare that it is OK to route through a node by setting <a>Node.avoidable</a> to false.
 </p>
 
 <h3>Curve, Curviness, Corner</h3>

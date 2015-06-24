@@ -14,6 +14,8 @@
 function DrawCommandHandler() {
   go.CommandHandler.call(this);
   this._arrowKeyBehavior = "move";
+  this._pasteOffset = new go.Point(10, 10);
+  this._lastPasteOffset = new go.Point(0, 0);
 }
 go.Diagram.inherit(DrawCommandHandler, go.CommandHandler);
 
@@ -389,6 +391,30 @@ DrawCommandHandler.prototype._angleCloseness = function(a, dir) {
 };
 
 /**
+* Reset the last offset for pasting.
+* @override
+* @this {DrawCommandHandler}
+* @param {Iterable.<Part>} coll a collection of {@link Part}s.
+*/
+DrawCommandHandler.prototype.copyToClipboard = function(coll) {
+  go.CommandHandler.prototype.copyToClipboard.call(this, coll);
+  this._lastPasteOffset.set(this.pasteOffset);
+};
+
+/**
+* Paste from the clipboard with an offset incremented on each paste, and reset when copied.
+* @override
+* @this {DrawCommandHandler}
+* @return {Set.<Part>} a collection of newly pasted {@link Part}s
+*/
+DrawCommandHandler.prototype.pasteFromClipboard = function() {
+  var coll = go.CommandHandler.prototype.pasteFromClipboard.call(this);
+  this.diagram.moveParts(coll, this._lastPasteOffset);
+  this._lastPasteOffset.add(this.pasteOffset);
+  return coll;
+};
+
+/**
 * Gets or sets the arrow key behavior. Possible values are "move", "select", and "scroll".  
 * The default value is "move".
 * @name DrawCommandHandler#arrowKeyBehavior
@@ -402,5 +428,19 @@ Object.defineProperty(DrawCommandHandler.prototype, "arrowKeyBehavior", {
       throw new Error("DrawCommandHandler.arrowKeyBehavior must be either \"move\", \"select\", \"scroll\", or \"none\", not: " + val);
     }
     this._arrowKeyBehavior = val;
+  }
+});
+
+/**
+* Gets or sets the offset at which each repeated pasteSelection() puts the new copied parts from the clipboard.
+* @name DrawCommandHandler#pasteOffset
+* @function.
+* @return {Point}
+*/
+Object.defineProperty(DrawCommandHandler.prototype, "pasteOffset", {
+  get: function() { return this._pasteOffset; },
+  set: function(val) {
+    if (!(val instanceof go.Point)) throw new Error("DrawCommandHandler.pasteOffset must be a Point, not: " + val);
+    this._pasteOffset.set(val);
   }
 });

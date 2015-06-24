@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Pipes</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -35,6 +36,14 @@
         if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
+
+    myDiagram.nodeTemplateMap.add("Comment",
+      $(go.Node,
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.TextBlock,
+          { stroke: "brown", font: "9pt sans-serif" },
+          new go.Binding("text"))
+      ));
 
     // Define the generic "pipe" Node.
     // The Shape gets it Geometry from a geometry path string in the bound data.
@@ -148,9 +157,10 @@
     myDiagram.model =
       $(go.GraphLinksModel,
         {
+          copiesArrays: true, 
+          copiesArrayObjects: true,
           linkFromPortIdProperty: "fid",
-          linkToPortIdProperty: "tid",
-          copyNodeDataFunction: copyNodeData  // copy port data too!
+          linkToPortIdProperty: "tid"
         });
 
     // Make sure the pipes are ordered by their key in the palette inventory
@@ -170,12 +180,17 @@
           nodeTemplate: myDiagram.nodeTemplate,  // shared with the main Diagram
           "contextMenuTool.isEnabled": false,
           layout: $(go.GridLayout,
-                    { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5),
-                      wrappingColumn: 12, comparer: keyCompare }),
+                    {
+                      cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5),
+                      wrappingColumn: 12, comparer: keyCompare
+                    }),
           // initialize the Palette with a few "pipe" nodes
           model: $(go.GraphLinksModel,
             {
-              copyNodeDataFunction: copyNodeData, // copy port data too!
+              copiesArrays: true,
+              copiesArrayObjects: true,
+              linkFromPortIdProperty: "fid",
+              linkToPortIdProperty: "tid",
               nodeDataArray: [
                 // Several different kinds of pipe objects, some already rotated for convenience.
                 // Each "glue point" is implemented by a port.
@@ -355,36 +370,10 @@
               ]  // end nodeDataArray
             })  // end model
         });  // end Palette
+
+    load();
   } // end init
 
-
-  // When copying a node, we need to copy the data that the node is bound to.
-  // This JavaScript object includes properties for the node as a whole, and
-  // a property that is an Array holding data for each port, which all need copying too.
-  function copyNodeData(data) {
-    var copy = {};
-    copy.key = data.key;  // adding to the Model will make the key value unique
-    copy.angle = data.angle;
-    copy.geo = data.geo;
-
-    var arr = data.ports;
-    var copyarr = [];
-    if (Array.isArray(arr)) {
-      for (var i = 0; i < arr.length; i++) {
-        var port = arr[i];
-        copyarr.push({
-          id: port.id,
-          spot: port.spot,
-          angle: port.angle
-          // if you add port data properties, you should copy them here too
-        });
-      }
-    }
-    copy.ports = copyarr;
-
-    // if you add data properties, you should copy them here too
-    return copy;
-  }
 
   // Define a custom DraggingTool
   function SnappingTool() {
@@ -439,6 +428,7 @@
   // Override this method to find the offset such that a moving port can
   // be snapped to be coincident with a compatible stationary port,
   // then move all of the parts by that offset.
+  /** @override */
   SnappingTool.prototype.moveParts = function(parts, offset, check) {
     // when moving an actually copied collection of Parts, use the offset that was calculated during the drag
     if (this._snapOffset && this.isActive && this.diagram.lastInput.up && parts === this.copiedParts) {
@@ -523,6 +513,7 @@
 
   // Establish links between snapped ports,
   // and remove obsolete links because their ports are no longer coincident.
+  /** @override */
   SnappingTool.prototype.doDropOnto = function(pt, obj) {
     go.DraggingTool.prototype.doDropOnto.call(this, pt, obj);
     var tool = this;
@@ -536,21 +527,15 @@
       var pit = node.ports;
       while (pit.next()) {
         var port = pit.value;
-        // maybe need to disconnect any existing link
-        var othernode = node.findNodesConnected(port.portId).first();
-        if (othernode !== null) {
-          if (coll.contains(othernode)) continue;  // OK -- also being moved
-          var link = node.findLinksConnected(port.portId).first();
-          if (link !== null) this.diagram.remove(link);
-        }
         // maybe add a link -- see if the port is at another port that is compatible
         var portPt = port.getDocumentPoint(go.Spot.Center);
+        if (!portPt.isReal()) continue;
         var nearbyports =
             this.diagram.findObjectsAt(portPt,
                       function(x) {  // some GraphObject at portPt
                         var o = x;
                         // walk up the chain of panels
-                        while (o !== null && typeof o.portId !== "string") o = o.panel;
+                        while (o !== null && o.portId === null) o = o.panel;
                         return o;
                       },
                       function(p) {  // a "port" Panel
@@ -572,10 +557,27 @@
   };
 
   // Just move selected nodes when SHIFT moving, causing nodes to be unsnapped.
+  // When SHIFTing, must disconnect all links that connect with nodes not being dragged.
   // Without SHIFT, move all nodes that are snapped to selected nodes, even indirectly.
+  /** @override */
   SnappingTool.prototype.computeEffectiveCollection = function(parts) {
     if (this.diagram.lastInput.shift) {
-      return go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts);
+      var links = new go.Set(go.Link);
+      var coll = go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts);
+      coll.iteratorKeys.each(function(node) {
+        // disconnect all links of this node that connect with stationary node
+        if (!(node instanceof go.Node)) return;
+        node.findLinksConnected().each(function(link) {
+          // see if this link connects with a node that is being dragged
+          var othernode = link.getOtherNode(node);
+          if (othernode !== null && !coll.contains(othernode)) {
+            links.add(link);  // remember for later deletion
+          }
+        });
+      });
+      // outside of nested loops we can actually delete the links
+      links.each(function(l) { l.diagram.remove(l); });
+      return coll;
     } else {
       var map = new go.Map(go.Part, Object);
       if (parts === null) return map;
@@ -608,7 +610,6 @@
   }
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    myDiagram.model.copyNodeDataFunction = copyNodeData;  // Note that this must be set for each new Model!
   }
 </script>
 
@@ -622,8 +623,9 @@
   As a part's unconnected port (shown by an X) comes close to a stationary port
   with which it is compatible, the dragged selection snaps so that those ports coincide.
   </p>
-  Dragging automatically drags all connected parts.
-  Hold down the Shift key before dragging in order to detach a part from the parts it is connected with.
+  <p>
+    Dragging automatically drags all connected parts.
+    Hold down the Shift key before dragging in order to detach a part from the parts it is connected with.
   </p>
   <p>
   Use the context menu on a part to rotate it.
@@ -634,6 +636,38 @@
   <button type="button" onclick="load()">Load</button>
   <br />
   <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "copiesArrays": true,
+  "copiesArrayObjects": true,
+  "linkFromPortIdProperty": "fid",
+  "linkToPortIdProperty": "tid",
+  "nodeDataArray": [
+{"key":0, "category":"Comment", "text":"Use Shift to disconnect a shape", "loc":"0 0"},
+{"key":1, "category":"Comment", "text":"The Context Menu has more commands", "loc":"0 30"},
+{"key":2, "category":"Comment", "text":"Gray X's are unconnected ports", "loc":"-100 -60"},
+{"key":3, "category":"Comment", "text":"Dragged Shapes snap to unconnected ports", "loc":"-100 -160"},
+{"key":11, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-187.33333333333331 -69.33333333333331", "angle":0},
+{"key":12, "angle":90, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-147.33333333333331 -69.33333333333331"},
+{"key":21, "geo":"F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U4", "spot":"0 0.25 0.5 0.25"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "loc":"-137.33333333333331 -9.333333333333314", "angle":0},
+{"key":5, "geo":"F1 M0 0 L20 0 20 60 0 60z", "ports":[ {"id":"U6", "spot":"0.5 0 0 0.5"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "loc":"-197.33333333333331 -19.333333333333314", "angle":0},
+{"key":13, "angle":180, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-147.33333333333331 30.666666666666685"},
+{"key":14, "angle":270, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-187.33333333333331 30.666666666666685"},
+{"key":-7, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-76.66666666666663 -8.666666666666657", "angle":0},
+{"key":-8, "angle":90, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-36.66666666666663 -8.666666666666657"},
+{"key":-9, "angle":180, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-36.66666666666663 31.333333333333343"},
+{"key":-10, "angle":270, "geo":"F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U2", "spot":"0.25 1 0.25 -0.5"} ], "loc":"-76.66666666666663 31.333333333333343"}
+],
+  "linkDataArray": [
+{"from":12, "to":11, "fid":"U2", "tid":"U0"},
+{"from":5, "to":11, "fid":"U6", "tid":"U2"},
+{"from":13, "to":21, "fid":"U2", "tid":"U2"},
+{"from":14, "to":5, "fid":"U0", "tid":"U2"},
+{"from":13, "to":14, "fid":"U0", "tid":"U2"},
+{"from":-8, "to":-7, "fid":"U2", "tid":"U0"},
+{"from":-9, "to":-8, "fid":"U2", "tid":"U0"},
+{"from":-10, "to":-7, "fid":"U0", "tid":"U2"},
+{"from":-10, "to":-9, "fid":"U2", "tid":"U0"}
+]}
   </textarea>
 </div>
 </body>

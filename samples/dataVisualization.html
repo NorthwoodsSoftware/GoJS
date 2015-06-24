@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Data Visualization GoJS Sample</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <!--
 The div needs an explicit size or else we won't see anything.
 Lets also add a border to help see the edges.
@@ -75,8 +76,6 @@ Lets also add a border to help see the edges.
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<!-- we also link to a file that contains some data on the iris flower -->
-<script src="dataVisualization.js"></script>
 <script id="code">
   var myDiagram;
   var myLocation = {  // this controls the data properties used by data binding conversions
@@ -92,10 +91,10 @@ Lets also add a border to help see the edges.
     myDiagram =
       $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
         {
-          "animationManager.isEnabled": false,
+          "animationManager.isEnabled": false,  // don't bother with layout animation
           contentAlignment: go.Spot.Center,  // content is always centered in the viewport
           autoScale: go.Diagram.Uniform,  // scale always has all content fitting in the viewport
-          isReadOnly: true,
+          isReadOnly: true,  // don't let users modify anything
           mouseOver: doMouseOver  // this event handler is defined below
         });
 
@@ -127,8 +126,163 @@ Lets also add a border to help see the edges.
             }))
       );
 
+    // This is the fundamental data set, taken from:
     // http://en.wikipedia.org/wiki/Iris_flower_data_set
-    // data is defined in dataVisualization.js
+    var irisData = [
+[ 5.1, 3.5, 1.4, 0.2, "Iris-setosa" ],
+[ 4.9, 3.0, 1.4, 0.2, "Iris-setosa" ],
+[ 4.7, 3.2, 1.3, 0.2, "Iris-setosa" ],
+[ 4.6, 3.1, 1.5, 0.2, "Iris-setosa" ],
+[ 5.0, 3.6, 1.4, 0.2, "Iris-setosa" ],
+[ 5.4, 3.9, 1.7, 0.4, "Iris-setosa" ],
+[ 4.6, 3.4, 1.4, 0.3, "Iris-setosa" ],
+[ 5.0, 3.4, 1.5, 0.2, "Iris-setosa" ],
+[ 4.4, 2.9, 1.4, 0.2, "Iris-setosa" ],
+[ 4.9, 3.1, 1.5, 0.1, "Iris-setosa" ],
+[ 5.4, 3.7, 1.5, 0.2, "Iris-setosa" ],
+[ 4.8, 3.4, 1.6, 0.2, "Iris-setosa" ],
+[ 4.8, 3.0, 1.4, 0.1, "Iris-setosa" ],
+[ 4.3, 3.0, 1.1, 0.1, "Iris-setosa" ],
+[ 5.8, 4.0, 1.2, 0.2, "Iris-setosa" ],
+[ 5.7, 4.4, 1.5, 0.4, "Iris-setosa" ],
+[ 5.4, 3.9, 1.3, 0.4, "Iris-setosa" ],
+[ 5.1, 3.5, 1.4, 0.3, "Iris-setosa" ],
+[ 5.7, 3.8, 1.7, 0.3, "Iris-setosa" ],
+[ 5.1, 3.8, 1.5, 0.3, "Iris-setosa" ],
+[ 5.4, 3.4, 1.7, 0.2, "Iris-setosa" ],
+[ 5.1, 3.7, 1.5, 0.4, "Iris-setosa" ],
+[ 4.6, 3.6, 1.0, 0.2, "Iris-setosa" ],
+[ 5.1, 3.3, 1.7, 0.5, "Iris-setosa" ],
+[ 4.8, 3.4, 1.9, 0.2, "Iris-setosa" ],
+[ 5.0, 3.0, 1.6, 0.2, "Iris-setosa" ],
+[ 5.0, 3.4, 1.6, 0.4, "Iris-setosa" ],
+[ 5.2, 3.5, 1.5, 0.2, "Iris-setosa" ],
+[ 5.2, 3.4, 1.4, 0.2, "Iris-setosa" ],
+[ 4.7, 3.2, 1.6, 0.2, "Iris-setosa" ],
+[ 4.8, 3.1, 1.6, 0.2, "Iris-setosa" ],
+[ 5.4, 3.4, 1.5, 0.4, "Iris-setosa" ],
+[ 5.2, 4.1, 1.5, 0.1, "Iris-setosa" ],
+[ 5.5, 4.2, 1.4, 0.2, "Iris-setosa" ],
+[ 4.9, 3.1, 1.5, 0.2, "Iris-setosa" ],
+[ 5.0, 3.2, 1.2, 0.2, "Iris-setosa" ],
+[ 5.5, 3.5, 1.3, 0.2, "Iris-setosa" ],
+[ 4.9, 3.6, 1.4, 0.1, "Iris-setosa" ],
+[ 4.4, 3.0, 1.3, 0.2, "Iris-setosa" ],
+[ 5.1, 3.4, 1.5, 0.2, "Iris-setosa" ],
+[ 5.0, 3.5, 1.3, 0.3, "Iris-setosa" ],
+[ 4.5, 2.3, 1.3, 0.3, "Iris-setosa" ],
+[ 4.4, 3.2, 1.3, 0.2, "Iris-setosa" ],
+[ 5.0, 3.5, 1.6, 0.6, "Iris-setosa" ],
+[ 5.1, 3.8, 1.9, 0.4, "Iris-setosa" ],
+[ 4.8, 3.0, 1.4, 0.3, "Iris-setosa" ],
+[ 5.1, 3.8, 1.6, 0.2, "Iris-setosa" ],
+[ 4.6, 3.2, 1.4, 0.2, "Iris-setosa" ],
+[ 5.3, 3.7, 1.5, 0.2, "Iris-setosa" ],
+[ 5.0, 3.3, 1.4, 0.2, "Iris-setosa" ],
+[ 7.0, 3.2, 4.7, 1.4, "Iris-versicolor" ],
+[ 6.4, 3.2, 4.5, 1.5, "Iris-versicolor" ],
+[ 6.9, 3.1, 4.9, 1.5, "Iris-versicolor" ],
+[ 5.5, 2.3, 4.0, 1.3, "Iris-versicolor" ],
+[ 6.5, 2.8, 4.6, 1.5, "Iris-versicolor" ],
+[ 5.7, 2.8, 4.5, 1.3, "Iris-versicolor" ],
+[ 6.3, 3.3, 4.7, 1.6, "Iris-versicolor" ],
+[ 4.9, 2.4, 3.3, 1.0, "Iris-versicolor" ],
+[ 6.6, 2.9, 4.6, 1.3, "Iris-versicolor" ],
+[ 5.2, 2.7, 3.9, 1.4, "Iris-versicolor" ],
+[ 5.0, 2.0, 3.5, 1.0, "Iris-versicolor" ],
+[ 5.9, 3.0, 4.2, 1.5, "Iris-versicolor" ],
+[ 6.0, 2.2, 4.0, 1.0, "Iris-versicolor" ],
+[ 6.1, 2.9, 4.7, 1.4, "Iris-versicolor" ],
+[ 5.6, 2.9, 3.6, 1.3, "Iris-versicolor" ],
+[ 6.7, 3.1, 4.4, 1.4, "Iris-versicolor" ],
+[ 5.6, 3.0, 4.5, 1.5, "Iris-versicolor" ],
+[ 5.8, 2.7, 4.1, 1.0, "Iris-versicolor" ],
+[ 6.2, 2.2, 4.5, 1.5, "Iris-versicolor" ],
+[ 5.6, 2.5, 3.9, 1.1, "Iris-versicolor" ],
+[ 5.9, 3.2, 4.8, 1.8, "Iris-versicolor" ],
+[ 6.1, 2.8, 4.0, 1.3, "Iris-versicolor" ],
+[ 6.3, 2.5, 4.9, 1.5, "Iris-versicolor" ],
+[ 6.1, 2.8, 4.7, 1.2, "Iris-versicolor" ],
+[ 6.4, 2.9, 4.3, 1.3, "Iris-versicolor" ],
+[ 6.6, 3.0, 4.4, 1.4, "Iris-versicolor" ],
+[ 6.8, 2.8, 4.8, 1.4, "Iris-versicolor" ],
+[ 6.7, 3.0, 5.0, 1.7, "Iris-versicolor" ],
+[ 6.0, 2.9, 4.5, 1.5, "Iris-versicolor" ],
+[ 5.7, 2.6, 3.5, 1.0, "Iris-versicolor" ],
+[ 5.5, 2.4, 3.8, 1.1, "Iris-versicolor" ],
+[ 5.5, 2.4, 3.7, 1.0, "Iris-versicolor" ],
+[ 5.8, 2.7, 3.9, 1.2, "Iris-versicolor" ],
+[ 6.0, 2.7, 5.1, 1.6, "Iris-versicolor" ],
+[ 5.4, 3.0, 4.5, 1.5, "Iris-versicolor" ],
+[ 6.0, 3.4, 4.5, 1.6, "Iris-versicolor" ],
+[ 6.7, 3.1, 4.7, 1.5, "Iris-versicolor" ],
+[ 6.3, 2.3, 4.4, 1.3, "Iris-versicolor" ],
+[ 5.6, 3.0, 4.1, 1.3, "Iris-versicolor" ],
+[ 5.5, 2.5, 4.0, 1.3, "Iris-versicolor" ],
+[ 5.5, 2.6, 4.4, 1.2, "Iris-versicolor" ],
+[ 6.1, 3.0, 4.6, 1.4, "Iris-versicolor" ],
+[ 5.8, 2.6, 4.0, 1.2, "Iris-versicolor" ],
+[ 5.0, 2.3, 3.3, 1.0, "Iris-versicolor" ],
+[ 5.6, 2.7, 4.2, 1.3, "Iris-versicolor" ],
+[ 5.7, 3.0, 4.2, 1.2, "Iris-versicolor" ],
+[ 5.7, 2.9, 4.2, 1.3, "Iris-versicolor" ],
+[ 6.2, 2.9, 4.3, 1.3, "Iris-versicolor" ],
+[ 5.1, 2.5, 3.0, 1.1, "Iris-versicolor" ],
+[ 5.7, 2.8, 4.1, 1.3, "Iris-versicolor" ],
+[ 6.3, 3.3, 6.0, 2.5, "Iris-virginica" ],
+[ 5.8, 2.7, 5.1, 1.9, "Iris-virginica" ],
+[ 7.1, 3.0, 5.9, 2.1, "Iris-virginica" ],
+[ 6.3, 2.9, 5.6, 1.8, "Iris-virginica" ],
+[ 6.5, 3.0, 5.8, 2.2, "Iris-virginica" ],
+[ 7.6, 3.0, 6.6, 2.1, "Iris-virginica" ],
+[ 4.9, 2.5, 4.5, 1.7, "Iris-virginica" ],
+[ 7.3, 2.9, 6.3, 1.8, "Iris-virginica" ],
+[ 6.7, 2.5, 5.8, 1.8, "Iris-virginica" ],
+[ 7.2, 3.6, 6.1, 2.5, "Iris-virginica" ],
+[ 6.5, 3.2, 5.1, 2.0, "Iris-virginica" ],
+[ 6.4, 2.7, 5.3, 1.9, "Iris-virginica" ],
+[ 6.8, 3.0, 5.5, 2.1, "Iris-virginica" ],
+[ 5.7, 2.5, 5.0, 2.0, "Iris-virginica" ],
+[ 5.8, 2.8, 5.1, 2.4, "Iris-virginica" ],
+[ 6.4, 3.2, 5.3, 2.3, "Iris-virginica" ],
+[ 6.5, 3.0, 5.5, 1.8, "Iris-virginica" ],
+[ 7.7, 3.8, 6.7, 2.2, "Iris-virginica" ],
+[ 7.7, 2.6, 6.9, 2.3, "Iris-virginica" ],
+[ 6.0, 2.2, 5.0, 1.5, "Iris-virginica" ],
+[ 6.9, 3.2, 5.7, 2.3, "Iris-virginica" ],
+[ 5.6, 2.8, 4.9, 2.0, "Iris-virginica" ],
+[ 7.7, 2.8, 6.7, 2.0, "Iris-virginica" ],
+[ 6.3, 2.7, 4.9, 1.8, "Iris-virginica" ],
+[ 6.7, 3.3, 5.7, 2.1, "Iris-virginica" ],
+[ 7.2, 3.2, 6.0, 1.8, "Iris-virginica" ],
+[ 6.2, 2.8, 4.8, 1.8, "Iris-virginica" ],
+[ 6.1, 3.0, 4.9, 1.8, "Iris-virginica" ],
+[ 6.4, 2.8, 5.6, 2.1, "Iris-virginica" ],
+[ 7.2, 3.0, 5.8, 1.6, "Iris-virginica" ],
+[ 7.4, 2.8, 6.1, 1.9, "Iris-virginica" ],
+[ 7.9, 3.8, 6.4, 2.0, "Iris-virginica" ],
+[ 6.4, 2.8, 5.6, 2.2, "Iris-virginica" ],
+[ 6.3, 2.8, 5.1, 1.5, "Iris-virginica" ],
+[ 6.1, 2.6, 5.6, 1.4, "Iris-virginica" ],
+[ 7.7, 3.0, 6.1, 2.3, "Iris-virginica" ],
+[ 6.3, 3.4, 5.6, 2.4, "Iris-virginica" ],
+[ 6.4, 3.1, 5.5, 1.8, "Iris-virginica" ],
+[ 6.0, 3.0, 4.8, 1.8, "Iris-virginica" ],
+[ 6.9, 3.1, 5.4, 2.1, "Iris-virginica" ],
+[ 6.7, 3.1, 5.6, 2.4, "Iris-virginica" ],
+[ 6.9, 3.1, 5.1, 2.3, "Iris-virginica" ],
+[ 5.8, 2.7, 5.1, 1.9, "Iris-virginica" ],
+[ 6.8, 3.2, 5.9, 2.3, "Iris-virginica" ],
+[ 6.7, 3.3, 5.7, 2.5, "Iris-virginica" ],
+[ 6.7, 3.0, 5.2, 2.3, "Iris-virginica" ],
+[ 6.3, 2.5, 5.0, 1.9, "Iris-virginica" ],
+[ 6.5, 3.0, 5.2, 2.0, "Iris-virginica" ],
+[ 6.2, 3.4, 5.4, 2.3, "Iris-virginica" ],
+[ 5.9, 3.0, 5.1, 1.8, "Iris-virginica" ]
+    ];
+
+    // now convert that data into an Array of JavaScript Objects,
+    // to be used as the Model.nodeDataArray
     var array = [];
     for (var i = 0; i < irisData.length; i++) {
       var line = irisData[i];
@@ -142,8 +296,11 @@ Lets also add a border to help see the edges.
       array.push(data);
     }
 
+    // create the Model for the Diagram to display
     myDiagram.model = new go.Model(array);
 
+
+    // Called when the mouse is over the diagram's background
     function doMouseOver(e) {
       if (e === undefined) e = myDiagram.lastInput;
       var doc = e.documentPoint;
@@ -193,7 +350,7 @@ Lets also add a border to help see the edges.
 
       var infoBox = document.getElementById("infoBox");
       var elem = document.elementFromPoint(e.clientX, e.clientY);
-      if (elem === infoBox || elem.parentNode === infoBox) {
+      if (elem !== null && (elem === infoBox || elem.parentNode === infoBox)) {
         var box = document.getElementById("infoBoxHolder");
         box.style.left = parseInt(box.style.left) + "px";
         box.style.top = parseInt(box.style.top)+30 + "px";
@@ -254,7 +411,6 @@ Lets also add a border to help see the edges.
       <!-- Initially Empty, it is populated when updateInfoBox is called -->
     </div>
 
-
   <div id="controls">
     <div style="border: solid 1px gray; float: left;  padding: 2px;">
       <p style="text-align: center;">X-axis</p>
@@ -283,13 +439,12 @@ Lets also add a border to help see the edges.
 
     <div id="description" style="float: left;">
       <p>This sample gives an example of a Diagram interacting with other HTML elements on the page.</p>
-      <p>As the mouse moves over the diagram, a formatted div displays information about the nearest Node.</p>
+      <p>As the mouse moves over the diagram, a formatted HTML DIV element displays information about the nearest Node.</p>
       <p>The data displayed is from the <a href="http://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>,
       describing the variations in dimensions of three related flower species.</p>
     </div>
   </div>
   </div>
-
 
 </div>
 </body>

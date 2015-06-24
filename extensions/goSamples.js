@@ -13,7 +13,6 @@ link.rel = "stylesheet";
 link.href = "../assets/css/highlight.css";
 document.getElementsByTagName("head")[0].appendChild(link);
 
-
 /* Copyright (C) 1998-2015 by Northwoods Software Corporation. All Rights Reserved. */
 
 function goSamples() {
@@ -41,7 +40,7 @@ function goSamples() {
   ftr.className = "footer";
   var msg = "Copyright &copy; 1998-2015 by Northwoods Software Corporation.";
   if (window.go && window.go.version) {
-    msg = "GoJS&reg; version " + window.go.version + ". " + msg;
+    msg = "<b>GoJS</b>&reg; version " + window.go.version + " for JavaScript and HTML. " + msg;
   }
   ftr.innerHTML = msg;
   samplediv.appendChild(ftr);
@@ -58,13 +57,18 @@ function goSamples() {
   url = url.slice(lindex+1).toLowerCase();  // include "/" to avoid matching prefixes
   var lis = document.getElementById("sections").getElementsByTagName("li");
   var l = lis.length;
+  var listed = false;
   for (var i = 0; i < l; i++) {
     var li = lis[i].parentNode;
     if (!li.href) continue;
     var lowerhref = li.href.toLowerCase();
     if (lowerhref.indexOf(url) !== -1) {
       lis[i].className = "selected";
+      listed = true;
     }
+  }
+  if (!listed) {
+    lis[lis.length - 1].className = "selected";
   }
 
 }
@@ -126,12 +130,19 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-1506307-5', 'gojs.net');
 ga('send', 'pageview');
 
-
+// commented out sample pages are listed in unlisted.html
 //<![CDATA[
 var myMenu = '\
   <ul id="sections">\
     <a href="../index.html" target="home"><li>GoJS Home</li></a>\
     <hr />\
+    <a href="Fishbone.html"><li>Fishbone Layout</li></a>\
+    <a href="Parallel.html"><li>Parallel Layout</li></a>\
+    <a href="Serpentine.html"><li>Serpentine Layout</li></a>\
+    <a href="TreeMap.html"><li>Tree Map Layout</li></a>\
+    <a href="Table.html"><li>Table Layout</li></a>\
+    <hr />\
+    <a href="DragCreating.html"><li>Drag Creating</li></a>\
     <a href="DragZooming.html"><li>Drag Zooming</li></a>\
     <a href="FreehandDrawing.html"><li>Freehand Drawing</li></a>\
     <a href="PolygonDrawing.html"><li>Polygon Drawing</li></a>\
@@ -140,17 +151,19 @@ var myMenu = '\
     <a href="LinkLabelDragging.html"><li>Link Label Dragging</li></a>\
     <a href="NodeLabelDragging.html"><li>Node Label Dragging</li></a>\
     <a href="PortShifting.html"><li>Port Shifting</li></a>\
+    <a href="ColumnResizing.html"><li>Column Resizing</li></a>\
     <hr />\
-    <a href="Fishbone.html"><li>Fishbone Layout</li></a>\
-    <a href="Serpentine.html"><li>Serpentine Layout</li></a>\
+    <a href="ScrollingTable.html"><li>Scrolling Table</li></a>\
+    <a href="Robot.html"><li>Simulating Input</li></a>\
+    <hr />\
+    <a href="Inspector.html"><li>Inspector</li></a>\
+    <hr />\
+    <a target="_blank" href="BPMN.html"><li>BPMN Editor</li></a>\
     <hr />\
     <a target="_blank" href="FloorPlanEditor.html"><li>Floor Plan Editor</li></a>\
     <a target="_blank" href="FloorPlanMonitor.html"><li>&nbsp;&nbsp;&nbsp;&nbsp;... and Monitor</li></a>\
     <hr />\
-    <a target="_blank" href="BPMN.html"><li>BPMN Editor</li></a>\
-    <hr />\
-    <a href="Robot.html"><li>Simulating Input</li></a>\
-    <hr />\
     <a href="../samples/index.html"><li>GoJS Samples</li></a>\
   </ul>';
 //]]>
+// commented out sample pages are listed in unlisted.html

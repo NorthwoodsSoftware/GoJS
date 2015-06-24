@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Dragging a Field from a Record onto an HTML Element</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -17,6 +18,7 @@
     go.Diagram.inherit(FieldDraggingTool, go.DraggingTool);
 
     // override this method
+    /** @override */
     FieldDraggingTool.prototype.findDraggablePart = function() {
       var diagram = this.diagram;
       var obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
@@ -38,6 +40,7 @@
       return null;
     };
 
+    /** @override */
     FieldDraggingTool.prototype.doActivate = function() {
       var diagram = this.diagram;
       this.standardMouseSelect();
@@ -50,6 +53,7 @@
       diagram.isMouseCaptured = true;
     };
 
+    /** @override */
     FieldDraggingTool.prototype.doDeactivate = function() {
       var diagram = this.diagram;
       // make sure the temporary Part is no longer in the Diagram
@@ -61,6 +65,7 @@
       go.DraggingTool.prototype.doDeactivate.call(this);
     };
 
+    /** @override */
     FieldDraggingTool.prototype.doMouseMove = function() {
       if (!this.isActive) return;
       var diagram = this.diagram;
@@ -69,6 +74,7 @@
       this.moveParts(this.draggedParts, offset, false);
     };
 
+    /** @override */
     FieldDraggingTool.prototype.doMouseUp = function() {
       if (!this.isActive) return;
       var diagram = this.diagram;

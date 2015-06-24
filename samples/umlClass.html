@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>UML Class Nodes</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        {
+          initialContentAlignment: go.Spot.Center,
+          "undoManager.isEnabled": true,
+          layout: $(go.TreeLayout,
+                    { // this only lays out in trees nodes connected by "generalization" links
+                      angle: 90,
+                      path: go.TreeLayout.PathSource,  // links go from child to parent
+                      setsPortSpot: false,  // keep Spot.AllSides for link connection spot
+                      setsChildPortSpot: false,  // keep Spot.AllSides
+                      // nodes not connected by "generalization" links are laid out horizontally
+                      arrangement: go.TreeLayout.ArrangementHorizontal
+                    })
+        });
+
+    // show visibility or access as a single character at the beginning of each property or method
+    function convertVisibility(v) {
+      switch (v) {
+        case "public": return "+";
+        case "private": return "-";
+        case "protected": return "#";
+        case "package": return "~";
+        default: return v;
+      }
+    }
+
+    // the item template for properties
+    var propertyTemplate =
+      $(go.Panel, "Horizontal",
+        // property visibility/access
+        $(go.TextBlock,
+          { isMultiline: false, editable: false, width: 12 },
+          new go.Binding("text", "visibility", convertVisibility)),
+        // property name, underlined if scope=="class" to indicate static property
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "name").makeTwoWay(),
+          new go.Binding("isUnderline", "scope", function(s) { return s[0] === 'c' })),
+        // property type, if known
+        $(go.TextBlock, "",
+          new go.Binding("text", "type", function(t) { return (t ? ": " : ""); })),
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "type").makeTwoWay()),
+        // property default value, if any
+        $(go.TextBlock,
+          { isMultiline: false, editable: false },
+          new go.Binding("text", "default", function(s) { return s ? " = " + s : ""; }))
+      );
+
+    // the item template for methods
+    var methodTemplate =
+      $(go.Panel, "Horizontal",
+        // method visibility/access
+        $(go.TextBlock,
+          { isMultiline: false, editable: false, width: 12 },
+          new go.Binding("text", "visibility", convertVisibility)),
+        // method name, underlined if scope=="class" to indicate static method
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "name").makeTwoWay(),
+          new go.Binding("isUnderline", "scope", function(s) { return s[0] === 'c' })),
+        // method parameters
+        $(go.TextBlock, "()",
+          // this does not permit adding/editing/removing of parameters via inplace edits
+          new go.Binding("text", "parameters", function(parr) {
+              var s = "(";
+              for (var i = 0; i < parr.length; i++) {
+                var param = parr[i];
+                if (i > 0) s += ", ";
+                s += param.name + ": " + param.type;
+              }
+              return s + ")";
+          })),
+        // method return type, if any
+        $(go.TextBlock, "",
+          new go.Binding("text", "type", function(t) { return (t ? ": " : ""); })),
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "type").makeTwoWay())
+      );
+
+    // this simple template does not have any buttons to permit adding or
+    // removing properties or methods, but it could!
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        {
+          locationSpot: go.Spot.Center,
+          fromSpot: go.Spot.AllSides,
+          toSpot: go.Spot.AllSides
+        },
+        $(go.Shape, { fill: "lightyellow" }),
+        $(go.Panel, "Table",
+          { defaultRowSeparatorStroke: "black" },
+          // header
+          $(go.TextBlock,
+            {
+              row: 0, margin: 3, alignment: go.Spot.Center,
+              font: "bold 12pt sans-serif",
+              isMultiline: false, editable: true
+            },
+            new go.Binding("text", "name").makeTwoWay()),
+          // properties
+          $(go.Panel, "Vertical",
+            new go.Binding("itemArray", "properties"),
+            {
+              row: 1, margin: 3, alignment: go.Spot.Left,
+              defaultAlignment: go.Spot.Left,
+              itemTemplate: propertyTemplate
+            }
+          ),
+          // methods
+          $(go.Panel, "Vertical",
+            new go.Binding("itemArray", "methods"),
+            {
+              row: 2, margin: 3, alignment: go.Spot.Left,
+              defaultAlignment: go.Spot.Left,
+              itemTemplate: methodTemplate
+            }
+          ))
+      );
+
+    function convertIsTreeLink(r) {
+      return r === "generalization";
+    }
+
+    function convertFromArrow(r) {
+      switch (r) {
+        case "generalization": return "";
+        default: return "";
+      }
+    }
+
+    function convertToArrow(r) {
+      switch (r) {
+        case "generalization": return "Triangle";
+        case "aggregation": return "StretchedDiamond";
+        default: return "";
+      }
+    }
+
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Link.Orthogonal },
+        new go.Binding("isLayoutPositioned", "relationship", convertIsTreeLink),
+        $(go.Shape),
+        $(go.Shape, { scale: 1.3, fill: "white" },
+          new go.Binding("fromArrow", "relationship", convertFromArrow)),
+        $(go.Shape, { scale: 1.3, fill: "white" },
+          new go.Binding("toArrow", "relationship", convertToArrow))
+      );
+
+    // setup a few example class nodes and relationships
+    var nodedata = [
+      {
+        key: 1,
+        name: "BankAccount",
+        properties: [
+          { name: "owner", type: "String", visibility: "public" },
+          { name: "balance", type: "Currency", visibility: "public", default: "0" }
+        ],
+        methods: [
+          { name: "deposit", parameters: [{ name: "amount", type: "Currency" }], visibility: "public" },
+          { name: "withdraw", parameters: [{ name: "amount", type: "Currency" }], visibility: "public" }
+        ]
+      },
+      {
+        key: 11,
+        name: "Person",
+        properties: [
+          { name: "name", type: "String", visibility: "public" },
+          { name: "birth", type: "Date", visibility: "protected" }
+        ],
+        methods: [
+          { name: "getCurrentAge", type: "int", visibility: "public" }
+        ]
+      },
+      {
+        key: 12,
+        name: "Student",
+        properties: [
+          { name: "classes", type: "List<Course>", visibility: "public" }
+        ],
+        methods: [
+          { name: "attend", parameters: [{ name: "class", type: "Course" }], visibility: "private" },
+          { name: "sleep", visibility: "private" }
+        ]
+      },
+      {
+        key: 13,
+        name: "Professor",
+        properties: [
+          { name: "classes", type: "List<Course>", visibility: "public" }
+        ],
+        methods: [
+          { name: "teach", parameters: [{ name: "class", type: "Course" }], visibility: "private" }
+        ]
+      },
+      {
+        key: 14,
+        name: "Course",
+        properties: [
+          { name: "name", type: "String" },
+          { name: "description", type: "String" },
+          { name: "professor", type: "Professor" },
+          { name: "location", type: "String" },
+          { name: "times", type: "List<Time>" },
+          { name: "prerequisites", type: "List<Course>" },
+          { name: "students", type: "List<Student>" }
+        ]
+      }
+    ];
+    var linkdata = [
+      { from: 12, to: 11, relationship: "generalization" },
+      { from: 13, to: 11, relationship: "generalization" },
+      { from: 14, to: 13, relationship: "aggregation" }
+    ];
+    myDiagram.model = $(go.GraphLinksModel,
+      {
+        copiesArrays: true,
+        copiesArrayObjects: true,
+        nodeDataArray: nodedata,
+        linkDataArray: linkdata
+      });
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+  This sample demonstrates one way of defining a UML Class Diagram.
+  Note the use of a separate Panel for the properties and one for the methods,
+  allowing for an item template for properties and a separate item template for methods.
+</div>
+</body>
+</html>

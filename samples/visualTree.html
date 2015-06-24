@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>GoJS Visual Tree</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -13,32 +14,28 @@
 
       myDiagram =
         $(go.Diagram, "myDiagram",
-          {
-            // start everything in the middle of the viewport
+          { // start everything in the middle of the viewport
             initialContentAlignment: go.Spot.Center, 
             "undoManager.isEnabled": true 
           });
+
       // define the "sample" Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          // define the node's outer shape
-          $(go.Shape, "RoundedRectangle",
-
+          $(go.Shape, "RoundedRectangle",  // define the node's outer shape
             { fill: "white", stroke: "black" },
             new go.Binding("fill", "color")),
-          // define the node's text
-          $(go.TextBlock,
+          $(go.TextBlock,  // define the node's text
             { margin: 5 },
             new go.Binding("text", "key"))
         );
+
       // use the default link template
 
-      myDiagram.model = new go.GraphLinksModel(
-      [
+      myDiagram.model = new go.GraphLinksModel([
         { key: "Alpha", color: "lightblue" },
         { key: "Beta", color: "pink" }
-      ],
-      [
+      ],[
         { from: "Alpha", to: "Beta" }
       ]);
 
@@ -97,9 +94,8 @@
 
       traverseVisualTree(myDiagram, null);
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
       myVisualTree.model =
-        $(go.TreeModel,
+        go.GraphObject.make(go.TreeModel,
           {
             nodeParentKeyProperty: "parentKey",
             nodeDataArray: visualNodeDataArray
@@ -133,6 +129,8 @@
   The text for each Node in "myVisualTree" is data-bound to the actual Diagram/Layer/Part/GraphObject object.
   That object is converted to a text string by using the <b>toString</b> method.
   </p>
+  <p>See also the <a href="visualTreeGrouping.html">Visual Tree Using Groups</a> sample,
+  to show the same visual tree using nested groups.</p>
 </div>
 </body>
 </html>

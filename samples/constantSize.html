@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Kitten Monitor</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -25,8 +26,8 @@
         $(go.Part,  // this Part is not bound to any model data
           { layerName: "Background", position: new go.Point(0, 0),
             selectable: false, pickable: false },
-          $(go.Picture, "http://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg"))
-        );
+          $(go.Picture, "http://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg")
+        ));
 
       // the template for each kitten, for now just a colored circle
       myDiagram.nodeTemplate =
@@ -46,7 +47,7 @@
                   $(go.TextBlock, { margin: 3 },
                     new go.Binding("text", "key"))
                 )
-              )
+              )  // end Adornment
           }
         );
 
@@ -82,6 +83,7 @@
       // simulate some real-time position monitoring, once every 2 seconds
       function randomMovement() {
         var model = myDiagram.model;
+        model.startTransaction("update locations");
         var arr = model.nodeDataArray;
         var picture = myDiagram.parts.first();
         for (var i = 0; i < arr.length; i++) {
@@ -90,12 +92,12 @@
           var x = pt.x + 20 * Math.random() - 10;
           var y = pt.y + 20 * Math.random() - 10;
           // make sure the kittens stay inside the house
-          if (x > picture.position.x && x < picture.position.x + picture.actualBounds.width)
-            pt.x = x;
-          if (y > picture.position.y && y < picture.position.y + picture.actualBounds.height)
-            pt.y = y;
-          model.updateTargetBindings(data);
+          var b = picture.actualBounds;
+          if (x < b.x || x > b.right) x = pt.x;
+          if (y < b.y || y > b.bottom) y = pt.y;
+          model.setDataProperty(data, "loc", new go.Point(x, y));
         }
+        model.commitTransaction("update locations");
       }
       function loop() {
         setTimeout(function() { randomMovement(); loop(); }, 2000);

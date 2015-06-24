@@ -1,25 +1,26 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Double Tree</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    var $ = go.GraphObject.make;  // for conciseness in defining templates in this function
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // must be the ID or reference to div
         { initialContentAlignment: go.Spot.Center });
 
     // define all of the gradient brushes
-    var graygrad = $(go.Brush, go.Brush.Linear, { 0: "#F5F5F5", 1: "#F1F1F1" });
-    var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "#CDDAF0", 1: "#91ADDD" });
-    var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "#FEC901", 1: "#FEA200" });
-    var lavgrad = $(go.Brush, go.Brush.Linear, { 0: "#EF9EFA", 1: "#A570AD" });
+    var graygrad = $(go.Brush, "Linear", { 0: "#F5F5F5", 1: "#F1F1F1" });
+    var bluegrad = $(go.Brush, "Linear", { 0: "#CDDAF0", 1: "#91ADDD" });
+    var yellowgrad = $(go.Brush, "Linear", { 0: "#FEC901", 1: "#FEA200" });
+    var lavgrad = $(go.Brush, "Linear", { 0: "#EF9EFA", 1: "#A570AD" });
 
     // define the Node template for non-terminal nodes
     myDiagram.nodeTemplate =
@@ -43,7 +44,7 @@
 
     // create the model for the double tree
     myDiagram.model = new go.TreeModel([
-        // these node data are indented according to the depth in the tree
+        // these node data are indented but not nested according to the depth in the tree
         { key: "Root", color: lavgrad },
           { key: "Left1", parent: "Root", dir: "left", color: bluegrad },
             { key: "leaf1", parent: "Left1" },
@@ -64,6 +65,7 @@
   }
 
   function doubleTreeLayout(diagram) {
+    // Within this function override the definition of '$' from jQuery:
     var $ = go.GraphObject.make;  // for conciseness in defining templates
     diagram.startTransaction("Double Tree Layout");
 

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Curviness</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                  {
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    "undoManager.isEnabled": true
+                  });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        new go.Binding("position", "position"),
+        $(go.Shape, "RoundedRectangle",
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },  // some room around the text
+          // TextBlock.text is bound to Node.data.key
+          new go.Binding("text", "key"))
+      );
+
+    myDiagram.linkTemplate =
+      $(go.Link, go.Link.Bezier,
+        // when using fromSpot/toSpot:
+        { fromSpot: go.Spot.Left, toSpot: go.Spot.Left },
+        new go.Binding("fromEndSegmentLength", "curviness"),
+        new go.Binding("toEndSegmentLength", "curviness"),
+
+        // if not using fromSpot/toSpot, use a binding to curviness instead:
+        //new go.Binding("curviness", "curviness"),
+
+        $(go.Shape,  // the link shape
+          { stroke: "black", strokeWidth: 1.5 }),
+
+        $(go.Shape,  // the arrowhead, at the mid point of the link
+          { toArrow: "OpenTriangle", segmentIndex: -Infinity })
+      );
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { position: new go.Point(100, 100), key: "Alpha", color: "lightblue" },
+      { position: new go.Point(100, 200), key: "Beta", color: "orange" },
+      { position: new go.Point(100, 300), key: "Gamma", color: "lightgreen" },
+      { position: new go.Point(100, 400), key: "Delta", color: "pink" }
+    ],
+    [
+      // The links have different curviness values.
+      // Set by hand here, they are larger when the two nodes are farther away
+      { from: "Alpha", to: "Beta", curviness: 20 },
+      { from: "Alpha", to: "Gamma", curviness: 40 },
+      { from: "Gamma", to: "Delta", curviness: 20 },
+      { from: "Delta", to: "Alpha", curviness: 60 }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; width:500px; height:500px"></div>
+  <p>
+    This sample explicitly binds the <a>Link.curviness</a> property, so that some links bend out farther than others.
+  </p>
+  <p>
+    The link template also places an arrowhead at the middle of the link,
+    by explicitly setting the arrowhead's <a>GraphObject.segmentIndex</a> to -Infinity
+    <i>after</i> setting <a>Shape.toArrow</a>.
+  </p>
+</div>
+</body>
+</html>

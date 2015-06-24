@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Graphical Macros via Auto Ungrouping</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+        {
+          allowDrop: true,   // must be true to accept drops from the Palette
+          "undoManager.isEnabled": true
+        });
+
+    // define the Node template for regular nodes
+    myDiagram.nodeTemplateMap.add("",  // the default category
+      $(go.Node, go.Panel.Auto,
+        // The Node.location comes from the "loc" property of the node data,
+        // converted by the Point.parse method.
+        // If the Node.location is changed, it updates the "loc" property of the node data,
+        // converting back using the Point.stringify method.
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+        $(go.Shape,
+          { figure: "Rectangle", fill: "white", strokeWidth: 2 },
+          new go.Binding("stroke", "color"),
+          { portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
+        $(go.TextBlock,
+          { maxSize: new go.Size(150, NaN), textAlign: "center",
+            margin: 6, editable: true, name: "TEXT",
+            font: "16pt Helvetica, Arial, sans-serif"
+          },
+          new go.Binding("text", "text").makeTwoWay())));
+
+    myDiagram.groupTemplate =
+      $(go.Group, go.Panel.Auto,
+        { isSubGraphExpanded: false,  // only show the Group itself, not any of its members
+          ungroupable: true },  // allow the ExternalObjectsDropped event handler to ungroup
+                                // the members to be top-level parts, via a command
+        $(go.Shape, "Rectangle",  // the rectangular shape around the members
+          { fill: "rgba(128,128,128,0.2)", stroke: "gray", strokeWidth: 3 }),
+        $(go.Placeholder, { alignment: go.Spot.TopLeft }),
+        $(go.TextBlock,
+          { font: "bold 16pt Helvetica, Arial, sans-serif", margin: 10 },
+          new go.Binding("text", "text")));
+
+    myDiagram.linkTemplate =
+      $(go.Link,
+        $(go.Shape, { strokeWidth: 1.5 }),
+        $(go.Shape, { toArrow: "Standard", stroke: null }));
+
+    // this DiagramEvent is raised when the user has drag-and-dropped something
+    // from another Diagram (a Palette in this case) into this Diagram
+    myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
+      // stop any ongoing text editing
+      if (myDiagram.currentTool instanceof go.TextEditingTool) {
+        myDiagram.currentTool.acceptText(go.TextEditingTool.LostFocus);
+      }
+      // expand any "macros"
+      myDiagram.commandHandler.ungroupSelection();
+      // start editing the first node that was dropped after ungrouping
+      var tb = myDiagram.selection.first().findObject('TEXT');
+      if (tb) myDiagram.commandHandler.editTextBlock(tb);
+    });
+
+    // automatically show the state of the diagram's model on the page in a <PRE> element
+    myDiagram.model.addChangedListener(function(e) {
+      if (e.isTransactionFinished) {
+        document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
+      }
+    });
+
+    // initialize the Palette that is on the left side of the page
+    myPalette =
+      $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
+        { 
+          nodeTemplateMap: myDiagram.nodeTemplateMap,
+          groupTemplateMap: myDiagram.groupTemplateMap
+        });
+
+    myPalette.model = new go.GraphLinksModel([
+      // a regular node
+      { key: "B", text: "some block", color: "blue" },
+      // a group node, plus three member nodes in that group
+      { key: "G", text: "Macro", isGroup: true },
+      { key: "Ga", text: "A block", color: "green", group: "G", loc: "0 0" },
+      { key: "Gb", text: "B block", color: "orange", group: "G", loc: "150 25" },
+      { key: "Gc", text: "C block", color: "red", group: "G", loc: "50 100" }
+    ],[
+      { from: "Ga", to: "Gb" },
+      { from: "Ga", to: "Gc" },
+      { from: "Gb", to: "Gc" }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:130px">
+      <div id="myPalette" style="border: solid 1px black; height: 700px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
+      <div id="myDiagram" style="border: solid 1px black; height: 700px"></div>
+    </span>
+  </div>
+  <p>
+    When one drags the "Macro" node (actually a <a>Group</a>) from the Palette into the main Diagram,
+    the "ExternalObjectsDropped" <a>DiagramEvent</a> listener automatically ungroups that group node
+    to show all of its members nodes and links that were copied by the drag-and-drop.
+  </p>
+  <p>
+    Note also that a drop causes the <a>TextEditingTool</a> to automatically start editing the text in the node.
+  </p>
+  Diagram Model saved in JSON format:
+  <br />
+  <pre id="mySavedModel" style="width:100%;height:300px">
+  </pre>
+</div>
+</body>
+</html>

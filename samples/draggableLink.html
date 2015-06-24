@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Draggable Link</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -154,6 +155,7 @@
     var linkSelectionAdornmentTemplate =
       $(go.Adornment, "Link",
         $(go.Shape,
+          // isPanelMain declares that this Shape shares the Link.geometry
           { isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0 })  // use selection object's strokeWidth
       );
 
@@ -243,6 +245,7 @@
   }
   go.Diagram.inherit(TopRotatingTool, go.RotatingTool);
 
+  /** @override */
   TopRotatingTool.prototype.updateAdornments = function(part) {
     go.RotatingTool.prototype.updateAdornments.call(this, part);
     var adornment = part.findAdornment("Rotating");
@@ -251,9 +254,11 @@
     }
   };
 
+  /** @override */
   TopRotatingTool.prototype.rotate = function(newangle) {
     go.RotatingTool.prototype.rotate.call(this, newangle + 90);
   };
+  // end of TopRotatingTool class
 
 
   // Show the diagram's model in JSON format that the user may edit
@@ -281,13 +286,37 @@
 <div id="sample">
   <div style="width:100%; white-space:nowrap;">
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
-      <div id="myPalette" style="border: solid 1px gray; height: 720px"></div>
+      <div id="myPalette" style="border: solid 1px gray; height: 620px"></div>
     </span>
 
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
-      <div id="myDiagram" style="border: solid 1px gray; height: 720px"></div>
+      <div id="myDiagram" style="border: solid 1px gray; height: 620px"></div>
     </span>
   </div>
+  <p>
+    This sample demonstrates the ability for the user to drag around a Link as if it were a Node.
+    When the either end of the link passes over a valid port, the port is highlighted.
+  </p>
+  <p>
+    The link-dragging functionality is enabled by setting some or all of the following properties:
+    <a>DraggingTool.dragsLink</a>, <a>LinkingTool.isUnconnectedLinkValid</a>, and
+    <a>RelinkingTool.isUnconnectedLinkValid</a>.
+  </p>
+  <p>
+    Note that a Link is present in the <a>Palette</a> so that it too can be dragged out and onto
+    the main Diagram.  Because links are not automatically routed when either end is not connected
+    with a Node, the route is provided explicitly when that Palette item is defined.
+  </p>
+  <p>
+    This also demonstrates several custom Adornments:
+    <a>Part.selectionAdornmentTemplate</a>, <a>Part.resizeAdornmentTemplate</a>, and
+    <a>Part.rotateAdornmentTemplate</a>.
+  </p>
+  <p>
+    Finally this sample demonstrates saving and restoring the <a>Diagram.position</a> as a property
+    on the <a>Model.modelData</a> object that is automatically saved and restored when calling <a>Model.toJson</a>
+    and <a>Model.fromJson</a>.
+  </p>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   <textarea id="mySavedModel" style="width:100%;height:300px">
@@ -298,7 +327,6 @@
  ],
   "linkDataArray": [
  ]}
-
   </textarea>
 </div>
 </body>

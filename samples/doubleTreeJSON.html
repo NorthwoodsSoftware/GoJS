@@ -1,37 +1,36 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Double Tree</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    // This overrides the definition of '$' from jQuery within this function:
+    // Within this function override the definition of '$' from jQuery:
     var $ = go.GraphObject.make;  // for conciseness in defining templates in this function
 
     myDiagram =
       $(go.Diagram, "myDiagram",  // must be the ID or reference to div
-        { contentAlignment: go.Spot.Center });
+        { initialContentAlignment: go.Spot.Center });
 
     // define all of the gradient brushes
-    var graygrad = $(go.Brush, go.Brush.Linear, { 0: "#F5F5F5", 1: "#F1F1F1" });
-    var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "#CDDAF0", 1: "#91ADDD" });
-    var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "#FEC901", 1: "#FEA200" });
-    var lavgrad = $(go.Brush, go.Brush.Linear, { 0: "#EF9EFA", 1: "#A570AD" });
+    var graygrad = $(go.Brush, "Linear", { 0: "#F5F5F5", 1: "#F1F1F1" });
+    var bluegrad = $(go.Brush, "Linear", { 0: "#CDDAF0", 1: "#91ADDD" });
+    var yellowgrad = $(go.Brush, "Linear", { 0: "#FEC901", 1: "#FEA200" });
+    var lavgrad = $(go.Brush, "Linear", { 0: "#EF9EFA", 1: "#A570AD" });
 
     // define the Node template for non-terminal nodes
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
         { isShadowed: true },
-        new go.Binding("text", "key"),
         // define the node's outer shape
         $(go.Shape, "RoundedRectangle",
-          { fill: graygrad,
-            stroke: "#D8D8D8" },
+          { fill: graygrad, stroke: "#D8D8D8" },
           new go.Binding("fill", "color")),
         // define the node's text
         $(go.TextBlock,
@@ -48,11 +47,10 @@
     // The previous initialization is the same as the doubleTree.html sample.
     // Here we request JSON-format text data from the server,
     // in this case from a static file so that you can view its contents separately.
-    jQuery.getJSON("doubleTree.json", function(data) { load(data); });
+    jQuery.getJSON("doubleTree.json", load);
   }
 
   function load(jsondata) {
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     // The top-level object has three properties, two of which we ignore.
     // This example assumes that the "nodes" property has the array of node data objects in it.
@@ -61,13 +59,20 @@
 
     // create the model for the double tree
     myDiagram.model = new go.TreeModel(jsondata["nodes"]);
+    // The rest of the code is the same as the doubleTree.html sample
 
-    // The rest of the code is the same as the doubleTree.html sample:
+    doubleTreeLayout(myDiagram);
+  }
+
+  function doubleTreeLayout(diagram) {
+    // Within this function override the definition of '$' from jQuery:
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    diagram.startTransaction("Double Tree Layout");
 
     // split the nodes and links into two Sets, depending on direction
     var leftParts = new go.Set(go.Part);
     var rightParts = new go.Set(go.Part);
-    separatePartsByLayout(myDiagram, leftParts, rightParts);
+    separatePartsByLayout(diagram, leftParts, rightParts);
     // but the ROOT node will be in both collections
 
     // create and perform two TreeLayouts, one in each direction,
@@ -86,6 +91,8 @@
 
     layout1.doLayout(leftParts);
     layout2.doLayout(rightParts);
+
+    diagram.commitTransaction("Double Tree Layout");
   }
 
   function separatePartsByLayout(diagram, leftParts, rightParts) {

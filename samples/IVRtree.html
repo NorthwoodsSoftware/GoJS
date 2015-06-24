@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Interactive Voice Response Tree</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -31,37 +32,14 @@
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
-          if (idx >= 0) document.title = document.title.substr(0, idx); 
+          if (idx >= 0) document.title = document.title.substr(0, idx);
         }
       });
 
-      // Define a new kind of button, used to toggle the visibility of a GraphObject named "COLLAPSIBLE".
-      // Caution: you can only control the visibility of one element in a Part at a time,
-      // due to the hard-coding of the "COLLAPSIBLE" name.
-      go.GraphObject.defineBuilder("PanelExpanderButton", function() {
-        return $("Button",
-              {
-                "ButtonBorder.stroke": null,
-                "ButtonBorder.fill": "transparent",
-                click: function(e, obj) {
-                        var elt = obj.part.findObject("COLLAPSIBLE");
-                        if (elt !== null) {
-                          obj.diagram.startTransaction("Collapse/Expand Panel");
-                          elt.visible = !elt.visible;
-                          obj.diagram.commitTransaction("Collapse/Expand Panel");
-                        }
-                      }
-              },
-              $(go.Shape, "TriangleUp",
-                { desiredSize: new go.Size(6, 4) },
-                new go.Binding("figure", "visible", function(vis) { return vis ? "TriangleUp" : "TriangleDown"; })
-                              .ofObject("COLLAPSIBLE")));  // end Button
-        });
-
-      var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "skyblue" });
-      var greengrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "green" });
-      var redgrad = $(go.Brush, go.Brush.Linear, { 0: "white", 1: "red" });
-      var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "yellow", 1: "orange" });
+      var bluegrad = $(go.Brush, "Linear", { 0: "white", 1: "skyblue" });
+      var greengrad = $(go.Brush, "Linear", { 0: "white", 1: "green" });
+      var redgrad = $(go.Brush, "Linear", { 0: "white", 1: "red" });
+      var yellowgrad = $(go.Brush, "Linear", { 0: "yellow", 1: "orange" });
 
       // each action is represented by a shape and some text
       var actionTemplate =
@@ -75,7 +53,7 @@
         );
 
       // each regular Node has body consisting of a title followed by a collapsible list of actions,
-      // with a TreeExpanderButton underneath the body
+      // controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
       myDiagram.nodeTemplate =  // the default node template
         $(go.Node, "Vertical",
           { selectionObjectName: "BODY" },
@@ -99,11 +77,12 @@
                    }),
                 // headered by a label and a PanelExpanderButton
                 $(go.TextBlock, "Steps", { row: 0, alignment: go.Spot.Left }),
-                $("PanelExpanderButton", { row: 0, alignment: go.Spot.Right }),
+                $("PanelExpanderButton", "COLLAPSIBLE",  // name of the object to make visible or invisible
+                  { row: 0, alignment: go.Spot.Right }),
                 // with the list data bound in the Vertical Panel
                 $(go.Panel, "Vertical",
                   {
-                    row: 1, name: "COLLAPSIBLE",  // identify to the PanelExpanderButton click function
+                    row: 1, name: "COLLAPSIBLE",  // identify to the PanelExpanderButton
                     padding: 2,
                     stretch: go.GraphObject.Horizontal,  // take up whole available width
                     background: "white",  // to distinguish from the node's body
@@ -163,14 +142,20 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  Interactive Voice Response Tree (IVR tree)
+
   <div id="myDiagram" style="border: solid 1px black; width:100%; height:500px"></div>
-  <button id="SaveButton" onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
-  <br />
+  <p>
+    This Interactive Voice Response Tree (IVR tree) has nodes that contain a collapsible list of actions,
+    controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body. See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
+  </p>
+
+  <p>
+    <button id="SaveButton" onclick="save()">Save</button>
+    <button onclick="load()">Load</button>
+  </p>
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
-  "nodeDataArray": [ 
+  "nodeDataArray": [
 {"key":"1", "question":"Present choices",
  "actions":[
    {"text":"first", "figure":"ElectricalHazard", "fill":"blue"},
@@ -213,7 +198,7 @@
          "colorStops":{"0":"white", "1":"red"}},
  "stroke":"red"}
  ],
-  "linkDataArray": [ 
+  "linkDataArray": [
 {"from":"1", "to":"2", "answer":"Yes"},
 {"from":"1", "to":"3", "answer":"No"},
 {"from":"1", "to":"4", "answer":"Maybe"},

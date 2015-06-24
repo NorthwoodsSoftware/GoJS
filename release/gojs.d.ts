@@ -1,7 +1,6 @@
-// Type definitions for GoJS 1.4
+// Type definitions for GoJS 1.5
 // Project: http://gojs.net
 // Definitions by: Barbara Duckworth <https://github.com/barbara42/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 /* Copyright (C) 1998-2015 by Northwoods Software Corporation. */
 
@@ -76,6 +75,9 @@ declare module go {
 
         /**Gets or sets a data object that is copied by .groupSelection when creating a new Group. The default value is null.*/
         archetypeGroupData: Object;
+
+        /**Gets or sets whether copySelection should also copy Links that connect with selected Nodes.*/
+        copiesConnectedLinks: boolean;
 
         /**Gets or sets whether copySelection and copyToClipboard copy the node data property whose value is the containing group data's key. The default value is false.*/
         copiesGroupKey: boolean;
@@ -498,6 +500,18 @@ declare module go {
         /**Gets or sets a fixed bounding rectangle to be returned by .documentBounds and .computeBounds.*/
         fixedBounds: Rect;
 
+        /**Gets or sets the scrollMode of the Diagram.*/
+        scrollMode: EnumValue;
+
+        /**Gets or sets the Margin (or number for a uniform Margin) that describes a scrollable area that surrounds the document bounds, allowing the user to scroll into empty space.*/
+        scrollMargin: any;
+
+        /**Gets or sets the function used to determine the position that this Diagram can be scrolled or moved to.*/
+        positionComputation: (d: Diagram, p: Point) => Point;
+
+        /**Gets or sets the function used to determine the scale that this Diagram can be set to.*/
+        scaleComputation: (d: Diagram, s: number) => number;
+
         /**Gets or sets a Panel of type Panel.Grid acting as the background grid extending across the whole viewport of this diagram.*/
         grid: Panel;
 
@@ -769,6 +783,13 @@ declare module go {
         findLinkForData(linkdata: Object): Link;
 
         /**
+        * Return a collection of Links that are bound to data whose properties have values
+        * that match those specified by the given example data.
+        * @param {...Object} examples
+        */
+        findLinksByExample(...examples: Object[]): Iterator;
+
+        /**
         * Look for a Node or Group corresponding to a model's node data object.
         * @param {Object} nodedata
         */
@@ -779,6 +800,13 @@ declare module go {
         * @param {*} key a string or number.
         */
         findNodeForKey(key: any): Node;
+
+        /**
+        * Return a collection of Nodes and Groups that are bound to data whose properties have values
+        * that match those specified by the given example data.
+        * @param {...Object} examples
+        */
+        findNodesByExample(...examples: Object[]): Iterator;
 
         /**
         * Find the front-most GraphObject at the given point in document coordinates.
@@ -874,7 +902,7 @@ declare module go {
         focus();
 
         /**
-        * This static method gets the Diagram that is attached to an HTML DIV element.
+        * This static function gets the Diagram that is attached to an HTML DIV element.
         * @param {HTMLDivElement} div
         */
         static fromDiv(div: HTMLDivElement): Diagram;
@@ -998,6 +1026,13 @@ declare module go {
         removeParts(coll: Iterable, check: boolean);
 
         /**
+        * This method removes from this Diagram all of the Parts in a collection.
+        * @param {Array} coll An Array of Parts.
+        * @param {boolean} check Whether to check Part.canDelete on each part.
+        */
+        removeParts(coll: Part[], check: boolean);
+
+        /**
         * Rollback the current transaction, undoing any recorded changes.
         * This just calls UndoManager.rollbackTransaction.
         */
@@ -1037,6 +1072,12 @@ declare module go {
         selectCollection(coll: Part[]);
 
         /**
+        * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
+        * in the same manner as GraphObject.make does when constructing a Diagram with an argument that is a simple JavaScript Object.
+        */
+        setProperties(props: Object);
+
+        /**
         * Begin a transaction, where the changes are held by a Transaction object in the UndoManager.
         * This just calls UndoManager.startTransaction.
         * @param {string=} tname a descriptive name for the transaction.
@@ -1059,6 +1100,13 @@ declare module go {
         * Update all of the data-bound properties of Nodes and Links in this diagram.
         */
         updateAllTargetBindings();
+
+        /**
+        * Update all of the references to nodes in case they had been modified in the model without
+        * properly notifying the model by calling GraphLinksModel.setGroupKeyForNodeData or
+        * GraphLinksModel.setToKeyForLinkData or other similar methods.
+        */
+        updateAllRelationshipsFromData();
 
         /**
         * Scales the Diagram to uniformly fit into the viewport.
@@ -1096,8 +1144,21 @@ declare module go {
         /**Diagrams with this autoScale type, used as the value of Diagram.autoScale, are scaled uniformly until the documentBounds fits in the view.*/
         static UniformToFill: EnumValue;
 
+        /**This value for Diagram.scrollMode states that the viewport constrains scrolling to the Diagram document bounds.*/
+        static DocumentScroll: EnumValue;
+
+        /**This value for Diagram.scrollMode states that the viewport does not constrain scrolling to the Diagram document bounds.*/
+        static InfiniteScroll: EnumValue;
+
+        getRenderingHint(name: string): any;  // undocumented
+        setRenderingHint(name: string, val: any);  // undocumented
+        getInputOption(name: string): any;  // undocumented
+        setInputOption(name: string, val: any);  // undocumented
         maybeUpdate();  // undocumented
         requestUpdate();  // undocumented
+        reset();  // undocumented
+        simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
+        simulatedMouseUp(e: Event, other: Diagram, modelpt: Point, curdiag?: Diagram): boolean;  // undocumented
     }
 
     /**
@@ -1366,6 +1427,13 @@ declare module go {
         copy(): GraphObject;
 
         /**
+        * This static function defines a named function that GraphObject.make can use to build objects.
+        * @param {string} name a capitalized name; must not be "" or "None"
+        * @param {function(Array):Object} func
+        */
+        static defineBuilder(name: string, func: (args: any[]) => Object);
+
+        /**
         * Returns the effective angle that the object is drawn at, in document coordinates.
         */
         getDocumentAngle(): number;
@@ -1403,6 +1471,12 @@ declare module go {
         isVisibleObject(): boolean;
 
         /**
+        * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
+        * in the same manner as GraphObject.make does when constructing a GraphObject with an argument that is a simple JavaScript Object.
+        */
+        setProperties(props: Object);
+
+        /**
         * This static function builds an object given its class and additional arguments providing initial properties or GraphObjects that become Panel elements.
         * @param {function()|string} type a class function or the name of a class in the "go" namespace,
         * or one of several predefined kinds of Panels: "Button", "TreeExpanderButton",
@@ -1437,6 +1511,11 @@ declare module go {
 
         /**GraphObjects with this as the value of GraphObject.stretch are scaled as much as possible in the y-axis*/
         static Vertical: EnumValue;
+
+        cloneProtected(copy: GraphObject);  // undocumented
+        static fromSvg(svg: string): GraphObject;  // undocumented
+        static fromSvg(svg: Document): GraphObject;  // undocumented
+        static getBuilders(): Map;  // undocumented
     }
 
     /**
@@ -1458,6 +1537,9 @@ declare module go {
 
         /**Gets or sets whether the bounds of a Group's Placeholder includes the previous Group.location. The default value is false.*/
         computesBoundsIncludingLocation: boolean;
+
+        /**Gets or sets whether drag-and-drop events may be bubbled up to this Group if not handled by member Parts.*/
+        handlesDragDropForMembers: boolean;
 
         /**Gets or sets whether the subgraph contained by this group is expanded. The default value is true.*/
         isSubGraphExpanded: boolean;
@@ -1590,6 +1672,12 @@ declare module go {
 
         /**Gets or sets whether an InputEvent that applies to a GraphObject and bubbles up the chain of containing Panels is stopped from continuing up the chain.*/
         handled: boolean;
+
+        /**This property is true when the InputEvent is caused by a touch event that registered more than one touch.*/
+        isMultiTouch: boolean;
+
+        /**This read-only property is true when the InputEvent is caused by a touch event.*/
+        isTouchEvent: boolean;
 
         /**Gets or sets the key pressed or released as this event.*/
         key: string;
@@ -2011,6 +2099,30 @@ declare module go {
 
         /**Used as a value for Link.adjusting, to indicate that the link route computation should linearly interpolate the intermediate points so that the link's shape looks stretched; if the routing is orthogonal, this value is treated as if it were Link.End.*/
         static Stretch: EnumValue;
+
+        routeBounds: Rect;  // undocumented
+        computeEndSegmentLength(node: Node, port: GraphObject, spot: Spot, from: boolean): number;  // undocumented
+        computeSpot(from: boolean): Spot;  // undocumented
+        computeOtherPoint(othernode: Node, otherport: GraphObject): Point;  // undocumented
+        computeShortLength(from: boolean): number;  // undocumented
+        computeCurve(): EnumValue;  // undocumented
+        computeCorner(): number;  // undocumented
+        computeCurviness(): number;  // undocumented
+        computeThickness(): number;  // undocumented
+        hasCurviness(): boolean;  // undocumented
+        invalidateRoute();  // undocumented
+        updateRoute();  // undocumented
+        computePoints(): boolean;  // undocumented
+        clearPoints();  // undocumented
+        addPoint(p: Point);  // undocumented
+        addPointAt(x: number, y: number);  // undocumented
+        insertPoint(i: number, p: Point);  // undocumented
+        insertPointAt(i: number, x: number, y: number);  // undocumented
+        removePoint(i: number);  // undocumented
+        setPoint(i: number, p: Point);  // undocumented
+        setPointAt(i: number, x: number, y: number);  // undocumented
+        invalidateGeometry();  // undocumented
+        makeGeometry(): Geometry;  // undocumented
     }
 
     /**
@@ -2061,6 +2173,9 @@ declare module go {
 
         /**This read-only property returns an iterator over all of the GraphObjects in this node that act as ports.*/
         ports: Iterator;
+
+        /**Gets or sets how link points are computed when the port spot is a "side" spot.*/
+        portSpreading: EnumValue;
 
         /**Gets or sets the function that is called when .isTreeExpanded has changed value.*/
         treeExpandedChanged: (node: Node) => void;
@@ -2152,6 +2267,12 @@ declare module go {
         findTreeChildrenNodes(): Iterator;
 
         /**
+        * Return how deep this node is in a tree structure.
+        * For tree root nodes, this returns zero.
+        */
+        findTreeLevel(): number;
+
+        /**
         * Returns the Link that connects with the tree parent Node of this node if the graph is tree-structured, if there is such a link and Link.isTreeLink is true.
         */
         findTreeParentLink(): Link;
@@ -2190,6 +2311,15 @@ declare module go {
 
         /**This value for GraphObject.fromEndSegmentDirection and GraphObject.toEndSegmentDirection indicates that the link's end segment angle is rotated to match the node's angle, but only in increments of 90 degrees.*/
         static DirectionRotatedNodeOrthogonal: EnumValue;
+
+        /**This value for Node.portSpreading indicates that links connecting with a port should be distributed evenly along the side(s) indicated by a Spot that is a "side" Spot.*/
+        static SpreadingEvenly: EnumValue;
+
+        /**This value for Node.portSpreading indicates that links connecting with a port should connect at a single point on the side(s) indicated by a Spot that is a "side" Spot.*/
+        static SpreadingNone: EnumValue;
+
+        /**This value for Node.portSpreading indicates that links connecting with a port should be packed together based on the link's shape's width on the side(s) indicated by a Spot that is a "side" Spot.*/
+        static SpreadingPacked: EnumValue;
     }
 
     /**
@@ -2349,6 +2479,12 @@ declare module go {
         * @param {number} x
         */
         findColumnForLocalX(x: number): number;
+
+        /**
+        * Returns the first immediate child element with GraphObject.isPanelMain set to true,
+        * or if there is no such child element, just the first element.
+        */
+        findMainElement(): GraphObject;
 
         /**
         * Search the visual tree starting at this Panel for a GraphObject whose GraphObject.name is the given name.
@@ -2685,6 +2821,12 @@ declare module go {
         findCommonContainingGroup(other: Part): Group;
 
         /**
+        * Return how deep this part is in the hierarchy of nested Groups.
+        * For top level parts, i.e. isTopLevel, this returns zero.
+        */
+        findSubGraphLevel(): number;
+
+        /**
         * Gets the top-level Part for this part, which is itself when .isTopLevel is true.
         */
         findTopLevelPart(): Part;
@@ -2733,6 +2875,13 @@ declare module go {
         */
         updateTargetBindings(srcprop?: string);
 
+        /**
+        * Update all of the references to nodes in case they had been modified in the model without
+        * properly notifying the model by calling GraphLinksModel.setGroupKeyForNodeData or
+        * GraphLinksModel.setToKeyForLinkData or other similar methods.
+        */
+        updateRelationshipsFromData();
+
         /**This flag may be combined with other "Layout" flags as the value of the Part.layoutConditions property to indicate that when a Part is added to a Diagram or Group, it invalidates the Layout responsible for the Part.*/
         static LayoutAdded: number;
 
@@ -2761,6 +2910,7 @@ declare module go {
         static LayoutStandard: number;
 
         ensureBounds();  // undocumented
+        moveTo(x: number, y: number);  // undocumented
     }
 
     /**
@@ -2790,8 +2940,13 @@ declare module go {
         /**Gets or sets the Picture's source URL, which can be any valid image (png, jpg, gif, etc) URL.*/
         source: string;
 
+        /**Gets or sets a function that returns a value for image.crossOrigin, which is null by default.*/
+        sourceCrossOrigin: (pic: Picture) => string;
+
         /**Gets or sets the rectangular area of the source image that this picture should display.*/
         sourceRect: Rect;
+
+        static clearCache(url?: string);  // undocumented
     }
 
     /**
@@ -2893,6 +3048,9 @@ declare module go {
 
         /**If a Table Panel is larger than all the rows then this .sizing grants this row and any others with the same value the extra space, apportioned proportionally between them*/
         static ProportionalExtra: EnumValue;
+
+        computeEffectiveSpacing(): number;  // undocumented
+        computeEffectiveSpacingTop(): number;  // undocumented
     }
 
     /**
@@ -2969,6 +3127,44 @@ declare module go {
 
         /**Gets or sets the name of the kind of arrowhead that this shape should take when this shape is an element of a Link.*/
         toArrow: string;
+
+        /**
+        * This static function returns a read-only Map of named geometry generators.
+        * @return {Map} the keys are figure names; the values are either synonymed names or generator functions
+        */
+        static getFigureGenerators(): Map;
+
+        /**
+        * This static function defines a named figure geometry generator for Shapes.
+        * @param {string} name new figure name must start with an uppercase letter, and must not be "None"
+        * @param {function(Shape, number, number):Geometry} func returns a Geometry for the given Shape, width, and height
+        */
+        static defineFigureGenerator(name: string, func: (shape: Shape, width: number, height: number) => Geometry);
+        /**
+        * This static function defines a synonym for a named figure geometry generator.
+        * @param {string} name the new figure name must start with an uppercase letter, and must not be "None"
+        * @param {string} synonym an existing figure name
+        */
+        static defineFigureGenerator(name: string, synonym: string);
+
+        /**
+        * This static function returns a read-only Map of named arrowhead geometries.
+        * @return {Map} the keys are arrowhead names; the values are Geometry objects
+        */
+        static getArrowheadGeometries(): Map;
+
+        /**
+        * This static function defines a named arrowhead geometry.
+        * @param {string} name the new arrowhead name must start with an uppercase letter, and must not be "None"
+        * @param {Geometry} geo the Geometry for the arrowhead
+        */
+        static defineArrowheadGeometry(name: string, geo: Geometry);
+        /**
+        * This static function defines a named arrowhead geometry.
+        * @param {string} name the new arrowhead name must start with an uppercase letter, and must not be "None"
+        * @param {string} pathstr a geometry path string that will be passed to Geometry.parse
+        */
+        static defineArrowheadGeometry(name: string, pathstr: string);
     }
 
     /**
@@ -3000,6 +3196,9 @@ declare module go {
 
         /**This read-only property returns the total number of lines in this TextBlock, including lines created from returns and wrapping.*/
         lineCount: number;
+
+        /**Gets or sets the maximum number of lines that this TextBlock may display.*/
+        maxLines: number;
 
         /**This read-only property returns the natural bounds of this TextBlock in local coordinates, as determined by its .font and .text string.*/
         naturalBounds: Rect;
@@ -3039,6 +3238,10 @@ declare module go {
 
         /**The TextBlock will wrap text, making the width of the TextBlock equal to the width of the longest line.*/
         static WrapFit: EnumValue;
+
+        static isValidFont(font: string): boolean;  // undocumented
+        static getEllipsis(): string;  // undocumented
+        static setEllipsis(val: string);  // undocumented
     }
 
 
@@ -3103,7 +3306,7 @@ declare module go {
         copy(): Brush;
 
         /**
-        * This static method can be used to generate a random color string.
+        * This static function can be used to generate a random color string.
         * @param {number=} min a number between zero and 255, defaults to 128.
         * @param {number=} max a number between zero and 255, defaults to 255.
         */
@@ -3120,6 +3323,8 @@ declare module go {
 
         /**For simple, solid color brushes, used as the value for Brush.type.*/
         static Solid: EnumValue;
+
+        static isValidColor(color: string): boolean;  // undocumented
     }
 
     /**
@@ -3140,6 +3345,9 @@ declare module go {
 
         /**This read-only property returns a rectangle that contains all points within the Geometry.*/
         bounds: Rect;
+
+        /**Gets or sets the Shape.geometryStretch value the Shape should use by default.*/
+        defaultStretch: EnumValue;
 
         /**Gets or sets the ending X coordinate of the Geometry if it is of type .Line, .Rectangle, or .Ellipse.*/
         endX: number;
@@ -3164,6 +3372,13 @@ declare module go {
 
         /**Gets or sets the type of the Geometry.*/
         type: EnumValue;
+
+        /**
+        * Add a PathFigure to the figures list.
+        * @param {PathFigure} figure a newly allocated unshared PathFigure that will become owned by this Geometry
+        * @return {Geometry} this
+        */
+        add(figure: PathFigure): Geometry;
 
         /**
         * Computes the Geometry's bounds without adding an origin point, and returns those bounds as a rect.
@@ -3191,8 +3406,9 @@ declare module go {
         * Offsets the Geometry in place by a given (x, y) amount
         * @param {number} x The x-axis offset factor.
         * @param {number} y The y-axis offset factor.
+        * @return {Geometry} this
         */
-        offset(x: number, y: number);
+        offset(x: number, y: number): Geometry;
 
         /**
         * Produce a Geometry from a string that uses an SVG-like compact path geometry syntax.
@@ -3211,18 +3427,20 @@ declare module go {
         * @param {number} angle The angle to rotate by.
         * @param {number=} x The optional X point to rotate the geometry about. If no point is given, this value is 0.
         * @param {number=} y The optional Y point to rotate the geometry about. If no point is given, this value is 0.
+        * @return {Geometry} this
         */
-        rotate(angle: number, x?: number, y?: number);
+        rotate(angle: number, x?: number, y?: number): Geometry;
 
         /**
         * Scales the Geometry in place by a given (x, y) scale factor
         * @param {number} x The x-axis scale factor.
         * @param {number} y The y-axis scale factor.
+        * @return {Geometry} this
         */
-        scale(x: number, y: number);
+        scale(x: number, y: number): Geometry;
 
         /**
-        * This static method can be used to write out a Geometry as a string
+        * This static function can be used to write out a Geometry as a string
         * that can be read by Geometry.parse.
         * The string produced by this method is a superset of the SVG path
         * string rules that contains some additional GoJS-specific tokens.
@@ -3242,6 +3460,8 @@ declare module go {
 
         /**For drawing a rectangle; a value for Geometry.type.*/
         static Rectangle: EnumValue;
+
+        equalsApprox(g: Geometry): boolean;  // undocumented
     }
 
     /**
@@ -3317,14 +3537,14 @@ declare module go {
         isReal(): boolean;
 
         /**
-        * This static method can be used to read in a Margin from a string that was produced by Margin.stringify.
+        * This static function can be used to read in a Margin from a string that was produced by Margin.stringify.
         * @param {string} str
         */
         static parse(str: string): Margin;
 
         /**
-        * Replace the transformation matrix of this Transform with those of another Transform.
-        * @param {Transform} t the other Transform from which to copy the transformation matrix.
+        * Modify this Margin so that its Top, Right, Bottom, and Left values are the same as the given Margin.
+        * @param {Margin} m the Margin whose values are to be copied
         */
         set(m: Margin): Margin;
 
@@ -3336,10 +3556,12 @@ declare module go {
         setTo(t: number, r: number, b: number, l: number): Margin;
 
         /**
-        * This static method can be used to write out a Margin as a string that can be read by Margin.parse.
+        * This static function can be used to write out a Margin as a string that can be read by Margin.parse.
         * @param {Margin} val
         */
         static stringify(val: Margin): string;
+
+        equalsApprox(m: Margin): boolean;  // undocumented
     }
 
     /**
@@ -3356,8 +3578,9 @@ declare module go {
         * @param {number=} sx optional: the X coordinate of the start point (default is zero).
         * @param {number=} sy optional: the Y coordinate of the start point (default is zero).
         * @param {boolean=} filled optional: whether the figure is filled (default is true).
+        * @param {boolean=} shadowed optional: whether the figure may be drawn with a shadow (default is true).
         */
-        constructor(sx?: number, sy?: number, filled?: boolean);
+        constructor(sx?: number, sy?: number, filled?: boolean, shadowed?: boolean);
 
         /**Gets or sets whether this PathFigure is drawn filled.*/
         isFilled: boolean;
@@ -3375,9 +3598,18 @@ declare module go {
         startY: number;
 
         /**
+        * Add a PathSegment to the segments list.
+        * @param {PathSegment} segment a newly allocated unshared PathSegment that will become owned by this PathFigure
+        * @return {PathFigure} this
+        */
+        add(segment: PathSegment): PathFigure;
+
+        /**
         * Create a copy of this PathFigure, with the same values and segments.
         */
         copy(): PathFigure;
+
+        equalsApprox(f: PathFigure): boolean;  // undocumented
     }
 
     /**
@@ -3479,6 +3711,8 @@ declare module go {
 
         /**For drawing an SVG arc segment, a value for PathSegment.type.*/
         static SvgArc: EnumValue;
+
+        equalsApprox(s: PathSegment): boolean;  // undocumented
     }
 
     /**
@@ -3516,7 +3750,7 @@ declare module go {
         copy(): Point;
 
         /**
-        * This static method returns the angle in degrees of the line from point P to point Q.
+        * This static function returns the angle in degrees of the line from point P to point Q.
         * @param {number} px
         * @param {number} py
         * @param {number} qx
@@ -3540,7 +3774,7 @@ declare module go {
         directionPoint(p: Point): number;
 
         /**
-        * This static method returns the square of the distance from the point P
+        * This static function returns the square of the distance from the point P
         * to the finite line segment from point A to point B.
         * @param {number} px
         * @param {number} py
@@ -3559,7 +3793,7 @@ declare module go {
         distanceSquared(px: number, py: number): number;
 
         /**
-        * This static method returns the square of the distance from the point P to the point Q.
+        * This static function returns the square of the distance from the point P to the point Q.
         * @param {number} px
         * @param {number} py
         * @param {number} qx
@@ -3607,7 +3841,7 @@ declare module go {
         offset(dx: number, dy: number): Point;
 
         /**
-        * This static method can be used to read in a Point from a string that was produced by Point.stringify.
+        * This static function can be used to read in a Point from a string that was produced by Point.stringify.
         * @param {string} str
         */
         static parse(str: string): Point;
@@ -3694,7 +3928,7 @@ declare module go {
         snapToGridPoint(origin: Point, cellsize: Size): Point;
 
         /**
-        * This static method can be used to write out a Point as a string that can be read by Point.parse.
+        * This static function can be used to write out a Point as a string that can be read by Point.parse.
         * @param {Point} val
         */
         static stringify(val: Point): string;
@@ -3705,6 +3939,8 @@ declare module go {
         * @param {Point} p The Point to subtract from the current Point.
         */
         subtract(p: Point): Point;
+
+        equalsApprox(p: Point): boolean;  // undocumented
     }
 
     /**
@@ -3796,7 +4032,7 @@ declare module go {
         contains(x: number, y: number, w?: number, h?: number): boolean;
 
         /**
-        * This static method indicates whether a Rect contains the given Point/Rect.
+        * This static function indicates whether a Rect contains the given Point/Rect.
         * @param {number} rx The X coordinate of a Rect.
         * @param {number} ry The Y coordinate of a Rect.
         * @param {number} rw The Width of a Rect.
@@ -3879,7 +4115,7 @@ declare module go {
         intersectRect(r: Rect): Rect;
 
         /**
-        * This static method indicates whether a Rect partly or wholly overlaps the given Rect.
+        * This static function indicates whether a Rect partly or wholly overlaps the given Rect.
         * @param {number} rx The X coordinate of a Rect.
         * @param {number} ry The Y coordinate of a Rect.
         * @param {number} rw The Width of a Rect.
@@ -3925,7 +4161,7 @@ declare module go {
         offset(dx: number, dy: number): Rect;
 
         /**
-        * This static method can be used to read in a Rect from a string that was produced by Rect.stringify.
+        * This static function can be used to read in a Rect from a string that was produced by Rect.stringify.
         * @param {string} str
         */
         static parse(str: string): Rect;
@@ -3968,7 +4204,7 @@ declare module go {
         setTo(x: number, y: number, w: number, h: number): Rect;
 
         /**
-        * This static method can be used to write out a Rect as a string that can be read by Rect.parse.
+        * This static function can be used to write out a Rect as a string that can be read by Rect.parse.
         * @param {Rect} val
         */
         static stringify(val: Rect): string;
@@ -4000,6 +4236,8 @@ declare module go {
         * @param {Rect} r The Rect to include in the new bounds.
         */
         unionRect(r: Rect): Rect;
+
+        equalsApprox(r: Rect): boolean;  // undocumented
     }
 
     /**
@@ -4051,7 +4289,7 @@ declare module go {
         isReal(): boolean;
 
         /**
-        * This static method can be used to read in a Size from a string that was produced by Size.stringify.
+        * This static function can be used to read in a Size from a string that was produced by Size.stringify.
         * @param {string} str
         */
         static parse(str: string): Size;
@@ -4070,10 +4308,12 @@ declare module go {
         setTo(w: number, h: number): Size;
 
         /**
-        * This static method can be used to write out a Size as a string that can be read by Size.parse.
+        * This static function can be used to write out a Size as a string that can be read by Size.parse.
         * @param {Size} val
         */
         static stringify(val: Size): string;
+
+        equalsApprox(s: Size): boolean;  // undocumented
     }
 
     /**
@@ -4158,7 +4398,7 @@ declare module go {
         opposite(): Spot;
 
         /**
-        * This static method can be used to read in a Spot from a string that was produced by Spot.stringify.
+        * This static function can be used to read in a Spot from a string that was produced by Spot.stringify.
         * @param {string} str
         */
         static parse(str: string): Spot;
@@ -4179,7 +4419,7 @@ declare module go {
         setTo(x: number, y: number, offx: number, offy: number): Spot;
 
         /**
-        * This static method can be used to write out a Spot as a string that can be read by Spot.parse.
+        * This static function can be used to write out a Spot as a string that can be read by Spot.parse.
         * @param {Spot} val
         */
         static stringify(val: Spot): string;
@@ -4402,7 +4642,7 @@ declare module go {
         ofObject(srcname?: string): Binding;
 
         /**
-        * This static method can be used to create a function that parses
+        * This static function can be used to create a function that parses
         * a string into an enumerated value, given the class that the enumeration values
         * are defined on and a default value if the string cannot be parsed successfully.
         * The normal usage is to pass the result of this function as the conversion function of a Binding.
@@ -4417,7 +4657,7 @@ declare module go {
         static parseEnum(ctor: new (...args: any[]) => Object, defval: EnumValue): (a: string) => EnumValue;
 
         /**
-        * This static method can be used to convert an object to a string,
+        * This static function can be used to convert an object to a string,
         * looking for commonly defined data properties, such as "text", "name", "key", or "id".
         * If none are found, this just calls toString() on it.
         * @param {*} val
@@ -4429,6 +4669,8 @@ declare module go {
 
         /**This value for Binding.mode uses data source values and GraphObject properties and keeps them in sync.*/
         static TwoWay: EnumValue;
+
+        ofModel(): Binding;  // undocumented
     }
 
     /**
@@ -4907,6 +5149,12 @@ declare module go {
         */
         constructor(nodedataarray?: Object[]);
 
+        /**Gets or sets whether the default behavior for copyNodeData makes copies of property values that are Arrays.*/
+        copiesArrays: boolean;
+
+        /**Gets or sets whether the default behavior for copyNodeData when copying Arrays also copies array items that are Objects.*/
+        copiesArrayObjects: boolean;
+
         /**Gets or sets a function that makes a copy of a node data object; the default value is null, resulting in the standard behavior which is to make a shallow copy of the object.*/
         copyNodeDataFunction: (obj: Object, model: Model) => Object;
 
@@ -5020,7 +5268,7 @@ declare module go {
         findNodeDataForKey(key: any): Object;
 
         /**
-        * This static method parses a string in JSON format and constructs, initializes, and returns a model.
+        * This static function parses a string in JSON format and constructs, initializes, and returns a model.
         * Note that properties with values that are functions are not written out by .toJson,
         * so reading in such a model will require constructing such a model, initializing its functional property values,
         * and explicitly passing it in as the second argument.
@@ -5030,7 +5278,7 @@ declare module go {
         static fromJson(s: string, model?: Model): Model;
 
         /**
-        * This static method parses a string in JSON format and constructs, initializes, and returns a model.
+        * This static function parses a string in JSON format and constructs, initializes, and returns a model.
         * Note that properties with values that are functions are not written out by .toJson,
         * so reading in such a model will require constructing such a model, initializing its functional property values,
         * and explicitly passing it in as the second argument.
@@ -5507,6 +5755,8 @@ declare module go {
         * Reverse the effects of this object change.
         */
         undo();
+
+        checksTransactionLevel: boolean;  // undocumented
     }
 
 
@@ -5705,6 +5955,9 @@ declare module go {
         /**Gets or sets the maximum number of iterations to perform when doing the force-directed auto layout.*/
         maxIterations: number;
 
+        /**Gets or sets a random number generator with a random() method; set to null in order to use and reset an internal repeatable pseudo-random number generator.*/
+        randomNumberGenerator: Object;
+
         /**Gets or sets whether the fromSpot and the toSpot of every Link should be set to Spot.Default.*/
         setsPortSpots: boolean;
 
@@ -5809,6 +6062,13 @@ declare module go {
         * @param {ForceDirectedVertex} v
         */
         isFixed(v: ForceDirectedVertex): boolean;
+
+        /**
+        * Maybe move a vertex that isFixed.
+        * This is called each iteration on each such vertex.
+        * By default this does nothing.
+        */
+        moveFixedVertex(v: ForceDirectedVertex);
 
         /**
         * Returns the length of the spring representing an edge.
@@ -6070,6 +6330,9 @@ declare module go {
 
         /**This option tries to have the packing algorithm straighten many of the links that cross layers, a valid value for LayeredDigraphLayout.packOption.*/
         static PackStraighten: number;
+
+        nodeMinLayerSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
+        nodeMinColumnSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
     }
 
     /** This holds LayeredDigraphLayout-specific information about Link s.*/
@@ -6199,6 +6462,9 @@ declare module go {
         * When using a LayoutNetwork, update the "physical" node positionings and link routings.
         */
         updateParts();
+
+        cloneProtected(copy: Layout);  // undocumented
+        collectParts(coll: Iterable);  // undocumented
     }
 
     /**
@@ -6243,9 +6509,12 @@ declare module go {
         /**
         * Creates a network of LayoutVertexes and LayoutEdges corresponding to the given Nodes and Links.
         * @param {Iterable} parts A collection of Nodes or Links.
-        * @param {boolean=} toplevelonly whether to skip Parts in the given collection that are contained by Groups.
+        * @param {boolean=} toplevelonly whether to skip Parts in the given collection that are contained by Groups; default is false.
+        * @param {function(Part):boolean|null=} pred optional predicate to apply to each Part --
+        *        if it returns false do not include Vertex or Edge in the network for that Part;
+        *        default ignores link label nodes or links connecting with them
         */
-        addParts(parts: Iterable, toplevelonly?: boolean);
+        addParts(parts: Iterable, toplevelonly?: boolean, pred?: (part: Part) => boolean);
 
         /**
         * Adds a LayoutVertex to the network.
@@ -6363,6 +6632,8 @@ declare module go {
         * @param {LayoutVertex} v
         */
         getOtherVertex(v: LayoutVertex);
+
+        data: Object;  // undocumented
     }
 
     /** A vertex represents a node in a LayoutNetwork. It holds layout-specific data for the node. */
@@ -6459,18 +6730,20 @@ declare module go {
         deleteSourceEdge(edge: LayoutEdge);
 
         /**
-        * This static method is used to compare the Part.text values of the .nodes of the argument LayoutVertexes.
+        * This static function is used to compare the Part.text values of the .nodes of the argument LayoutVertexes.
         * @param {LayoutVertex} m
         * @param {LayoutVertex} n
         */
         static smartComparer(m: LayoutVertex, n: LayoutVertex): number;
 
         /**
-        * This static method is used to compare the Part.text values of the .nodes of the argument LayoutVertexes.
+        * This static function is used to compare the Part.text values of the .nodes of the argument LayoutVertexes.
         * @param {LayoutVertex} m
         * @param {LayoutVertex} n
         */
         static standardComparer(m: LayoutVertex, n: LayoutVertex): number;
+
+        data: Object;  // undocumented
     }
 
     /**
@@ -7370,6 +7643,17 @@ declare module go {
         isLinked(fromport: GraphObject, toport: GraphObject): boolean;
 
         /**
+        * Checks whether a proposed link would be valid according to Diagram.validCycle.
+        * This does not distinguish between different ports on a node, so this method does not need to take port arguments.
+        * This is called by isValidLink.
+        * @param {Node} from
+        * @param {Node} to
+        * @param {Link} ignore may be null; this is useful during relinking to ignore the originalLink
+        * @return {boolean}
+        */
+        isValidCycle(from: Node, to: Node, ignore: Link): boolean;
+
+        /**
         * This predicate is true if it is permissible to connect a link from a given node/port.
         * @param {Node} fromnode
         * @param {GraphObject} fromport
@@ -8017,6 +8301,11 @@ declare module go {
         canStart(): boolean;
 
         /**
+        * This predicate determines whether or not to allow pinch zooming from a multi-touch event.
+        */
+        canStartMultiTouch(): boolean;
+
+        /**
         * This method is called by the diagram after setting Diagram.currentTool, to make the new tool active.
         */
         doActivate();
@@ -8112,6 +8401,16 @@ declare module go {
         * Implement the standard behavior for mouse wheel events.
         */
         standardMouseWheel();
+
+        /**
+        * Initiates pinch-zooming on multi-touch devices.
+        */
+        standardPinchZoomStart();
+
+        /**
+        * Continues pinch-zooming (started by standardPinchZoomStart) on multi-touch devices.
+        */
+        standardPinchZoomMove();
 
         /**
         * This is called to start a new timer to call .doWaitAfter after a given delay.
@@ -8298,6 +8597,15 @@ declare module go {
         */
         showToolTip(tooltip: Adornment, obj: GraphObject);
 
+        /**This value for gestureBehavior indicates that the pointer/touch pinch gestures on the canvas intend to have no effect on the Diagram, but also no effect on the page.*/
+        static GestureCancel: EnumValue;
+
+        /**This value for gestureBehavior indicates that the pointer/touch pinch gestures on the canvas intend to have no effect on the Diagram, but will not be prevented, and may bubble up the page to have other effects (such as zooming the page).*/
+        static GestureNone: EnumValue;
+
+        /**This value for gestureBehavior indicates that the pointer/touch pinch gestures on the canvas intend to zoom the Diagram.*/
+        static GestureZoom: EnumValue;
+
         /**This value for .mouseWheelBehavior indicates that the mouse wheel events are ignored, although scrolling or zooming by other means may still be allowed.*/
         static WheelNone: EnumValue;
 
@@ -8393,6 +8701,9 @@ declare module go {
         /**This read-only property returns the length of the List.*/
         count: number;
 
+        /**This read-only property returns the length of the List. ES6-like synonym for count.*/
+        size: number;
+
         /**Gets an object that you can use for iterating over the List.*/
         iterator: Iterator;
 
@@ -8449,6 +8760,12 @@ declare module go {
         copy(): List;
 
         /**
+        * Removes a given value (if found) from the List. ES6-like synonym for remove.
+        * @param {*} any
+        */
+        delete(val: any): boolean;
+
+        /**
         * Call the given function on each item in the collection.
         * @param {(x: any) => void} func
         */
@@ -8461,9 +8778,21 @@ declare module go {
         elt(i: number);
 
         /**
-        * Returns the first item in the collection, or null if there is none.
+        * Returns the first item in the list, or null if there is none.
         */
         first(): any;
+
+        /**
+        * Returns the element at the given index. ES6-like synonym for elt.
+        * @param {number} i
+        */
+        get(i: number);
+
+        /**
+        * Returns whether the given value is in this List. ES6-like synonym for contains.
+        * @param {*} any
+        */
+        has(val: any): boolean;
 
         /**
         * Returns the index of the given value if it is in this List.
@@ -8477,6 +8806,21 @@ declare module go {
         * @param {*} any
         */
         insertAt(i: number, val: any);
+
+        /**
+        * Returns the last item in the list, or null if there is none.
+        */
+        last(): any;
+
+        /**
+        * Returns the last item in the list and removes it from the list, or just return null if there is none.
+        */
+        pop(): any;
+
+        /**
+        * Add an item at the end of the list -- a synonym for add.
+        */
+        push(val: any);
 
         /**
         * Removes a given value (if found) from the List.
@@ -8501,6 +8845,13 @@ declare module go {
         * Reverse the order of items in this List.
         */
         reverse(): List;
+
+        /**
+        * Set the element at the given index to a given value. ES6-like synonym for setElt.
+        * @param {number} i
+        * @param {*} val
+        */
+        set(i: number, val: any);
 
         /**
         * Set the element at the given index to a given value.
@@ -8569,6 +8920,9 @@ declare module go {
         /**Gets an object that you can use for iterating over the values of the Map.*/
         iteratorValues: Iterator;
 
+        /**This read-only property returns the number of associations in the Map. ES6-like synonym for count.*/
+        size: number;
+
         /**
         * Adds a key-value association to the Map, or replaces the value associated with the key if the key was already present in the map.
         * @param {*} any
@@ -8611,6 +8965,12 @@ declare module go {
         copy(): Map;
 
         /**
+        * Removes a key (if found) from the Map. ES6-like synonym for remove.
+        * @param {*} any
+        */
+        delete(key: any): boolean;
+
+        /**
         * Call the given function on each key-value pair in the collection.
         * @param {(x: Object) => void} func
         */
@@ -8622,16 +8982,35 @@ declare module go {
         first(): any;
 
         /**
+        * Returns the value associated with a key. ES6-like synonym for getValue.
+        * @param {*} any
+        */
+        get(key: any);
+
+        /**
         * Returns the value associated with a key.
         * @param {*} any
         */
         getValue(key: any);
 
         /**
+        * Returns whether the given key is in this Map. ES6-like synonym for contains.
+        * @param {*} any
+        */
+        has(key: any): boolean;
+
+        /**
         * Removes a key (if found) from the Map.
         * @param {*} any
         */
         remove(key: any): boolean;
+
+        /**
+        * Adds a key-value association to the Map, or replaces the value associated with the key if the key was already present in the map. ES6-like synonym for add.
+        * @param {*} any
+        * @param {*} val
+        */
+        set(key: any, val: any): boolean;
 
         /**
         * Produces a JavaScript Array of key/value pair objects from the contents of this Map.
@@ -8665,6 +9044,9 @@ declare module go {
 
         /**Gets an object that you can use for iterating over the Set.*/
         iterator: Iterator;
+
+        /**This read-only property returns the number of elements in the Set. ES6-like synonym for count.*/
+        size: number;
 
         /**
         * Adds a given value to the Set, if not already present.
@@ -8725,6 +9107,12 @@ declare module go {
         copy(): Set;
 
         /**
+        * Removes a value (if found) from the Set. ES6-like synonym for remove.
+        * @param {*} any
+        */
+        delete(val: any): boolean;
+
+        /**
         * Call the given function on each item in the collection.
         * @param {(x: any) => void} func
         */
@@ -8734,6 +9122,12 @@ declare module go {
         * Returns the first item in the collection, or null if there is none.
         */
         first(): any;
+
+        /**
+        * Returns whether the given value is in this Set. ES6-like synonym for contains.
+        * @param {*} any
+        */
+        has(val: any): boolean;
 
         /**
         * Removes a value (if found) from the Set.
@@ -8770,7 +9164,7 @@ declare module go {
         toList(): List;
     }
 
-    class EnumValue {
+    class EnumValue {  // undocumented
         //Rawr!
     }
 } //END go

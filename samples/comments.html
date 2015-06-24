@@ -1,9 +1,11 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Comments</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
+<script src="../extensions/BalloonLink.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
@@ -19,8 +21,7 @@
                     { angle: 90,
                       setsPortSpot: false,
                       setsChildPortSpot: false
-                    }),
-          "undoManager.isEnabled": true
+                    })
         });
 
     myDiagram.nodeTemplate =
@@ -41,6 +42,23 @@
           { toArrow: "Standard", stroke: null })
       );
 
+    myDiagram.nodeTemplateMap.add("Comment",
+      $(go.Node,  // this needs to act as a rectangular shape for BalloonLink,
+        { background: "transparent" },  // which can be accomplished by setting the background.
+        { selectionAdorned: false },    // optional
+        $(go.TextBlock,
+          { stroke: "brown", margin: 3 },
+          new go.Binding("text"))
+      ));
+
+    myDiagram.linkTemplateMap.add("Comment",
+      // if the BalloonLink class has been loaded from the Extensions directory, use it
+      $((typeof BalloonLink === "function" ? BalloonLink : go.Link),
+        $(go.Shape,  // the Shape.geometry will be computed to surround the comment node and
+                     // point all the way to the commented node
+          { stroke: "brown", strokeWidth: 1, fill: "lightyellow" })
+      ));
+
     myDiagram.model =
       $(go.GraphLinksModel,
         { nodeDataArray: [
@@ -48,8 +66,8 @@
             { key: "Beta", color: "lightgreen" },
             { key: "Gamma", color: "lightgreen" },
             { key: "Delta", color: "pink" },
-            { key: "A comment", text: "comment about Alpha", category: "Comment" },
-            { key: "B comment", text: "comment about Beta", category: "Comment" },
+            { key: "A comment", text: "comment\nabout Alpha", category: "Comment" },
+            { key: "B comment", text: "comment\nabout Beta", category: "Comment" },
             { key: "G comment", text: "comment about Gamma", category: "Comment" }
           ],
           linkDataArray: [
@@ -69,6 +87,7 @@
 </head>
 <body onload="init()">
   <div id="sample">
+    <div id="myDiagram" style="border: solid 1px blue; width:100%; height:400px;"></div>
     <p>
       <b>GoJS</b> supports the notion of "Comment"s.
       A "Comment" is a node that is linked with another node but is positioned by some layouts to go along with that other node,
@@ -79,11 +98,11 @@
       Node and link data are marked as "Comment"s by specifying "Comment" as the category.
       But the "Comment" nodes and links have a different default template, and thus a different appearance, than regular nodes and links.
       You can specify your own templates for "Comment" nodes and "Comment" links.
+      The "Comment" link template defined here uses the <code>BalloonLink</code> class defined in <a href="../extensions/BalloonLink.js">BalloonLink.js</a> in the Extensions directory.
     </p>
-    <div id="myDiagram" style="border: solid 1px blue; width:100%; height:400px;"></div>
     <div style="display: inline">
       Current Diagram.model saved in JSON format:<br />
-      <pre id="savedModel" />
+      <pre id="savedModel"></pre>
     </div>
   </div>
 </body>

@@ -1,12 +1,14 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Tapered Links</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script>
+
+<script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;
@@ -55,7 +57,7 @@
           relinkableTo: true
         },
         $(go.Shape,
-          { isPanelMain: true, stroke: null, strokeWidth: 0 },
+          { stroke: null, strokeWidth: 0 },
           new go.Binding("fill", "color"))
       );
 
@@ -87,6 +89,7 @@
   go.Diagram.inherit(TaperedLink, go.Link);
   
   // produce a Geometry from the Link's route
+  /** @override */
   TaperedLink.prototype.makeGeometry = function() {
     // maybe use the standard geometry for this route, instead?
     var numpts = this.pointsCount;
@@ -111,8 +114,7 @@
     var p3y = p3.y + (toHoriz ? -1 : 0);
 
     var fig = new go.PathFigure(p0x, p0y, true);  // filled
-    var seg1 = new go.PathSegment(go.PathSegment.Bezier, p3x, p3y, p1x, p1y, p2x, p2y);
-    fig.segments.add(seg1);
+    fig.add(new go.PathSegment(go.PathSegment.Bezier, p3x, p3y, p1x, p1y, p2x, p2y));
 
     p0x = p0.x + (fromHoriz ? 0 : 4);
     p0y = p0.y + (fromHoriz ? 4 : 0);
@@ -122,17 +124,15 @@
     p2y = p2.y + (toHoriz ? 2 : 0);
     p3x = p3.x + (toHoriz ? 0 : 1);
     p3y = p3.y + (toHoriz ? 1: 0);
-
-    fig.segments.add(new go.PathSegment(go.PathSegment.Line, p3x, p3y));
-
-    var seg2 = new go.PathSegment(go.PathSegment.Bezier, p0x, p0y, p2x, p2y, p1x, p1y).close();
-    fig.segments.add(seg2);
+    fig.add(new go.PathSegment(go.PathSegment.Line, p3x, p3y));
+    fig.add(new go.PathSegment(go.PathSegment.Bezier, p0x, p0y, p2x, p2y, p1x, p1y).close());
 
     var geo = new go.Geometry();
-    geo.figures.add(fig);
-    var offset = geo.normalize();
+    geo.add(fig);
+    geo.normalize();
     return geo;
   };
+  // end TaperedLink class
 </script>
 </head>
 <body onload="init()">

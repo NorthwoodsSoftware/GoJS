@@ -37,7 +37,7 @@ Programmatic layouts happen when some code executes to set the <a>Part</a> posit
 Automatic layouts are programmatic layouts that are implemented by the <a>Layout</a> class or its subclasses.
 </p>
 
-<h2>Default Layout</h2>
+<h3>Default Layout</h3>
 <p>
 The value of <a>Diagram.layout</a> defaults to an instance of <a>Layout</a>.
 This kind of layout is unlike all of the other layout subclasses, in that it only sets the position of nodes
@@ -85,7 +85,7 @@ There are samples for each of these layouts, demonstrating the effects of settin
 In the introduction pages and samples you will see many examples that make use of automatic layout by setting the <a>Diagram.layout</a> property. <a href="https://github.com/NorthwoodsSoftware/GoJS/search?utf8=%E2%9C%93&amp;q=%22layout%3A+%26%28go%22&amp;type=Code">Search the sources of the samples for many more examples.</a>
 </p>
 
-<h2>Layout Usage</h2>
+<h3>Layout Usage</h3>
 
 <p>
 You can set <a>Diagram.layout</a> in a JavaScript statement:
@@ -106,7 +106,7 @@ var diagram = $(go.Diagram, "myDiagramDiv",
 We recommend using <b>GraphObject.make</b> whenever you can because of the error checking that it does for property names.
 </p>
 
-<h2>Grid Layout</h2>
+<h3>Grid Layout</h3>
 
 <p>A simple layout for placing Nodes in a grid-like arrangement.</p>
 
@@ -154,9 +154,12 @@ diagram.linkTemplate =
 </pre>
 <script>goCode("gridlayout", 400, 120)</script>
 
-<p>See the <a href="../samples/gLayout.html" target="samples">GridLayout Sample</a> for a demonstration of layout options.</p>
+<p>
+See the <a href="../samples/gLayout.html" target="samples">GridLayout Sample</a> for a demonstration of layout options.
+The <a href="../samples/swimlanes.html" target="samples">Swim Lanes</a> sample demonstrates a customization of <a>GridLayout</a>.
+</p>
 
-<h2>Tree Layout</h2>
+<h3>Tree Layout</h3>
 
 <p>This layout positions nodes of a tree-structured graph in layers (rows or columns).</p>
 
@@ -204,15 +207,22 @@ diagram.linkTemplate =
 </pre>
 <script>goCode("treelayout", 400, 200)</script>
 
-<p>See the <a href="../samples/tLayout.html" target="samples">TreeLayout Sample</a> for a demonstration of layout options.</p>
+<p>
+See the <a href="../samples/tLayout.html" target="samples">TreeLayout sample</a> for a demonstration of layout options.
+The <a href="../samples/orgChartEditor.html" target="samples">Org Chart Editor</a>,
+<a href="../samples/parseTree.html" target="samples">Parse Tree</a>,
+<a href="../samples/swimBands.html" target="samples">Layer Bands</a>, and
+<a href="../samples/virtualizedTreeLayout.html" target="samples">Virtualized Tree</a>
+samples demonstrate customization of <a>TreeLayout</a>.
+</p>
 
-<h2>Force-Directed Layout</h2>
+<h3>Force-Directed Layout</h3>
 
 <p>Force-directed layout treats the graph as if it were a system of physical bodies with forces acting on them and between them.</p>
 
 <pre data-language="javascript" id="fdlayout" style="display: none;">
     diagram.layout = $(go.ForceDirectedLayout);
-    diagram.autoScale = go.Diagram.Uniform;
+    diagram.initialAutoScale = go.Diagram.Uniform;
     diagram.contentAlignment = go.Spot.Center;
 
     // define a simple Node template
@@ -265,9 +275,14 @@ diagram.linkTemplate =
 </pre>
 <script>goCode("fdlayout", 400, 200)</script>
 
-<p>See the <a href="../samples/fdLayout.html" target="samples">ForceDirectedLayout Sample</a> for a demonstration of layout options.</p>
+<p>
+See the <a href="../samples/fdLayout.html" target="samples">ForceDirectedLayout sample</a> for a demonstration of layout options.
+That sample also demonstrates a simple customization of <a>ForceDirectedLayout</a>.
+The <a href="../samples/virtualizedForceLayout.html" target="samples">Virtualized Force Directed</a> sample
+demonstrates a more complicated customization of <a>ForceDirectedLayout</a>.
+</p>
 
-<h2>Layered Digraph Layout</h2>
+<h3>Layered Digraph Layout</h3>
 
 <p>This arranges nodes of directed graphs into layers (rows or columns).</p>
 
@@ -320,11 +335,14 @@ diagram.linkTemplate =
 </pre>
 <script>goCode("ldllayout", 400, 300)</script>
 
-<p>See the <a href="../samples/ldLayout.html" target="samples">LayeredDigraphLayout Sample</a> for a demonstration of layout options.</p>
+<p>
+See the <a href="../samples/ldLayout.html" target="samples">LayeredDigraphLayout sample</a> for a demonstration of layout options.
+The <a href="../samples/genogram.html" target="samples">Genogram</a> sample demonstrates a complex customization of <a>LayeredDigraphLayout</a>.
+</p>
 
-<h2>Circular Layout</h2>
+<h3>Circular Layout</h3>
 
-<p>This layout positions nodes in a circular arrangement.</p>
+<p>This layout positions nodes in a circular or elliptical arrangement.</p>
 
 <pre data-language="javascript" id="CircularLayout" style="display: none;">
     diagram.layout = $(go.CircularLayout);
@@ -375,20 +393,25 @@ diagram.linkTemplate =
 </pre>
 <script>goCode("CircularLayout", 400, 200)</script>
 
-<p>See the <a href="../samples/cLayout.html" target="samples">CircularLayout Sample</a> for a demonstration of layout options.</p>
+<p>
+See the <a href="../samples/cLayout.html" target="samples">CircularLayout sample</a> for a demonstration of layout options.
+The <a href="../samples/friendWheel.html" target="samples">Friend Wheel</a> sample demonstrates a simple customization of <a>CircularLayout</a>.
+</p>
 
 
-<h2>Custom Layouts</h2>
+<h3>Custom Layouts</h3>
 
-<p>GoJS allows for the creation of custom layouts. The intro page on <a href="extensions.html">GoJS extensions</a> gives a simple example of a custom layout, and the <a href="../extensions/Serpentine.html">Serpentine extension sample</a> illustrates a more complex custom layout.</p>
-
-
-
+<p>
+GoJS allows for the creation of custom layouts.
+The intro page on <a href="extensions.html">GoJS extensions</a> gives a simple example of a custom layout.
+The <a href="../extensions/Serpentine.html">Serpentine</a> and
+<a href="../extensions/Fishbone.html">Fishbone</a> extension samples illustrate more complex custom layouts.
+</p>
 
 
 <h3>Layout Invalidation</h3>
 <p>
-A layout is considered "valid" when it has performed its positioning of its nodes and (perhaps) routed its links.
+A layout is considered "valid" when it has performed its positioning of its nodes and perhaps routed its links.
 However some kinds of changes cause a layout to become "invalid", thereby causing it to be performed again in the near future.
 Because layouts can be computationally expensive, automatic layouts are not performed as soon as a layout is invalidated.
 Instead they are typically performed at the end of a transaction.
@@ -408,10 +431,16 @@ When both <a>Layout.isInitial</a> and <a>Layout.isOngoing</a> are false, you can
 calling <a>Layout.invalidateLayout</a> or by calling <a>Diagram.layoutDiagram</a> with a <code>true</code> argument.
 </p>
 <p>
-But if you do not want a change to a particular Node or Link to cause an automatic layout, yet you do want that for the other Nodes or Links,
+But if you do not want a change to a particular Node or Link to cause an automatic layout, yet you do want that invalidation for other Nodes or Links,
 you can set the <a>Part.layoutConditions</a> property to the combination of <a>Part</a> "Layout..." flags that suits your needs.
-It is most common to not want a layout for the <a>Part.LayoutNodeSized</a> condition.
+It is most common to not want a layout for the <a>Part.LayoutNodeSized</a> condition:
 </p>
+<pre>
+  $(go.Node, . . .,
+    { layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized },
+    . . .
+  )
+</pre>
 <p>
 Parts that remain not visible or that are in layers that are <a>Layer.isTemporary</a> also never invalidate any Layout.
 </p>
@@ -419,6 +448,8 @@ Parts that remain not visible or that are in layers that are <a>Layer.isTemporar
 Finally, you can set <a>Part.isLayoutPositioned</a> to false in order for the Layout to completely ignore that Part.
 But you will have to make sure that that Part does have a real <a>Part.location</a>, since no layout will set it for you.
 Without a real location the part will not be visible anywhere in the diagram.
+Furthermore if a node has isLayoutPositioned set to false, Layouts will not only ignore that node but also all links connecting with that node.
+Because the node will not be moved by the layout, it might overlap with the laid-out nodes and links.
 </p>
 
 </div>

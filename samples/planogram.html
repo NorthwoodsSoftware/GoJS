@@ -1,9 +1,18 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Planogram</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<style type="text/css">
+  .ui-accordion .ui-accordion-content {
+    padding: 1px;
+  }
+</style>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
@@ -32,7 +41,6 @@
 
     // Regular Nodes represent items to be put onto racks.
     // Nodes are currently resizable, but if that is not desired, just set resizable to false.
-
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
         { resizable: true, resizeObjectName: "SHAPE",
@@ -41,27 +49,16 @@
         },
         // always save/load the point that is the top-left corner of the node, not the location
         new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-        { // what to do when a drag-over or a drag-drop occurs on a Node
-          mouseDragEnter: function(e, node, prev) { highlightGroup(node.containingGroup, true); },
-          mouseDragLeave: function(e, node, next) { highlightGroup(node.containingGroup, false); },
-          mouseDrop: function(e, node) {
-            var grp = node.containingGroup;
-            if (grp !== null) {
-              var ok = grp.addMembers(grp.diagram.selection, true);
-              if (!ok) grp.diagram.currentTool.doCancel();
-            }
-          }
-        },
-        $(go.Panel, "Spot",
-          $(go.Shape, "Rectangle",
-            { name: "SHAPE",
-              fill: "white",
-              minSize: cellSize,
-              desiredSize: cellSize  // initially 1x1 cell
-            },
-            new go.Binding("fill", "color"),
-            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify))
-        ),  // end Spot Panel
+        // this is the primary thing people see
+        $(go.Shape, "Rectangle",
+          { name: "SHAPE",
+            fill: "white",
+            minSize: cellSize,
+            desiredSize: cellSize  // initially 1x1 cell
+          },
+          new go.Binding("fill", "color"),
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
+        // with the textual key in the middle
         $(go.TextBlock,
           { alignment: go.Spot.Center },
           new go.Binding("text", "key"))
@@ -104,7 +101,8 @@
           mouseDrop: function(e, grp) {
             var ok = grp.addMembers(grp.diagram.selection, true);
             if (!ok) grp.diagram.currentTool.doCancel();
-          }
+          },
+          handlesDragDropForMembers: true  // don't need to define handlers on member Nodes and Links
         },
         $(go.Shape, "Rectangle",  // the rectangular shape around the members
           { name: "SHAPE",
@@ -123,7 +121,7 @@
       return true;
     };
 
-    // what to do when a drag-drop occur-s in the Diagram's background
+    // what to do when a drag-drop occurs in the Diagram's background
     myDiagram.mouseDrop = function(e) {
       // when the selection is dropped in the diagram's background,
       // make sure the selected Parts no longer belong to any Group
@@ -147,22 +145,77 @@
       }
     });
 
+    jQuery("#accordion").accordion({
+      activate: function(event, ui) {
+        myPaletteSmall.requestUpdate();
+        myPaletteTall.requestUpdate();
+        myPaletteWide.requestUpdate();
+        myPaletteBig.requestUpdate();
+      }
+    });
 
-    // initialize the Palette
-    myPalette =
-      $(go.Palette, "myPalette",
+    // initialize the first Palette
+    myPaletteSmall =
+      $(go.Palette, "myPaletteSmall",
         { // share the templates with the main Diagram
           nodeTemplate: myDiagram.nodeTemplate,
           groupTemplate: myDiagram.groupTemplate,
-          // limit items to one column
-          layout: $(go.GridLayout, { wrappingColumn: 1 })
+          layout: $(go.GridLayout)
         });
 
     // specify the contents of the Palette
-    myPalette.model = new go.GraphLinksModel([
+    myPaletteSmall.model = new go.GraphLinksModel([
       { key: "g", color: "green" },
       { key: "b", color: "blue" },
       { key: "y", color: "yellow" }
+    ]);
+
+    // initialize the second Palette, of tall items
+    myPaletteTall =
+      $(go.Palette, "myPaletteTall",
+        { // share the templates with the main Diagram
+          nodeTemplate: myDiagram.nodeTemplate,
+          groupTemplate: myDiagram.groupTemplate,
+          layout: $(go.GridLayout)
+        });
+
+    // specify the contents of the Palette
+    myPaletteTall.model = new go.GraphLinksModel([
+      { key: "g", color: "green", size: "50 100" },
+      { key: "b", color: "blue", size: "50 100" },
+      { key: "y", color: "yellow", size: "50 100" }
+    ]);
+
+    // initialize the third Palette, of wide items
+    myPaletteWide =
+      $(go.Palette, "myPaletteWide",
+        { // share the templates with the main Diagram
+          nodeTemplate: myDiagram.nodeTemplate,
+          groupTemplate: myDiagram.groupTemplate,
+          layout: $(go.GridLayout)
+        });
+
+    // specify the contents of the Palette
+    myPaletteWide.model = new go.GraphLinksModel([
+      { key: "g", color: "green", size: "100 50" },
+      { key: "b", color: "blue", size: "100 50" },
+      { key: "y", color: "yellow", size: "100 50" }
+    ]);
+
+    // initialize the fourth Palette, of big items
+    myPaletteBig =
+      $(go.Palette, "myPaletteBig",
+        { // share the templates with the main Diagram
+          nodeTemplate: myDiagram.nodeTemplate,
+          groupTemplate: myDiagram.groupTemplate,
+          layout: $(go.GridLayout)
+        });
+
+    // specify the contents of the Palette
+    myPaletteBig.model = new go.GraphLinksModel([
+      { key: "g", color: "green", size: "100 100" },
+      { key: "b", color: "blue", size: "100 100" },
+      { key: "y", color: "yellow", size: "100 100" }
     ]);
   }
 </script>
@@ -170,8 +223,25 @@
 <body onload="init()">
 <div id="sample">
   <div style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
-      <div id="myPalette" style="border: solid 1px black; height: 500px"></div>
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <div id="accordion">
+        <h4>Small items</h4>
+        <div>
+          <div id="myPaletteSmall" style="width: 140px; height: 360px"></div>
+        </div>
+        <h4>Tall items</h4>
+        <div>
+          <div id="myPaletteTall" style="width: 140px; height: 360px"></div>
+        </div>
+        <h4>Wide items</h4>
+        <div>
+          <div id="myPaletteWide" style="width: 140px; height: 360px"></div>
+        </div>
+        <h4>Big items</h4>
+        <div>
+          <div id="myPaletteBig" style="width: 140px; height: 360px"></div>
+        </div>
+      </div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
       <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
@@ -179,8 +249,9 @@
   </div>
   Drag-and-drop "items" from the Palette onto "racks" in the Diagram.
   "Items" are implemented as Nodes; "racks" are implemented as Groups.
+  The JSON shown below is updated automatically as each transaction completes.
   <div style="display: inline">
-    <pre id="savedModel" />
+    <pre id="savedModel"></pre>
   </div>
 </div>
 </body>

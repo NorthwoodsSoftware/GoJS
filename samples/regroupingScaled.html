@@ -1,12 +1,13 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
-  <title>Regrouping Demo with shrinking members</title>
-  <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
-  <script src="go.js"></script>
-  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-  <script id="code">
+<title>Regrouping Demo with shrinking members</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;
@@ -14,39 +15,27 @@
     myDiagram =
       $(go.Diagram, "myDiagram",
         {
-          allowDrop: true,
+          allowDrop: true, // from Palette
           // what to do when a drag-drop occurs in the Diagram's background
-          mouseDrop:
-            function(e) {
-              // when the selection is dropped in the diagram's background,
-              // make sure the selected Parts no longer belong to any Group
-              var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
-              if (!ok) myDiagram.currentTool.doCancel();
-            },
-          layout:
+          mouseDrop: function(e) { finishDrop(e, null); },
+          layout:  // Diagram has simple horizontal layout
             $(go.GridLayout,
-              { wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-                cellSize: new go.Size(1, 1) }),
+              { wrappingWidth: Infinity, alignment: go.GridLayout.Position, cellSize: new go.Size(1, 1) }),
           initialContentAlignment: go.Spot.Center,
-          groupSelectionAdornmentTemplate:  // this applies to all Groups
-            $(go.Adornment, go.Panel.Auto,
-              $(go.Shape, "Rectangle",
-                { fill: null, stroke: "dodgerblue", strokeWidth: 2 }),
-              $(go.Placeholder)),
           "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
           "undoManager.isEnabled": true
         });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
-      var button = document.getElementById("saveModel");
-      if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf("*");
-      if (myDiagram.isModified) {
-        if (idx < 0) document.title += "*";
-      } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx);
-      }
+        var button = document.getElementById("saveModel");
+        if (button) button.disabled = !myDiagram.isModified;
+        var idx = document.title.indexOf("*");
+        if (myDiagram.isModified) {
+          if (idx < 0) document.title += "*";
+        } else {
+          if (idx >= 0) document.title = document.title.substr(0, idx);
+        }
     });
 
     // There are two templates for Groups, "OfGroups" and "OfNodes".
@@ -69,16 +58,14 @@
       grp.isHighlighted = false;
     }
 
-    // upon a drop onto a Group, we try to add the selection as members of the Group;
-    // if this is OK, we're done; otherwise we cancel the operation to rollback everything
+    // Upon a drop onto a Group, we try to add the selection as members of the Group.
+    // Upon a drop onto the background, or onto a top-level Node, make selection top-level.
+    // If this is OK, we're done; otherwise we cancel the operation to rollback everything.
     function finishDrop(e, grp) {
-      var ok = grp !== null && grp.addMembers(grp.diagram.selection, true);
-      if (!ok) grp.diagram.currentTool.doCancel();
-    }
-
-    function computeLevel(part) {
-      if (part.isTopLevel) return 1;
-      return 1 + computeLevel(part.containingGroup);
+      var ok = (grp !== null
+                ? grp.addMembers(grp.diagram.selection, true)
+                : e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true));
+      if (!ok) e.diagram.currentTool.doCancel();
     }
 
     myDiagram.groupTemplateMap.add("OfGroups",
@@ -92,6 +79,7 @@
           // when the selection is dropped into a Group, add the selected Parts into that Group;
           // if it fails, cancel the tool, rolling back any changes
           mouseDrop: finishDrop,
+          handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           // Groups containing Groups lay out their members horizontally
           layout:
             $(go.GridLayout,
@@ -100,32 +88,30 @@
         },
         { // automatically adjust the scale of the HEADER, depending on the nesting depth 
           containingGroupChanged:
-            function(part, oldgroup, newgroup) { part.findObject("HEADER").scale = 1 / computeLevel(part); }
+            function(part, oldgroup, newgroup) { part.findObject("HEADER").scale = 1 / (1+part.findSubGraphLevel()); }
         },
-        $(go.Panel, go.Panel.Vertical,
-          $(go.Panel, go.Panel.Horizontal,
+        new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
+        $(go.Shape, "Rectangle",
+          { fill: null, stroke: "#E69900", strokeWidth: 2 }),
+        $(go.Panel, go.Panel.Vertical,  // title above Placeholder
+          $(go.Panel, go.Panel.Horizontal,  // button next to TextBlock
             { name: "HEADER" },
-            { stretch: go.GraphObject.Horizontal, background: "#FFDD33" },
+            { stretch: go.GraphObject.Horizontal, background: "#FFDD33", margin: 1 },
             $("SubGraphExpanderButton",
               { alignment: go.Spot.Right, margin: 5 }),
             $(go.TextBlock,
-              { alignment: go.Spot.Left, editable: true,
-              margin: 5,
-              font: "bold 18px sans-serif",
-              stroke: "#9A6600"},
+              {
+                alignment: go.Spot.Left,
+                editable: true,
+                margin: 5,
+                font: "bold 18px sans-serif",
+                stroke: "#9A6600"
+              },
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
-            { padding: 5, alignment: go.Spot.TopLeft },
-            new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
-        ),  // end Vertical Panel
-        $(go.Shape, "Rectangle",
-          {
-            isPanelMain: true,  // the Rectangle Shape is in front of the Vertical Panel
-            fill: null,
-            stroke: "#E69900",
-            strokeWidth: 1.75,
-          })
+            { padding: 5, alignment: go.Spot.TopLeft })
+        )  // end Vertical Panel
       ));  // end Group and call to add to template Map
 
     myDiagram.groupTemplateMap.add("OfNodes",
@@ -140,6 +126,7 @@
           // when the selection is dropped into a Group, add the selected Parts into that Group;
           // if it fails, cancel the tool, rolling back any changes
           mouseDrop: finishDrop,
+          handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           // Groups containing Nodes lay out their members vertically
           layout:
             $(go.GridLayout,
@@ -148,57 +135,52 @@
         },
         { // automatically adjust the scale of the HEADER, depending on the nesting depth 
           containingGroupChanged:
-            function(part, oldgroup, newgroup) { part.findObject("HEADER").scale = 1 / computeLevel(part); }
+            function(part, oldgroup, newgroup) { part.findObject("HEADER").scale = 1 / (1+part.findSubGraphLevel()); }
         },
-        $(go.Panel, go.Panel.Vertical,
-          $(go.Panel, go.Panel.Horizontal,
+        new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
+        $(go.Shape, "Rectangle",
+          { fill: null, stroke: "#0099CC", strokeWidth: 2 }),
+        $(go.Panel, go.Panel.Vertical,  // title above Placeholder
+          $(go.Panel, go.Panel.Horizontal,  // button next to TextBlock
             { name: "HEADER" },
-            { stretch: go.GraphObject.Horizontal, background: "#33D3E5" },
+            { stretch: go.GraphObject.Horizontal, background: "#33D3E5", margin: 1 },
             $("SubGraphExpanderButton",
-              { alignment: go.Spot.Right, margin: 5}),
+              { alignment: go.Spot.Right, margin: 5 }),
             $(go.TextBlock,
-              { alignment: go.Spot.Left, editable: true,
-              margin: 5,
-              font: "bold 16px sans-serif",
-              stroke: "#006080"},
+              {
+                alignment: go.Spot.Left,
+                editable: true,
+                margin: 5,
+                font: "bold 16px sans-serif",
+                stroke: "#006080"
+              },
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Placeholder,
-            { padding: 5, alignment: go.Spot.TopLeft },
-            new go.Binding("background", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject())
-        ),  // end Vertical Panel
-        $(go.Shape, "Rectangle",
-          {
-            isPanelMain: true,
-            fill: null,
-            stroke: "#0099CC",
-            strokeWidth: 1.5,
-          })
+            { padding: 5, alignment: go.Spot.TopLeft })
+        )  // end Vertical Panel
       ));  // end Group and call to add to template Map
 
-    // Nodes have a trivial definition -- the interesting thing is that it handles
-    // the mouseDragEnter/mouseDragLeave/mouseDrop events and delegates them to the containing Group.
+    // Nodes have a trivial definition
     myDiagram.nodeTemplate =
       $(go.Node, go.Panel.Auto,
-        {
-          // highlight when dragging over a Node that is inside a Group
-          mouseDragEnter: function(e, nod, prev) { highlightGroup(e, nod.containingGroup, true); },
-          mouseDragLeave: function(e, nod, next) { highlightGroup(e, nod.containingGroup, false); },
-          // dropping on a Node is the same as dropping on its containing Group, if any
+        { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
           mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
         },
         { // automatically adjust the scale of the HEADER, depending on the nesting depth 
           containingGroupChanged:
-            function(part, oldgroup, newgroup) { part.scale = 1 / computeLevel(part); }
+            function(part, oldgroup, newgroup) { part.scale = 1 / (1+part.findSubGraphLevel()); }
         },
         $(go.Shape, "Rectangle",
           { fill: "#ACE600", stroke: "#558000", strokeWidth: 2 },
           new go.Binding("fill", "color")),
         $(go.TextBlock,
           {
-              margin: 5, editable: true,
-              font: "bold 13px sans-serif",
-              stroke: "#446700"},
+            margin: 5,
+            editable: true,
+            font: "bold 13px sans-serif",
+            stroke: "#446700"
+          },
           new go.Binding("text", "text").makeTwoWay())
       );
 
@@ -216,10 +198,28 @@
       { text: "lightblue", color: "#33D3E5" }
     ]);
 
+    var slider = document.getElementById("levelSlider");
+    slider.addEventListener('change', reexpand);
+    slider.addEventListener('input', reexpand);
+
     load();
   }
 
-  // save a model to and load a model from Json text, displayed below the Diagram
+  function expandGroups(g, i, level) {
+    if (!(g instanceof go.Group)) return;
+    g.isSubGraphExpanded = i < level;
+    g.memberParts.each(function(m) {
+      expandGroups(m, i + 1, level);
+    })
+  }
+  function reexpand(e) {
+    myDiagram.startTransaction("reexpand");
+    var level = parseInt(document.getElementById("levelSlider").value);
+    myDiagram.findTopLevelGroups().each(function(g) { expandGroups(g, 0, level); })
+    myDiagram.commitTransaction("reexpand");
+  }
+
+  // save a model to and load a model from JSON text, displayed below the Diagram
   function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
     myDiagram.isModified = false;
@@ -244,8 +244,9 @@
     but the members of each Group are scaled with smaller values as their nesting increases.
   </p>
   <div id="buttons">
-    <button id="loadModel" onclick="load()">Load</button>
     <button id="saveModel" onclick="save()">Save</button>
+    <button id="loadModel" onclick="load()">Load</button>
+    Semantic zoom level: <input id="levelSlider" type="range" min="0" max="5" value="3" />
   </div>
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
@@ -256,6 +257,7 @@
 {"key":4, "text":"Group B", "isGroup":true, "category":"OfNodes", "group":1},
 {"key":5, "text":"Group C", "isGroup":true, "category":"OfNodes", "group":2},
 {"key":6, "text":"Group D", "isGroup":true, "category":"OfNodes", "group":2},
+{"key":7, "text":"Group E", "isGroup":true, "category":"OfNodes", "group":6},
 {"text":"first A", "group":3, "key":-7},
 {"text":"second A", "group":3, "key":-8},
 {"text":"first B", "group":4, "key":-9},
@@ -263,7 +265,8 @@
 {"text":"third B", "group":4, "key":-11},
 {"text":"first C", "group":5, "key":-12},
 {"text":"second C", "group":5, "key":-13},
-{"text":"first D", "group":6, "key":-14}
+{"text":"first D", "group":6, "key":-14},
+{"text":"first E", "group":7, "key":-15}
  ],
   "linkDataArray": [  ]}
   </textarea>

@@ -275,23 +275,183 @@ This is the only way to specify the individual column or row indexes for the ele
   diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("table", 450, 200)</script>
+<p>
+Note in this case the item template has a data binding of the TableRow Panel's <a>Panel.background</a> property
+to the item data's "back" property.
+</p>
+
+<p>
+Sometimes one wants to get the row for a particular item, or one wants to have a property value depend on the row index.
+You can always depend on the value of <a>Panel.itemIndex</a> to get that property.
+If the item Panel is of type <a>Panel.TableRow</a>, the item Panel's <a>GraphObject.row</a> property will also be set to the zero-based row number,
+so you can access it in code by finding that Panel.
+The same is true for <a>GraphObject.column</a> if the itemTemplate is a <a>Panel.TableColumn</a> Panel.
+</p>
+<p>
+Because that property is set when the item panels are created for Array item data, you can create <a>Binding</a>s where the source
+is that "row" property: <code>new go.Binding("targetProperty", "row", function(i) { return ...; }).ofObject()</code>.
+The following example demonstrates binding the Panel.background property to be light green if the row is even.
+</p>
+<pre data-language="javascript" id="alternating">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, { fill: "white" }),
+      $(go.Panel, "Table",
+        new go.Binding("itemArray", "people"),
+        {
+          defaultAlignment: go.Spot.Left,
+          itemTemplate:
+            $(go.Panel, "TableRow",
+              new go.Binding("background", "row",
+                             function(i) { return i%2 === 0 ? "lightgreen" : "transparent" })
+                  .ofObject(),
+              $(go.TextBlock, new go.Binding("text", "name"),
+                { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
+              $(go.TextBlock, new go.Binding("text", "phone"),
+                { column: 1, margin: 2 }),
+              $(go.TextBlock, new go.Binding("text", "loc"),
+                { column: 2, margin: 2 }),
+              $("Button",
+                {
+                  column: 3,
+                  margin: new go.Margin(0, 1, 0, 0),
+                  click: function(e, obj) {
+                    // OBJ is this Button Panel;
+                    // find the TableRow Panel containing it
+                    var itempanel = obj.panel;
+                    alert("Clicked on row " + itempanel.row + " for " + itempanel.data.name);
+                  }
+                },
+                $(go.Shape, "FivePointedStar",
+                  { desiredSize: new go.Size(8, 8) })
+              )
+            )  // end of itemTemplate
+        })
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: "group1",
+            people: [
+              { name: "Alice", phone: "2345", loc: "C4-E18" },
+              { name: "Bob", phone: "9876", loc: "E1-B34" },
+              { name: "Carol", phone: "1111", loc: "C4-E23" },
+              { name: "Ted", phone: "2222", loc: "C4-E197" },
+              { name: "Robert", phone: "5656", loc: "B1-A27" },
+              { name: "Natalie", phone: "5698", loc: "B1-B6" }
+            ] }
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("alternating", 450, 200)</script>
+<p>
+The "Button" Panel in the item template also demonstrates how one can get the particular row index
+as well as the data to which the item panel is bound.
+</p>
+
+<p>
+The natural way to have a distinct header for a Table Panel is to have the first row (i.e. the first item)
+hold the data for the header, but have it be styled differently.
+If you want such a behavior, you will want to use multiple templates -- see the example in <a href="templateMaps.html">Template Maps</a>.
+</p>
+<p>
+If instead you want to have a table header that is "fixed" and not dependent on item Array data,
+you can have a single "TableRow" (or "TableColumn") Panel in the "Table" Panel that is kept if <a>Panel.isPanelMain</a> is true.
+</p>
+<pre data-language="javascript" id="header">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, { fill: "white" }),
+      $(go.Panel, "Table",
+        new go.Binding("itemArray", "people"),
+        {
+          defaultAlignment: go.Spot.Left,
+          defaultColumnSeparatorStroke: "black",
+          itemTemplate:  // the row created for each item in the itemArray
+            $(go.Panel, "TableRow",
+              $(go.TextBlock, new go.Binding("text", "name"),
+                { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
+              $(go.TextBlock, new go.Binding("text", "phone"),
+                { column: 1, margin: 2 }),
+              $(go.TextBlock, new go.Binding("text", "loc"),
+                { column: 2, margin: 2 })
+            )
+        },
+        // define the header as a literal row in the table,
+        // not bound to any item, but bound to Node data
+        $(go.Panel, "TableRow",
+          { isPanelMain: true },  // needed to keep this element when itemArray gets an Array
+          $(go.TextBlock, "Person",
+            { column: 0, margin: new go.Margin(2, 2, 0, 2), font: "bold 10pt sans-serif" }),
+          $(go.TextBlock, "Phone",
+            { column: 1, margin: new go.Margin(2, 2, 0, 2), font: "bold 10pt sans-serif" }),
+          $(go.TextBlock, "Location",
+            { column: 2, margin: new go.Margin(2, 2, 0, 2), font: "bold 10pt sans-serif" })
+        ),
+        $(go.RowColumnDefinition,
+          { row: 0, background: "lightgray" }),
+        $(go.RowColumnDefinition,
+          { row: 1, separatorStroke: "black" })
+      )
+    );
+
+  diagram.model =
+    $(go.GraphLinksModel,
+      { 
+        nodeDataArray: [
+          { key: "group1",
+            people: [
+              { name: "Alice", phone: "2345", loc: "C4-E18" },
+              { name: "Bob", phone: "9876", loc: "E1-B34" },
+              { name: "Carol", phone: "1111", loc: "C4-E23" },
+              { name: "Ted", phone: "2222", loc: "C4-E197" },
+              { name: "Robert", phone: "5656", loc: "B1-A27" },
+              { name: "Natalie", phone: "5698", loc: "B1-B6" }
+            ] }
+        ]
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+</pre>
+<script>goCode("header", 450, 200)</script>
+<p>
+In such cases the constant header element, the literal "TableRow" Panel in the node template,
+will have a <a>GraphObject.row</a> == 0 and a <a>Panel.itemIndex</a> that is NaN.
+The "TableRow" Panel corresponding to the first item data, <code>panel.itemArray[0]</code>,
+will have a <a>GraphObject.row</a> == 1, matching its position in the list of <a>Panel.elements</a>.
+But it will have a <a>Panel.itemIndex</a> == 0, matching its position in the itemArray.
+</p>
 
 <h3>Arrays in Models</h3>
 <p>
 When a data-bound Part is copied, the Part's <a>Part.data</a>, which must be a JavaScript Object, is copied too.
-The normal copying method, <a>Model.copyNodeData</a>, make a shallow copy of the original data object.
+The normal copying method, <a>Model.copyNodeData</a>, makes a shallow copy of the original data object.
 </p>
 <p>
-However that is probably not the desired behavior for arrays.
+However that is probably not the desired behavior for Arrays.
 When you use item Arrays, you normally do <em>not</em> want to share those Arrays between copies of the Node.
 If your node data is not copied correctly, unexpected behavior may occur.
-So when you are using item Arrays and permit users to copy nodes, you will want to implement your own node data copier function
+So when you are using item Arrays and permit users to copy nodes, you will need to make sure such Arrays and their objects are copied.
+For the simplest cases, it may be sufficient to set <a>Model.copiesArrays</a> and <a>Model.copiesArrayObjects</a> to true.
+More generally you may want to implement your own node data copier function
 and assign it to <a>Model.copyNodeDataFunction</a>.
 </p>
 <p>
 This is demonstrated by the <a href="../samples/dynamicPorts.html">Dynamic Ports</a> sample,
 which not only needs to copy the four item Arrays that each node data holds,
 but also each Object that is in each of those Arrays.
+In that sample the <a>Model.copiesArrays</a> and <a>Model.copiesArrayObjects</a> properties
+are set to true in the JSON-formatted representation of the model that is loaded into the diagram.
+</p>
+<p>
+For <a>GraphLinksModel</a>s, there is also a similar members for link data:
+the <a>GraphLinksModel.copyLinkData</a> method and <a>GraphLinksModel.copyLinkDataFunction</a> property.
 </p>
 <p>
 If you need to dynamically modify the value of a property of an item data, call <a>Model.setDataProperty</a>,

@@ -15,7 +15,8 @@
 <p>
 <b>GoJS</b> is a JavaScript library that lets you easily create interactive diagrams in modern web browsers.
 <b>GoJS</b> supports graphical templates and data-binding of graphical object properties to model data.
-Only the model, consisting of simple JavaScript objects, needs to be saved and restored.
+You only need to save and restore the model, consisting of simple JavaScript objects holding
+whatever properties your app needs.
 Many predefined tools and commands implement the standard behaviors that most diagrams need.
 Customization of appearance and behavior is mostly a matter of setting properties.
 </p>
@@ -43,7 +44,8 @@ The following code defines a node template and model data, which produces a smal
 
     // the Model holds only the essential information describing the diagram
     diagram.model = new go.GraphLinksModel(
-    [ // a JavaScript Array of JavaScript objects, one per node
+    [ // a JavaScript Array of JavaScript objects, one per node;
+      // the "color" property is added specifically for this app
       { key: "Alpha", color: "lightblue" },
       { key: "Beta", color: "orange" },
       { key: "Gamma", color: "lightgreen" },
@@ -64,11 +66,43 @@ The following code defines a node template and model data, which produces a smal
 <p>This creates the following Diagram:</p>
 <script>goCode("minimal", 400, 150)</script>
 <p>
-You can pan, scroll, select, delete, and undo operations in this Diagram. More interactive features (and how to add Diagrams to pages) are detailed in the samples below.
+You can interact with this diagram in many ways:
+<ul>
+  <li>You can select a part by clicking on it.
+      Selected nodes are highlighted with an <a>Adornment</a> that is a blue rectangle surrounding the node.
+      Selected links are highlighted with a blue line following the path of the link.</li>
+  <li>Multiple parts may be selected at once.
+      Hold the Shift key down when clicking to add to the selection.
+      Hold the Control key down when clicking to toggle whether that part is selected.</li>
+  <li>Another way to multi-select is to mouse-down at a point in the background (not on a part), wait a moment, and then drag a box.
+      Parts that are in the box when the mouse-up occurs are selected.
+      The Shift and Control modifiers work then as well.</li>
+  <li>Ctrl-A selects all parts in the diagram.</li>
+  <li>Move one or more parts by selecting them and dragging.</li>
+  <li>Copying selected parts works with either copy/paste (Ctrl-C/Ctrl-V) or with Ctrl-mouse-drag.</li>
+  <li>Delete selected parts with the Delete key.</li>
+  <li>If scrollbars are visible or if the whole collection of parts is smaller than the viewable area of the diagram (the "viewport"),
+      you can pan the diagram with a mouse-down in the background (not on a part) if you drag without waiting.</li>
+  <li>Use the mouse wheel to scroll up and down and Shift-mouse-wheel to scroll left and right.
+      Ctrl-mouse-wheel zooms in and out.</li>
+</ul>
+</p>
+<p>
+You can also pan, pinch zoom, select, copy, move, delete, undo, and redo with your fingers on a touch device.
+Most commands that can be invoked from a keyboard can be invoked from the default context menu that you get by pressing your finger and holding it motionless for a moment.
 </p>
 
 <p>
-If you'd like to see more examples of what <b>GoJS</b> can do, see the <a href="../samples/index.html" target="samples">GoJS Samples directory</a>. Otherwise, read on for a high-level discussion of the basic concepts in <b>GoJS</b>.
+What is unique about all of the examples in the documentation is that they are all "live" -- there are no screenshots!
+They are actual <a>Diagram</a>s implemented by the source code shown.
+You can interact with them -- some even display animation.
+</p>
+
+<p>
+If you'd like to see more examples of what <b>GoJS</b> can do, see the <a href="../samples/index.html" target="samples">GoJS Samples directory</a>.
+To make it easier to search the JavaScript code and documentation or to experiment by modifying the samples, you can download a ZIP file of the
+whole web site for the current version of <b>GoJS</b> from <a href="../index.html">GoJS Home</a>.
+Or you can visit <a href="https://github.com/NorthwoodsSoftware/GoJS">GoJS on GitHub</a>.
 </p>
 
 <h3>GoJS Concepts</h3>
@@ -127,141 +161,41 @@ support tools such as resizing a node or reconnecting a link.
 Adornments are also how tooltips and context menus are implemented.
 </p>
 
-<h3>A More Sophisticated Diagram</h3>
 <p>
-Here is an enhanced example that displays nodes, links, and groups.  It also allows the user to manipulate them.
-</p>
-<ul>
-  <li>You can select a part by clicking on it.
-      Selected nodes are highlighted with an <a>Adornment</a> that is a blue rectangle surrounding the node.
-      Selected links are highlighted with a blue line following the path of the link.</li>
-  <li>Multiple parts may be selected at once.
-      Hold the shift key down when clicking to add to the selection.
-      Hold the control key down when clicking to toggle whether that part is selected.</li>
-  <li>Another way to multi-select is to mouse-down at a point in the background (not on a part), wait a moment, and then drag a box.
-      Parts that are in the box when the mouse-up occurs are selected.</li>
-  <li>Ctrl-A selects all parts in the diagram.</li>
-  <li>Move one or more parts by selecting them and dragging.</li>
-  <li>Copying works with either Ctrl-mouse-drag or with copy/paste (Ctrl-C/Ctrl-V).</li>
-  <li>Delete selected parts with the Delete key.</li>
-  <li>Select several parts and group them together with the Ctrl-G command;
-you can ungroup with the Ctrl-Shift-G command.</li>
-  <li>If scrollbars are visible or if the whole collection of parts is smaller than the viewable area of the diagram (the "viewport"),
-      you can pan the diagram with a mouse-down in the background (not on a part) if you drag without waiting.</li>
-  <li>Draw new Links by dragging from the inner edge of a Node's Shape.</li>
-  <li>Reconnect an existing Link by selecting a Link and dragging one of its diamond handles.</li>
-</ul>
-<p>
-After making changes, you can undo and redo those changes with Ctrl-Z to undo and Ctrl-Y to redo.
+All programmatic changes to <a>Diagram</a>, <a>GraphObject</a>, <a>Model</a> or model data state should be performed
+within a single transaction per user action, to make sure updating happens correctly and to support undo/redo.
+All of the predefined tools and commands perform transactions, so each user action is automatically undoable
+if the <a>UndoManager</a> is enabled.
+<a>DiagramEvent</a>s on Diagrams, and event handlers on Diagrams and GraphObjects,
+are all documented whether they are raised within a transaction or whether you need to conduct a transaction in order
+to change the model or the diagram.
 </p>
 
-<pre data-language="javascript" id="example">
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: "white",
-          portId: "", cursor: "pointer",
-          fromLinkable: true, toLinkable: true },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
-
-  diagram.linkTemplate =
-    $(go.Link,
-      { relinkableFrom: true, relinkableTo: true },
-      $(go.Shape,
-        { strokeWidth: 2 },
-        new go.Binding("stroke", "color")),
-      $(go.Shape,
-        { toArrow: "Standard", stroke: null },
-        new go.Binding("fill", "color"))
-    );
-
-  diagram.groupTemplate =
-    $(go.Group, "Vertical",
-      { selectionObjectName: "PANEL",
-        ungroupable: true },
-      $(go.TextBlock,
-        { font: "bold 12pt sans-serif" },
-        new go.Binding("text", "", go.Binding.toString),
-        new go.Binding("stroke", "color")),
-      $(go.Panel, "Auto",
-        { name: "PANEL" },
-        $(go.Shape, "Rectangle",
-          { fill: "rgba(128,128,128,0.2)",
-            stroke: "gray", strokeWidth: 3 }),
-        $(go.Placeholder,
-          { padding: 5})
-      )
-    );
-
-  diagram.initialContentAlignment = go.Spot.Center;
-
-  diagram.commandHandler.archetypeGroupData =
-    { key: "Group", isGroup: true, color: "blue" };
-
-  var nodeDataArray = [
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta", color: "pink" },
-    { key: "Delta", color: "pink", group: "Epsilon" },
-    { key: "Gamma", color: "lightgreen", group: "Epsilon" },
-    { key: "Epsilon", color: "green", isGroup: true }
-  ];
-
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta", color: "blue" },
-    { from: "Beta", to: "Beta" },
-    { from: "Gamma", to: "Delta", color: "green" },
-    { from: "Delta", to: "Alpha", color: "purple" }
-  ];
-
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.undoManager.isEnabled = true;
-</pre>
-<script>goCode("example", 600, 300)</script>
-
-<p>
-There are many simple examples throughout this introduction, each with source code.
-For this example:
-<input id="showCodeButton" type="button" value="Show Code" onclick="showCode()" />
-</p>
-<script>
-  function showCode() {
-    var pre = document.getElementById("example");
-    var button = document.getElementById("showCodeButton");
-    if (pre.style.display === "none") {
-      pre.style.display = "block";
-      button.value = "Hide Code";
-    } else {
-      pre.style.display = "none";
-      button.value = "Show Code";
-    }
-  }
-  showCode();  // initially hide the source code
-</script>
-
-<p>
-What is unique about these examples is that they are all "live" -- there are no screenshots.
-They are actual <a>Diagram</a>s implemented by the source code shown.
-You can interact with them -- some even display animation.
-</p>
-
-<p>
-There are also many more samples at <a href="../samples/index.html" target="samples">GoJS Samples</a>.
-</p>
-<p>
-You can find additional samples that use custom <a>Tool</a>s, <a>CommandHandler</a>s, and <a>Layout</a>s at
-<a href="../extensions/index.html" target="extensions">GoJS Extensions</a>.
-</p>
-
-<p>
-To make it easier to search the JavaScript code or to experiment by modifying the samples, you can download a ZIP file of the
-whole web site for the current version of <b>GoJS</b> from <a href="../index.html">GoJS Home</a>.
-</p>
 
 <h3>Creating a Diagram</h3>
+<p>
+Before you can execute any JavaScript code to build a Diagram, you will need to load the <b>GoJS</b> library, "go.js".
+When you include the library, the "<code>go</code>" JavaScript object will hold all of the <b>GoJS</b> types.
+During development we recommend that you load "go-debug.js" instead of "go.js", for additional run-time error checking and debugging ability.
+</p>
+<p>
+<b>GoJS</b> does not depend on any JavaScript library or framework, so you should be able to use it in any environment.
+However it does require that the environment support modern HTML and JavaScript, so we recommend that you
+declare that your web page supports modern HTML:
+</p>
+<pre>
+&lt;!DOCTYPE html&gt;  &lt;!-- Declare standards mode. --&gt;
+&lt;html&gt;
+  &lt;head&gt;
+  . . .
+  &lt;!-- Include the GoJS library. --&gt;
+  &lt;script src="go.js"&gt;&lt;/script&gt;
+</pre>
+<p>
+If you are using <a href="http://requirejs.org" target="_blank">RequireJS</a>, <b>GoJS</b> supports AMD module definitions.
+See the <a href="../samples/require.html" target="samples">Require sample</a> for an example.
+</p>
+
 <p>
 Every <a>Diagram</a> must be hosted by an HTML Div element.
 <b>GoJS</b> will manage the contents of that Div element, but you may position and size and style the Div as you would any HTML element.
@@ -270,31 +204,13 @@ The Canvas element is automatically sized to have the same size as the Div eleme
 </p>
 
 <pre>
-&lt;!-- The DIV for a Diagram needs an explicit size or else we won't see anything.
-     In this case we also add a border to help see the edges. --&gt;
-&lt;div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"&gt;&lt;/div&gt;
+&lt;body&gt;
+  . . .
+  &lt;!-- The DIV for a Diagram needs an explicit size or else we won't see anything.
+       In this case we also add a border to help see the edges. --&gt;
+  &lt;div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"&gt;&lt;/div&gt;
 </pre>
-
-<!-- The DIV for a Diagram needs an explicit size or else we won't see anything.
-     In this case we also add a border to help see the edges. -->
 <div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"></div>
-
-<p>
-Before you can execute any JavaScript code to build a Diagram, you will need to load the <b>GoJS</b> library, "go.js".
-When you include the library, the "<code>go</code>" JavaScript object will hold all of the <b>GoJS</b> types.
-If you want additional run-time error checking and debugging ability, load "go-debug.js" instead of "go.js".
-</p>
-<p>
-<b>GoJS</b> does not depend on any JavaScript library or framework, so you should be able to use it in any environment.
-</p>
-<pre>
-&lt;!-- Include the GoJS library. --&gt;
-&lt;script src="go.js"&gt;&lt;/script&gt;
-</pre>
-<p>
-If you are using <a href="http://requirejs.org" target="_blank">RequireJS</a>, <b>GoJS</b> version 1.3 and later supports AMD module definitions.
-See the <a href="../samples/require.html" target="samples">Require sample</a> for an example.
-</p>
 
 <p>
 Then you can create the <a>Diagram</a> in JavaScript with a reference to that Div element.
@@ -342,6 +258,11 @@ you will will see many one or two letter property names.  All of those are inter
 At the current time the only one letter property names are "x" and "y" on <a>Point</a>, <a>Rect</a>, <a>Spot</a> and <a>LayoutVertex</a>.
 The only two letter property name is <a>InputEvent.up</a>.
 Otherwise you should not try to use any one or two letter property names on any <b>GoJS</b>-defined objects.
+</p>
+
+<p class="box warning">
+Do not modify the prototypes of the <b>GoJS</b> classes.<br />
+Only use the properties and methods documented in the <a href="../api/index.html">API</a>.
 </p>
 
 <p>

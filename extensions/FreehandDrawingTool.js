@@ -76,8 +76,7 @@ FreehandDrawingTool.prototype.addPoint = function(p) {
   var part = shape.part;
   if (part.diagram === null) {
     var fig = new go.PathFigure(q.x, q.y, true);  // possibly filled, depending on Shape.fill
-    var geo = new go.Geometry();
-    geo.figures.add(fig);  // the Shape.geometry consists of a single PathFigure
+    var geo = new go.Geometry().add(fig);  // the Shape.geometry consists of a single PathFigure
     this.temporaryShape.geometry = geo;
     part.position = viewpt;  // position the Shape's Part
     this.diagram.add(part);
@@ -95,7 +94,7 @@ FreehandDrawingTool.prototype.addPoint = function(p) {
   var geo = shape.geometry.copy();
   var fig = geo.figures.first();
   var seg = new go.PathSegment(go.PathSegment.Line, q.x, q.y);
-  fig.segments.add(seg);
+  fig.add(seg);
   shape.geometry = geo;
 };
 

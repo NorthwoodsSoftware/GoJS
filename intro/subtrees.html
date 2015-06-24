@@ -71,6 +71,53 @@ as the property <a>Node.wasTreeExpanded</a>.
 The expanding operation respects the value of that property when recursing through the subtree.
 </p>
 
+<p>
+You may also want to start off the tree mostly or completely collapsed.
+First, set <a>Node.isTreeExpanded</a> to false in the template.
+That will cause only the roots of the tree to be shown.
+Second, if you want to show three levels of the tree, call <a>Node.expandTree</a>.
+</p>
+<pre data-language="javascript" id="tree2">
+  diagram.nodeTemplate =
+    $(go.Node, "Horizontal",
+      { isTreeExpanded: false },  // by default collapsed
+      $(go.Panel, "Auto",
+        $(go.Shape, "Ellipse", { fill: null }),
+        $(go.TextBlock,
+          new go.Binding("text", "key"))
+      ),
+      $("TreeExpanderButton")
+    );
+
+  diagram.layout = $(go.TreeLayout);
+
+  // After the nodes and links have been created,
+  // expand each of the tree roots to 3 levels deep.
+  diagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+      e.diagram.findTreeRoots().each(function(r) { r.expandTree(3); });
+    });
+
+  var nodeDataArray = [
+    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" },
+    { key: "Epsilon" }, { key: "Zeta" }, { key: "Eta" }, { key: "Theta" },
+    { key: "Iota" }, { key: "Kappa" }, { key: "Lambda" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Beta", to: "Gamma" },
+    { from: "Beta", to: "Delta" },
+    { from: "Alpha", to: "Epsilon" },
+    { from: "Epsilon", to: "Zeta" },
+    { from: "Epsilon", to: "Eta" },
+    { from: "Eta", to: "Theta" },
+    { from: "Gamma", to: "Iota" },
+    { from: "Iota", to: "Kappa" },
+    { from: "Iota", to: "Lambda" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("tree2", 600, 200)</script>
+
 </div>
 </body>
 </html>

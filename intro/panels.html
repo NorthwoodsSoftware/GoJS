@@ -15,6 +15,7 @@
 <a>Panel</a>s are <a>GraphObject</a>s that hold other <a>GraphObject</a>s as their elements.
 A Panel is responsible for sizing and positioning all of its elements.
 Each Panel establishes its own coordinate system.
+The elements of a panel are drawn in order, thereby establishing the Z-ordering of those elements.
 </p>
 <p>
 Although there is only one Panel class, there are many different kinds of panels,
@@ -43,6 +44,7 @@ and that a Part cannot be an element of a Panel.
 But all Parts are Panels because the <a>Part</a> class inherits from <a>Panel</a> -- Parts are basically "top-level" Panels.
 Thus these examples make use of Parts as top-level objects whereas within a Node you would use a Panel instead of a Part.
 </p>
+
 
 <h3>Position Panels</h3>
 <p>
@@ -90,6 +92,14 @@ Thus a Position Panel that has elements whose collective bounds does not include
 </pre>
 <script>goCode("zeroPositionPanel", 600, 140)</script>
 
+<p>
+Note that when you position <a>Shape</a>s within a Position Panel the thickness of their strokes,
+<a>Shape.strokeWidth</a>, will be included.  If you wish to position multiple Shapes so that their geometries
+line up with each other, independent of how thick their strokes are, set
+<a>Shape.isGeometryPositioned</a> to true on each of those Shapes.
+</p>
+
+
 <h3>Vertical Panels</h3>
 <p>
 A very common kind of <a>Panel</a> is "Vertical" (<a>Panel.Vertical</a>).
@@ -113,11 +123,11 @@ so that the <a>GraphObject.stretch</a> value is effective.
   diagram.add(
     $(go.Part, go.Panel.Vertical,  // or "Vertical"
       { background: "lightgray" },
-      $(go.TextBlock, "a longer string", { background: "lightgreen", margin: 2 }),
-      $(go.TextBlock, "left", { background: "lightgreen", margin: 2, alignment: go.Spot.Left }),
-      $(go.TextBlock, "center", { background: "lightgreen", margin: 2, alignment: go.Spot.Center }),
-      $(go.TextBlock, "right", { background: "lightgreen", margin: 2, alignment: go.Spot.Right }),
-      $(go.TextBlock, "stretch", { background: "lightgreen", margin: 2, stretch: go.GraphObject.Fill })
+      $(go.TextBlock, "a longer string", { background: "lightgreen" }),
+      $(go.TextBlock, "left", { background: "lightgreen", alignment: go.Spot.Left }),
+      $(go.TextBlock, "center", { background: "lightgreen", alignment: go.Spot.Center }),
+      $(go.TextBlock, "right", { background: "lightgreen", alignment: go.Spot.Right }),
+      $(go.TextBlock, "stretch", { background: "lightgreen", stretch: go.GraphObject.Fill })
     ));
 </pre>
 <script>goCode("verticalPanels", 600, 150)</script>
@@ -139,11 +149,11 @@ You can see how the last element's width is stretched.
   diagram.add(
     $(go.Part, "Vertical",
       { background: "lightgray", width: 140 },
-      $(go.TextBlock, "a longer string", { background: "lightgreen", margin: 2 }),
-      $(go.TextBlock, "left", { background: "lightgreen", margin: 2, alignment: go.Spot.Left }),
-      $(go.TextBlock, "center", { background: "lightgreen", margin: 2, alignment: go.Spot.Center }),
-      $(go.TextBlock, "right", { background: "lightgreen", margin: 2, alignment: go.Spot.Right }),
-      $(go.TextBlock, "stretch", { background: "lightgreen", margin: 2, stretch: go.GraphObject.Fill })
+      $(go.TextBlock, "a longer string", { background: "lightgreen" }),
+      $(go.TextBlock, "left", { background: "lightgreen", alignment: go.Spot.Left }),
+      $(go.TextBlock, "center", { background: "lightgreen", alignment: go.Spot.Center }),
+      $(go.TextBlock, "right", { background: "lightgreen", alignment: go.Spot.Right }),
+      $(go.TextBlock, "stretch", { background: "lightgreen", stretch: go.GraphObject.Fill })
     ));
 </pre>
 <script>goCode("excessWidth", 600, 150)</script>
@@ -157,23 +167,24 @@ because the default value for <a>TextBlock.wrap</a> is to allow wrapping.
   diagram.add(
     $(go.Part, "Vertical",
       { position: new go.Point(0, 0), background: "lightgray", width: 50 },
-      $(go.TextBlock, "a longer string", { background: "lightgreen", margin: 2 }),
-      $(go.TextBlock, "left", { background: "lightgreen", margin: 2, alignment: go.Spot.Left }),
-      $(go.TextBlock, "center", { background: "lightgreen", margin: 2, alignment: go.Spot.Center }),
-      $(go.TextBlock, "right", { background: "lightgreen", margin: 2, alignment: go.Spot.Right }),
-      $(go.TextBlock, "stretch", { background: "lightgreen", margin: 2, stretch: go.GraphObject.Fill })
+      $(go.TextBlock, "a longer string", { background: "lightgreen" }),
+      $(go.TextBlock, "left", { background: "lightgreen", alignment: go.Spot.Left }),
+      $(go.TextBlock, "center", { background: "lightgreen", alignment: go.Spot.Center }),
+      $(go.TextBlock, "right", { background: "lightgreen", alignment: go.Spot.Right }),
+      $(go.TextBlock, "stretch", { background: "lightgreen", stretch: go.GraphObject.Fill })
     ));
   diagram.add(
     $(go.Part, "Vertical",
       { position: new go.Point(70, 0), background: "lightgray", width: 50, height: 90 },
-      $(go.TextBlock, "a longer string", { background: "lightgreen", margin: 2 }),
-      $(go.TextBlock, "left", { background: "lightgreen", margin: 2, alignment: go.Spot.Left }),
-      $(go.TextBlock, "center", { background: "lightgreen", margin: 2, alignment: go.Spot.Center }),
-      $(go.TextBlock, "right", { background: "lightgreen", margin: 2, alignment: go.Spot.Right }),
-      $(go.TextBlock, "stretch", { background: "lightgreen", margin: 2, stretch: go.GraphObject.Fill })
+      $(go.TextBlock, "a longer string", { background: "lightgreen" }),
+      $(go.TextBlock, "left", { background: "lightgreen", alignment: go.Spot.Left }),
+      $(go.TextBlock, "center", { background: "lightgreen", alignment: go.Spot.Center }),
+      $(go.TextBlock, "right", { background: "lightgreen", alignment: go.Spot.Right }),
+      $(go.TextBlock, "stretch", { background: "lightgreen", stretch: go.GraphObject.Fill })
     ));
 </pre>
 <script>goCode("limitedWidth", 600, 150)</script>
+
 
 <h3>Horizontal Panels</h3>
 <p>
@@ -189,19 +200,19 @@ so that the <a>GraphObject.stretch</a> value may be effective.
   diagram.add(
     $(go.Part, go.Panel.Horizontal,  // or "Horizontal"
       { position: new go.Point(0, 0), background: "lightgray" },
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 100 }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 50, alignment: go.Spot.Top }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 50, alignment: go.Spot.Center }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 50, alignment: go.Spot.Bottom }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", stretch: go.GraphObject.Fill })
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 100 }),
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 50, alignment: go.Spot.Top }),
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 50, alignment: go.Spot.Center }),
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 50, alignment: go.Spot.Bottom }),
+      $(go.Shape, { width: 30, fill: "lightgreen", stretch: go.GraphObject.Fill })
     ));
   diagram.add(
     $(go.Part, "Horizontal",
       { position: new go.Point(200, 0), background: "lightgray", height: 120 },
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 50, alignment: go.Spot.Top }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 50, alignment: go.Spot.Center }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", height: 50, alignment: go.Spot.Bottom }),
-      $(go.Shape, { width: 30, margin: 2, fill: "lightgreen", stretch: go.GraphObject.Fill })
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 50, alignment: go.Spot.Top }),
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 50, alignment: go.Spot.Center }),
+      $(go.Shape, { width: 30, fill: "lightgreen", height: 50, alignment: go.Spot.Bottom }),
+      $(go.Shape, { width: 30, fill: "lightgreen", stretch: go.GraphObject.Fill })
     ));
 </pre>
 <script>goCode("horizontalPanels", 600, 150)</script>
@@ -215,6 +226,7 @@ This is a convenience so that you do not need to set the <a>GraphObject.alignmen
 Here is a Horizontal Panel with a default <a>GraphObject.alignment</a> of <a>Spot.Bottom</a>.
 All of the <a>Shape</a>s are aligned at the bottom, even though the default alignment would normally be <a>Spot.Center</a>.
 However, the last Shape has its height stretched to the full height of the panel, 90.
+In this case the <a>GraphObject.margin</a> provides a little extra space around the object.
 </p>
 <pre data-language="javascript" id="defaultAlignment">
   diagram.add(
@@ -246,6 +258,7 @@ However the last TextBlock has a specific width, 50, so it is not stretched.
     ));
 </pre>
 <script>goCode("defaultStretch", 600, 150)</script>
+
 
 <h3>Spots</h3>
 <p>
@@ -306,26 +319,29 @@ The <a>Spot.offsetX</a> and <a>Spot.offsetY</a> properties determine a point tha
 a distance from the fractional point given by <a>Spot.x</a> and <a>Spot.y</a>.
 Here we show three TextBlocks near the bottom-left corner and three TextBlocks near the bottom-right corner.
 The ones on the left are offset along the X-axis plus or minus 40 units;
-the ones on the right are offset along the Y-axis plus or minus 20 units. TextBlocks are also given a semi-transparent red background to help distinguish their bounds.
+the ones on the right are offset along the Y-axis plus or minus 20 units.
+TextBlocks are also given a semi-transparent red background to help distinguish their bounds.
 </p>
 <pre data-language="javascript" id="spotOffsets">
+  var pink = "rgba(255,0,0,.2)";
   diagram.add(
     $(go.Part, "Spot",
       $(go.Shape, "Rectangle",
         { fill: "lightgreen", stroke: null, width: 200, height: 50 }),
 
       // Near bottom-left corner:
-      $(go.TextBlock, "(-40,0)",  { background: 'rgba(255,0,0,.2)', alignment: new go.Spot(0, 1, -40, 0) }),
-      $(go.TextBlock, "(0,0)",    { background: 'rgba(255,0,0,.2)', alignment: new go.Spot(0, 1, 0, 0) }),
-      $(go.TextBlock, "(40,0)",   { background: 'rgba(255,0,0,.2)', alignment: new go.Spot(0, 1, 40, 0) }),
+      $(go.TextBlock, "(-40,0)",  { background: pink, alignment: new go.Spot(0, 1, -40, 0) }),
+      $(go.TextBlock, "(0,0)",    { background: pink, alignment: new go.Spot(0, 1, 0, 0) }),
+      $(go.TextBlock, "(40,0)",   { background: pink, alignment: new go.Spot(0, 1, 40, 0) }),
 
       // Near bottom-right corner:
-      $(go.TextBlock, "(0,-20)",  { background: 'rgba(255,0,0,.2)', alignment: new go.Spot(1, 1, 0, -20) }),
-      $(go.TextBlock, "(0,0)",    { background: 'rgba(255,0,0,.2)', alignment: new go.Spot(1, 1, 0, 0) }),
-      $(go.TextBlock, "(0,20)",   { background: 'rgba(255,0,0,.2)', alignment: new go.Spot(1, 1, 0, 20) })
+      $(go.TextBlock, "(0,-20)",  { background: pink, alignment: new go.Spot(1, 1, 0, -20) }),
+      $(go.TextBlock, "(0,0)",    { background: pink, alignment: new go.Spot(1, 1, 0, 0) }),
+      $(go.TextBlock, "(0,20)",   { background: pink, alignment: new go.Spot(1, 1, 0, 20) })
     ));
 </pre>
 <script>goCode("spotOffsets", 600, 100)</script>
+
 
 <h3>Auto Panels</h3>
 <p>
@@ -346,7 +362,11 @@ Use a <a>Shape</a> as the first/"main" element -- it becomes the border.
 The <a>Shape.figure</a> is normally "Rectangle" or "RoundedRectangle" or "Ellipse", as shown below.
 The other elements become the "content" for the panel inside the border.
 In the examples below there is only a single "content" element, a <a>TextBlock</a>.
-We have set the <a>GraphObject.background</a> and <a>Shape.fill</a> properties to help show the sizes and positions of objects.</p>
+We have set the <a>GraphObject.background</a> and <a>Shape.fill</a> properties to help show the sizes and positions of objects.
+</p>
+<p>
+Auto Panels should have two or more elements in them.
+</p>
 <pre data-language="javascript" id="autoPanels">
   diagram.add(
     $(go.Part, "Auto",
@@ -413,14 +433,16 @@ Many of the predefined figures have their own default values for spot1 and spot2
     $(go.Part, "Auto",
       { position: new go.Point(100, 0), background: "lightgray" },
       $(go.Shape, "RoundedRectangle",
-        { fill: "lightgreen", spot1: new go.Spot(0, 0, 10, 0), spot2: new go.Spot(1, 1, -10, -10) }),
+        { fill: "lightgreen",
+          spot1: new go.Spot(0, 0, 10, 0), spot2: new go.Spot(1, 1, -10, -10) }),
       $(go.TextBlock, "some text", { background: "yellow" })
     ));
   diagram.add(
     $(go.Part, "Auto",
       { position: new go.Point(200, 0), background: "lightgray" },
       $(go.Shape, "RoundedRectangle",
-        { fill: "lightgreen", spot1: new go.Spot(0, 0, 0, 20), spot2: new go.Spot(1, 1, 0, -20) }),
+        { fill: "lightgreen",
+          spot1: new go.Spot(0, 0, 0, 20), spot2: new go.Spot(1, 1, 0, -20) }),
       $(go.TextBlock, "some text", { background: "yellow" })
     ));
 </pre>
@@ -428,6 +450,7 @@ Many of the predefined figures have their own default values for spot1 and spot2
 <p>
 The spot1 and spot2 properties on the main <a>Shape</a> are more general and more flexible than specifying the <a>GraphObject.margin</a> on the content element(s).
 </p>
+
 
 <h3>Spot Panels</h3>
 <p>
@@ -523,6 +546,46 @@ If you did, it might be clipped or there might be extra room around the main ele
     ));
 </pre>
 <script>goCode("clipping", 600, 100)</script>
+<p>
+Spot Panels should have two or more elements in them.
+</p>
+
+<p>
+Remember that the elements of every panel are drawn in order.
+Normally you want the main element to be behind all of the other elements, so the main element will come first.
+However if you want the main element to be in front of some or all of the other elements,
+you can move the main element not to be the first element of the panel,
+if you also set its <a>GraphObject.isPanelMain</a> property to true.
+</p>
+<pre data-language="javascript" id="spotZorder">
+  diagram.add(
+    $(go.Part, "Spot",
+      { background: "lightgray" },
+      $(go.TextBlock, "TL", { background: "yellow", alignment: go.Spot.TopLeft }),
+      $(go.TextBlock, "TR", { background: "yellow", alignment: go.Spot.TopRight }),
+      $(go.TextBlock, "BL", { background: "yellow", alignment: go.Spot.BottomLeft }),
+      $(go.TextBlock, "BR", { background: "yellow", alignment: go.Spot.BottomRight }),
+
+      // NOTE: the main element isn't first, so it must be declared by setting isPanelMain to true
+      $(go.Shape, "Rectangle",
+        { isPanelMain: true },
+        { fill: "lightgreen", width: 100, height: 50 })
+    ));
+</pre>
+<script>goCode("spotZorder", 600, 100)</script>
+<p>
+Note how the opaque Shape, explicitly declared to be the main element, is now visually in front of
+the non-main elements of the Spot Panel because it has been moved to be the last element in the panel.
+</p>
+<p>
+Without setting <a>GraphObject.isPanelMain</a> to true on the desired main element, in this example
+<a>Panel.findMainElement</a> would return the first TextBlock.
+This would cause all of the other elements to be arranged around that TextBlock.
+Since the TextBlock is small and the rectangular Shape is big and opaque,
+the Shape would cover all of the other TextBlocks, so the user might not see any text,
+depending on the size and alignment of those other TextBlocks.
+</p>
+
 
 <h3>Viewbox Panels</h3>
 <p>

@@ -31,7 +31,7 @@ when a property value has been changed.
 
 <h3>Transactions</h3>
 <p>
-Whenever you modify a model or its data programmatically, you should wrap the code in a transaction.
+Whenever you modify a model or its data programmatically in response to some event, you should wrap the code in a transaction.
 Call <a>Diagram.startTransaction</a> or <a>Model.startTransaction</a>, make the changes,
 and then call <a>Diagram.commitTransaction</a> or <a>Model.commitTransaction</a>.
 Although the primary benefit from using transactions is to group together side-effects for undo/redo,
@@ -42,16 +42,31 @@ As with database transactions, you will want to perform transactions that are sh
 Do not leave transactions ongoing between user actions.
 Consider whether it would be better to have a single transaction surrounding a loop
 instead of starting and finishing a transaction repeatedly within a loop.
+Do not execute transactions within a property setter -- such granularity is too small.
+Instead execute a transaction where the properties are set in response to some user action or external event.
 </p>
 <p>
 However, unlike database transactions, you do not need to conduct a transaction in order to access any state.
 All JavaScript objects are in memory, so you can look at their properties at any time that it would make sense to do so.
 But when you want to make state changes to a <a>Diagram</a> or a <a>GraphObject</a> or a <a>Model</a> or a JavaScript object in a model,
 do so within a transaction.
+</p>
+<p>
 The only exception is that transactions are unnecessary when initializing a model before assigning the model to the <a>Diagram.model</a>.
-Furthermore many event handlers and listeners are executed within transactions that are conducted by <a>Tool</a>s or <a>CommandHandler</a> commands,
+(A Diagram only gets access to an UndoManager via the Model, the <a>Model.undoManager</a> property.)
+</p>
+<p>
+Furthermore many event handlers and listeners are already executed within transactions
+that are conducted by <a>Tool</a>s or <a>CommandHandler</a> commands,
 so you often will not need to start and commit a transaction within such functions.
-Read the documentation for details about whether a function is called within a transaction.
+Read the API documentation for details about whether a function is called within a transaction.
+For example, setting <a>GraphObject.click</a> to an event handler to respond to a click on an object
+needs to perform a transaction if it wants to modify the model or the diagram.
+Most custom click event handlers do not change the diagram but instead update some HTML.
+But implementing an "ExternalObjectsDropped" <a>DiagramEvent</a> listener, which usually does want to
+modify the just-dropped Parts in the <a>Diagram.selection</a>, is called within the <a>DraggingTool</a>'s
+transaction, so no additional start/commit transaction calls are needed.
+Finally, some customizations, such as the <a>Node.linkValidation</a> predicate, should not modify the diagram or model at all.
 </p>
 <p>
 Both model changes and diagram changes are recorded in the <a>UndoManager</a>
@@ -127,12 +142,14 @@ corresponding to the data.
   diagram.model = new go.GraphLinksModel(nodeDataArray);
   diagram.model.undoManager.isEnabled = true;
 
-  incrementData = function() {  // define a function named "incrementData" callable by onclick
+  // define a function named "incrementData" callable by onclick
+  function incrementData() {
     var model = diagram.model;
-    model.startTransaction("increment");  // all model changes should happen in a transaction
+    // all model changes should happen in a transaction
+    model.startTransaction("increment");
     var data = model.nodeDataArray[0];  // get the first node data
     model.setDataProperty(data, "someValue", data.someValue + 1);
-    model.commitTransaction("increment");  // all model changes should happen in a transaction
+    model.commitTransaction("increment");
   };
 </pre>
 <p>

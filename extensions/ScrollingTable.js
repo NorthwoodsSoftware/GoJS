@@ -47,12 +47,26 @@ go.GraphObject.defineBuilder("AutoRepeatButton", function(args) {
            { actionDown: delayClicking, actionUp: endClicking });
 });
 
-// Set or bind "TABLE.itemArray" in this custom Table Panel:
+// Create a scrolling Table Panel, whose name is given as the optional first argument.
+// If not given the name defaults to "TABLE".
+// Example use:
+//   $("ScrollingTable", "TABLE",
+//     new go.Binding("TABLE.itemArray", "someArrayProperty"),
+//     ...)
+// Note that if you have more than one of these in a Part,
+// you'll want to make sure each one has a unique name.
 go.GraphObject.defineBuilder("ScrollingTable", function(args) {
+  var tablename = "TABLE";
+  if (typeof args[1] === 'string') {
+    tablename = args[1];  // the name of the button
+    args.splice(1, 1);  // remove this name from the arguments to be processed by GraphObject.make
+  }
 
   // an internal helper function for actually performing a scrolling operation
   function incrTableIndex(obj, i) {
-    var table = obj.panel.panel.panel.findObject("TABLE");
+    var diagram = obj.diagram;
+    if (diagram !== null) diagram.startTransaction("scroll");
+    var table = obj.panel.panel.panel.findObject(tablename);
     if (i === +Infinity || i === -Infinity) {  // page up or down
       var tabh = table.actualBounds.height;
       var rowh = table.elt(table.topIndex).actualBounds.height;  // assume each row has same height?
@@ -70,6 +84,7 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
     if (up) up.visible = (idx > 0);
     var down = table.panel.findObject("DOWN");
     if (down) down.visible = (idx < table.rowCount - 1);
+    if (diagram !== null) diagram.commitTransaction("scroll");
   }
 
   return $(go.Panel, "Table",
@@ -77,12 +92,13 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
             // this actually holds the item elements
             $(go.Panel, "Table",
               {
-                name: "TABLE",
+                name: tablename,
                 column: 0,
                 stretch: go.GraphObject.Fill,
                 //alignment: go.Spot.Top,
                 //stretch: go.GraphObject.Horizontal,
-                background: "whitesmoke"
+                background: "whitesmoke",
+                rowSizing: go.RowColumnDefinition.None
               }),
 
             // this is the scrollbar
@@ -100,7 +116,7 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
                   click: function(e, obj) { incrTableIndex(obj, -1); }
                 },
                 $(go.Shape, "TriangleUp",
-                  { stroke: null, desiredSize: new go.Size(6, 6), margin: 2 })),
+                  { stroke: null, desiredSize: new go.Size(6, 6) })),
               // the filler between the scroll buttons
               // (someday implement a thumb here and support dragging to scroll)
               $(go.Shape,
@@ -115,7 +131,7 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
                   click: function(e, obj) { incrTableIndex(obj, +1); }
                 },
                 $(go.Shape, "TriangleDown",
-                  { stroke: null, desiredSize: new go.Size(6, 6), margin: 2 }))
+                  { stroke: null, desiredSize: new go.Size(6, 6) }))
             )
          );
 });

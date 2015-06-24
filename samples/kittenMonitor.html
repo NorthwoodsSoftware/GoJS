@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Kitten Monitor</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -24,7 +25,8 @@
         $(go.Part,  // this Part is not bound to any model data
           { layerName: "Background", position: new go.Point(0, 0),
             selectable: false, pickable: false },
-          $(go.Picture, "http://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg")));
+          $(go.Picture, "http://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg")
+        ));
 
       // the template for each kitten, for now just a colored circle
       myDiagram.nodeTemplate =
@@ -32,14 +34,16 @@
           new go.Binding("location", "loc"),  // specified by data
           { locationSpot: go.Spot.Center },   // at center of node
           $(go.Shape, "Circle",
-            { width: 12, height: 12, stroke: null },
-            new go.Binding("fill", "color")),  // also specified by data
+            { width: 15, height: 15, strokeWidth: 3 },
+            new go.Binding("fill", "color", makeFill),
+            new go.Binding("stroke", "color", makeStroke)
+            ),  // also specified by data
           { // this tooltip shows the name and picture of the kitten
             toolTip:
               $(go.Adornment, "Auto",
                 $(go.Shape, { fill: "lightyellow" }),
                 $(go.Panel, "Vertical",
-                  $(go.Picture,
+                  $(go.Picture, { margin: 3 },
                     new go.Binding("source", "src", function(s) { return "images/" + s + ".png"; })),
                   $(go.TextBlock, { margin: 3 },
                     new go.Binding("text", "key"))
@@ -50,10 +54,10 @@
 
       // pretend there are four kittens
       myDiagram.model.nodeDataArray = [
-        { key: "Alonzo", src: "50x40", loc: new go.Point(220, 130), color: "blue" },
-        { key: "Coricopat", src: "55x55", loc: new go.Point(420, 250), color: "green" },
-        { key: "Garfield", src: "60x90", loc: new go.Point(640, 450), color: "red" },
-        { key: "Demeter", src: "80x50", loc: new go.Point(140, 350), color: "purple" }
+        { key: "Alonzo", src: "50x40", loc: new go.Point(220, 130), color: 2 },
+        { key: "Coricopat", src: "55x55", loc: new go.Point(420, 250), color: 4 },
+        { key: "Garfield", src: "60x90", loc: new go.Point(640, 450), color: 6 },
+        { key: "Demeter", src: "80x50", loc: new go.Point(140, 350), color: 8 }
       ];
 
       // simulate some real-time position monitoring, once every 2 seconds
@@ -79,6 +83,34 @@
         setTimeout(function() { randomMovement(); loop(); }, 2000);
       }
       loop();  // start the simulation
+
+      // generate some colors based on hue value
+      function makeFill(number) {
+        return HSVtoRGB(0.1 * number, 0.5, 0.7);
+      }
+      function makeStroke(number) {
+        return HSVtoRGB(0.1 * number, 0.5, 0.5); // same color but darker (less V in HSV)
+      }
+      function HSVtoRGB(h, s, v) {
+          var r, g, b, i, f, p, q, t;
+          i = Math.floor(h * 6);
+          f = h * 6 - i;
+          p = v * (1 - s);
+          q = v * (1 - f * s);
+          t = v * (1 - (1 - f) * s);
+          switch (i % 6) {
+              case 0: r = v, g = t, b = p; break;
+              case 1: r = q, g = v, b = p; break;
+              case 2: r = p, g = v, b = t; break;
+              case 3: r = p, g = q, b = v; break;
+              case 4: r = t, g = p, b = v; break;
+              case 5: r = v, g = p, b = q; break;
+          }
+          return 'rgb(' +
+              Math.floor(r * 255) + ',' +
+              Math.floor(g * 255) + ',' +
+              Math.floor(b * 255) + ')';
+      }
     }
   </script>
 </head>
@@ -86,6 +118,8 @@
 <div id="sample">
   <h3>Kitten Monitor</h3>
   <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+  <p>This diagram displays a monitored floor plan with several nodes (representing kittens) to view in real-time.</p>
+  <p>Every two seconds the kitten positions are updated</p>
   <p>The tooltip for each kitten shows its name and photo.</p>
 </div>
 </body>

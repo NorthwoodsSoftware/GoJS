@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Multi-Arrow Links</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram", // the ID of the DIV HTML element
+        {
+          initialContentAlignment: go.Spot.Center,
+          layout: $(go.ForceDirectedLayout),
+          "undoManager.isEnabled": true
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, go.Panel.Auto,
+        { locationSpot: go.Spot.Center },
+        $(go.Shape,
+          {
+            figure: "RoundedRectangle",
+            parameter1: 10,
+            fill: "orange",  // default fill color
+            portId: "",
+            fromLinkable: true,
+            fromSpot: go.Spot.AllSides,
+            toLinkable: true,
+            toSpot: go.Spot.AllSides,
+            cursor: "pointer"
+          },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 10, font: "bold 12pt sans-serif" },
+          new go.Binding("text"))
+      );
+
+    myDiagram.linkTemplate =
+      $(MultiArrowLink,  // subclass of Link, defined below
+        {
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          resegmentable: true
+        },
+        $(go.Shape,
+          { isPanelMain: true },
+          new go.Binding("fill", "color"))
+        // no arrowhead is defined here -- they are hard-coded in MultiArrowLink.makeGeometry
+      );
+
+    // create a few nodes and links
+    myDiagram.model = new go.GraphLinksModel([
+        { key: 1, text: "one", color: "lightyellow" },
+        { key: 2, text: "two", color: "brown" },
+        { key: 3, text: "three", color: "green" },
+        { key: 4, text: "four", color: "slateblue" },
+        { key: 5, text: "five", color: "aquamarine" },
+        { key: 6, text: "six", color: "lightgreen" },
+        { key: 7, text: "seven" }
+      ], [
+        { from: 5, to: 6, color: "orange" },
+        { from: 1, to: 2, color: "red" },
+        { from: 1, to: 3, color: "blue" },
+        { from: 1, to: 4, color: "goldenrod" },
+        { from: 2, to: 5, color: "fuchsia" },
+        { from: 3, to: 5, color: "green" },
+        { from: 4, to: 5, color: "black" },
+        { from: 6, to: 7 }
+      ]);
+  }
+
+
+  // Produce a Geometry that includes an arrowhead at the end of each segment.
+  // This only works with orthogonal non-Bezier routing.
+  function MultiArrowLink() {
+    go.Link.call(this);
+    this.routing = go.Link.Orthogonal;
+  }
+  go.Diagram.inherit(MultiArrowLink, go.Link);
+  
+  // produce a Geometry from the Link's route
+  MultiArrowLink.prototype.makeGeometry = function () {
+    // get the Geometry created by the standard behavior
+    var geo = go.Link.prototype.makeGeometry.call(this);
+    if (geo.type !== go.Geometry.Path || geo.figures.length === 0) return geo;
+    var mainfig = geo.figures.elt(0);  // assume there's just one PathFigure
+    var mainsegs = mainfig.segments;
+
+    var arrowLen = 8;  // length for each arrowhead
+    var arrowWid = 3;  // actually half-width of each arrowhead
+    var fx = mainfig.startX;
+    var fy = mainfig.startY;
+    for (var i = 0; i < mainsegs.length; i++) {
+      var a = mainsegs.elt(i);
+      // assume each arrowhead is a simple triangle
+      var ax = a.endX;
+      var ay = a.endY;
+      var bx = ax;
+      var by = ay;
+      var cx = ax;
+      var cy = ay;
+      if (fx < ax - arrowLen) {
+        bx -= arrowLen; by += arrowWid;
+        cx -= arrowLen; cy -= arrowWid;
+      } else if (fx > ax + arrowLen) {
+        bx += arrowLen; by += arrowWid;
+        cx += arrowLen; cy -= arrowWid;
+      } else if (fy < ay - arrowLen) {
+        bx -= arrowWid; by -= arrowLen;
+        cx += arrowWid; cy -= arrowLen;
+      } else if (fy > ay + arrowLen) {
+        bx -= arrowWid; by += arrowLen;
+        cx += arrowWid; cy += arrowLen;
+      }
+      geo.add(new go.PathFigure(ax, ay, true)
+              .add(new go.PathSegment(go.PathSegment.Line, bx, by))
+              .add(new go.PathSegment(go.PathSegment.Line, cx, cy).close()));
+      fx = ax;
+      fy = ay;
+    }
+
+    return geo;
+  };
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:700px; min-width: 200px"></div>
+  <p>
+  This sample demonstrates customization of the <a>Link</a> <a>Shape</a>'s <a>Geometry</a>.
+  </p>
+  <p>
+  The MultiArrowLink class in this sample inherits from Link and overrides the <a>Link.makeGeometry</a> method
+  to add arrowheads at the end of each interior segment, assuming that the route is orthogonal.
+  </p>
+</div>
+</body>
+</html>

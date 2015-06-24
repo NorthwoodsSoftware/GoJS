@@ -20,6 +20,11 @@
   You should not modify the prototypes of any of the <b>GoJS</b> classes.
 </p>
 
+<p class="box warning">
+  Do not modify the prototypes of the <b>GoJS</b> classes.<br />
+  Only use the properties and methods documented in the <a href="../api/index.html">API</a>.
+</p>
+
 <p class="box">
   In addition to our samples, <b>GoJS</b> provides an <strong><a href="../extensions/">extensions gallery</a></strong>, showcasing the creation of custom tools and layouts.
 </p>
@@ -80,10 +85,10 @@
     // ...
 
     // Be careful about using 'this' within such functions!
-    // We recommend that you refer to the Tool with a variable declared outside of the function.
 
     // In cases where you want normal behavior, call the base functionality.
-    // Note the reference to the prototype and the call to 'call' passing it what 'this' should be.
+    // Note the reference to the prototype
+    // and the call to 'call' passing it what 'this' should be.
     go.ClickSelectingTool.prototype.standardMouseSelect.call(tool);
 
     // Maybe do something else after
@@ -165,14 +170,17 @@
 
 <pre data-language="javascript">
   function CascadeLayout() {
-    go.Layout.call(this);  // Note the direct constructor call, no use of "prototype"
+    // Note the direct constructor call, no use of "prototype"
+    go.Layout.call(this);
     // new properties go here, on "this"
   }
   go.Diagram.inherit(CascadeLayout, go.Layout);
 
-  CascadeLayout.prototype.doLayout = function(coll) {  // Note setting the method on the prototype
-    // layout logic goes here
-    // You can reliably use "this" to refer to the instance on which this method was called
+  // Note setting the method on the prototype
+  CascadeLayout.prototype.doLayout = function(coll) {
+    // Layout logic goes here.
+    // You can reliably use "this" to refer to the layout instance
+    // on which this method was called.
   }
 </pre>
 
@@ -198,7 +206,9 @@
   Object.defineProperty(CascadeLayout.prototype, "spacing", {
     get: function() { return this._spacing; },
     set: function(val) {
-      if (!(val instanceof go.Size)) throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+      if (!(val instanceof go.Size)) {
+        throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+      }
       if (!this._spacing.equals(val)) {
         this._spacing = val;
         this.invalidateLayout();
@@ -230,7 +240,9 @@
   Object.defineProperty(CascadeLayout.prototype, "spacing", {
     get: function() { return this._spacing; },
     set: function(val) {
-      if (!(val instanceof go.Size)) throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+      if (!(val instanceof go.Size)) {
+        throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+      }
       if (!this._spacing.equals(val)) {
         this._spacing = val;
         this.invalidateLayout();

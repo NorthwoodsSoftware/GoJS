@@ -81,8 +81,10 @@ Note that we move the other port-related properties, such as the port spots, to 
     $(go.Node, "Vertical",
       $(go.Shape, "Ellipse",
         { width: 30, height: 30, fill: "green",
-          portId: "",                          // now the Shape is the port, not the whole Node
-          fromSpot: go.Spot.Right, toSpot: go.Spot.Left }),  // port properties go on the port!
+          portId: "",  // now the Shape is the port, not the whole Node
+          fromSpot: go.Spot.Right,  // port properties go on the port!
+          toSpot: go.Spot.Left
+        }),
       $(go.TextBlock,
         { font: "20px sans-serif" },
         new go.Binding("text", "key"))
@@ -122,6 +124,14 @@ If you want to support port identifiers on link data, you need to set <a>GraphLi
 and <a>GraphLinksModel.linkFromPortIdProperty</a> to be the names of the link data properties.
 If you do not set these properties, all port identifiers are assumed to be the empty string,
 which is the name of the one default port for a node.
+</p>
+<p class="box warning">
+If you have set or bound <a>GraphObject.portId</a> on any element to be a non-empty string,
+you will need to use a <a>GraphLinksModel</a> and set <a>GraphLinksModel.linkToPortIdProperty</a>
+and <a>GraphLinksModel.linkFromPortIdProperty</a> to be the names of two properties on your link data,
+or you will need to hard code the portId names in the link template(s)
+(i.e. <a>Link.fromPortId</a> and <a>Link.toPortId</a>),
+in order for the user to be able to link with those ports.
 </p>
 <pre data-language="javascript" id="ports">
   diagram.nodeTemplate =

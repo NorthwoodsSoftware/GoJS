@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Visual Tree Using Nested Groups</title>
+  <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          { // start everything in the middle of the viewport
+            initialContentAlignment: go.Spot.Center, 
+            "undoManager.isEnabled": true 
+          });
+
+      // define the "sample" Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          $(go.Shape, "RoundedRectangle",  // define the node's outer shape
+            { fill: "white", stroke: "black" },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,  // define the node's text
+            { margin: 5 },
+            new go.Binding("text", "key"))
+        );
+
+      // use the default link template
+
+      myDiagram.model = new go.GraphLinksModel([
+        { key: "Alpha", color: "lightblue" },
+        { key: "Beta", color: "pink" }
+      ],[
+        { from: "Alpha", to: "Beta" }
+      ]);
+
+
+      // Now we can initialize a Diagram that looks at the visual tree that constitutes the Diagram above.
+      myVisualTree =
+        $(go.Diagram, "myVisualTree",
+          {
+            isReadOnly: true,  // do not allow users to modify or select in this view
+            allowSelect: false,
+            layout: $(go.TreeLayout, { nodeSpacing: 5 })  // automatically laid out as a tree
+          });
+
+      // use Groups, not regular Nodes or Links, to show relationship of GraphObjects in myDiagram
+      myVisualTree.groupTemplate =
+        $(go.Group, "Auto",
+          {
+            layout: $(go.GridLayout,
+                      {
+                        wrappingColumn: 2,
+                        alignment: go.GridLayout.Position,
+                        cellSize: new go.Size(1, 1)
+                      })
+          },
+          $(go.Shape, { fill: "rgba(99,99,99,0.1)", strokeWidth: 0.5 }),
+          $(go.Panel, "Spot",
+            $(go.Placeholder,
+              { padding: new go.Margin(15,5,5,5) }),
+            $(go.TextBlock,
+              {
+                font: "bold 13px Helvetica, bold Arial, sans-serif",
+                stroke: "black",
+                margin: 3,
+                alignment: go.Spot.Top, alignmentFocus: go.Spot.Top
+              },
+              // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+              new go.Binding("text", "", function(x) { return x.toString(); } ))
+          )
+        );
+
+      drawVisualTree();
+    }
+
+    function drawVisualTree() {
+      var visualNodeDataArray = [];
+
+      // recursively walk the visual tree, collecting objects as we go
+      function traverseVisualTree(obj, parent) {
+        obj.key = visualNodeDataArray.length;
+        visualNodeDataArray.push(obj);
+        if (parent) {
+          obj.parentKey = parent.key;
+        }
+        if (obj instanceof go.Diagram) {
+          var lit = obj.layers;
+          while (lit.next()) traverseVisualTree(lit.value, obj);
+        } else if (obj instanceof go.Layer) {
+          var pit = obj.parts;
+          while (pit.next()) traverseVisualTree(pit.value, obj);
+        } else if (obj instanceof go.Panel) {
+          var eit = obj.elements;
+          while (eit.next()) traverseVisualTree(eit.value, obj);
+        }
+      }
+
+      traverseVisualTree(myDiagram, null);
+
+      myVisualTree.model =
+        go.GraphObject.make(go.GraphLinksModel,
+          {
+            nodeGroupKeyProperty: "parentKey",
+            // always return true so that all node data is represented by groups
+            nodeIsGroupProperty: function(data) { return true; },
+            nodeDataArray: visualNodeDataArray
+          });
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <h3>GoJS Visual Tree, using nested Groups</h3>
+  <b>myDiagram</b>, the diagram being inspected:<br />
+  <div id="myDiagram" style="border: 1px solid blue; width: 300px; height: 200px"></div>
+  <br />
+  <input type="button" onclick="drawVisualTree()" value="Draw Visual Tree" />
+  <br />
+  <br />
+  <b>myVisualTree</b>, showing the Layers, Nodes and Links that are in <b>myDiagram</b> above:<br />
+  <div id="myVisualTree" style="border: 1px solid blue; width: 100%; height: 400px"></div>
+  <p>
+  You can also try selecting, copying, and deleting parts in <b>myDiagram</b>
+  and then click on "Draw Visual Tree" again to see how the visual tree in <b>myDiagram</b> changes.
+  </p>
+  <p>See also the <a href="visualTree.html">Visual Tree</a> sample,
+  to show the same visual tree using nodes and links in a traditional tree structure.</p>
+</div>
+</body>
+</html>

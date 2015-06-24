@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Decision Tree</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -20,7 +21,7 @@
                   });
 
     // custom behavior for expanding/collapsing half of the subtree from a node
-    function buttonExpandCollapse(port) {
+    function buttonExpandCollapse(e, port) {
       var node = port.part;
       node.diagram.startTransaction("expand/collapse");
       var portid = port.portId;
@@ -98,10 +99,11 @@
             new go.Binding("text", "key")),
           // define a vertical panel to place the node's two buttons one above the other
           $(go.Panel, "Vertical",
+              { defaultStretch: go.GraphObject.Fill },
               $("Button",  // button A
                 {
                   name: "ButtonA",
-                  click: function (e, obj) { buttonExpandCollapse(obj); },
+                  click: buttonExpandCollapse,
                   toolTip: tooltipTemplate
                 },
                 new go.Binding("portId", "a"),
@@ -111,7 +113,7 @@
               $("Button",  // button B
                 {
                   name: "ButtonB",
-                  click: function (e, obj) { buttonExpandCollapse(obj); },
+                  click: buttonExpandCollapse,
                   toolTip: tooltipTemplate
                 },
                 new go.Binding("portId", "b"),
@@ -139,7 +141,7 @@
         { fromPortId: "" },
         new go.Binding("fromPortId", "fromport"),
         $(go.Shape,  // the link shape
-          { isPanelMain: true, stroke: "red", strokeWidth: 2 })
+          { stroke: "red", strokeWidth: 2 })
       );
 
     // create the model for the decision tree

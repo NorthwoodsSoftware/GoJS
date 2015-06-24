@@ -17,6 +17,9 @@ A <a>Group</a> has its own <a>Group.layout</a> that is responsible for the posit
 and the routing of member <a>Link</a>s.
 One way to declutter a diagram is to "collapse" a <a>Group</a> to hide the subgraph that it holds.
 </p>
+<p>
+Keep in mind that subgraphs are not separate Diagrams and that Groups are just one way of organizing Parts.
+</p>
 
 <h3>Layouts of SubGraphs</h3>
 <p>
@@ -78,6 +81,18 @@ For simplicity these examples use the default templates for nodes and links.
 </pre>
 <script>goCode("layouts", 600, 250)</script>
 
+<p>
+The default layout for a Group is an instance of <a>Layout</a>, just as it is for <a>Diagram</a>.
+So if you do not specify a value for <a>Group.layout</a>, the default layout for the group will position
+all member nodes that do not have a real <a>Part.location</a>.
+</p>
+
+<p>
+If you explicitly set <a>Group.layout</a> to null, the Diagram will be responsible for laying out all of
+Nodes and Links as if the Group did not exist.
+This is possible because a subgraph is not another <a>Diagram</a>.
+</p>
+
 <h3>Collapsing and Expanding Groups</h3>
 <p>
 One common technique to visually simplify a diagram is to hide parts of them by "collapsing" them.
@@ -98,7 +113,7 @@ shrink when the member parts become invisible and will inflate when the member p
 </p>
 <p>
 Click on the expander button to collapse or expand the group.
-Clicking the expander button also invalidates the layout that is responsible for positioning the group as a single node.
+Changing the size of the group also invalidates the layout that is responsible for positioning the group as a single node.
 Often the size of the group changes greatly, so a layout usually needs to be performed again.
 </p>
 <pre data-language="javascript" id="collapseExpand">
@@ -147,6 +162,12 @@ Often the size of the group changes greatly, so a layout usually needs to be per
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </pre>
 <script>goCode("collapseExpand", 600, 250)</script>
+
+<p>
+If you do not want a layout to be performed again when the group changes size,
+you can set the <a>Part.layoutConditions</a> property to control the circumstances under which
+the layout will be invalidated.
+</p>
 
 </div>
 </body>

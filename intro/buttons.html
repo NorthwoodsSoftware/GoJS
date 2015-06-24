@@ -13,12 +13,16 @@
 <h2>Buttons</h2>
 <p>
 For your convenience we have defined several <a>Panel</a>s for common uses.
-These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", and "ContextMenuButton".
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", and "ContextMenuButton".
 </p>
 <p>
 These predefined panels can be used as if they were <a>Panel</a>-derived classes in calls to <a>GraphObject.make</a>.
 They are implemented as simple visual trees of <a>GraphObject</a>s in <a>Panel</a>s,
 with pre-set properties and event handlers.
+</p>
+<p>
+You can see a copy of their definitions in this file:
+<a href="../extensions/Buttons.js">Buttons.js</a>.
 </p>
 
 <h3>General Buttons</h3>
@@ -40,7 +44,8 @@ The most general kind of predefined <a>Panel</a> is "Button".
             click: incrementCounter },
           $(go.TextBlock, "Click me!")),
         $(go.TextBlock,
-          new go.Binding("text", "clickCount", function(c) { return "Clicked " + c + " times."; }))
+          new go.Binding("text", "clickCount",
+                         function(c) { return "Clicked " + c + " times."; }))
       )
     );
 
@@ -123,6 +128,58 @@ You can let the user control this by adding an instance of the "SubGraphExpander
 </pre>
 <script>goCode("subgraphExpanderButton", 600, 150)</script>
 
+<h3>PanelExpanderButtons</h3>
+<p>
+It is common to want to expand and collapse a piece of a node,
+thereby showing or hiding details that are sometimes not needed.
+It is easy to let the user control this by adding an instance of the "PanelExpanderButton" to your node template.
+The second argument to <a>GraphObject.make</a> should be a string that names the element in the node whose
+<a>GraphObject.visible</a> property you want the button to toggle.
+</p>
+<pre data-language="javascript" id="panelExpanderButton">
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { fill: "gold" }),
+      $(go.Panel, "Table",
+        { defaultAlignment: go.Spot.Top, defaultColumnSeparatorStroke: "black" },
+        $(go.Panel, "Table",
+          { column: 0 },
+          $(go.TextBlock, "List 1",
+            { column: 0, margin: new go.Margin(3, 3, 0, 3),
+              font: "bold 12pt sans-serif" }),
+          $("PanelExpanderButton", "LIST1",
+            { column: 1 }),
+          $(go.Panel, "Vertical",
+            { name: "LIST1", row: 1, column: 0, columnSpan: 2 },
+            new go.Binding("itemArray", "list1"))
+        ),
+        $(go.Panel, "Table",
+          { column: 1 },
+          $(go.TextBlock, "List 2",
+            { column: 0, margin: new go.Margin(3, 3, 0, 3),
+              font: "bold 12pt sans-serif" }),
+          $("PanelExpanderButton", "LIST2",
+            { column: 1 }),
+          $(go.Panel, "Vertical",
+            { name: "LIST2", row: 1, column: 0, columnSpan: 2 },
+            new go.Binding("itemArray", "list2"))
+        )
+      )
+    );
+
+  diagram.model = new go.GraphLinksModel([
+    {
+      key: 1,
+      list1: [ "one", "two", "three", "four", "five" ],
+      list2: [ "first", "second", "third", "fourth" ]
+    }
+  ]);
+</pre>
+<script>goCode("panelExpanderButton", 600, 200)</script>
+
 <h3>ContextMenuButtons</h3>
 <p>
 Although you can implement context menus in any way you choose, it is common to use the predefined "ContextMenuButton".
@@ -168,205 +225,14 @@ For an example of defining context menus using HTML, see the <a href="../samples
 
 <h3>Button Definitions</h3>
 <p>
-The implementation of these buttons is listed here.
+The implementation of all predefined buttons is provided in <a href="../extensions/Buttons.js">Buttons.js</a>
+in the Extensions directory.
 You may wish to copy and adapt these definitions when creating your own buttons.
 </p>
 <p>
-These definitions might not be an accurate or up-to-date description
-of the actual standard button definitions that are in <b>GoJS</b> and used by <a>GraphObject.make</a>.
+Those definitions might not be an up-to-date description
+of the actual standard button implementations that are in <b>GoJS</b> and used by <a>GraphObject.make</a>.
 </p>
-
-<h4>"Button"</h4>
-<p>
-Here is how "Button" is defined:
-</p>
-<pre data-language="javascript" id="buttonDefinition">
-function makeStandardButton() {
-  var $ = go.GraphObject.make;
-  // standard brushes used by "Button"
-  var buttonFillNormal = new go.Brush(go.Brush.Linear);
-  buttonFillNormal.addColorStop(0, "white");
-  buttonFillNormal.addColorStop(1, "lightgray");
-
-  var buttonStrokeNormal = "gray";
-
-  var buttonFillOver = new go.Brush(go.Brush.Linear);
-  buttonFillOver.addColorStop(0, "white");
-  buttonFillOver.addColorStop(1, "dodgerblue");
-
-  var buttonStrokeOver = "blue";
-
-  var button =
-    $(go.Panel, "Auto",
-      { isActionable: true },  // handle mouse events without involving other tools
-      $(go.Shape,  // the border
-        { name: "ButtonBorder",
-          figure: "RoundedRectangle",
-          fill: buttonFillNormal,
-          stroke: buttonStrokeNormal
-        })
-    );
-
-  // There's no GraphObject inside the button shape --
-  // it must be added as part of the button definition.
-  // This way the button object could be a TextBlock or a Shape or a Picture or whatever.
-
-  // mouse-over behavior
-  button.mouseEnter = function(e, obj, prev) {
-    var button = obj;
-    var diagram = button.diagram;
-    var shape = button.elt(0);  // the border Shape
-    var brush = button["_buttonFillOver"];
-    if (brush === undefined) brush = buttonFillOver;
-    button["_buttonFillNormal"] = shape.fill;
-    shape.fill = brush;
-    brush = button["_buttonStrokeOver"];
-    if (brush === undefined) brush = buttonStrokeOver;
-    button["_buttonStrokeNormal"] = shape.stroke;
-    shape.stroke = brush;
-  };
-  button.mouseLeave = function(e, obj, next) {
-    var button = obj;
-    var diagram = button.diagram;
-    var shape = button.elt(0);  // the border Shape
-    var brush = button["_buttonFillNormal"];
-    if (brush === undefined) brush = buttonFillNormal
-    shape.fill = brush;
-    brush = button["_buttonStrokeNormal"];
-    if (brush === undefined) brush = buttonStrokeNormal;
-    shape.stroke = brush;
-  };
-  return button;
-}
-</pre>
-
-<h4>"TreeExpanderButton"</h4>
-<p>
-Here is how "TreeExpanderButton" is defined:
-</p>
-<pre data-language="javascript" id="treeExpanderButtonDefinition">
-function makeTreeExpanderButton() {
-  var $ = go.GraphObject.make;
-  var button =
-    $("Button",  // NOTE: this creates a "Button" and extends it
-      $(go.Shape,  // the icon
-        { name: "ButtonIcon",
-          figure: "MinusLine",  // default value for isTreeExpanded is true
-          desiredSize: new go.Size(6, 6) },
-        // bind the Shape.figure to the Node.isTreeExpanded value using this converter:
-        new go.Binding("figure", "isTreeExpanded",
-                    function(exp, node) {
-                      var fig = null;
-                      var button = node.panel;
-                      if (button) fig = exp ? button["_treeExpandedFigure"] : button["_treeCollapsedFigure"];
-                      if (!fig) fig = exp ? "MinusLine" : "PlusLine";
-                      return fig;
-                    })
-            .ofObject()),
-      // assume initially not visible because there are no links coming out
-      { visible: false },
-      // bind the button visibility to whether it's not a leaf node
-      new go.Binding("visible", "isTreeLeaf",
-                     function(leaf) { return !leaf; })
-          .ofObject()
-    );
-
-  // tree expand/collapse behavior
-  button.click = function(e, obj) {
-    var node = obj.part;  // OBJ is this button
-    if (node instanceof go.Adornment) node = node.adornedPart;
-    if (!(node instanceof go.Node)) return;
-    var diagram = node.diagram;
-    if (diagram === null) return;
-    var cmd = diagram.commandHandler;
-    if (node.isTreeExpanded) {
-      if (!cmd.canCollapseTree(node)) return;
-    } else {
-      if (!cmd.canExpandTree(node)) return;
-    }
-    e.handled = true;
-    if (node.isTreeExpanded) {
-      cmd.collapseTree(node);
-    } else {
-      cmd.expandTree(node);
-    }
-  };
-  return button;
-}
-</pre>
-
-<h4>"SubGraphExpanderButton"</h4>
-<p>
-Here is how "SubGraphExpanderButton" is defined:
-</p>
-<pre data-language="javascript" id="subgraphExpanderButtonDefinition">
-function makeSubGraphExpanderButton() {
-  var $ = go.GraphObject.make;
-  var button =
-    $("Button",  // NOTE: this creates a "Button" and extends it
-      $(go.Shape,  // the icon
-        { name: "ButtonIcon",
-          figure: "MinusLine",  // default value for isSubGraphExpanded is true
-          desiredSize: new go.Size(6, 6) },
-        // bind the Shape.figure to the Group.isSubGraphExpanded value using this converter:
-        new go.Binding("figure", "isSubGraphExpanded",
-                      function(exp, group) {
-                        var fig = null;
-                        var button = group.panel;
-                        if (button) fig = exp ? button["_subGraphExpandedFigure"] : button["_subGraphCollapsedFigure"];
-                        if (!fig) fig = exp ? "MinusLine" : "PlusLine";
-                        return fig;
-                      })
-              .ofObject())
-    );
-
-  // subgraph expand/collapse behavior
-  button.click = function(e, obj) {
-    var group = obj.part;  // OBJ is this button
-    if (group instanceof go.Adornment) group = group.adornedPart;
-    if (!(group instanceof go.Group)) return;
-    var diagram = group.diagram;
-    if (diagram === null) return;
-    var cmd = diagram.commandHandler;
-    if (group.isSubGraphExpanded) {
-      if (!cmd.canCollapseSubGraph(group)) return;
-    } else {
-      if (!cmd.canExpandSubGraph(group)) return;
-    }
-    e.handled = true;
-    if (group.isSubGraphExpanded) {
-      cmd.collapseSubGraph(group);
-    } else {
-      cmd.expandSubGraph(group);
-    }
-  };
-
-  return button;
-}
-</pre>
-
-<h4>"ContextMenuButton"</h4>
-<p>
-Here is how "ContextMenuButton" is defined:
-</p>
-<pre data-language="javascript" id="contextMenuButtonDefinition">
-function makeContextMenuButton() {
-  var $ = go.GraphObject.make;
-  var button =
-    $("Button",
-      { stretch: go.GraphObject.Horizontal });
-
-  // leave a two-pixel margin
-  var border = button.findObject("ButtonBorder");
-  if (border instanceof go.Shape) {
-    border.figure = "Rectangle";
-    border.spot1 = new go.Spot(0, 0, 2, 2);
-    border.spot2 = new go.Spot(1, 1, -2, -2);
-  }
-
-  return button;
-}
-</pre>
 
 </div>
 </body>

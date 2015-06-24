@@ -974,7 +974,7 @@
     <div id="contentBody">
     <!-- ============================== header ================================= -->
     <div id="header" class="fineprint">
-      GoJS&reg; Diagramming Components<br/>version 1.4.27<br/>by <a href="http://www.nwoods.com/">Northwoods Software&reg;</a>
+      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.5.0 for JavaScript/HTML<br/>by <a href="http://www.nwoods.com/">Northwoods Software&reg;</a>
     </div>
 
 <!-- ============================== class title ============================ -->
@@ -989,7 +989,7 @@
 				
 				
 
-				Models hold the essential data of a diagram, describing the basic entities and their properties and relationshipswithout specifying the appearance and behavior of the Nodes and Links and Groups that represent them visually.Models tend to hold only relatively simple data, making them easy to persist by serialization as JSON or XML formatted text.<p>Models hold simple data objects, not <a href="../symbols/Part.html" class="linkConstructor">Part</a>s such as <a href="../symbols/Node.html" class="linkConstructor">Node</a>s or <a href="../symbols/Link.html" class="linkConstructor">Link</a>s.Node data is normally represented in a <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> by instances of <a href="../symbols/Node.html" class="linkConstructor">Node</a>,but they could be represented by simple <a href="../symbols/Part.html" class="linkConstructor">Part</a>s or by <a href="../symbols/Group.html" class="linkConstructor">Group</a>s.A Diagram constructs Parts for its <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a>'s data by copying templates.Templates are <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>s of <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s that get some property values from the model data,accessible via the <a href="../symbols/Panel.html#data" class="linkProperty">Panel.data</a> property, using data <a href="../symbols/Binding.html" class="linkConstructor">Binding</a>.See <a href="../../intro/usingModels.html">Using Models</a> and <a href="../../intro/dataBinding.html">Data Binding</a> for an introduction.<p>This Model class only supports holding an array of node dataand interpreting properties on that data to be able to refer to themusing unique key values.To support simple tree-structured graphs, use a <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a>, which inherits from this class.To support links and grouping, use a <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>.<p>Each node data object is assumed to have a unique key value.The <a href="../symbols/Model.html#nodeKeyProperty" class="linkProperty">nodeKeyProperty</a> property names the property on the node data whose valueis the unique key for that node data object.The default value for this property is "key".You should not have a TwoWay data binding on the node key property,because that might cause the property value to be set to a duplicate key value.<p>The key values must be either strings or numbers or undefined.If the key is undefined, or if there are duplicate key values,the model will automatically try to assign a new unique key value.<p>For example, one can define a graph consisting of just two nodes:<pre class="javascript"> model.nodeDataArray = [   { key: "Alpha" },   { key: "Beta" } ];</pre><p>This model cannot detect the modification of the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a> arrayor the modification of any node data object.If you want to add or remove node data from the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a>,call the <a href="../symbols/Model.html#addNodeData" class="linkMethod">addNodeData</a> or <a href="../symbols/Model.html#removeNodeData" class="linkMethod">removeNodeData</a> methods.<p>If you want to modify a node data object, it depends on whether the property you want to changeis a structural property that the model needs to know about, or whether it is a propertythat is only used for data binding or other application-specific purposes.<p>For the former case, call the appropriate method, such as<a href="../symbols/Model.html#setKeyForNodeData" class="linkMethod">setKeyForNodeData</a>, <a href="../symbols/Model.html#setCategoryForNodeData" class="linkMethod">setCategoryForNodeData</a>,<a href="../symbols/GraphLinksModel.html#setToKeyForLinkData" class="linkMethod">GraphLinksModel.setToKeyForLinkData</a>, or <a href="../symbols/GraphLinksModel.html#setGroupKeyForNodeData" class="linkMethod">GraphLinksModel.setGroupKeyForNodeData</a>.These methods have names that start with "set", "add", "insert", or "remove".<p>For the latter case, when setting an application-specific property, typically for data binding,and to support undo/redo, call <a href="../symbols/Model.html#setDataProperty" class="linkMethod">setDataProperty</a>.<p>Each model comes with its own <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a> that is initially not enabled.You will need to set <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">UndoManager.isEnabled</a> to true in order for theUndoManager to record model changes and for your users to perform undo and redo.<p>You can temporarily turn off the recording of changes by setting<a href="../symbols/Model.html#skipsUndoManager" class="linkProperty">skipsUndoManager</a> to true.A number of places within the system do that routinely in order to avoid recording temporary changes,so be sure to remember the original value beforehand and restore it afterwards.<p>One normally saves a diagram by just saving its model.If you can use JSON-formatted text, this is easy to do -- just call <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a>to get the string representation of the model, and save that string.Load the diagram by replacing the <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a> with one created by callingthe static function <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a>:<pre class="javascript">  myDiagram.model = go.Model.fromJson(loadedString);</pre>Note that JSON and other textual data formats cannot faithfully store all JavaScript functions.<a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a> and <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a> do not try to save and load functional property values.You should arrange that all such functions, including event handlers, are established by your app.<a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a> and <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a> also cannot handle circular references; any sharing ofreferences will be lost too.They also skip properties that are not enumerable, those whose names start with an underscore, and those whose values are undefined.<p>Note that models also do not store the templates used by diagrams,nor any transient or temporary parts such as <a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a>s, nor any tools,nor any <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a> state, nor any event listeners.These objects and all other properties of diagrams must be established by your app.You can add any number of properties to the <a href="../symbols/Model.html#modelData" class="linkProperty">modelData</a> object, which is serialized and deserializedinto JSON just like any other model data for nodes or links.However <a href="../symbols/Model.html#modelData" class="linkProperty">modelData</a> is associated with the model as a whole and does not depend on the existenceof any node data or link data.
+				Models hold the essential data of a diagram, describing the basic entities and their properties and relationshipswithout specifying the appearance and behavior of the Nodes and Links and Groups that represent them visually.Models tend to hold only relatively simple data, making them easy to persist by serialization as JSON or XML formatted text.<p>Models hold simple data objects, not <a href="../symbols/Part.html" class="linkConstructor">Part</a>s such as <a href="../symbols/Node.html" class="linkConstructor">Node</a>s or <a href="../symbols/Link.html" class="linkConstructor">Link</a>s.Node data is normally represented in a <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> by instances of <a href="../symbols/Node.html" class="linkConstructor">Node</a>,but they could be represented by simple <a href="../symbols/Part.html" class="linkConstructor">Part</a>s or by <a href="../symbols/Group.html" class="linkConstructor">Group</a>s.A Diagram constructs Parts for its <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a>'s data by copying templates.Templates are <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>s of <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s that get some property values from the model data,accessible via the <a href="../symbols/Panel.html#data" class="linkProperty">Panel.data</a> property, using data <a href="../symbols/Binding.html" class="linkConstructor">Binding</a>.See <a href="../../intro/usingModels.html">Using Models</a> and <a href="../../intro/dataBinding.html">Data Binding</a> for an introduction.<p>This Model class only supports holding an array of node dataand interpreting properties on that data to be able to refer to themusing unique key values.To support simple tree-structured graphs, use a <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a>, which inherits from this class.To support links and grouping, use a <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>.<p>Each node data object is assumed to have a unique key value.The <a href="../symbols/Model.html#nodeKeyProperty" class="linkProperty">nodeKeyProperty</a> property names the property on the node data whose valueis the unique key for that node data object.The default value for this property is "key".You should not have a TwoWay data binding on the node key property,because that might cause the property value to be set to a duplicate key value.<p>The key values must be either strings or numbers or undefined.If the key is undefined, or if there are duplicate key values,the model will automatically try to assign a new unique key value.Caution: if your keys are numbers, do not try to use string representations of those numbers as keys.Conversely, if your keys are strings that happen to have number syntax, do not try to use those number values.Sometimes JavaScript will automatically convert from string to number or vice-versa, but sometimes it won't.<p>For example, one can define a graph consisting of just two nodes:<pre class="javascript"> model.nodeDataArray = [   { key: "Alpha" },   { key: "Beta" } ];</pre><p>This model cannot detect the modification of the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a> arrayor the modification of any node data object.If you want to add or remove node data from the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a>,call the <a href="../symbols/Model.html#addNodeData" class="linkMethod">addNodeData</a> or <a href="../symbols/Model.html#removeNodeData" class="linkMethod">removeNodeData</a> methods.<p>If you want to modify a node data object, it depends on whether the property you want to changeis a structural property that the model needs to know about, or whether it is a propertythat is only used for data binding or other application-specific purposes.<p>For the former case, call the appropriate method, such as<a href="../symbols/Model.html#setKeyForNodeData" class="linkMethod">setKeyForNodeData</a>, <a href="../symbols/Model.html#setCategoryForNodeData" class="linkMethod">setCategoryForNodeData</a>,<a href="../symbols/GraphLinksModel.html#setToKeyForLinkData" class="linkMethod">GraphLinksModel.setToKeyForLinkData</a>, or <a href="../symbols/GraphLinksModel.html#setGroupKeyForNodeData" class="linkMethod">GraphLinksModel.setGroupKeyForNodeData</a>.These methods have names that start with "set", "add", "insert", or "remove".<p>For the latter case, when setting an application-specific property, typically for data binding,and to support undo/redo, call <a href="../symbols/Model.html#setDataProperty" class="linkMethod">setDataProperty</a>.<p>The <a href="../symbols/Model.html#copyNodeData" class="linkMethod">copyNodeData</a> method can be called to make a shallow copy of a node data object.However, if some of those property values are Arrays that want not to be shared but to be copied,you can set <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> to true.  This is typically very useful when dealingwith data bound item arrays.Furthermore if the items in those copied Arrays are in fact Objects that need to be copied,you can also set <a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a> to true, causing a copied Array to refer tonewly shallow-copied objects of the original array.<p>Each model comes with its own <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a> that is initially not enabled.You will need to set <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">UndoManager.isEnabled</a> to true in order for theUndoManager to record model changes and for your users to perform undo and redo.<p>You can temporarily turn off the recording of changes by setting<a href="../symbols/Model.html#skipsUndoManager" class="linkProperty">skipsUndoManager</a> to true.A number of places within the system do that routinely in order to avoid recording temporary changes,so be sure to remember the original value beforehand and restore it afterwards.<p>One normally saves a diagram by just saving its model.If you can use JSON-formatted text, this is easy to do -- just call <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a>to get the string representation of the model, and save that string.Load the diagram by replacing the <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a> with one created by callingthe static function <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a>:<pre class="javascript">  myDiagram.model = go.Model.fromJson(loadedString);</pre>Note that JSON and other textual data formats cannot faithfully store all JavaScript functions.<a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a> and <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a> do not try to save and load functional property values.You should arrange that all such functions, including event handlers, are established by your app.<a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a> and <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a> also cannot handle circular references; any sharing ofreferences will be lost too.They also skip properties that are not enumerable, those whose names start with an underscore, and those whose values are undefined.<p>Note that models also do not store the templates used by diagrams,nor any transient or temporary parts such as <a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a>s, nor any tools,nor any <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a> state, nor any event listeners.These objects and all other properties of diagrams must be established by your app.You can add any number of properties to the <a href="../symbols/Model.html#modelData" class="linkProperty">modelData</a> object, which is serialized and deserializedinto JSON just like any other model data for nodes or links.However <a href="../symbols/Model.html#modelData" class="linkProperty">modelData</a> is associated with the model as a whole and does not depend on the existenceof any node data or link data.
 			</p>
       <span class="hideshowall"><span class="nodetails"><button id="buttonShow">Show Details</button></span><span class="details"><button id="buttonHide">Show Summaries</button></span></span>
 <!-- ============================== constructor summary ==================== -->
@@ -1049,6 +1049,64 @@
 						</tr>
 					</thead>
 					<tbody>
+					
+						<tr id="copiesArrayObjects" >
+							<td class="attributes"><div class="attributes">
+              
+              <span class="light">{boolean}</span></div>
+							</td>
+							<td class="name"><div class="name">
+								copiesArrayObjects
+                
+                    <span class="since" title="since">1.5</span>
+                
+                </div>
+              </td>
+                <td class="description">
+                 <div class="description">Gets or sets whether the default behavior for <a href="../symbols/Model.html#copyNodeData" class="linkMethod">copyNodeData</a> when copying Arrays also copies array items that are Objects.<span class="nodetails" id="xpropcopiesArrayObjects"><a onclick="hst('propcopiesArrayObjects')"> More...</a></span> <span class="details" id="propcopiesArrayObjects">This only covers copying Objects that are items in Arrays that are copied when <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> is true.Copying an Object when this property is true also recursively copies any Arrays that are property values.It also assumes that the object's constructor can be called with no arguments.<p>The default value is false.This property does not affect any behavior when the value of <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> has been set to a function.This property has no effect unless <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> is true.<p>Caution: if you want a copied data object to share some references but not others,you will need to provide your own copying function as <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> rather than settingthis property and <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> to true.<p>Warning: there should not be any cyclical references within the model data.
+              
+							</p><span class="seealso">See also:
+              <ul class="seealsolist">
+							  
+							    <li><a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a></li>
+							
+							    <li><a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a></li>
+							
+              </ul></span>
+						
+            </span> <!-- end summarize -->
+        </div>
+							</td>
+						</tr>
+					
+						<tr id="copiesArrays" >
+							<td class="attributes"><div class="attributes">
+              
+              <span class="light">{boolean}</span></div>
+							</td>
+							<td class="name"><div class="name">
+								copiesArrays
+                
+                    <span class="since" title="since">1.5</span>
+                
+                </div>
+              </td>
+                <td class="description">
+                 <div class="description">Gets or sets whether the default behavior for <a href="../symbols/Model.html#copyNodeData" class="linkMethod">copyNodeData</a> makes copies of property values that are Arrays.<span class="nodetails" id="xpropcopiesArrays"><a onclick="hst('propcopiesArrays')"> More...</a></span> <span class="details" id="propcopiesArrays">This only copies Arrays that are top-level property values in node data objects, not for Arrays that are in nested objects.Copying Arrays will also copy any array items that are Objects when <a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a> is true.<p>The default value is false.It is commonplace to set <a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a> to true when setting this property to true.This property does not affect any behavior when the value of <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> has been set to a function.<p>Caution: if you want a copied data object to share some Arrays but not others,you will need to provide your own copying function as <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> rather than settingthis property to true.<p>Warning: there should not be any cyclical references within the model data.
+              
+							</p><span class="seealso">See also:
+              <ul class="seealsolist">
+							  
+							    <li><a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a></li>
+							
+							    <li><a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a></li>
+							
+              </ul></span>
+						
+            </span> <!-- end summarize -->
+        </div>
+							</td>
+						</tr>
 					
 						<tr id="copyNodeDataFunction" >
 							<td class="attributes"><div class="attributes">
@@ -1418,7 +1476,7 @@
 							      <dt class="heading">Parameters:</dt>
 							      
 								      <dt>
-									      <span class="light fixedFont">{<a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a>|Array}</span> <b>coll</b>
+									      <span class="light fixedFont">{Iterable.<Object>|Array.<Object>}</span> <b>coll</b>
 									      
 								      </dt>
 								      <dd>a collection of node data objects to add to the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a></dd>
@@ -1542,7 +1600,7 @@
                 </div>
                 </td>
                 <td class="description">
-								<div class="description">Make a copy of a node data object.<span class="nodetails" id="xmethcopyNodeData"><a onclick="hst('methcopyNodeData')"> More...</a></span> <span class="details" id="methcopyNodeData">This uses the value of <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> to actually perform the copy,unless it is null, in which case this method just makes a shallow copy of the JavaScript Object.<p>This does not modify the model -- the returned data object is not added to this model.This assumes that the data's constructor can be called with no arguments.
+								<div class="description">Make a copy of a node data object.<span class="nodetails" id="xmethcopyNodeData"><a onclick="hst('methcopyNodeData')"> More...</a></span> <span class="details" id="methcopyNodeData">This uses the value of <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> to actually perform the copy, unless that property is null.When it is null the default behavior is to just make a shallow copy of the JavaScript Object.<p>However when <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> is true, this will make a copy of property values that are JavaScript Arrays.This is useful when you do not want the Arrays to be shared between the node data objects.Note that if you want to copy some property values that are Arrays but not other properties that are Arrays,you cannot use <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> but must implement your own <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a>.<p>In addition when <a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a> is true, if items in the Array being copied are JavaScript Objects,those objects are copied, recursively.This is useful when the items in copied Arrays are themselves objects that need to be copied.Note that if you want to share references to some but not all of the objects in copied Arrays you cannot use<a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a> but must implement your own <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a>.<p>This does not modify the model -- the returned data object is not added to this model.This assumes that the data's constructor can be called with no arguments.<p>Models should not have any references to Diagrams or GraphObjects or Tools or Layouts or other objectsthat form a <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>.<p>Warning: there should not be any cyclical references within the model data, unless youeither do not turn on <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a> or <a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a> or unless you havesupplied your own <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a> that can handle cyclical references.
                  
 							    </p><span class="seealso">See also:
                   <ul class="seealsolist">
@@ -1604,7 +1662,7 @@
 							      <dt class="heading">Parameters:</dt>
 							      
 								      <dt>
-									      <span class="light fixedFont">{*}</span> <b>key</b>
+									      <span class="light fixedFont">{(string|number|undefined)}</span> <b>key</b>
 									      
 								      </dt>
 								      <dd>a string or a number.</dd>
@@ -1636,7 +1694,7 @@
                 </div>
                 </td>
                 <td class="description">
-								<div class="description">This static method parses a string in JSON format and constructs, initializes, and returns a model.<span class="nodetails" id="xmethfromJson"><a onclick="hst('methfromJson')"> More...</a></span> <span class="details" id="methfromJson"><p>Note that properties with values that are functions are not written out by <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a>,so reading in such a model will require constructing such a model, initializing its functional property values,and explicitly passing it in as the second argument.
+								<div class="description">This static function parses a string in JSON format and constructs, initializes, and returns a model.<span class="nodetails" id="xmethfromJson"><a onclick="hst('methfromJson')"> More...</a></span> <span class="details" id="methfromJson"><p>Note that properties with values that are functions are not written out by <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a>,so reading in such a model will require constructing such a model, initializing its functional property values,and explicitly passing it in as the second argument.
                  
 						      
 							      <dl class="detailList">
@@ -1720,7 +1778,7 @@
 						<tr id="getKeyForNodeData">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{number|string|undefined}</span></div>
+              <span class="light">{string|number|undefined}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1758,7 +1816,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{number|string|undefined}</span> </dt>
+								      <dt><span class="light fixedFont">{string|number|undefined}</span> </dt>
 							      
 							      </dl>
 						      
@@ -2110,7 +2168,7 @@
 							      <dt class="heading">Parameters:</dt>
 							      
 								      <dt>
-									      <span class="light fixedFont">{<a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a>|Array}</span> <b>coll</b>
+									      <span class="light fixedFont">{Iterable.<Object>|Array.<Object>}</span> <b>coll</b>
 									      
 								      </dt>
 								      <dd>a collection of node data objects to remove from the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a></dd>
@@ -2278,7 +2336,7 @@
 								      <dd>a JavaScript object representing a node, group, or non-link.</dd>
 							      
 								      <dt>
-									      <span class="light fixedFont">{number|string|undefined}</span> <b>key</b>
+									      <span class="light fixedFont">{string|number}</span> <b>key</b>
 									      
 								      </dt>
 								      <dd></dd>

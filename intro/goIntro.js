@@ -46,7 +46,7 @@ function goIntro() {
   // add standard header and footer
   var hdr = document.createElement("div");
   hdr.className = "header";
-  hdr.innerHTML = "GoJS&reg; Diagramming Components for HTML Canvas by Northwoods Software&reg;";
+  hdr.innerHTML = "GoJS&reg; Diagramming Components for JavaScript and HTML by Northwoods Software&reg;";
   document.body.insertBefore(hdr, document.body.firstChild);
   var ftr = document.createElement("div");
   ftr.className = "footer";

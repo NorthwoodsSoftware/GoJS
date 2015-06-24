@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Sankey Diagram</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function SankeyLayout() {
+    go.LayeredDigraphLayout.call(this);
+  }
+  go.Diagram.inherit(SankeyLayout, go.LayeredDigraphLayout);
+
+  // Before creating the LayeredDigraphNetwork of vertexes and edges,
+  // determine the desired height of each node (Shape).
+  /** @override */
+  SankeyLayout.prototype.createNetwork = function() {
+    this.diagram.nodes.each(function(node) {
+      var height = getAutoHeightForNode(node);
+      var font = "bold " + Math.max(12, Math.round(height / 8)) + "pt Segoe UI, sans-serif"
+      var shape = node.findObject("SHAPE");
+      var text = node.findObject("TEXT");
+      var ltext = node.findObject("LTEXT");
+      if (shape) shape.height = height;
+      if (text) text.font = font;
+      if (ltext) ltext.font = font;
+    });
+    return go.LayeredDigraphLayout.prototype.createNetwork.call(this);
+  };
+
+  function getAutoHeightForNode(node) {
+    var heightIn = 0;
+    var it = node.findLinksInto()
+    while (it.next()) {
+      var link = it.value;
+      heightIn += link.computeThickness();
+    }
+    var heightOut = 0;
+    var it = node.findLinksOutOf()
+    while (it.next()) {
+      var link = it.value;
+      heightOut += link.computeThickness();
+    }
+    var h = Math.max(heightIn, heightOut);
+    if (h < 10) h = 10;
+    return h;
+  };
+
+  // treat dummy vertexes as having the thickness of the link that they are in
+  /** @override */
+  SankeyLayout.prototype.nodeMinColumnSpace = function(v, topleft) {
+    if (v.node === null) {
+      if (v.edgesCount >= 1) {
+        var max = 1;
+        var it = v.edges;
+        while (it.next()) {
+          var edge = it.value;
+          if (edge.link != null) {
+            var t = edge.link.computeThickness();
+            if (t > max) max = t;
+            break;
+          }
+        }
+        return Math.ceil(max/this.columnSpacing);
+      }
+      return 1;
+    }
+    return go.LayeredDigraphLayout.prototype.nodeMinColumnSpace.call(this, v, topleft);
+  }
+
+  /** @override */
+  SankeyLayout.prototype.assignLayers = function() {
+    go.LayeredDigraphLayout.prototype.assignLayers.call(this);
+    var maxlayer = this.maxLayer;
+    // now make sure every vertex with no outputs is maxlayer
+    for (var it = this.network.vertexes.iterator; it.next() ;) {
+      var v = it.value;
+      var node = v.node;
+      var key = node.key;
+      if (v.destinationVertexes.count == 0) {
+        v.layer = 0;
+      }
+      if (v.sourceVertexes.count == 0) {
+        v.layer = maxlayer;
+      }
+    }
+    // from now on, the LayeredDigraphLayout will think that the Node is bigger than it really is
+    // (other than the ones that are the widest or tallest in their respective layer).
+  };
+
+  /** @override */
+  SankeyLayout.prototype.commitLayout = function() {
+    go.LayeredDigraphLayout.prototype.commitLayout.call(this);
+    for (var it = this.network.edges.iterator; it.next();) {
+      var link = it.value.link;
+      if (link && link.curve === go.Link.Bezier) {
+        // depend on Link.adjusting === go.Link.End to fix up the end points of the links
+        // without losing the intermediate points of the route as determined by LayeredDigraphLayout
+        link.invalidateRoute();
+      }
+    }
+  };
+  // end of SankeyLayout
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram", // the ID of the DIV HTML element
+        {
+          initialAutoScale: go.Diagram.UniformToFill,
+          "animationManager.isEnabled": false,
+          layout: $(SankeyLayout,
+                    {
+                      setsPortSpots: false,  // to allow the "Side" spots on the nodes to take effect
+                      direction: 0,  // rightwards
+                      layeringOption: go.LayeredDigraphLayout.LayerOptimalLinkLength,
+                      packOption: go.LayeredDigraphLayout.PackStraighten || go.LayeredDigraphLayout.PackMedian,
+                      layerSpacing: 150,  // lots of space between layers, for nicer thick links
+                      columnSpacing: 1
+                    })
+        });
+
+    var colors = ["#AC193D/#BF1E4B", "#2672EC/#2E8DEF", "#8C0095/#A700AE", "#5133AB/#643EBF", "#008299/#00A0B1", "#D24726/#DC572E", "#008A00/#00A600", "#094AB2/#0A5BC4"];
+
+    // this function provides a common style for the TextBlocks
+    function textStyle() {
+      return { font: "bold 12pt Segoe UI, sans-serif", stroke: "black", margin: 5 };
+    }
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, go.Panel.Horizontal,
+        {
+          locationObjectName: "SHAPE",
+          locationSpot: go.Spot.MiddleLeft,
+          portSpreading: go.Node.SpreadingPacked  // rather than the default go.Node.SpreadingEvenly
+        },
+        $(go.TextBlock, textStyle(),
+          { name: "LTEXT" },
+          new go.Binding("text", "ltext")),
+        $(go.Shape,
+          {
+            name: "SHAPE",
+            figure: "Rectangle",
+            fill: "#2E8DEF",  // default fill color
+            stroke: null,
+            strokeWidth: 0,
+            portId: "",
+            fromSpot: go.Spot.RightSide,
+            toSpot: go.Spot.LeftSide,
+            height: 50,
+            width: 20
+          },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock, textStyle(),
+          { name: "TEXT" },
+          new go.Binding("text"))
+      );
+
+    function getAutoLinkColor(data) {
+      var nodedata = myDiagram.model.findNodeDataForKey(data.from);
+      var hex = nodedata.color;
+      if (hex.charAt(0) == '#') {
+        var rgb = parseInt(hex.substr(1, 6), 16);
+        var r = rgb >> 16;
+        var g = rgb >> 8 & 0xFF;
+        var b = rgb & 0xFF;
+        var alpha = 0.4;
+        if (data.width <= 2) alpha = 1;
+        var rgba = "rgba(" + r + "," + g + "," + b + ", " + alpha + ")";
+        return rgba;
+      }
+      return "rgba(173, 173, 173, 0.25)";
+    }
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link, go.Link.Bezier,
+        {
+          layerName: "Background",
+          fromEndSegmentLength: 150, toEndSegmentLength: 150,
+          adjusting: go.Link.End
+        },
+        $(go.Shape, { strokeWidth: 4, stroke: "rgba(173, 173, 173, 0.25)" },
+         new go.Binding("stroke", "", getAutoLinkColor),
+         new go.Binding("strokeWidth", "width"))
+      );
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+  }
+
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="xbackground-color: #696969; border: solid 1px black; width: 99%; height: 850px"></div>
+  <p>
+    A Sankey diagram is a type of flow diagram where the Link thickness is proportional to the flow quantity.
+  </p>
+  <div>
+    <div>
+      <button onclick="load()">Read</button>
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:250px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+{"key":"Coal reserves", "text":"Coal reserves", "color":"#9d75c2"},
+{"key":"Coal imports", "text":"Coal imports", "color":"#9d75c2"},
+{"key":"Oil reserves", "text":"Oil\nreserves", "color":"#9d75c2"},
+{"key":"Oil imports", "text":"Oil imports", "color":"#9d75c2"},
+{"key":"Gas reserves", "text":"Gas reserves", "color":"#a1e194"},
+{"key":"Gas imports", "text":"Gas imports", "color":"#a1e194"},
+{"key":"UK land based bioenergy", "text":"UK land based bioenergy", "color":"#f6bcd5"},
+{"key":"Marine algae", "text":"Marine algae", "color":"#681313"},
+{"key":"Agricultural 'waste'", "text":"Agricultural 'waste'", "color":"#3483ba"},
+{"key":"Other waste", "text":"Other waste", "color":"#c9b7d8"},
+{"key":"Biomass imports", "text":"Biomass imports", "color":"#fea19f"},
+{"key":"Biofuel imports", "text":"Biofuel imports", "color":"#d93c3c"},
+{"key":"Coal", "text":"Coal", "color":"#9d75c2"},
+{"key":"Oil", "text":"Oil", "color":"#9d75c2"},
+{"key":"Natural gas", "text":"Natural\ngas", "color":"#a6dce6"},
+{"key":"Solar", "text":"Solar", "color":"#c9a59d"},
+{"key":"Solar PV", "text":"Solar PV", "color":"#c9a59d"},
+{"key":"Bio-conversion", "text":"Bio-conversion", "color":"#b5cbe9"},
+{"key":"Solid", "text":"Solid", "color":"#40a840"},
+{"key":"Liquid", "text":"Liquid", "color":"#fe8b25"},
+{"key":"Gas", "text":"Gas", "color":"#a1e194"},
+{"key":"Nuclear", "text":"Nuclear", "color":"#fea19f"},
+{"key":"Thermal generation", "text":"Thermal\ngeneration", "color":"#3483ba"},
+{"key":"CHP", "text":"CHP", "color":"yellow"},
+{"key":"Electricity imports", "text":"Electricity imports", "color":"yellow"},
+{"key":"Wind", "text":"Wind", "color":"#cbcbcb"},
+{"key":"Tidal", "text":"Tidal", "color":"#6f3a5f"},
+{"key":"Wave", "text":"Wave", "color":"#8b8b8b"},
+{"key":"Geothermal", "text":"Geothermal", "color":"#556171"},
+{"key":"Hydro", "text":"Hydro", "color":"#7c3e06"},
+{"key":"Electricity grid", "text":"Electricity grid", "color":"#e483c7"},
+{"key":"H2 conversion", "text":"H2 conversion", "color":"#868686"},
+{"key":"Solar Thermal", "text":"Solar Thermal", "color":"#c9a59d"},
+{"key":"H2", "text":"H2", "color":"#868686"},
+{"key":"Pumped heat", "text":"Pumped heat", "color":"#96665c"},
+{"key":"District heating", "text":"District heating", "color":"#c9b7d8"},
+{"key":"Losses", "ltext":"Losses", "color":"#fec184"},
+{"key":"Over generation / exports", "ltext":"Over generation / exports", "color":"#f6bcd5"},
+{"key":"Heating and cooling - homes", "ltext":"Heating and cooling - homes", "color":"#c7a39b"},
+{"key":"Road transport", "ltext":"Road transport", "color":"#cbcbcb"},
+{"key":"Heating and cooling - commercial", "ltext":"Heating and cooling - commercial", "color":"#c9a59d"},
+{"key":"Industry", "ltext":"Industry", "color":"#96665c"},
+{"key":"Lighting & appliances - homes", "ltext":"Lighting & appliances - homes", "color":"#2dc3d2"},
+{"key":"Lighting & appliances - commercial", "ltext":"Lighting & appliances - commercial", "color":"#2dc3d2"},
+{"key":"Agriculture", "ltext":"Agriculture", "color":"#5c5c10"},
+{"key":"Rail transport", "ltext":"Rail transport", "color":"#6b6b45"},
+{"key":"Domestic aviation", "ltext":"Domestic aviation", "color":"#40a840"},
+{"key":"National navigation", "ltext":"National navigation", "color":"#a1e194"},
+{"key":"International aviation", "ltext":"International aviation", "color":"#fec184"},
+{"key":"International shipping", "ltext":"International shipping", "color":"#fec184"},
+{"key":"Geosequestration", "ltext":"Geosequestration", "color":"#fec184"}
+    ], "linkDataArray": [
+{"from":"Coal reserves", "to":"Coal", "width":31},
+{"from":"Coal imports", "to":"Coal", "width":86},
+{"from":"Oil reserves", "to":"Oil", "width":244},
+{"from":"Oil imports", "to":"Oil", "width":1},
+{"from":"Gas reserves", "to":"Natural gas", "width":182},
+{"from":"Gas imports", "to":"Natural gas", "width":61},
+{"from":"UK land based bioenergy", "to":"Bio-conversion", "width":1},
+{"from":"Marine algae", "to":"Bio-conversion", "width":1},
+{"from":"Agricultural 'waste'", "to":"Bio-conversion", "width":1},
+{"from":"Other waste", "to":"Bio-conversion", "width":8},
+{"from":"Other waste", "to":"Solid", "width":1},
+{"from":"Biomass imports", "to":"Solid", "width":1},
+{"from":"Biofuel imports", "to":"Liquid", "width":1},
+{"from":"Coal", "to":"Solid", "width":117},
+{"from":"Oil", "to":"Liquid", "width":244},
+{"from":"Natural gas", "to":"Gas", "width":244},
+{"from":"Solar", "to":"Solar PV", "width":1},
+{"from":"Solar PV", "to":"Electricity grid", "width":1},
+{"from":"Solar", "to":"Solar Thermal", "width":1},
+{"from":"Bio-conversion", "to":"Solid", "width":3},
+{"from":"Bio-conversion", "to":"Liquid", "width":1},
+{"from":"Bio-conversion", "to":"Gas", "width":5},
+{"from":"Bio-conversion", "to":"Losses", "width":1},
+{"from":"Solid", "to":"Over generation / exports", "width":1},
+{"from":"Liquid", "to":"Over generation / exports", "width":18},
+{"from":"Gas", "to":"Over generation / exports", "width":1},
+{"from":"Solid", "to":"Thermal generation", "width":106},
+{"from":"Liquid", "to":"Thermal generation", "width":2},
+{"from":"Gas", "to":"Thermal generation", "width":87},
+{"from":"Nuclear", "to":"Thermal generation", "width":41},
+{"from":"Thermal generation", "to":"District heating", "width":2},
+{"from":"Thermal generation", "to":"Electricity grid", "width":92},
+{"from":"Thermal generation", "to":"Losses", "width":142},
+{"from":"Solid", "to":"CHP", "width":1},
+{"from":"Liquid", "to":"CHP", "width":1},
+{"from":"Gas", "to":"CHP", "width":1},
+{"from":"CHP", "to":"Electricity grid", "width":1},
+{"from":"CHP", "to":"Losses", "width":1},
+{"from":"Electricity imports", "to":"Electricity grid", "width":1},
+{"from":"Wind", "to":"Electricity grid", "width":1},
+{"from":"Tidal", "to":"Electricity grid", "width":1},
+{"from":"Wave", "to":"Electricity grid", "width":1},
+{"from":"Geothermal", "to":"Electricity grid", "width":1},
+{"from":"Hydro", "to":"Electricity grid", "width":1},
+{"from":"Electricity grid", "to":"H2 conversion", "width":1},
+{"from":"Electricity grid", "to":"Over generation / exports", "width":1},
+{"from":"Electricity grid", "to":"Losses", "width":6},
+{"from":"Gas", "to":"H2 conversion", "width":1},
+{"from":"H2 conversion", "to":"H2", "width":1},
+{"from":"H2 conversion", "to":"Losses", "width":1},
+{"from":"Solar Thermal", "to":"Heating and cooling - homes", "width":1},
+{"from":"H2", "to":"Road transport", "width":1},
+{"from":"Pumped heat", "to":"Heating and cooling - homes", "width":1},
+{"from":"Pumped heat", "to":"Heating and cooling - commercial", "width":1},
+{"from":"CHP", "to":"Heating and cooling - homes", "width":1},
+{"from":"CHP", "to":"Heating and cooling - commercial", "width":1},
+{"from":"District heating", "to":"Heating and cooling - homes", "width":1},
+{"from":"District heating", "to":"Heating and cooling - commercial", "width":1},
+{"from":"District heating", "to":"Industry", "width":2},
+{"from":"Electricity grid", "to":"Heating and cooling - homes", "width":7},
+{"from":"Solid", "to":"Heating and cooling - homes", "width":3},
+{"from":"Liquid", "to":"Heating and cooling - homes", "width":3},
+{"from":"Gas", "to":"Heating and cooling - homes", "width":81},
+{"from":"Electricity grid", "to":"Heating and cooling - commercial", "width":7},
+{"from":"Solid", "to":"Heating and cooling - commercial", "width":1},
+{"from":"Liquid", "to":"Heating and cooling - commercial", "width":2},
+{"from":"Gas", "to":"Heating and cooling - commercial", "width":19},
+{"from":"Electricity grid", "to":"Lighting & appliances - homes", "width":21},
+{"from":"Gas", "to":"Lighting & appliances - homes", "width":2},
+{"from":"Electricity grid", "to":"Lighting & appliances - commercial", "width":18},
+{"from":"Gas", "to":"Lighting & appliances - commercial", "width":2},
+{"from":"Electricity grid", "to":"Industry", "width":30},
+{"from":"Solid", "to":"Industry", "width":13},
+{"from":"Liquid", "to":"Industry", "width":34},
+{"from":"Gas", "to":"Industry", "width":54},
+{"from":"Electricity grid", "to":"Agriculture", "width":1},
+{"from":"Solid", "to":"Agriculture", "width":1},
+{"from":"Liquid", "to":"Agriculture", "width":1},
+{"from":"Gas", "to":"Agriculture", "width":1},
+{"from":"Electricity grid", "to":"Road transport", "width":1},
+{"from":"Liquid", "to":"Road transport", "width":122},
+{"from":"Electricity grid", "to":"Rail transport", "width":2},
+{"from":"Liquid", "to":"Rail transport", "width":1},
+{"from":"Liquid", "to":"Domestic aviation", "width":2},
+{"from":"Liquid", "to":"National navigation", "width":4},
+{"from":"Liquid", "to":"International aviation", "width":38},
+{"from":"Liquid", "to":"International shipping", "width":13},
+{"from":"Electricity grid", "to":"Geosequestration", "width":1},
+{"from":"Gas", "to":"Losses", "width":2}
+ ]}
+    </textarea>
+  </div>
+  This sample demonstrates one way of generating a Sankey or flow diagram.
+  The data was derived from http://tamc.github.io/Sankey/.
+</div>
+</body>
+</html>

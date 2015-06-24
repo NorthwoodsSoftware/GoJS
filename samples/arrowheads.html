@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>GoJS Arrowheads</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -32,7 +33,7 @@
         });
 
     // construct a shared radial gradient brush
-    var radBrush = $(go.Brush, go.Brush.Radial, { 0: "#969696", 1: "#666666" });
+    var radBrush = $(go.Brush, "Radial", { 0: "#969696", 1: "#666666" });
 
     // these are the nodes that are in a circle
     myDiagram.nodeTemplate =
@@ -75,7 +76,8 @@
       $(go.Link,  // the whole link panel
         { routing: go.Link.Normal },
         $(go.Shape,  // the link shape
-          { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
+          // the first element is assumed to be main element: as if isPanelMain were true
+          { stroke: "gray", strokeWidth: 2 }),
         $(go.Shape,  // the "from" arrowhead
           new go.Binding("fromArrow", "fromArrow"),
           { scale: 2, fill: "red" }),
@@ -94,12 +96,7 @@
       );
 
     // collect all of the predefined arrowhead names
-    var arrowheads = [];
-    for (var a in go.Shape.ArrowheadGeometries) {
-      // ignore all-lower-case arrowhead names
-      if (a.toLowerCase() === a) continue;
-      arrowheads.push(a);
-    }
+    var arrowheads = go.Shape.getArrowheadGeometries().toKeySet().toArray();
     if (arrowheads.length % 2 === 1) arrowheads.push("");  // make sure there's an even number
 
     // create all of the link data, two arrowheads per link

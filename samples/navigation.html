@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Navigation of Graphs</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -22,7 +23,9 @@
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           new go.Binding("location", "loc"),
-          { locationSpot: go.Spot.Center },
+          {   locationSpot: go.Spot.Center,
+              toEndSegmentLength: 30, fromEndSegmentLength: 30
+          },
           $(go.Shape, "Rectangle",
             {
               name: "OBJSHAPE",
@@ -58,7 +61,7 @@
             toShortLength: 2
           },
           $(go.Shape,  //  the link shape
-            { name: "OBJSHAPE", isPanelMain: true }),
+            { name: "OBJSHAPE" }),
           $(go.Shape,  //  the arrowhead
             { name: "ARWSHAPE", toArrow: "Standard" }),
           {
@@ -81,7 +84,8 @@
                   { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
                 $(go.Placeholder)
               ),
-            toSpot: go.Spot.TopSide // links coming into groups come from top
+            toSpot: go.Spot.TopSide, // links coming into groups come from top
+            toEndSegmentLength: 30, fromEndSegmentLength: 30
           },
           $(go.Panel, "Auto",
             $(go.Shape, "Rectangle",
@@ -145,6 +149,8 @@
       // whenever selection changes, run updateHighlights
       myDiagram.addDiagramListener("ChangedSelection",
                                    function() { updateHighlights(getRadioButton()); } );
+
+      myDiagram.select(myDiagram.findNodeForKey('C'));
     }
 
     // This highlights all graph objects that should be highlighted
@@ -280,23 +286,18 @@
     // highlights the group containing this object, specific method for links
     // returns the containing group of x
     function containing(x, i) {
-      if (x instanceof go.Link) return containingGroupForLinks(x, i);
-      if (x.containingGroup !== null) x.containingGroup.highlight = i;
-      return x.containingGroup;
+      var container = x.containingGroup;
+      if (container !== null) container.highlight = i;
+      return container;
     }
 
     // container is the group that contains this node and
     // will be the parameter x for the next call of this function.
     // Calling containing(x,i) highlights each group the appropriate color
     function containingAll(x, i) {
-      var container;
-      if (x instanceof go.Node) {
-        container = x.containingGroup;
-        containing(x, i);
-      } else {
-        container = containingGroupForLinks(x, i);
-      }
-      if (container !== null) containingAll(container, i+1);
+      containing(x, i);
+      var container = x.containingGroup;
+      if (container !== null) containingAll(container, i + 1);
     }
 
     // if the Node"s containingGroup is x, highlight it
@@ -304,7 +305,7 @@
       var childLst = new go.List("string");
       if (x instanceof go.Group) {
         myDiagram.nodes.each(function(node) {
-          if (node.containingGroup !== null && node.containingGroup === x) {
+          if (node.containingGroup === x) {
             node.highlight = i;
             childLst.add(node.data.key);
           }
@@ -317,7 +318,7 @@
     function allMemberNodes(x, i) {
       if (x instanceof go.Group) {
         myDiagram.nodes.each(function(node) {
-          if (node.containingGroup !== null && node.containingGroup === x) {
+          if (node.containingGroup === x) {
             node.highlight = i;
             allMemberNodes(node, i+1);
           }
@@ -329,7 +330,7 @@
     function childLinks(x, i) {
       var childLst = new go.List(go.Link);
       myDiagram.links.each(function(link) {
-        if (containingGroupForLinks(link, 0) === x) {
+        if (link.containingGroup === x) {
           link.highlight = i;
           childLst.add(link);
         }
@@ -345,26 +346,6 @@
           allMemberLinks(node, i+1);
         }
       });
-    }
-
-    // Return the Group containing this Link and highlight it according to i.
-    // The containing Group is the lowest level Group containing both ends of the Link.
-    function containingGroupForLinks(x, i) {
-      if (x.fromNode.containingGroup === x.toNode) {
-        x.toNode.highlight = i; return x.toNode;
-      } else if (x.toNode.containingGroup === x.fromNode) {
-        x.fromNode.highlight = i; return x.fromNode;
-      }
-      var frG = x.fromNode.containingGroup;
-      while (frG !== null) {
-        var toG = x.toNode.containingGroup;
-        while (toG !== null) {
-          if (frG === toG) { toG.highlight = i; return toG; }
-          toG = toG.containingGroup;
-        }
-        frG = frG.containingGroup;
-      }
-      return null;
     }
 
     // perform the actual highlighting
@@ -453,10 +434,8 @@
           // if it"s a link, display its to and from nodes
         text += "Link: " + x.data.from + " --> " + x.data.to +
           "\nNode To: " + x.data.to + "\nNode From: " + x.data.from;
-        var grp = containingGroupForLinks(x, 0); // and containing group, if it has one
-        if (grp !== null) {
-          text += "\nContaining SubGraph: " + grp.data.key;
-        }
+        var grp = containing(x, 0); // and containing group, if it has one
+        if (grp !== null) text += "\nContaining SubGraph: " + grp.data.key;
       }
       return text;
     }
@@ -472,20 +451,20 @@
       <div id="controls" style="border: solid 1px black; height: 560px;">
         <div id="buttons" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Related Parts Highlighted</b> <br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="None" checked="checked">Unhighlight All</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links in">Links Into</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links out">Links Out Of</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links all">Links Connected</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes in">Nodes Into</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes out">Nodes Out Of</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes connect">Nodes Connected</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes reach">Nodes Reachable</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Group">Containing Group (Parent)</input><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Groups all">Containing Groups (All)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes member">Member Nodes (Children)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes members all">Member Nodes (All)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links member">Member Links (Children)</label><br />
-          <input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links members all">Member Links (All)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="None" checked="checked">Unhighlight All</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links in">Links Into</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links out">Links Out Of</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links all">Links Connected</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes in">Nodes Into</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes out">Nodes Out Of</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes connect">Nodes Connected</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes reach">Nodes Reachable</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Group">Containing Group (Parent)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Groups all">Containing Groups (All)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes member">Member Nodes (Children)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes members all">Member Nodes (All)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links member">Member Links (Children)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links members all">Member Links (All)</label><br />
         </div>
         <div id="colorKey" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Relationship Colors</b>

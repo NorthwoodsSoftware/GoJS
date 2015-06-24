@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Virtualized Graph with ForceDirectedLayout</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -301,6 +302,8 @@
     // end of virtualized Diagram
 
 
+    // start of VirtualizedForceDirected[Layout/Network] classes
+
     // Here we try to replace the dependence of ForceDirectedLayout on Nodes
     // with depending only on the data in the GraphLinksModel.
     function VirtualizedForceDirectedLayout() {
@@ -310,17 +313,20 @@
     }
     go.Diagram.inherit(VirtualizedForceDirectedLayout, go.ForceDirectedLayout);
 
+    /** @override */
     VirtualizedForceDirectedLayout.prototype.createNetwork = function() {
       return new VirtualizedForceDirectedNetwork();  // defined below
     };
 
     // ignore the argument, an (implicit) collection of Parts
+    /** @override */
     VirtualizedForceDirectedLayout.prototype.makeNetwork = function(coll) {
       var net = this.createNetwork();
       net.addData(this.model);  // use the model data, not any actual Nodes and Links
       return net;
     };
 
+    /** @override */
     VirtualizedForceDirectedLayout.prototype.commitLayout = function() {
       go.ForceDirectedLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
@@ -330,21 +336,13 @@
         node.updateTargetBindings();
       });
     };
+    // end VirtualizedForceDirectedLayout class
 
 
-    // Use Virtualized versions of ForceDirectedVertex and ForceDirectedEdge.
     function VirtualizedForceDirectedNetwork() {
       go.ForceDirectedNetwork.call(this);
     }
     go.Diagram.inherit(VirtualizedForceDirectedNetwork, go.ForceDirectedNetwork);
-
-    VirtualizedForceDirectedNetwork.prototype.createVertex = function() {
-      return new VirtualizedForceDirectedVertex();  // defined below
-    };
-
-    VirtualizedForceDirectedNetwork.prototype.createEdge = function() {
-      return new VirtualizedForceDirectedEdge();  // defined below
-    };
 
     VirtualizedForceDirectedNetwork.prototype.addData = function(model) {
       if (model instanceof go.GraphLinksModel) {
@@ -354,7 +352,7 @@
         for (var i = 0; i < ndata.length; i++) {
           var d = ndata[i];
           var v = this.createVertex();
-          v.data = d;
+          v.data = d;  // associate this Vertex with data, not a Node
           dataVertexMap.add(d.k, v);
           this.addVertex(v);
         }
@@ -368,7 +366,7 @@
           if (from === null || to === null) continue;  // skip
           // create and add VirtualizedForceDirectedEdge
           var e = this.createEdge();
-          e.data = d;
+          e.data = d;  // associate this Edge with data, not a Link
           e.fromVertex = from;
           e.toVertex = to;
           this.addEdge(e);
@@ -378,43 +376,11 @@
       }
     };
 
+    /** @override */
     VirtualizedForceDirectedNetwork.prototype.deleteArtificialVertexes = function() { };
+    // end VirtualizedForceDirectedNetwork class
 
-
-    // Associate with node data rather than with a Node.
-    function VirtualizedForceDirectedVertex() {
-      go.ForceDirectedVertex.call(this);
-      this._data = null;
-    }
-    go.Diagram.inherit(VirtualizedForceDirectedVertex, go.ForceDirectedVertex);
-
-    Object.defineProperty(VirtualizedForceDirectedVertex.prototype, "data", {
-      get: function() { return this._data; },
-      set: function(val) {
-        this._data = val;
-        if (val !== null) {
-          this.focus = new go.Point(val.bounds.width/2, val.bounds.height/2);
-          this.bounds = val.bounds;
-        }
-      }
-    });
-
-    VirtualizedForceDirectedVertex.prototype.commit = function() {
-      if (this._data !== null) {
-        this._data.bounds.set(this.bounds);
-      }
-    };
-
-
-    // Associate with link data rather than with a Link.
-    // NOTE: This does not support custom routing of links that is normally done by ForceDirectedLayout.
-    function VirtualizedForceDirectedEdge() {
-      go.ForceDirectedEdge.call(this);
-      this.data = null;
-    }
-    go.Diagram.inherit(VirtualizedForceDirectedEdge, go.ForceDirectedEdge);
-
-    // end of VirtualizedForceDirected[Layout/Network/Vertex/Edge]
+    // end of VirtualizedForceDirected[Layout/Network] classes
   </script>
 </head>
 <body onload="init()">

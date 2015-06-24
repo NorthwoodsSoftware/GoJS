@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Sparkline Charts</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        {
+          initialContentAlignment: go.Spot.Center,
+          layout: $(go.TreeLayout)
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Vertical",
+        {
+          selectionAdorned: false,
+          resizable: true, resizeObjectName: "SHAPE",
+          background: "white"
+        },
+        $(go.Shape,
+          {
+            name: "SHAPE",
+            geometryStretch: go.GraphObject.Fill,
+            minSize: new go.Size(30, 10),
+            maxSize: new go.Size(300, 20)
+          },
+          new go.Binding("geometry", "d", convertNumberArrayToGeometry)),
+        $(go.TextBlock,
+          new go.Binding("text", "key"))
+      );
+
+    myDiagram.model = new go.GraphLinksModel([
+      { key: "Alpha", d: [7, 10, 23, 4, 17, 14, 7, 12, 18] },
+      { key: "Beta", d: [5, 4, 3, 2, 1, 2, 3, 4, 5] },
+      { key: "Gamma", d: [3] }
+    ], [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" }
+    ]);
+  }
+
+  function convertNumberArrayToGeometry(a) {
+    var len = a.length;
+    var max = -Infinity;
+    for (var i = 0; i < len; i++) {
+      var n = a[i];
+      if (n > max) max = n;
+    }
+    if (len < 2 || max === -Infinity) { len = 2; max = 0; a = [0, 0]; }
+    var fig = new go.PathFigure(0, max-a[0], false);
+    for (var i = 1; i < len; i++) {
+      fig.add(new go.PathSegment(go.PathSegment.Line, i, max-a[i]));
+    }
+    return new go.Geometry().add(fig);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+</div>
+</body>
+</html>

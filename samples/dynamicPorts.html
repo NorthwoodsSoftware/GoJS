@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Dynamic Ports</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -23,7 +24,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -75,10 +76,10 @@
           { row: 1, column: 1, name: "BODY",
             stretch: go.GraphObject.Fill },
           $(go.Shape, "Rectangle",
-            { fill: "#BFBFBF",
+            { fill: "#AC193D", stroke: null, strokeWidth: 0,
               minSize: new go.Size(56, 56) }),
           $(go.TextBlock,
-            { margin: 10, textAlign: "center" },
+            { margin: 10, textAlign: "center", font: "14px  Segoe UI,sans-serif", stroke: "white" },
             new go.Binding("text", "key"))
         ),  // end Auto Panel body
 
@@ -95,7 +96,7 @@
                   contextMenu: portMenu },
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
-                  { stroke: null,
+                  { stroke: null, strokeWidth: 0,
                     desiredSize: portSize,
                     margin: new go.Margin(1,0) },
                   new go.Binding("fill", "portColor"))
@@ -116,7 +117,7 @@
                   contextMenu: portMenu },
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
-                  { stroke: null,
+                  { stroke: null, strokeWidth: 0,
                     desiredSize: portSize,
                     margin: new go.Margin(0, 1) },
                   new go.Binding("fill", "portColor"))
@@ -137,7 +138,7 @@
                   contextMenu: portMenu },
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
-                  { stroke: null,
+                  { stroke: null, strokeWidth: 0,
                     desiredSize: portSize,
                     margin: new go.Margin(1, 0) },
                   new go.Binding("fill", "portColor"))
@@ -158,7 +159,7 @@
                   contextMenu: portMenu },
                 new go.Binding("portId", "portId"),
                 $(go.Shape, "Rectangle",
-                  { stroke: null,
+                  { stroke: null, strokeWidth: 0,
                     desiredSize: portSize,
                     margin: new go.Margin(0, 1) },
                   new go.Binding("fill", "portColor"))
@@ -180,7 +181,7 @@
           relinkableTo: true
         },
         new go.Binding("points").makeTwoWay(),
-        $(go.Shape)  // just a plain black line
+        $(go.Shape, { stroke: "#2F4F4F", strokeWidth: 2 })
       );
 
     // support double-clicking in the background to add a copy of this data as a node
@@ -190,7 +191,6 @@
       rightArray: [],
       topArray: [],
       bottomArray: []
-      // if you add data properties here, you should copy them in copyNodeData below
     };
 
     // load the diagram from JSON data
@@ -284,42 +284,7 @@
     }
     return go.Link.prototype.computeCurviness.call(this);
   };
-
-
-  // When copying a node, we need to copy the data that the node is bound to.
-  // This JavaScript object includes properties for the node as a whole, and
-  // four properties that are Arrays holding data for each port.
-  // Those arrays and port data objects need to be copied too.
-
-  function copyNodeData(data) {
-    var copy = {};
-    copy.key = data.key;  // adding to the Model will make the key value unique
-    copy.loc = data.loc;
-    copy.leftArray = copyPortArray(data.leftArray);
-    copy.rightArray = copyPortArray(data.rightArray);
-    copy.topArray = copyPortArray(data.topArray);
-    copy.bottomArray = copyPortArray(data.bottomArray);
-    // if you add data properties, you should copy them here too
-    return copy;
-  }
-
-  function copyPortArray(arr) {
-    var copy = [];
-    if (Array.isArray(arr)) {
-      for (var i = 0; i < arr.length; i++) {
-        copy.push(copyPortData(arr[i]));
-      }
-    }
-    return copy;
-  }
-
-  function copyPortData(data) {
-    var copy = {};
-    copy.portId = data.portId;
-    copy.portColor = data.portColor;
-    // if you add port data properties, you should copy them here too
-    return copy;
-  }
+  // end CustomLink class
 
 
   // Add a port to the specified side of the selected nodes.
@@ -390,14 +355,15 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
 
-    // link data includes the names of the to- and from- ports;
+    // When copying a node, we need to copy the data that the node is bound to.
+    // This JavaScript object includes properties for the node as a whole, and
+    // four properties that are Arrays holding data for each port.
+    // Those arrays and port data objects need to be copied too.
+    // Thus Model.copiesArrays and Model.copiesArrayObjects both need to be true.
+
+    // Link data includes the names of the to- and from- ports;
     // the GraphLinksModel needs to set these property names:
     // linkFromPortIdProperty and linkToPortIdProperty.
-
-    // Customize the node data copying function
-    // to avoid sharing of port data arrays and of the port data themselves.
-    // (Functions cannot be written/read in JSON format.)
-    myDiagram.model.copyNodeDataFunction = copyNodeData;
   }
 </script>
 </head>
@@ -422,6 +388,8 @@
   </p>
   <textarea id="mySavedModel" style="width:100%;height:200px">
 { "class": "go.GraphLinksModel",
+  "copiesArrays": true,
+  "copiesArrayObjects": true,
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
   "nodeDataArray": [

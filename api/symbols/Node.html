@@ -974,7 +974,7 @@
     <div id="contentBody">
     <!-- ============================== header ================================= -->
     <div id="header" class="fineprint">
-      GoJS&reg; Diagramming Components<br/>version 1.4.27<br/>by <a href="http://www.nwoods.com/">Northwoods Software&reg;</a>
+      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.5.0 for JavaScript/HTML<br/>by <a href="http://www.nwoods.com/">Northwoods Software&reg;</a>
     </div>
 
 <!-- ============================== class title ============================ -->
@@ -991,7 +991,7 @@
 					<a href="../symbols/Part.html" class="linkConstructor">Part</a>.</span>
 				
 
-				A Node is a <a href="../symbols/Part.html" class="linkConstructor">Part</a> that may connect to other nodes with <a href="../symbols/Link.html" class="linkConstructor">Link</a>s,or that may be a member of a <a href="../symbols/Group.html" class="linkConstructor">Group</a>.<p><a href="../symbols/Group.html" class="linkConstructor">Group</a> inherits from Node,enabling nodes to logically contain other nodes and links.<p class="boxread">For a more general discussion of how to define nodes, see <a href="../../intro/nodes.html">Introduction to Nodes</a>.<p>Although you can create a Node and <a href="../symbols/Diagram.html#add" class="linkMethod">Diagram.add</a> it to a Diagram, this does not update the Model.It is more common to create a node by adding a node data object to the modelby calling <a href="../symbols/Model.html#addNodeData" class="linkMethod">Model.addNodeData</a>. For example:<pre>  myDiagram.startTransaction("make new node");  myDiagram.model.addNodeData({ key: "Omega" });  myDiagram.commitTransaction("make new node");</pre><p>This will cause a Node or simple <a href="../symbols/Part.html" class="linkConstructor">Part</a> to be created (copying the template found in <a href="../symbols/Diagram.html#nodeTemplateMap" class="linkProperty">Diagram.nodeTemplateMap</a>),added to the Diagram in some <a href="../symbols/Layer.html" class="linkConstructor">Layer</a> (based on <a href="../symbols/Part.html#layerName" class="linkProperty">Part.layerName</a>), and bound to the node data(resulting in <a href="../symbols/Panel.html#data" class="linkProperty">Panel.data</a> referring to that node data object).If you do not keep a reference to that JavaScript object, as the above code does not,you can retrieve it later by calling <a href="../symbols/Model.html#findNodeDataForKey" class="linkMethod">Model.findNodeDataForKey</a>.<p>It is very common to initialize a Diagram by setting <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">Model.nodeDataArray</a> to a JavaScript Arrayof JavaScript objects holding the properties that you need in your model.Nearly all of the samples do this kind of initialization.<p>You can delete a Node by either calling <a href="../symbols/Diagram.html#remove" class="linkMethod">Diagram.remove</a> or by calling <a href="../symbols/Model.html#removeNodeData" class="linkMethod">Model.removeNodeData</a>.The latter obviously will modify the Model; the former does so if the Node was created from model data.Commands such as <a href="../symbols/CommandHandler.html#deleteSelection" class="linkMethod">CommandHandler.deleteSelection</a> call these methods within a transaction.<p>You can find all of the <a href="../symbols/Link.html" class="linkConstructor">Link</a>s that are connected with a Node by calling <a href="../symbols/Node.html#findLinksConnected" class="linkMethod">findLinksConnected</a>.Because links normally have a direction, you can find all of the links that have their <a href="../symbols/Link.html#toNode" class="linkProperty">Link.toNode</a>be a given Node by calling <a href="../symbols/Node.html#findLinksInto" class="linkMethod">findLinksInto</a>.Similarly, you can call <a href="../symbols/Node.html#findLinksOutOf" class="linkMethod">findLinksOutOf</a> to find all of the links coming out from a node;such links have their <a href="../symbols/Link.html#fromNode" class="linkProperty">Link.fromNode</a> be that node.For tree-structured graphs, use <a href="../symbols/Node.html#findTreeChildrenLinks" class="linkMethod">findTreeChildrenLinks</a> or <a href="../symbols/Node.html#findTreeParentLink" class="linkMethod">findTreeParentLink</a>.<p>If you are not so interested in the links but are interested in the nodes at the other end of the linksconnecting with a node, there are other methods that you can call.<a href="../symbols/Node.html#findNodesConnected" class="linkMethod">findNodesConnected</a> returns all of the nodes that are at the other end of the links thatconnect with a given node.<a href="../symbols/Node.html#findNodesInto" class="linkMethod">findNodesInto</a> and <a href="../symbols/Node.html#findNodesOutOf" class="linkMethod">findNodesOutOf</a> return the subsets of those nodes consideringonly those links that go into or come out of the given node.For tree-structured graphs, use <a href="../symbols/Node.html#findTreeChildrenNodes" class="linkMethod">findTreeChildrenNodes</a> or <a href="../symbols/Node.html#findTreeParentNode" class="linkMethod">findTreeParentNode</a>.<p>For example, to operate on the data of all of the destination nodes:<pre>var it = somenode.findNodesOutOf();while (it.next()) {  var child = it.value;  if (child.data.text.indexOf("special") >= 0) { ... }}</pre><p>You can link two nodes by creating a new <a href="../symbols/Link.html" class="linkConstructor">Link</a>, setting its <a href="../symbols/Link.html#toNode" class="linkProperty">Link.toNode</a> and <a href="../symbols/Link.html#fromNode" class="linkProperty">Link.fromNode</a>(in either order), and <a href="../symbols/Diagram.html#add" class="linkMethod">Diagram.add</a>ing it to the diagram.But it is more common to add a link data object to the <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a> by calling <a href="../symbols/GraphLinksModel.html#addLinkData" class="linkMethod">GraphLinksModel.addLinkData</a>.Just creating and adding a <a href="../symbols/Link.html" class="linkConstructor">Link</a> will not update the model.<p>Thus to add a link when using a <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a> you should do something like:<pre>  myDiagram.startTransaction("make new link");  myDiagram.model.addLinkData({ from: "Alpha", to: "Beta" });  myDiagram.commitTransaction("make new link");</pre><p>Where you would substitute the keys of the actual nodes that you want to connect with a link.If you are using a <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a>, there are no link data objects, so you just need to call<a href="../symbols/TreeModel.html#setParentKeyForNodeData" class="linkMethod">TreeModel.setParentKeyForNodeData</a> to specify the "parent" node's key for a "child" node data.<p>To find a <a href="../symbols/Link.html" class="linkConstructor">Link</a> given a link data object in the <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>,call <a href="../symbols/Diagram.html#findLinkForData" class="linkMethod">Diagram.findLinkForData</a>.  When using a <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a>, call either <a href="../symbols/Diagram.html#findNodeForData" class="linkMethod">Diagram.findNodeForData</a>or <a href="../symbols/Diagram.html#findNodeForKey" class="linkMethod">Diagram.findNodeForKey</a> to get a Node, and then call <a href="../symbols/Node.html#findTreeParentLink" class="linkMethod">findTreeParentLink</a> to get the Link, if any exists.<p>To find a link that connects two nodes, call <a href="../symbols/Node.html#findLinksTo" class="linkMethod">findLinksTo</a> or <a href="../symbols/Node.html#findLinksBetween" class="linkMethod">findLinksBetween</a>.With the former method, the direction matters; with the latter method it returns links in either direction.<p>As links connect with a node or are disconnected, you may want to update the appearance of the node.You can set the <a href="../symbols/Node.html#linkConnected" class="linkProperty">linkConnected</a> and <a href="../symbols/Node.html#linkDisconnected" class="linkProperty">linkDisconnected</a> properties to be functions that are called.These functions must not modify any link relationships -- the properties just exist to update the appearance of the node.A typical usage would be to change the color or figure of a shape.<p>You can control whether the user may draw a new link or reconnect a link between a pair of Nodesby affecting the result of <a href="../symbols/LinkingBaseTool.html#isValidLink" class="linkMethod">LinkingBaseTool.isValidLink</a>.You can override that predicate on <a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a> and <a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a>,but it is easier to set the <a href="../symbols/Node.html#linkValidation" class="linkProperty">linkValidation</a> or<a href="../symbols/LinkingBaseTool.html#linkValidation" class="linkProperty">LinkingBaseTool.linkValidation</a> functional property.<p class="boxread">For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.<p>Nodes also support the ability to provide logical and physical distinctions in the connection pointsthat links use at a node. These connection objects are called "ports".By default that will be the whole <a href="../symbols/Node.html" class="linkConstructor">Node</a>.However, you can set the <a href="../symbols/GraphObject.html#portId" class="linkProperty">GraphObject.portId</a> property on any <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> in the visual tree of a nodeto cause that element to be treated as a "port".The "port id" is just a string that ought to be unique amongst all of the port elements in the node.<p>In the case of a node only having a single port, you should set the <a href="../symbols/GraphObject.html#portId" class="linkProperty">GraphObject.portId</a> as an empty string.When there is no such element declared as the default port, it uses the whole node.You can use the <a href="../symbols/Node.html#port" class="linkProperty">port</a> property to get the only port element.<p>When a node should have multiple ports,i.e. multiple <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s acting as separate connection points for links,you should set each port's <a href="../symbols/GraphObject.html#portId" class="linkProperty">GraphObject.portId</a> to a string value that is unique for the node.When there may be multiple ports on a node, you can get a collection of elements representing portsby using the <a href="../symbols/Node.html#ports" class="linkProperty">ports</a> property.Use the <a href="../symbols/Node.html#findPort" class="linkMethod">findPort</a> method to find a particular port element by name.<p class="boxread">For a more general discussion of ports, see <a href="../../intro/ports.html">Introduction to Ports</a>.<p>All of the "findLinks..." and "findNodes..." methods mentioned above take an optional port id argument.When no argument is passed, these methods consider all links connecting with the node.When a port id argument is provided, these methods only consider links that connect with that portin the given node.Thus when navigating through the diagram, you can easily look at all of the nodes that links coming out ofa given node go to.  Or you can just look at those nodes at the ends of links coming out of a particular port.<p>You can also control the default connecting behavior of <a href="../symbols/Link.html" class="linkConstructor">Link</a>s at each port.Because a port can be any <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>, they are all properties on GraphObject.The properties are duplicated so that you can guide the "from" ends of links differently from the "to" ends of links.The properties include:<ul>  <li><a href="../symbols/GraphObject.html#fromSpot" class="linkProperty">GraphObject.fromSpot</a>, <a href="../symbols/GraphObject.html#toSpot" class="linkProperty">GraphObject.toSpot</a></li>  <li><a href="../symbols/GraphObject.html#fromEndSegmentLength" class="linkProperty">GraphObject.fromEndSegmentLength</a>, <a href="../symbols/GraphObject.html#toEndSegmentLength" class="linkProperty">GraphObject.toEndSegmentLength</a></li>  <li><a href="../symbols/GraphObject.html#fromEndSegmentDirection" class="linkProperty">GraphObject.fromEndSegmentDirection</a>, <a href="../symbols/GraphObject.html#toEndSegmentDirection" class="linkProperty">GraphObject.toEndSegmentDirection</a></li>  <li><a href="../symbols/GraphObject.html#fromShortLength" class="linkProperty">GraphObject.fromShortLength</a>, <a href="../symbols/GraphObject.html#toShortLength" class="linkProperty">GraphObject.toShortLength</a></li>  <li><a href="../symbols/GraphObject.html#fromLinkable" class="linkProperty">GraphObject.fromLinkable</a>, <a href="../symbols/GraphObject.html#toLinkable" class="linkProperty">GraphObject.toLinkable</a></li>  <li><a href="../symbols/GraphObject.html#fromLinkableDuplicates" class="linkProperty">GraphObject.fromLinkableDuplicates</a>, <a href="../symbols/GraphObject.html#toLinkableDuplicates" class="linkProperty">GraphObject.toLinkableDuplicates</a></li>  <li><a href="../symbols/GraphObject.html#fromLinkableSelfNode" class="linkProperty">GraphObject.fromLinkableSelfNode</a>, <a href="../symbols/GraphObject.html#toLinkableSelfNode" class="linkProperty">GraphObject.toLinkableSelfNode</a></li>  <li><a href="../symbols/GraphObject.html#fromMaxLinks" class="linkProperty">GraphObject.fromMaxLinks</a>, <a href="../symbols/GraphObject.html#toMaxLinks" class="linkProperty">GraphObject.toMaxLinks</a></li></ul><p>The "...Spot" and "...Length" and "...Direction" properties control the position and routing of links at a port.The "...Linkable..." and "...MaxLinks" properties control whether or not users can draw a new linkor reconnect an existing link from or to a port.(The "...Spot" and "...Length" and "...Direction" properties also exist on <a href="../symbols/Link.html" class="linkConstructor">Link</a>, to override for a particularlink the default values that come from a port element.)<p class="boxread">For a more general discussion of link points, see <a href="../../intro/connectionPoints.html">Introduction to Link Connection Points</a>.<p>When the graph is tree-structured, you can use several functions for traversing the tree:<ul>  <li><a href="../symbols/Node.html#findTreeParentNode" class="linkMethod">findTreeParentNode</a></li>  <li><a href="../symbols/Node.html#findTreeChildrenNodes" class="linkMethod">findTreeChildrenNodes</a></li>  <li><a href="../symbols/Node.html#findTreeParentLink" class="linkMethod">findTreeParentLink</a></li>  <li><a href="../symbols/Node.html#findTreeChildrenLinks" class="linkMethod">findTreeChildrenLinks</a></li>  <li><a href="../symbols/Node.html#findTreeRoot" class="linkMethod">findTreeRoot</a></li>  <li><a href="../symbols/Node.html#findTreeParts" class="linkMethod">findTreeParts</a></li>  <li><a href="../symbols/Node.html#isInTreeOf" class="linkMethod">isInTreeOf</a></li></ul><p>Determining whether a tree grows from the root via links that go out to the children or vice-versais controlled for the whole diagram by the <a href="../symbols/Diagram.html#isTreePathToChildren" class="linkProperty">Diagram.isTreePathToChildren</a> property.However an individual link will be ignored by the above functions if <a href="../symbols/Link.html#isTreeLink" class="linkProperty">Link.isTreeLink</a> is false.<p>The Node class also supports the notion of expanding and collapsing a subtree of nodes and links,causing those nodes and links to be shown or hidden.Principally this is a matter of setting <a href="../symbols/Node.html#isTreeExpanded" class="linkProperty">Node.isTreeExpanded</a>.Of course if the diagram's graph is not tree-structured, these concepts and properties might not apply.<p>If you want to change the appearance of the node you can do so in a function that you assign tothe <a href="../symbols/Node.html#treeExpandedChanged" class="linkProperty">treeExpandedChanged</a> property.This function must not modify any link relationships or expand or collapse any subtrees -- the property just existsto update the appearance of the node.<p>There is an option for link routing to try to avoid crossing over nodes:<a href="../symbols/Link.html#routing" class="linkProperty">Link.routing</a> = <a href="../symbols/Link.html#AvoidsNodes" class="linkConstant">Link.AvoidsNodes</a>.You can control whether such links should avoid or ignore a node by setting <a href="../symbols/Node.html#avoidable" class="linkProperty">avoidable</a>.Set <a href="../symbols/Node.html#avoidableMargin" class="linkProperty">avoidableMargin</a> to control the area beyond the <a href="../symbols/GraphObject.html#actualBounds" class="linkProperty">GraphObject.actualBounds</a>where AvoidsNodes links should not go.<p class="boxread">For more discussion and examples, see <a href="../../intro/nodes.html">Nodes</a>,<a href="../../intro/ports.html">Ports</a>, and<a href="../../intro/connectionPoints.html">Link Points</a>.<p class="boxread">For more about trees, see <a href="../../intro/trees.html">Trees</a>, and<a href="../../intro/subtrees.html">SubTrees</a>.<p>Only Nodes that are in Diagrams can have connections via Links.Templates should not be connected with Links, be labels of Links, be members of Groups, or have any Adornments.
+				A Node is a <a href="../symbols/Part.html" class="linkConstructor">Part</a> that may connect to other nodes with <a href="../symbols/Link.html" class="linkConstructor">Link</a>s,or that may be a member of a <a href="../symbols/Group.html" class="linkConstructor">Group</a>.<p><a href="../symbols/Group.html" class="linkConstructor">Group</a> inherits from Node,enabling nodes to logically contain other nodes and links.<p class="boxread">For a more general discussion of how to define nodes, see <a href="../../intro/nodes.html">Introduction to Nodes</a>.<p>Although you can create a Node and <a href="../symbols/Diagram.html#add" class="linkMethod">Diagram.add</a> it to a Diagram, this does not update the Model.It is more common to create a node by adding a node data object to the modelby calling <a href="../symbols/Model.html#addNodeData" class="linkMethod">Model.addNodeData</a>. For example:<pre>  myDiagram.startTransaction("make new node");  myDiagram.model.addNodeData({ key: "Omega" });  myDiagram.commitTransaction("make new node");</pre><p>This will cause a Node or simple <a href="../symbols/Part.html" class="linkConstructor">Part</a> to be created (copying the template found in <a href="../symbols/Diagram.html#nodeTemplateMap" class="linkProperty">Diagram.nodeTemplateMap</a>),added to the Diagram in some <a href="../symbols/Layer.html" class="linkConstructor">Layer</a> (based on <a href="../symbols/Part.html#layerName" class="linkProperty">Part.layerName</a>), and bound to the node data(resulting in <a href="../symbols/Panel.html#data" class="linkProperty">Panel.data</a> referring to that node data object).If you do not keep a reference to that JavaScript object, as the above code does not,you can retrieve it later by calling <a href="../symbols/Model.html#findNodeDataForKey" class="linkMethod">Model.findNodeDataForKey</a>.<p>It is very common to initialize a Diagram by setting <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">Model.nodeDataArray</a> to a JavaScript Arrayof JavaScript objects holding the properties that you need in your model.Nearly all of the samples do this kind of initialization.<p>You can delete a Node by either calling <a href="../symbols/Diagram.html#remove" class="linkMethod">Diagram.remove</a> or by calling <a href="../symbols/Model.html#removeNodeData" class="linkMethod">Model.removeNodeData</a>.The latter obviously will modify the Model; the former does so if the Node was created from model data.Commands such as <a href="../symbols/CommandHandler.html#deleteSelection" class="linkMethod">CommandHandler.deleteSelection</a> call these methods within a transaction.<p>You can find all of the <a href="../symbols/Link.html" class="linkConstructor">Link</a>s that are connected with a Node by calling <a href="../symbols/Node.html#findLinksConnected" class="linkMethod">findLinksConnected</a>.Because links normally have a direction, you can find all of the links that have their <a href="../symbols/Link.html#toNode" class="linkProperty">Link.toNode</a>be a given Node by calling <a href="../symbols/Node.html#findLinksInto" class="linkMethod">findLinksInto</a>.Similarly, you can call <a href="../symbols/Node.html#findLinksOutOf" class="linkMethod">findLinksOutOf</a> to find all of the links coming out from a node;such links have their <a href="../symbols/Link.html#fromNode" class="linkProperty">Link.fromNode</a> be that node.For tree-structured graphs, use <a href="../symbols/Node.html#findTreeChildrenLinks" class="linkMethod">findTreeChildrenLinks</a> or <a href="../symbols/Node.html#findTreeParentLink" class="linkMethod">findTreeParentLink</a>.<p>If you are not so interested in the links but are interested in the nodes at the other end of the linksconnecting with a node, there are other methods that you can call.<a href="../symbols/Node.html#findNodesConnected" class="linkMethod">findNodesConnected</a> returns all of the nodes that are at the other end of the links thatconnect with a given node.<a href="../symbols/Node.html#findNodesInto" class="linkMethod">findNodesInto</a> and <a href="../symbols/Node.html#findNodesOutOf" class="linkMethod">findNodesOutOf</a> return the subsets of those nodes consideringonly those links that go into or come out of the given node.For tree-structured graphs, use <a href="../symbols/Node.html#findTreeChildrenNodes" class="linkMethod">findTreeChildrenNodes</a> or <a href="../symbols/Node.html#findTreeParentNode" class="linkMethod">findTreeParentNode</a>.<p>For example, to operate on the data of all of the destination nodes:<pre>var it = somenode.findNodesOutOf();while (it.next()) {  var child = it.value;  if (child.data.text.indexOf("special") >= 0) { ... }}</pre><p>You can link two nodes by creating a new <a href="../symbols/Link.html" class="linkConstructor">Link</a>, setting its <a href="../symbols/Link.html#toNode" class="linkProperty">Link.toNode</a> and <a href="../symbols/Link.html#fromNode" class="linkProperty">Link.fromNode</a>(in either order), and <a href="../symbols/Diagram.html#add" class="linkMethod">Diagram.add</a>ing it to the diagram.But it is more common to add a link data object to the <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a> by calling <a href="../symbols/GraphLinksModel.html#addLinkData" class="linkMethod">GraphLinksModel.addLinkData</a>.Just creating and adding a <a href="../symbols/Link.html" class="linkConstructor">Link</a> will not update the model.<p>Thus to add a link when using a <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a> you should do something like:<pre>  myDiagram.startTransaction("make new link");  myDiagram.model.addLinkData({ from: "Alpha", to: "Beta" });  myDiagram.commitTransaction("make new link");</pre><p>Where you would substitute the keys of the actual nodes that you want to connect with a link.If you are using a <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a>, there are no link data objects, so you just need to call<a href="../symbols/TreeModel.html#setParentKeyForNodeData" class="linkMethod">TreeModel.setParentKeyForNodeData</a> to specify the "parent" node's key for a "child" node data.<p>To find a <a href="../symbols/Link.html" class="linkConstructor">Link</a> given a link data object in the <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>,call <a href="../symbols/Diagram.html#findLinkForData" class="linkMethod">Diagram.findLinkForData</a>.  When using a <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a>, call either <a href="../symbols/Diagram.html#findNodeForData" class="linkMethod">Diagram.findNodeForData</a>or <a href="../symbols/Diagram.html#findNodeForKey" class="linkMethod">Diagram.findNodeForKey</a> to get a Node, and then call <a href="../symbols/Node.html#findTreeParentLink" class="linkMethod">findTreeParentLink</a> to get the Link, if any exists.<p>To find a link that connects two nodes, call <a href="../symbols/Node.html#findLinksTo" class="linkMethod">findLinksTo</a> or <a href="../symbols/Node.html#findLinksBetween" class="linkMethod">findLinksBetween</a>.With the former method, the direction matters; with the latter method it returns links in either direction.<p>As links connect with a node or are disconnected, you may want to update the appearance of the node.You can set the <a href="../symbols/Node.html#linkConnected" class="linkProperty">linkConnected</a> and <a href="../symbols/Node.html#linkDisconnected" class="linkProperty">linkDisconnected</a> properties to be functions that are called.These functions must not modify any link relationships -- the properties just exist to update the appearance of the node.A typical usage would be to change the color or figure of a shape.<p>You can control whether the user may draw a new link or reconnect a link between a pair of Nodesby affecting the result of <a href="../symbols/LinkingBaseTool.html#isValidLink" class="linkMethod">LinkingBaseTool.isValidLink</a>.You can override that predicate on <a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a> and <a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a>,but it is easier to set the <a href="../symbols/Node.html#linkValidation" class="linkProperty">linkValidation</a> or<a href="../symbols/LinkingBaseTool.html#linkValidation" class="linkProperty">LinkingBaseTool.linkValidation</a> functional property.<p class="boxread">For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.<p>Nodes also support the ability to provide logical and physical distinctions in the connection pointsthat links use at a node. These connection objects are called "ports".By default the port object will be the whole <a href="../symbols/Node.html" class="linkConstructor">Node</a>.However, you can set the <a href="../symbols/GraphObject.html#portId" class="linkProperty">GraphObject.portId</a> property on any <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> in the visual tree of a nodeto cause that element to be treated as a "port".The "port id" is just a string that ought to be unique amongst all of the port elements in the node.<p>In the case of a node only having a single port, you should set the <a href="../symbols/GraphObject.html#portId" class="linkProperty">GraphObject.portId</a> as an empty string.When there is no such element declared as the default port, it uses the whole node.You can use the <a href="../symbols/Node.html#port" class="linkProperty">port</a> property to get the only port element.<p>When a node should have multiple ports,i.e. multiple <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s acting as separate connection points for links,you should set each port's <a href="../symbols/GraphObject.html#portId" class="linkProperty">GraphObject.portId</a> to a string value that is unique for the node.When there may be multiple ports on a node, you can get a collection of elements representing portsby using the <a href="../symbols/Node.html#ports" class="linkProperty">ports</a> property.Use the <a href="../symbols/Node.html#findPort" class="linkMethod">findPort</a> method to find a particular port element by name.<p>Note: the only kind of model that can save port information, i.e. portIds that are not an empty string,for links is a <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a> whose <a href="../symbols/GraphLinksModel.html#linkFromPortIdProperty" class="linkProperty">GraphLinksModel.linkFromPortIdProperty</a> and<a href="../symbols/GraphLinksModel.html#linkToPortIdProperty" class="linkProperty">GraphLinksModel.linkToPortIdProperty</a> have been set to name properties on the link data objects.<p class="boxread">For a more general discussion of ports, see <a href="../../intro/ports.html">Introduction to Ports</a>.<p>All of the "findLinks..." and "findNodes..." methods mentioned above take an optional port id argument.When no argument is passed, these methods consider all links connecting with the node.When a port id argument is provided, these methods only consider links that connect with that portin the given node.Thus when navigating through the diagram, you can easily look at all of the nodes that links coming out ofa given node go to.  Or you can just look at those nodes at the ends of links coming out of a particular port.<p>You can also control the default connecting behavior of <a href="../symbols/Link.html" class="linkConstructor">Link</a>s at each port.Because a port can be any <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>, they are all properties on GraphObject.The properties are duplicated so that you can guide the "from" ends of links differently from the "to" ends of links.The properties include:<ul>  <li><a href="../symbols/GraphObject.html#fromSpot" class="linkProperty">GraphObject.fromSpot</a>, <a href="../symbols/GraphObject.html#toSpot" class="linkProperty">GraphObject.toSpot</a></li>  <li><a href="../symbols/GraphObject.html#fromEndSegmentLength" class="linkProperty">GraphObject.fromEndSegmentLength</a>, <a href="../symbols/GraphObject.html#toEndSegmentLength" class="linkProperty">GraphObject.toEndSegmentLength</a></li>  <li><a href="../symbols/GraphObject.html#fromEndSegmentDirection" class="linkProperty">GraphObject.fromEndSegmentDirection</a>, <a href="../symbols/GraphObject.html#toEndSegmentDirection" class="linkProperty">GraphObject.toEndSegmentDirection</a></li>  <li><a href="../symbols/GraphObject.html#fromShortLength" class="linkProperty">GraphObject.fromShortLength</a>, <a href="../symbols/GraphObject.html#toShortLength" class="linkProperty">GraphObject.toShortLength</a></li>  <li><a href="../symbols/GraphObject.html#fromLinkable" class="linkProperty">GraphObject.fromLinkable</a>, <a href="../symbols/GraphObject.html#toLinkable" class="linkProperty">GraphObject.toLinkable</a></li>  <li><a href="../symbols/GraphObject.html#fromLinkableDuplicates" class="linkProperty">GraphObject.fromLinkableDuplicates</a>, <a href="../symbols/GraphObject.html#toLinkableDuplicates" class="linkProperty">GraphObject.toLinkableDuplicates</a></li>  <li><a href="../symbols/GraphObject.html#fromLinkableSelfNode" class="linkProperty">GraphObject.fromLinkableSelfNode</a>, <a href="../symbols/GraphObject.html#toLinkableSelfNode" class="linkProperty">GraphObject.toLinkableSelfNode</a></li>  <li><a href="../symbols/GraphObject.html#fromMaxLinks" class="linkProperty">GraphObject.fromMaxLinks</a>, <a href="../symbols/GraphObject.html#toMaxLinks" class="linkProperty">GraphObject.toMaxLinks</a></li></ul><p>The "...Spot" and "...Length" and "...Direction" properties control the position and routing of links at a port.The "...Linkable..." and "...MaxLinks" properties control whether or not users can draw a new linkor reconnect an existing link from or to a port.(The "...Spot" and "...Length" and "...Direction" properties also exist on <a href="../symbols/Link.html" class="linkConstructor">Link</a>, to override for a particularlink the default values that come from a port element.)<p class="boxread">For a more general discussion of link points, see <a href="../../intro/connectionPoints.html">Introduction to Link Connection Points</a>.<p>When the graph is tree-structured, you can use several functions for traversing the tree:<ul>  <li><a href="../symbols/Node.html#findTreeParentNode" class="linkMethod">findTreeParentNode</a></li>  <li><a href="../symbols/Node.html#findTreeChildrenNodes" class="linkMethod">findTreeChildrenNodes</a></li>  <li><a href="../symbols/Node.html#findTreeParentLink" class="linkMethod">findTreeParentLink</a></li>  <li><a href="../symbols/Node.html#findTreeChildrenLinks" class="linkMethod">findTreeChildrenLinks</a></li>  <li><a href="../symbols/Node.html#findTreeRoot" class="linkMethod">findTreeRoot</a></li>  <li><a href="../symbols/Node.html#findTreeParts" class="linkMethod">findTreeParts</a></li>  <li><a href="../symbols/Node.html#findCommonTreeParent" class="linkMethod">findCommonTreeParent</a></li>  <li><a href="../symbols/Node.html#isInTreeOf" class="linkMethod">isInTreeOf</a></li>  <li><a href="../symbols/Node.html#findTreeLevel" class="linkMethod">findTreeLevel</a></li></ul><p>Determining whether a tree grows from the root via links that go out to the children or vice-versais controlled for the whole diagram by the <a href="../symbols/Diagram.html#isTreePathToChildren" class="linkProperty">Diagram.isTreePathToChildren</a> property.However an individual link will be ignored by the above functions if <a href="../symbols/Link.html#isTreeLink" class="linkProperty">Link.isTreeLink</a> is false.<p>The Node class also supports the notion of expanding and collapsing a subtree of nodes and links,causing those nodes and links to be shown or hidden.Principally this is a matter of setting <a href="../symbols/Node.html#isTreeExpanded" class="linkProperty">Node.isTreeExpanded</a>.Of course if the diagram's graph is not tree-structured, these concepts and properties might not apply.<p>If you want to change the appearance of the node you can do so in a function that you assign tothe <a href="../symbols/Node.html#treeExpandedChanged" class="linkProperty">treeExpandedChanged</a> property.This function must not modify any link relationships or expand or collapse any subtrees -- the property just existsto update the appearance of the node.<p>There is an option for link routing to try to avoid crossing over nodes:<a href="../symbols/Link.html#routing" class="linkProperty">Link.routing</a> = <a href="../symbols/Link.html#AvoidsNodes" class="linkConstant">Link.AvoidsNodes</a>.You can control whether such links should avoid or ignore a node by setting <a href="../symbols/Node.html#avoidable" class="linkProperty">avoidable</a>.Set <a href="../symbols/Node.html#avoidableMargin" class="linkProperty">avoidableMargin</a> to control the area beyond the <a href="../symbols/GraphObject.html#actualBounds" class="linkProperty">GraphObject.actualBounds</a>where AvoidsNodes links should not go.<p class="boxread">For more discussion and examples, see <a href="../../intro/nodes.html">Nodes</a>,<a href="../../intro/ports.html">Ports</a>, and<a href="../../intro/connectionPoints.html">Link Points</a>.<p class="boxread">For more about trees, see <a href="../../intro/trees.html">Trees</a>, and<a href="../../intro/subtrees.html">SubTrees</a>.<p>Only Nodes that are in Diagrams can have connections via Links.Templates should not be connected with Links, be labels of Links, be members of Groups, or have any Adornments.
 			</p>
       <span class="hideshowall"><span class="nodetails"><button id="buttonShow">Show Details</button></span><span class="details"><button id="buttonHide">Show Summaries</button></span></span>
 <!-- ============================== constructor summary ==================== -->
@@ -1213,7 +1213,7 @@
 						<tr id="linksConnected" >
 							<td class="attributes"><div class="attributes">
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
 							</td>
 							<td class="name"><div class="name">
 								linksConnected
@@ -1269,7 +1269,7 @@
 						<tr id="ports" >
 							<td class="attributes"><div class="attributes">
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<GraphObject>}</span></div>
 							</td>
 							<td class="name"><div class="name">
 								ports
@@ -1278,6 +1278,26 @@
               </td>
                 <td class="description">
                  <div class="description">This read-only property returns an iterator over all of the <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s in this node that act as ports.
+              
+            </span> <!-- end summarize -->
+        </div>
+							</td>
+						</tr>
+					
+						<tr id="portSpreading" >
+							<td class="attributes"><div class="attributes">
+              
+              <span class="light">{EnumValue}</span></div>
+							</td>
+							<td class="name"><div class="name">
+								portSpreading
+                
+                    <span class="since" title="since">1.5</span>
+                
+                </div>
+              </td>
+                <td class="description">
+                 <div class="description">Gets or sets how link points are computed when the port spot is a "side" spot.<span class="nodetails" id="xpropportSpreading"><a onclick="hst('propportSpreading')"> More...</a></span> <span class="details" id="propportSpreading">The default value is <a href="../symbols/Node.html#SpreadingEvenly" class="linkConstant">Node.SpreadingEvenly</a>.
               
             </span> <!-- end summarize -->
         </div>
@@ -1435,10 +1455,51 @@
 							</td>
 						</tr>
 					
+						<tr id="findCommonTreeParent">
+							<td class="attributes"><div class="attributes"></a>
+              
+              <span class="light">{<a href="../symbols/Node.html" class="linkConstructor">Node</a>}</span></div>
+  						</td>
+							<td class="name">
+              <div class="name">
+              findCommonTreeParent(other)
+                
+                    <span class="since" title="since">1.5</span>
+                
+                </div>
+                </td>
+                <td class="description">
+								<div class="description">Find the <a href="../symbols/Node.html" class="linkConstructor">Node</a> that is the perhaps indirect tree parent of both this node and another one,or this node if it is an ancestor of the other node, or vice-versa.<span class="nodetails" id="xmethfindCommonTreeParent"><a onclick="hst('methfindCommonTreeParent')"> More...</a></span> <span class="details" id="methfindCommonTreeParent"><p>If you want to find the <a href="../symbols/Group.html" class="linkConstructor">Group</a> that contains two Parts, call <a href="../symbols/Part.html#findCommonContainingGroup" class="linkMethod">Part.findCommonContainingGroup</a>.
+                 
+						      
+							      <dl class="detailList">
+							      <dt class="heading">Parameters:</dt>
+							      
+								      <dt>
+									      <span class="light fixedFont">{<a href="../symbols/Node.html" class="linkConstructor">Node</a>}</span> <b>other</b>
+									      
+								      </dt>
+								      <dd></dd>
+							      
+							      </dl>
+						      
+						      
+							      <dl class="detailList">
+							      <dt class="heading">Returns:</dt>
+							      
+								      <dt><span class="light fixedFont">{<a href="../symbols/Node.html" class="linkConstructor">Node</a>}</span> may be null if in different trees,  or may be itself if the OTHER argument is THIS node,  or may be itself if the OTHER node is a descendant of THIS node,  or may be the OTHER node if THIS node is in the tree of the OTHER node.</dt>
+							      
+							      </dl>
+						      
+              </span> <!-- end summarize -->
+                </div>
+							</td>
+						</tr>
+					
 						<tr id="findLinksBetween">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1479,7 +1540,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Link>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1491,7 +1552,7 @@
 						<tr id="findLinksConnected">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1518,7 +1579,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Link>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1530,7 +1591,7 @@
 						<tr id="findLinksInto">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1557,7 +1618,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Link>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1569,7 +1630,7 @@
 						<tr id="findLinksOutOf">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1596,7 +1657,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Link>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1608,7 +1669,7 @@
 						<tr id="findLinksTo">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1649,7 +1710,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Link>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1661,7 +1722,7 @@
 						<tr id="findNodesConnected">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Node>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1688,7 +1749,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Node>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1700,7 +1761,7 @@
 						<tr id="findNodesInto">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Node>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1727,7 +1788,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Node>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1739,7 +1800,7 @@
 						<tr id="findNodesOutOf">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Node>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1766,7 +1827,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Node>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1817,7 +1878,7 @@
 						<tr id="findTreeChildrenLinks">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Link>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1844,7 +1905,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Link>}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1856,7 +1917,7 @@
 						<tr id="findTreeChildrenNodes">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span></div>
+              <span class="light">{Iterator.<Node>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -1883,7 +1944,37 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a>}</span> </dt>
+								      <dt><span class="light fixedFont">{Iterator.<Node>}</span> </dt>
+							      
+							      </dl>
+						      
+              </span> <!-- end summarize -->
+                </div>
+							</td>
+						</tr>
+					
+						<tr id="findTreeLevel">
+							<td class="attributes"><div class="attributes"></a>
+              
+              <span class="light">{number}</span></div>
+  						</td>
+							<td class="name">
+              <div class="name">
+              findTreeLevel()
+                
+                    <span class="since" title="since">1.5</span>
+                
+                </div>
+                </td>
+                <td class="description">
+								<div class="description">Return how deep this node is in a tree structure.<span class="nodetails" id="xmethfindTreeLevel"><a onclick="hst('methfindTreeLevel')"> More...</a></span> <span class="details" id="methfindTreeLevel">For tree root nodes, this returns zero.This calls <a href="../symbols/Node.html#findTreeParentNode" class="linkMethod">findTreeParentNode</a> to find any tree parent node,so this respects <a href="../symbols/Diagram.html#isTreePathToChildren" class="linkProperty">Diagram.isTreePathToChildren</a> and <a href="../symbols/Link.html#isTreeLink" class="linkProperty">Link.isTreeLink</a>to know which way to traverse links and to know to ignore non-tree links.<p>If you want to know how deep a Part is nested inside Groups, call <a href="../symbols/Part.html#findSubGraphLevel" class="linkMethod">Part.findSubGraphLevel</a>.
+                 
+						      
+						      
+							      <dl class="detailList">
+							      <dt class="heading">Returns:</dt>
+							      
+								      <dt><span class="light fixedFont">{number}</span> </dt>
 							      
 							      </dl>
 						      
@@ -1977,7 +2068,7 @@
 						<tr id="findTreeParts">
 							<td class="attributes"><div class="attributes"></a>
               
-              <span class="light">{<a href="../symbols/Set.html" class="linkConstructor">Set</a>}</span></div>
+              <span class="light">{Set.<Part>}</span></div>
   						</td>
 							<td class="name">
               <div class="name">
@@ -2004,7 +2095,7 @@
 							      <dl class="detailList">
 							      <dt class="heading">Returns:</dt>
 							      
-								      <dt><span class="light fixedFont">{<a href="../symbols/Set.html" class="linkConstructor">Set</a>}</span> A Set of Nodes and Links.</dt>
+								      <dt><span class="light fixedFont">{Set.<Part>}</span> A Set of Nodes and Links.</dt>
 							      
 							      </dl>
 						      
@@ -2102,7 +2193,7 @@
 
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/Part.html" class="linkConstructor">Part</a>: </dt><dd><a href="../symbols/Part.html#addAdornment" class="linkMethod">addAdornment</a>, <a href="../symbols/Part.html#canCopy" class="linkMethod">canCopy</a>, <a href="../symbols/Part.html#canDelete" class="linkMethod">canDelete</a>, <a href="../symbols/Part.html#canEdit" class="linkMethod">canEdit</a>, <a href="../symbols/Part.html#canGroup" class="linkMethod">canGroup</a>, <a href="../symbols/Part.html#canLayout" class="linkMethod">canLayout</a>, <a href="../symbols/Part.html#canMove" class="linkMethod">canMove</a>, <a href="../symbols/Part.html#canReshape" class="linkMethod">canReshape</a>, <a href="../symbols/Part.html#canResize" class="linkMethod">canResize</a>, <a href="../symbols/Part.html#canRotate" class="linkMethod">canRotate</a>, <a href="../symbols/Part.html#canSelect" class="linkMethod">canSelect</a>, <a href="../symbols/Part.html#clearAdornments" class="linkMethod">clearAdornments</a>, <a href="../symbols/Part.html#findAdornment" class="linkMethod">findAdornment</a>, <a href="../symbols/Part.html#findCommonContainingGroup" class="linkMethod">findCommonContainingGroup</a>, <a href="../symbols/Part.html#findTopLevelPart" class="linkMethod">findTopLevelPart</a>, <a href="../symbols/Part.html#invalidateLayout" class="linkMethod">invalidateLayout</a>, <a href="../symbols/Part.html#isMemberOf" class="linkMethod">isMemberOf</a>, <a href="../symbols/Part.html#isVisible" class="linkMethod">isVisible</a>, <a href="../symbols/Part.html#move" class="linkMethod">move</a>, <a href="../symbols/Part.html#removeAdornment" class="linkMethod">removeAdornment</a>, <a href="../symbols/Part.html#updateAdornments" class="linkMethod">updateAdornments</a>, <a href="../symbols/Part.html#updateTargetBindings" class="linkMethod">updateTargetBindings</a></dd><dt>Methods borrowed from class <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>: </dt><dd><a href="../symbols/Panel.html#add" class="linkMethod">add</a>, <a href="../symbols/Panel.html#copy" class="linkMethod">copy</a>, <a href="../symbols/Panel.html#elt" class="linkMethod">elt</a>, <a href="../symbols/Panel.html#findColumnForLocalX" class="linkMethod">findColumnForLocalX</a>, <a href="../symbols/Panel.html#findObject" class="linkMethod">findObject</a>, <a href="../symbols/Panel.html#findRowForLocalY" class="linkMethod">findRowForLocalY</a>, <a href="../symbols/Panel.html#getColumnDefinition" class="linkMethod">getColumnDefinition</a>, <a href="../symbols/Panel.html#getRowDefinition" class="linkMethod">getRowDefinition</a>, <a href="../symbols/Panel.html#insertAt" class="linkMethod">insertAt</a>, <a href="../symbols/Panel.html#rebuildItemElements" class="linkMethod">rebuildItemElements</a>, <a href="../symbols/Panel.html#remove" class="linkMethod">remove</a>, <a href="../symbols/Panel.html#removeAt" class="linkMethod">removeAt</a>, <a href="../symbols/Panel.html#removeColumnDefinition" class="linkMethod">removeColumnDefinition</a>, <a href="../symbols/Panel.html#removeRowDefinition" class="linkMethod">removeRowDefinition</a></dd><dt>Methods borrowed from class <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>: </dt><dd><a href="../symbols/GraphObject.html#bind" class="linkMethod">bind</a>, <a href="../symbols/GraphObject.html#getDocumentAngle" class="linkMethod">getDocumentAngle</a>, <a href="../symbols/GraphObject.html#getDocumentPoint" class="linkMethod">getDocumentPoint</a>, <a href="../symbols/GraphObject.html#getDocumentScale" class="linkMethod">getDocumentScale</a>, <a href="../symbols/GraphObject.html#getLocalPoint" class="linkMethod">getLocalPoint</a>, <a href="../symbols/GraphObject.html#isContainedBy" class="linkMethod">isContainedBy</a>, <a href="../symbols/GraphObject.html#isVisibleObject" class="linkMethod">isVisibleObject</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/Part.html" class="linkConstructor">Part</a>: </dt><dd><a href="../symbols/Part.html#addAdornment" class="linkMethod">addAdornment</a>, <a href="../symbols/Part.html#canCopy" class="linkMethod">canCopy</a>, <a href="../symbols/Part.html#canDelete" class="linkMethod">canDelete</a>, <a href="../symbols/Part.html#canEdit" class="linkMethod">canEdit</a>, <a href="../symbols/Part.html#canGroup" class="linkMethod">canGroup</a>, <a href="../symbols/Part.html#canLayout" class="linkMethod">canLayout</a>, <a href="../symbols/Part.html#canMove" class="linkMethod">canMove</a>, <a href="../symbols/Part.html#canReshape" class="linkMethod">canReshape</a>, <a href="../symbols/Part.html#canResize" class="linkMethod">canResize</a>, <a href="../symbols/Part.html#canRotate" class="linkMethod">canRotate</a>, <a href="../symbols/Part.html#canSelect" class="linkMethod">canSelect</a>, <a href="../symbols/Part.html#clearAdornments" class="linkMethod">clearAdornments</a>, <a href="../symbols/Part.html#findAdornment" class="linkMethod">findAdornment</a>, <a href="../symbols/Part.html#findCommonContainingGroup" class="linkMethod">findCommonContainingGroup</a>, <a href="../symbols/Part.html#findSubGraphLevel" class="linkMethod">findSubGraphLevel</a>, <a href="../symbols/Part.html#findTopLevelPart" class="linkMethod">findTopLevelPart</a>, <a href="../symbols/Part.html#invalidateLayout" class="linkMethod">invalidateLayout</a>, <a href="../symbols/Part.html#isMemberOf" class="linkMethod">isMemberOf</a>, <a href="../symbols/Part.html#isVisible" class="linkMethod">isVisible</a>, <a href="../symbols/Part.html#move" class="linkMethod">move</a>, <a href="../symbols/Part.html#removeAdornment" class="linkMethod">removeAdornment</a>, <a href="../symbols/Part.html#updateAdornments" class="linkMethod">updateAdornments</a>, <a href="../symbols/Part.html#updateRelationshipsFromData" class="linkMethod">updateRelationshipsFromData</a>, <a href="../symbols/Part.html#updateTargetBindings" class="linkMethod">updateTargetBindings</a></dd><dt>Methods borrowed from class <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>: </dt><dd><a href="../symbols/Panel.html#add" class="linkMethod">add</a>, <a href="../symbols/Panel.html#copy" class="linkMethod">copy</a>, <a href="../symbols/Panel.html#elt" class="linkMethod">elt</a>, <a href="../symbols/Panel.html#findColumnForLocalX" class="linkMethod">findColumnForLocalX</a>, <a href="../symbols/Panel.html#findMainElement" class="linkMethod">findMainElement</a>, <a href="../symbols/Panel.html#findObject" class="linkMethod">findObject</a>, <a href="../symbols/Panel.html#findRowForLocalY" class="linkMethod">findRowForLocalY</a>, <a href="../symbols/Panel.html#getColumnDefinition" class="linkMethod">getColumnDefinition</a>, <a href="../symbols/Panel.html#getRowDefinition" class="linkMethod">getRowDefinition</a>, <a href="../symbols/Panel.html#insertAt" class="linkMethod">insertAt</a>, <a href="../symbols/Panel.html#rebuildItemElements" class="linkMethod">rebuildItemElements</a>, <a href="../symbols/Panel.html#remove" class="linkMethod">remove</a>, <a href="../symbols/Panel.html#removeAt" class="linkMethod">removeAt</a>, <a href="../symbols/Panel.html#removeColumnDefinition" class="linkMethod">removeColumnDefinition</a>, <a href="../symbols/Panel.html#removeRowDefinition" class="linkMethod">removeRowDefinition</a></dd><dt>Methods borrowed from class <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>: </dt><dd><a href="../symbols/GraphObject.html#bind" class="linkMethod">bind</a>, <a href="../symbols/GraphObject.html#getDocumentAngle" class="linkMethod">getDocumentAngle</a>, <a href="../symbols/GraphObject.html#getDocumentPoint" class="linkMethod">getDocumentPoint</a>, <a href="../symbols/GraphObject.html#getDocumentScale" class="linkMethod">getDocumentScale</a>, <a href="../symbols/GraphObject.html#getLocalPoint" class="linkMethod">getLocalPoint</a>, <a href="../symbols/GraphObject.html#isContainedBy" class="linkMethod">isContainedBy</a>, <a href="../symbols/GraphObject.html#isVisibleObject" class="linkMethod">isVisibleObject</a>, <a href="../symbols/GraphObject.html#setProperties" class="linkMethod">setProperties</a></dd>
 				</dl>
 				
 			
@@ -2186,6 +2277,57 @@
                </td>
                 <td class="description">
 								<div class="description">This value for <a href="../symbols/GraphObject.html#fromEndSegmentDirection" class="linkProperty">GraphObject.fromEndSegmentDirection</a> and<a href="../symbols/GraphObject.html#toEndSegmentDirection" class="linkProperty">GraphObject.toEndSegmentDirection</a> indicates that the link'send segment angle is rotated to match the node's angle,but only in increments of 90 degrees.
+						    
+                  </span> <!-- end summarize -->
+                </div>
+							</td>
+						</tr>
+					
+						<tr id="SpreadingEvenly">
+							<td class="attributes">&lt;constant&gt; <span class="light">{EnumValue}</span>
+							</td>
+							<td class="name">
+								<div class="name">
+								SpreadingEvenly
+                
+								</div>
+               </td>
+                <td class="description">
+								<div class="description">This default value for <a href="../symbols/Node.html#portSpreading" class="linkProperty">Node.portSpreading</a> indicates that links connecting with a portshould be distributed evenly along the side(s) indicated by a Spot that is <a href="../symbols/Spot.html#isSide" class="linkMethod">Spot.isSide</a>.
+						    
+                  </span> <!-- end summarize -->
+                </div>
+							</td>
+						</tr>
+					
+						<tr id="SpreadingNone">
+							<td class="attributes">&lt;constant&gt; <span class="light">{EnumValue}</span>
+							</td>
+							<td class="name">
+								<div class="name">
+								SpreadingNone
+                
+								</div>
+               </td>
+                <td class="description">
+								<div class="description">This value for <a href="../symbols/Node.html#portSpreading" class="linkProperty">Node.portSpreading</a> indicates that links connecting with a portshould all connect at a single point on the side(s) indicated by a Spot that is <a href="../symbols/Spot.html#isSide" class="linkMethod">Spot.isSide</a>.
+						    
+                  </span> <!-- end summarize -->
+                </div>
+							</td>
+						</tr>
+					
+						<tr id="SpreadingPacked">
+							<td class="attributes">&lt;constant&gt; <span class="light">{EnumValue}</span>
+							</td>
+							<td class="name">
+								<div class="name">
+								SpreadingPacked
+                
+								</div>
+               </td>
+                <td class="description">
+								<div class="description">This value for <a href="../symbols/Node.html#portSpreading" class="linkProperty">Node.portSpreading</a> indicates that links connecting with a portshould packed together based on the link's shape's widthon the side(s) indicated by a Spot that is <a href="../symbols/Spot.html#isSide" class="linkMethod">Spot.isSide</a>.
 						    
                   </span> <!-- end summarize -->
                 </div>

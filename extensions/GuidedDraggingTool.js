@@ -6,9 +6,9 @@
 /**
 * @constructor
 * @extends DraggingTool
-* @class 
+* @class
 * This draggingTool class makes guidelines visible as the parts are dragged around a diagram
-* when the selected part is nearly aligned with another part. 
+* when the selected part is nearly aligned with another part.
 */
 function GuidedDraggingTool() {
   go.DraggingTool.call(this);
@@ -64,7 +64,7 @@ function GuidedDraggingTool() {
 go.Diagram.inherit(GuidedDraggingTool, go.DraggingTool);
 
 /**
-* Removes all of the guidelines from the grid. 
+* Removes all of the guidelines from the grid.
 * @this {GuidedDraggingTool}
 */
 GuidedDraggingTool.prototype.clearGuidelines = function() {
@@ -114,7 +114,7 @@ GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
 
   // snaps only when the mouse is released without shift modifier
   var e = this.diagram.lastInput;
-  var snap = !e.shift;
+  var snap = this.isGuidelineSnapEnabled && !e.shift;
 
   this.showHorizontalMatches(part, this.isGuidelineEnabled, snap);
   this.showVerticalMatches(part, this.isGuidelineEnabled, snap);
@@ -123,8 +123,8 @@ GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
 /**
 * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
 * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
-* The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}. 
-* The parameters used for {@link #guidelineSnap} are also set here. 
+* The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
+* The parameters used for {@link #guidelineSnap} are also set here.
 * @this {GuidedDraggingTool}
 * @param {Part} part
 * @param {boolean} guideline if true, show guideline
@@ -173,7 +173,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
 
   if (bestPart !== null) {
     var bestBounds = bestPart.actualBounds;
-    // line extends from x0 to x2 
+    // line extends from x0 to x2
     var x0 = Math.min(partBounds.x, bestBounds.x) - 10;
     var x2 = Math.max(partBounds.x + partBounds.width, bestBounds.x + bestBounds.width) + 10;
     // find bestPart's desired Y
@@ -213,8 +213,8 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
 /**
 * This finds parts that are aligned near the selected part along vertical lines. It compares the selected
 * part to all parts within a rectangle approximately twice the {@link #searchDistance} tall.
-* The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}. 
-* The parameters used for {@link #guidelineSnap} are also set here. 
+* The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
+* The parameters used for {@link #guidelineSnap} are also set here.
 * @this {GuidedDraggingTool}
 * @param {Part} part
 * @param {boolean} guideline if true, show guideline
@@ -263,7 +263,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
 
   if (bestPart !== null) {
     var bestBounds = bestPart.actualBounds;
-    // line extends from y0 to y2 
+    // line extends from y0 to y2
     var y0 = Math.min(partBounds.y, bestBounds.y) - 10;
     var y2 = Math.max(partBounds.y + partBounds.height, bestBounds.y + bestBounds.height) + 10;
     // find bestPart's desired X

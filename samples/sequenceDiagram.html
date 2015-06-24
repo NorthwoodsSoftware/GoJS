@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Sequence Diagram</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -59,7 +60,6 @@
         ),
         $(go.Shape,
           {
-            name: "LINE",
             figure: "LineV",
             fill: null,
             stroke: "gray",
@@ -78,7 +78,7 @@
 
     // define the Activity Node template
     myDiagram.nodeTemplate =
-      $(go.Node, "Spot",
+      $(go.Node,
         {
           locationSpot: go.Spot.Top,
           locationObjectName: "SHAPE",
@@ -197,6 +197,7 @@
   }
   go.Diagram.inherit(MessageLink, go.Link);
 
+  /** @override */
   MessageLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
     var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
@@ -206,27 +207,54 @@
     var data = this.data;
     var time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
 
+    var aw = this.findActivityWidth(node, time);
+    var x = (op.x > p.x ? p.x + aw / 2 : p.x - aw / 2);
+    var y = convertTimeToY(time);
+    return new go.Point(x, y);
+  };
+
+  MessageLink.prototype.findActivityWidth = function(node, time) {
     var aw = ActivityWidth;
     if (node instanceof go.Group) {
       // see if there is an Activity Node at this point -- if not, connect the link directly with the Group's lifeline
       if (!node.memberParts.any(function(mem) {
               var act = mem.data;
               return (act !== null && act.start <= time && time <= act.start + act.duration);
-            })) {
+      })) {
         aw = 0;
       }
     }
-    var x = (op.x > p.x ? p.x + aw/2 : p.x - aw/2);
-    var y = convertTimeToY(time);
-    return new go.Point(x, y);
+    return aw;
   };
 
+  /** @override */
   MessageLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
     var op = otherport.getDocumentPoint(go.Spot.Center);
     var right = op.x > p.x;
     return right ? 0 : 180;
   };
+
+  /** @override */
+  MessageLink.prototype.computePoints = function() {
+    if (this.fromNode === this.toNode) {  // also handle a reflexive link as a simple orthogonal loop
+      var data = this.data;
+      var time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
+      var p = this.fromNode.port.getDocumentPoint(go.Spot.Center);
+      var aw = this.findActivityWidth(this.fromNode, time);
+
+      var x = p.x + aw / 2;
+      var y = convertTimeToY(time);
+      this.clearPoints();
+      this.addPoint(new go.Point(x, y));
+      this.addPoint(new go.Point(x + 50, y));
+      this.addPoint(new go.Point(x + 50, y + 5));
+      this.addPoint(new go.Point(x, y + 5));
+      return true;
+    } else {
+      return go.Link.prototype.computePoints.call(this);
+    }
+  }
 
   // end MessageLink
 
@@ -245,12 +273,14 @@
   };
   go.Diagram.inherit(MessagingTool, go.LinkingTool);
 
+  /** @override */
   MessagingTool.prototype.doActivate = function() {
     go.LinkingTool.prototype.doActivate.call(this);
     var time = convertYToTime(this.diagram.firstInput.documentPoint.y);
     this.temporaryLink.time = Math.ceil(time);  // round up to an integer value
   };
 
+  /** @override */
   MessagingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
     var newlink = go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
     if (newlink !== null) {
@@ -272,7 +302,6 @@
     }
     return newlink;
   };
-
   // end MessagingTool
 
 

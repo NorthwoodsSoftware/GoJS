@@ -1,19 +1,24 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>HTML Interaction</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
-<link href="assets/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
-<!-- Spectrum color picker -->
+<!-- Spectrum color picker, pre-requisitie for the inspector -->
 <link href="assets/spectrum.css" rel="stylesheet" type="text/css"/>
 <script src="assets/spectrum.js"></script>
+
+<link rel='stylesheet' href='../extensions/inspector.css' />
+<script src="../extensions/inspector.js"></script>
+<script src="../extensions/ExtendedBrush.js"></script>
 
 <script id="code">
   function init() {
@@ -27,16 +32,16 @@
          { allowDrop: true });  // must be true to accept drops from the Palette
 
     // define several shared Brushes
-    var grad1 = GO(go.Brush, go.Brush.Linear, { 0: "rgb(115,220,241)", 0.5: "rgb(105,210,231)", 1: "rgb(75,180,201)" });
+    var fill1 = "rgb(105,210,231)"
     var brush1 = "rgb(65,180,181)";
 
-    var grad2 = GO(go.Brush, go.Brush.Linear, { 0: "rgb(177,229,226)", 0.5: "rgb(167,219,216)", 1: "rgb(137,189,186)" });
+    var fill2 = "rgb(167,219,216)"
     var brush2 = "rgb(127,179,176)";
 
-    var grad3 = GO(go.Brush, go.Brush.Linear, { 0: "rgb(234,238,214)", 0.5: "rgb(224,228,204)", 1: "rgb(194,198,174)" });
+    var fill3 = "rgb(224,228,204)"
     var brush3 = "rgb(184,188,164)";
 
-    var grad4 = GO(go.Brush, go.Brush.Linear, { 0: "rgb(253,164,58)", 0.5: "rgb(243,134,48)", 1: "rgb(213,104,18)" });
+    var fill4 = "rgb(243,134,48)"
     var brush4 = "rgb(203,84,08)";
 
     myDiagram.nodeTemplateMap.add("", // default category
@@ -44,7 +49,7 @@
         { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         GO(go.Shape, "Ellipse",
-          { strokeWidth: 2, fill: grad1, name: "SHAPE" },
+          { strokeWidth: 2, fill: fill1, name: "SHAPE" },
           new go.Binding("figure", "figure"),
           new go.Binding("fill", "fill"),
           new go.Binding("stroke", "stroke")
@@ -64,10 +69,10 @@
     myPalette = new go.Palette("myPalette");  // must name or refer to the DIV HTML element
     myPalette.nodeTemplateMap = myDiagram.nodeTemplateMap;
     myPalette.model = new go.GraphLinksModel([
-      { text: "Lake", fill: grad1, stroke: brush1, figure: "Hexagon" },
-      { text: "Ocean", fill: grad2, stroke: brush2, figure: "Rectangle" },
-      { text: "Sand", fill: grad3, stroke: brush3, figure: "Diamond" },
-      { text: "Goldfish", fill: grad4, stroke: brush4, figure: "Octagon" }
+      { text: "Lake", fill: fill1, stroke: brush1, figure: "Hexagon" },
+      { text: "Ocean", fill: fill2, stroke: brush2, figure: "Rectangle" },
+      { text: "Sand", fill: fill3, stroke: brush3, figure: "Diamond" },
+      { text: "Goldfish", fill: fill4, stroke: brush4, figure: "Octagon" }
     ]);
 
     myPalette.addDiagramListener("InitialLayoutCompleted", function(diagramEvent) {
@@ -79,64 +84,24 @@
       pdrag.style.height = palette.documentBounds.height + 30 + "px";
     });
 
-    var info = document.getElementById("myInfo");
-    myDiagram.addDiagramListener("ChangedSelection", function (e) {
-      var sel = e.diagram.selection;
-      var str = "";
-      if (sel.count === 0) {
-        str = "Selecting nodes in the main Diagram will display information here.";
-        info.innerHTML = str;
-        return;
-      } else if (sel.count > 1) {
-        str = sel.count + " objects selected.";
-        info.innerHTML = str;
-        return;
-      }
-      // One object selected, display some information
-      var elem = sel.first();
-      var shape = elem.findObject("SHAPE");
-      var txtblock = elem.findObject("TEXT");
-      str += "<h3>Selected Node:</h3>";
-      str += "<p>Figure: " + shape.figure + "</p>";
-      str += "<p>Text: " + txtblock.text + "</p>";
-      var strokeColor = shape.stroke;
-      str += '<p style="float: left; margin-right: 10px;">Color: <input type="text" id="custom" /></p>';
-      info.innerHTML = str;
-
-      // Initialize color picker
-      $("#custom").spectrum({
-          color: strokeColor,
-
-          // Change colors by constructing a gradient
-          change: function(color) {
-            var c = color.toRgb();
-            var r,g,b;
-            var grad1 = new go.Brush(go.Brush.Linear);
-            r = Math.min(c.r + 10, 255);
-            g = Math.min(c.g + 10, 255);
-            b = Math.min(c.b + 10, 255);
-            grad1.addColorStop(0, "rgb(" + r +","+ g +","+ b + ")");
-            grad1.addColorStop(0.5, color.toRgbString());
-            r = Math.max(c.r - 30, 0);
-            g = Math.max(c.g - 30, 0);
-            b = Math.max(c.b - 30, 0);
-            grad1.addColorStop(1, "rgb(" + r +","+ g +","+ b+  ")");
-            shape.fill = grad1;
-            shape.stroke = "rgb(" + r +","+ g +","+ b+  ")";
-
-            txtblock.stroke = (r < 100 && g < 100 && b < 100) ? "white" : "black";
-          }
-      });
-    });
-
 
     $(function() {
         $("#paletteDraggable").draggable({handle: "#paletteDraggableHandle"}).resizable({
           // After resizing, perform another layout to fit everything in the palette's viewport
           stop: function(){ myPalette.layoutDiagram(true); }
+        });
+
+        var inspector = new Inspector('infoDraggable', myDiagram,
+          {
+            acceptButton: true,
+            resetButton: true,
+            propertyNames: {
+              "Node": ["location", "background", "scale", "angle", "isShadowed", "resizable"],
+              "#SHAPE": ["fill", "stroke", "strokeWidth", "figure"],
+              "#TEXT": ["text", "font"]
+            }
           });
-        $("#infoDraggable").draggable({handle: "#infoDraggableHandle"});
-    });
+        });
 
   }
 </script>
@@ -147,7 +112,7 @@
   vertical-align: top;
   border: 4px solid #BBB;
   border-radius: 4px;
-  background-color: whitesmoke;
+  background-color: #F5F5F5;
 
   position: absolute;
   top: 20px;
@@ -163,9 +128,7 @@
 }
 
 #infoDraggable {
-  width: 200px;
-  top: 60px;
-  left: 520px;
+  font: 12px helvetica, sans-serif;
 }
 
 #myInfo {
@@ -173,7 +136,7 @@
 }
 
 #myPalette {
-  background-color: whitesmoke;
+  background-color: #F5F5F5;
   width: 100%;
   height: 100%;
 }
@@ -194,10 +157,6 @@ with allowances for the title (top) and the resize handle (bottom)
 </head>
 <body onload="init()">
 <div id="sample">
-    <div id="infoDraggable" class="draggable">
-      <div id="infoDraggableHandle" class="handle">Information</div>
-      <div id="myInfo">Selecting nodes in the main Diagram will display information here</div>
-    </div>
 
     <div id="paletteDraggable" class="draggable" style="height: 300px;">
       <div id="paletteDraggableHandle" class="handle">Palette</div>
@@ -206,14 +165,22 @@ with allowances for the title (top) and the resize handle (bottom)
       </div>
     </div>
 
-    <div style="display: inline-block; vertical-align: top; padding: 5px; width:60%">
+    <div style="display: inline-block; vertical-align: top; padding: 5px; width:400px">
       <div id="myDiagram" style="background-color: whitesmoke; border: solid 1px black; height: 400px"></div>
-    <p>
-    This sample contains two draggable HTML elements (using jQuery UI).
-    One of the two HTML elements houses a panel that interacts with the main Diagram.
-    The other houses an information box that displays content based on the currently selected node.
-    </p>
     </div>
+
+    <div id="infoDraggable" style="display: inline-block; vertical-align: top; padding: 5px;">
+      <div id="myInfo">Selecting nodes in the main Diagram will display information here</div>
+    </div>
+
+    <p>
+      This sample contains a draggable HTML element (using jQuery UI), which houses a GoJS Palette.
+    </p>
+    <p>
+      A DIV to the right of the diagram houses a <a href="../extensions/inspector.html">GoJS GraphObject inspector</a>,
+      which displays some editable information about each Node.
+    </p>
+
 </div>
 </body>
 </html>

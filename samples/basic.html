@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Basic GoJS Sample</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -33,18 +34,18 @@
 
     // To simplify this code we define a function for creating a context menu button:
     function makeButton(text, action, visiblePredicate) {
-      if (visiblePredicate === undefined) visiblePredicate = function() { return true; };
       return $("ContextMenuButton",
                $(go.TextBlock, text),
                { click: action },
-               new go.Binding("visible", "", visiblePredicate).ofObject());
+               // don't bother with binding GraphObject.visible if there's no predicate
+               visiblePredicate ? new go.Binding("visible", "", visiblePredicate).ofObject() : {});
     }
 
     // a context menu is an Adornment with a bunch of buttons in them
     var partContextMenu =
       $(go.Adornment, "Vertical",
           makeButton("Properties",
-                     function(e, obj) {  // the OBJ is this Button
+                     function(e, obj) {  // OBJ is this Button
                        var contextmenu = obj.part;  // the Button is in the context menu Adornment
                        var part = contextmenu.adornedPart;  // the adornedPart is the Part that the context menu adorns
                        // now can do something with PART, or with its data, or with the Adornment (the context menu)
@@ -154,7 +155,7 @@
 
     // Define the appearance and behavior for Groups:
 
-    function groupInfo(adornment) {  // takes the tooltip, not a group node data object
+    function groupInfo(adornment) {  // takes the tooltip or context menu, not a group node data object
       var g = adornment.adornedPart;  // get the Group that the tooltip adorns
       var mems = g.memberParts.count;
       var links = 0;
@@ -250,9 +251,8 @@
   as well as several other powerful diagram editing abilities.</p>
   <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
   <p>Unlike the <a href="minimal.html">Minimal</a> sample, this sample has templates for Links and for Groups,
-  plus tooltips and context menus for Nodes, for Links, for Groups, and for the Diagram.
-  </p>
-  <p>This sample also allows the user to:</p>
+  plus tooltips and context menus for Nodes, for Links, for Groups, and for the Diagram.</p>
+  <p>This sample additionally allows the user to:</p>
   <ul>
     <li>create new nodes: double-click in the background of the diagram</li>
     <li>edit text: select the node and then click on the text, or select the node and press F2</li>
@@ -261,8 +261,8 @@
     <li>group nodes and links: select some nodes and links and then type Ctrl-G</li>
     <li>ungroup an existing group: select a group and then type Ctrl-Shift-G</li>
   </ul>
-  <p>GoJS contains many other possible commands, which can be invoked by either mouse/keyboard/touch or programatically. <a href="../intro/commands.html">See an overview of possible commands here.</a></p>
-
+  <p>GoJS contains many other possible commands, which can be invoked by either mouse/keyboard/touch or programatically.
+  <a href="../intro/commands.html">See an overview of possible commands here.</a></p>
   <p>On touch devices, hold your finger stationary to bring up a context menu.
   The default context menu supports most of the standard commands that are enabled at that time for that object.</p>
 </div>

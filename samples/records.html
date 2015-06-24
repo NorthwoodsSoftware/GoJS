@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Mapping Fields of Records</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -15,31 +16,35 @@
         $(go.Diagram, "myDiagram",
           {
             initialContentAlignment: go.Spot.Center,
-            validCycle: go.Diagram.CycleNotDirected,
+            validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
             "undoManager.isEnabled": true
-          });  // don't allow loops
+          });
 
       // This template is a Panel that is used to represent each item in a Panel.itemArray.
       // The Panel is data bound to the item object.
       var fieldTemplate =
         $(go.Panel, "TableRow",  // this Panel is a row in the containing Table
           new go.Binding("portId", "name"),  // this Panel is a "port"
-          { background: "transparent",  // so this port's background can be picked by the mouse
+          {
+            background: "transparent",  // so this port's background can be picked by the mouse
             fromSpot: go.Spot.Right,  // links only go from the right side to the left side
             toSpot: go.Spot.Left,
-            fromLinkable: true, toLinkable: true },  // allow drawing links from or to this port
+            // allow drawing links from or to this port:
+            fromLinkable: true, toLinkable: true
+          },
           $(go.Shape,
             { width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4,
+              // but disallow drawing links from or to this shape:
               fromLinkable: false, toLinkable: false },
             new go.Binding("figure", "figure"),
             new go.Binding("fill", "color")),
           $(go.TextBlock,
             { margin: new go.Margin(0, 2), column: 1, font: "bold 13px sans-serif",
+              // and disallow drawing links from or to this text:
               fromLinkable: false, toLinkable: false },
             new go.Binding("text", "name")),
           $(go.TextBlock,
-            { margin: new go.Margin(0, 2), column: 2, font: "13px sans-serif",
-              fromLinkable: false, toLinkable: false },
+            { margin: new go.Margin(0, 2), column: 2, font: "13px sans-serif" },
             new go.Binding("text", "info"))
         );
 
@@ -61,19 +66,23 @@
               $(go.Shape,
                 { fill: "#1570A6", stroke: null }),
               $(go.TextBlock,
-                { alignment: go.Spot.Center,
+                {
+                  alignment: go.Spot.Center,
                   margin: 3,
                   stroke: "white",
                   textAlign: "center",
-                  font: "bold 12pt sans-serif" },
+                  font: "bold 12pt sans-serif"
+                },
                 new go.Binding("text", "key"))),
             // this Panel holds a Panel for each item object in the itemArray;
             // each item Panel is defined by the itemTemplate to be a TableRow in this Table
             $(go.Panel, "Table",
-              { padding: 2,
+              {
+                padding: 2,
                 minSize: new go.Size(100, 10),
                 defaultStretch: go.GraphObject.Horizontal,
-                itemTemplate: fieldTemplate },
+                itemTemplate: fieldTemplate
+              },
               new go.Binding("itemArray", "fields")
             )  // end Table Panel of items
           )  // end Vertical Panel
@@ -88,7 +97,8 @@
 
       myDiagram.model =
         $(go.GraphLinksModel,
-          { linkFromPortIdProperty: "fromPort",
+          {
+            linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
             nodeDataArray: [
               { key: "Record1",
@@ -136,7 +146,8 @@
      The "record" Nodes are not movable or copyable or deletable.</p>
   <div id="myDiagram" style="border: solid 1px black; width:100%; height:300px"></div>
   <p>The model data, automatically updated after each change or undo or redo:</p>
-  <textarea id="mySavedModel" style="width:100%;height:300px" />
+  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
+  <p>See also the variation on this sample with selectable fields: <a href="recordsSelectable.html">Records Selectable</a>.</p>
 </div>
 </body>
 </html>

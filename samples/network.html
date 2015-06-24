@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Network Configuration</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -46,7 +47,7 @@
         { locationSpot: go.Spot.Center, background: "gray" },
         new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "Circle",
-          { stroke: null, fill: $(go.Brush, go.Brush.Linear, { 0: "lightgray", 1: "gray" }),
+          { stroke: null, fill: $(go.Brush, "Linear", { 0: "lightgray", 1: "gray" }),
             width: 20, height: 20, margin: 2,
             portId: "", fromLinkable: true, cursor: "pointer" })
       ));
@@ -143,6 +144,7 @@
   }
   go.Diagram.inherit(BarLink, go.Link);
 
+  /** @override */
   BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
     var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
                         port.getDocumentPoint(go.Spot.BottomRight));
@@ -158,15 +160,17 @@
     }
   };
 
+  /** @override */
   BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
     var op = otherport.getDocumentPoint(go.Spot.Center);
     var below = op.y > p.y;
     return below ? 90 : 270;
   };
+  // end BarLink class
 
 
-  // save a model to and load a model from Json text, displayed below the Diagram
+  // save a model to and load a model from JSON text, displayed below the Diagram
   function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
     myDiagram.isModified = false;

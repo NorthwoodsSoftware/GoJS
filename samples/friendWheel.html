@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Friend Wheel</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -13,6 +14,7 @@
   go.Diagram.inherit(WheelLayout, go.CircularLayout);
 
   // override makeNetwork to set the diameter of each node and ignore the TextBlock label
+  /** @override */
   WheelLayout.prototype.makeNetwork = function(coll) {
     var net = go.CircularLayout.prototype.makeNetwork.call(this, coll);
     net.vertexes.each(function(cv) {
@@ -23,6 +25,7 @@
 
   // override commitNodes to rotate nodes so the text goes away from the center,
   // and flip text if it would be upside-down
+  /** @override */
   WheelLayout.prototype.commitNodes = function() {
     go.CircularLayout.prototype.commitNodes.call(this);
     this.network.vertexes.each(function(v) {
@@ -49,7 +52,7 @@
     myDiagram =
       $(go.Diagram, "myDiagram", // must be the ID or reference to div
         {
-          autoScale: go.Diagram.Uniform,
+          initialAutoScale: go.Diagram.Uniform,
           padding: 10,
           contentAlignment: go.Spot.Center,
           layout:

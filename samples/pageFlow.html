@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Page Flow</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -11,11 +12,11 @@
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" });
-    var greengrad = $(go.Brush, go.Brush.Linear, { 0: "#98FB98", 1: "#9ACD32" });
-    var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "#B0E0E6", 1: "#87CEEB" });
-    var redgrad = $(go.Brush, go.Brush.Linear, { 0: "#C45245", 1: "#7D180C" });
-    var whitegrad = $(go.Brush, go.Brush.Linear, { 0: "#F0F8FF", 1: "#E6E6FA" });
+    var yellowgrad = $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" });
+    var greengrad = $(go.Brush, "Linear", { 0: "#98FB98", 1: "#9ACD32" });
+    var bluegrad = $(go.Brush, "Linear", { 0: "#B0E0E6", 1: "#87CEEB" });
+    var redgrad = $(go.Brush, "Linear", { 0: "#C45245", 1: "#7D180C" });
+    var whitegrad = $(go.Brush, "Linear", { 0: "#F0F8FF", 1: "#E6E6FA" });
 
     var bigfont = "bold 13pt Helvetica, Arial, sans-serif";
     var smallfont = "bold 11pt Helvetica, Arial, sans-serif";
@@ -52,7 +53,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -148,7 +149,7 @@
             new go.Binding("text", "text").makeTwoWay()),
 
           $(go.Panel, "Vertical",
-            { name: "ReasonList", defaultAlignment: go.Spot.TopLeft,
+            { defaultAlignment: go.Spot.TopLeft,
               itemTemplate: reasonTemplate },
             new go.Binding("itemArray", "reasonsList").makeTwoWay()
           )
@@ -175,9 +176,7 @@
       var adorn = obj.part;
       if (adorn === null) return;
       e.handled = true;
-      //var list = adorn.adornedPart.findObject("ReasonList");
       var arr = adorn.adornedPart.data.reasonsList;
-      // and add it to the Array of port data
       myDiagram.startTransaction("add reason");
       myDiagram.model.addArrayItem(arr, {});
       myDiagram.commitTransaction("add reason");
@@ -220,11 +219,9 @@
         { curve: go.Link.Bezier, toShortLength: 15 },
         new go.Binding("curviness", "curviness"),
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "#2F4F4F", strokeWidth: 2.5 }),
+          { stroke: "#2F4F4F", strokeWidth: 2.5 }),
         $(go.Shape,  // the arrowhead
-          { toArrow: "kite", fill: "#2F4F4F",
-            stroke: null, scale: 2 })
+          { toArrow: "kite", fill: "#2F4F4F", stroke: null, scale: 2 })
     );
 
     myDiagram.linkTemplateMap.add("Comment",
@@ -237,7 +234,7 @@
         {
           // share the template map with the Palette
           nodeTemplateMap: myDiagram.nodeTemplateMap,
-          autoScale: go.Diagram.Uniform
+          autoScale: go.Diagram.Uniform  // everything always fits in viewport
         });
 
     palette.model.nodeDataArray = [

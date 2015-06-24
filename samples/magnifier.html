@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Magnifier</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<style type="text/css">
+
+#myOverview {
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 300; /* make sure its in front */
+  border: solid 1px blue;
+  width:200px;
+  height:200px
+}
+
+</style>
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // the DIV HTML element
+        {
+          initialAutoScale: go.Diagram.Uniform,
+          layout:
+            $(go.TreeLayout,  // use a TreeLayout to position all of the nodes
+              {
+                treeStyle: go.TreeLayout.StyleLastParents,
+                angle: 90,
+                layerSpacing: 80,
+                alternateAngle: 0,
+                alternateAlignment: go.TreeLayout.AlignmentStart,
+                alternateNodeIndent: 20,
+                alternateNodeIndentPastParent: 1,
+                alternateNodeSpacing: 20,
+                alternateLayerSpacing: 40,
+                alternateLayerSpacingParentOverlap: 1,
+                alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
+                alternateChildPortSpot: go.Spot.Left
+              })
+        });
+
+    // define Converters to be used for Bindings
+    function theNationFlagConverter(nation) {
+      return "http://www.nwoods.com/go/Flags/" + nation.toLowerCase().replace(/\s/g, "-") + "-flag.Png";
+    }
+
+    function theInfoTextConverter(info) {
+      var str = "";
+      if (info.title) str += "Title: " + info.title;
+      if (info.headOf) str += "\n\nHead of: " + info.headOf;
+      if (typeof info.boss === "number") {
+        var bossinfo = myDiagram.model.findNodeDataForKey(info.boss);
+        if (bossinfo !== null) {
+          str += "\n\nReporting to: " + bossinfo.name;
+        }
+      }
+      return str;
+    }
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { isShadowed: true },
+        // the outer shape for the node, surrounding the Table
+        $(go.Shape, "Rectangle",
+          new go.Binding("fill", "isHighlighted", function(h) { return h ? "red" : "azure"; }).ofObject()),
+        // a table to contain the different parts of the node
+        $(go.Panel, "Table",
+          { margin: 4, maxSize: new go.Size(150, NaN) },
+          // the two TextBlocks in column 0 both stretch in width
+          // but align on the left side
+          $(go.RowColumnDefinition,
+            {
+              column: 0,
+              stretch: go.GraphObject.Horizontal,
+              alignment: go.Spot.Left
+            }),
+          // the name
+          $(go.TextBlock,
+            {
+              row: 0, column: 0,
+              maxSize: new go.Size(120, NaN), margin: 2,
+              font: "bold 8pt sans-serif",
+              alignment: go.Spot.Top
+            },
+            new go.Binding("text", "name")),
+          // the country flag
+          $(go.Picture,
+            {
+              row: 0, column: 1,
+              desiredSize: new go.Size(34, 26), margin: 2,
+              imageStretch: go.GraphObject.Uniform,
+              alignment: go.Spot.TopRight
+            },
+            new go.Binding("source", "nation", theNationFlagConverter)),
+          // the additional textual information
+          $(go.TextBlock,
+            {
+              row: 1, column: 0, columnSpan: 2,
+              font: "8pt sans-serif"
+            },
+            new go.Binding("text", "", theInfoTextConverter))
+        )  // end Table Panel
+      );  // end Node
+
+    // define the Link template, a simple orthogonal line
+    myDiagram.linkTemplate =
+      $(go.Link, go.Link.Orthogonal,
+        { selectable: false },
+        $(go.Shape, { stroke: '#222' } ));  // the default black link shape
+
+
+    // set up the nodeDataArray, describing each person/position
+    var nodeDataArray = [
+      { key: 0, name: "Ban Ki-moon 반기문", nation: "South Korea", title: "Secretary-General of the United Nations", headOf: "Secretariat" },
+        { key: 1, boss: 0, name: "Patricia O'Brien", nation: "Ireland", title: "Under-Secretary-General for Legal Affairs and United Nations Legal Counsel", headOf: "Office of Legal Affairs" },
+          { key: 3, boss: 1, name: "Peter Taksøe-Jensen", nation: "Denmark", title: "Assistant Secretary-General for Legal Affairs" },
+            { key: 9, boss: 3, name: "Other Employees" },
+          { key: 4, boss: 1, name: "Maria R. Vicien - Milburn", nation: "Argentina", title: "General Legal Division Director", headOf: "General Legal Division" },
+            { key: 10, boss: 4, name: "Other Employees" },
+          { key: 5, boss: 1, name: "Václav Mikulka", nation: "Czech Republic", title: "Codification Division Director", headOf: "Codification Division" },
+            { key: 11, boss: 5, name: "Other Employees" },
+          { key: 6, boss: 1, name: "Sergei Tarassenko", nation: "Russia", title: "Division for Ocean Affairs and the Law of the Sea Director", headOf: "Division for Ocean Affairs and the Law of the Sea" },
+            { key: 12, boss: 6, name: "Alexandre Tagore Medeiros de Albuquerque", nation: "Brazil", title: "Chairman of the Commission on the Limits of the Continental Shelf", headOf: "The Commission on the Limits of the Continental Shelf" },
+              { key: 17, boss: 12, name: "Peter F. Croker", nation: "Ireland", title: "Chairman of the Committee on Confidentiality", headOf: "The Committee on Confidentiality" },
+                { key: 31, boss: 17, name: "Michael Anselme Marc Rosette", nation: "Seychelles", title: "Vice Chairman of the Committee on Confidentiality" },
+                { key: 32, boss: 17, name: "Kensaku Tamaki", nation: "Japan", title: "Vice Chairman of the Committee on Confidentiality" },
+                { key: 33, boss: 17, name: "Osvaldo Pedro Astiz", nation: "Argentina", title: "Member of the Committee on Confidentiality" },
+                { key: 34, boss: 17, name: "Yuri Borisovitch Kazmin", nation: "Russia", title: "Member of the Committee on Confidentiality" },
+              { key: 18, boss: 12, name: "Philip Alexander Symonds", nation: "Australia", title: "Chairman of the Committee on provision of scientific and technical advice to coastal States", headOf: "Committee on provision of scientific and technical advice to coastal States"},
+                { key: 35, boss: 18, name: "Emmanuel Kalngui", nation: "Cameroon", title: "Vice Chairman of the Committee on provision of scientific and technical advice to coastal States" },
+                { key: 36, boss: 18, name: "Sivaramakrishnan Rajan", nation: "India", title: "Vice Chairman of the Committee on provision of scientific and technical advice to coastal States" },
+                { key: 37, boss: 18, name: "Francis L. Charles", nation: "Trinidad and Tobago", title: "Member of the Committee on provision of scientific and technical advice to costal States"},
+                { key: 38, boss: 18, name: "Mihai Silviu German", nation: "Romania", title: "Member of the Committee on provision of scientific and technical advice to costal States"},
+              { key: 19, boss: 12, name: "Lawrence Folajimi Awosika", nation: "Nigeria", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
+              { key: 20, boss: 12, name: "Harald Brekke", nation: "Norway", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
+              { key: 21, boss: 12, name: "Yong-Ahn Park", nation: "South Korea", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
+              { key: 22, boss: 12, name: "Abu Bakar Jaafar", nation: "Malaysia", title: "Chairman of the Editorial Committee", headOf: "Editorial Committee" },
+              { key: 23, boss: 12, name: "Galo Carrera Hurtado", nation: "Mexico", title: "Chairman of the Training Committee", headOf: "Training Committee" },
+              { key: 24, boss: 12, name: "Indurlall Fagoonee", nation: "Mauritius", title: "Member of the Commission on the Limits of the Continental Shelf" },
+              { key: 25, boss: 12, name: "George Jaoshvili", nation: "Georgia", title: "Member of the Commission on the Limits of the Continental Shelf" },
+              { key: 26, boss: 12, name: "Wenzhang Lu", nation: "China", title: "Member of the Commission on the Limits of the Continental Shelf" },
+              { key: 27, boss: 12, name: "Isaac Owusu Orudo", nation: "Ghana", title: "Member of the Commission on the Limits of the Continental Shelf" },
+              { key: 28, boss: 12, name: "Fernando Manuel Maia Pimentel", nation: "Portugal", title: "Member of the Commission on the Limits of the Continental Shelf" },
+          { key: 7, boss: 1, name: "Renaud Sorieul", nation: "France", title: "International Trade Law Division Director", headOf: "International Trade Law Division" },
+            { key: 13, boss: 7, name: "Other Employees" },
+          { key: 8, boss: 1, name: "Annebeth Rosenboom", nation: "Netherlands", title: "Treaty Section Chief", headOf: "Treaty Section" },
+            { key: 14, boss: 8, name: "Bradford Smith", nation: "United States", title: "Substantive Legal Issues Head", headOf: "Substantive Legal Issues" },
+              { key: 29, boss: 14, name: "Other Employees" },
+            { key: 15, boss: 8, name: "Andrei Kolomoets", nation: "Russia", title: "Technical/Legal Issues Head", headOf: "Technical/Legal Issues" },
+              { key: 30, boss: 15, name: "Other Employees" },
+            { key: 16, boss: 8, name: "Other Employees" },
+        { key: 2, boss: 0, name: "Heads of Other Offices/Departments" }
+    ];
+
+    // create the Model with data for the tree, and assign to the Diagram
+    myDiagram.model =
+      $(go.TreeModel,
+        { nodeParentKeyProperty: "boss",  // this property refers to the parent node data
+          nodeDataArray: nodeDataArray });
+  }
+
+  var myOverview = null;
+
+  function showMagnifier() {
+    var myOverviewDiv = document.getElementById("myOverview");
+    if (myOverview === null || myOverviewDiv.style.display === "none") {
+      // show DIV
+      myOverviewDiv.style.display = "inline";
+
+      // create Overview
+      myOverview =
+        go.GraphObject.make(go.Overview, myOverviewDiv,  // the HTML DIV element for the Overview
+          {
+            observed: myDiagram,   // tell it which Diagram to show
+            // disable normal Overview functionality to make it act as a magnifying glass:
+            initialScale: 2,  // zoom in even more than normal
+            autoScale: go.Diagram.None,  // don't show whole observed Diagram
+            hasHorizontalScrollbar: false,  // don't show any scrollbars
+            hasVerticalScrollbar: false
+          });
+
+      // disable all mouse-down tools
+      myOverview.toolManager.mouseDownTools.each(function(t) { t.isEnabled = false; });
+
+      // handle mouse moves within the Overview by redirecting the events to the myDiagram
+      myOverview.doMouseMove = function() {
+        var pt = myOverview.lastInput.documentPoint.copy();
+        var e = myDiagram.lastInput;
+        e.documentPoint = pt;
+        e.viewPoint = myDiagram.transformDocToView(e.documentPoint);
+        myDiagram.toolManager.doMouseMove();
+      };
+
+      // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
+      myDiagram.toolManager.doMouseMove = function() {
+        go.ToolManager.prototype.doMouseMove.call(myDiagram.toolManager);
+        var myOverviewDiv = document.getElementById("myOverview");
+        if (myOverviewDiv.style.display !== "none") {
+          var e = myDiagram.lastInput;
+          var osize = myOverview.viewportBounds.size;
+          myOverview.position = new go.Point(e.documentPoint.x - osize.width / 2, e.documentPoint.y - osize.height / 2);
+          myOverviewDiv.style.left = (e.viewPoint.x - myOverviewDiv.scrollWidth / 2) + "px";
+          myOverviewDiv.style.top = (e.viewPoint.y - myOverviewDiv.scrollHeight / 2) + "px";
+        }
+      };
+    } else {
+      // hide DIV
+      myOverviewDiv.style.display = "none";
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample" style="position: relative;">
+  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
+  <div id="myOverview"></div> <!-- Styled in a <style> tag at the top of the html page -->
+  <label><input type="checkbox" onclick="showMagnifier()" />Show Magnifier</label>
+  <p>
+    This variation of the <a href="orgChartStatic.html">Org Chart (Static)</a> sample
+    uses the <a>Overview</a> diagram as a magnifying glass.
+    The primary behavior of showing an observed Diagram is kept, but all other behaviors
+    of the Overview are disabled.
+  </p>
+</div>
+</body>
+</html>

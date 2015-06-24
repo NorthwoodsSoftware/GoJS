@@ -58,13 +58,17 @@ function BPMNLinkingTool() {
   // don't allow user to create link starting on the To node
   this.direction = go.LinkingTool.ForwardsOnly;
   this.temporaryLink.routing = go.Link.Orthogonal;
+  this.linkValidation = function(fromnode, fromport, tonode, toport) {
+      return validateSequenceLinkConnection(fromnode, fromport, tonode, toport) || 
+                 validateMessageLinkConnection(fromnode, fromport, tonode, toport);
+    };    
 }
 go.Diagram.inherit(BPMNLinkingTool, go.LinkingTool);
 
 BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
   var lsave = null;
   // maybe temporarily change the link data that is copied to create the new link
-  if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") {
+  if (validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
     lsave = this.archetypeLinkData;
     this.archetypeLinkData = { category: "msg" };
   }
@@ -82,3 +86,42 @@ BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, topo
   if (lsave !== null) this.archetypeLinkData = lsave;
   return newlink;
 };
+
+  
+// utility validation routines for linking & relinking as well as insert link logic
+
+// in BPMN, can't link sequence flows across subprocess or pool boundaries
+function validateSequenceLinkConnection(fromnode, fromport, tonode, toport) {
+
+if (fromnode.category === null || tonode.category === null) return true;
+
+// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") || 
+    (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
+    if (fromnode.containingGroup !== tonode.containingGroup) return false;
+}
+
+if (fromnode.containingGroup === tonode.containingGroup) return true;  // a valid Sequence Flow
+// also check for children in common pool
+var common = fromnode.findCommonContainingGroup(tonode);
+return common != null;
+}
+
+// in BPMN, Message Links must cross pool boundaries
+function validateMessageLinkConnection(fromnode, fromport, tonode, toport) {
+
+if (fromnode.category === null || tonode.category === null) return true;
+    
+if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") return true;    
+
+// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") || 
+    (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
+    if (fromnode.containingGroup !== tonode.containingGroup) return false;
+}
+
+if (fromnode.containingGroup === tonode.containingGroup) return false;  // an invalid Message Flow
+// also check for children in common pool
+var common = fromnode.findCommonContainingGroup(tonode);
+return common === null;
+}     

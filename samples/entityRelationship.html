@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Entity Relationship</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -22,11 +23,11 @@
         });
 
     // define several shared Brushes
-    var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-    var greengrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
-    var redgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
-    var yellowgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-    var lightgrad = $(go.Brush, go.Brush.Linear, { 1: "#E6E6FA", 0: "#FFFAF0" });
+    var bluegrad = $(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
+    var greengrad = $(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
+    var redgrad = $(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
+    var yellowgrad = $(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
+    var lightgrad = $(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
 
     // the template for each attribute in a node's array of item data
     var itemTempl =
@@ -67,23 +68,8 @@
             },
             new go.Binding("text", "key")),
           // the collapse/expand button
-          $("Button",
-            {
-              row: 0, alignment: go.Spot.TopRight,
-              "ButtonBorder.stroke": null,
-              click: function(e, but) {
-                var list = but.part.findObject("LIST");
-                if (list !== null) {
-                  list.diagram.startTransaction("collapse/expand");
-                  list.visible = !list.visible;
-                  var shape = but.findObject("SHAPE");
-                  if (shape !== null) shape.figure = (list.visible ? "TriangleUp" : "TriangleDown");
-                  list.diagram.commitTransaction("collapse/expand");
-                }
-              } 
-            },
-            $(go.Shape, "TriangleUp",
-              { name: "SHAPE", width: 6, height: 4 })),
+          $("PanelExpanderButton", "LIST",  // the name of the element whose visibility this button toggles
+            { row: 0, alignment: go.Spot.TopRight }),
           // the list of Panels, each showing an attribute
           $(go.Panel, "Vertical",
             {

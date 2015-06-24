@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Family Tree</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -20,23 +21,23 @@
               { angle: 90, nodeSpacing: 5 })
         });
 
-    var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(60, 204, 254)", 1: "rgb(70, 172, 254)" });
-    var pinkgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(255, 192, 203)", 1: "rgb(255, 142, 203)" });
+    var bluegrad = $(go.Brush, "Linear", { 0: "rgb(60, 204, 254)", 1: "rgb(70, 172, 254)" });
+    var pinkgrad = $(go.Brush, "Linear", { 0: "rgb(255, 192, 203)", 1: "rgb(255, 142, 203)" });
 
     // Set up a Part as a legend, and place it directly on the diagram
     myDiagram.add(
-      $(go.Part, go.Panel.Table,
+      $(go.Part, "Table",
         { position: new go.Point(10, 10), selectable: false },
         $(go.TextBlock, "Key",
           { row: 0, font: "bold 10pt Helvetica, Arial, sans-serif" }),  // end row 0
-        $(go.Panel, go.Panel.Horizontal,
+        $(go.Panel, "Horizontal",
           { row: 1, alignment: go.Spot.Left },
           $(go.Shape, "Rectangle",
             { desiredSize: new go.Size(30, 30), fill: bluegrad, margin: 5 }),
           $(go.TextBlock, "Males",
             { font: "bold 8pt Helvetica, bold Arial, sans-serif" })
         ),  // end row 1
-        $(go.Panel, go.Panel.Horizontal,
+        $(go.Panel, "Horizontal",
           { row: 2, alignment: go.Spot.Left },
           $(go.Shape, "Rectangle",
             { desiredSize: new go.Size(30, 30), fill: pinkgrad, margin: 5 }),
@@ -56,7 +57,7 @@
 
     // define tooltips for nodes
     var tooltiptemplate =
-      $(go.Adornment, go.Panel.Auto,
+      $(go.Adornment, "Auto",
         $(go.Shape, "Rectangle",
           { fill: "whitesmoke", stroke: "black" }),
         $(go.TextBlock,
@@ -75,7 +76,7 @@
 
     // replace the default Node template in the nodeTemplateMap
     myDiagram.nodeTemplate =
-      $(go.Node, go.Panel.Auto,
+      $(go.Node, "Auto",
         { deletable: false, toolTip: tooltiptemplate },
         new go.Binding("text", "name"),
         $(go.Shape, "Rectangle",

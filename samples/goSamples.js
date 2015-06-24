@@ -40,7 +40,7 @@ function goSamples() {
   ftr.className = "footer";
   var msg = "Copyright &copy; 1998-2015 by Northwoods Software Corporation.";
   if (window.go && window.go.version) {
-    msg = "GoJS&reg; version " + window.go.version + ". " + msg;
+    msg = "<b>GoJS</b>&reg; version " + window.go.version + " for JavaScript and HTML. " + msg;
   }
   ftr.innerHTML = msg;
   samplediv.appendChild(ftr);
@@ -144,10 +144,11 @@ var myMenu = '\
     <a href="classHierarchy.html"><li>Class Hierarchy</li></a>\
     <a href="DOMTree.html"><li>DOM Tree</li></a>\
     <a href="visualTree.html"><li>Visual Tree</li></a>\
+    <!--<a href="visualTreeGrouping.html"><li>Visual Tree Groups</li></a>-->\
     <a href="shapes.html"><li>Shapes</li></a>\
+    <!--<a href="tiger.html"><li>SVG Tiger</li></a>-->\
     <a href="icons.html"><li>SVG Icons</li></a>\
     <a href="arrowheads.html"><li>Arrowheads</li></a>\
-    <!--<a href="taperedLinks.html"><li>Tapered Links</li></a>-->\
     <a href="navigation.html"><li>Navigation</li></a>\
     <hr />\
     <a href="familyTree.html"><li>Family Tree</li></a>\
@@ -175,50 +176,78 @@ var myMenu = '\
     <a href="entityRelationship.html"><li>Entity Relationship</li></a>\
     <a href="friendWheel.html"><li>Friend Wheel</li></a>\
     <a href="radial.html"><li>Recentering Radial</li></a>\
+    <a href="distances.html"><li>Distances and Paths</li></a>\
+    <a href="sankey.html"><li>Sankey</li></a>\
     <a href="PERT.html"><li>PERT</li></a>\
     <a href="gantt.html"><li>Gantt</li></a>\
+    <!--<a href="timeline.html"><li>Timeline</li></a>-->\
     <a href="shopFloorMonitor.html"><li>Shop Floor Monitor</li></a>\
     <a href="kittenMonitor.html"><li>Kitten Monitor</li></a>\
     <!--<a href="constantSize.html"><li>Constant Size</li></a>-->\
+    <!--<a href="spacingZoom.html"><li>Spacing Zoom</li></a>-->\
     <a href="grouping.html"><li>Grouping</li></a>\
-    <a href="swimbands.html"><li>Layer Bands</li></a>\
-    <a href="swimlanes.html"><li>Swim Lanes</li></a>\
+    <a href="swimBands.html"><li>Layer Bands</li></a>\
+    <a href="swimLanes.html"><li>Swim Lanes</li></a>\
+    <!--<a href="swimLanesVertical.html"><li>Swim Lanes (V)</li></a>-->\
+    <!--<a href="spreadsheet.html"><li>Spreadsheet</li></a>-->\
+    <a href="umlClass.html"><li>UML Class</li></a>\
     <!--<a href="virtualizedTree.html"><li>Virtualized Tree</li></a>-->\
     <!--<a href="virtualizedTreeLayout.html"><li>Virtualized TreeLayout</li></a>-->\
     <!--<a href="virtualizedForceLayout.html"><li>Virtualized ForceLayout</li></a>-->\
     <hr />\
     <a href="flowchart.html"><li>Flowchart</li></a>\
     <a href="pageFlow.html"><li>Page Flow</li></a>\
-    <!--<a href="processFlow.html"><li>Process Flow</li></a>-->\
+    <a href="processFlow.html"><li>Process Flow</li></a>\
     <!--<a href="flowBuilder.html"><li>Flow Builder</li></a>-->\
     <!--<a href="flowgrammer.html"><li>Flowgrammer</li></a>-->\
     <!--<a href="network.html"><li>Network Config</li></a>-->\
     <a href="stateChart.html"><li>State Chart</li></a>\
+    <!--<a href="sharedStates.html"><li>Shared States</li></a>-->\
     <a href="sequentialFunction.html"><li>Sequential Function</li></a>\
     <a href="grafcet.html"><li>Grafcet Diagrams</li></a>\
     <a href="sequenceDiagram.html"><li>Sequence Diagram</li></a>\
     <a href="logicCircuit.html"><li>Logic Circuit</li></a>\
     <a href="records.html"><li>Record Mapper</li></a>\
+    <!--<a href="selectableFields.html"><li>Selectable Fields</li></a>-->\
+    <!--<a href="addRemoveColumns.html"><li>Add & Remove Columns</li></a>-->\
     <!--<a href="dragDropFields.html"><li>Drag & Drop Fields</li></a>-->\
     <!--<a href="dragOutFields.html"><li>Drag Out Fields</li></a>-->\
+    <a href="dataFlow.html"><li>Data Flow</li></a>\
+    <!--<a href="dataFlowVertical.html"><li>Data Flow (V)</li></a>-->\
     <a href="dynamicPorts.html"><li>Dynamic Ports</li></a>\
+    <!--<a href="selectablePorts.html"><li>Selectable Ports</li></a>-->\
+    <!--<a href="draggablePorts.html"><li>Draggable Ports</li></a>-->\
     <a href="planogram.html"><li>Planogram</li></a>\
     <a href="seatingChart.html"><li>Seating Chart</li></a>\
     <a href="regrouping.html"><li>Regrouping</li></a>\
     <!--<a href="regroupingScaled.html"><li>Regrouping Scaled</li></a>-->\
+    <!--<a href="regroupingTreeView.html"><li>Regrouping with Tree View</li></a>-->\
     <a href="pipes.html"><li>Pipes</li></a>\
     <a href="draggableLink.html"><li>Draggable Link</li></a>\
     <a href="linksToLinks.html"><li>Links to Links</li></a>\
     <a href="updateDemo.html"><li>Update Demo</li></a>\
+    <!--<a href="twoDiagrams.html"><li>Two Diagrams</li></a>-->\
+    <!--<hr />-->\
+    <!--<a href="curviness.html"><li>Curviness</li></a>-->\
+    <!--<a href="multiNodePathLinks.html"><li>Path Links</li></a>-->\
+    <!--<a href="taperedLinks.html"><li>Tapered Links</li></a>-->\
+    <!--<a href="multiArrow.html"><li>Multi Arrow</li></a>-->\
+    <!--<a href="barCharts.html"><li>Bar Charts</li></a>-->\
+    <!--<a href="pieCharts.html"><li>Pie Charts</li></a>-->\
+    <!--<a href="candlestickCharts.html"><li>Candlestick Charts</li></a>-->\
+    <!--<a href="sparklineGraphs.html"><li>Sparkline Graphs</li></a>-->\
     <hr />\
     <a href="contentAlign.html"><li>Content Alignment</li></a>\
     <a href="htmlInteraction.html"><li>HTML Interaction</li></a>\
     <!--<a href="htmlDragDrop.html"><li>HTML Drag and Drop</li></a>-->\
     <!--<a href="jQueryDragDrop.html"><li>jQuery Drag and Drop</li></a>-->\
+    <!--<a href="macros.html"><li>Macros via auto ungrouping</li></a>-->\
     <!--<a href="customTextEditingTool.html"><li>Text Editing</li></a>-->\
     <a href="customContextMenu.html"><li>Context Menu</li></a>\
     <!--<a href="htmlLightBoxContextMenu.html"><li>LightBox Context</li></a>-->\
+    <!--<a href="tabs.html"><li>Tabbed Diagrams</li></a>-->\
     <a href="canvases.html"><li>Canvases</li></a>\
+    <!--<a href="magnifier.html"><li>Magnifier</li></a>-->\
     <a href="comments.html"><li>Comments</li></a>\
     <hr />\
     <a href="gLayout.html"><li>Grid Layout</li></a>\
@@ -226,11 +255,10 @@ var myMenu = '\
     <a href="fdLayout.html"><li>Force Directed</li></a>\
     <a href="ldLayout.html"><li>Layered Digraph</li></a>\
     <a href="cLayout.html"><li>Circular Layout</li></a>\
+    <a href="interactiveForce.html"><li>Interactive Force</li></a>\
     <hr />\
     <a href="../extensions/index.html"><li>GoJS Extensions</li></a>\
     <a href="unlisted.html"><li>Unlisted Samples</li></a>\
   </ul>';
 //]]>
 // commented out sample pages are listed in unlisted.html
-
-

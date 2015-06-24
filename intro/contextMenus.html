@@ -80,11 +80,27 @@ The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
       $("ContextMenuButton",
         $(go.TextBlock, "Undo"),
         { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
-        new go.Binding("visible", "", function(o) { return o.diagram.commandHandler.canUndo(); }).ofObject()),
+        new go.Binding("visible", "", function(o) {
+                                          return o.diagram.commandHandler.canUndo();
+                                        }).ofObject()),
       $("ContextMenuButton",
         $(go.TextBlock, "Redo"),
         { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
-        new go.Binding("visible", "", function(o) { return o.diagram.commandHandler.canRedo(); }).ofObject())
+        new go.Binding("visible", "", function(o) {
+                                          return o.diagram.commandHandler.canRedo();
+                                        }).ofObject()),
+      // no binding, always visible button:
+      $("ContextMenuButton",
+        $(go.TextBlock, "New Node"),
+        { click: function(e, obj) {
+          var diagram = e.diagram;
+          diagram.startTransaction('new node');
+          var data = {};
+          diagram.model.addNodeData(data);
+          part = diagram.findPartForData(data);
+          part.location = diagram.toolManager.contextMenuTool.mouseDownPoint;
+          diagram.commitTransaction('new node');
+        } })
     );
 
   diagram.initialContentAlignment = go.Spot.Center;
@@ -105,6 +121,57 @@ Try context clicking a node and invoking the "Change Color" command a few times.
 With the diagram context menu you will be able to "Undo" and/or "Redo", or you can use Control-Z and/or Control-Y.
 </p>
 
+<h4>Positioning</h4>
+<p>
+There are two ways to customize the positioning of the context menu relative to the adorned GraphObject.
+One way is to override <a>ContextMenuTool.positionContextMenu</a>.
+Another way is to have the context menu <a>Adornment</a> include a <a>Placeholder</a>.
+The Placeholder is positioned to have the same size and position as the adorned object.
+</p>
+<pre data-language="javascript" id="contextmenusplaceholder">
+  // this is a shared context menu button click event handler, just for demonstration
+  function cmCommand(e, obj) {
+    var node = obj.part.adornedPart;  // the Node with the context menu
+    var buttontext = obj.elt(1);  // the TextBlock
+    alert(buttontext.text + " command on " + node.data.key);
+  }
+
+  // this is a normal Node template that also has a contextMenu defined for it
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key")),
+      {
+        contextMenu:                            // define a context menu for each node
+          $(go.Adornment, "Spot",               // that has several buttons around
+            $(go.Placeholder, { padding: 5 }),  // a Placeholder object
+            $("ContextMenuButton", $(go.TextBlock, "Top"),
+              { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom, click: cmCommand }),
+            $("ContextMenuButton", $(go.TextBlock, "Right"),
+              { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, click: cmCommand }),
+            $("ContextMenuButton", $(go.TextBlock, "Bottom"),
+              { alignment: go.Spot.Bottom, alignmentFocus: go.Spot.Top, click: cmCommand }),
+            $("ContextMenuButton", $(go.TextBlock, "Left"),
+              { alignment: go.Spot.Left, alignmentFocus: go.Spot.Right, click: cmCommand })
+          )  // end Adornment
+      }
+    );
+
+  diagram.initialContentAlignment = go.Spot.Center;
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightyellow" },
+    { key: "Beta", color: "orange" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("contextmenusplaceholder", 350, 200)</script>
+
 <h3>Custom Context Menus</h3>
 <p>
 It is possible to define custom context menus using HTML instead of Adornments by overriding the
@@ -114,9 +181,13 @@ The <a href="../samples/customContextMenu.html">Custom Context Menu sample</a> s
 
 <h3>Default Context Menu for Touch-enabled devices</h3>
 <p>
-Touch devices are presumed to have not keyboard ability, which makes actions like copying and pasting more difficult by default.
-Because of this, <b>GoJS</b> provides a built-in default context menu on touch devices.
-The buttons on this menu are populated dynamically, depending on the target GraphObject and Diagram and their properties.
+Touch devices are presumed to have no keyboard ability, which makes actions like copying and pasting more difficult.
+Because of this, <b>GoJS</b> provides a built-in default context menu on touch devices, implemented in HTML.
+The buttons on this menu are populated dynamically, depending on the target GraphObject (if any) and Diagram and their properties.
+</p>
+<p>
+If you define your own custom context menus, they will prevent the default context menu from appearing on touch devices.
+We recommend that your custom context menus include common commands appropriate for your app.
 </p>
 
 </div>

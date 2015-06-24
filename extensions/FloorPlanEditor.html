@@ -1,10 +1,11 @@
-<!doctype html>
+ï»¿<!DOCTYPE html>
 <html>
 <head>
 <title>Floor Plan Editor</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>
+<meta charset="UTF-8">
 <script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>
 <script src="DrawCommandHandler.js"></script>
 <script src="RotateMultipleTool.js"></script>
 <script src="ResizeMultipleTool.js"></script>
@@ -281,6 +282,15 @@
     myDiagram.nodeTemplate.contextMenu =
       $(go.Adornment, "Vertical",
         $("ContextMenuButton",
+            $(go.TextBlock, "Rename", { margin: 3 }),
+            { click: function(e, obj) { rename(obj); } }),
+        $("ContextMenuButton",
+            $(go.TextBlock, "Cut", { margin: 3 }),
+            { click: function(e, obj) { myDiagram.commandHandler.cutSelection(); } }),
+        $("ContextMenuButton",
+            $(go.TextBlock, "Copy", { margin: 3 }),
+            { click: function(e, obj) { myDiagram.commandHandler.copySelection(); } }),
+        $("ContextMenuButton",
             $(go.TextBlock, "Rotate +45", { margin: 3 }),
             { click: function(e, obj) { myDiagram.commandHandler.rotate(45); } }),
         $("ContextMenuButton",
@@ -294,10 +304,8 @@
             { click: function(e, obj) { myDiagram.commandHandler.rotate(-90); } }),
         $("ContextMenuButton",
             $(go.TextBlock, "Rotate 180", { margin: 3 }),
-            { click: function(e, obj) { myDiagram.commandHandler.rotate(180); } }),
-        $("ContextMenuButton",
-            $(go.TextBlock, "Rename", { margin: 3 }),
-            { click: function(e, obj) { rename(obj); } }));
+            { click: function(e, obj) { myDiagram.commandHandler.rotate(180); } })
+      );
 
 
     // group settings from basic.html to lock things together
@@ -358,11 +366,11 @@
     // the Palette
 
     // brushes for furniture structures
-    var wood = $(go.Brush, go.Brush.Linear, { 0: "#964514", 1: "#5E2605" });
-    var wall = $(go.Brush, go.Brush.Linear, { 0: "#A8A8A8", 1: "#545454" });
-    var blue = $(go.Brush, go.Brush.Linear, { 0: "#42C0FB", 1: "#009ACD" });
-    var metal = $(go.Brush, go.Brush.Linear, { 0: "#A8A8A8", 1: "#474747" });
-    var green = $(go.Brush, go.Brush.Linear, { 0: "#9CCB19", 1: "#698B22" });
+    var wood = $(go.Brush, "Linear", { 0: "#964514", 1: "#5E2605" });
+    var wall = $(go.Brush, "Linear", { 0: "#A8A8A8", 1: "#545454" });
+    var blue = $(go.Brush, "Linear", { 0: "#42C0FB", 1: "#009ACD" });
+    var metal = $(go.Brush, "Linear", { 0: "#A8A8A8", 1: "#474747" });
+    var green = $(go.Brush, "Linear", { 0: "#9CCB19", 1: "#698B22" });
 
     // default structures and furniture
     myPalette =
@@ -514,6 +522,7 @@
   // enable or disable all context-sensitive command buttons
   function enableAll() {
     var cmdhnd = myDiagram.commandHandler;
+    enable("Rename", myDiagram.selection.count > 0);
     enable("Undo", cmdhnd.canUndo());
     enable("Redo", cmdhnd.canRedo());
     enable("Cut", cmdhnd.canCutSelection());
@@ -541,8 +550,10 @@
 
   // changes the item of the object
   function rename(obj) {
+    if (!obj) obj = myDiagram.selection.first();
+    if (!obj) return;
     myDiagram.startTransaction("rename");
-    var newName = prompt("Rename " + obj.part.data.item + " to:");
+    var newName = prompt("Rename " + obj.part.data.item + " to:", obj.part.data.item);
     myDiagram.model.setDataProperty(obj.part.data, "item", newName);
     myDiagram.commitTransaction("rename");
   }
@@ -794,7 +805,8 @@
         </li>
         <li><a href="#">Edit</a>
             <ul>
-                <li><a id="Undo" href="#" onclick="myDiagram.commandHandler.undo()">Undo</a></li>
+                <li><a id="Rename" href="#" onclick="rename()">Rename</a></li>
+                <li><a id="A1" href="#" onclick="myDiagram.commandHandler.undo()">Undo</a></li>
                 <li><a id="Redo" href="#" onclick="myDiagram.commandHandler.redo()">Redo</a></li>
                 <li><a id="Cut" href="#" onclick="myDiagram.commandHandler.cutSelection()">Cut</a></li>
                 <li><a id="Copy" href="#" onclick="myDiagram.commandHandler.copySelection()">Copy</a></li>
@@ -821,11 +833,11 @@
         </li>
         <li><a href="#">Rotate</a>
             <ul>
-                <li><a id="Rotate45" href="#" onclick="myDiagram.commandHandler.rotate(45)">45°</a></li>
-                <li><a id="Rotate_45" href="#" onclick="myDiagram.commandHandler.rotate(-45)">-45°</a></li>
-                <li><a id="Rotate90" href="#" onclick="myDiagram.commandHandler.rotate(90)">90°</a></li>
-                <li><a id="Rotate_90" href="#" onclick="myDiagram.commandHandler.rotate(-90)">-90°</a></li>
-                <li><a id="Rotate180" href="#" onclick="myDiagram.commandHandler.rotate(180)">180°</a></li>
+                <li><a id="Rotate45" href="#" onclick="myDiagram.commandHandler.rotate(45)">45Â°</a></li>
+                <li><a id="Rotate_45" href="#" onclick="myDiagram.commandHandler.rotate(-45)">-45Â°</a></li>
+                <li><a id="Rotate90" href="#" onclick="myDiagram.commandHandler.rotate(90)">90Â°</a></li>
+                <li><a id="Rotate_90" href="#" onclick="myDiagram.commandHandler.rotate(-90)">-90Â°</a></li>
+                <li><a id="Rotate180" href="#" onclick="myDiagram.commandHandler.rotate(180)">180Â°</a></li>
             </ul>
         </li>
         <li><a href="#">Options</a>

@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Genogram</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -347,6 +348,7 @@
     }
     go.Diagram.inherit(GenogramLayout, go.LayeredDigraphLayout);
 
+    /** @override */
     GenogramLayout.prototype.makeNetwork = function(coll) {
       // generate LayoutEdges for each parent-child Link
       var net = this.createNetwork();
@@ -422,6 +424,7 @@
       }
     };
 
+    /** @override */
     GenogramLayout.prototype.assignLayers = function() {
       go.LayeredDigraphLayout.prototype.assignLayers.call(this);
       var horiz = this.direction == 0.0 || this.direction == 180.0;
@@ -451,6 +454,7 @@
       // (other than the ones that are the widest or tallest in their respective layer).
     };
 
+    /** @override */
     GenogramLayout.prototype.commitNodes = function() {
       go.LayeredDigraphLayout.prototype.commitNodes.call(this);
       // position regular nodes
@@ -502,14 +506,14 @@
       }
       return null;
     };
-
     // end GenogramLayout class
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
   <div id="myDiagram" style="border: solid 1px blue; width:100%; height:600px"></div>
-  <p>A <em>genogram</em> is an extended family tree diagram that show information about each person or each relationship.</p>
+  <p>A <em>genogram</em> is an extended family tree diagram that displays information about each person or each relationship.</p>
+  <p>For a simpler family tree see the <a href="familyTree.html">family tree sample</a>.</p>
   <p>The node data representing the people, processed by the <code>setupDiagram</code> function:</p>
   <pre id="peopleData">[
     { key: 0, n: "Aaron", s: "M", m:-10, f:-11, ux: 1, a: ["C", "F", "K"] },
@@ -544,7 +548,7 @@
     { key: -40, n: "Great Uncle", s: "M", m: -33, f: -32, a: ["F", "H"] },
     { key: -41, n: "Great Aunt", s: "F", m: -33, f: -32, a: ["B", "I"] },
     { key: -20, n: "Uncle", s: "M", m: -11, f: -10, a: ["A"] },
-          
+
     // "Alice"'s ancestors
     { key: -12, n: "Maternal Grandfather", s: "M", ux: -13, a: ["D", "L"] },
     { key: -13, n: "Maternal Grandmother", s: "F", m: -31, f: -30, a: ["H"] },

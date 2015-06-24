@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Table Layout</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="TableLayout.js"></script>
+
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        {
+          initialContentAlignment: go.Spot.Center,
+          // use TableLayout, and don't layout continuously while dragging a Node in a Group
+          layout: $(TableLayout, { isRealtime: false }),
+          allowDrop: true,
+          // when dropped in the background, not on a Node or a Group:
+          mouseDrop: function(e) { e.diagram.currentTool.doCancel(); },
+          "undoManager.isEnabled": true
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { width: 100, height: 50 },
+        new go.Binding("row"),
+        new go.Binding("column", "col"),
+        $(go.Shape, { fill: "white" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          new go.Binding("text", "key"))
+      );
+
+    myDiagram.nodeTemplateMap.add("Column",
+      $(go.Part, "Table",
+        { selectable: false, pickable: false, layerName: "Background" },
+        { row: 0, rowSpan: 9999, stretch: go.GraphObject.Fill, minSize: new go.Size(100, 100), margin: 4 },
+        new go.Binding("row"),
+        new go.Binding("column", "col"),
+        $(go.TextBlock,
+          { row: 0, alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.BottomLeft,
+            font: "10pt sans-serif" },
+          new go.Binding("text")),
+        $(go.Shape, { row: 1, fill: "lightgray", stretch: go.GraphObject.Fill },
+          new go.Binding("fill", "color"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Header",
+      $(go.Part, "Auto",
+        { selectable: false, pickable: false },
+        { column: 0, columnSpan: 9999, stretch: go.GraphObject.Horizontal, margin: 4 },
+        new go.Binding("row"),
+        $(go.Shape, { fill: "lightgray", height: 22 },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock, { alignment: go.Spot.Left, stroke: "white", font: "bold 12pt sans-serif", margin: 2 },
+          new go.Binding("text"))
+      ));
+
+    myDiagram.groupTemplate =
+      $(go.Group, "Auto",
+        { movable: false, deletable: false, copyable: false },
+        { margin: 8, alignment: go.Spot.TopLeft },
+        new go.Binding("row"),
+        new go.Binding("column", "col"),
+        // leave room for "Column" part's header TextBlock in first row;
+        // the margin is double that of the "Column" part
+        new go.Binding("margin", "row", function(r) { return new go.Margin((r === 1 ? 22 : 0), 8, 8, 8); }),
+        $(go.Shape, { fill: "white" },
+          new go.Binding("fill", "color"),
+          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; }).ofObject()),
+        $(go.Panel, "Vertical",
+          { margin: 4 },
+          $(go.TextBlock, { alignment: go.Spot.TopLeft, font: "bold 10pt sans-serif" },
+            new go.Binding("text", "key"),
+            new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; }).ofObject()),
+          $(go.Placeholder)
+        ),
+        {
+          layout: $(go.GridLayout, { wrappingColumn: 1 }),
+          handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+          mouseDragEnter: function(e, group, prev) { group.isHighlighted = true; },
+          mouseDragLeave: function(e, group, next) { group.isHighlighted = false; },
+          mouseDrop: function(e, group) {
+            var ok = group.addMembers(group.diagram.selection, true);
+            if (!ok) group.diagram.currentTool.doCancel();
+          }
+        }
+      );
+
+    myDiagram.model = new go.GraphLinksModel([
+      { text: "Title", color: "firebrick", row: 0, category: "Header" },
+      { text: "Column 0", color: "lightyellow", row: 1, col: 0, category: "Column" },
+      { text: "Column 1", color: "lightyellow", row: 1, col: 1, category: "Column" },
+      { text: "Column 2", color: "lightyellow", row: 1, col: 2, category: "Column" },
+      { key: "Group 1", color: "cyan", row: 1, col: 1, isGroup: true },
+      { key: "Group 2", color: "lightgreen", row: 1, col: 2, isGroup: true },
+      { key: "Group 3", color: "yellow", row: 2, col: 2, isGroup: true },
+      { key: "Delta", color: "orange", size: "100 100", group: "Group 1" },
+      { key: "Epsilon", color: "coral", size: "100 50", group: "Group 1" },
+      { key: "Zeta", color: "tomato", size: "50 70", group: "Group 2" },
+      { key: "Eta", color: "coral", size: "50 50", group: "Group 3" },
+      { key: "Theta", color: "tomato", size: "100 50", group: "Group 3" }
+    ]);
+
+    myPalette =
+      $(go.Palette, "myPalette",
+        {
+          nodeTemplateMap: myDiagram.nodeTemplateMap,
+          "model.nodeDataArray": [
+            { key: "Alpha", color: "orange" },
+            { key: "Beta", color: "tomato" },
+            { key: "Gamma", color: "goldenrod" }
+          ]
+        });
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div>
+    <span style="display:inline-block; vertical-align:top; width:120px">
+      <div id="myPalette" style="border: solid 1px black; height:600px"></div>
+    </span>
+    <span style="display:inline-block; vertical-align:top; width:70%">
+      <div id="myDiagram" style="border: solid 1px black; height:600px"></div>
+    </span>
+  </div>
+  <p>
+  This sample demonstrates a custom Layout, TableLayout, that is very much like a simplified "Table" Panel layout,
+  but working on non-Link Parts in a Diagram or a Group rather than on GraphObjects in a Panel.
+  The layout is defined in its own file, as <a href="TableLayout.js">TableLayout.js</a>.
+  </p>
+  <p>
+  You can drag-and-drop nodes from the Palette into any Group.
+  Dragging into a Group highlights the Group.
+  Drops must occur inside Groups; otherwise the action is cancelled.
+  </p>
+  <p>
+  This example assumes the Groups are predefined and fixed at a particular row/column,
+  but this sample could be extended to allow Groups to be added, moved, and removed.
+  </p>
+</div>
+</body>
+</html>

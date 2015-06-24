@@ -1,8 +1,9 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Local View</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -14,7 +15,7 @@
       myFullDiagram =
         $(go.Diagram, "fullDiagram",  // each diagram refers to its DIV HTML element by id
           {
-            autoScale: go.Diagram.Uniform,  // automatically scale down to show whole tree
+            initialAutoScale: go.Diagram.Uniform,  // automatically scale down to show whole tree
             contentAlignment: go.Spot.Center,  // center the tree in the viewport
             isReadOnly: true,  // don't allow user to change the diagram
             layout: $(go.TreeLayout,
@@ -57,7 +58,7 @@
         $(go.Link,
           { routing: go.Link.Normal, selectable: false },
           $(go.Shape,
-            { isPanelMain: true, strokeWidth: 1 })
+            { strokeWidth: 1 })
         );
       myFullDiagram.linkTemplate = myLinkTemplate;
       myLocalDiagram.linkTemplate = myLinkTemplate;
@@ -76,7 +77,7 @@
           },
           $(go.Shape, "Ellipse",
             {
-              fill: $(go.Brush, go.Brush.Radial, { 0.0: "yellow", 1.0: "white" }),
+              fill: $(go.Brush, "Radial", { 0.0: "yellow", 1.0: "white" }),
               stroke: null,
               desiredSize: new go.Size(400, 400)
             })
@@ -160,7 +161,6 @@
 <div id="sample">
   <div id="fullDiagram" style="height:250px;width:100%;border:1px solid black;margin:2px"></div>
   <div id="localDiagram" style="height:350px;width:100%;border:1px solid black;margin:2px"></div>
-  <div id="description">
   <p>
   This sample includes two diagrams, the one on top showing a full tree and the one below
   focusing on a specific node in the tree and those nodes that are logically "near" it.
@@ -175,7 +175,6 @@
   And one could use more detailed templates in the bottom Diagram,
   where there is more room to show information for each node.
   </p>
-  </div>
 </div>
 </body>
 </html>

@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Bar Charts</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+        { initialContentAlignment: go.Spot.Center });
+
+    // the template for each item in a node's array of item data
+    var itemTempl =
+      $(go.Panel, "TableColumn",
+        $(go.Shape,
+          { row: 0, alignment: go.Spot.Bottom },
+          { fill: "slateblue", stroke: null, width: 40 },
+          new go.Binding("height", "val"),
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { row: 1 },
+          new go.Binding("text")),
+        {
+          toolTip:
+            $(go.Adornment, "Auto",
+              $(go.Shape, { fill: "#EFEFCC" }),
+              $(go.TextBlock, { margin: 4 },
+                new go.Binding("text", "val"))
+            )
+        }
+      );
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape,
+          { fill: "white" }),
+        $(go.Panel, "Vertical",
+          $(go.Panel, "Table",
+            { margin: 6, itemTemplate: itemTempl },
+            new go.Binding("itemArray", "items")),
+          $(go.TextBlock,
+            { font: "bold 12pt sans-serif" },
+            new go.Binding("text"))
+        )
+      );
+
+    var nodeDataArray = [
+      {
+        key: 1,
+        text: "Before",
+        items: [ { text: "first", val: 50 },
+                 { text: "second", val: 70 },
+                 { text: "third", val: 60 },
+                 { text: "fourth", val: 80 } ]
+      },
+      {
+        key: 2,
+        text: "After",
+        items: [ { text: "first", val: 50 },
+                 { text: "second", val: 70 },
+                 { text: "third", val: 75, color: "red" },
+                 { text: "fourth", val: 80 } ]
+      }
+    ];
+    var linkDataArray = [
+      { from: 1, to: 2 }
+    ];
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <p>
+    Each node contains a Table Panel whose <a>Panel.itemArray</a> is data bound to the "items" property which holds an Array of data objects.
+    That Table Panel has an <a>Panel.itemTemplate</a> which creates a bar (a rectangular Shape) and a TextBlock label for each item.
+    Each bar also has a tooltip showing the value.
+  </p>
+</div>
+</body>
+</html>

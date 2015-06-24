@@ -247,7 +247,8 @@ a second incoming link to any node and also ensures that the user draw no cycles
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
-  diagram.validCycle = go.Diagram.CycleDestinationTree;  // only allow links that maintain tree-structure
+  // only allow links that maintain tree-structure
+  diagram.validCycle = go.Diagram.CycleDestinationTree;
 </pre>
 <script>goCode("tree", 600, 250)</script>
 <p>
@@ -291,9 +292,11 @@ You will see that the only permitted link destinations are nodes of the same col
     $(go.Link,
       { curve: go.Link.Bezier, relinkableFrom: true, relinkableTo: true },
       $(go.Shape, { strokeWidth: 2 },
-        new go.Binding("stroke", "fromNode", function(n) { return n.data.color; }).ofObject()),
+        new go.Binding("stroke", "fromNode", function(n) { return n.data.color; })
+            .ofObject()),
       $(go.Shape, { toArrow: "Standard", stroke: null},
-        new go.Binding("fill", "fromNode", function(n) { return n.data.color; }).ofObject())
+        new go.Binding("fill", "fromNode", function(n) { return n.data.color; })
+            .ofObject())
     );
 
   // this predicate is true if both nodes have the same color
@@ -366,6 +369,8 @@ You can verify that by moving the group to see if the textual node moves too.
       {
         // only allow those simple nodes that have the same data key prefix:
         memberValidation: samePrefix,
+        // don't need to define handlers on member Nodes and Links
+        handlesDragDropForMembers: true,
         // support highlighting of Groups when allowing a drop to add a member
         mouseDragEnter: function(e, grp, prev) {
           // this will call samePrefix; it is true if any node has the same key prefix
@@ -454,7 +459,8 @@ Setting the property on the <a>TextEditingTool</a> causes the predicate to be ap
 whereas setting the property on the <a>TextBlock</a> only applies to that text object.
 </p>
 <pre data-language="javascript" id="textEditing">
-  // this predicate is true if the new string has at least three characters and has a vowel in it
+  // this predicate is true if the new string has at least three characters
+  // and has a vowel in it
   function okName(textblock, oldstr, newstr) {
     return newstr.length >= 3 && /[aeiouy]/i.test(newstr);
   };

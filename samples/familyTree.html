@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <title>Family Tree</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -17,11 +18,11 @@
           allowCopy: false,
           layout:  // create a TreeLayout for the family tree
             $(go.TreeLayout,
-              { angle: 90, nodeSpacing: 5 })
+              { angle: 90, nodeSpacing: 10, layerSpacing: 40, layerStyle: go.TreeLayout.LayerUniform })
         });
 
-    var bluegrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(60, 204, 254)", 1: "rgb(70, 172, 254)" });
-    var pinkgrad = $(go.Brush, go.Brush.Linear, { 0: "rgb(255, 192, 203)", 1: "rgb(255, 142, 203)" });
+    var bluegrad = $(go.Brush, "Linear", { 0: "rgb(60, 204, 254)", 1: "rgb(70, 172, 254)" });
+    var pinkgrad = $(go.Brush, "Linear", { 0: "rgb(255, 192, 203)", 1: "rgb(255, 142, 203)" });
 
     // Set up a Part as a legend, and place it directly on the diagram
     myDiagram.add(
@@ -86,8 +87,8 @@
           new go.Binding("fill", "gender", genderBrushConverter)),
         $(go.TextBlock,
           { font: "bold 8pt Helvetica, bold Arial, sans-serif",
-            alignment: go.Spot.Center,
-            margin: 6 },
+            textAlign: "center",
+            margin: 6, maxSize: new go.Size(90, NaN) },
           new go.Binding("text", "name"))
       );
 
@@ -186,12 +187,29 @@
 
     // create the model for the family tree
     myDiagram.model = new go.TreeModel(nodeDataArray);
+
+    document.getElementById('zoomToFit').addEventListener('click', function() {
+      myDiagram.zoomToFit();
+    });
+
+    document.getElementById('centerRoot').addEventListener('click', function() {
+      myDiagram.scale = 1;
+      myDiagram.scrollToRect(myDiagram.findNodeForKey(0).actualBounds);
+    });
+
   }
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
   <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <p><button id="zoomToFit">Zoom to Fit</button> <button id="centerRoot">Center on root</button></p>
+  <p>This family tree diagram shows several generations of British royalty beginning with George V (1865-1936).</p>
+  <p>Node data contains information about gender, and a data-binding assigns a corresponding color.</p>
+  <p>For a more complex family tree see the <a href="genogram.html">genogram sample</a>.</p>
+
+
+
 </div>
 </body>
 </html>

@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Pie Charts</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagram",
+        {
+          initialContentAlignment: go.Spot.Center,
+          nodeTemplate:
+            $(go.Node, "Vertical",
+              $(go.Panel,
+                new go.Binding("itemArray", "slices"),
+                {
+                  itemTemplate:
+                    $(go.Panel,
+                      $(go.Shape,
+                        { fill: "lightgreen", isGeometryPositioned: true },
+                        new go.Binding("fill", "color"),
+                        new go.Binding("geometry", "", makeGeo)),
+                      {
+                        toolTip:
+                          $(go.Adornment, "Auto",
+                            $(go.Shape, { fill: "#EFEFCC" }),
+                            $(go.TextBlock, { margin: 4 },
+                              new go.Binding("text", "", function(data) {
+                                   return data.color + ": " + data.start +
+                                          " to " + (data.start+data.sweep);
+                                 }))
+                          )
+                      }
+                    )
+                }),
+              $(go.TextBlock,
+                new go.Binding("text"))
+            ),
+          model: new go.GraphLinksModel([  // node data
+              {
+                key: 1,
+                text: "full circle",
+                slices: [
+                  { start: -30, sweep: 60, color: "white" },
+                  { start: 30, sweep: 300, color: "red" }
+                ]
+              },
+              {
+                key: 2,
+                text: "partial circle",
+                slices: [
+                  { start: 0, sweep: 120, color: "lightgreen" },
+                  { start: 120, sweep: 70, color: "blue" },
+                  { start: 250, sweep: 20, color: "yellow" }
+                ]
+              }
+            ], [  // link data
+              { from: 1, to: 2 }
+            ])
+        }
+      );
+
+    function makeGeo(data) {
+      // this is much more efficient than calling go.GraphObject.make:
+      return new go.Geometry()
+            .add(new go.PathFigure(50, 50)  // start point
+                 .add(new go.PathSegment(go.PathSegment.Arc,
+                                         data.start, data.sweep,  // angles
+                                         50, 50,  // center
+                                         50, 50)  // radius
+                      .close()));
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="border: solid 1px blue; width: 100%; height: 500px;"></div>
+  <p>
+    Each node has a Position Panel whose <a>Panel.itemArray</a> is data bound to the "slices" property of the node data.
+    That "slices" property is an Array of data objects; for each item the <a>Panel.itemTemplate</a> produces a Shape whose
+    <a>Shape.geometry</a> is computed using a conversion function to generate a pie-shaped slice given a start angle
+    and a sweep angle from the item data.
+    Note that <a>Shape.isGeometryPositioned</a> is true to make sure all of the Shapes are positioned
+    by their computed geometries, independent of any stroke width.
+    Each slice Panel also has a tooltip showing some information.
+  </p>
+</div>
+</body>
+</html>

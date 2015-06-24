@@ -115,11 +115,13 @@ var myDiagram =
     <h2>Diagrams and Models</h2>
 
     <p>
-      The contents of a Diagram are managed by a Model.
-      GoJS has a  model-view architecture,
+      The Nodes and Links of a Diagram are visualizations of data that is managed by a Model.
+      GoJS has a model-view architecture,
       where Models hold the data (arrays of JavaScript objects) that describe nodes and links,
       and Diagrams act as views to visualize this data using actual Node and Link objects.
       Models, not Diagrams, are what you load and then save after editing.
+      You add whatever properties you need for your app on the data objects in the model;
+      you do not add properties to or modify the prototype of the Diagram and GraphObject classes.
     </p>
 
     <p>
@@ -131,12 +133,12 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      initialContentAlignment: go.Spot.Center, // Center Diagram contents
+      initialContentAlignment: go.Spot.Center, // center Diagram contents
       "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
     });
 
 var myModel = $(go.Model);
-// In our model data, each node is represented by a JavaScript object:
+// in our model data, each node is represented by a JavaScript object:
 myModel.nodeDataArray = [
   { key: "Alpha" },
   { key: "Beta" },
@@ -152,12 +154,12 @@ myDiagram.model = myModel;
     var myDiagram =
       $(go.Diagram, "myDiagramDiv2",
         {
-          initialContentAlignment: go.Spot.Center, // Center Diagram contents
+          initialContentAlignment: go.Spot.Center, // center Diagram contents
           "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
         });
 
     var myModel = $(go.Model);
-    // In our model data, each node is represented by a JavaScript object:
+    // in our model data, each node is represented by a JavaScript object:
     myModel.nodeDataArray = [
       { key: "Alpha" },
       { key: "Beta" },
@@ -201,7 +203,7 @@ myDiagram.model = myModel;
     <p>
       We want our model data properties to affect our Nodes, and this is done by way of data bindings.
       Data bindings allow us to change the appearance and behavior of GraphObjects in Nodes by automatically setting
-      properties on those GraphObjects.  You can choose to use whatever property names you like on the node data.
+      properties on those GraphObjects.  You can choose to use whatever property names you like on the node data in the model.
     </p>
 
     <p>
@@ -225,13 +227,13 @@ myDiagram.nodeTemplate =
 
     <pre><code>
 myDiagram.nodeTemplate =
-  $(go.Node, "Vertical" // Second argument of a Node/Panel can be a Panel type
+  $(go.Node, "Vertical" // second argument of a Node/Panel can be a Panel type
     { /* set Node properties here */ },
     // example Node binding sets Node.location to the value of Node.data.loc
     new go.Binding("location", "loc"),
 
     // GraphObjects contained within the Node
-    // This Shape will be vertically above the TextBlock
+    // this Shape will be vertically above the TextBlock
     $(go.Shape,
       "RoundedRectangle", // string argument can name a predefined figure
       { /* set Shape properties here */ },
@@ -270,14 +272,14 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      initialContentAlignment: go.Spot.Center, // Center Diagram contents
+      initialContentAlignment: go.Spot.Center, // center Diagram contents
       "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
     });
 
 // define a simple Node template
 myDiagram.nodeTemplate =
   $(go.Node, "Horizontal",
-    // The entire node will have a light-blue background
+    // the entire node will have a light-blue background
     { background: "#44CCFF" },
     $(go.Picture,
       // Pictures should normally have an explicit width and height.
@@ -288,7 +290,7 @@ myDiagram.nodeTemplate =
       new go.Binding("source")),
     $(go.TextBlock,
       "Default Text",  // the initial value for TextBlock.text
-      // Some room around the text, a larger font, and a white stroke:
+      // some room around the text, a larger font, and a white stroke:
       { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
       // TextBlock.text is data bound to the "name" attribute of the model data
       new go.Binding("text", "name"))
@@ -296,7 +298,8 @@ myDiagram.nodeTemplate =
 
 var model = $(go.Model);
 model.nodeDataArray =
-[ // note that each node data object holds whatever properties it needs
+[ // note that each node data object holds whatever properties it needs;
+  // for this app we add the "name" and "source" properties
   { name: "Don Meow", source: "cat1.png" },
   { name: "Copricat", source: "cat2.png" },
   { name: "Demeter",  source: "cat3.png" },
@@ -314,24 +317,24 @@ myDiagram.model = model;
     var myDiagram =
       $(go.Diagram, "myDiagramDiv3",
         {
-          initialContentAlignment: go.Spot.Center, // Center Diagram contents
+          initialContentAlignment: go.Spot.Center, // center Diagram contents
           "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
         });
 
     // define a simple Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Horizontal",
-        // The entire node will have a light-blue background
+        // the entire node will have a light-blue background
         { background: "#44CCFF" },
         $(go.Picture,
-          // The picture has a red background, only visible when there is no source set
+          // the picture has a red background, only visible when there is no source set
           // or when the image is partially transparent
           { margin: 10, width: 50, height: 50, background: "red" },
           // Picture.source is data bound to the "source" attribute of model data:
           new go.Binding("source")),
         $(go.TextBlock,
           "Default Text",  // the initial value for TextBlock.text
-          // Some room around the text, a larger font, and a white stroke
+          // some room around the text, a larger font, and a white stroke
           { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
           // TextBlock.text is data bound to the "name" attribute of model data:
           new go.Binding("text", "name"))
@@ -339,7 +342,8 @@ myDiagram.model = model;
 
     var model = $(go.Model);
     model.nodeDataArray =
-    [
+    [ // note that each node data object holds whatever properties it needs;
+      // for this app we add the "name" and "source" properties
       { name: "Don Meow",  source: "cat1.png" },
       { name: "Copricat", source: "cat2.png" },
       { name: "Demeter", source: "cat3.png" },
@@ -432,7 +436,7 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      initialContentAlignment: go.Spot.Center, // Center Diagram contents
+      initialContentAlignment: go.Spot.Center, // center Diagram contents
       "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
     });
 
@@ -469,7 +473,7 @@ myDiagram.model = model;
     var myDiagram =
       $(go.Diagram, "myDiagramDiv4",
         {
-          initialContentAlignment: go.Spot.Center, // Center Diagram contents
+          initialContentAlignment: go.Spot.Center, // center Diagram contents
           "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
         });
 
@@ -525,7 +529,7 @@ myDiagram.model = model;
     </p>
 
     <pre><code>
-// Define a TreeLayout that flows from top to bottom
+// define a TreeLayout that flows from top to bottom
 myDiagram.layout =
   $(go.TreeLayout,
     { angle: 90, layerSpacing: 35 });
@@ -544,8 +548,10 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      initialContentAlignment: go.Spot.Center, // Center Diagram contents
-      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+      initialContentAlignment: go.Spot.Center, // center Diagram contents
+      "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+      layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
+                { angle: 90, layerSpacing: 35 })
     });
 
 // the template we defined earlier
@@ -559,10 +565,6 @@ myDiagram.nodeTemplate =
       { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
       new go.Binding("text", "name"))
   );
-
-myDiagram.layout =
-  $(go.TreeLayout,
-    { angle: 90, layerSpacing: 35 });
 
 var model = $(go.TreeModel);
 model.nodeDataArray =
@@ -584,8 +586,10 @@ myDiagram.model = model;
     var myDiagram =
       $(go.Diagram, "myDiagramDiv5",
         {
-          initialContentAlignment: go.Spot.Center, // Center Diagram contents
-          "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+          initialContentAlignment: go.Spot.Center, // center Diagram contents
+          "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+          layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
+                    { angle: 90, layerSpacing: 35 })
         });
 
     // the template we defined earlier
@@ -599,10 +603,6 @@ myDiagram.model = model;
           { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
           new go.Binding("text", "name"))
       );
-
-    myDiagram.layout =
-      $(go.TreeLayout,
-        { angle: 90, layerSpacing: 35 });
 
     var model = $(go.TreeModel);
     model.nodeDataArray =
@@ -636,15 +636,15 @@ myDiagram.model = model;
     </p>
 
     <pre><code>
-// Define a Link template that routes orthogonally, with no arrowhead
+// define a Link template that routes orthogonally, with no arrowhead
 myDiagram.linkTemplate =
   $(go.Link,
-    // Default routing is go.Link.Normal
-    // Default corner is 0
+    // default routing is go.Link.Normal
+    // default corner is 0
     { routing: go.Link.Orthogonal, corner: 5 },
     $(go.Shape, { strokeWidth: 3, stroke: "#555" }) // the link shape
 
-    // If we wanted an arrowhead we would also add another Shape with toArrow defined:
+    // if we wanted an arrowhead we would also add another Shape with toArrow defined:
     // $(go.Shape, { toArrow: "Standard", stroke: null }
     );
     </code></pre>
@@ -660,8 +660,10 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      initialContentAlignment: go.Spot.Center, // Center Diagram contents
-      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+      initialContentAlignment: go.Spot.Center, // center Diagram contents
+      "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+      layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
+                { angle: 90, layerSpacing: 35 })
     });
 
 // the template we defined earlier
@@ -676,15 +678,11 @@ myDiagram.nodeTemplate =
       new go.Binding("text", "name"))
   );
 
-// Define a Link template that routes orthogonally, with no arrowhead
+// define a Link template that routes orthogonally, with no arrowhead
 myDiagram.linkTemplate =
   $(go.Link,
     { routing: go.Link.Orthogonal, corner: 5 },
     $(go.Shape, { strokeWidth: 3, stroke: "#555" })); // the link shape
-
-myDiagram.layout =
-  $(go.TreeLayout,
-    { angle: 90, layerSpacing: 35 });
 
 var model = $(go.TreeModel);
 model.nodeDataArray =
@@ -706,8 +704,10 @@ myDiagram.model = model;
     var myDiagram =
       $(go.Diagram, "myDiagramDiv6",
         {
-          initialContentAlignment: go.Spot.Center, // Center Diagram contents
-          "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+          initialContentAlignment: go.Spot.Center, // center Diagram contents
+          "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+          layout: $(go.TreeLayout,
+                    { angle: 90, layerSpacing: 35 })
         });
 
     // the template we defined earlier
@@ -722,15 +722,11 @@ myDiagram.model = model;
           new go.Binding("text", "name"))
       );
 
-    // Define a Link template that routes orthogonally, with no arrowhead
+    // define a Link template that routes orthogonally, with no arrowhead
     myDiagram.linkTemplate =
       $(go.Link,
         { routing: go.Link.Orthogonal, corner: 5 },
         $(go.Shape, { strokeWidth: 3, stroke: "#555" })); // the link shape
-
-    myDiagram.layout =
-      $(go.TreeLayout,
-        { angle: 90, layerSpacing: 35 });
 
     var model = $(go.TreeModel);
     model.nodeDataArray =

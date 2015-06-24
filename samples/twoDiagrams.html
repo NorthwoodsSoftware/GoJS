@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Two Diagrams</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<script src="../extensions/Robot.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    // ****** First Diagram ******
+
+    myDiagram = $(go.Diagram, "myDiagram",
+                  {
+                    initialContentAlignment: go.Spot.Center,
+                    allowDragOut: true,
+                    allowDrop: true,
+                    "commandHandler.archetypeGroupData": { isGroup: true }
+                  });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          { portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },
+          new go.Binding("text", "key")));
+
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Beta", to: "Beta" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+
+    // ****** Second Diagram ******
+
+    myDiagram2 = $(go.Diagram, "myDiagram2",
+                  {
+                    initialContentAlignment: go.Spot.Center,
+                    allowDragOut: true,
+                    allowDrop: true,
+                    "commandHandler.archetypeGroupData": { isGroup: true }
+                  });
+
+    // share templates with the first diagram
+    myDiagram2.nodeTemplate = myDiagram.nodeTemplate;
+
+    myDiagram2.model = new go.GraphLinksModel(
+    [
+      { key: "Zeta", color: "lightblue" },
+      { key: "Eta", color: "orange" }
+    ],
+    [
+      { from: "Zeta", to: "Eta" }
+    ]);
+
+    // A Diagram listener must be placed on both Diagrams.
+    // When a collection of Parts is dragged into a diagram and dropped, the normal behavior is
+    // to copy the data and create new Parts in the destination diagram.
+    // To simulate a "move", the source Node must be deleted.
+    // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
+    myDiagram2.addDiagramListener("ExternalObjectsDropped", function(e) {
+      if (myDiagram.commandHandler.canDeleteSelection() && !myDiagram.lastInput.control) {
+        myDiagram.commandHandler.deleteSelection();
+      }
+    });
+    myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
+      if (myDiagram2.commandHandler.canDeleteSelection() && !myDiagram2.lastInput.control) {
+        myDiagram2.commandHandler.deleteSelection();
+      }
+    });
+
+    // The Diagrams share the same undo manager
+    myDiagram.model.undoManager = myDiagram2.model.undoManager;
+    myDiagram.model.undoManager.isEnabled = true;
+
+    // handle undo or redo maybe changing Diagram properties controlled by check boxes
+    myDiagram.addChangedListener(makeHandleUndo(false));
+    myDiagram.model.addChangedListener(makeHandleUndo(true));
+    myDiagram2.model.addChangedListener(makeHandleUndo(true));
+
+    allChecks(true);
+  }
+
+  function makeHandleUndo(forModel) {
+    return function(e) {
+      if ((forModel && e.model !== null) || (!forModel && e.diagram !== null)) {
+        //if (window.console) window.console.log(e.toString());
+      }
+      if (e.isTransactionFinished) {
+        allChecks(true);
+      }
+    }
+  }
+
+  function allChecks(set) {
+    var MD1allowDragOut = document.getElementById("MD1allowDragOut");
+    var MD1allowDrop = document.getElementById("MD1allowDrop");
+    var MD1isReadOnly = document.getElementById("MD1isReadOnly");
+    var MD1allowDelete = document.getElementById("MD1allowDelete");
+    var MD1allowInsert = document.getElementById("MD1allowInsert");
+    var MD1allowMove = document.getElementById("MD1allowMove");
+
+    var MD2allowDragOut = document.getElementById("MD2allowDragOut");
+    var MD2allowDrop = document.getElementById("MD2allowDrop");
+    var MD2isReadOnly = document.getElementById("MD2isReadOnly");
+    var MD2allowDelete = document.getElementById("MD2allowDelete");
+    var MD2allowInsert = document.getElementById("MD2allowInsert");
+    var MD2allowMove = document.getElementById("MD2allowMove");
+
+    if (set) {
+      MD1allowDragOut.checked = myDiagram.allowDragOut;
+      MD1allowDrop.checked = myDiagram.allowDrop;
+      MD1isReadOnly.checked = myDiagram.isReadOnly;
+      MD1allowCopy.checked = myDiagram.allowCopy;
+      MD1allowDelete.checked = myDiagram.allowDelete;
+      MD1allowInsert.checked = myDiagram.allowInsert;
+      MD1allowMove.checked = myDiagram.allowMove;
+
+      MD2allowDragOut.checked = myDiagram2.allowDragOut;
+      MD2allowDrop.checked = myDiagram2.allowDrop;
+      MD2isReadOnly.checked = myDiagram2.isReadOnly;
+      MD2allowCopy.checked = myDiagram2.allowCopy;
+      MD2allowDelete.checked = myDiagram2.allowDelete;
+      MD2allowInsert.checked = myDiagram2.allowInsert;
+      MD2allowMove.checked = myDiagram2.allowMove;
+    } else {
+      myDiagram.startTransaction('a');
+      myDiagram.allowDragOut = MD1allowDragOut.checked;
+      myDiagram.allowDrop = MD1allowDrop.checked;
+      myDiagram.isReadOnly = MD1isReadOnly.checked;
+      myDiagram.allowCopy = MD1allowCopy.checked;
+      myDiagram.allowDelete = MD1allowDelete.checked;
+      myDiagram.allowInsert = MD1allowInsert.checked;
+      myDiagram.allowMove = MD1allowMove.checked;
+
+      myDiagram2.allowDragOut = MD2allowDragOut.checked;
+      myDiagram2.allowDrop = MD2allowDrop.checked;
+      myDiagram2.isReadOnly = MD2isReadOnly.checked;
+      myDiagram2.allowCopy = MD2allowCopy.checked;
+      myDiagram2.allowDelete = MD2allowDelete.checked;
+      myDiagram2.allowInsert = MD2allowInsert.checked;
+      myDiagram2.allowMove = MD2allowMove.checked;
+      myDiagram.commitTransaction('a');
+    }
+  }
+
+  function dragBetaAcross() {
+    var robot = new Robot(myDiagram);
+    var beta = myDiagram.findNodeForKey("Beta");
+    if (beta !== null) {
+      var opts = { sourceDiagram: myDiagram, targetDiagram: myDiagram2 };
+      var loc = beta.location;
+      robot.mouseDown(loc.x + 10, loc.y + 10, 0, opts);
+      robot.mouseMove(loc.x + 20, loc.y + 10, 100, opts);
+      robot.mouseMove(60, 20, 200, opts);
+      robot.mouseUp(80, 50, 300, opts);
+    } else {
+      if (window.console) window.console.log("Beta not found in myDiagram");
+    }
+  }
+
+  function copyBetaBack() {
+    var robot = new Robot(myDiagram2);
+    var beta = myDiagram2.findNodeForKey("Beta");
+    if (beta !== null) {
+      // turn off deletion in myDiagram2
+      var delbutton = document.getElementById("MD2allowDelete");
+      delbutton.checked = false;
+      delbutton.onclick();  // better way to simulate clicking on check box?
+
+      // now dragging between diagrams won't delete the source node in myDiagram2
+      var opts = { sourceDiagram: myDiagram2, targetDiagram: myDiagram };
+      var loc = beta.location;
+      robot.mouseDown(loc.x + 10, loc.y + 10, 0, opts);
+      robot.mouseMove(loc.x - 20, loc.y + 10, 100, opts);
+      robot.mouseMove(160, 40, 200, opts);
+      robot.mouseUp(80, 10, 300, opts);
+    } else {
+      if (window.console) window.console.log("Beta not found in myDiagram2");
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>In this sample dragging from one Diagram to the other effectively "moves" the selection. It does this by having an "ExternalObjectsDropped" Diagram listener on each Diagram, which deletes the selection in the original Diagram when it is dropped on an external one.</p>
+  <p>The two Diagrams do not share a Model, but the two Models do share the same UndoManager:</p>
+  <pre>myDiagram.model.undoManager = myDiagram2.model.undoManager;</pre>
+  <p>Hence an undo or redo in one Diagram affects the other Diagram. This allows Node "moves" to be undone across Diagrams.</p>
+  <p>(This is different from the <a href="updateDemo.html">Update Demo</a>, which is an example of two Diagrams sharing/showing the same Model.)</p>
+  <div id="Column1" style="float:left; margin-right:20px">
+    <div id="myDiagram" style="border: solid 1px black; width:350px; height:300px"></div>
+    <p>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1allowDragOut" />allowDragOut</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1allowDrop" />allowDrop</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1isReadOnly" />isReadOnly</label>
+    </p>
+    <p>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1allowCopy" />allowCopy</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1allowDelete" />allowDelete</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1allowInsert" />allowInsert</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD1allowMove" />allowMove</label>
+    </p>
+  </div>
+  <div id="Column2" style="float:left; margin-right:20px">
+    <div id="myDiagram2" style="border: solid 1px black; width:350px; height:300px"></div>
+    <p>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2allowDragOut" />allowDragOut</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2allowDrop" />allowDrop</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2isReadOnly" />isReadOnly</label>
+    </p>
+    <p>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2allowCopy" />allowCopy</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2allowDelete" />allowDelete</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2allowInsert" />allowInsert</label>
+      <label><input type="checkbox" onclick="allChecks()" id="MD2allowMove" />allowMove</label>
+    </p>
+  </div>
+  <div>
+  Using the Robot extension class:<br />
+  <button onclick="dragBetaAcross()">Drag Beta across</button><br />
+  <button onclick="copyBetaBack()">Copy Beta back</button>
+  </div>
+</div>
+</body>
+</html>

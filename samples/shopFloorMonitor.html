@@ -1,8 +1,9 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Shop Floor Monitor</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -13,7 +14,9 @@
 
       myDiagram =
         $(go.Diagram, "myDiagram",
-          { initialContentAlignment: go.Spot.Center });
+          { "animationManager.isEnabled": false,
+            initialContentAlignment: go.Spot.Center
+          });
 
       // conversion functions for Bindings in the Node template:
 
@@ -30,7 +33,7 @@
         }
         if (type.charAt(0) === "S") return
         if (type.charAt(0) === "P") return "images/general processor.jpg";
-        if (type.charAt(0) === "M") 
+        if (type.charAt(0) === "M")
         return "images/pc.jpg";
       }
 
@@ -67,11 +70,11 @@
             ),  // end Auto Panel
             $(go.Shape, "Circle",
               { alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.TopLeft,
-                width: 10, height: 10, fill: "orange" },
+                width: 12, height: 12, fill: "orange" },
               new go.Binding("figure", "operation", nodeOperationConverter)),
             $(go.Shape, "Triangle",
               { alignment: go.Spot.TopRight, alignmentFocus: go.Spot.TopRight,
-                width: 10, height: 10, fill: "blue" },
+                width: 12, height: 12, fill: "blue" },
               new go.Binding("fill", "status", nodeStatusConverter))
           ),  // end Spot Panel
           $(go.TextBlock,
@@ -83,14 +86,14 @@
 
       function linkProblemConverter(msg) {
         if (msg) return "red";
-        return "black";
+        return "gray";
       }
 
       myDiagram.linkTemplate =
         $(go.Link, go.Link.AvoidsNodes,
           { corner: 3 },
           $(go.Shape,
-            { strokeWidth: 2 },
+            { strokeWidth: 2, stroke: "gray" },
             new go.Binding("stroke", "problem", linkProblemConverter))
         );
 
@@ -131,16 +134,16 @@
 <body onload="init()">
 <div id="sample">
   <h3>Monitor display</h3>
+  <div id="myDiagram" style="border: solid 1px black; width:80%; height:400px"></div>
   <p>
-    This continuously shows the state of a number of stations on an imaginary shop floor.
+    This monitoring diagram continuously shows the state of a number of stations on an imaginary shop floor.
     Every two seconds it updates the display, showing some random problems via highlighting.
     You can add nodes and links by adding data to the model text below and then clicking "Load".
   </p>
-  <div id="myDiagram" style="border: solid 1px black; width:100%; height:500px"></div>
   <button onclick="load()">Load</button>
   <br />
   <textarea id="mySavedModel" style="width:100%;height:300px">
-{ "nodeDataArray": [ 
+{ "nodeDataArray": [
 {"key":"1", "text":"Switch 23", "type":"S2", "loc":"195 225"},
 {"key":"2", "text":"Machine 17", "type":"M4", "loc":"183.5 94"},
 {"key":"3", "text":"Panel 7", "type":"P2", "loc":"75 211.5"},
@@ -148,7 +151,7 @@
 {"key":"5", "text":"Machine 18", "type":"M5", "loc":"288.5 95"},
 {"key":"6", "text":"Panel 9", "type":"P1", "loc":"426 211"},
 {"key":"7", "text":"Instr 3", "type":"I1", "loc":"-50 218"} ],
-  "linkDataArray": [ 
+  "linkDataArray": [
 {"from":"1", "to":"2"},
 {"from":"1", "to":"3"},
 {"from":"1", "to":"4"},

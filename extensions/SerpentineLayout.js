@@ -32,10 +32,13 @@ go.Diagram.inherit(SerpentineLayout, go.Layout);
 * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
 */
 SerpentineLayout.prototype.doLayout = function(coll) {
-  if (coll === this.diagram) {
-    coll = this.diagram.nodes;
-  } else if (coll === this.group) {
-    coll = this.group.memberParts;
+  var diagram = this.diagram;
+  if (coll instanceof go.Diagram) {
+    diagram = coll;
+    coll = coll.nodes;  // use all links connecting with these nodes
+  } else if (coll instanceof go.Group) {
+    diagram = coll.diagram;
+    coll = coll.memberParts;
   }
 
   var root = null;
@@ -57,10 +60,10 @@ SerpentineLayout.prototype.doLayout = function(coll) {
 
   // calculate the width at which we should start a new row
   var wrap = this.wrap;
-  if (this.diagram !== null && isNaN(wrap)) {
+  if (diagram !== null && isNaN(wrap)) {
     if (this.group === null) {  // for a top-level layout, use the Diagram.viewportBounds
-      var pad = this.diagram.padding;
-      wrap = Math.max(spacing.width * 2, this.diagram.viewportBounds.width - 24 - pad.left - pad.right);
+      var pad = diagram.padding;
+      wrap = Math.max(spacing.width * 2, diagram.viewportBounds.width - 24 - pad.left - pad.right);
     } else {
       wrap = 1000; // provide a better default value?
     }
@@ -68,7 +71,7 @@ SerpentineLayout.prototype.doLayout = function(coll) {
 
   // implementations of doLayout that do not make use of a LayoutNetwork
   // need to perform their own transactions
-  this.diagram.startTransaction("Serpentine Layout");
+  if (diagram !== null) diagram.startTransaction("Serpentine Layout");
 
   // start on the left, at Layout.arrangementOrigin
   var x = this.arrangementOrigin.x;
@@ -126,7 +129,7 @@ SerpentineLayout.prototype.doLayout = function(coll) {
     node = nextnode;
   }
 
-  this.diagram.commitTransaction("Serpentine Layout");
+  if (diagram !== null) diagram.commitTransaction("Serpentine Layout");
 };
 
 // Public properties

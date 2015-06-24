@@ -3,6 +3,7 @@
 <head>
 <title>Beat Paths</title>
 <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -15,7 +16,7 @@
     myDiagram =
       $(go.Diagram, "myDiagram",
         { // automatically scale the diagram to fit the viewport's size
-          autoScale: go.Diagram.Uniform,
+          initialAutoScale: go.Diagram.Uniform,
           // start everything in the middle of the viewport
           initialContentAlignment: go.Spot.Center,
           // disable user copying of parts
@@ -44,16 +45,11 @@
     // replace the default Link template in the linkTemplateMap
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
-        { routing: go.Link.Normal,
-          curve: go.Link.Bezier,
-          toShortLength: 2 },
+        { curve: go.Link.Bezier, toShortLength: 2 },
         $(go.Shape,  // the link shape
-          { isPanelMain: true,
-            stroke: "black",
-            strokeWidth: 1.5 }),
+          { strokeWidth: 1.5 }),
         $(go.Shape,  // the arrowhead
-          { toArrow: "standard",
-            stroke: null })
+          { toArrow: "Standard", stroke: null })
       );
 
     // the array of link data objects: the relationships between the nodes
@@ -103,13 +99,14 @@
     ];
 
     // create the model and assign it to the Diagram
-    var model = new go.GraphLinksModel();
-    // automatically create node data objects for each "from" or "to" reference
-    // (set this property before setting the linkDataArray)
-    model.archetypeNodeData = {};
-    // process all of the link relationship data
-    model.linkDataArray = linkDataArray;
-    myDiagram.model = model;
+    myDiagram.model =
+      $(go.GraphLinksModel,
+        { // automatically create node data objects for each "from" or "to" reference
+          // (set this property before setting the linkDataArray)
+          archetypeNodeData: {},
+          // process all of the link relationship data
+          linkDataArray: linkDataArray
+        });
   }
 
   function convertKeyImage(key) {
