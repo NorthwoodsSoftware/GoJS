@@ -1,22 +1,19 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <title>Virtualized Tree</title>
+  <title>Virtualized Sample with no Layout</title>
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
   <script src="go.js"></script>
   <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
-    // this controls whether the tree grows deeper towards the right or downwards:
-    var HORIZONTAL = true;
-
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       // The Diagram just shows what should be visible in the viewport.
-      // Its model does NOT include node data for the whole tree, but only that
+      // Its model does NOT include node data for everything, but only that
       // which might be visible in the viewport.
       myDiagram =
         $(go.Diagram, "myDiagram",
@@ -25,17 +22,14 @@
             initialDocumentSpot: go.Spot.Center,
             initialViewportSpot: go.Spot.Center,
 
-            // Do manual layout in the layoutTree function below, rather than automatic layout using a
-            // TreeLayout which would require the Nodes and Links to exist first for an accurate layout.
-            //layout: $(go.TreeLayout,
-            //          { nodeSpacing: 4, compaction: go.TreeLayout.CompactionNone }),
+            // Assume there's no Layout
 
             // Define the template for Nodes, used by virtualization.
             nodeTemplate:
               $(go.Node, "Auto",
                 new go.Binding("position", "bounds", function(b) { return b.position; })
                               .makeTwoWay(function(p, d) { d.bounds.position = p; return d.bounds; }),
-                { width: 70, height: 20 },  // in cooperation with the loadTree function, below
+                { width: 70, height: 20 },  // in cooperation with the load function, below
                 $(go.Shape, "Rectangle",
                   new go.Binding("fill", "c")),
                 $(go.TextBlock,
@@ -47,7 +41,7 @@
                       $(go.Shape, { fill: "lightyellow" }),
                       $(go.TextBlock, { margin: 3 },
                         new go.Binding("text", "",
-                                       function(d) { return "key: " + d.k + "\nbounds: " + d.bounds.toString(); }))
+                                       function(d) { return "key: " + d.key + "\nbounds: " + d.bounds.toString(); }))
                     )
                 }
               ),
@@ -55,33 +49,24 @@
             // Define the template for Links
             linkTemplate:
               $(go.Link,
-                {
-                  fromSpot: (HORIZONTAL ? go.Spot.Right : go.Spot.Bottom),
-                  toSpot: (HORIZONTAL ? go.Spot.Left : go.Spot.Top)
-                },
-                $(go.Shape)
+                $(go.Shape),
+                $(go.Shape, { toArrow: "OpenTriangle" })
               ),
-            "animationManager.isEnabled": false
+
+            "animationManager.isEnabled": false,
+            "undoManager.isEnabled": true
           });
 
-      // This model includes the entire tree of data
-      myTreeModel =
-        $(go.TreeModel,
-          { // we use single character property names, to save space when rendered as JSON
-            nodeKeyProperty: "k",
-            nodeParentKeyProperty: "p"
-          });  // must match the TreeModel used by the Diagram, below
+      // This model includes all of the data
+      myWholeModel =
+        $(go.GraphLinksModel);  // must match the model used by the Diagram, below
 
-      // Do not set myDiagram.model = myTreeModel -- that would create a zillion Nodes and Links!
+      // Do not set myDiagram.model = myWholeModel -- that would create a zillion Nodes and Links!
       // In the future Diagram may have built-in support for virtualization.
       // For now, we have to implement virtualization ourselves by having the Diagram's model
       // be different than the "real" model.
       myDiagram.model =
-        $(go.TreeModel,  // this only holds nodes that should be in the viewport
-          {
-            nodeKeyProperty: "k",
-            nodeParentKeyProperty: "p"
-          });  // must match myTreeModel, above
+        $(go.GraphLinksModel);  // must match the model, above
 
       // This is a status message
       myLoading =
@@ -94,60 +79,34 @@
       myDiagram.add(myLoading);
 
       // Allow the myLoading indicator to be shown now,
-      // but allow objects added in loadTree to also be considered part of the initial Diagram.
+      // but allow objects added in load to also be considered part of the initial Diagram.
       // If you are not going to add temporary initial Parts, don't call delayInitialization.
-      myDiagram.delayInitialization(loadTree);
+      myDiagram.delayInitialization(load);
     }
 
-    function loadTree() {
-      // create a lot of tree data for the myTreeModel
+    function load() {
+      // create a lot of data for myWholeModel
       var total = 123456;
-      var treedata = [];
+      var sqrt = Math.sqrt(total);
+      var data = [];
       for (var i = 0; i < total; i++) {
-        var d = {
-          k: i,  // this node data's key
+        data.push({
+          key: i,  // this node data's key
           c: go.Brush.randomColor(),  // the node's color
-          p: (i > 0 ? Math.floor(Math.random() * i / 2) : undefined)  // the random parent's key
-        };
-        //!!!???@@@ this needs to be customized to account for your chosen Node template
-        d.bounds = new go.Rect(0, 0, 70, 20);
-        treedata.push(d);
+          //!!!???@@@ this needs to be customized to account for your chosen Node template
+          bounds: new go.Rect((i%sqrt)*100, (i/sqrt)*100, 70, 20)
+        });
       }
-      myTreeModel.nodeDataArray = treedata;
+      myWholeModel.nodeDataArray = data;
 
-      // make it faster to get from a model parent data object to all of the children data
-      improveNavigation(myTreeModel);
+      // can't depend on regular bounds computation that depends on all Nodes existing
+      myDiagram.fixedBounds = computeDocumentBounds(myWholeModel);
 
-      // this sets the data.bounds on each node data
-      // and Diagram.fixedBounds on the diagram, so the diagram knows how far it can scroll
-      layoutTree(myTreeModel);
-
-      // for now, we have to implement virtualization ourselves,
-      // and only after layoutTree() has finished
+      // for now, we have to implement virtualization ourselves
       myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
 
       // remove the status indicator
       myDiagram.remove(myLoading);
-    }
-
-    // this adds ._parent and ._children properties on each node data
-    function improveNavigation(model) {  // this must be a TreeModel
-      var tdata = model.nodeDataArray;
-      // create an Array of child data references for each parent data
-      for (var i = 0; i < tdata.length; i++) {
-        var child = tdata[i];
-        var parentkey = model.getParentKeyForNodeData(child);
-        var parent = model.findNodeDataForKey(parentkey);
-        if (parent) {
-          child._parent = parent;
-          var childarr = parent._children;
-          if (childarr) {
-            childarr.push(child);
-          } else {
-            parent._children = [child];
-          }
-        }
-      }
     }
 
     // make sure the Parts (Nodes and Links) exist as the user scrolls or zooms
@@ -157,7 +116,7 @@
       var viewb = myDiagram.viewportBounds;  // the new viewportBounds
       var model = myDiagram.model;
 
-      var tdata = myTreeModel.nodeDataArray;
+      var tdata = myWholeModel.nodeDataArray;
       for (var i = 0; i < tdata.length; i++) {
         var d = tdata[i];
         if (!d.bounds) continue;
@@ -220,7 +179,7 @@
     // This function is only used in this sample to demonstrate the effects of the virtualization.
     // In a real application you would delete this function and all calls to it.
     function updateCounts() {
-      document.getElementById("myMessage1").textContent = myTreeModel.nodeDataArray.length;
+      document.getElementById("myMessage1").textContent = myWholeModel.nodeDataArray.length;
       document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
     }
 
@@ -240,74 +199,6 @@
       }
       return b;
     }
-
-
-    // A very simple tree layout.
-    // Basic tree layout parameters
-    var nodeSpacing = 4;
-    var layerSpacing = 50;
-
-    // Layout the whole tree just using the model, not any Nodes or Links.
-    function layoutTree(model) {
-      var tdata = model.nodeDataArray;
-      // layout each tree root
-      if (HORIZONTAL) {
-        var y = 0;
-        for (var i = 0; i < tdata.length; i++) {
-          var d = tdata[i];
-          // is this a root node?
-          if (!d._parent) {
-            y = walkTreeH(d, 0, y) + d.bounds.height + nodeSpacing;
-          }
-        }
-      } else {  // !HORIZONTAL
-        var x = 0;
-        for (var i = 0; i < tdata.length; i++) {
-          var d = tdata[i];
-          // is this a root node?
-          if (!d._parent) {
-            x = walkTreeV(d, x, 0) + d.bounds.width + nodeSpacing;
-          }
-        }
-      }
-
-      // can't depend on regular bounds computation that depends on all Nodes existing
-      myDiagram.fixedBounds = computeDocumentBounds(model);
-    }
-
-    // Walk subtrees from each root node, positioning as we go.
-    function walkTreeH(parent, oldx, oldy) {  // HORIZONTAL
-      var origy = oldy;
-      var newy = oldy;
-      var childarr = parent._children;
-      if (childarr) {
-        for (var i = 0; i < childarr.length; i++) {
-          var child = childarr[i];
-          newy = walkTreeH(child, oldx + child.bounds.width + layerSpacing, oldy);
-          oldy = newy + child.bounds.height + nodeSpacing;
-        }
-      }
-      parent.bounds.x = oldx;
-      parent.bounds.y = (origy + newy) / 2;
-      return newy;
-    }
-
-    function walkTreeV(parent, oldx, oldy) {  // !HORIZONTAL
-      var origx = oldx;
-      var newx = oldx;
-      var childarr = parent._children;
-      if (childarr) {
-        for (var i = 0; i < childarr.length; i++) {
-          var child = childarr[i];
-          newx = walkTreeV(child, oldx, oldy + child.bounds.height + layerSpacing);
-          oldx = newx + child.bounds.width + nodeSpacing;
-        }
-      }
-      parent.bounds.x = (origx + newx) / 2;
-      parent.bounds.y = oldy;
-      return newx;
-    }
-    // end of layoutTree functionality
   </script>
 </head>
 <body onload="init()">
@@ -315,9 +206,9 @@
   <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
   <div id="description">
   <p>
-  This uses a <a>TreeModel</a> but not <a>TreeLayout</a>.
+  This uses a <a>GraphLinksModel</a> but not any <a>Layout</a>.
   </p>
-  Node data in TreeModel: <span id="myMessage1"></span>.
+  Node data in Model: <span id="myMessage1"></span>.
   Actual Nodes in Diagram: <span id="myMessage2"></span>.
   </div>
 </div>

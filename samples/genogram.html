@@ -213,7 +213,7 @@
           { key: -12, n: "Maternal Grandfather", s: "M", ux: -13, a: ["D", "L", "S"] },
           { key: -13, n: "Maternal Grandmother", s: "F", m: -31, f: -30, a: ["H", "S"] },
           { key: -21, n: "Aunt", s: "F", m: -13, f: -12, a: ["C", "I"] },
-          { key: -22, n: "???", s: "M", ux: -21 },
+          { key: -22, n: "uncle", s: "M", ux: -21 },
           { key: -23, n: "cousin", s: "M", m: -21, f: -22 },
           { key: -30, n: "Maternal Great", s: "M", ux: -31, a: ["D", "J", "S"] },
           { key: -31, n: "Maternal Great", s: "F", m: -50, f: -51, a: ["B", "H", "L", "S"] },
@@ -253,7 +253,7 @@
       }
     }
 
-    function findMarriage(diagram, a, b) {
+    function findMarriage(diagram, a, b) {  // A and B are node keys
       var nodeA = diagram.findNodeForKey(a);
       var nodeB = diagram.findNodeForKey(b);
       if (nodeA !== null && nodeB !== null) {
@@ -345,6 +345,7 @@
     // A custom layout that shows the two families related to a person's parents
     function GenogramLayout() {
       go.LayeredDigraphLayout.call(this);
+      this.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
     }
     go.Diagram.inherit(GenogramLayout, go.LayeredDigraphLayout);
 
@@ -476,13 +477,20 @@
         lablink.invalidateRoute();
         var spouseA = lablink.fromNode;
         var spouseB = lablink.toNode;
+        // prefer fathers on the left, mothers on the right
+        if (spouseA.data.s === "F") {  // sex is female
+          var temp = spouseA;
+          spouseA = spouseB;
+          spouseB = temp;
+        }
         // see if the parents are on the desired sides, to avoid a link crossing
         var aParentsNode = layout.findParentsMarriageLabelNode(spouseA);
         var bParentsNode = layout.findParentsMarriageLabelNode(spouseB);
         if (aParentsNode !== null && bParentsNode !== null && aParentsNode.position.x > bParentsNode.position.x) {
           // swap the spouses
-          spouseA = lablink.toNode;
-          spouseB = lablink.fromNode;
+          var temp = spouseA;
+          spouseA = spouseB;
+          spouseB = temp;
         }
         spouseA.position = new go.Point(v.x, v.y);
         spouseB.position = new go.Point(v.x + spouseA.actualBounds.width + 30, v.y);
@@ -553,7 +561,7 @@
     { key: -12, n: "Maternal Grandfather", s: "M", ux: -13, a: ["D", "L"] },
     { key: -13, n: "Maternal Grandmother", s: "F", m: -31, f: -30, a: ["H"] },
     { key: -21, n: "Aunt", s: "F", m: -13, f: -12, a: ["C", "I"] },
-    { key: -22, n: "???", s: "M", ux: -21 },
+    { key: -22, n: "uncle", s: "M", ux: -21 },
     { key: -23, n: "cousin", s: "M", m: -21, f: -22 },
     { key: -30, n: "Maternal Great", s: "M", ux: -31, a: ["D", "J"] },
     { key: -31, n: "Maternal Great", s: "F", m: -50, f: -51, a: ["B", "H", "L"] },
