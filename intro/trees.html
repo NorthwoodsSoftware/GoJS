@@ -219,6 +219,29 @@ each parent node will have all of its children sorted in that order by their tex
   diagram.layout = $(go.TreeLayout, { sorting: go.TreeLayout.SortingAscending });
 </pre>
 <script>goCode("sort", 600, 200)</script>
+<p>
+But you can provide your own function for ordering the children, such as:
+</p>
+<pre data-language="javascript">
+  $(go.Diagram, . . .,
+    {
+      layout:
+          $(go.TreeLayout,
+            {
+              sorting: go.TreeLayout.SortingAscending,
+              comparer: function(a, b) {
+                  // A and B are TreeVertexes
+                  var av = a.node.data.index;
+                  var bv = b.node.data.index;
+                  if (av < bv) return -1;
+                  if (av > bv) return 1;
+                  return 0;
+                },
+              . . .
+            })
+      . . .
+    })
+</pre>
 
 </div>
 </body>

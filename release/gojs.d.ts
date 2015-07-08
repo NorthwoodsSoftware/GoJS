@@ -1,18 +1,29 @@
-// Type definitions for GoJS 1.5
+// Type definitions for GoJS v1.5.0
 // Project: http://gojs.net
-// Definitions by: Barbara Duckworth <https://github.com/barbara42/>
+// Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
+// Definitions: https://github.com/NorthwoodsSoftware/GoJS
 
 /* Copyright (C) 1998-2015 by Northwoods Software Corporation. */
 
-// A number of types have been declared "any" because they would best be described by a union of specific types,
-// not as truly "any" type, and TypeScript does not support union types.  Most of the cases are due to:
-//   - a property of type Margin whose setter also accepts a number, for a uniform Margin of that thickness
-//   - a property of type Brush whose setter also accepts a string, a CSS color string for a solid color Brush
-//   - a boolean property that may also be null (tri-state)
-//   - a key type, which may be a string or a number, uniquely identifying a node data within a Model
-//   - a property that is string that names a property or that is a function that gets or sets a value, on an Object in a Model
+// This is for TypeScript 1.4
+// TODO: TypeScript 1.5 modules and destructuring
 
 declare module go {
+    /** A number in place of a Margin object is treated as a uniform Margin with that thickness */
+    type MarginLike = Margin | number;
+
+    /** A string in place of a Brush object is treated as a Solid Brush of that color. */
+    type BrushLike = Brush | string;
+
+    /** A Key is the type of the unique identifier managed by Models for each node data object. */
+    type Key = string | number;
+
+    /** Either name a property or get the value of a property from an object. */
+    type PropertyAccessor = string | ((data: any, newval: any) => any);
+
+    /** A constructor */
+    type Constructor = new (...args: any[]) => Object;
+
     /**
     * An adornment is a special kind of Part that is associated with another Part,
     * the Adornment.adornedPart.
@@ -58,7 +69,7 @@ declare module go {
         /**
         * Stops any running animation and updates the Diagram to its final state.
         */
-        stopAnimation();
+        stopAnimation(): void;
     }
 
     /**
@@ -105,10 +116,10 @@ declare module go {
 
         /**
         * Make sure all of the unnested Parts in the given collection are removed from any containing Groups.
-        * @param {Iterable} coll a collection of Parts.
+        * @param {Iterable<Part>} coll a collection of Parts.
         * @param {boolean=} check whether to call .isValidMember to confirm that changing the Part to be a top-level Part is valid.
         */
-        addTopLevelParts(coll: Iterable, check?: boolean): boolean;
+        addTopLevelParts(coll: Iterable<Part>, check?: boolean): boolean;
 
         /**
         * This predicate controls whether the user can collapse expanded Groups.
@@ -198,8 +209,7 @@ declare module go {
         * @param {GraphObject|Diagram=} obj a GraphObject or Diagram with a contextMenu defined.
         * If none is given, this method will use the first selected object, or else the Diagram.
         */
-        canShowContextMenu(obj: Diagram): boolean;
-        canShowContextMenu(obj?: GraphObject): boolean;
+        canShowContextMenu(obj?: GraphObject | Diagram): boolean;
 
         /**
         * This predicate controls whether the user may stop the current tool.
@@ -226,79 +236,79 @@ declare module go {
         * Collapse all expanded selected Groups.
         * @param {Group=} group if supplied, ignore the selection and collapse this particular Group.
         */
-        collapseSubGraph(group?: Group);
+        collapseSubGraph(group?: Group): void;
 
         /**
         * Collapse all expanded selected Nodes.
         * @param {Node=} node if supplied, ignore the selection and collapse this particular Node subtree.
         */
-        collapseTree(node?: Node);
+        collapseTree(node?: Node): void;
 
         /**
         * Copy the currently selected parts, Diagram.selection, from the Diagram into the clipboard.
         */
-        copySelection();
+        copySelection(): void;
 
         /**
         * This makes a copy of the given collection of Parts and stores it in a static variable acting as the clipboard.
-        * @param {Iterable} coll A collection of Parts.
+        * @param {Iterable<Part>} coll A collection of Parts.
         */
-        copyToClipboard(coll: Iterable);
+        copyToClipboard(coll: Iterable<Part>): void;
 
         /**
         * Execute a .copySelection followed by a .deleteSelection.
         */
-        cutSelection();
+        cutSelection(): void;
 
         /**
         * Decrease the Diagram.scale by a given factor.
         * @param {number=} factor This defaults to 1/.zoomFactor.  The value should be less than one.
         */
-        decreaseZoom(factor?: number);
+        decreaseZoom(factor?: number): void;
 
         /**
         * Delete the currently selected parts from the diagram.
         */
-        deleteSelection();
+        deleteSelection(): void;
 
         /**
         * This is called by tools to handle keyboard commands.
         */
-        doKeyDown();
+        doKeyDown(): void;
 
         /**
         * This is called by tools to handle keyboard commands.
         */
-        doKeyUp();
+        doKeyUp(): void;
 
         /**
         * Start in-place editing of a TextBlock in the selected Part.
         * @param {TextBlock=} textblock the TextBlock to start editing.
         */
-        editTextBlock(textblock?: TextBlock);
+        editTextBlock(textblock?: TextBlock): void;
 
         /**
         * Expand all collapsed selected Groups.
         * @param {Group=} group if supplied, ignore the selection and expand this particular Group.
         */
-        expandSubGraph(group?: Group);
+        expandSubGraph(group?: Group): void;
 
         /**
         * Expand all collapsed selected Nodes.
         * @param {Node=} node if supplied, ignore the selection and collapse this particular Node subtree.
         */
-        expandTree(node?: Node);
+        expandTree(node?: Node): void;
 
         /**
         * Add a copy of .archetypeGroupData and add it to the diagram's model to create a new Group and then add the selected Parts to that new group.
         */
-        groupSelection();
+        groupSelection(): void;
 
         /**
         * Increase the Diagram.scale by a given factor.
         * @param {number=} factor This defaults to .zoomFactor.  The value should be greater than one.
         */
-        increaseZoom(factor?: Number);
+        increaseZoom(factor?: Number): void;
 
         /**
         * This predicate is called to determine whether a Node may be added as a member of a Group.
@@ -310,29 +320,29 @@ declare module go {
         /**
         * If the clipboard holds a collection of Parts, and if the Model.dataFormat matches that stored in the clipboard, this makes a copy of the clipboard's parts and adds the copies to this Diagram.
         */
-        pasteFromClipboard(): Set;
+        pasteFromClipboard(): Set<Part>;
 
         /**
         * Copy the contents of the clipboard into this diagram, and make those new parts the new selection.
         * @param {Point=} pos Point at which to center the newly pasted parts; if not present the parts are not moved.
         */
-        pasteSelection(pos?: Point);
+        pasteSelection(pos?: Point): void;
 
         /**
         * Call UndoManager.redo.
         */
-        redo();
+        redo(): void;
 
         /**
         * Set the Diagram.scale to a new scale value, by default 1.
         * @param {number=} newscale This defaults to 1.  The value should be greater than zero.
         */
-        resetZoom(newscale?: number);
+        resetZoom(newscale?: number): void;
 
         /**
         * Select all of the selectable Parts in the diagram.
         */
-        selectAll();
+        selectAll(): void;
 
         /**
         * Open the context menu of a given GraphObject.
@@ -341,29 +351,28 @@ declare module go {
         * @param {GraphObject|Diagram=} obj a GraphObject or Diagram with a contextMenu defined.
         * If none is given, this method will use the first selected object, or else the Diagram.
         */
-        showContextMenu(obj: Diagram);
-        showContextMenu(obj?: GraphObject);
+        showContextMenu(obj?: GraphObject | Diagram): void;
 
         /**
         * Cancel the operation of the current tool.
         */
-        stopCommand();
+        stopCommand(): void;
 
         /**
         * Call UndoManager.undo.
         */
-        undo();
+        undo(): void;
 
         /**
         * Remove the group from the diagram without removing its members from the diagram.
         * @param {Group=} group if supplied, ignore the selection and consider ungrouping this particular Group.
         */
-        ungroupSelection(group?: Group);
+        ungroupSelection(group?: Group): void;
 
         /**
         * Change the Diagram.scale so that the Diagram.documentBounds fits within the viewport.
         */
-        zoomToFit();
+        zoomToFit(): void;
     }
 
     /**
@@ -456,7 +465,7 @@ declare module go {
         autoScale: EnumValue;
 
         /**Gets or sets the Margin (or number for a uniform Margin) that describes the Diagram's autoScrollRegion.*/
-        autoScrollRegion: any;
+        autoScrollRegion: MarginLike;
 
         /**Gets or sets the function to execute when the user single-primary-clicks on the background of the Diagram.*/
         click: (e: InputEvent) => void;
@@ -504,7 +513,7 @@ declare module go {
         scrollMode: EnumValue;
 
         /**Gets or sets the Margin (or number for a uniform Margin) that describes a scrollable area that surrounds the document bounds, allowing the user to scroll into empty space.*/
-        scrollMargin: any;
+        scrollMargin: MarginLike;
 
         /**Gets or sets the function used to determine the position that this Diagram can be scrolled or moved to.*/
         positionComputation: (d: Diagram, p: Point) => Point;
@@ -522,7 +531,7 @@ declare module go {
         groupTemplate: Group;
 
         /**Gets or sets a Map mapping template names to Groups.*/
-        groupTemplateMap: Map;
+        groupTemplateMap: Map<string,Group>;
 
         /**Gets or sets whether the Diagram has a horizontal Scrollbar.*/
         hasHorizontalScrollbar: boolean;
@@ -531,7 +540,7 @@ declare module go {
         hasVerticalScrollbar: boolean;
 
         /**This read-only property returns the read-only collection of highlighted Parts.*/
-        highlighteds: Set;
+        highlighteds: Set<Part>;
 
         /**Gets or sets the initialAutoScale of the Diagram.*/
         initialAutoScale: EnumValue;
@@ -573,13 +582,13 @@ declare module go {
         lastInput: InputEvent;
 
         /**Gets an iterator for this Diagram's Layers.*/
-        layers: Iterator;
+        layers: Iterator<Layer>;
 
         /**Gets or sets the Layout used to position all of the top-level nodes and links in this Diagram.*/
         layout: Layout;
 
         /**Returns an iterator of all Links in the Diagram.*/
-        links: Iterator;
+        links: Iterator<Link>;
 
         /**Gets or sets the default selection Adornment template, used to adorn selected Links.*/
         linkSelectionAdornmentTemplate: Adornment;
@@ -588,7 +597,7 @@ declare module go {
         linkTemplate: Link;
 
         /**Gets or sets a Map mapping template names to Links.*/
-        linkTemplateMap: Map;
+        linkTemplateMap: Map<string,Link>;
 
         /**Gets or sets the largest value that .scale may take.*/
         maxScale: number;
@@ -618,7 +627,7 @@ declare module go {
         mouseOver: (e: InputEvent) => void;
 
         /**Returns an iterator of all Nodes and Groups in the Diagram.*/
-        nodes: Iterator;
+        nodes: Iterator<Node>;
 
         /**Gets or sets the default selection Adornment template, used to adorn selected Parts other than Groups or Links.*/
         nodeSelectionAdornmentTemplate: Adornment;
@@ -627,13 +636,13 @@ declare module go {
         nodeTemplate: Part;
 
         /**Gets or sets a Map mapping template names to Parts.*/
-        nodeTemplateMap: Map;
+        nodeTemplateMap: Map<string,Part>;
 
         /**Gets or sets the Margin (or number for a uniform Margin) that describes the Diagram's padding, which controls how much extra space there is around the area occupied by the document.*/
-        padding: any;
+        padding: MarginLike;
 
         /**Returns an iterator of all Parts in the Diagram that are not Nodes or Links or Adornments.*/
-        parts: Iterator;
+        parts: Iterator<Part>;
 
         /**Gets or sets the coordinates of this Diagram in the viewport.*/
         position: Point;
@@ -648,7 +657,7 @@ declare module go {
         scrollVerticalLineChange: number;
 
         /**This read-only property returns the read-only collection of selected Parts.*/
-        selection: Set;
+        selection: Set<Part>;
 
         /**Gets or sets whether ChangedEvents are not recorded by the UndoManager.*/
         skipsUndoManager: boolean;
@@ -675,68 +684,68 @@ declare module go {
         * Adds a Part to the Layer that matches the Part's Part.layerName, or else to the default layer, which is named with the empty string.
         * @param {Part} part
         */
-        add(part: Part);
+        add(part: Part): void;
 
         /**
         * Register an event handler that is called when there is a ChangedEvent.
         * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
         */
-        addChangedListener(listener: (e: ChangedEvent) => void );
+        addChangedListener(listener: (e: ChangedEvent) => void ): void;
 
         /**
         * Register an event handler that is called when there is a DiagramEvent of a given name.
         * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
         * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
         */
-        addDiagramListener(name: string, listener: (e: DiagramEvent) => void );
+        addDiagramListener(name: string, listener: (e: DiagramEvent) => void ): void;
 
         /**
         * Adds a Layer to the list of layers.
         * @param {Layer} layer The Layer to add.
         */
-        addLayer(layer: Layer);
+        addLayer(layer: Layer): void;
 
         /**
         * Adds a layer to the list of layers after a specified layer.
         * @param {Layer} layer The Layer to add.
         * @param {Layer} existingLayer The layer to insert after.
         */
-        addLayerAfter(layer: Layer, existingLayer: Layer);
+        addLayerAfter(layer: Layer, existingLayer: Layer): void;
 
         /**
         * Adds a layer to the list of layers before a specified layer.
         * @param {Layer} layer The Layer to add.
         * @param {Layer} existingLayer The layer to insert before.
         */
-        addLayerBefore(layer: Layer, existingLayer: Layer);
+        addLayerBefore(layer: Layer, existingLayer: Layer): void;
 
         /**
         * Aligns the Diagram's .position based on a desired document Spot and viewport Spot.
         * @param {Spot} documentspot
         * @param {Spot} viewportspot
         */
-        alignDocument(documentspot: Spot, viewportspot: Spot);
+        alignDocument(documentspot: Spot, viewportspot: Spot): void;
 
         /**
         * Modifies the .position to show a given Rect of the Diagram by centering the viewport on that Rect.
         * @param {Rect} r
         */
-        centerRect(r: Rect);
+        centerRect(r: Rect): void;
 
         /**
         * Removes all Parts from the Diagram, including unbound Parts and the background grid, and also clears out the Model and UndoManager.
         */
-        clear();
+        clear(): void;
 
         /**
         * Remove highlights from all Parts.
         */
-        clearHighlighteds();
+        clearHighlighteds(): void;
 
         /**
         * Deselect all selected Parts.
         */
-        clearSelection();
+        clearSelection(): void;
 
         /**
         * Commit the changes of the current transaction.
@@ -752,23 +761,23 @@ declare module go {
 
         /**
         * Find the union of the GraphObject.actualBounds of all of the Parts in the given collection.
-        * @param {Iterable} coll a collection of Parts.
+        * @param {Iterable<Part>} coll a collection of Parts.
         */
-        computePartsBounds(coll: Iterable): Rect;
+        computePartsBounds(coll: Iterable<Part>): Rect;
 
         /**
         * Make a copy of a collection of Parts and return them in a Map mapping each original Part to its copy.
-        * @param {Iterable} coll  A List or a Set or Iterator of Parts.
+        * @param {Iterable<Part>} coll  A List or a Set or Iterator of Parts.
         * @param {Diagram} diagram  The destination diagram; if null, the copied parts are not added to this diagram.
         * @param {boolean} check  Whether to check Part.canCopy on each part.
         */
-        copyParts(coll: Iterable, diagram: Diagram, check: boolean);
+        copyParts(coll: Iterable<Part>, diagram: Diagram, check: boolean): void;
 
         /**
         * Updates the diagram immediately, then resets initialization flags so that actions taken in the argument function will be considered part of Diagram initialization, and will participate in initial layouts, .initialAutoScale, .initialContentAlignment, etc.
         * @param {function()|null=} func an optional function of actions to perform as part of another diagram initialization.
         */
-        delayInitialization(func?: () => void );
+        delayInitialization(func?: () => void ): void;
 
         /**
         * Finds a layer with a given name.
@@ -787,7 +796,7 @@ declare module go {
         * that match those specified by the given example data.
         * @param {...Object} examples
         */
-        findLinksByExample(...examples: Object[]): Iterator;
+        findLinksByExample(...examples: Array<Object>): Iterator<Link>;
 
         /**
         * Look for a Node or Group corresponding to a model's node data object.
@@ -799,14 +808,14 @@ declare module go {
         * Look for a Node or Group corresponding to a model's node data object's unique key.
         * @param {*} key a string or number.
         */
-        findNodeForKey(key: any): Node;
+        findNodeForKey(key: Key): Node;
 
         /**
         * Return a collection of Nodes and Groups that are bound to data whose properties have values
         * that match those specified by the given example data.
         * @param {...Object} examples
         */
-        findNodesByExample(...examples: Object[]): Iterator;
+        findNodesByExample(...examples: Array<Object>): Iterator<Node>;
 
         /**
         * Find the front-most GraphObject at the given point in document coordinates.
@@ -830,8 +839,8 @@ declare module go {
         * defaulting to a predicate that always returns true.
         * @param {List|Set=} coll An optional collection (List or Set) to add the results to.
         */
-        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: List): List;
-        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: Set): Set;
+        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: List<GraphObject>): List<GraphObject>;
+        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: Set<GraphObject>): Set<GraphObject>;
 
         /**
         * Returns a collection of all GraphObjects that are inside or that intersect a given Rect in document coordinates.
@@ -846,8 +855,8 @@ declare module go {
         * if it must be entirely inside the rectangular area (false).  The default value is false.
         * @param {List|Set=} coll An optional collection (List or Set) to add the results to.
         */
-        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List): List;
-        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set): Set;
+        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List<GraphObject>): List<GraphObject>;
+        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set<GraphObject>): Set<GraphObject>;
 
         /**
         * Returns a collection of all GraphObjects that are within a certain distance of a given point in document coordinates.
@@ -864,8 +873,8 @@ declare module go {
         * The default is true.
         * @param {List|Set=} coll An optional collection (List or Set) to add the results to.
         */
-        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List): List;
-        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set): Set;
+        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List<GraphObject>): List<GraphObject>;
+        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set<GraphObject>): Set<GraphObject>;
 
         /**
         * This convenience function finds the front-most Part that is at a given point and that might be selectable.
@@ -884,22 +893,22 @@ declare module go {
         * Look for a Part or Node or Group corresponding to a model's data object's unique key.
         * @param {*} key a string or number.
         */
-        findPartForKey(key: any): Part;
+        findPartForKey(key: Key): Part;
 
         /**
         * Returns an iterator of all Groups that are at top-level, in other words that are not themselves inside other Groups.
         */
-        findTopLevelGroups(): Iterator;
+        findTopLevelGroups(): Iterator<Group>;
 
         /**
         * Returns an iterator of all top-level Nodes that have no tree parents.
         */
-        findTreeRoots(): Iterator;
+        findTreeRoots(): Iterator<Node>;
 
         /**
         * Explicitly bring focus to the Diagram's canvas.
         */
-        focus();
+        focus(): void;
 
         /**
         * This static function gets the Diagram that is attached to an HTML DIV element.
@@ -911,32 +920,26 @@ declare module go {
         * Make the given part the only highlighted part.
         * @param {Part} part
         */
-        highlight(part: Part);
+        highlight(part: Part): void;
 
         /**
         * Highlight all of the Parts supplied in the given collection, and clear all other highlighted Parts.
-        * @param {Iterable} coll an Iterable of Parts
+        * @param {Iterable<Part>|Array<Part>} coll an Iterable of Parts
         */
-        highlightCollection(coll: Iterable);
-
-        /**
-        * Highlight all of the Parts supplied in the given collection, and clear all other highlighted Parts.
-        * @param {Array} coll an Array of Parts
-        */
-        highlightCollection(coll: Part[]);
+        highlightCollection(coll: Iterable<Part> | Array<Part>): void;
 
         /**
         * This static function declares that a class (constructor function) derives from another class -- but please note that most classes do not support inheritance.
         * @param {Function} derivedclass
         * @param {Function} baseclass
         */
-        static inherit(derivedclass: new (...args: any[]) => Object, baseclass: new (...args: any[]) => Object);
+        static inherit(derivedclass: Constructor, baseclass: Constructor): void;
 
         /**
         * Perform all invalid layouts.
         * @param {boolean=} invalidateAll If true, this will explicitly set Layout.isValidLayout to false on each Layout in the diagram.
         */
-        layoutDiagram(invalidateAll?: boolean);
+        layoutDiagram(invalidateAll?: boolean): void;
 
         /**
         * Create an HTMLImageElement that contains a bitmap of the current Diagram.
@@ -950,7 +953,7 @@ declare module go {
             scale: number,
             maxSize: Size,
             position: Point,
-            parts: Iterable,
+            parts: Iterable<Part>,
             padding: (Margin|number),
             showTemporary: boolean,
             showGrid: boolean,
@@ -968,7 +971,7 @@ declare module go {
             scale: number,
             maxSize: Size,
             position: Point,
-            parts: Iterable,
+            parts: Iterable<Part>,
             padding: (Margin|number),
             showTemporary: boolean,
             showGrid: boolean,
@@ -982,55 +985,48 @@ declare module go {
 
         /**
         * Move a collection of Parts in this Diagram by a given offset.
-        * @param {Iterable} coll  A List or a Set or Iterator of Parts.
+        * @param {Iterable<Part>} coll  A List or a Set or Iterator of Parts.
         * @param {Point} offset  the X and Y change to be made to each Part, in document coordinates.
         * @param {boolean} check  Whether to check Part.canMove on each part.
         */
-        moveParts(coll: Iterable, offset: Point, check: boolean);
+        moveParts(coll: Iterable<Part>, offset: Point, check: boolean): void;
 
         /**
         * Remove all of the Parts created from model data and then create them again.
         */
-        rebuildParts();
+        rebuildParts(): void;
 
         /**
         * Removes a Part from its Layer, provided the Layer is in this Diagram.
         * @param {Part} part
         */
-        remove(part: Part);
+        remove(part: Part): void;
 
         /**
         * Unregister an event handler listener.
         * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
         */
-        removeChangedListener(listener: (e: ChangedEvent) => void );
+        removeChangedListener(listener: (e: ChangedEvent) => void ): void;
 
         /**
         * Unregister a DiagramEvent handler.
         * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
         * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
         */
-        removeDiagramListener(name: string, listener: (e: DiagramEvent) => void );
+        removeDiagramListener(name: string, listener: (e: DiagramEvent) => void ): void;
 
         /**
         * Removes the given layer from the list of layers.
         * @param {Layer} layer
         */
-        removeLayer(layer: Layer);
+        removeLayer(layer: Layer): void;
 
         /**
         * This method removes from this Diagram all of the Parts in a collection.
-        * @param {Iterable} coll A List or Set or Iterator of Parts.
+        * @param {Iterable<Part>|Array<Part>} coll A List or Set or Iterator of Parts.
         * @param {boolean} check Whether to check Part.canDelete on each part.
         */
-        removeParts(coll: Iterable, check: boolean);
-
-        /**
-        * This method removes from this Diagram all of the Parts in a collection.
-        * @param {Array} coll An Array of Parts.
-        * @param {boolean} check Whether to check Part.canDelete on each part.
-        */
-        removeParts(coll: Part[], check: boolean);
+        removeParts(coll: Iterable<Part> | Array<Part>, check: boolean): void;
 
         /**
         * Rollback the current transaction, undoing any recorded changes.
@@ -1044,38 +1040,32 @@ declare module go {
         * @param {string} dir The direction of the scroll operation. Can be 'up', 'down', 'left', or 'right'.
         * @param {number=} dist An optional distance multiplier, for multiple pixels, lines, or pages. Default is 1.
         */
-        scroll(unit: string, dir: string, dist?: number);
+        scroll(unit: string, dir: string, dist?: number): void;
 
         /**
         * Modifies the .position to show a given Rect of the Diagram by centering the viewport on that Rect.
         * @param {Rect} r
         */
-        scrollToRect(r: Rect);
+        scrollToRect(r: Rect): void;
 
         /**
         * Make the given object the only selected object.
         * @param {GraphObject} part a GraphObject that is already in a layer of this Diagram.
         * If the value is null, this does nothing.
         */
-        select(part: Part);
+        select(part: Part): void;
 
         /**
         * Select all of the Parts supplied in the given collection.
-        * @param {Iterable} coll a List or Set of Parts to be selected.
+        * @param {Iterable<Part>|Array<Part>} coll a List or Set of Parts to be selected.
         */
-        selectCollection(coll: Iterable);
-
-        /**
-        * Select all of the Parts supplied in the given collection.
-        * @param {Array} coll an Array of Parts to be selected.
-        */
-        selectCollection(coll: Part[]);
+        selectCollection(coll: Iterable<Part> | Array<Part>): void;
 
         /**
         * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
         * in the same manner as GraphObject.make does when constructing a Diagram with an argument that is a simple JavaScript Object.
         */
-        setProperties(props: Object);
+        setProperties(props: Object): void;
 
         /**
         * Begin a transaction, where the changes are held by a Transaction object in the UndoManager.
@@ -1099,26 +1089,26 @@ declare module go {
         /**
         * Update all of the data-bound properties of Nodes and Links in this diagram.
         */
-        updateAllTargetBindings();
+        updateAllTargetBindings(): void;
 
         /**
         * Update all of the references to nodes in case they had been modified in the model without
         * properly notifying the model by calling GraphLinksModel.setGroupKeyForNodeData or
         * GraphLinksModel.setToKeyForLinkData or other similar methods.
         */
-        updateAllRelationshipsFromData();
+        updateAllRelationshipsFromData(): void;
 
         /**
         * Scales the Diagram to uniformly fit into the viewport.
         */
-        zoomToFit();
+        zoomToFit(): void;
 
         /**
         * Modifies the .scale and .position of the Diagram so that the viewport displays a given document-coordinates rectangle.
         * @param {Rect} r rectangular bounds in document coordinates.
         * @param {EnumValue=} scaling an optional value of either .Uniform (the default) or .UniformToFill.
         */
-        zoomToRect(r: Rect, scaling?: EnumValue);
+        zoomToRect(r: Rect, scaling?: EnumValue): void;
 
         /**This value for Diagram.validCycle states that there are no restrictions on making cycles of links.*/
         static CycleAll: EnumValue;
@@ -1151,12 +1141,12 @@ declare module go {
         static InfiniteScroll: EnumValue;
 
         getRenderingHint(name: string): any;  // undocumented
-        setRenderingHint(name: string, val: any);  // undocumented
+        setRenderingHint(name: string, val: any): void;  // undocumented
         getInputOption(name: string): any;  // undocumented
-        setInputOption(name: string, val: any);  // undocumented
-        maybeUpdate();  // undocumented
-        requestUpdate();  // undocumented
-        reset();  // undocumented
+        setInputOption(name: string, val: any): void;  // undocumented
+        maybeUpdate(): void;  // undocumented
+        requestUpdate(): void;  // undocumented
+        reset(): void;  // undocumented
         simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
         simulatedMouseUp(e: Event, other: Diagram, modelpt: Point, curdiag?: Diagram): boolean;  // undocumented
     }
@@ -1193,7 +1183,7 @@ declare module go {
         parameter: any;
 
         /**Gets or sets an optional object that is the subject of the diagram event.*/
-        subject: Object;
+        subject: any;
     }
 
     /**
@@ -1230,10 +1220,10 @@ declare module go {
         angle: number;
 
         /**Gets or sets the areaBackground Brush (or CSS color string) of this GraphObject.*/
-        areaBackground: any;
+        areaBackground: BrushLike;
 
         /**Gets or sets the background Brush (or CSS color string) of this GraphObject, filling the rectangle of this object's local coordinate space.*/
-        background: any;
+        background: BrushLike;
 
         /**Gets or sets the function to execute when the user single-primary-clicks on this object.*/
         click: (e: InputEvent, obj: GraphObject) => void;
@@ -1269,7 +1259,7 @@ declare module go {
         fromEndSegmentLength: number;
 
         /**Gets or sets whether the user may draw Links from this port. The value must be either a boolean or null.*/
-        fromLinkable: any;
+        fromLinkable: boolean;
 
         /**Gets or sets whether the user may draw duplicate Links from this port.*/
         fromLinkableDuplicates: boolean;
@@ -1299,7 +1289,7 @@ declare module go {
         layer: Layer;
 
         /**Gets or sets the size of empty area around this GraphObject, as a Margin (or number for a uniform Margin), in the containing Panel coordinates.*/
-        margin: any;
+        margin: MarginLike;
 
         /**Gets or sets the maximum size of this GraphObject in container coordinates (either a Panel or the document).*/
         maxSize: Size;
@@ -1389,7 +1379,7 @@ declare module go {
         toEndSegmentLength: number;
 
         /**Gets or sets whether the user may draw Links to this port. The value must be either a boolean or null.*/
-        toLinkable: any;
+        toLinkable: boolean;
 
         /**Gets or sets whether the user may draw duplicate Links to this port.*/
         toLinkableDuplicates: boolean;
@@ -1419,7 +1409,7 @@ declare module go {
         * Add a data-binding of a property on this GraphObject to a property on a data object.
         * @param {Binding} binding
         */
-        bind(binding: Binding);
+        bind(binding: Binding): void;
 
         /**
         * Creates a deep copy of this GraphObject and returns it.
@@ -1429,9 +1419,9 @@ declare module go {
         /**
         * This static function defines a named function that GraphObject.make can use to build objects.
         * @param {string} name a capitalized name; must not be "" or "None"
-        * @param {function(Array):Object} func
+        * @param {function(Array<*>):Object} func
         */
-        static defineBuilder(name: string, func: (args: any[]) => Object);
+        static defineBuilder(name: string, func: (args: any[]) => Object): void;
 
         /**
         * Returns the effective angle that the object is drawn at, in document coordinates.
@@ -1474,7 +1464,7 @@ declare module go {
         * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
         * in the same manner as GraphObject.make does when constructing a GraphObject with an argument that is a simple JavaScript Object.
         */
-        setProperties(props: Object);
+        setProperties(props: Object): void;
 
         /**
         * This static function builds an object given its class and additional arguments providing initial properties or GraphObjects that become Panel elements.
@@ -1489,7 +1479,7 @@ declare module go {
         * is recognized to take that value,
         * or a string that is used as the value of a commonly set property.
         */
-        static make(type: any, ...initializers: any[]): any;
+        static make(type: Constructor | string, ...initializers: any[]): any;
 
         /**GraphObjects with this as the value of GraphObject.stretch are stretched depending on the context they are used.*/
         static Default: EnumValue;
@@ -1512,10 +1502,10 @@ declare module go {
         /**GraphObjects with this as the value of GraphObject.stretch are scaled as much as possible in the y-axis*/
         static Vertical: EnumValue;
 
-        cloneProtected(copy: GraphObject);  // undocumented
+        protected cloneProtected(copy: GraphObject): void;  // undocumented
         static fromSvg(svg: string): GraphObject;  // undocumented
         static fromSvg(svg: Document): GraphObject;  // undocumented
-        static getBuilders(): Map;  // undocumented
+        static getBuilders(): Map<string,(args: any[]) => Object>;  // undocumented
     }
 
     /**
@@ -1551,7 +1541,7 @@ declare module go {
         memberAdded: (a: Group, b: Part) => void;
 
         /**This read-only property returns an iterator over the member Parts of this Group.*/
-        memberParts: Iterator;
+        memberParts: Iterator<Part>;
 
         /**Gets or sets the function that is called after a member Part has been removed from this Group.*/
         memberRemoved: (a: Group, b: Part) => void;
@@ -1573,16 +1563,16 @@ declare module go {
 
         /**
         * Add the Parts in the given collection as members of this Group for those Parts for which CommandHandler.isValidMember returns true.
-        * @param {Iterable} coll
+        * @param {Iterable<Part>} coll
         * @param {boolean=} check whether to call CommandHandler.isValidMember to confirm that it is valid to add the Part to be a member of this Group.
         */
-        addMembers(coll: Iterable, check?: boolean): boolean;
+        addMembers(coll: Iterable<Part>, check?: boolean): boolean;
 
         /**
         * See if the given collection of Parts contains non-Links all for which CommandHandler.isValidMember returns true.
-        * @param {Iterable} coll
+        * @param {Iterable<Part>} coll
         */
-        canAddMembers(coll: Iterable): boolean;
+        canAddMembers(coll: Iterable<Part>): boolean;
 
         /**
         * This predicate returns true if .ungroupable is true, if the layer's Layer.allowUngroup is true, and if the diagram's Diagram.allowUngroup is true.
@@ -1592,35 +1582,35 @@ declare module go {
         /**
         * Hide each of the member nodes and links of this group, and recursively collapse any member groups.
         */
-        collapseSubGraph();
+        collapseSubGraph(): void;
 
         /**
         * Show each member node and link, and perhaps recursively expand nested subgraphs.
         */
-        expandSubGraph();
+        expandSubGraph(): void;
 
         /**
         * Returns an iterator over all of the Links that connect with this group or any node contained by this group,
         * in either direction, but that are not internal to this group.
         */
-        findExternalLinksConnected(): Iterator;
+        findExternalLinksConnected(): Iterator<Link>;
 
         /**
         * Returns an iterator over all of the Nodes that are connected with this group or any node contained by this group,
         * by a link in either direction, but that are not internal to this group.
         */
-        findExternalNodesConnected(): Iterator;
+        findExternalNodesConnected(): Iterator<Node>;
 
         /**
         * Return a collection of Parts that are all of the nodes and links that are members of this group, including inside nested groups, but excluding this group itself.
         */
-        findSubGraphParts(): Set;
+        findSubGraphParts(): Set<Part>;
 
         /**
         * Move this Group and all of its member parts, recursively.
         * @param {Point} newpos a new Point in document coordinates.
         */
-        move(newpos: Point);
+        move(newpos: Point): void;
     }
 
     /**
@@ -1780,10 +1770,10 @@ declare module go {
         opacity: number;
 
         /**This read-only property returns an iterator for this Layer's Parts.*/
-        parts: Iterator;
+        parts: Iterator<Part>;
 
         /**This read-only property returns a backwards iterator for this Layer's Parts, for iterating over the parts in reverse order.*/
-        partsBackwards: Iterator;
+        partsBackwards: Iterator<Part>;
 
         /**Gets or sets whether methods such as .findObjectAt find any of the objects in this layer.*/
         pickable: boolean;
@@ -1813,8 +1803,8 @@ declare module go {
         * defaulting to a predicate that always returns true.
         * @param {List|Set=} coll An optional collection (List or Set) to add the results to.
         */
-        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: List): List;
-        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: Set): Set;
+        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: List<GraphObject>): List<GraphObject>;
+        findObjectsAt(p: Point, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, coll?: Set<GraphObject>): Set<GraphObject>;
 
         /**
         * Returns a collection of all GraphObjects that are inside or that intersect a given Rect in document coordinates.
@@ -1829,8 +1819,8 @@ declare module go {
         * if it must be entirely inside the rectangular area (false).  The default value is false.
         * @param {List|Set=} coll An optional collection (List or Set) to add the results to.
         */
-        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List): List;
-        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set): Set;
+        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List<GraphObject>): List<GraphObject>;
+        findObjectsIn(r: Rect, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set<GraphObject>): Set<GraphObject>;
 
         /**
         * Returns a collection of all GraphObjects that are within a certain distance of a given point in document coordinates.
@@ -1846,8 +1836,8 @@ declare module go {
         * if it must be entirely inside the circular area (false).  The default value is true.
         * @param {List|Set=} coll An optional collection (List or Set) to add the results to.
         */
-        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List): List;
-        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set): Set;
+        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: List<GraphObject>): List<GraphObject>;
+        findObjectsNear(p: Point, dist: number, navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean, partialInclusion?: boolean, coll?: Set<GraphObject>): Set<GraphObject>;
     }
 
     /**
@@ -1911,7 +1901,7 @@ declare module go {
         isTreeLink: boolean;
 
         /**This read-only property returns an iterator over the Nodes that act as labels on this Link.*/
-        labelNodes: Iterator;
+        labelNodes: Iterator<Node>;
 
         /**This read-only property returns the angle of the path at the .midPoint.*/
         midAngle: number;
@@ -1923,7 +1913,7 @@ declare module go {
         path: Shape;
 
         /**Gets or sets the List of Points in the route. Can also be set as an Array of numbers.*/
-        points: List;
+        points: List<Point>;
 
         /**This read-only property returns the number of points in the route.*/
         pointsCount: number;
@@ -2044,7 +2034,7 @@ declare module go {
         * Move this link to a new position.
         * @param {Point} newpos
         */
-        move(newpos: Point);
+        move(newpos: Point): void;
 
         /**Used as a value for Link.routing: each segment is horizontal or vertical, but the route tries to avoid crossing over nodes.*/
         static AvoidsNodes: EnumValue;
@@ -2101,27 +2091,27 @@ declare module go {
         static Stretch: EnumValue;
 
         routeBounds: Rect;  // undocumented
-        computeEndSegmentLength(node: Node, port: GraphObject, spot: Spot, from: boolean): number;  // undocumented
-        computeSpot(from: boolean): Spot;  // undocumented
-        computeOtherPoint(othernode: Node, otherport: GraphObject): Point;  // undocumented
-        computeShortLength(from: boolean): number;  // undocumented
-        computeCurve(): EnumValue;  // undocumented
-        computeCorner(): number;  // undocumented
-        computeCurviness(): number;  // undocumented
-        computeThickness(): number;  // undocumented
+        protected computeEndSegmentLength(node: Node, port: GraphObject, spot: Spot, from: boolean): number;  // undocumented
+        protected computeSpot(from: boolean): Spot;  // undocumented
+        protected computeOtherPoint(othernode: Node, otherport: GraphObject): Point;  // undocumented
+        protected computeShortLength(from: boolean): number;  // undocumented
+        protected computeCurve(): EnumValue;  // undocumented
+        protected computeCorner(): number;  // undocumented
+        protected computeCurviness(): number;  // undocumented
+        protected computeThickness(): number;  // undocumented
         hasCurviness(): boolean;  // undocumented
-        invalidateRoute();  // undocumented
-        updateRoute();  // undocumented
-        computePoints(): boolean;  // undocumented
-        clearPoints();  // undocumented
-        addPoint(p: Point);  // undocumented
-        addPointAt(x: number, y: number);  // undocumented
-        insertPoint(i: number, p: Point);  // undocumented
-        insertPointAt(i: number, x: number, y: number);  // undocumented
-        removePoint(i: number);  // undocumented
-        setPoint(i: number, p: Point);  // undocumented
-        setPointAt(i: number, x: number, y: number);  // undocumented
-        invalidateGeometry();  // undocumented
+        invalidateRoute(): void;  // undocumented
+        updateRoute(): void;  // undocumented
+        protected computePoints(): boolean;  // undocumented
+        clearPoints(): void;  // undocumented
+        addPoint(p: Point): void;  // undocumented
+        addPointAt(x: number, y: number): void;  // undocumented
+        insertPoint(i: number, p: Point): void;  // undocumented
+        insertPointAt(i: number, x: number, y: number): void;  // undocumented
+        removePoint(i: number): void;  // undocumented
+        setPoint(i: number, p: Point): void;  // undocumented
+        setPointAt(i: number, x: number, y: number): void;  // undocumented
+        invalidateGeometry(): void;  // undocumented
         makeGeometry(): Geometry;  // undocumented
     }
 
@@ -2142,7 +2132,7 @@ declare module go {
         avoidable: boolean;
 
         /**Gets or sets the Margin (or number for a uniform Margin) around this Node in which avoidable links will not be routed.*/
-        avoidableMargin: any;
+        avoidableMargin: MarginLike;
 
         /**This read-only property is true when this Node is a label node for a Link.*/
         isLinkLabel: boolean;
@@ -2166,13 +2156,13 @@ declare module go {
         linkValidation: (from: Node, fromPort: GraphObject, to: Node, toPort: GraphObject, link: Link) => boolean;
 
         /**This read-only property returns an iterator over all of the Links that are connected with this node.*/
-        linksConnected: Iterator;
+        linksConnected: Iterator<Link>;
 
         /**This read-only property returns the primary GraphObject representing a port in this node.*/
         port: GraphObject;
 
         /**This read-only property returns an iterator over all of the GraphObjects in this node that act as ports.*/
-        ports: Iterator;
+        ports: Iterator<GraphObject>;
 
         /**Gets or sets how link points are computed when the port spot is a "side" spot.*/
         portSpreading: EnumValue;
@@ -2188,7 +2178,7 @@ declare module go {
         * @param {number=} level How many levels of the tree, starting at this node, to keep expanded if already expanded;
         *    the default is 1, hiding all tree children of this node.  Values less than 1 are treated as 1.
         */
-        collapseTree(level?: number);
+        collapseTree(level?: number): void;
 
         /**
         * Show each child node and the connecting link, and perhaps recursively expand their child nodes.
@@ -2196,7 +2186,7 @@ declare module go {
         *    the default is 2, showing all tree children of this node and potentially more.
         *    Values less than 2 are treated as 2.
         */
-        expandTree(level?: number);
+        expandTree(level?: number): void;
 
         /**
         * Returns an iterator over all of the Links that go from this node to another node or vice-versa, perhaps limited to a given port id on this node and a port id on the other node.
@@ -2204,25 +2194,25 @@ declare module go {
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         * @param {string|null=} otherpid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findLinksBetween(othernode: Node, pid?: string, otherpid?: string): Iterator;
+        findLinksBetween(othernode: Node, pid?: string, otherpid?: string): Iterator<Link>;
 
         /**
         * Returns an iterator over all of the Links that connect with this node in either direction, perhaps limited to the given port id on this node.
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findLinksConnected(pid?: string): Iterator;
+        findLinksConnected(pid?: string): Iterator<Link>;
 
         /**
         * Returns an iterator over all of the Links that go into this node, perhaps limited to the given port id on this node.
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findLinksInto(pid?: string): Iterator;
+        findLinksInto(pid?: string): Iterator<Link>;
 
         /**
         * Returns an iterator over all of the Links that come out of this node, perhaps limited to the given port id on this node.
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findLinksOutOf(pid?: string): Iterator;
+        findLinksOutOf(pid?: string): Iterator<Link>;
 
         /**
         * Returns an iterator over all of the Links that go from this node to another node, perhaps limited to a given port id on this node and a port id on the other node.
@@ -2230,25 +2220,25 @@ declare module go {
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         * @param {string|null=} otherpid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findLinksTo(othernode: Node, pid?: string, otherpid?: string): Iterator;
+        findLinksTo(othernode: Node, pid?: string, otherpid?: string): Iterator<Link>;
 
         /**
         * Returns an iterator over the Nodes that are connected with this node in either direction, perhaps limited to the given port id on this node.
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findNodesConnected(pid?: string): Iterator;
+        findNodesConnected(pid?: string): Iterator<Node>;
 
         /**
         * Returns an iterator over the Nodes that are connected with this node by links going into this node, perhaps limited to the given port id on this node.
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findNodesInto(pid?: string): Iterator;
+        findNodesInto(pid?: string): Iterator<Node>;
 
         /**
         * Returns an iterator over the Nodes that are connected with this node by links coming out of this node, perhaps limited to the given port id on this node.
         * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
         */
-        findNodesOutOf(pid?: string): Iterator;
+        findNodesOutOf(pid?: string): Iterator<Node>;
 
         /**
         * Find a GraphObject with a given GraphObject.portId.
@@ -2259,12 +2249,12 @@ declare module go {
         /**
         * Returns an Iterator for the collection of Links that connect with the immediate tree children of this node.
         */
-        findTreeChildrenLinks(): Iterator;
+        findTreeChildrenLinks(): Iterator<Link>;
 
         /**
         * Returns an Iterator for the collection of Nodes that are the immediate tree children of this node.
         */
-        findTreeChildrenNodes(): Iterator;
+        findTreeChildrenNodes(): Iterator<Node>;
 
         /**
         * Return how deep this node is in a tree structure.
@@ -2287,7 +2277,7 @@ declare module go {
         * @param {number=} level How many levels of the tree, starting at this node, to include;
         *    the default is Infinity, including all tree children of this node.  Values less than 1 are treated as 1.
         */
-        findTreeParts(level?: number): Set;
+        findTreeParts(level?: number): Set<Part>;
 
         /**
         * Return the Node that is at the root of the tree that this node is in, perhaps this node itself.
@@ -2383,37 +2373,37 @@ declare module go {
         columnSizing: EnumValue;
 
         /**Gets or sets the optional model data to which this panel is data-bound.*/
-        data: Object;
+        data: any;
 
         /**Gets or sets the default alignment spot of this Panel, used as the alignment for an element when its GraphObject.alignment value is Spot.Default.*/
         defaultAlignment: Spot;
 
         /**Gets or sets the default dash array for a particular column's separator.*/
-        defaultColumnSeparatorDashArray: number[];
+        defaultColumnSeparatorDashArray: Array<number>;
 
         /**Gets or sets the default Brush stroke (or CSS color string) for columns in a Table Panel provided a given column has a nonzero RowColumnDefinition.separatorStrokeWidth.*/
-        defaultColumnSeparatorStroke: any;
+        defaultColumnSeparatorStroke: BrushLike;
 
         /**Gets or sets the default stroke width for a particular column's separator.*/
         defaultColumnSeparatorStrokeWidth: number;
 
         /**Gets or sets the default dash array for a particular row's separator.*/
-        defaultRowSeparatorDashArray: number[];
+        defaultRowSeparatorDashArray: Array<number>;
 
         /**Gets or sets the default Brush stroke (or CSS color string) for rows in a Table Panel provided a given row has a nonzero RowColumnDefinition.separatorStrokeWidth.*/
-        defaultRowSeparatorStroke: any;
+        defaultRowSeparatorStroke: BrushLike;
 
         /**Gets or sets the default stroke width for a particular row's separator.*/
         defaultRowSeparatorStrokeWidth: number;
 
         /**Gets or sets the additional padding for a particular row or column, a Margin (or number for a uniform Margin).*/
-        defaultSeparatorPadding: any;
+        defaultSeparatorPadding: MarginLike;
 
         /**Gets or sets the default stretch of this Panel, used as the stretch for an element when its GraphObject.stretch value is GraphObject.Default.*/
         defaultStretch: EnumValue;
 
         /**This read-only property returns an iterator over the collection of the GraphObjects that this panel manages.*/
-        elements: Iterator;
+        elements: Iterator<GraphObject>;
 
         /**Gets or sets the distance between lines in a .Grid panel.*/
         gridCellSize: Size;
@@ -2422,10 +2412,10 @@ declare module go {
         gridOrigin: Point;
 
         /**Gets or sets a JavaScript Array of values or objects, each of which will be represented by a Panel as elements in this Panel.*/
-        itemArray: any[];
+        itemArray: Array<any>;
 
         /**Gets or sets the name of the item data property that returns a string describing that data's category, or a function that takes an item data object and returns that string; the default value is the name 'category'.*/
-        itemCategoryProperty: any;
+        itemCategoryProperty: PropertyAccessor;
 
         /**This read-only property returns the index of the item in the containing Panel's Panel.itemArray that this Panel represents.*/
         itemIndex: number;
@@ -2434,13 +2424,13 @@ declare module go {
         itemTemplate: Panel;
 
         /**Gets or sets a Map mapping template names to Panels.*/
-        itemTemplateMap: Map;
+        itemTemplateMap: Map<string,Panel>;
 
         /**Gets or sets the first column that this Panel of .type Panel.Table displays.*/
         leftIndex: number;
 
         /**Gets or sets the space between this Panel's border and its content, as a Margin (or number for a uniform Margin), depending on the type of panel.*/
-        padding: any;
+        padding: MarginLike;
 
         /**This read-only property returns the number of row in this Panel if it is of .type Panel.Table.*/
         rowCount: number;
@@ -2461,7 +2451,7 @@ declare module go {
         * Adds a GraphObject to the end of this Panel's list of elements, visually in front of all of the other elements.
         * @param {GraphObject} element A GraphObject.
         */
-        add(element: GraphObject);
+        add(element: GraphObject): void;
 
         /**
         * Creates a deep copy of this Panel and returns it.
@@ -2515,36 +2505,36 @@ declare module go {
         * @param {number} index
         * @param {GraphObject} element A GraphObject.
         */
-        insertAt(index: number, element: GraphObject);
+        insertAt(index: number, element: GraphObject): void;
 
         /**
         * Create and add new GraphObjects corresponding to and bound to the data in the .itemArray, after removing all existing elements from this Panel.
         */
-        rebuildItemElements();
+        rebuildItemElements(): void;
 
         /**
         * Removes a GraphObject from this Panel's list of elements.
         * @param {GraphObject} element A GraphObject.
         */
-        remove(element: GraphObject);
+        remove(element: GraphObject): void;
 
         /**
         * Removes an GraphObject from this Panel's list of elements at the specified index.
         * @param {number} idx
         */
-        removeAt(idx: number);
+        removeAt(idx: number): void;
 
         /**
         * Removes the RowColumnDefinition for a particular row in this Table Panel.
         * @param {number} idx the non-negative zero-based integer row index.
         */
-        removeColumnDefinition(idx: number);
+        removeColumnDefinition(idx: number): void;
 
         /**
         * Removes the RowColumnDefinition for a particular row in this Table Panel.
         * @param {number} idx the non-negative zero-based integer row index.
         */
-        removeRowDefinition(idx: number);
+        removeRowDefinition(idx: number): void;
 
         /**
         * Re-evaluate all data bindings on this panel, in order to assign new property values to the GraphObjects in this visual tree based on this this object's .data property values.
@@ -2552,7 +2542,7 @@ declare module go {
         *   when provided, only evaluates those Bindings that use that particular property;
         *   when not provided or when it is the empty string, all bindings are evaluated.
         */
-        updateTargetBindings(srcprop?: string);
+        updateTargetBindings(srcprop?: string): void;
 
         /**This value for .type resizes the main element to fit around the other elements; the main element is the first GraphObject with GraphObject.isPanelMain set to true, or else the first GraphObject if none have that property set to true.*/
         static Auto: EnumValue;
@@ -2603,7 +2593,7 @@ declare module go {
         constructor(type?: EnumValue);
 
         /**This read-only property returns an iterator over all of the Adornments associated with this part.*/
-        adornments: Iterator;
+        adornments: Iterator<Adornment>;
 
         /**Gets or sets the category of this part, typically used to distinguish different kinds of nodes or links.*/
         category: string;
@@ -2751,7 +2741,7 @@ declare module go {
         * @param {string} category a string identifying the kind or role of the given adornment for this Part.
         * @param {Adornment} ad
         */
-        addAdornment(category: string, ad: Adornment);
+        addAdornment(category: string, ad: Adornment): void;
 
         /**
         * This predicate returns true if .copyable is true, if the layer's Layer.allowCopy is true, and if the diagram's Diagram.allowCopy is true.
@@ -2806,7 +2796,7 @@ declare module go {
         /**
         * Remove all adornments associated with this part.
         */
-        clearAdornments();
+        clearAdornments(): void;
 
         /**
         * Find an Adornment of a given category associated with this Part.
@@ -2838,7 +2828,7 @@ declare module go {
         * if this argument is not supplied, any value of .layoutConditions other than Part.LayoutNone
         * will allow the layout to be invalidated.
         */
-        invalidateLayout(condition?: number);
+        invalidateLayout(condition?: number): void;
 
         /**
         * This predicate is true if this part is a member of the given Part, perhaps indirectly.
@@ -2855,17 +2845,17 @@ declare module go {
         * Move this part and any parts that are owned by this part to a new position.
         * @param {Point} newpos a new Point in document coordinates.
         */
-        move(newpos: Point);
+        move(newpos: Point): void;
 
         /**
         * Remove any Adornment of the given category that may be associated with this Part.
         * @param {string} category a string identifying the kind or role of the given adornment for this Part.
         */
-        removeAdornment(category: string);
+        removeAdornment(category: string): void;
 
         /**
         * This is responsible for creating any selection Adornment (if this Part .isSelected) and any tool adornments for this part.*/
-        updateAdornments();
+        updateAdornments(): void;
 
         /**
         * Re-evaluate all data bindings on this Part, in order to assign new property values to the GraphObjects in this visual tree based on this this object's .data property values.
@@ -2873,14 +2863,14 @@ declare module go {
         *   when provided, only evaluates those Bindings that use that particular property;
         *   when not provided or when it is the empty string, all bindings are evaluated.
         */
-        updateTargetBindings(srcprop?: string);
+        updateTargetBindings(srcprop?: string): void;
 
         /**
         * Update all of the references to nodes in case they had been modified in the model without
         * properly notifying the model by calling GraphLinksModel.setGroupKeyForNodeData or
         * GraphLinksModel.setToKeyForLinkData or other similar methods.
         */
-        updateRelationshipsFromData();
+        updateRelationshipsFromData(): void;
 
         /**This flag may be combined with other "Layout" flags as the value of the Part.layoutConditions property to indicate that when a Part is added to a Diagram or Group, it invalidates the Layout responsible for the Part.*/
         static LayoutAdded: number;
@@ -2909,8 +2899,8 @@ declare module go {
         /**This is the default value for the Part.layoutConditions property: the Layout responsible for the Part is invalidated when the Part is added or removed from the Diagram or Group or when it changes visibility or size or when a Group's layout has been performed.*/
         static LayoutStandard: number;
 
-        ensureBounds();  // undocumented
-        moveTo(x: number, y: number);  // undocumented
+        ensureBounds(): void;  // undocumented
+        moveTo(x: number, y: number): void;  // undocumented
     }
 
     /**
@@ -2946,7 +2936,7 @@ declare module go {
         /**Gets or sets the rectangular area of the source image that this picture should display.*/
         sourceRect: Rect;
 
-        static clearCache(url?: string);  // undocumented
+        static clearCache(url?: string): void;  // undocumented
     }
 
     /**
@@ -2962,7 +2952,7 @@ declare module go {
         constructor();
 
         /**Gets or sets the padding as a Margin (or number for a uniform Margin) around the members of the Group or around the Adornment.adornedObject GraphObject.*/
-        padding: any;
+        padding: MarginLike;
     }
 
     /**
@@ -2984,7 +2974,7 @@ declare module go {
         alignment: Spot;
 
         /**Gets or sets the background Brush (or CSS color string) for a particular row or column, which fills the entire span of the column, including any separatorPadding.*/
-        background: any;
+        background: BrushLike;
 
         /**Determines whether or not the background, if there is one, is in front of or behind the separators.*/
         coversSeparators: boolean;
@@ -3011,13 +3001,13 @@ declare module go {
         position: number;
 
         /**Gets or sets the dash array for dashing the spacing provided this row or column has a nonzero RowColumnDefinition.separatorStrokeWidth and non-null RowColumnDefinition.separatorStroke.*/
-        separatorDashArray: number[];
+        separatorDashArray: Array<number>;
 
         /**Gets or sets the additional padding for a particular row or column, a Margin (or number for a uniform Margin).*/
-        separatorPadding: any;
+        separatorPadding: MarginLike;
 
         /**Gets or sets the Brush (or CSS color string) for a particular row or column, provided that row or column has a nonzero RowColumnDefinition.separatorStrokeWidth.*/
-        separatorStroke: any;
+        separatorStroke: BrushLike;
 
         /**Gets or sets the stroke width for a particular row or column's separator,*/
         separatorStrokeWidth: number;
@@ -3038,7 +3028,7 @@ declare module go {
         * Add a data-binding of a property on this object to a property on a data object.
         * @param {Binding} binding
         */
-        bind(binding: Binding);
+        bind(binding: Binding): void;
 
         /**The default .sizing, which resolves to RowColumnDefinition.None or else the Table Panel's rowSizing and columnSizing if present.*/
         static Default: EnumValue;
@@ -3069,7 +3059,7 @@ declare module go {
         figure: string;
 
         /**Gets or sets the Brush (or CSS color string) that describes the fill of the Shape.*/
-        fill: any;
+        fill: BrushLike;
 
         /**Gets or sets the name of the kind of arrowhead that this shape should take when this shape is an element of a Link.*/
         fromArrow: string;
@@ -3105,13 +3095,13 @@ declare module go {
         spot2: Spot;
 
         /**Gets or sets the Brush (or CSS color string) that describes the stroke of the Shape.*/
-        stroke: any;
+        stroke: BrushLike;
 
         /**Gets or sets the style for the stroke's line cap.*/
         strokeCap: string;
 
         /**Gets or sets the dash array for creating dashed lines.*/
-        strokeDashArray: number[];
+        strokeDashArray: Array<number>;
 
         /**Gets or sets the offset for dashed lines, used in the phase pattern.*/
         strokeDashOffset: number;
@@ -3132,39 +3122,39 @@ declare module go {
         * This static function returns a read-only Map of named geometry generators.
         * @return {Map} the keys are figure names; the values are either synonymed names or generator functions
         */
-        static getFigureGenerators(): Map;
+        static getFigureGenerators(): Map<string,(shape: Shape, width: number, height: number) => Geometry>;
 
         /**
         * This static function defines a named figure geometry generator for Shapes.
         * @param {string} name new figure name must start with an uppercase letter, and must not be "None"
         * @param {function(Shape, number, number):Geometry} func returns a Geometry for the given Shape, width, and height
         */
-        static defineFigureGenerator(name: string, func: (shape: Shape, width: number, height: number) => Geometry);
+        static defineFigureGenerator(name: string, func: (shape: Shape, width: number, height: number) => Geometry): void;
         /**
         * This static function defines a synonym for a named figure geometry generator.
         * @param {string} name the new figure name must start with an uppercase letter, and must not be "None"
         * @param {string} synonym an existing figure name
         */
-        static defineFigureGenerator(name: string, synonym: string);
+        static defineFigureGenerator(name: string, synonym: string): void;
 
         /**
         * This static function returns a read-only Map of named arrowhead geometries.
         * @return {Map} the keys are arrowhead names; the values are Geometry objects
         */
-        static getArrowheadGeometries(): Map;
+        static getArrowheadGeometries(): Map<string,Geometry>;
 
         /**
         * This static function defines a named arrowhead geometry.
         * @param {string} name the new arrowhead name must start with an uppercase letter, and must not be "None"
         * @param {Geometry} geo the Geometry for the arrowhead
         */
-        static defineArrowheadGeometry(name: string, geo: Geometry);
+        static defineArrowheadGeometry(name: string, geo: Geometry): void;
         /**
         * This static function defines a named arrowhead geometry.
         * @param {string} name the new arrowhead name must start with an uppercase letter, and must not be "None"
         * @param {string} pathstr a geometry path string that will be passed to Geometry.parse
         */
-        static defineArrowheadGeometry(name: string, pathstr: string);
+        static defineArrowheadGeometry(name: string, pathstr: string): void;
     }
 
     /**
@@ -3207,7 +3197,7 @@ declare module go {
         overflow: EnumValue;
 
         /**Gets or sets the Brush (or CSS color string) that describes the stroke (color) of the .font.*/
-        stroke: any;
+        stroke: BrushLike;
 
         /**Gets or sets the current text string.*/
         text: string;
@@ -3241,7 +3231,7 @@ declare module go {
 
         static isValidFont(font: string): boolean;  // undocumented
         static getEllipsis(): string;  // undocumented
-        static setEllipsis(val: string);  // undocumented
+        static setEllipsis(val: string): void;  // undocumented
     }
 
 
@@ -3270,7 +3260,7 @@ declare module go {
         color: string;
 
         /**Gets or sets a Map holding all of the color stops used in this gradient, where the key is a number, the fractional distance between zero and one (inclusive), and where the corresponding value is a color string.*/
-        colorStops: Map;
+        colorStops: Map<number,string>;
 
         /**Gets or sets the ending location for a linear or radial gradient.*/
         end: Spot;
@@ -3298,7 +3288,7 @@ declare module go {
         * @param {number} loc between zero and one, inclusive.
         * @param {string} color a CSS color string
         */
-        addColorStop(loc: number, color: string);
+        addColorStop(loc: number, color: string): void;
 
         /**
         * Create a copy of this Brush, with the same values.
@@ -3356,7 +3346,7 @@ declare module go {
         endY: number;
 
         /**Gets or sets the List of PathFigures that describes the content of the path for Geometries of type .Path.*/
-        figures: List;
+        figures: List<PathFigure>;
 
         /**Gets or sets the spot to use when the Shape.spot1 value is Spot.Default.*/
         spot1: Spot;
@@ -3589,7 +3579,7 @@ declare module go {
         isShadowed: boolean;
 
         /**Gets or sets the List of PathSegments that define this PathFigure.*/
-        segments: List;
+        segments: List<PathSegment>;
 
         /**Gets or sets the starting point X coordinate of the PathFigure.*/
         startX: number;
@@ -4654,7 +4644,7 @@ declare module go {
         * @param {function()} ctor the class constructor that defines the enumerated values that are being parsed.
         * @param {EnumValue} defval the default enumerated value to return if it fails to parse the given string.
         */
-        static parseEnum(ctor: new (...args: any[]) => Object, defval: EnumValue): (a: string) => EnumValue;
+        static parseEnum(ctor: Constructor, defval: EnumValue): (a: string) => EnumValue;
 
         /**
         * This static function can be used to convert an object to a string,
@@ -4709,7 +4699,7 @@ declare module go {
         newValue: any;
 
         /**Gets or sets the Object that was modified.*/
-        object: Object;
+        object: any;
 
         /**Gets or sets an optional value associated with the old value.*/
         oldParam: any;
@@ -4718,7 +4708,7 @@ declare module go {
         oldValue: any;
 
         /**Gets or sets the name of the property change.*/
-        propertyName: any;
+        propertyName: PropertyAccessor;
 
         /**
         * This predicate returns true if you can call redo().
@@ -4733,7 +4723,7 @@ declare module go {
         /**
         * Forget any object references that this ChangedEvent may have.
         */
-        clear();
+        clear(): void;
 
         /**
         * Make a copy of this ChangedEvent.
@@ -4757,12 +4747,12 @@ declare module go {
         /**
         * Re-perform this object change after an undo().
         */
-        redo();
+        redo(): void;
 
         /**
         * Reverse the effects of this object change.
         */
-        undo();
+        undo(): void;
 
         /**For inserting into collections, and used as the value for ChangedEvent.change.*/
         static Insert: EnumValue;
@@ -4787,10 +4777,10 @@ declare module go {
     class GraphLinksModel extends Model {
         /**
         * This constructs an empty GraphLinksModel unless one provides arguments as the initial data array values for the Model.nodeDataArray and GraphLinksModel.linkDataArray properties.
-        * @param {Array=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
-        * @param {Array=} linkdataarray an optional Array containing JavaScript objects to be represented by Links.
+        * @param {Array<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
+        * @param {Array<Object>=} linkdataarray an optional Array containing JavaScript objects to be represented by Links.
         */
-        constructor(nodedataarray?: Object[], linkdataarray?: Object[]);
+        constructor(nodedataarray?: Array<Object>, linkdataarray?: Array<Object>);
 
         /**
         * Gets or sets a data object that will be copied and added to the model as a new node data each time there
@@ -4818,10 +4808,10 @@ declare module go {
         * This is used by the diagram to distinguish between different kinds of links.
         * The name must not be null.
         */
-        linkCategoryProperty: any;
+        linkCategoryProperty: PropertyAccessor;
 
         /**Gets or sets the array of link data objects that correspond to Links in the Diagram; the initial value is an empty Array.*/
-        linkDataArray: Object[];
+        linkDataArray: Array<Object>;
 
         /**
         * Gets or sets the name of the data property that returns
@@ -4832,7 +4822,7 @@ declare module go {
         * If the value is an empty string,
         * .getFromKeyForLinkData will return undefined for all link data objects.
         */
-        linkFromKeyProperty: any;
+        linkFromKeyProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the data property that returns the optional parameter naming a "port" element on the node that the link data is connected from,
@@ -4841,7 +4831,7 @@ declare module go {
         * different logical connection points for any links.
         * The name must not be null.
         */
-        linkFromPortIdProperty: any;
+        linkFromPortIdProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the data property that returns
@@ -4853,7 +4843,7 @@ declare module go {
         * .getLabelKeysForLinkData will return an empty array for all link data objects.
         * You will need to set this property in order to support nodes as link labels.
         */
-        linkLabelKeysProperty: any;
+        linkLabelKeysProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the data property that returns
@@ -4862,7 +4852,7 @@ declare module go {
         * the default value is the name 'to'.
         * The name must not be null.
         */
-        linkToKeyProperty: any;
+        linkToKeyProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the data property that returns
@@ -4872,7 +4862,7 @@ declare module go {
         * different logical connection points for any links.
         * The name must not be null.
         */
-        linkToPortIdProperty: any;
+        linkToPortIdProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the property on node data that specifies
@@ -4881,7 +4871,7 @@ declare module go {
         * the default value is the name 'group'.
         * The value must not be null.
         */
-        nodeGroupKeyProperty: any;
+        nodeGroupKeyProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the boolean property on node data that indicates
@@ -4891,23 +4881,15 @@ declare module go {
         * the default value is the name 'isGroup'.
         * The value must not be null.
         */
-        nodeIsGroupProperty: any;
+        nodeIsGroupProperty: PropertyAccessor;
 
         /**
         * Adds a node key value that identifies a node data acting as a new label node on the given link data.
         * This method only works if .linkLabelKeysProperty has been set to something other than an empty string.
         * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {number} key a number or string that is the key of the new label node.
+        * @param {string|number} key a number or string that is the key of the new label node.
         */
-        addLabelKeyForLinkData(linkdata: Object, key: number);
-
-        /**
-        * Adds a node key value that identifies a node data acting as a new label node on the given link data.
-        * This method only works if .linkLabelKeysProperty has been set to something other than an empty string.
-        * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {string} key a number or string that is the key of the new label node.
-        */
-        addLabelKeyForLinkData(linkdata: Object, key: string);
+        addLabelKeyForLinkData(linkdata: Object, key: Key): void;
 
         /**
         * When you want to add a link to the diagram, call this method with a new data object.
@@ -4919,19 +4901,13 @@ declare module go {
         * This operation does nothing if the link data is already part of this model's .linkDataArray.
         * @param {Object} linkdata a JavaScript object representing a link.
         */
-        addLinkData(linkdata: Object);
+        addLinkData(linkdata: Object): void;
 
         /**
         * Add to this model all of the link data held in an Array or in an Iterable of link data objects.
-        * @param {Iterable} coll a collection of link data objects to add to the .linkDataArray
+        * @param {Iterable<Object>|Array<Object>} coll a collection of link data objects to add to the .linkDataArray
         */
-        addLinkDataCollection(coll: Iterable);
-
-        /**
-        * Add to this model all of the link data held in an Array or in an Iterable of link data objects.
-        * @param {Array} coll a collection of link data objects to add to the .linkDataArray
-        */
-        addLinkDataCollection(coll: Object[]);
+        addLinkDataCollection(coll: Iterable<Object> | Array<Object>): void;
 
         /**
         * Decide if a given link data is in this model.
@@ -4962,7 +4938,7 @@ declare module go {
         * from which this link is connected.
         * @param {Object} linkdata a JavaScript object representing a link.
         */
-        getFromKeyForLinkData(linkdata: Object): any;
+        getFromKeyForLinkData(linkdata: Object): Key;
 
         /**
         * From a link data retrieve a value identifying the port object of the node
@@ -4975,21 +4951,21 @@ declare module go {
         * If there is a container group for the given node data, return the group's key.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
         */
-        getGroupKeyForNodeData(nodedata: Object): any;
+        getGroupKeyForNodeData(nodedata: Object): Key;
 
         /**
         * Gets an Array of node key values that identify node data acting as labels on the given link data.
         * This method only works if .linkLabelKeysProperty has been set to something other than an empty string.
         * @param {Object} linkdata a JavaScript object representing a link.
         */
-        getLabelKeysForLinkData(linkdata: Object): any[];
+        getLabelKeysForLinkData(linkdata: Object): Array<Key>;
 
         /**
         * From a link data retrieve a value uniquely identifying the node data
         * to which this link is connected.
         * @param {Object} linkdata a JavaScript object representing a link.
         */
-        getToKeyForLinkData(linkdata: Object): any;
+        getToKeyForLinkData(linkdata: Object): Key;
 
         /**
         * From a link data retrieve a value identifying the port object of the node
@@ -5012,19 +4988,9 @@ declare module go {
         * does not automatically remove any node data from the model.
         * This method only works if .linkLabelKeysProperty has been set to something other than an empty string.
         * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {number} key a number or string that is the key of the label node being removed from the link.
+        * @param {string|number} key a number or string that is the key of the label node being removed from the link.
         */
-        removeLabelKeyForLinkData(linkdata: Object, key: number);
-
-        /**
-        * Removes a node key value that identifies a node data acting as a former label node on the given link data.
-        * Removing a reference to a node data from the collection of link label keys
-        * does not automatically remove any node data from the model.
-        * This method only works if .linkLabelKeysProperty has been set to something other than an empty string.
-        * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {string} key a number or string that is the key of the label node being removed from the link.
-        */
-        removeLabelKeyForLinkData(linkdata: Object, key: string);
+        removeLabelKeyForLinkData(linkdata: Object, key: Key): void;
 
         /**
         * When you want to remove a link from the diagram, call this method with an existing link data object.
@@ -5035,19 +5001,13 @@ declare module go {
         * This operation does nothing if the link data is not present in the .linkDataArray.
         * @param {Object} linkdata a JavaScript object representing a link.
         */
-        removeLinkData(linkdata: Object);
+        removeLinkData(linkdata: Object): void;
 
         /**
         * Remove from this model all of the link data held in an Array or in an Iterable of link data objects.
-        * @param {Iterable} coll a collection of link data objects to remove from the .linkDataArray
+        * @param {Iterable<Object>|Array<Object>} coll a collection of link data objects to remove from the .linkDataArray
         */
-        removeLinkDataCollection(coll: Iterable);
-
-        /**
-        * Remove from this model all of the link data held in an Array or in an Iterable of link data objects.
-        * @param {Array} coll a collection of link data objects to remove from the .linkDataArray
-        */
-        removeLinkDataCollection(coll: Object[]);
+        removeLinkDataCollection(coll: Iterable<Object> | Array<Object>): void;
 
         /**
         * Change the category of a given link data, a string naming the link template
@@ -5058,25 +5018,16 @@ declare module go {
         * @param {Object} linkdata a JavaScript object representing a link.
         * @param {string} cat Must not be null.
         */
-        setCategoryForLinkData(linkdata: Object, cat: string);
+        setCategoryForLinkData(linkdata: Object, cat: string): void;
 
         /**
         * Change the node key that the given link data references as the
         * source of the link.
         * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {number|undefined} key This may be undefined if
+        * @param {string|number|undefined} key This may be undefined if
         * the link should no longer come from any node.
         */
-        setFromKeyForLinkData(linkdata: Object, key: number);
-
-        /**
-        * Change the node key that the given link data references as the
-        * source of the link.
-        * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {string|undefined} key This may be undefined if
-        * the link should no longer come from any node.
-        */
-        setFromKeyForLinkData(linkdata: Object, key: string);
+        setFromKeyForLinkData(linkdata: Object, key: Key): void;
 
         /**
         * Change the information that the given link data uses to identify the
@@ -5085,21 +5036,14 @@ declare module go {
         * @param {string} portname This may be the empty string if
         * the link should no longer be associated with any particular "port".
         */
-        setFromPortIdForLinkData(linkdata: Object, portname: string);
+        setFromPortIdForLinkData(linkdata: Object, portname: string): void;
 
         /**
         * Change the container group for the given node data, given a key for the new group.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
-        * @param {number|undefined} key This may be undefined if there should be no containing group data.
+        * @param {string|number|undefined} key This may be undefined if there should be no containing group data.
         */
-        setGroupKeyForNodeData(nodedata: Object, key: number);
-
-        /**
-        * Change the container group for the given node data, given a key for the new group.
-        * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
-        * @param {string|undefined} key This may be undefined if there should be no containing group data.
-        */
-        setGroupKeyForNodeData(nodedata: Object, key: string);
+        setGroupKeyForNodeData(nodedata: Object, key: Key): void;
 
         /**
         * Replaces an Array of node key values that identify node data acting as labels on the given link data.
@@ -5107,25 +5051,16 @@ declare module go {
         * @param {Object} linkdata a JavaScript object representing a link.
         * @param arr an Array of node keys; an empty Array if the property was not present.
         */
-        setLabelKeysForLinkData(linkdata: Object, arr: any[]);
+        setLabelKeysForLinkData(linkdata: Object, arr: Array<Key>): void;
 
         /**
         * Change the node key that the given link data references as the
         * destination of the link.
         * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {number|undefined} key This may be undefined if
+        * @param {string|number|undefined} key This may be undefined if
         * the link should no longer go to any node.
         */
-        setToKeyForLinkData(linkdata: Object, key: number);
-
-        /**
-        * Change the node key that the given link data references as the
-        * destination of the link.
-        * @param {Object} linkdata a JavaScript object representing a link.
-        * @param {string|undefined} key This may be undefined if
-        * the link should no longer go to any node.
-        */
-        setToKeyForLinkData(linkdata: Object, key: string);
+        setToKeyForLinkData(linkdata: Object, key: Key): void;
 
         /**
         * Change the information that the given link data uses to identify the
@@ -5134,7 +5069,7 @@ declare module go {
         * @param {string} portname This may be the empty string if
         * the link should no longer be associated with any particular "port".
         */
-        setToPortIdForLinkData(linkdata: Object, portname: string);
+        setToPortIdForLinkData(linkdata: Object, portname: string): void;
     }
 
     /*
@@ -5145,9 +5080,9 @@ declare module go {
     class Model {
         /**
         * You probably don't want to call this constructor, because this class does not support links (relationships between nodes) or groups (nodes and links and subgraphs as nodes): instead, create instances of a subclass such as GraphLinksModel or TreeModel.
-        * @param {Array=} nodedataarray an optional Array containing JavaScript objects to be represented by Parts.
+        * @param {Array<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Parts.
         */
-        constructor(nodedataarray?: Object[]);
+        constructor(nodedataarray?: Array<Object>);
 
         /**Gets or sets whether the default behavior for copyNodeData makes copies of property values that are Arrays.*/
         copiesArrays: boolean;
@@ -5165,22 +5100,22 @@ declare module go {
         isReadOnly: boolean;
 
         /**Gets or sets a function that returns a unique id number or string for a node data object; the default value is null.*/
-        makeUniqueKeyFunction: (model: Model, obj: Object) => any;
+        makeUniqueKeyFunction: (model: Model, obj: Object) => Key;
 
         /**Gets a JavaScript Object that can hold programmer-defined property values for the model as a whole, rather than just for one node or one link; by default this is an object with no properties.*/
-        modelData: Object;
+        modelData: any;
 
         /**Gets or sets the name of this model; the initial name is an empty string.*/
         name: string;
 
         /**Gets or sets the name of the node data property that returns a string naming that data's category, or a function that takes a node data object and returns the category name; the default value is the name 'category'.*/
-        nodeCategoryProperty: any;
+        nodeCategoryProperty: PropertyAccessor;
 
         /**Gets or sets the array of node data objects that correspond to Nodes, Groups, or non-Link Parts in the Diagram; the initial value is an empty Array.*/
-        nodeDataArray: Object[];
+        nodeDataArray: Array<Object>;
 
         /**Gets or sets the name of the data property that returns a unique id number or string for each node data object, or a function taking a node data object and returning the key value; the default value is the name 'key'.*/
-        nodeKeyProperty: any;
+        nodeKeyProperty: PropertyAccessor;
 
         /**Gets or sets whether ChangedEvents are not recorded by the UndoManager; the initial and normal value is false.*/
         skipsUndoManager: boolean;
@@ -5193,17 +5128,17 @@ declare module go {
         * in a manner that can be undone/redone and that automatically updates any bindings.
         * This also calls .raiseChangedEvent to notify all listeners about the ChangedEvent.Insert.
         * If you want to add a new node or part to the diagram, call .addNodeData.
-        * @param {Array} arr an Array that is the value of some Panel's Panel.itemArray.
+        * @param {Array<*>} arr an Array that is the value of some Panel's Panel.itemArray.
         * @param {*} val the new value to be pushed onto the array.
         */
-        addArrayItem(arr: any[], val: any);
+        addArrayItem(arr: Array<any>, val: any): void;
 
         /**
         * Register an event handler that is called when there is a ChangedEvent.
         * This registration does not raise a ChangedEvent.
         * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
         */
-        addChangedListener(listener: (e: ChangedEvent) => void );
+        addChangedListener(listener: (e: ChangedEvent) => void ): void;
 
         /**
         * When you want to add a node or group to the diagram,
@@ -5214,19 +5149,13 @@ declare module go {
         * To add or remove an object or value from an item array, call .insertArrayItem or .removeArrayItem.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
         */
-        addNodeData(nodedata: Object);
+        addNodeData(nodedata: Object): void;
 
         /**
         * Add to this model all of the node data held in an Array or in an Iterable of node data objects.
-        * @param {Iterable} coll a collection of node data objects to add to the .nodeDataArray
+        * @param {Iterable<Object>|Array<Object>} coll a collection of node data objects to add to the .nodeDataArray
         */
-        addNodeDataCollection(coll: Iterable);
-
-        /**
-        * Add to this model all of the node data held in an Array or in an Iterable of node data objects.
-        * @param {Array} coll a collection of node data objects to add to the .nodeDataArray
-        */
-        addNodeDataCollection(coll: Object[]);
+        addNodeDataCollection(coll: Iterable<Object> | Array<Object>): void;
 
         /**
         * Clear out all references to any model data.
@@ -5235,7 +5164,7 @@ declare module go {
         * Instead of calling this method, you may prefer to set .nodeDataArray to an empty JavaScript Array.
         * If this model is a GraphLinksModel, you would also want to set GraphLinksModel.linkDataArray to a separate empty JavaScript Array.
         */
-        clear();
+        clear(): void;
 
         /**
         * Commit the changes of the current transaction.
@@ -5265,7 +5194,7 @@ declare module go {
         * that uses the given value as its unique key.
         * @param {*} key a string or a number.
         */
-        findNodeDataForKey(key: any): Object;
+        findNodeDataForKey(key: Key): any;
 
         /**
         * This static function parses a string in JSON format and constructs, initializes, and returns a model.
@@ -5275,17 +5204,7 @@ declare module go {
         * @param {string} s a String in JSON format containing all of the persistent properties of the model, or an Object already read from JSON text.
         * @param {model=} model an optional model to be modified; if not supplied, it constructs and returns a new model whose name is specified by the "class" property.
         */
-        static fromJson(s: string, model?: Model): Model;
-
-        /**
-        * This static function parses a string in JSON format and constructs, initializes, and returns a model.
-        * Note that properties with values that are functions are not written out by .toJson,
-        * so reading in such a model will require constructing such a model, initializing its functional property values,
-        * and explicitly passing it in as the second argument.
-        * @param {Object} s a String in JSON format containing all of the persistent properties of the model, or an Object already read from JSON text.
-        * @param {model=} model an optional model to be modified; if not supplied, it constructs and returns a new model whose name is specified by the "class" property.
-        */
-        static fromJson(s: Object, model?: Model): Model;
+        static fromJson(s: string | Object, model?: Model): Model;
 
         /**
         * Find the category of a given node data, a string naming the node template
@@ -5301,18 +5220,18 @@ declare module go {
         * It is possible to change the key for a node data object by calling .setKeyForNodeData.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
         */
-        getKeyForNodeData(nodedata: Object): any;
+        getKeyForNodeData(nodedata: Object): Key;
 
         /**
         * Add an item to a data array that may be data bound by a Panel as its Panel.itemArray,
         * given a new data value and the index at which to insert the new value, in a manner that can be undone/redone and that automatically updates any bindings.
         * This also calls .raiseChangedEvent to notify all listeners about the ChangedEvent.Insert.
         * If you want to add a new node or part to the diagram, call .addNodeData.
-        * @param {Array} arr an Array that is the value of some Panel's Panel.itemArray.
+        * @param Array<*> arr an Array that is the value of some Panel's Panel.itemArray.
         * @param {number} idx the zero-based array index where the new value will be inserted; use -1 to push the new value on the end of the array.
         * @param {*} val the new value to be inserted into the array.
         */
-        insertArrayItem(arr: any[], idx: number, val: any);
+        insertArrayItem(arr: Array<any>, idx: number, val: any): void;
 
         /**
         * This method is called when a node data object is added to the model to make sure that
@@ -5327,7 +5246,7 @@ declare module go {
         * call .setKeyForNodeData and give it a new unique key value.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
         */
-        makeNodeDataKeyUnique(nodedata: Object);
+        makeNodeDataKeyUnique(nodedata: Object): void;
 
         /**
         * Call this method to notify that the model or its objects have changed.
@@ -5340,7 +5259,7 @@ declare module go {
         * @param {*=} oldparam an optional value that helps describe the older value.
         * @param {*=} newparam an optional value that helps describe the newer value.
         */
-        raiseChangedEvent(change: EnumValue, propertyname: any, obj: Object, oldval: any, newval: any, oldparam?: any, newparam?: any);
+        raiseChangedEvent(change: EnumValue, propertyname: PropertyAccessor, obj: Object, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
 
         /**
         * Call this method to notify about a data property having changed value.
@@ -5354,7 +5273,7 @@ declare module go {
         * @param {*=} oldparam an optional value additionally describing the old value.
         * @param {*=} newparam an optional value additionally describing the new value.
         */
-        raiseDataChanged(data: Object, propertyname: any, oldval: any, newval: any, oldparam?: any, newparam?: any);
+        raiseDataChanged(data: Object, propertyname: PropertyAccessor, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
 
         /**
         * Remove an item from a data array that may be data bound by a Panel as its Panel.itemArray,
@@ -5364,18 +5283,18 @@ declare module go {
         * Note that there is no version of this method that takes an item value instead of an index into the array.
         * Because item arrays may hold any JavaScript value, including numbers and strings, there may be duplicate entries with that value in the array.
         * To avoid ambiguity, removing an item from an array requires an index.
-        * @param {Array} arr an Array that is the value of some Panel's Panel.itemArray.
+        * @param Array<*> arr an Array that is the value of some Panel's Panel.itemArray.
         * @param {number=} idx the zero-based array index of the data item to be removed from the array;
         *   if not supplied it will remove the last item of the array.
         */
-        removeArrayItem(arr: any[], idx?: number);
+        removeArrayItem(arr: Array<any>, idx?: number): void;
 
         /**
         * Unregister an event handler listener.
         * This deregistration does not raise a ChangedEvent.
         * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
         */
-        removeChangedListener(listener: (e: ChangedEvent) => void );
+        removeChangedListener(listener: (e: ChangedEvent) => void ): void;
 
         /**
         * When you want to remove a node or group from the diagram,
@@ -5390,19 +5309,13 @@ declare module go {
         * To add or remove an object or value from an item array, call .insertArrayItem or .removeArrayItem.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
         */
-        removeNodeData(nodedata: Object);
+        removeNodeData(nodedata: Object): void;
 
         /**
         * Remove from this model all of the node data held in an Array or in an Iterable of node data objects.
-        * @param {Iterable} coll a collection of node data objects to remove from the .nodeDataArray
+        * @param {Iterable<Object>|Array<Object>} coll a collection of node data objects to remove from the .nodeDataArray
         */
-        removeNodeDataCollection(coll: Iterable);
-
-        /**
-        * Remove from this model all of the node data held in an Array or in an Iterable of node data objects.
-        * @param {Array} coll a collection of node data objects to remove from the .nodeDataArray
-        */
-        removeNodeDataCollection(coll: Object[]);
+        removeNodeDataCollection(coll: Iterable<Object> | Array<Object>): void;
 
         /**
         * Rollback the current transaction, undoing any recorded changes.
@@ -5420,7 +5333,7 @@ declare module go {
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
         * @param {string} cat Must not be null.
         */
-        setCategoryForNodeData(nodedata: Object, cat: string);
+        setCategoryForNodeData(nodedata: Object, cat: string): void;
 
         /**
         * Change the value of some property of a node data, a link data, or an item data, given a string naming the property
@@ -5430,7 +5343,7 @@ declare module go {
         * @param {string} propname a string that is not null or the empty string.
         * @param {*} val the new value for the property.
         */
-        setDataProperty(data: Object, propname: string, val: any);
+        setDataProperty(data: Object, propname: string, val: any): void;
 
         /**
         * Change the unique key of a given node data that is already in this model.
@@ -5441,22 +5354,9 @@ declare module go {
         * If this is called on a node data object that is not (yet) in this model,
         * this unconditionally modifies the property to the new key value.
         * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
-        * @param {number|undefined} key
+        * @param {string|number|undefined} key
         */
-        setKeyForNodeData(nodedata: Object, key: number);
-
-        /**
-        * Change the unique key of a given node data that is already in this model.
-        * The new key value must be unique -- i.e. not in use by another node data object.
-        * You can call .findNodeDataForKey to check if a proposed new key is already in use.
-        * This operation will check all data objects in the model and replace all references
-        * using the old key value with the new one.
-        * If this is called on a node data object that is not (yet) in this model,
-        * this unconditionally modifies the property to the new key value.
-        * @param {Object} nodedata a JavaScript object representing a node, group, or non-link.
-        * @param {string|undefined} key
-        */
-        setKeyForNodeData(nodedata: Object, key: string);
+        setKeyForNodeData(nodedata: Object, key: Key): void;
 
         /**
         * Begin a transaction, where the changes are held by a Transaction object in the UndoManager.
@@ -5493,7 +5393,7 @@ declare module go {
         *   update all bindings on the target Part or item Panel;
         *   otherwise update only those bindings using this source property name.
         */
-        updateTargetBindings(data: Object, srcpropname?: string);
+        updateTargetBindings(data: Object, srcpropname?: string): void;
     }
 
     /**
@@ -5507,7 +5407,7 @@ declare module go {
         constructor();
 
         /**This read-only property returns the list of ChangedEvents.*/
-        changes: List;
+        changes: List<ChangedEvent>;
 
         /**Gets or sets whether we can add more ChangedEvents to this list of changes.*/
         isComplete: boolean;
@@ -5528,17 +5428,17 @@ declare module go {
         /**
         * Clear all of the saved changes.
         */
-        clear();
+        clear(): void;
 
         /**
         * Re-perform these changes after an .undo.
         */
-        redo();
+        redo(): void;
 
         /**
         * Undo all of the changes, in reverse order.
         */
-        undo();
+        undo(): void;
     }
 
     /**
@@ -5549,9 +5449,9 @@ declare module go {
     class TreeModel extends Model {
         /**
         * This constructs an empty TreeModel unless one provides arguments as the initial data array values for the Model.nodeDataArray property.
-        * @param {Array=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
+        * @param {Array<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
         */
-        constructor(nodedataarray?: Object[]);
+        constructor(nodedataarray?: Array<Object>);
 
         /**
         * Gets or sets the name of the property on node data that specifies
@@ -5560,7 +5460,7 @@ declare module go {
         * the default value is the name 'parent'.
         * The value must not be null nor an empty string.
         */
-        nodeParentKeyProperty: any;
+        nodeParentKeyProperty: PropertyAccessor;
 
         /**
         * Gets or sets the name of the data property that returns a string describing that node data's parent link's category,
@@ -5569,13 +5469,13 @@ declare module go {
         * This is used by the diagram to distinguish between different kinds of links.
         * The name must not be null.
         */
-        parentLinkCategoryProperty: any;
+        parentLinkCategoryProperty: PropertyAccessor;
 
         /**
         * If there is a parent node for the given node data, return the parent's key.
         * @param {Object} nodedata a JavaScript object representing a node.
         */
-        getParentKeyForNodeData(nodedata: Object): any;
+        getParentKeyForNodeData(nodedata: Object): Key;
 
         /**
         * Find the category for the parent link of a given child node data, a string naming the link template
@@ -5587,16 +5487,9 @@ declare module go {
         /**
         * Change the parent node for the given node data, given a key for the new parent, or undefined if there should be no parent.
         * @param {Object} nodedata a JavaScript object representing a node.
-        * @param {number|undefined} key This may be undefined if there should be no parent node data.
+        * @param {string|number|undefined} key This may be undefined if there should be no parent node data.
         */
-        setParentKeyForNodeData(nodedata: Object, key: number);
-
-        /**
-        * Change the parent node for the given node data, given a key for the new parent, or undefined if there should be no parent.
-        * @param {Object} nodedata a JavaScript object representing a node.
-        * @param {string|undefined} key This may be undefined if there should be no parent node data.
-        */
-        setParentKeyForNodeData(nodedata: Object, key: string);
+        setParentKeyForNodeData(nodedata: Object, key: Key): void;
 
         /**
         * Change the category for the parent link of a given child node data, a string naming the link template
@@ -5607,7 +5500,7 @@ declare module go {
         * @param {Object} childdata a JavaScript object representing a node data.
         * @param {string} cat Must not be null.
         */
-        setParentLinkCategoryForNodeData(childdata: Object, cat: string);
+        setParentLinkCategoryForNodeData(childdata: Object, cat: string): void;
     }
 
     /**
@@ -5624,7 +5517,7 @@ declare module go {
         currentTransaction: Transaction;
 
         /**This read-only property returns the whole history, a list of all of the Transactions, each representing a transaction with some number of ChangedEvents.*/
-        history: List;
+        history: List<Transaction>;
 
         /**This read-only property returns the index into .history for the current undoable Transaction.*/
         hisotryIndex: number;
@@ -5642,10 +5535,10 @@ declare module go {
         maxHistoryLength: number;
 
         /**This read-only property returns an iterator for all of the Models that this UndoManager is handling.*/
-        models: Iterator;
+        models: Iterator<Model>;
 
         /**This read-only property returns a stack of ongoing transaction names.*/
-        nestedTransactionNames: List;
+        nestedTransactionNames: List<string>;
 
         /**This read-only property returns the current transaction level.*/
         transactionLevel: number;
@@ -5660,7 +5553,7 @@ declare module go {
         * Make sure this UndoManager knows about a Model for which it may receive ChangedEvents when the given Model is changed.
         * @param {Model} model
         */
-        addModel(model: Model);
+        addModel(model: Model): void;
 
         /**
         * This predicate returns true if you can call .redo.
@@ -5675,7 +5568,7 @@ declare module go {
         /**
         * Clear all of the Transactions and clear all other state, including any ongoing transaction without rolling back.
         */
-        clear();
+        clear(): void;
 
         /**
         * Commit the current transaction started by a call to .startTransaction.
@@ -5703,12 +5596,12 @@ declare module go {
         * This method is also a no-op if .isEnabled is false.
         * @param {ChangedEvent} e a ChangedEvent.
         */
-        handleChanged(e: ChangedEvent);
+        handleChanged(e: ChangedEvent): void;
 
         /**
         * Re-perform this object change after an .undo.
         */
-        redo();
+        redo(): void;
 
         /**
         * Inform this UndoManager that it will no longer be receiving ChangedEvents
@@ -5719,7 +5612,7 @@ declare module go {
         * you should be careful that there are no ChangedEvents referring to that model in any Transactions.
         * @param {Model} model A Model that this UndoManager should no longer manage.
         */
-        removeModel(model: Model);
+        removeModel(model: Model): void;
 
         /**
         * Rollback the current transaction started by a call to .startTransaction, undoing any changes.
@@ -5754,7 +5647,7 @@ declare module go {
         /**
         * Reverse the effects of this object change.
         */
-        undo();
+        undo(): void;
 
         checksTransactionLevel: boolean;  // undocumented
     }
@@ -5817,17 +5710,17 @@ declare module go {
         /**
         * Position each Node according to the Vertex position, and then position the Links.
         */
-        commitLayout();
+        commitLayout(): void;
 
         /**
         * Commit the position and routing of all edge links.
         */
-        commitLinks();
+        commitLinks(): void;
 
         /**
         * Commit the position of all vertex nodes.
         */
-        commitNodes();
+        commitNodes(): void;
 
         /**
         * Create a new LayoutNetwork of CircularVertexes and CircularEdges.
@@ -5836,11 +5729,9 @@ declare module go {
 
         /**
         * Assign the positions of the vertexes in the network.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {Diagram | Group | Iterable<Part>} coll A Diagram or a Group or a collection of Parts.
         */
-        doLayout(coll: Diagram);
-        doLayout(coll: Group);
-        doLayout(coll: Iterable);
+        doLayout(coll: (Diagram | Group | Iterable<Part>)): void;
 
         /**Nodes are sorted using the .comparer, in ascending order; This value is used for CircularLayout.sorting.*/
         static Ascending: EnumValue;
@@ -5956,7 +5847,7 @@ declare module go {
         maxIterations: number;
 
         /**Gets or sets a random number generator with a random() method; set to null in order to use and reset an internal repeatable pseudo-random number generator.*/
-        randomNumberGenerator: Object;
+        randomNumberGenerator: { random: () => number };
 
         /**Gets or sets whether the fromSpot and the toSpot of every Link should be set to Spot.Default.*/
         setsPortSpots: boolean;
@@ -5965,22 +5856,22 @@ declare module go {
         * Find associated objects to be positioned along with the vertex.
         * @param {LayoutVertex} v
         */
-        addComments(v: LayoutVertex);
+        addComments(v: LayoutVertex): void;
 
         /**
         * Position the Nodes according to the Vertex positions.
         */
-        commitLayout();
+        commitLayout(): void;
 
         /**
         * Commit the position and routing of all edge links.
         */
-        commitLinks();
+        commitLinks(): void;
 
         /**
         * Commit the position of all vertex nodes.
         */
-        commitNodes();
+        commitNodes(): void;
 
         /**
         * Create a new LayoutNetwork of ForceDirectedVertexes and ForceDirectedEdges.
@@ -5989,11 +5880,9 @@ declare module go {
 
         /**
         * Assign the positions of the vertexes in the network.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {(Diagram | Group | Iterable<Part>)} coll A Diagram or a Group or a collection of Parts.
         */
-        doLayout(coll: Diagram);
-        doLayout(coll: Group);
-        doLayout(coll: Iterable);
+        doLayout(coll: (Diagram | Group | Iterable<Part>)): void;
 
         /**
         * Returns the charge of the vertex,
@@ -6068,7 +5957,7 @@ declare module go {
         * This is called each iteration on each such vertex.
         * By default this does nothing.
         */
-        moveFixedVertex(v: ForceDirectedVertex);
+        moveFixedVertex(v: ForceDirectedVertex): void;
 
         /**
         * Returns the length of the spring representing an edge.
@@ -6153,11 +6042,9 @@ declare module go {
 
         /**
         * Assign the positions of the parts, ignoring any links.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {(Diagram | Group | Iterable<Part>)} coll A Diagram or a Group or a collection of Parts.
         */
-        doLayout(coll: Diagram);
-        doLayout(coll: Group);
-        doLayout(coll: Iterable);
+        doLayout(coll: (Diagram | Group | Iterable<Part>)): void;
 
         /**Lay out each child according to the sort order given by GridLayout.comparer; This value is used for GridLayout.sorting.*/
         static Ascending: EnumValue;
@@ -6245,30 +6132,30 @@ declare module go {
         /**
         * Assigns every vertex in the input network to a layer.
         */
-        assignLayers();
+        assignLayers(): void;
 
         /**
         * This overridable method is called by commitLayout
         * to support custom arrangement of bands or labels across each layout layer.
-        * @param {Array} layerRects an Array of Rects with the bounds of each of the "layers"
+        * @param Array<*> layerRects an Array of Rects with the bounds of each of the "layers"
         * @param {Point} offset the position of the top-left corner of the banded area relative to the coordinates given by the layerRects
         */
-        commitLayers(layerRects: Rect[], offset: Point);
+        commitLayers(layerRects: Array<Rect>, offset: Point): void;
 
         /**
         * Updates the physical location of "real" nodes and links to reflect the layout.
         */
-        commitLayout();
+        commitLayout(): void;
 
         /**
         * Routes the links.
         */
-        commitLinks();
+        commitLinks(): void;
 
         /**
         * Lays out the nodes.
         */
-        commitNodes();
+        commitNodes(): void;
 
         /**
         * Create a new LayoutNetwork of LayeredDigraphVertexes and LayeredDigraphEdges.
@@ -6277,11 +6164,9 @@ declare module go {
 
         /**
         * Assign the positions of the vertexes in the network.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {(Diagram | Group | Iterable<Part>)} coll A Diagram or a Group or a collection of Parts.
         */
-        doLayout(coll: Diagram);
-        doLayout(coll: Group);
-        doLayout(coll: Iterable);
+        doLayout(coll: (Diagram | Group | Iterable<Part>)): void;
 
         /**The faster, less aggressive, crossing reduction algorithm; a valid value for LayeredDigraphLayout.aggressiveOption.*/
         static AggressiveLess: EnumValue;
@@ -6331,8 +6216,8 @@ declare module go {
         /**This option tries to have the packing algorithm straighten many of the links that cross layers, a valid value for LayeredDigraphLayout.packOption.*/
         static PackStraighten: number;
 
-        nodeMinLayerSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
-        nodeMinColumnSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
+        protected nodeMinLayerSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
+        protected nodeMinColumnSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
     }
 
     /** This holds LayeredDigraphLayout-specific information about Link s.*/
@@ -6425,7 +6310,7 @@ declare module go {
         /**
         * When using a LayoutNetwork, commit changes to the diagram by setting Node positions and by routing the Links.
         */
-        commitLayout();
+        commitLayout(): void;
 
         /**
         * Creates a copy of this Layout and returns it.
@@ -6439,32 +6324,28 @@ declare module go {
 
         /**
         * Position all of the nodes that do not have an assigned Part.location in the manner of a simple rectangular array.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {(Diagram | Group | Iterable<Part>)} coll A Diagram or a Group or a collection of Parts.
         */
-        doLayout(coll: Diagram);
-        doLayout(coll: Group);
-        doLayout(coll: Iterable);
+        doLayout(coll: (Diagram | Group | Iterable<Part>)): void;
 
         /**
         * If .isOngoing is true and if an initial layout has not yet been performed, set the .isValidLayout property to false, and ask to perform another layout in the near future.
         */
-        invalidateLayout();
+        invalidateLayout(): void;
 
         /**
         * Create and initialize a LayoutNetwork with the given nodes and links.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {(Diagram | Group | Iterable<Part>)} coll A Diagram or a Group or a collection of Parts.
         */
-        makeNetwork(coll: Diagram): LayoutNetwork;
-        makeNetwork(coll: Group): LayoutNetwork;
-        makeNetwork(coll: Iterable): LayoutNetwork;
+        makeNetwork(coll: (Diagram | Group | Iterable<Part>)): LayoutNetwork;
 
         /**
         * When using a LayoutNetwork, update the "physical" node positionings and link routings.
         */
-        updateParts();
+        updateParts(): void;
 
-        cloneProtected(copy: Layout);  // undocumented
-        collectParts(coll: Iterable);  // undocumented
+        protected cloneProtected(copy: Layout): void;  // undocumented
+        collectParts(coll: Iterable<Part>): void;  // undocumented
     }
 
     /**
@@ -6479,19 +6360,19 @@ declare module go {
         constructor();
 
         /**Gets a collection of all of the LayoutEdges in this network.*/
-        edges: Set;
+        edges: Set<LayoutEdge>;
 
         /**This read-only property returns the Layout that uses this network of LayoutVertexes and LayoutEdges.*/
         layout: Layout;
 
         /**Gets a collection of all of the LayoutVertexes in this network.*/
-        vertexes: Set;
+        vertexes: Set<LayoutVertex>;
 
         /**
         * Adds a LayoutEdge to the network.
         * @param {LayoutEdge} edge
         */
-        addEdge(edge: LayoutEdge);
+        addEdge(edge: LayoutEdge): void;
 
         /**
         * This convenience method makes sure there is a LayoutEdge in this network corresponding to a Link.
@@ -6508,19 +6389,19 @@ declare module go {
 
         /**
         * Creates a network of LayoutVertexes and LayoutEdges corresponding to the given Nodes and Links.
-        * @param {Iterable} parts A collection of Nodes or Links.
+        * @param {Iterable<Part>} parts A collection of Nodes or Links.
         * @param {boolean=} toplevelonly whether to skip Parts in the given collection that are contained by Groups; default is false.
         * @param {function(Part):boolean|null=} pred optional predicate to apply to each Part --
         *        if it returns false do not include Vertex or Edge in the network for that Part;
         *        default ignores link label nodes or links connecting with them
         */
-        addParts(parts: Iterable, toplevelonly?: boolean, pred?: (part: Part) => boolean);
+        addParts(parts: Iterable<Part>, toplevelonly?: boolean, pred?: (part: Part) => boolean): void;
 
         /**
         * Adds a LayoutVertex to the network.
         * @param {LayoutVertex} vertex
         */
-        addVertex(vertex: LayoutVertex);
+        addVertex(vertex: LayoutVertex): void;
 
         /**
         * Allocate a new instance of LayoutEdge.
@@ -6535,41 +6416,41 @@ declare module go {
         /**
         * Deletes all vertexes and edges that have no Part associated with them.
         */
-        deleteArtificialVertexes();
+        deleteArtificialVertexes(): void;
 
         /**
         * Removes a LayoutEdge from the network.
         * @param {LayoutEdge} edge
         */
-        deleteEdge(edge: LayoutEdge);
+        deleteEdge(edge: LayoutEdge): void;
 
         /**
         * This convenience method deletes from this network any LayoutEdge corresponding to a Link.
         * @param {Link} link
         */
-        deleteLink(link: Link);
+        deleteLink(link: Link): void;
 
         /**
         * This convenience method deletes any LayoutVertex corresponding to a Node.
         * @param {Node} node
         */
-        deleteNode(node: Node);
+        deleteNode(node: Node): void;
 
         /**
         * Deletes all LayoutEdges whose "to vertex" and "from vertex" are the same vertex.
         */
-        deleteSelfEdges();
+        deleteSelfEdges(): void;
 
         /**
         * Removes a LayoutVertex from the network.
         * @param {LayoutVertex} vertex
         */
-        deleteVertex(vertex: LayoutVertex);
+        deleteVertex(vertex: LayoutVertex): void;
 
         /**
         * Retrieve all of the Nodes and Links from the LayoutVertexes and LayoutEdges that are in this network.
         */
-        findAllParts(): Set;
+        findAllParts(): Set<Part>;
 
         /**
         * Returns the LayoutEdge that was constructed for the Link.
@@ -6595,12 +6476,12 @@ declare module go {
         * Reverses the direction of a LayoutEdge in the network.
         * @param {LayoutEdge} edge
         */
-        reverseEdge(edge: LayoutEdge);
+        reverseEdge(edge: LayoutEdge): void;
 
         /**
         * Modify this network by splitting it up into separate subnetworks, each of which has all of its vertexes connected to each other, but not to any vertexes in any other subnetworks.
         */
-        splitIntoSubNetworks(): List;
+        splitIntoSubNetworks(): List<LayoutNetwork>;
     }
 
     /** An edge represents a link in a LayoutNetwork. It holds layout-specific data for the link. */
@@ -6625,15 +6506,15 @@ declare module go {
         /**
         * Commits the route of this edge to the corresponding Link, if any.
         */
-        commit();
+        commit(): void;
 
         /**
         * Returns the edge's vertex at the other of this edge from the given vertex.
         * @param {LayoutVertex} v
         */
-        getOtherVertex(v: LayoutVertex);
+        getOtherVertex(v: LayoutVertex): void;
 
-        data: Object;  // undocumented
+        data: any;  // undocumented
     }
 
     /** A vertex represents a node in a LayoutNetwork. It holds layout-specific data for the node. */
@@ -6653,13 +6534,13 @@ declare module go {
         centerY: number;
 
         /**Gets an iterator for all of the edges that go out of this vertex.*/
-        destinationEdges: Iterator;
+        destinationEdges: Iterator<LayoutEdge>;
 
         /**Gets an iterator for all of the vertexes that are connected with edges going out of this vertex.*/
-        destinationVertexes: Iterator;
+        destinationVertexes: Iterator<LayoutVertex>;
 
         /**Gets an iterator for all of the edges that are connected with this vertex in either direction.*/
-        edges: Iterator;
+        edges: Iterator<LayoutEdge>;
 
         /**This read-only property returns the total number of edges that are connected with this vertex in either direction.*/
         edgesCount: number;
@@ -6683,13 +6564,13 @@ declare module go {
         node: Node;
 
         /**Gets an iterator for all of the edges that come into this vertex.*/
-        sourceEdges: Iterator;
+        sourceEdges: Iterator<LayoutEdge>;
 
         /**Gets an iterator for all of the vertexes that are connected with edges coming into this vertex.*/
-        sourceVertexes: Iterator;
+        sourceVertexes: Iterator<LayoutVertex>;
 
         /**Gets an iterator for all of the vertexes that are connected in either direction with this vertex.*/
-        vertexes: Iterator;
+        vertexes: Iterator<LayoutVertex>;
 
         /**Gets or sets the width of this vertex.*/
         width: number;
@@ -6704,30 +6585,30 @@ declare module go {
         * Adds a LayoutEdge to the list of successors (the edge will be going out from this vertex).
         * @param {LayoutEdge} edge
         */
-        addDestinationEdge(edge: LayoutEdge);
+        addDestinationEdge(edge: LayoutEdge): void;
 
         /**
         * Adds a LayoutEdge to the list of predecessors (the edge will be coming into this vertex).
         * @param {LayoutEdge} edge
         */
-        addSourceEdge(edge: LayoutEdge);
+        addSourceEdge(edge: LayoutEdge): void;
 
         /**
         * Moves the Node corresponding to this vertex so that its position is at the current .bounds point.
         */
-        commit();
+        commit(): void;
 
         /**
         * Deletes a LayoutEdge from the list of successors (the edge was going out from this vertex).
         * @param {LayoutEdge} edge
         */
-        deleteDestinationEdge(edge: LayoutEdge);
+        deleteDestinationEdge(edge: LayoutEdge): void;
 
         /**
         * Deletes a LayoutEdge from the list of predecessors (the edge was coming into this vertex).
         * @param {LayoutEdge} edge
         */
-        deleteSourceEdge(edge: LayoutEdge);
+        deleteSourceEdge(edge: LayoutEdge): void;
 
         /**
         * This static function is used to compare the Part.text values of the .nodes of the argument LayoutVertexes.
@@ -6743,7 +6624,7 @@ declare module go {
         */
         static standardComparer(m: LayoutVertex, n: LayoutVertex): number;
 
-        data: Object;  // undocumented
+        data: any;  // undocumented
     }
 
     /**
@@ -6876,7 +6757,7 @@ declare module go {
         rootDefaults: TreeVertex;
 
         /**Gets or sets the collection of root vertexes.*/
-        roots: Set;
+        roots: Set<TreeVertex|Node>;
 
         /**Gets or sets the default indentation of the first child of each row, if the .alignment is not a "Center" alignment.*/
         rowIndent: number;
@@ -6900,41 +6781,41 @@ declare module go {
         * Find associated objects to be positioned along with the TreeVertex.
         * @param {LayoutVertex} v
         */
-        addComments(v: LayoutVertex);
+        addComments(v: LayoutVertex): void;
 
         /**
         * Position each separate tree.
         */
-        arrangeTrees();
+        arrangeTrees(): void;
 
         /**
         * Assign final property values for a TreeVertex.
         * @param {LayoutVertex} v
         */
-        assignTreeVertexValues(v: LayoutVertex);
+        assignTreeVertexValues(v: LayoutVertex): void;
 
         /**
         * This overridable method is called by commitLayout if layerStyle is LayerUniform
         * to support custom arrangement of bands or labels across each layout layer.
-        * @param {Array} layerRects an Array of Rects with the bounds of each of the "layers"
+        * @param Array<*> layerRects an Array of Rects with the bounds of each of the "layers"
         * @param {Point} offset the position of the top-left corner of the banded area relative to the coordinates given by the layerRects
         */
-        commitLayers(layerRects: Rect[], offset: Point);
+        commitLayers(layerRects: Array<Rect>, offset: Point): void;
 
         /**
         * Set the fromSpot and toSpot for each Vertex, position each Node according to the Vertex position, and then position the Links.
         */
-        commitLayout();
+        commitLayout(): void;
 
         /**
         * Commit the position and routing of all edge links.
         */
-        commitLinks();
+        commitLinks(): void;
 
         /**
         * Commit the position of all vertex nodes.
         */
-        commitNodes();
+        commitNodes(): void;
 
         /**
         * Create a new LayoutNetwork of TreeVertexes and TreeEdges.
@@ -6943,23 +6824,21 @@ declare module go {
 
         /**
         * Assign the positions of the vertexes in the network.
-        * @param {Diagram|Group|Iterable} coll A Diagram or a Group or a collection of Parts.
+        * @param {(Diagram | Group | Iterable<Part>)} coll A Diagram or a Group or a collection of Parts.
         */
-        doLayout(coll: Diagram);
-        doLayout(coll: Group);
-        doLayout(coll: Iterable);
+        doLayout(coll: (Diagram | Group | Iterable<Part>)): void;
 
         /**
         * Assign initial property values for a TreeVertex.
         * @param {LayoutVertex} v
         */
-        initializeTreeVertexValues(v: LayoutVertex);
+        initializeTreeVertexValues(v: LayoutVertex): void;
 
         /**
         * Position and TreeVertex.comments around the vertex.
         * @param {LayoutVertex} v
         */
-        layoutComments(v: LayoutVertex);
+        layoutComments(v: LayoutVertex): void;
 
         /**The children are positioned in a bus, only on the bottom or right side of the parent; This value is used for TreeLayout.alignment or TreeLayout.alternateAlignment.*/
         static AlignmentBottomRightBus: EnumValue;
@@ -7053,7 +6932,7 @@ declare module go {
         /**
         * Commits the position of the Link and routes it.
         */
-        commit();
+        commit(): void;
     }
 
     /** This holds TreeLayout-specific information about Nodes.*/
@@ -7073,7 +6952,7 @@ declare module go {
         childPortSpot: Spot;
 
         /**Gets or sets the logical children for this node.*/
-        children: TreeVertex[];
+        children: Array<TreeVertex>;
 
         /**This read-only property returns the number of immediate children this node has.*/
         childrenCount: number;
@@ -7082,7 +6961,7 @@ declare module go {
         commentMargin: number;
 
         /**Gets or sets an array of Nodes that will be positioned near this node.*/
-        comments: Node[];
+        comments: Array<Node>;
 
         /**Gets or sets the space to leave between consecutive comments.*/
         commentSpacing: number;
@@ -7157,7 +7036,7 @@ declare module go {
         * Copy inherited properties from another TreeVertex to this one.
         * @param {TreeVertex} copy
         */
-        copyInheritedPropertiesFrom(copy: TreeVertex);
+        copyInheritedPropertiesFrom(copy: TreeVertex): void;
     }
 
 
@@ -7181,22 +7060,22 @@ declare module go {
         /**
         * Call the GraphObject.actionCancel event if defined on the current object.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * If there is a GraphObject found with GraphObject.isActionable set to true, call that object's GraphObject.actionDown event, if it exists.
         */
-        doMouseDown();
+        doMouseDown(): void;
 
         /**
         * If this tool is active call GraphObject.actionMove, if it exists, on the active object.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Calls the GraphObject.actionUp event if defined, then effectively calls Tool.standardMouseClick to perform the normal click behaviors, and then stops this tool.
         */
-        doMouseUp();
+        doMouseUp(): void;
     }
 
     /**
@@ -7224,7 +7103,7 @@ declare module go {
         /**
         * Upon a click, call .insertPart and stop this tool.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Create a node by adding a copy of the .archetypeNodeData object to the diagram's model, assign its Part.location to be the given point, and select the new part.
@@ -7253,7 +7132,7 @@ declare module go {
         /**
         * Upon a click, this calls Tool.standardMouseSelect to change the Diagram.selection collection, then calls Tool.standardMouseClick to perform the normal click behaviors, and then stops this tool.
         */
-        doMouseUp();
+        doMouseUp(): void;
     }
 
     /**
@@ -7283,51 +7162,58 @@ declare module go {
         /**
         * Do nothing, activation is special and relies on doMouseUp
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Handle mouse-enter, mouse-over, and mouse-leave events.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * If there is something found by .findObjectWithContextMenu, call .showContextMenu with that object's GraphObject.contextMenu or Diagram.contextMenu.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Find a GraphObject at the current mouse point with a GraphObject.contextMenu, or return the Diagram if there is a Diagram.contextMenu.
         */
-        findObjectWithContextMenu(): any;
+        findObjectWithContextMenu(): GraphObject | Diagram;
 
         /**
         * Hide any context menu.
         */
-        hideContextMenu();
+        hideContextMenu(): void;
 
         /**
         * Hide the default context menu.
         */
-        hideDefaultContextMenu();
+        hideDefaultContextMenu(): void;
 
         /**
         * This is called by .showContextMenu to position the context menu within the viewport.
         * @param {Adornment} contextmenu
         * @param {GraphObject} obj
         */
-        positionContextMenu(contextmenu: Adornment, obj: GraphObject);
+        positionContextMenu(contextmenu: Adornment, obj: GraphObject): void;
 
         /**
         * Show an Adornment as a context menu.
         * @param {Adornment} contextmenu
         * @param {GraphObject} obj
         */
-        showContextMenu(contextmenu: Adornment, obj: GraphObject);
+        showContextMenu(contextmenu: Adornment, obj: GraphObject): void;
 
         /**
         * Show a series of HTML elements acting as a context menu.
         */
-        showDefaultContextMenu();
+        showDefaultContextMenu(): void;
+    }
+
+    /**
+    * This helper structure for DraggingTool holds the original location Point.
+    */
+    interface DraggingInfo {  // undocumented
+      point: Point
     }
 
     /**
@@ -7343,7 +7229,7 @@ declare module go {
         constructor();
 
         /**This read-only property returns the collection of Parts that this tool has copied.*/
-        copiedParts: Map;
+        copiedParts: Map<Part,DraggingInfo>;
 
         /**Gets or sets whether for a copying operation the extended selection is copied or only the selected parts.*/
         copiesEffectiveCollection: boolean;
@@ -7355,7 +7241,7 @@ declare module go {
         delay: number;
 
         /**This read-only property returns the collection of Parts being dragged.*/
-        draggedParts: Map;
+        draggedParts: Map<Part,DraggingInfo>;
 
         /**Gets or sets whether the user can drag a single Link, disconnecting it from its connected nodes and possibly connecting it to valid ports when the link is dropped.*/
         dragsLink: boolean;
@@ -7391,9 +7277,9 @@ declare module go {
 
         /**
         * Find the actual collection of nodes and links to be moved or copied, given an initial collection.
-        * @param {Iterable} parts A Set or List of Parts.
+        * @param {Iterable<Part>} parts A Set or List of Parts.
         */
-        computeEffectiveCollection(parts: Iterable): Map;
+        computeEffectiveCollection(parts: Iterable<Part>): Map<Part,DraggingInfo>;
 
         /**
         * This method computes the new location for a Node or simple Part, given a new desired location and an optional Map of dragged parts, taking any grid-snapping into consideration, any Part.dragComputation function, and any Part.minLocation and Part.maxLocation.
@@ -7402,22 +7288,22 @@ declare module go {
         * @param {Map=} draggedparts  an optional Map mapping Parts to JavaScript Objects that have a "point" property remembering the original location of that Part.
         * @param {Point=} result  an optional Point that is modified and returned
         */
-        computeMove(n: Part, newloc: Point, draggedparts?: Map, result?: Point): Point;
+        computeMove(n: Part, newloc: Point, draggedparts?: Map<Part,DraggingInfo>, result?: Point): Point;
 
         /**
         * Start the dragging operation.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Abort any dragging operation.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * Stop the dragging operation by stopping the transaction and cleaning up any temporary state.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * Perform any additional side-effects during a drag, whether an internal move or copy or an external drag, that may affect the existing non-moved object(s).
@@ -7428,7 +7314,7 @@ declare module go {
         * Use GraphObject.part to get the Node or Part at the root of
         * the visual tree of the stationary object.
         */
-        doDragOver(pt: Point, obj: GraphObject);
+        doDragOver(pt: Point, obj: GraphObject): void;
 
         /**
         * Perform any additional side-effects after a drop, whether an internal move or copy or an external drop, that may affect the existing non-moved object(s).
@@ -7439,27 +7325,27 @@ declare module go {
         * Use GraphObject.part to get the Node or Part at the root of
         * the visual tree of the stationary object.
         */
-        doDropOnto(pt: Point, obj: GraphObject);
+        doDropOnto(pt: Point, obj: GraphObject): void;
 
         /**
         * Handle switching between copying and moving modes as the Control key is pressed or released.
         */
-        doKeyDown();
+        doKeyDown(): void;
 
         /**
         * Handle switching between copying and moving modes as the Control key is pressed or released.
         */
-        doKeyUp();
+        doKeyUp(): void;
 
         /**
         * Move the .draggedParts (or if copying, the .copiedParts) to follow the current mouse point.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * On a mouse-up finish moving or copying the effective selection.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Return the selectable and movable/copyable Part at the mouse-down point.
@@ -7482,12 +7368,12 @@ declare module go {
         * @param {Point} offset
         * @param {boolean} check  Whether to check Part.canMove on each part.
         */
-        moveParts(parts: Map, offset: Point, check: boolean);
+        moveParts(parts: Map<Part,DraggingInfo>, offset: Point, check: boolean): void;
 
         /**
         * This override prevents the Control modifier unselecting an already selected part.
         */
-        standardMouseSelect();
+        standardMouseSelect(): void;
     }
 
     /**
@@ -7526,28 +7412,28 @@ declare module go {
         /**
         * Capture the mouse and show the .box.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Release the mouse and remove any .box.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * Update the .box's position and size according to the value of .computeBoxBounds.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Call .selectInRect with the value of a call to .computeBoxBounds.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * This method is called to select some parts within the area of a given rectangle.
         *@param {Rect} r
         */
-        selectInRect(r: Rect);
+        selectInRect(r: Rect): void;
     }
 
     /**
@@ -7615,12 +7501,12 @@ declare module go {
         * @param {GraphObject} tempport
         * @param {boolean} toend
         */
-        copyPortProperties(realnode: Node, realport: GraphObject, tempnode: Node, tempport: GraphObject, toend: boolean);
+        copyPortProperties(realnode: Node, realport: GraphObject, tempnode: Node, tempport: GraphObject, toend: boolean): void;
 
         /**
         * Mouse movement results in a temporary node moving to where a valid target port is located, or to where the mouse is if there is no valid target port nearby.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Find a port with which the user could complete a valid link.
@@ -7699,7 +7585,7 @@ declare module go {
         * @param {GraphObject} tempport
         * @param {boolean} toend
         */
-        setNoTargetPortProperties(tempnode: Node, tempport: GraphObject, toend: boolean);
+        setNoTargetPortProperties(tempnode: Node, tempport: GraphObject, toend: boolean): void;
     }
 
     /**
@@ -7734,17 +7620,17 @@ declare module go {
         /**
         * Start the linking operation.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Finishing the linking operation stops the transaction, releases the mouse, and resets the cursor.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * A mouse-up ends the linking operation; if there is a valid .targetPort nearby, this adds a new Link by calling .insertLink.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Return the GraphObject at the mouse-down point, if it is part of a node and if it is valid to link with it.
@@ -7799,7 +7685,7 @@ declare module go {
         originalPoint: Point;
 
         /**This read-only property returns the List of Points that was the original route of the Link that is being reshaped.*/
-        originalPoints: List;
+        originalPoints: List<Point>;
 
         /**
         * This tool may run when there is a mouse-down event on a reshape handle.
@@ -7815,27 +7701,27 @@ declare module go {
         /**
         * Start reshaping, if .findToolHandleAt finds a reshape handle at the mouse down point.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Restore the link route to be the original points and stop this tool.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * This stops the current reshaping operation with the link route shaped the way it is.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * Call .reshape with a new point determined by the mouse to change the route of the .adornedLink.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Reshape the route with a point based on the most recent mouse point by calling .reshape, and then raise a "LinkReshaped" DiagramEvent before stopping this tool.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Get the permitted reshaping behavior for a particular reshape handle.
@@ -7848,19 +7734,19 @@ declare module go {
         * @param {GraphObject} obj a reshape handle in the "LinkReshaping" Adornment.
         * @param {EnumValue} behavior one of LinkReshapingTool.All, .Vertical, .Horizontal, or .None
         */
-        setReshapingBehavior(obj: GraphObject, behavior: EnumValue);
+        setReshapingBehavior(obj: GraphObject, behavior: EnumValue): void;
 
         /**
         * Change the route of the .adornedLink by moving the point corresponding to the current .handle to be at the given Point.
         * @param {Point} newPoint
         */
-        reshape(newPoint: Point);
+        reshape(newPoint: Point): void;
 
         /**
         * Show an Adornment with reshape handles at each of the interesting points of the link's route, if the link is selected and visible and if Part.canReshape is true.
         * @param {Part} part
         */
-        updateAdornments(part: Part);
+        updateAdornments(part: Part): void;
 
         /**Allow dragging in any direction.*/
         static All: EnumValue;
@@ -7899,27 +7785,27 @@ declare module go {
         /**
         * Capture the mouse, change the diagram cursor, and remember the Diagram.position.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Restore the Diagram.position to what it was when this tool activated.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * Release the mouse and restore the default diagram cursor.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * Modify the Diagram.position according to how much the mouse has moved.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Modify the Diagram.position according to how much the mouse has moved.
         */
-        doMouseUp();
+        doMouseUp(): void;
     }
 
     /**
@@ -7951,22 +7837,22 @@ declare module go {
         * @param {Link} reallink
         * @param {Link} templink
         */
-        copyLinkProperties(reallink: Link, templink: Link);
+        copyLinkProperties(reallink: Link, templink: Link): void;
 
         /**
         * Start the relinking operation.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Finishing the linking operation stops the transaction, releases the mouse, and resets the cursor.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * A mouse-up ends the relinking operation; if there is a valid .targetPort nearby, this modifies the old link to connect with the target port.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Modify an existing Link to connect to a new node and port.
@@ -7981,7 +7867,7 @@ declare module go {
         * Show an Adornment for each end of the Link that the user may reconnect.
         * @param {Part} part
         */
-        updateAdornments(part: Part);
+        updateAdornments(part: Part): void;
     }
 
     /**
@@ -8056,39 +7942,39 @@ declare module go {
         /**
         * Capture the mouse, remember the object's original bounds, and start a transaction.\
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Restore the original GraphObject's size.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * Stop the current transaction and release the mouse.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * Call .resize with a new size determined by the current mouse point.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Call .resize with the final bounds based on the most recent mouse point, commit the transaction, and raise the "PartResized" DiagramEvent.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Change the size of the selected part's Part.resizeObject to have the given bounds.
         * @param {Rect} newr
         */
-        resize(newr: Rect);
+        resize(newr: Rect): void;
 
         /**
         * Show an Adornment with the resize handles at points along the edge of the bounds of the selected Part's Part.resizeObject.
         * @param {Part} part
         */
-        updateAdornments(part: Part);
+        updateAdornments(part: Part): void;
     }
 
     /**
@@ -8135,39 +8021,39 @@ declare module go {
         /**
         * Capture the mouse, remember the original GraphObject.angle, and start a transaction.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Restore the original GraphObject.angle of the adorned object.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * Stop the current transaction and release the mouse.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * Call .rotate with a new angle determined by the current mouse point.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Call .rotate with an angle based on the most recent mouse point, commit the transaction, and raise the "PartRotated" DiagramEvent.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * Change the angle of the selected part's Part.rotateObject.
         * @param {number} newangle
         */
-        rotate(newangle: number);
+        rotate(newangle: number): void;
 
         /**
         * Show an Adornment with a rotate handle at a point to the side of the adorned object if the part is selected and visible and if Part.canRotate() is true.
         * @param {Part} part
         */
-        updateAdornments(part: Part);
+        updateAdornments(part: Part): void;
     }
 
     /**
@@ -8201,7 +8087,7 @@ declare module go {
         * @param {EnumValue} reason The reason must be either TextEditingTool.LostFocus,
         * TextEditingTool.MouseDown, TextEditingTool.Tab, or TextEditingTool.Enter.
         */
-        acceptText(reason: EnumValue);
+        acceptText(reason: EnumValue): void;
 
         /**
         * This may run when there is a mouse-click on a TextBlock for which the TextBlock.editable property is true in a Part that Part.isSelected.
@@ -8211,32 +8097,32 @@ declare module go {
         /**
         * Start editing the text for a TextBlock.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * Abort any text editing operation.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * Release the mouse.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * A click (mouse up) calls TextEditingTool.doActivate if this tool is not already active and if TextEditingTool.canStart returns true.
         */
-        doMouseDown();
+        doMouseDown(): void;
 
         /**
         * A click (mouse up) calls TextEditingTool.doActivate if this tool is not already active and if TextEditingTool.canStart returns true.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * This calls TextEditingTool.doActivate if there is a TextBlock supplied.
         */
-        doStart();
+        doStart(): void;
 
         /**
         * This predicate checks any TextBlock.textValidation predicate and this tool's .textValidation predicate to make sure the TextBlock.text property may be set to the new string.
@@ -8293,7 +8179,7 @@ declare module go {
         /**
         * This is called to cancel any running "WaitAfter" timer.
         */
-        cancelWaitAfter();
+        cancelWaitAfter(): void;
 
         /**
         * This predicate is used by the ToolManager to decide if this tool can be started mode-lessly by mouse and touch events.
@@ -8308,62 +8194,62 @@ declare module go {
         /**
         * This method is called by the diagram after setting Diagram.currentTool, to make the new tool active.
         */
-        doActivate();
+        doActivate(): void;
 
         /**
         * The diagram will call this method when the user wishes to cancel the current tool's operation.
         */
-        doCancel();
+        doCancel(): void;
 
         /**
         * This method is called by the diagram on the old tool when Diagram.currentTool is set to a new tool.
         */
-        doDeactivate();
+        doDeactivate(): void;
 
         /**
         * The diagram will call this method upon a key down event.
         */
-        doKeyDown();
+        doKeyDown(): void;
 
         /**
         * The diagram will call this method upon a key up event.
         */
-        doKeyUp();
+        doKeyUp(): void;
 
         /**
         * The diagram will call this method upon a mouse down event.
         */
-        doMouseDown();
+        doMouseDown(): void;
 
         /**
         * The diagram will call this method upon a mouse move event.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * The diagram will call this method upon a mouse up event.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * The diagram will call this method as the mouse wheel is rotated.
         */
-        doMouseWheel();
+        doMouseWheel(): void;
 
         /**
         * This method is called by the diagram when this tool becomes the current tool; you should not call this method.
         */
-        doStart();
+        doStart(): void;
 
         /**
         * This method is called by the diagram when this tool stops being the current tool; you should not call this method.
         */
-        doStop();
+        doStop(): void;
 
         /**
         * This is called a certain delay after a call to .standardWaitAfter if there has not been any call to .cancelWaitAfter.
         */
-        doWaitAfter();
+        doWaitAfter(): void;
 
         /**
         * This convenience function finds the front-most GraphObject that is at a given point and that is part of an Adornment that is of a given category.
@@ -8385,38 +8271,38 @@ declare module go {
         * function to find target objects.
         * @param {function(GraphObject):boolean | null=} pred An optional custom predicate
         */
-        standardMouseClick(navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean);
+        standardMouseClick(navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean): void;
 
         /**
         * Implement the standard behavior for mouse enter, over, and leave events, where the mouse is moving but no button is pressed.
         */
-        standardMouseOver();
+        standardMouseOver(): void;
 
         /**
         * Implement the standard behavior for selecting parts with the mouse, depending on the control and shift modifier keys.
         */
-        standardMouseSelect();
+        standardMouseSelect(): void;
 
         /**
         * Implement the standard behavior for mouse wheel events.
         */
-        standardMouseWheel();
+        standardMouseWheel(): void;
 
         /**
         * Initiates pinch-zooming on multi-touch devices.
         */
-        standardPinchZoomStart();
+        standardPinchZoomStart(): void;
 
         /**
         * Continues pinch-zooming (started by standardPinchZoomStart) on multi-touch devices.
         */
-        standardPinchZoomMove();
+        standardPinchZoomMove(): void;
 
         /**
         * This is called to start a new timer to call .doWaitAfter after a given delay.
         * @param {number} delay in milliseconds
         */
-        standardWaitAfter(delay: number);
+        standardWaitAfter(delay: number): void;
 
         /**
         * Call Diagram.startTransaction with the given transaction name.
@@ -8427,7 +8313,7 @@ declare module go {
         /**
         * If the Diagram.currentTool is this tool, stop this tool and start the Diagram.defaultTool by making it be the new current tool.
         */
-        stopTool();
+        stopTool(): void;
 
         /**
         * If .transactionResult is null, call Diagram.rollbackTransaction, otherwise call Diagram.commitTransaction.
@@ -8438,7 +8324,7 @@ declare module go {
         * The diagram asks each tool to update any adornments the tool might use for a given part.
         * @param {Part} part
         */
-        updateAdornments(part: Part);
+        updateAdornments(part: Part): void;
     }
 
     /**
@@ -8488,13 +8374,13 @@ declare module go {
         linkReshapingTool: LinkReshapingTool;
 
         /**This read-only property returns the list of Tools that might be started upon a mouse-down event.*/
-        mouseDownTools: List;
+        mouseDownTools: List<Tool>;
 
         /**This read-only property returns the list of Tools that might be started upon a mouse-move event.*/
-        mouseMoveTools: List;
+        mouseMoveTools: List<Tool>;
 
         /**This read-only property returns the list of Tools that might be started upon a mouse-up event.*/
-        mouseUpTools: List;
+        mouseUpTools: List<Tool>;
 
         /**Gets or sets the ToolManager's mouse wheel behavior.*/
         mouseWheelBehavior: EnumValue;
@@ -8517,47 +8403,47 @@ declare module go {
         /**
         * This just calls CommandHandler.doKeyDown on the diagram's Diagram.commandHandler.
         */
-        doKeyDown();
+        doKeyDown(): void;
 
         /**
         * This just calls CommandHandler.doKeyUp on the diagram's Diagram.commandHandler.
         */
-        doKeyUp();
+        doKeyUp(): void;
 
         /**
         * Iterate over the .mouseDownTools list and start the first tool for which its Tool.canStart predicate returns true.
         */
-        doMouseDown();
+        doMouseDown(): void;
 
         /**
         * Implement the standard behavior for mouse hover and mouse hold events, called by .doWaitAfter when the mouse has not moved for a period of time.
         */
-        doMouseHover();
+        doMouseHover(): void;
 
         /**
         * Iterate over the .mouseMoveTools list and start the first tool for which its Tool.canStart predicate returns true.
         */
-        doMouseMove();
+        doMouseMove(): void;
 
         /**
         * Iterate over the .mouseUpTools list and start the first tool for which its Tool.canStart predicate returns true.
         */
-        doMouseUp();
+        doMouseUp(): void;
 
         /**
         * The diagram will call this method as the mouse wheel is rotated.
         */
-        doMouseWheel();
+        doMouseWheel(): void;
 
         /**
         * Implement the standard behavior for tooltips, called by .doWaitAfter when the mouse has not moved for a period of time.
         */
-        doToolTip();
+        doToolTip(): void;
 
         /**
         * Implement the standard behavior for when the mouse has not moved for a period of time.
         */
-        doWaitAfter();
+        doWaitAfter(): void;
 
         /**
         * Find a mouse tool of a given name.
@@ -8568,19 +8454,19 @@ declare module go {
         /**
         * Hide any tooltip.
         */
-        hideToolTip();
+        hideToolTip(): void;
 
         /**
         * Initialize the three mouse tool lists with instances of the standard tools.
         */
-        initializeStandardTools();
+        initializeStandardTools(): void;
 
         /**
         * This is called by .showToolTip to position the part within the viewport.
         * @param {Adornment} tooltip
         * @param {GraphObject} obj The GraphObject getting the tooltip.
         */
-        positionToolTip(tooltip: Adornment, obj: GraphObject);
+        positionToolTip(tooltip: Adornment, obj: GraphObject): void;
 
         /**
         * Replace a mouse tool of a given name with a new tool.
@@ -8595,7 +8481,7 @@ declare module go {
         * @param {Adornment} tooltip
         * @param {GraphObject} obj The GraphObject getting the tooltip; this is null if the tooltip is being shown for the diagram background.
         */
-        showToolTip(tooltip: Adornment, obj: GraphObject);
+        showToolTip(tooltip: Adornment, obj: GraphObject): void;
 
         /**This value for gestureBehavior indicates that the pointer/touch pinch gestures on the canvas intend to have no effect on the Diagram, but also no effect on the page.*/
         static GestureCancel: EnumValue;
@@ -8621,11 +8507,11 @@ declare module go {
     * This interface is implemented by the List, Set, and Map
     * classes; it provides the .iterator read-only property that returns an Iterator.
     */
-    class Iterable {
+    class Iterable<T> {
         /*This is an interface and thus does not have a constructor.*/
 
         /**Gets an Iterator that can iterate over the items in the collection.*/
-        iterator: Iterator;
+        iterator: Iterator<T>;
     }
 
     /**
@@ -8633,43 +8519,43 @@ declare module go {
     * it provides the .next predicate and the .value read-only property.
     * Some Iterators also provide key property values along with each value.
     */
-    class Iterator extends Iterable {
+    class Iterator<T> extends Iterable<T> {
         /*This is an interface and thus does not have a constructor.*/
 
         /**This read-only property returns the total number of items in the iterated collection.*/
         count: number;
 
         /**Returns itself, which is convenient for code that expects an Iterable instead of an Iterator.*/
-        iterator: Iterator;
+        iterator: Iterator<T>;
 
         /**This read-only property returns the current index to the item in the collection, assuming .next has just returned true.*/
         key;
 
         /**This read-only property returns the current item in the collection, assuming .next has just returned true.*/
-        value: any;
+        value: T;
 
         /**
         * This is true if all invocations of the given predicate on items in the collection are true.
-        * @param {(x: any) => boolean} pred
+        * @param {(x: T) => boolean} pred
         */
-        all(pred: (x: any) => boolean): boolean;
+        all(pred: (x: T) => boolean): boolean;
 
         /**
         * This is true if any invocation of the given predicate on items in the collection is true.
-        * @param {(x: any) => boolean} pred
+        * @param {(x: T) => boolean} pred
         */
-        any(pred: (x: any) => boolean): boolean;
+        any(pred: (x: T) => boolean): boolean;
 
         /**
         * Call the given function on each item in the collection.
-        * @param {(x: any) => void} func
+        * @param {(x: T) => void} func
         */
-        each(func: (x: any) => void );
+        each(func: (x: T) => void ): void;
 
         /**
         * Return the first item in the collection, or null if there is none.
         */
-        first(): any;
+        first(): T;
 
         /**
         * Call this method to advance the iterator to the next item in the collection.
@@ -8679,19 +8565,19 @@ declare module go {
         /**
         * Start this iterator all over again.
         */
-        reset();
+        reset(): void;
     }
 
     /**
     * An ordered iterable collection.
     * It optionally enforces the type of elements that may be added to the List.
     */
-    class List {
+    class List<T> {
         /**
         * This creates a List that checks the type of the values to be instances of a particular kind of Object.
         * @param {function(...)} type this must be a class function/constructor.
         */
-        constructor(type: new (...args: any[]) => Object);
+        constructor(type: Constructor);
         /**
         * This creates a List that may check the types of the values.
         * @param {string=} type if supplied, this must be one of: 'number', 'string', 'boolean', or 'function' for the value type.
@@ -8705,176 +8591,178 @@ declare module go {
         size: number;
 
         /**Gets an object that you can use for iterating over the List.*/
-        iterator: Iterator;
+        iterator: Iterator<T>;
 
         /**Gets an object that you can use for iterating over the List in backwards order.*/
-        iteratorBackwards: Iterator;
+        iteratorBackwards: Iterator<T>;
 
         /**This read-only property returns the length of the List, a synonym for the .count property.*/
         length: number;
 
         /**
         * Adds a given value to the end of the List.
-        * @param {*} any
+        * @param {*} val
         */
-        add(val: any);
+        add(val: T): void;
 
         /**
         * Adds all of the values of a collection (either an Iterable or an Array) to the end of this List.
-        * @param {Iterable} coll
+        * @param {Iterable<T>|Array<T>} coll
         */
-        addAll(coll: Iterable): List;
-
-        /**
-        * Adds all of the values of a collection (either an Iterable or an Array) to the end of this List.
-        * @param {Array} coll
-        */
-        addAll(coll: any[]): List;
+        addAll(coll: Iterable<T> | Array<T>): List<T>;
 
         /**
         * This is true if all invocations of the given predicate on items in the collection are true.
-        * @param {(x: any) => boolean} pred
+        * @param {(x: T) => boolean} pred
         */
-        all(pred: (x: any) => boolean): boolean;
+        all(pred: (x: T) => boolean): boolean;
 
         /**
         * This is true if any invocation of the given predicate on items in the collection is true.
-        * @param {(x: any) => boolean} pred
+        * @param {(x: T) => boolean} pred
         */
-        any(pred: (x: any) => boolean): boolean;
+        any(pred: (x: T) => boolean): boolean;
 
         /**
         * Clears the List.
         */
-        clear();
+        clear(): void;
 
         /**
         * Returns whether the given value is in this List.
-        * @param {*} any
+        * @param {*} val
         */
-        contains(val: any): boolean;
+        contains(val: T): boolean;
 
         /**
         * Makes a shallow copy of this List.
         */
-        copy(): List;
+        copy(): List<T>;
 
         /**
         * Removes a given value (if found) from the List. ES6-like synonym for remove.
-        * @param {*} any
+        * @param {*} val
         */
-        delete(val: any): boolean;
+        delete(val: T): boolean;
 
         /**
         * Call the given function on each item in the collection.
-        * @param {(x: any) => void} func
+        * @param {(x: T) => void} func
         */
-        each(func: (x: any) => void );
+        each(func: (x: T) => void ): void;
 
         /**
         * Returns the element at the given index.
         * @param {number} i
         */
-        elt(i: number);
+        elt(i: number): T;
 
         /**
         * Returns the first item in the list, or null if there is none.
         */
-        first(): any;
+        first(): T;
 
         /**
         * Returns the element at the given index. ES6-like synonym for elt.
         * @param {number} i
         */
-        get(i: number);
+        get(i: number): T;
 
         /**
         * Returns whether the given value is in this List. ES6-like synonym for contains.
-        * @param {*} any
+        * @param {*} val
         */
-        has(val: any): boolean;
+        has(val: T): boolean;
 
         /**
         * Returns the index of the given value if it is in this List.
-        * @param {*} any
+        * @param {*} val
         */
-        indexOf(val: any): number;
+        indexOf(val: T): number;
 
         /**
         * Insert a value before the index i.
         * @param {number} i
-        * @param {*} any
+        * @param {*} val
         */
-        insertAt(i: number, val: any);
+        insertAt(i: number, val: T): void;
 
         /**
         * Returns the last item in the list, or null if there is none.
         */
-        last(): any;
+        last(): T;
 
         /**
         * Returns the last item in the list and removes it from the list, or just return null if there is none.
         */
-        pop(): any;
+        pop(): T;
 
         /**
         * Add an item at the end of the list -- a synonym for add.
         */
-        push(val: any);
+        push(val: T): void;
 
         /**
         * Removes a given value (if found) from the List.
-        * @param {*} any
+        * @param {*} val
         */
-        remove(val: any): boolean;
+        remove(val: T): boolean;
 
         /**
         * Removes a value at a given index from the List.
         * @param {number} i
         */
-        removeAt(i: number);
+        removeAt(i: number): void;
 
         /**
         * Removes a range of values from the List.
         * @param {number} to
         * @param {number} from
         */
-        removeRange(to: number, from: number);
+        removeRange(to: number, from: number): void;
 
         /**
         * Reverse the order of items in this List.
         */
-        reverse(): List;
+        reverse(): List<T>;
 
         /**
         * Set the element at the given index to a given value. ES6-like synonym for setElt.
         * @param {number} i
         * @param {*} val
         */
-        set(i: number, val: any);
+        set(i: number, val: T): void;
 
         /**
         * Set the element at the given index to a given value.
         * @param {number} i
         * @param {*} val
         */
-        setElt(i: number, val: any);
+        setElt(i: number, val: T): void;
 
         /**
         * Sort the List according to a comparison function.
         * @param {function(*,*):number} sortfunc the same kind of function as passed to Array.sort
         */
-        sort(sortfunc: (a: any, b: any) => number): List;
+        sort(sortfunc: (a: T, b: T) => number): List<T>;
 
         /**
         * Produces a JavaScript Array from the contents of this List.
         */
-        toArray(): any[];
+        toArray(): Array<T>;
 
         /**
         * Converts the List to a Set.
         */
-        toSet(): Set;
+        toSet(): Set<T>;
+    }
+
+    /**
+    * This is a structure used by Map to hold key-value pairs.
+    */
+    interface KeyValuePair<K,V> {  // undocumented
+      key: K,
+      value: V
     }
 
     /**
@@ -8882,25 +8770,25 @@ declare module go {
     * same key.
     * It optionally enforces the type of the key and the type of the associated value.
     */
-    class Map {
+    class Map<K,V> {
         /**
         * This creates a Map that may check the types of the keys and/or values.
         * @param {function(...)} keytype if supplied, this must be a class function/constructor.
         * @param {function(...)} valtype if supplied, this must be a class function/constructor.
         */
-        constructor(keytype: new (...args: any[]) => Object, valtype: new (...args: any[]) => Object);
+        constructor(keytype: Constructor, valtype: Constructor);
         /**
         * This creates a Map that may check the types of the keys and/or values.
         * @param {string=} keytype if supplied, this must be one of: 'number' or 'string' for the key type.
         * @param {function(...)} valtype if supplied, this must be a class function/constructor.
         */
-        constructor(keytype: string, valtype: new (...args: any[]) => Object);
+        constructor(keytype: string, valtype: Constructor);
         /**
         * This creates a Map that may check the types of the keys and/or values.
         * @param {function(...)} keytype if supplied, this must be a class function/constructor.
         * @param {string} valtype if supplied, this must be one of: 'number', 'string', 'boolean', or 'function' for the value type.
         */
-        constructor(keytype: new (...args: any[]) => Object, valtype: string);
+        constructor(keytype: Constructor, valtype: string);
         /**
         * This creates a Map that may check the types of the keys and/or values.
         * @param {string=} keytype if supplied, this must be one of: 'number' or 'string' for the key type.
@@ -8912,29 +8800,29 @@ declare module go {
         count: number;
 
         /**Gets an object that you can use for iterating over the key-value pairs of the Map.*/
-        iterator: Iterator;
+        iterator: Iterator<KeyValuePair<K,V>>;
 
         /**Gets an object that you can use for iterating over the keys in the Map.*/
-        iteratorKeys: Iterator;
+        iteratorKeys: Iterator<K>;
 
         /**Gets an object that you can use for iterating over the values of the Map.*/
-        iteratorValues: Iterator;
+        iteratorValues: Iterator<V>;
 
         /**This read-only property returns the number of associations in the Map. ES6-like synonym for count.*/
         size: number;
 
         /**
         * Adds a key-value association to the Map, or replaces the value associated with the key if the key was already present in the map.
-        * @param {*} any
+        * @param {*} key
         * @param {*} val
         */
-        add(key: any, val: any): boolean;
+        add(key: K, val: V): boolean;
 
         /**
         * Adds all of the key-value pairs of another Map to this Map.
-        * @param {Map} map
+        * @param {Map|Array} map
         */
-        addAll(map: Map): Map;
+        addAll(map: Map<K, V> | Array<KeyValuePair<K, V>>): Map<K,V>;
 
         /**
         * This is true if all invocations of the given predicate on key-value pairs in the collection are true.
@@ -8951,88 +8839,88 @@ declare module go {
         /**
         * Clears the Map, removing all key-value associations.
         */
-        clear();
+        clear(): void;
 
         /**
         * Returns whether the given key is in this Map.
-        * @param {*} any
+        * @param {*} key
         */
-        contains(key: any): boolean;
+        contains(key: K): boolean;
 
         /**
         * Makes a shallow copy of this Map.
         */
-        copy(): Map;
+        copy(): Map<K,V>;
 
         /**
         * Removes a key (if found) from the Map. ES6-like synonym for remove.
-        * @param {*} any
+        * @param {*} key
         */
-        delete(key: any): boolean;
+        delete(key: K): boolean;
 
         /**
         * Call the given function on each key-value pair in the collection.
         * @param {(x: Object) => void} func
         */
-        each(func: (x: Object) => void );
+        each(func: (x: KeyValuePair<K,V>) => void ): void;
 
         /**
         * Returns the first key-value pair in the collection, or null if there is none.
         */
-        first(): any;
+        first(): KeyValuePair<K,V>;
 
         /**
         * Returns the value associated with a key. ES6-like synonym for getValue.
-        * @param {*} any
+        * @param {*} key
         */
-        get(key: any);
+        get(key: K): V;
 
         /**
         * Returns the value associated with a key.
-        * @param {*} any
+        * @param {*} key
         */
-        getValue(key: any);
+        getValue(key: K): V;
 
         /**
         * Returns whether the given key is in this Map. ES6-like synonym for contains.
-        * @param {*} any
+        * @param {*} key
         */
-        has(key: any): boolean;
+        has(key: K): boolean;
 
         /**
         * Removes a key (if found) from the Map.
-        * @param {*} any
+        * @param {*} key
         */
-        remove(key: any): boolean;
+        remove(key: K): boolean;
 
         /**
         * Adds a key-value association to the Map, or replaces the value associated with the key if the key was already present in the map. ES6-like synonym for add.
-        * @param {*} any
+        * @param {*} key
         * @param {*} val
         */
-        set(key: any, val: any): boolean;
+        set(key: K, val: V): boolean;
 
         /**
         * Produces a JavaScript Array of key/value pair objects from the contents of this Map.
         */
-        toArray(): any[];
+        toArray(): Array<KeyValuePair<K,V>>;
 
         /**
         * Produces a Set that provides a read-only view onto the keys of this Map.
         */
-        toKeySet(): Set;
+        toKeySet(): Set<K>;
     }
 
     /**
     * An unordered iterable collection that cannot contain two instances of the same kind of value.
     * It optionally enforces the type of elements that may be added to the Set.
     */
-    class Set {
+    class Set<T> {
         /**
         * This creates a Set that checks the type of the values.
         * @param {function(...)} type this must be a class function/constructor.
         */
-        constructor(type: new (...args: any[]) => Object);
+        constructor(type: Constructor);
         /**
         * This creates a Set that may check the types of the values.
         * @param {string=} type if supplied, this must be one of: 'number' or 'string' for the key type.
@@ -9043,125 +8931,119 @@ declare module go {
         count: number;
 
         /**Gets an object that you can use for iterating over the Set.*/
-        iterator: Iterator;
+        iterator: Iterator<T>;
 
         /**This read-only property returns the number of elements in the Set. ES6-like synonym for count.*/
         size: number;
 
         /**
         * Adds a given value to the Set, if not already present.
-        * @param {*} any
+        * @param {*} val
         */
-        add(val: any): boolean;
+        add(val: T): boolean;
 
         /**
         * Adds all of the values of a collection (either an Iterable or an Array) to this Set.
-        * @param {Iterable} coll
+        * @param {Iterable<T>|Array<T>} coll
         */
-        addAll(coll: Iterable): Set;
-
-        /**
-        * Adds all of the values of a collection (either an Iterable or an Array) to this Set.
-        * @param {Array} coll
-        */
-        addAll(coll: any[]): Set;
+        addAll(coll: Iterable<T> | Array<T>): Set<T>;
 
         /**
         * This is true if all invocations of the given predicate on items in the collection are true.
-        * @param {(x: any) => boolean} pred
+        * @param {(x: T) => boolean} pred
         */
-        all(pred: (x: any) => boolean): boolean;
+        all(pred: (x: T) => boolean): boolean;
 
         /**
         * This is true if any invocation of the given predicate on items in the collection is true.
-        * @param {(x: any) => boolean} pred
+        * @param {(x: T) => boolean} pred
         */
-        any(pred: (x: any) => boolean): boolean;
+        any(pred: (x: T) => boolean): boolean;
 
         /**
         * Clears the Set.
         */
-        clear();
+        clear(): void;
 
         /**
         * Returns whether the given value is in this Set.
-        * @param {*} any
+        * @param {*} val
         */
-        contains(val: any): boolean;
+        contains(val: T): boolean;
 
         /**
         * Returns true if all of the values of a given collection are in this Set.
-        * @param {Iterable} coll
+        * @param {Iterable<T>} coll
         */
-        containsAll(coll: Iterable): boolean;
+        containsAll(coll: Iterable<T>): boolean;
 
         /**
         * Returns true if any of the values of a given collection are in this Set.
-        * @param {Iterable} coll
+        * @param {Iterable<T>} coll
         */
-        containsAny(coll: Iterable): boolean;
+        containsAny(coll: Iterable<T>): boolean;
 
         /**
         * Makes a shallow copy of this Set.
         */
-        copy(): Set;
+        copy(): Set<T>;
 
         /**
         * Removes a value (if found) from the Set. ES6-like synonym for remove.
-        * @param {*} any
+        * @param {*} val
         */
-        delete(val: any): boolean;
+        delete(val: T): boolean;
 
         /**
         * Call the given function on each item in the collection.
-        * @param {(x: any) => void} func
+        * @param {(x: T) => void} func
         */
-        each(func: (x: any) => void );
+        each(func: (x: T) => void): void;
 
         /**
         * Returns the first item in the collection, or null if there is none.
         */
-        first(): any;
+        first(): T;
 
         /**
         * Returns whether the given value is in this Set. ES6-like synonym for contains.
-        * @param {*} any
+        * @param {*} val
         */
-        has(val: any): boolean;
+        has(val: T): boolean;
 
         /**
         * Removes a value (if found) from the Set.
-        * @param {*} any
+        * @param {*} val
         */
-        remove(val: any): boolean;
+        remove(val: T): boolean;
 
         /**
         * Removes all of the values of a collection from this Set.
-        * @param {Iterable} coll
+        * @param {Iterable<T>} coll
         */
-        removeAll(coll: Iterable): Set;
+        removeAll(coll: Iterable<T>): Set<T>;
 
         /**
         * Removes all of the values of a collection from this Set.
-        * @param {Array} coll
+        * @param {Array<T>} coll
         */
-        removeAll(coll: any[]): Set;
+        removeAll(coll: Array<T>): Set<T>;
 
         /**
         * Removes from this Set all items that are not in the given collection.
-        * @param {Iterable} coll
+        * @param {Iterable<T>} coll
         */
-        retainAll(coll: Iterable): Set;
+        retainAll(coll: Iterable<T>): Set<T>;
 
         /**
         * Produces a JavaScript Array from the contents of this Set.
         */
-        toArray(): any[];
+        toArray(): Array<T>;
 
         /**
         * Converts the Set to a List.
         */
-        toList(): List;
+        toList(): List<T>;
     }
 
     class EnumValue {  // undocumented
