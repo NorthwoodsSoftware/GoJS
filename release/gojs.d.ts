@@ -22,7 +22,7 @@ declare module go {
     type PropertyAccessor = string | ((data: any, newval: any) => any);
 
     /** A constructor */
-    type Constructor = new (...args: any[]) => Object;
+    type Constructor = new (...args: Array<any>) => Object;
 
     /**
     * An adornment is a special kind of Part that is associated with another Part,
@@ -750,9 +750,9 @@ declare module go {
         /**
         * Commit the changes of the current transaction.
         * This just calls UndoManager.commitTransaction.
-        * @param {string} tname a descriptive name for the transaction.
+        * @param {string=} tname a descriptive name for the transaction.
         */
-        commitTransaction(tname: string): boolean;
+        commitTransaction(tname?: string): boolean;
 
         /**
         * This is called during a Diagram update to determine a new value for .documentBounds.
@@ -1421,7 +1421,7 @@ declare module go {
         * @param {string} name a capitalized name; must not be "" or "None"
         * @param {function(Array<*>):Object} func
         */
-        static defineBuilder(name: string, func: (args: any[]) => Object): void;
+        static defineBuilder(name: string, func: (args: Array<any>) => Object): void;
 
         /**
         * Returns the effective angle that the object is drawn at, in document coordinates.
@@ -1479,7 +1479,7 @@ declare module go {
         * is recognized to take that value,
         * or a string that is used as the value of a commonly set property.
         */
-        static make(type: Constructor | string, ...initializers: any[]): any;
+        static make(type: Constructor | string, ...initializers: Array<any>): any;
 
         /**GraphObjects with this as the value of GraphObject.stretch are stretched depending on the context they are used.*/
         static Default: EnumValue;
@@ -1505,7 +1505,7 @@ declare module go {
         protected cloneProtected(copy: GraphObject): void;  // undocumented
         static fromSvg(svg: string): GraphObject;  // undocumented
         static fromSvg(svg: Document): GraphObject;  // undocumented
-        static getBuilders(): Map<string,(args: any[]) => Object>;  // undocumented
+        static getBuilders(): Map<string,(args: Array<any>) => Object>;  // undocumented
     }
 
     /**
@@ -5169,9 +5169,9 @@ declare module go {
         /**
         * Commit the changes of the current transaction.
         * This just calls UndoManager.commitTransaction.
-        * @param {string} tname a descriptive name for the transaction.
+        * @param {string=} tname a descriptive name for the transaction.
         */
-        commitTransaction(tname: string): boolean;
+        commitTransaction(tname?: string): boolean;
 
         /**
         * Decide if a given node data is in this model.
@@ -5194,7 +5194,7 @@ declare module go {
         * that uses the given value as its unique key.
         * @param {*} key a string or a number.
         */
-        findNodeDataForKey(key: Key): any;
+        findNodeDataForKey(key: Key): Object;
 
         /**
         * This static function parses a string in JSON format and constructs, initializes, and returns a model.
@@ -5581,9 +5581,9 @@ declare module go {
         * redos will throw away the Transactions holding changes that happened
         * after the current state, before adding the new Transaction to the
         * .history list.
-        * @param {string} tname a short string describing the transaction.
+        * @param {string=} tname a short string describing the transaction, defaulting to the name given at the call to startTransaction
         */
-        commitTransaction(tname: string): boolean;
+        commitTransaction(tname?: string): boolean;
 
         /**
         * Maybe record a ChangedEvent in the .currentTransaction.
