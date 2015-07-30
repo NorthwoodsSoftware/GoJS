@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime Drag Selecting Tool</title>
+  <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="RealtimeDragSelectingTool.js"></script>
+
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            initialDocumentSpot: go.Spot.Center,
+            initialViewportSpot: go.Spot.Center,
+
+            // replace the standard DragSelectingTool with one that selects while dragging,
+            // and also only requires overlapping bounds with the dragged box to be selected
+            dragSelectingTool:
+              $(RealtimeDragSelectingTool,
+                { isPartialInclusion: true, delay: 50 },
+                { box: $(go.Part,  // replace the magenta box with a red one
+                         { layerName: "Tool", selectable: false },
+                         $(go.Shape,
+                           { name: "SHAPE", fill: "rgba(255,0,0,0.1)",
+                             stroke: "red", strokeWidth: 2 })) }
+              ),
+
+            // Define the template for Nodes, just some text inside a colored rectangle
+            nodeTemplate:
+              $(go.Node, "Spot",
+                { width: 70, height: 20 },
+                $(go.Shape, "Rectangle",
+                  new go.Binding("fill", "c")),
+                $(go.TextBlock,
+                  { margin: 2 },
+                  new go.Binding("text", "c"))),
+            
+            // Define the template for Links, just a simple line
+            linkTemplate:
+              $(go.Link,
+                $(go.Shape, { stroke: "black" })),
+            
+            layout: $(go.TreeLayout)
+          });
+
+      myDiagram.model = loadTree();
+    }
+
+    function loadTree() {
+      // create some tree data
+      var total = 49;
+      var treedata = [];
+      for (var i = 0; i < total; i++) {
+        // these property names are also specified when creating the TreeModel
+        var d = {
+          key: i,  // this node data's key
+          c: go.Brush.randomColor(),  // the node's color
+          parent: (i > 0 ? Math.floor(Math.random() * i / 2) : undefined)  // the random parent's key
+        };
+        treedata.push(d);
+      }
+      return new go.TreeModel(treedata);
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%;height: 600px"></div>
+  <p>
+  This sample demonstrates the RealtimeDragSelectingTool, which replaces the standard <a>DragSelectingTool</a>.
+  Press in the background, wait briefly, and then drag to start selecting Nodes or Links that intersect with the box.
+  You can press or release Control (Command on Mac) or Shift while dragging to see how the selection changes.
+  </p>
+  <p>
+  Load it in your own app by including <a href="RealtimeDragSelectingTool.js">RealtimeDragSelectingTool.js</a>.
+  Initialize your Diagram by setting <a>ToolManager.dragSelectingTool</a> to a new instance of this tool.
+  For example:
+  </p>
+  <pre>
+    myDiagram.toolManager.dragSelectingTool = new go.RealtimeDragSelectingTool();
+  </pre>
+  or
+  <pre>
+    $(go.Diagram, { . . .,
+                    toolManager: $(RealtimeDragSelectingTool, { isPartialInclusion: true }),
+                    . . . })
+  </pre>
+</div>
+</body>
+</html>

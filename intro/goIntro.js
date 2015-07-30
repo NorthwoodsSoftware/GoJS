@@ -159,10 +159,7 @@ var myMenu = '\
     <a href="makingSVG.html"><li>Diagram SVG</li></a>\
     <a href="printing.html"><li>Printing</li></a>\
     <a href="serverSideImages.html"><li>Server-side Images</li></a>\
-    <a href="deployment.html"><li>Deployment</li></a>\
-    <!--\
-    <a href="updatingDatabase.html"><li>Updating Database</li></a>\
     <a href="performance.html"><li>Performance</li></a>\
-    -->\
+    <a href="deployment.html"><li>Deployment</li></a>\
   </ul>';
 //]]>

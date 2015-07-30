@@ -139,9 +139,11 @@ var myMenu = '\
     <a href="Fishbone.html"><li>Fishbone Layout</li></a>\
     <a href="Parallel.html"><li>Parallel Layout</li></a>\
     <a href="Serpentine.html"><li>Serpentine Layout</li></a>\
+    <a href="Spiral.html"><li>Spiral Layout</li></a>\
     <a href="TreeMap.html"><li>Tree Map Layout</li></a>\
     <a href="Table.html"><li>Table Layout</li></a>\
     <hr />\
+    <a href="RealtimeDragSelecting.html"><li>Realtime Selecting</li></a>\
     <a href="DragCreating.html"><li>Drag Creating</li></a>\
     <a href="DragZooming.html"><li>Drag Zooming</li></a>\
     <a href="FreehandDrawing.html"><li>Freehand Drawing</li></a>\

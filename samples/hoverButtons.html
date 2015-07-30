@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Buttons that show on Hover</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                  {
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    hoverDelay: 200,  // controls how long to wait motionless (msec) before showing Adornment
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    // this is shown by the mouseHover event handler
+    var nodeHoverAdornment =
+      $(go.Adornment, "Spot",
+        {
+          background: "transparent",
+          // hide the Adornment when the mouse leaves it
+          mouseLeave: function(e, obj) {
+            var ad = obj.part;
+            ad.adornedPart.removeAdornment("mouseHover");
+          }
+        },
+        $(go.Placeholder,
+          {
+            background: "transparent",  // to allow this Placeholder to be "seen" by mouse events
+            isActionable: true,  // needed because this is in a temporary Layer
+            click: function(e, obj) {
+              var node = obj.part.adornedPart;
+              node.diagram.select(node);
+            }
+          }),
+        $("Button",
+          { alignment: go.Spot.Left, alignmentFocus: go.Spot.Right },
+          { click: function(e, obj) { alert("Hi!"); } },
+          $(go.TextBlock, "Hi!")),
+        $("Button",
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left },
+          { click: function(e, obj) { alert("Bye"); } },
+          $(go.TextBlock, "Bye"))
+      );
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",  // the Shape will go around the TextBlock
+        $(go.Shape, "RoundedRectangle",
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },  // some room around the text
+          // TextBlock.text is bound to Node.data.key
+          new go.Binding("text", "key")),
+        { // show the Adornment when a mouseHover event occurs
+          mouseHover: function(e, obj) {
+            var node = obj.part;
+            nodeHoverAdornment.adornedObject = node;
+            node.addAdornment("mouseHover", nodeHoverAdornment);
+          }
+        }
+      );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Beta", to: "Beta" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>Minimal <b>GoJS</b> Sample</p>
+  <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
+  <p>
+    This sample demonstrates buttons that appear when the user hovers over a node with the mouse.
+    The advantage of using an <a>Adornment</a> is that it keeps the Node template simpler.
+    That means there are less resources used to create nodes -- only that one adornment can be shown.
+  </p>
+  <p>
+    However, using a template as the <a>Part.selectionAdornmentTemplate</a> would allow for more
+    than one set of buttons to be shown simultaneously, one set for each selected node.
+  </p>
+  <p>
+    This technique does not work on touch devices.
+  </p>
+  <p>
+    If you want to show such an Adornment on mouseEnter and mouseLeave, rather than on mouseHover,
+    the code is given in the documentation for the <a>GraphObject.mouseEnter</a> property.
+  </p>
+</div>
+</body>
+</html>

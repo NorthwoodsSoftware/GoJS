@@ -140,6 +140,7 @@ var myMenu = '\
     <!--<a href="minimalXML.html"><li>Minimal (XML)</li></a>-->\
     <!--<a href="require.html"><li>Using RequireJS</li></a>-->\
     <!--<a href="angular.html"><li>Using AngularJS</li></a>-->\
+    <!--<a href="hoverButtons.html"><li>Hover Buttons</li></a>-->\
     <a href="basic.html"><li>Basic</li></a>\
     <a href="classHierarchy.html"><li>Class Hierarchy</li></a>\
     <a href="DOMTree.html"><li>DOM Tree</li></a>\

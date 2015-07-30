@@ -189,6 +189,7 @@ in this case the Shape's desiredSize.
 <p>
 You can limit the minimum and maximum size for the resized object by setting
 <a>GraphObject.maxSize</a> and <a>GraphObject.minSize</a>.
+Note that these GraphObject properties are set on the <a>Part.resizeObject</a>, not on the <a>Part</a> itself.
 </p>
 <pre data-language="javascript" id="resizingMaxMin">
   diagram.initialContentAlignment = go.Spot.Center;
@@ -252,7 +253,8 @@ You can customize the resize handles by setting <a>Part.resizeAdornmentTemplate<
 For example, to allow the user to only change the width of a Shape in a Node,
 the <a>Adornment</a> should have only two resize handles: one at the left and one at the right.
 The Adornment is implemented as a Spot Panel that surrounds a <a>Placeholder</a>,
-representing the adorned Shape, with two rectangular blue Shapes, each representing a handle. 
+representing the adorned Shape, with two rectangular blue Shapes, each representing a handle.
+There is also a TextBlock placed above the adorned shape showing the shape's current width.
 </p>
 <pre data-language="javascript" id="resizingTemplate">
   diagram.initialContentAlignment = go.Spot.Center;
@@ -262,12 +264,19 @@ representing the adorned Shape, with two rectangular blue Shapes, each represent
         resizeAdornmentTemplate:  // specify what resize handles there are and how they look
           $(go.Adornment, "Spot",
             $(go.Placeholder),  // takes size and position of adorned object
-            $(go.Shape,  // left resize handle
+            $(go.Shape, "Circle",  // left resize handle
               { alignment: go.Spot.Left, cursor: "col-resize",
-                desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "dodgerblue" }),
-            $(go.Shape,  // right resize handle
+                desiredSize: new go.Size(9, 9), fill: "lightblue", stroke: "dodgerblue" }),
+            $(go.Shape, "Circle",  // right resize handle
               { alignment: go.Spot.Right, cursor: "col-resize",
-                desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "dodgerblue" })),
+                desiredSize: new go.Size(9, 9), fill: "lightblue", stroke: "dodgerblue" }),
+            $(go.TextBlock, // show the width as text
+              { alignment: go.Spot.Top, alignmentFocus: new go.Spot(0.5, 1, 0, -2),
+                stroke: "dodgerblue" },
+              new go.Binding("text", "adornedObject",
+                             function(shp) { return shp.naturalBounds.width.toFixed(0); })
+                  .ofObject())
+          ),
         selectionAdorned: false },  // don't show selection Adornment, a rectangle
       $(go.Shape, "RoundedRectangle",
         { name: "SHAPE", fill: "orange", width: 50, height: 30,
@@ -279,6 +288,12 @@ representing the adorned Shape, with two rectangular blue Shapes, each represent
 <script>goCode("resizingTemplate", 600, 100)</script>
 <p>
 Note also that because <a>Part.selectionAdorned</a> is false, there is no blue rectangle default selection adornment.
+</p>
+<p>
+There are examples custom resizing tools defined in the samples and extensions directories:
+<a href="../extensions/FloorPlanEditor.html">Resize Multiple Tool (in Floor Plan Editor)</a>,
+<a href="../samples/swimLanes.html">Lane Resizing Tool (in Swim Lanes)</a>, and
+<a href="../samples/swimLanesVertical.html">Lane Resizing Tool (in Swim Lanes Vertical)</a>.
 </p>
 
 <h4>RotatingTool</h4>
@@ -368,6 +383,12 @@ You can customize the rotate handle by setting <a>Part.rotateAdornmentTemplate</
   diagram.commandHandler.selectAll();
 </pre>
 <script>goCode("rotatingTemplate", 600, 150)</script>
+<p>
+There are examples custom rotating tools defined in the samples and extensions directories:
+<a href="../extensions/FloorPlanEditor.html">Rotate Multiple Tool (in Floor Plan Editor)</a>,
+<a href="../samples/draggableLink.html">Top Rotating Tool (in Draggable Link)</a>, and
+<a href="../samples/seatingChart.html">Horizontal Text Rotating Tool (in Seating Chart)</a>.
+</p>
 
 <h4>RelinkingTool</h4>
 <p>
@@ -505,6 +526,13 @@ The resegmenting handles can be customized by setting <a>LinkReshapingTool.midHa
 At the current time they cannot be customized by setting a property on the Link.
 Also at the current time resegmenting is not supported on Bezier-curved links.
 </p>
+<p>
+If you want your users to be able to reshape Shape geometries that are not Link paths,
+there is the <a href="../extensions/GeometryReshapingTool.js">Geometry Reshaping Tool</a>
+used by the <a href="../extensions/PolygonDrawing.html">Polygon Drawing</a> and
+<a href="../extensions/FreehandDrawing.html">Freehand Drawing</a> samples in the extensions directory.
+It is defined in a separate JS file that you can load into your app.
+</p>
 
 
 <h3>Tools and Tool Parts</h3>
@@ -549,6 +577,13 @@ Note that the <a>DragSelectingTool</a> expects that the object in the "box" to b
 The object should be rectangular too, or else the user might be misled by the area in which parts will be selected.
 Finally note also that the box is not an Adornment because it does not "adorn" any Part.
 It is just an unbound Part that is used temporarily by the DragSelectingTool.
+</p>
+<p>
+There are examples of in-the-background-dragging tools defined in the extensions directory:
+<a href="../extensions/RealtimeDragSelecting.html">Realtime Drag Selecting Tool</a>,
+<a href="../extensions/DragCreating.html">Drag Creating Tool</a>, and
+<a href="../extensions/DragZooming.html">Drag Zooming Tool</a>.
+Each is defined in a separate JS file that you can load into your app.
 </p>
 
 <h4>LinkingTool and RelinkingTool</h4>
@@ -618,6 +653,12 @@ The temporary link is a dashed red line without an arrowhead.
 </p>
 <p>
 If your app also supports relinking you will probably want to do the same customizations on the <a>RelinkingTool</a>.
+</p>
+<p>
+There are examples of linking tools defined in the samples and extensions directories:
+<a href="../extensions/PolylineLinking.html">Polyline Linking Tool</a>,
+<a href="../samples/sequenceDiagram.html">Messaging Tool (in Sequence Diagram)</a>, and
+<a href="../samples/sequenceDiagram.html">Custom Linking Tool (in Grafcet Diagram)</a>
 </p>
 
 </div>
