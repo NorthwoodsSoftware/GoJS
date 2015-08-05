@@ -1424,6 +1424,19 @@ declare module go {
         static defineBuilder(name: string, func: (args: Array<any>) => Object): void;
 
         /**
+        * This static function returns the first argument from the arguments array passed
+        * to a {@link GraphObject.defineBuilder} function by {@link GraphObject.make}.
+        * By default this requires the first argument to be a string,
+        * but you can provide a predicate to determine whether the argument is suitable.
+        * @param {Array} args
+        * @param {*=} defval the default value to return if the argument is optional and not present as the first argument
+        * @param {function(*):boolean|null=} pred a predicate to determine the acceptability of the argument;
+        *        the default predicate checks whether the argument is a string
+        * @return {*}
+        */
+        static takeBuilderArgument(args: Array<any>, defval?: any, pred?: (any) => boolean): any;
+
+        /**
         * Returns the effective angle that the object is drawn at, in document coordinates.
         */
         getDocumentAngle(): number;

@@ -155,6 +155,7 @@ var myMenu = '\
     <a href="PortShifting.html"><li>Port Shifting</li></a>\
     <a href="ColumnResizing.html"><li>Column Resizing</li></a>\
     <hr />\
+    <a href="CheckBoxes.html"><li>CheckBoxes</li></a>\
     <a href="ScrollingTable.html"><li>Scrolling Table</li></a>\
     <a href="Robot.html"><li>Simulating Input</li></a>\
     <hr />\

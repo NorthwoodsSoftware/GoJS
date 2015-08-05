@@ -56,11 +56,7 @@ go.GraphObject.defineBuilder("AutoRepeatButton", function(args) {
 // Note that if you have more than one of these in a Part,
 // you'll want to make sure each one has a unique name.
 go.GraphObject.defineBuilder("ScrollingTable", function(args) {
-  var tablename = "TABLE";
-  if (typeof args[1] === 'string') {
-    tablename = args[1];  // the name of the button
-    args.splice(1, 1);  // remove this name from the arguments to be processed by GraphObject.make
-  }
+  var tablename = go.GraphObject.takeBuilderArgument(args, "TABLE");
 
   // an internal helper function for actually performing a scrolling operation
   function incrTableIndex(obj, i) {

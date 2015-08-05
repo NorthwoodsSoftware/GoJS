@@ -12,6 +12,7 @@ function PoolLink() {
 }
 go.Diagram.inherit(PoolLink, go.Link);
 
+/** @override */
 PoolLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
   var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
                       port.getDocumentPoint(go.Spot.BottomRight));
@@ -29,6 +30,7 @@ PoolLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othern
 };
 
 // If there are two links from & to same node... and pool is offset in X from node... the link toPoints collide on pool
+/** @override */
 PoolLink.prototype.computeOtherPoint = function(othernode, otherport) {
   var op = go.Link.prototype.computeOtherPoint(this, othernode, otherport);
   var node = this.toNode;
@@ -39,6 +41,7 @@ PoolLink.prototype.computeOtherPoint = function(othernode, otherport) {
   return op;
 };
 
+/** @override */
 PoolLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
   if (node.category === "privateProcess") {
     var p = port.getDocumentPoint(go.Spot.Center);
@@ -59,12 +62,13 @@ function BPMNLinkingTool() {
   this.direction = go.LinkingTool.ForwardsOnly;
   this.temporaryLink.routing = go.Link.Orthogonal;
   this.linkValidation = function(fromnode, fromport, tonode, toport) {
-      return validateSequenceLinkConnection(fromnode, fromport, tonode, toport) || 
-                 validateMessageLinkConnection(fromnode, fromport, tonode, toport);
+      return BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
+             BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
     };    
 }
 go.Diagram.inherit(BPMNLinkingTool, go.LinkingTool);
 
+/** @override */
 BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
   var lsave = null;
   // maybe temporarily change the link data that is copied to create the new link
@@ -87,41 +91,38 @@ BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, topo
   return newlink;
 };
 
-  
-// utility validation routines for linking & relinking as well as insert link logic
+// static utility validation routines for linking & relinking as well as insert link logic
 
 // in BPMN, can't link sequence flows across subprocess or pool boundaries
-function validateSequenceLinkConnection(fromnode, fromport, tonode, toport) {
+BPMNLinkingTool.validateSequenceLinkConnection = function(fromnode, fromport, tonode, toport) {
+  if (fromnode.category === null || tonode.category === null) return true;
 
-if (fromnode.category === null || tonode.category === null) return true;
-
-// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
-if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") || 
-    (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
+  // if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+  if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") || 
+      (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
     if (fromnode.containingGroup !== tonode.containingGroup) return false;
-}
+  }
 
-if (fromnode.containingGroup === tonode.containingGroup) return true;  // a valid Sequence Flow
-// also check for children in common pool
-var common = fromnode.findCommonContainingGroup(tonode);
-return common != null;
-}
+  if (fromnode.containingGroup === tonode.containingGroup) return true;  // a valid Sequence Flow
+  // also check for children in common pool
+  var common = fromnode.findCommonContainingGroup(tonode);
+  return common != null;
+};
 
 // in BPMN, Message Links must cross pool boundaries
-function validateMessageLinkConnection(fromnode, fromport, tonode, toport) {
-
-if (fromnode.category === null || tonode.category === null) return true;
+BPMNLinkingTool.validateMessageLinkConnection = function(fromnode, fromport, tonode, toport) {
+  if (fromnode.category === null || tonode.category === null) return true;
     
-if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") return true;    
+  if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") return true;    
 
-// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
-if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") || 
-    (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
+  // if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+  if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") || 
+      (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
     if (fromnode.containingGroup !== tonode.containingGroup) return false;
-}
+  }
 
-if (fromnode.containingGroup === tonode.containingGroup) return false;  // an invalid Message Flow
-// also check for children in common pool
-var common = fromnode.findCommonContainingGroup(tonode);
-return common === null;
-}     
+  if (fromnode.containingGroup === tonode.containingGroup) return false;  // an invalid Message Flow
+  // also check for children in common pool
+  var common = fromnode.findCommonContainingGroup(tonode);
+  return common === null;
+};

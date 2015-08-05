@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>CheckBoxes</title>
+<!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+
+  // Define a common checkbox button; the first argument is the name of the data property
+  // to which the state of this checkbox is data bound.  If the first argument is not a string,
+  // it raises an error.  If no data binding of the checked state is desired,
+  // pass an empty string as the first argument.
+  // $("CheckBoxButton", "dataPropertyName", ...)
+  go.GraphObject.defineBuilder("CheckBoxButton", function(args) {
+    // process the one required string argument for this kind of button
+    var propname = go.GraphObject.takeBuilderArgument(args);
+
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    var button = $("Button",
+                   {
+                     "ButtonBorder.fill": "white",
+                     "ButtonBorder.stroke": "gray",
+                     width: 14,
+                     height: 14
+                   },
+                   $(go.Shape,
+                     {
+                       name: "ButtonIcon",
+                       geometryString: "M0 4 L3 9 9 0",  // a "check" mark
+                       strokeWidth: 2,
+                       stretch: go.GraphObject.Fill,  // this Shape expands to fill the Button
+                       geometryStretch: go.GraphObject.Uniform,  // the check mark fills the Shape without distortion
+                       visible: false  // visible set to false: not checked, unless data.PROPNAME is true
+                     },
+                     // create a data Binding only if PROPNAME is supplied and not the empty string
+                     (propname !== "" ? new go.Binding("visible", propname).makeTwoWay() : []))
+                 );
+
+    button.click = function(e, obj) {
+      e.handled = true;
+      var shape = obj.findObject("ButtonIcon");
+      shape.diagram.startTransaction("checkbox");
+      shape.visible = !shape.visible;  // this toggles data.checked due to TwoWay Binding
+      // support extra side-effects without clobbering the click event handler:
+      if (typeof obj["_doClick"] === "function") obj["_doClick"](e, obj);
+      shape.diagram.commitTransaction("checkbox");
+    };
+
+    return button;
+  });
+
+  // This defines a whole check-box -- including both a "CheckBoxButton" and whatever you want as the check box label.
+  // Note that mouseEnter/mouseLeave/click events apply to everything in the panel, not just in the "CheckBoxButton".
+  go.GraphObject.defineBuilder("CheckBoxPanel", function(args) {
+    // process the one required string argument for this kind of button
+    var propname = go.GraphObject.takeBuilderArgument(args);
+
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    var button = $("CheckBoxButton", propname,
+                   {
+                     name: "Button",  // bound to this data property
+                     margin: new go.Margin(0, 1, 0, 0)
+                   }
+                 );
+    var box = $(go.Panel, "Horizontal",
+                button,
+                {
+                  isActionable: true,
+                  margin: 1,
+                  // transfer CheckBoxButton properties over to this new CheckBoxPanel
+                  "_buttonFillNormal": button["_buttonFillNormal"],
+                  "_buttonStrokeNormal": button["_buttonStrokeNormal"],
+                  "_buttonFillOver": button["_buttonFillOver"],
+                  "_buttonStrokeOver": button["_buttonStrokeOver"],
+                  mouseEnter: button.mouseEnter,
+                  mouseLeave: button.mouseLeave,
+                  click: button.click,
+                  "_buttonClick": button.click  // save original Button behavior, for use in a Panel.click event handler
+                }
+              );
+    // avoid potentially conflicting event handlers on the "CheckBoxButton"
+    button.mouseEnter = null;
+    button.mouseLeave = null;
+    button.click = null;
+    return box;
+  });
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+                  {
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",  // the Shape will go around the TextBlock
+        $(go.Shape, { strokeWidth: 0 },
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.Panel, "Table",
+          { padding: 3 },
+          $(go.TextBlock,
+            { row: 0, column: 0, columnSpan: 2 },
+            { margin: 3, font: "bold 10pt sans-serif" },  // some room around the text
+            // TextBlock.text is bound to Node.data.key
+            new go.Binding("text", "key")),
+          $(go.Panel, "Vertical",
+            { row: 1, column: 0, defaultAlignment: go.Spot.Left },
+            // two checkboxes for node data properties
+            $("CheckBoxPanel", "choice1",
+              $(go.TextBlock, "default")
+            ),
+            $("CheckBoxPanel", "choice2",
+              { "ButtonIcon.stroke": "green" },
+              $(go.TextBlock, "green")
+            ),
+            $("CheckBoxPanel", "choice3",
+              { "ButtonIcon.stroke": "red", "ButtonIcon.figure": "XLine" },
+              $(go.TextBlock, "red X")
+            ),
+            $("CheckBoxPanel", "choice4",
+              { "_buttonFillOver": "pink", "_buttonStrokeOver": "red" },
+              $(go.TextBlock, "pink over")
+            ),
+            $("CheckBoxPanel", "choice5",
+              { "Button.width": 32, "Button.height": 32 },
+              $(go.TextBlock, "BIG",
+                { font: "bold 12pt sans-serif" })
+            ),
+            $("CheckBoxPanel", "choice6",
+              {
+                "Button.width": 20, "Button.height": 20,
+                "ButtonBorder.figure": "Circle", "ButtonBorder.stroke": "blue",
+                "ButtonIcon.figure": "Circle", "ButtonIcon.fill": "blue",
+                "ButtonIcon.strokeWidth": 0, "ButtonIcon.desiredSize": new go.Size(10, 10)
+              },
+              $(go.TextBlock, "blue circle")
+            ),
+            $("CheckBoxPanel", "choice7", go.Panel.Vertical,
+              { alignment: go.Spot.Center },
+              $(go.TextBlock, "vertical")
+            ),
+            $("CheckBoxPanel", "choice8",
+              $(go.TextBlock, "frozen"),
+              {
+                click: function(e, obj) {
+                  // maybe startTransaction here
+                  e.diagram.startTransaction("toggle movable");
+                  obj["_buttonClick"](e, obj);  // execute normal click behavior for CheckBoxButtons
+                  obj.part.movable = !obj.part.movable;  // toggle the Part.movable flag
+                  // and maybe commitTransation here
+                  e.diagram.commitTransaction("toggle movable");
+                }
+              }
+            )
+          ),
+          // a list of checked items
+          $(go.Panel, "Table",
+            {
+              row: 1, column: 1,
+              alignment: go.Spot.Top,
+              minSize: new go.Size(50, NaN),
+              itemTemplate:
+                $("CheckBoxPanel", "checked", go.Panel.TableRow,
+                  $(go.TextBlock,  // align text towards the right, next to the Button
+                    { column: 0, alignment: go.Spot.Right },
+                    new go.Binding("text", "name")),
+                  { "Button.column": 1 }  // put Button in second column, to the right of text
+                )
+            },
+            new go.Binding("itemArray", "items")
+          )
+        )
+      );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue", choice1: true, choice2: true, choice3: true, choice4: true, choice5: true, choice6: true, choice7: true,
+                      items: [{ name: "item 0" }, { name: "item 1" }, { name: "item 2" }] },
+      { key: "Beta", color: "orange", items: [{ name: "B1", checked: false }, { name: "Bee2", checked: true }] },
+      { key: "Gamma", color: "lightgreen", items: [{ name: "C-one", checked: true }, { name: "C-two", checked: true }, { name: "C-three"}] },
+      { key: "Delta", color: "pink", choice1: true, choice2: false, items: [] }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+    myDiagram.model.copiesArrays = true;
+    myDiagram.model.copiesArrayObjects = true;
+    myDiagram.model.addChangedListener(function(e) {
+      if (e.isTransactionFinished) document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
+    });
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>Simple uses of CheckBoxes, using CheckBoxButtons</p>
+  <div id="myDiagram" style="border: solid 1px black; width:450px; height:450px"></div>
+  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
+</div>
+</body>
+</html>

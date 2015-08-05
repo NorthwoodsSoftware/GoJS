@@ -3,11 +3,15 @@
 *  Copyright (C) 1998-2015 by Northwoods Software Corporation. All Rights Reserved.
 */
 
+// These are the definitions for all of the predefined buttons.
+// You do not need to load this file in order to use buttons.
+
 // A "Button" is a Panel that has a Shape surrounding some content
 // and that has mouseEnter/mouseLeave behavior to highlight the button.
 // The content of the button, whether a TextBlock or a Picture or a complicated Panel,
 // must be supplied by the caller.
 // The caller must also provide a click event handler.
+
 // Typical usage:
 //    $("Button",
 //      $(go.TextBlock, "Click me!"),  // the content is just the text label
@@ -196,11 +200,7 @@ go.GraphObject.defineBuilder("ContextMenuButton", function(args) {
 // You can only control the visibility of one element in a Part at a time,
 // although that element might be an arbitrarily complex Panel.
 go.GraphObject.defineBuilder("PanelExpanderButton", function(args) {
-  var eltname = "COLLAPSIBLE";
-  if (typeof args[1] === "string") {
-    eltname = args[1];  // the name of the panel to collapse
-    args.splice(1, 1);  // remove this name from the arguments to be processed by GraphObject.make
-  }
+  var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
 
   var button =
     go.GraphObject.make("Button",
