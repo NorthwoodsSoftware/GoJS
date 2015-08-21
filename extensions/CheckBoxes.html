@@ -147,15 +147,16 @@
               { alignment: go.Spot.Center },
               $(go.TextBlock, "vertical")
             ),
-            $("CheckBoxPanel", "choice8",
+            $("CheckBoxPanel", "",  // not data bound
+              // this checkbox is not bound to model data, but it does toggle the Part.movable
+              // property of the Node that this is in
               $(go.TextBlock, "frozen"),
               {
                 click: function(e, obj) {
-                  // maybe startTransaction here
+                  // always conduct transactions when making changes
                   e.diagram.startTransaction("toggle movable");
                   obj["_buttonClick"](e, obj);  // execute normal click behavior for CheckBoxButtons
                   obj.part.movable = !obj.part.movable;  // toggle the Part.movable flag
-                  // and maybe commitTransation here
                   e.diagram.commitTransaction("toggle movable");
                 }
               }

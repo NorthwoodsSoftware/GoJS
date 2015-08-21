@@ -17,6 +17,18 @@ function TreeMapLayout() {
 }
 go.Diagram.inherit(TreeMapLayout, go.Layout);
 
+/**
+* @ignore
+* Copies properties to a cloned Layout.
+* @this {TreeMapLayout}
+* @param {Layout} copy
+* @override
+*/
+TreeMapLayout.prototype.cloneProtected = function(copy) {
+  go.Layout.prototype.cloneProtected.call(this, copy);
+  copy._isTopLevelHorizontal = this._isTopLevelHorizontal;
+};
+
 // First call computeTotals to make sure all of the node data have values for data.total.
 // Then do a top-down walk through the diagram's structure of group relationships,
 // positioning everything to fit in the viewport.

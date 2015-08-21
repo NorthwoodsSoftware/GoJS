@@ -25,6 +25,19 @@ function SerpentineLayout() {
 go.Diagram.inherit(SerpentineLayout, go.Layout);
 
 /**
+* @ignore
+* Copies properties to a cloned Layout.
+* @this {SerpentineLayout}
+* @param {Layout} copy
+* @override
+*/
+SerpentineLayout.prototype.cloneProtected = function(copy) {
+  go.Layout.prototype.cloneProtected.call(this, copy);
+  copy._spacing = this._spacing;
+  copy._wrap = this._wrap;
+};
+
+/**
 * This method actually positions all of the Nodes, assuming that the ordering of the nodes
 * is given by a single link from one node to the next.
 * This respects the {@link #spacing} and {@link #wrap} properties to affect the layout.

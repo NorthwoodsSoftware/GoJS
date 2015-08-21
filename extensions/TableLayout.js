@@ -44,7 +44,7 @@ go.Diagram.inherit(TableLayout, go.Layout);
 
 /** @ignore */
 TableLayout.prototype.cloneProtected = function(copy) {
-  Layout.prototype.cloneProtected.call(this, copy);
+  go.Layout.prototype.cloneProtected.call(this, copy);
   copy._defaultAlignment = this._defaultAlignment;
   copy._defaultStretch = this._defaultStretch;
   for (var i = 0; i < this._rowDefs.length; i++) {
