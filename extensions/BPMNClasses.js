@@ -72,7 +72,7 @@ go.Diagram.inherit(BPMNLinkingTool, go.LinkingTool);
 BPMNLinkingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
   var lsave = null;
   // maybe temporarily change the link data that is copied to create the new link
-  if (validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
+  if (BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
     lsave = this.archetypeLinkData;
     this.archetypeLinkData = { category: "msg" };
   }
