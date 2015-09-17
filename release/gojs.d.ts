@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.5.0
+// Type definitions for GoJS v1.5.8
 // Project: http://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -84,8 +84,8 @@ declare module go {
         */
         constructor();
 
-        /**Gets or sets a data object that is copied by .groupSelection when creating a new Group. The default value is null.*/
-        archetypeGroupData: Object;
+        /**Gets or sets a data object that is copied by .groupSelection when creating a new Group. The default value is null. The value must be an Object or null.*/
+        archetypeGroupData: any;
 
         /**Gets or sets whether copySelection should also copy Links that connect with selected Nodes.*/
         copiesConnectedLinks: boolean;
@@ -3242,6 +3242,8 @@ declare module go {
         /**The TextBlock will wrap text, making the width of the TextBlock equal to the width of the longest line.*/
         static WrapFit: EnumValue;
 
+        spacingAbove: number;  // undocumented
+        spacingBelow: number;  // undocumented
         static isValidFont(font: string): boolean;  // undocumented
         static getEllipsis(): string;  // undocumented
         static setEllipsis(val: string): void;  // undocumented
@@ -4800,10 +4802,11 @@ declare module go {
         * is a link reference (either the "to" or the "from" of a link data) to a node key that does not yet exist in the model.
         * The default value is null -- node data is not automatically copied and added to the model
         * when there is an unresolved reference in a link data.
+        * The value must be an Object or null.
         * When adding or modifying a link data if there is a "from" or "to" key value for which Model.findNodeDataForKey returns null,
         * it will call Model.copyNodeData on this property value and Model.addNodeData on the result.
         */
-        archetypeNodeData: Object;
+        archetypeNodeData: any;
 
         /**
         * Gets or sets a function that makes a copy of a link data object.
@@ -5115,7 +5118,7 @@ declare module go {
         /**Gets or sets a function that returns a unique id number or string for a node data object; the default value is null.*/
         makeUniqueKeyFunction: (model: Model, obj: Object) => Key;
 
-        /**Gets a JavaScript Object that can hold programmer-defined property values for the model as a whole, rather than just for one node or one link; by default this is an object with no properties.*/
+        /**Gets a JavaScript Object that can hold programmer-defined property values for the model as a whole, rather than just for one node or one link; by default this is an object with no properties. The value must be an Object.*/
         modelData: any;
 
         /**Gets or sets the name of this model; the initial name is an empty string.*/
@@ -5205,9 +5208,10 @@ declare module go {
         /**
         * Given a number or string, find the node data in this model
         * that uses the given value as its unique key.
+        * The return value will be an Object or null.
         * @param {*} key a string or a number.
         */
-        findNodeDataForKey(key: Key): Object;
+        findNodeDataForKey(key: Key): any;
 
         /**
         * This static function parses a string in JSON format and constructs, initializes, and returns a model.
@@ -5738,7 +5742,7 @@ declare module go {
         /**
         * Create a new LayoutNetwork of CircularVertexes and CircularEdges.
         */
-        createNetwork(): LayoutNetwork;
+        createNetwork(): CircularNetwork;
 
         /**
         * Assign the positions of the vertexes in the network.
@@ -5792,15 +5796,15 @@ declare module go {
         static Reverse: EnumValue;
     }
 
+    class CircularNetwork extends LayoutNetwork {  // undocumented
+    }
+
     /** This holds CircularLayout-specific information about Links.*/
     class CircularEdge extends LayoutEdge {
-        constructor();
     }
 
     /** This holds CircularLayout-specific information about Nodes.*/
     class CircularVertex extends LayoutVertex {
-        constructor();
-
         /**Gets or sets the value used as the vertex's angle.*/
         actualAngle: number;
 
@@ -5869,7 +5873,7 @@ declare module go {
         * Find associated objects to be positioned along with the vertex.
         * @param {LayoutVertex} v
         */
-        addComments(v: LayoutVertex): void;
+        addComments(v: ForceDirectedVertex): void;
 
         /**
         * Position the Nodes according to the Vertex positions.
@@ -5889,7 +5893,7 @@ declare module go {
         /**
         * Create a new LayoutNetwork of ForceDirectedVertexes and ForceDirectedEdges.
         */
-        createNetwork(): LayoutNetwork;
+        createNetwork(): ForceDirectedNetwork;
 
         /**
         * Assign the positions of the vertexes in the network.
@@ -5987,10 +5991,11 @@ declare module go {
         springStiffness(e: ForceDirectedEdge): number;
     }
 
+    class ForceDirectedNetwork extends LayoutNetwork {  // undocumented
+    }
+
     /** This holds ForceDirectedLayout-specific information about Links.*/
     class ForceDirectedEdge extends LayoutEdge {
-        constructor();
-
         /**Gets or sets the length of this edge.*/
         length: number;
 
@@ -6000,8 +6005,6 @@ declare module go {
 
     /** This holds ForceDirectedLayout-specific information about Nodes.*/
     class ForceDirectedVertex extends LayoutVertex {
-        constructor();
-
         /**Gets or sets the electrical charge for this vertex.*/
         charge: number;
 
@@ -6173,7 +6176,7 @@ declare module go {
         /**
         * Create a new LayoutNetwork of LayeredDigraphVertexes and LayeredDigraphEdges.
         */
-        createNetwork(): LayoutNetwork;
+        createNetwork(): LayeredDigraphNetwork;
 
         /**
         * Assign the positions of the vertexes in the network.
@@ -6229,14 +6232,16 @@ declare module go {
         /**This option tries to have the packing algorithm straighten many of the links that cross layers, a valid value for LayeredDigraphLayout.packOption.*/
         static PackStraighten: number;
 
+        linkSpacing: number;  // undocumented
         protected nodeMinLayerSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
         protected nodeMinColumnSpace(v: LayeredDigraphVertex, tl: boolean): number;  // undocumented
     }
 
+    class LayeredDigraphNetwork extends LayoutNetwork {  // undocumented
+    }
+
     /** This holds LayeredDigraphLayout-specific information about Link s.*/
     class LayeredDigraphEdge extends LayoutEdge {
-        constructor();
-
         /**True if the link is part of the depth first forest.*/
         forest: boolean;
 
@@ -6261,8 +6266,6 @@ declare module go {
 
     /** This holds LayeredDigraphLayout-specific information about Nodes.*/
     class LayeredDigraphVertex extends LayoutVertex {
-        constructor();
-
         /**The column to which the node is assigned.*/
         column: number;
 
@@ -6318,7 +6321,7 @@ declare module go {
         isViewportSized: boolean;
 
         /**Gets or sets the LayoutNetwork used by this Layout, if any.*/
-        newtork: LayoutNetwork;
+        network: LayoutNetwork;
 
         /**
         * When using a LayoutNetwork, commit changes to the diagram by setting Node positions and by routing the Links.
@@ -6794,7 +6797,7 @@ declare module go {
         * Find associated objects to be positioned along with the TreeVertex.
         * @param {LayoutVertex} v
         */
-        addComments(v: LayoutVertex): void;
+        addComments(v: TreeVertex): void;
 
         /**
         * Position each separate tree.
@@ -6805,7 +6808,7 @@ declare module go {
         * Assign final property values for a TreeVertex.
         * @param {LayoutVertex} v
         */
-        assignTreeVertexValues(v: LayoutVertex): void;
+        assignTreeVertexValues(v: TreeVertex): void;
 
         /**
         * This overridable method is called by commitLayout if layerStyle is LayerUniform
@@ -6833,7 +6836,7 @@ declare module go {
         /**
         * Create a new LayoutNetwork of TreeVertexes and TreeEdges.
         */
-        createNetwork(): LayoutNetwork;
+        createNetwork(): TreeNetwork;
 
         /**
         * Assign the positions of the vertexes in the network.
@@ -6845,13 +6848,13 @@ declare module go {
         * Assign initial property values for a TreeVertex.
         * @param {LayoutVertex} v
         */
-        initializeTreeVertexValues(v: LayoutVertex): void;
+        initializeTreeVertexValues(v: TreeVertex): void;
 
         /**
         * Position and TreeVertex.comments around the vertex.
         * @param {LayoutVertex} v
         */
-        layoutComments(v: LayoutVertex): void;
+        layoutComments(v: TreeVertex): void;
 
         /**The children are positioned in a bus, only on the bottom or right side of the parent; This value is used for TreeLayout.alignment or TreeLayout.alternateAlignment.*/
         static AlignmentBottomRightBus: EnumValue;
@@ -6935,10 +6938,11 @@ declare module go {
         static StyleRootOnly: EnumValue;
     }
 
+    class TreeNetwork extends LayoutNetwork {  // undocumented
+    }
+
     /** This holds TreeLayout-specific information about Links.*/
     class TreeEdge extends LayoutEdge {
-        constructor();
-
         /**Gets or sets a Point, relative to the parent node, that may be useful in routing this link.*/
         relativePoint: Point;
 
@@ -6950,8 +6954,6 @@ declare module go {
 
     /** This holds TreeLayout-specific information about Nodes.*/
     class TreeVertex extends LayoutVertex {
-        constructor();
-
         /**Gets or sets how this parent node should be aligned relative to its children.*/
         alignment: EnumValue;
 
@@ -7102,8 +7104,8 @@ declare module go {
         */
         constructor();
 
-        /**Gets or sets a data object that will be copied and added to the diagram's model each time this tool executes.*/
-        archetypeNodeData: Object;
+        /**Gets or sets a data object that will be copied and added to the diagram's model each time this tool executes. The value must be an Object or null.*/
+        archetypeNodeData: any;
 
         /**Gets or sets whether a double click rather than a single-click is required to insert a new Part at the mouse-up point.*/
         isDoubleClick: boolean;
@@ -7613,11 +7615,11 @@ declare module go {
         */
         constructor();
 
-        /**Gets or sets an optional node data object representing a link label, that is copied by .insertLink and added to the GraphLinksModel when creating a new Link.*/
-        archetypeLabelNodeData: Object;
+        /**Gets or sets an optional node data object representing a link label, that is copied by .insertLink and added to the GraphLinksModel when creating a new Link. The value must be an Object or null.*/
+        archetypeLabelNodeData: any;
 
-        /**Gets or sets a data object that is copied by .insertLink and added to the GraphLinksModel when creating a new Link.*/
-        archetypeLinkData: Object;
+        /**Gets or sets a data object that is copied by .insertLink and added to the GraphLinksModel when creating a new Link. The value must be an Object or null.*/
+        archetypeLinkData: any;
 
         /**Gets or sets the direction in which new links may be drawn.*/
         direction: EnumValue;
@@ -7825,7 +7827,7 @@ declare module go {
     * The RelinkingTool allows the user to reconnect an existing Link
     * if the Link.relinkableTo and/or Link.relinkableFrom properties are true.
     */
-    class RelinkingTool extends Tool {
+    class RelinkingTool extends LinkingBaseTool {
         /**
         * You do not normally need to create an instance of this tool because one already exists as the ToolManager.relinkingTool, which you can modify.
         */
