@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Drag Unoccupied</title>
+  <meta name="description" content="Limit the dragging of nodes to avoid any overlap with other nodes.">
+  <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // R is a Rect in document coordinates
+      // NODE is the Node being moved -- ignore when looking for Parts intersecting the Rect
+      function isUnoccupied(r, node) {
+        var diagram = node.diagram;
+
+        // nested function used by Layer.findObjectsIn, below
+        // only consider Parts, and ignore the given Node and any Links
+        function navig(obj) {
+          var part = obj.part;
+          if (part === node) return null;
+          if (part instanceof go.Link) return null;
+          return part;
+        }
+
+        // only consider non-temporary Layers
+        var lit = diagram.layers;
+        while (lit.next()) {
+          var lay = lit.value;
+          if (lay.isTemporary) continue;
+          if (lay.findObjectsIn(r, navig, null, true).count > 0) return false;
+        }
+        return true;
+      }
+
+      // a Part.dragComputation function that prevents a Part from being dragged to overlap another Part
+      function avoidNodeOverlap(node, pt, gridpt) {
+        // this assumes each node is fully rectangular
+        var bnds = node.actualBounds;
+        var loc = node.location;
+        // see if the area at the proposed location is unoccupied
+        // use PT instead of GRIDPT if you want to ignore any grid snapping behavior
+        var x = gridpt.x - (loc.x - bnds.x);
+        var y = gridpt.y - (loc.y - bnds.y);
+        var r = new go.Rect(x, y, bnds.width, bnds.height);
+        // maybe inflate R if you want some space between the node and any other nodes
+        if (isUnoccupied(r, node)) return pt;  // OK
+        return loc;  // give up -- don't allow the node to be moved to the new location
+      }
+
+      myDiagram =
+        $(go.Diagram, "myDiagram",
+          {
+            initialContentAlignment: go.Spot.Center,
+            "animationManager.isEnabled": false,
+            "undoManager.isEnabled": true
+          });
+
+      // Define the template for Nodes, just some text inside a colored rectangle
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { dragComputation: avoidNodeOverlap },
+          { minSize: new go.Size(50, 20), resizable: true },
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+          // temporarily put selected nodes in Foreground layer
+          new go.Binding("layerName", "isSelected", function(s) { return s ? "Foreground" : ""; }).ofObject(),
+          $(go.Shape, "Rectangle",
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            new go.Binding("text", "color"))
+        );
+
+      myDiagram.model = new go.GraphLinksModel([
+        { pos: "0 0", size: "50 300", color: go.Brush.randomColor() },
+        { pos: "120 20", size: "300 50", color: go.Brush.randomColor() },
+        { pos: "100 200", size: "300 50", color: go.Brush.randomColor() },
+        { pos: "500 50", size: "50 300", color: go.Brush.randomColor() },
+        { key: 1, pos: "100 100", size: "50 50", color: "lightgray" },
+        { key: 2, pos: "200 140", size: "50 50", color: "lightgray" }
+      ]);
+
+      myDiagram.findNodeForKey(1).isSelected = true;
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%;height: 800px"></div>
+  <p>
+    Drag a node around.
+    Notice how you cannot force the dragged node to overlap any other (stationary) node.
+    If you drag more than one node, notice how the relative positions of the dragged nodes are maintained
+    except when forced to be shifted in order to avoid overlapping other nodes.
+  </p>
+  <p>
+    This functionality is implemented by a custom <a>Part.dragComputation</a> property function,
+    which affects how the <a>DraggingTool</a> can move selected nodes.
+  </p>
+</div>
+</body>
+</html>
