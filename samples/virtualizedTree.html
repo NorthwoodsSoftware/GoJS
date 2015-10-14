@@ -1,7 +1,8 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <title>Virtualized Tree</title>
+  <title>Virtualized Tree with custom layout</title>
+  <meta name="description" content="An example of virtualization where a very simple tree layout sets the bounds for each node data." />
   <!-- Copyright 1998-2015 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
   <script src="go.js"></script>
@@ -164,8 +165,8 @@
         if (d.bounds.intersectsRect(viewb)) {
           if (!model.containsNodeData(d)) {
             model.addNodeData(d);
-          }
-          // make sure links to all parent nodes appear
+        }
+        // make sure links to all parent nodes appear
           var parent = d._parent;
           while (parent && !model.containsNodeData(parent)) {
             model.addNodeData(parent);
@@ -209,20 +210,20 @@
           // even if the node is out of the viewport, keep it if it is selected or
           // if any link connecting with the node is still in the viewport
           if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) remove.push(d);
+          }
         }
-      }
 
       myDiagram.model.removeNodeDataCollection(remove);
 
       updateCounts();  // only for this sample
-    }
+      }
 
     // This function is only used in this sample to demonstrate the effects of the virtualization.
     // In a real application you would delete this function and all calls to it.
     function updateCounts() {
       document.getElementById("myMessage1").textContent = myTreeModel.nodeDataArray.length;
       document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
-    }
+      }
 
     // The normal mechanism for determining the size of the document depends on all of the
     // Nodes and Links existing, so we need to use a function that depends only on the model data.
