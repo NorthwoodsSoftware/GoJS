@@ -31,13 +31,15 @@ function Inspector(divid, diagram, options) {
   // assume coll is a single object for now TODO fix this,
   // which means looking at every use of this.collection
   this.collection = null;
-  this.tracked = null; // map of all tracked properties, set in showObjectProperties and used in rebuildViews
+  this.tracked = {}; // map of all tracked properties, set in showObjectProperties and used in rebuildViews
   this.diagram = diagram;
 
   this.acceptButton = !!options['acceptButton'];
   this.resetButton = !!options['resetButton'];
   this.acceptFocus = !!options['acceptFocus'];
+  this.whenSelected = (options['whenSelected'] === undefined) ? true : !!options['whenSelected'];
   this.inspectPredicate = options['inspectPredicate'] || null;
+  this.propertyPredicate = options['propertyPredicate'] || null;
   this.propertyNames = options['propertyNames'] || null;
 
   /*
@@ -64,57 +66,70 @@ function Inspector(divid, diagram, options) {
   this.lastIndex = 0;
 
   var self = this;
-  var pred = this.inspectPredicate;
 
-  diagram.addDiagramListener('ChangedSelection', function(e) {
-    var graphObjects = [];
-    var selection = myDiagram.selection.first();
-    if (selection === null) {
-      self.toggleVisibility(false);
-      return;
-    }
-    self.toggleVisibility(true);
+  function updateViews(e) {
+    if (e.isTransactionFinished) self.rebuildViews();
+  }
 
-    if (self.propertyNames !== null) {
-      self.populatePropertyNames(graphObjects, pred, selection); // NYI
-    } else {
-      self.populateDefault(graphObjects, pred, selection);
-    }
+  if (diagram.addModelChangedListener) {  // new in v1.6
+    // automatically reregisters listener when the Diagram.model is replaced
+    diagram.addModelChangedListener(updateViews);
+  } else {
+    diagram.model.addChangedListener(updateViews);
+  }
 
-    chooser.innerHTML = '';
-    for (var i = 0; i < graphObjects.length; i++) {
-      var option = document.createElement('option');
-      option.value = i;
-      option.text = graphObjects[i] instanceof go.GraphObject ? graphObjects[i].toString() : 'data';
-      chooser.appendChild(option);
-    }
+  if (this.whenSelected) {
+    var pred = this.inspectPredicate;
+    diagram.addDiagramListener('ChangedSelection', function(e) {
+      var inspectedObjects = [];
+      var selection = myDiagram.selection.first();
+      if (selection === null) {
+        self.toggleVisibility(false);
+        return;
+      }
 
-    chooser.onchange = function() {
-      var index = this.selectedIndex;
+      if (self.propertyNames !== null) {
+        self.populatePropertyNames(inspectedObjects, pred, selection); // NYI
+      } else {
+        self.populateDefault(inspectedObjects, pred, selection);
+      }
+
+      chooser.innerHTML = '';
+      for (var i = 0; i < inspectedObjects.length; i++) {
+        var option = document.createElement('option');
+        option.value = i;
+        option.text = inspectedObjects[i] instanceof go.GraphObject ? inspectedObjects[i].toString() : 'data';
+        chooser.appendChild(option);
+      }
+
+      chooser.onchange = function() {
+        var index = this.selectedIndex;
+        if (self.propertyNames !== null) {
+          self.change(selection);
+        } else {
+          self.change(inspectedObjects[index]);
+        }
+        self.lastIndex = index;
+      }
+      self.toggleVisibility(true);
+
+      var useLastIndex = self.lastIndex <= (inspectedObjects.length -1);
       if (self.propertyNames !== null) {
         self.change(selection);
       } else {
-        self.change(graphObjects[index]);
+        self.change(inspectedObjects[useLastIndex ? self.lastIndex : 0]);
       }
-      self.lastIndex = index;
-    }
-
-    var useLastIndex = self.lastIndex <= (graphObjects.length -1);
-    if (self.propertyNames !== null) {
-      self.change(selection);
-    } else {
-      self.change(graphObjects[useLastIndex ? self.lastIndex : 0]);
-    }
-    if (useLastIndex) chooser.value = self.lastIndex;
-    // if the index was from the lastIndex than we need to update the chooser
-  });
+      if (useLastIndex) chooser.value = self.lastIndex;
+      // if the index was from the lastIndex than we need to update the chooser
+    });
+  }
 
   // accept focus option = commit when clicking away from the div:
   if (this.acceptFocus) {
     div.tabIndex = 3; // div must be allowed focus
     // must use focusout instead of blur - blur does not bubble,
     // so clicking on an <input> inside the div and then clicking away
-    // will not fire an event with blur, and it will will focusout
+    // will not fire an event with blur, and it will focusout
     div.addEventListener('focusout', function(e) {
       self.setAllProperties();
     });
@@ -160,7 +175,8 @@ Inspector.prototype.change = function(graphObject) {
 Inspector.prototype.toggleVisibility = function(visible) {
   this.div.style.display = visible ? "block" : "none";
   this.acceptResetDiv.style.display = visible ? "block" : "none";
-  this.chooser.style.display = visible ? "block" : "none";
+  // Hide the chooser if there's only one observed object being inspected
+  this.chooser.style.display = (visible && this.chooser.options.length > 1) ? "block" : "none";
 }
 
 // coll = collection of objects (JavaScript Objects, GraphObjects, Parts, etc)
@@ -183,7 +199,7 @@ Inspector.prototype.rebuildViews = function() {
     for (var j = 0; j < inspectedProps.length; j++) {
       var propname = inspectedProps[j];
       var view = this.inspectedProps[propname];
-      if (view.visible !== true) continue;
+      if (!view || view.visible !== true) continue;
 
       section.appendChild(view.getDOM());
       var coll = this.collection;
@@ -272,7 +288,7 @@ Inspector.prototype.setAllProperties = function() {
   diagram.startTransaction(transactionName);
   for (var k in inspectedProps) {
     var view = inspectedProps[k];
-    if (view.setter === null || view.options.readOnly) continue;
+    if (!view || view.setter === null || view.options.readOnly) continue;
     // don't set values that have not changed
     var val = view.isNull() ? null : view.use(this);
     if (view.originalValue === val) continue;
@@ -286,19 +302,24 @@ Inspector.prototype.setAllProperties = function() {
 }
 
 Inspector.prototype.createProperty = function(propname, options, object) {
-  // assume propname to be unique, create it if it does not exist
-  // right now this clobbers the old View if it existed before
-  var inspectedProps = this.inspectedProps;
-  var view = new View(object, options);
-  inspectedProps[propname] = view;
-  view.name = propname;
+  var pred = this.propertyPredicate;
+  if (pred === null || pred(object, propname)) {
+    // assume propname to be unique, create it if it does not exist
+    // right now this clobbers the old View if it existed before
+    var inspectedProps = this.inspectedProps;
+    var view = new View(object, options);
+    inspectedProps[propname] = view;
+    view.name = propname;
+  }
 }
 
 // create it if it doesn't exist, then append
 Inspector.prototype.appendProperty = function(propname, options, object) {
   var inspectedProps = this.inspectedProps;
   this.createProperty(propname, options, object);
-  inspectedProps[propname].visible = true;
+  if (inspectedProps[propname]) {
+    inspectedProps[propname].visible = true;
+  }
 }
 
 Inspector.prototype.hideAllProperties = function() {
@@ -368,7 +389,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
         options['readOnly'] = true;
       }
       this.tracked[name].push(prop);
-      this.appendProperty(prop, options, this.collection.data);
+      this.appendProperty(prop, options, this.collection);
     }
   } else { // GoJS object
     while (proto && proto.constructor !== Object) {
@@ -387,6 +408,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
   }
   this.rebuildViews();
 }
+
 
 // node, part, panel, graphobject properties
 Inspector.createSection = function(name) {
