@@ -1,12 +1,11 @@
-// Type definitions for GoJS v1.5.8
+// Type definitions for GoJS v1.5.13
 // Project: http://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
 
 /* Copyright (C) 1998-2015 by Northwoods Software Corporation. */
 
-// This is for TypeScript 1.4
-// TODO: TypeScript 1.5 modules and destructuring
+// TODO: TypeScript 1.5 destructuring
 
 declare module go {
     /** A number in place of a Margin object is treated as a uniform Margin with that thickness */
@@ -9065,3 +9064,7 @@ declare module go {
         //Rawr!
     }
 } //END go
+
+declare module "go" {
+    export = go;
+}
