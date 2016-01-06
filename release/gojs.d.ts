@@ -3,7 +3,7 @@
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
 
-/* Copyright (C) 1998-2015 by Northwoods Software Corporation. */
+/* Copyright (C) 1998-2016 by Northwoods Software Corporation. */
 
 // TODO: TypeScript 1.5 destructuring
 

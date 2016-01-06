@@ -1,6 +1,6 @@
 "use strict"
 /*
-*  Copyright (C) 1998-2015 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2016 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Tool for shifting the end point of a Link to be anywhere along the edges of the port.

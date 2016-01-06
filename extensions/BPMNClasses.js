@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2015 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2016 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // Contains PoolLink and BPMNLinkingTool classes for the BPMN sample
