@@ -18,11 +18,9 @@ You can use the GitHub repository to quickly [search through all of the sources]
 <h3>Support</h3>
 
 Northwoods Software offers a month of free developer-to-developer support for GoJS to help you get started on your project.
-<<<<<<< HEAD
-Read and search the <a href="http://forum.nwoods.com/c/gojs">GoJS forum</a> for any topics related to your questions.
-=======
+
 Read and search the official <a href="http://forum.nwoods.com/c/gojs">GoJS forum</a> for any topics related to your questions.
->>>>>>> origin/master
+
 Posting in the forum is the fastest and most effective way of obtaining support for any GoJS related inquiries.
 Please register for support at Northwoods Software's <a href="http://www.nwoods.com/products/register.html">registration form</a> before posting in the forum.
 
