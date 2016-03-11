@@ -1,9 +1,9 @@
 /*
- * GoJS v1.6.0 JavaScript Library for HTML Diagrams
+ * GoJS v1.6.1 JavaScript Library for HTML Diagrams
  * Northwoods Software, http://www.nwoods.com/
  * GoJS and Northwoods Software are registered trademarks of Northwoods Software Corporation.
  * Copyright (C) 1998-2016 by Northwoods Software Corporation.  All Rights Reserved.
- * THIS SOFTWARE IS LICENSED.  THE LICENSE AGREEMENT IS AT: http://gojs.net/1.6.0/doc/license.html.
+ * THIS SOFTWARE IS LICENSED.  THE LICENSE AGREEMENT IS AT: http://gojs.net/1.6.1/doc/license.html.
  */
 (function(window) { var g,ea={};if(!window.document||void 0===window.document.createElement("canvas").getContext)throw window.console&&window.console.log("The HTML Canvas element is not supported in this browser,or this browser is in Compatibility mode."),Error("The HTML Canvas element is not supported in this browser,or this browser is in Compatibility mode.");if(!Object.defineProperty)throw Error("GoJS requires a newer version of JavaScript");
 Function.prototype.bind||(Function.prototype.bind=function(a){function b(){return f.apply(a,e.concat(d.call(arguments)))}function c(){}var d=Array.prototype.slice,e=d.call(arguments,1),f=this;c.prototype=this.prototype;b.prototype=new c;return b});
@@ -1960,5 +1960,5 @@ a.w(2,a.l(2).x,b):3===a.pa?a.W(1,a.l(2).x,b):2===a.pa&&a.w(1,a.l(1).x,b)):180===
 a.l(4).y):6===a.pa&&(a.W(2,a.l(2).x,b),a.W(3,a.l(3).x,b)):4===a.pa?a.w(2,a.l(2).x,b):3===a.pa?a.W(1,a.l(2).x,b):2===a.pa&&a.w(1,a.l(1).x,b)),a.Si()))}};v.defineProperty(ts,{pL:"relativePoint"},function(){return this.Qr},function(a){this.Qr.set(a)});function mn(){G.call(this);this.Re=null}v.Ja(mn,G);mn.prototype.cloneProtected=function(a){G.prototype.cloneProtected.call(this,a);a.element=this.Re.cloneNode(!0)};mn.prototype.toString=function(){return"HTMLHost("+this.Re.toString()+")#"+v.pd(this)};
 mn.prototype.ak=function(a,b){var c=this.Re;if(null!==c){var d=this.Za(ub);d.x-=this.Z.width/2;d.y-=this.Z.height/2;d.x-=this.Z.x;d.y-=this.Z.y;var d=b.KF(d),e=b.ml;null===e||e.contains(c)||e.appendChild(c);e=this.transform;c.style.transform="matrix("+e.m11+","+e.m12+","+e.m21+","+e.m22+","+e.dx+","+e.dy+")";c.style.transformOrigin="0 0";e=d.y;c.style.left=d.x+"px";c.style.top=e+"px"}};
 mn.prototype.qp=function(a,b,c,d){var e=this.za;isFinite(e.width)&&(a=e.width);isFinite(e.height)&&(b=e.height);var e=this.gf,f=this.wg;c=Math.max(c,f.width);d=Math.max(d,f.height);a=Math.min(e.width,a);b=Math.min(e.height,b);a=Math.max(c,a);b=Math.max(d,b);c=this.Re;null!==c&&(b=c.getBoundingClientRect(),a=b.width,b=b.height);Ua(this.Oc,a,b);Al(this,0,0,a,b)};mn.prototype.Pi=function(a,b,c,d){El(this,a,b,c,d)};v.u(mn,{Ia:"naturalBounds"},function(){return this.Oc});
-v.defineProperty(mn,{element:"element"},function(){return this.Re},function(a){var b=this.Re;b!==a&&(a instanceof HTMLElement||v.k("HTMLHost.element must be an instance of HTMLElement."),this.Re=a,a.className="HTMLHost",this.h("element",b,a),this.qa())});ea.version="1.6.0";
+v.defineProperty(mn,{element:"element"},function(){return this.Re},function(a){var b=this.Re;b!==a&&(a instanceof HTMLElement||v.k("HTMLHost.element must be an instance of HTMLElement."),this.Re=a,a.className="HTMLHost",this.h("element",b,a),this.qa())});ea.version="1.6.1";
 window&&(window.module&&"object"===typeof window.module&&"object"===typeof window.module.exports?window.module.exports=ea:window.define&&"function"===typeof window.define&&window.define.amd?(window.go=ea,window.define(ea)):window.go=ea);"undefined"!==typeof module&&"object"===typeof module.exports&&(module.exports=ea); })(window);
