@@ -147,6 +147,7 @@ var myMenu = '\
     <a href="DragCreating.html"><li>Drag Creating</li></a>\
     <a href="DragZooming.html"><li>Drag Zooming</li></a>\
     <a href="FreehandDrawing.html"><li>Freehand Drawing</li></a>\
+    <a href="CurvedLinkReshaping.html"><li>Link Reshaping</li></a>\
     <a href="PolygonDrawing.html"><li>Polygon Drawing</li></a>\
     <a href="PolylineLinking.html"><li>Polyline Linking</li></a>\
     <a href="LinkShifting.html"><li>Link Shifting</li></a>\
@@ -157,6 +158,7 @@ var myMenu = '\
     <hr />\
     <a href="CheckBoxes.html"><li>CheckBoxes</li></a>\
     <a href="ScrollingTable.html"><li>Scrolling Table</li></a>\
+    <a href="Dimensioning.html"><li>Dimensioning Links</li></a>\
     <a href="Robot.html"><li>Simulating Input</li></a>\
     <hr />\
     <a href="Inspector.html"><li>Inspector</li></a>\

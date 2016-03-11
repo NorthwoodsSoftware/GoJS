@@ -21,6 +21,8 @@ function NodeLabelDraggingTool() {
   /** @type {GraphObject} */
   this.label = null;
   /** @type {Point} */
+  this._offset = new go.Point();  // of the mouse relative to the center of the label object
+  /** @type {Point} */
   this._originalAlignment = null;
   /** @type {Point} */
   this._originalCenter = null;
@@ -59,8 +61,8 @@ NodeLabelDraggingTool.prototype.findLabel = function() {
   var elt = diagram.findObjectAt(e.documentPoint, null, null);
 
   if (elt === null || !(elt.part instanceof go.Node)) return null;
-  while (elt.panel !== null && elt.panel.type === go.Panel.Spot && elt.panel.elt(0) !== elt) {
-    if (elt._isNodeLabel) return elt;
+  while (elt.panel !== null) {
+    if (elt._isNodeLabel && elt.panel.type === go.Panel.Spot && elt.panel.findMainElement() !== elt) return elt;
     elt = elt.panel;
   }
   return null;
@@ -75,6 +77,8 @@ NodeLabelDraggingTool.prototype.doActivate = function() {
   this.startTransaction("Shifted Label");
   this.label = this.findLabel();
   if (this.label !== null) {
+    // compute the offset of the mouse-down point relative to the center of the label
+    this._offset = this.diagram.firstInput.documentPoint.copy().subtract(this.label.getDocumentPoint(go.Spot.Center));
     this._originalAlignment = this.label.alignment.copy();
     var main = this.label.panel.findMainElement();
     this._originalCenter = main.getDocumentPoint(go.Spot.Center);
@@ -141,5 +145,5 @@ NodeLabelDraggingTool.prototype.updateAlignment = function() {
   if (this.label === null) return;
   var last = this.diagram.lastInput.documentPoint;
   var cntr = this._originalCenter;
-  this.label.alignment = new go.Spot(0.5, 0.5, last.x - cntr.x, last.y - cntr.y);
+  this.label.alignment = new go.Spot(0.5, 0.5, last.x - this._offset.x - cntr.x, last.y - this._offset.y - cntr.y);
 }

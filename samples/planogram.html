@@ -6,9 +6,9 @@
 <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <script src="go.js"></script>
-<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 <style type="text/css">
   .ui-accordion .ui-accordion-content {
     padding: 1px;
@@ -25,7 +25,7 @@
     var cellSize = new go.Size(50, 50);
 
     myDiagram =
-      $(go.Diagram, "myDiagram",
+      $(go.Diagram, "myDiagramDiv",
         {
           grid: $(go.Panel, "Grid",
                   { gridCellSize: cellSize },
@@ -37,6 +37,12 @@
           "draggingTool.gridSnapCellSpot": go.Spot.Center,
           "resizingTool.isGridSnapEnabled": true,
           allowDrop: true,  // handle drag-and-drop from the Palette
+          // For this sample, automatically show the state of the diagram's model on the page
+          "ModelChanged": function(e) {
+              if (e.isTransactionFinished) {
+                document.getElementById("savedModel").textContent = myDiagram.model.toJson();
+              }
+            },
           "undoManager.isEnabled": true
         });
 
@@ -44,9 +50,22 @@
     // Nodes are currently resizable, but if that is not desired, just set resizable to false.
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
-        { resizable: true, resizeObjectName: "SHAPE",
+        {
+          resizable: true, resizeObjectName: "SHAPE",
           // because the gridSnapCellSpot is Center, offset the Node's location
-          locationSpot: new go.Spot(0, 0, cellSize.width / 2, cellSize.height / 2)
+          locationSpot: new go.Spot(0, 0, cellSize.width / 2, cellSize.height / 2),
+          // provide a visual warning about dropping anything onto an "item"
+          mouseDragEnter: function(e, node) {
+            e.handled = true;
+            node.findObject("SHAPE").fill = "red";
+            highlightGroup(node.containingGroup, false);
+          },
+          mouseDragLeave: function(e, node) {
+            node.updateTargetBindings();
+          },
+          mouseDrop: function(e, node) {  // disallow dropping anything onto an "item"
+            node.diagram.currentTool.doCancel();
+          }
         },
         // always save/load the point that is the top-left corner of the node, not the location
         new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -124,9 +143,8 @@
 
     // what to do when a drag-drop occurs in the Diagram's background
     myDiagram.mouseDrop = function(e) {
-      // when the selection is dropped in the diagram's background,
-      // make sure the selected Parts no longer belong to any Group
-      var ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
+      // disallow dropping any regular nodes onto the background, but allow dropping "racks"
+      var ok = myDiagram.selection.all(function(p) { return p instanceof go.Group; });
       if (!ok) myDiagram.currentTool.doCancel();
     };
 
@@ -138,13 +156,6 @@
       { key: "G4", isGroup: true, pos: "200 200", size: "200 200" }
     ]);
     // this sample does not make use of any links
-
-    // For this sample, automatically show the state of the diagram's model on the page
-    myDiagram.model.addChangedListener(function(e) {
-      if (e.isTransactionFinished) {
-        document.getElementById("savedModel").textContent = myDiagram.model.toJson();
-      }
-    });
 
     jQuery("#accordion").accordion({
       activate: function(event, ui) {
@@ -245,7 +256,7 @@
       </div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
-      <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
     </span>
   </div>
   Drag-and-drop "items" from the Palette onto "racks" in the Diagram.

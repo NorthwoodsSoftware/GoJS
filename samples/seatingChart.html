@@ -15,7 +15,7 @@
 
     // Initialize the main Diagram
     myDiagram =
-      $(go.Diagram, "myDiagram",
+      $(go.Diagram, "myDiagramDiv",
         {
           allowDragOut: true,  // to myGuests
           allowDrop: true,  // from myGuests
@@ -23,6 +23,12 @@
           initialContentAlignment: go.Spot.Center,
           draggingTool: $(SpecialDraggingTool),
           rotatingTool: $(HorizontalTextRotatingTool),
+          // For this sample, automatically show the state of the diagram's model on the page
+          "ModelChanged": function(e) {
+              if (e.isTransactionFinished) {
+                document.getElementById("savedModel").textContent = myDiagram.model.toJson();
+              }
+            },
           "undoManager.isEnabled": true
         });
 
@@ -230,14 +236,6 @@
       myGuests.selection.each(function(n) {
         if (isPerson(n)) unassignSeat(n.data);
       });
-    });
-
-
-    // For this sample, automatically show the state of the diagram's model on the page
-    myDiagram.model.addChangedListener(function(e) {
-      if (e.isTransactionFinished) {
-        document.getElementById("savedModel").textContent = myDiagram.model.toJson();
-      }
     });
   } // end init
 
@@ -455,7 +453,7 @@
       <div id="myGuests" style="border: solid 1px black; height: 500px"></div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
-      <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
     </span>
   </div>
   This sample demonstrates how a "Person" node can be dropped onto a "Table" node,

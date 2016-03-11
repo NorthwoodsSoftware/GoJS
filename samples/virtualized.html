@@ -14,28 +14,30 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       // The Diagram just shows what should be visible in the viewport.
-      // Its model does NOT include node data for everything, but only that
+      // Its model does NOT include node data for the whole graph, but only that
       // which might be visible in the viewport.
       myDiagram =
-        $(go.Diagram, "myDiagram",
+        $(go.Diagram, "myDiagramDiv",
           {
             contentAlignment: go.Spot.Center,
             initialDocumentSpot: go.Spot.Center,
             initialViewportSpot: go.Spot.Center,
 
-            // Assume there's no Layout
+            // Assume there's no Layout -- all data.bounds are provided
+            layout: $(go.Layout, { isInitial: false, isOngoing: false }),  // never invalidates
 
             // Define the template for Nodes, used by virtualization.
             nodeTemplate:
               $(go.Node, "Auto",
+                { isLayoutPositioned: false },  // optimization
                 new go.Binding("position", "bounds", function(b) { return b.position; })
                               .makeTwoWay(function(p, d) { d.bounds.position = p; return d.bounds; }),
                 { width: 70, height: 20 },  // in cooperation with the load function, below
                 $(go.Shape, "Rectangle",
-                  new go.Binding("fill", "c")),
+                  new go.Binding("fill", "color")),
                 $(go.TextBlock,
                   { margin: 2 },
-                  new go.Binding("text", "c")),
+                  new go.Binding("text", "color")),
                 {
                   toolTip:
                     $(go.Adornment, "Auto",
@@ -47,9 +49,36 @@
                 }
               ),
 
+            groupTemplate:
+              $(go.Group, "Vertical",
+                { isLayoutPositioned: false },  // optimization
+                { locationSpot: go.Spot.TopLeft, locationObjectName: "SHAPE" },
+                new go.Binding("location", "bounds", function(b) { return b.position; })
+                              .makeTwoWay(function(p, d) { d.bounds.position = p; return d.bounds; }),
+                new go.Binding("isSubGraphExpanded").makeTwoWay(),
+                {
+                  subGraphExpandedChanged: function(g) {
+                      if (!g.isSubGraphExpanded) return;  // only after expanding
+                      // invalidate all member and external link routes
+                      g.findSubGraphParts().each(function(n) { if (n instanceof go.Node) n.invalidateConnectedLinks(); });
+                    }
+                },
+                $(go.Panel, "Horizontal",
+                  $("SubGraphExpanderButton"),
+                  $(go.TextBlock,
+                    new go.Binding("text", "key"))
+                ),
+                $(go.Shape,
+                  { fill: "lightgray", name: "SHAPE" },
+                  new go.Binding("fill", "color"),
+                  new go.Binding("desiredSize", "", function(d) { if (d.isSubGraphExpanded === false) return new go.Size(50, 50); else return d.bounds.size; })
+                )
+              ),
+
             // Define the template for Links
             linkTemplate:
               $(go.Link,
+                { isLayoutPositioned: false },  // optimization
                 $(go.Shape),
                 $(go.Shape, { toArrow: "OpenTriangle" })
               ),
@@ -66,8 +95,14 @@
       // In the future Diagram may have built-in support for virtualization.
       // For now, we have to implement virtualization ourselves by having the Diagram's model
       // be different than the "real" model.
-      myDiagram.model =
+      myDiagram.model =   // this only holds nodes that should be in the viewport
         $(go.GraphLinksModel);  // must match the model, above
+
+      // for now, we have to implement virtualization ourselves
+      myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
+      myDiagram.addModelChangedListener(onModelChanged);
+      myDiagram.model.makeUniqueKeyFunction = virtualUniqueKey;  // ensure uniqueness in myWholeModel
+      myDiagram.commandHandler.selectAll = function() { };  // make Select All command a no-op
 
       // This is a status message
       myLoading =
@@ -86,131 +121,282 @@
     }
 
     function load() {
-      // create a lot of data for myWholeModel
+      // create a lot of data for the myWholeModel
       var total = 123456;
       var sqrt = Math.sqrt(total);
       var data = [];
+      var ldata = [];
       for (var i = 0; i < total; i++) {
         data.push({
           key: i,  // this node data's key
-          c: go.Brush.randomColor(),  // the node's color
+          color: go.Brush.randomColor(),  // the node's color
           //!!!???@@@ this needs to be customized to account for your chosen Node template
           bounds: new go.Rect((i%sqrt)*100, (i/sqrt)*100, 70, 20)
         });
+        if (i > 0) {  // link sequential nodes
+          ldata.push({
+            from: i - 1,
+            to: i
+          });
+        }
+      }
+      // create some groups
+      for (var i = 0; i < total-10; i++) {
+        if (Math.random() > 0.1) continue;  // # groups ~10% of total
+        var key = total + i;  // key for new group
+        var mems = Math.floor(Math.random()*5) + 1;  // number of member nodes in this group
+        var sgb = new go.Rect();  // Placeholder-like bounds of the member nodes
+        for (var j = 0; j < mems; j++) {
+          var d = data[i+j];
+          d.group = key;  // assign membership
+          if (sgb.isEmpty()) sgb.set(d.bounds); else sgb.unionRect(d.bounds);
+        }
+        sgb.inflate(15, 15);  // a bit of padding
+        data.push({
+          key: key,
+          isGroup: true,
+          color: "rgba(180,180,180, 0.2)",
+          bounds: sgb
+        });
+        i += mems;  // avoid overlapping groups, except for groups that wrap to next row
       }
       myWholeModel.nodeDataArray = data;
+      myWholeModel.linkDataArray = ldata;
 
       // can't depend on regular bounds computation that depends on all Nodes existing
       myDiagram.fixedBounds = computeDocumentBounds(myWholeModel);
-
-      // for now, we have to implement virtualization ourselves
-      myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
 
       // remove the status indicator
       myDiagram.remove(myLoading);
     }
 
-    // make sure the Parts (Nodes and Links) exist as the user scrolls or zooms
-    function onViewportChanged(e) {
-      // make sure there are Nodes for each node data that is in the viewport
-      // or that is connected to such a Node
-      var viewb = myDiagram.viewportBounds;  // the new viewportBounds
-      var model = myDiagram.model;
+    // The following functions implement virtualization of the Diagram
+    // Assume data.bounds is a Rect of the area occupied by the Node in document coordinates.
 
-      var tdata = myWholeModel.nodeDataArray;
-      for (var i = 0; i < tdata.length; i++) {
-        var d = tdata[i];
-        if (!d.bounds) continue;
-        if (d.bounds.intersectsRect(viewb)) {
-          if (!model.containsNodeData(d)) {
-            model.addNodeData(d);
-          }
-          // make sure links to all parent nodes appear
-          var parent = d._parent;
-          while (parent && !model.containsNodeData(parent)) {
-            model.addNodeData(parent);
-            parent = parent._parent;
-          }
-          // make sure links to children appear
-          var childarr = d._children;
-          if (childarr) {
-            for (var j = 0; j <  childarr.length; j++) {
-              var child = childarr[j];
-              if (!model.containsNodeData(child)) {
-                model.addNodeData(child);
-              }
-            }
-          }
-        }
-      }
-
-      if (myRemoveTimer === null) {
-        // only remove offscreen nodes after a delay
-        myRemoveTimer = setTimeout(removeOffscreen, 3000);
-      }
-
-      updateCounts();  // only for this sample
-    }
-
-    // occasionally remove Parts that are offscreen from the Diagram
-    var myRemoveTimer = null;
-
-    function removeOffscreen() {
-      myRemoveTimer = null;
-
-      var viewb = myDiagram.viewportBounds;
-      var remove = [];  // collect for later removal
-      var it = myDiagram.nodes;
-      while (it.next()) {
-        var n = it.value;
-        var d = n.data;
-        if (d === null) continue;
-        if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
-          // even if the node is out of the viewport, keep it if it is selected or
-          // if any link connecting with the node is still in the viewport
-          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) remove.push(d);
-        }
-      }
-
-      myDiagram.model.removeNodeDataCollection(remove);
-
-      updateCounts();  // only for this sample
-    }
-
-    // This function is only used in this sample to demonstrate the effects of the virtualization.
-    // In a real application you would delete this function and all calls to it.
-    function updateCounts() {
-      document.getElementById("myMessage1").textContent = myWholeModel.nodeDataArray.length;
-      document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
+    // It's not good enough to ensure keys are unique in the limited model that is myDiagram.model --
+    // need to ensure uniqueness in myWholeModel.
+    function virtualUniqueKey(model, data) {
+      myWholeModel.makeNodeDataKeyUnique(data);
+      return myWholeModel.getKeyForNodeData(data);
     }
 
     // The normal mechanism for determining the size of the document depends on all of the
     // Nodes and Links existing, so we need to use a function that depends only on the model data.
     function computeDocumentBounds(model) {
       var b = new go.Rect();
-      var tdata = model.nodeDataArray;
-      for (var i = 0; i < tdata.length; i++) {
-        var d = tdata[i];
+      var ndata = model.nodeDataArray;
+      for (var i = 0; i < ndata.length; i++) {
+        var d = ndata[i];
         if (!d.bounds) continue;
-        if (i === 0) {
-          b.set(d.bounds);
-        } else {
-          b.unionRect(d.bounds);
-        }
+        if (b.isEmpty()) b.set(d.bounds); else b.unionRect(d.bounds);
       }
       return b;
+    }
+
+    // As the user scrolls or zooms, make sure the Parts (Nodes and Links) exist in the viewport.
+    function onViewportChanged(e) {
+      var diagram = e.diagram;
+      // make sure there are Nodes for each node data that is in the viewport
+      // or that is connected to such a Node
+      var viewb = diagram.viewportBounds;  // the new viewportBounds
+      var model = diagram.model;
+
+      var oldskips = diagram.skipsUndoManager;
+      diagram.skipsUndoManager = true;
+
+      var b = new go.Rect();
+      var ndata = myWholeModel.nodeDataArray;
+      for (var i = 0; i < ndata.length; i++) {
+        var n = ndata[i];
+        if (!n.bounds) continue;
+        if (n.bounds.intersectsRect(viewb)) {
+          addNodeAndGroups(diagram, myWholeModel, n);
+        }
+        if (model instanceof go.TreeModel) {
+          // make sure links to all parent nodes appear
+          var parentkey = myWholeModel.getParentKeyForNodeData(n);
+          var parent = myWholeModel.findNodeDataForKey(parentkey);
+          if (parent !== null) {
+            if (n.bounds.intersectsRect(viewb)) {  // N is inside viewport
+              // so that link to parent appears
+              addNodeAndGroups(diagram, myWholeModel, parent);
+              var node = diagram.findNodeForData(n);
+              if (node !== null) {
+                var link = node.findTreeParentLink();
+                if (link !== null) {
+                  // do this now to avoid delayed routing outside of transaction
+                  link.updateRoute();
+                }
+              }
+            } else {  // N is outside of viewport
+              // see if there's a parent that is in the viewport,
+              // or if the link might cross over the viewport
+              b.set(n.bounds);
+              b.unionRect(parent.bounds);
+              if (b.intersectsRect(viewb)) {
+                // add N so that link to parent appears
+                addNodeAndGroups(diagram, myWholeModel, n);
+                var child = diagram.findNodeForData(n);
+                if (child !== null) {
+                  var link = child.findTreeParentLink();
+                  if (link !== null) {
+                    // do this now to avoid delayed routing outside of transaction
+                    link.updateRoute();
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (model instanceof go.GraphLinksModel) {
+        var ldata = myWholeModel.linkDataArray;
+        for (var i = 0; i < ldata.length; i++) {
+          var l = ldata[i];
+
+          var fromkey = myWholeModel.getFromKeyForLinkData(l);
+          if (fromkey === undefined) continue;
+          var from = myWholeModel.findNodeDataForKey(fromkey);
+          if (from === null || !from.bounds) continue;
+
+          var tokey = myWholeModel.getToKeyForLinkData(l);
+          if (tokey === undefined) continue;
+          var to = myWholeModel.findNodeDataForKey(tokey);
+          if (to === null || !to.bounds) continue;
+
+          b.set(from.bounds);
+          b.unionRect(to.bounds);
+          if (b.intersectsRect(viewb)) {
+            // also make sure both connected nodes are present,
+            // so that link routing is authentic
+            addNodeAndGroups(diagram, myWholeModel, from);
+            addNodeAndGroups(diagram, myWholeModel, to);
+            model.addLinkData(l);
+            var link = diagram.findLinkForData(l);
+            if (link !== null) {
+              // do this now to avoid delayed routing outside of transaction
+              link.updateRoute();
+            }
+          }
+        }
+      }
+
+      diagram.skipsUndoManager = oldskips;
+
+      if (myRemoveTimer === null) {
+        // only remove offscreen nodes after a delay
+        myRemoveTimer = setTimeout(function() { removeOffscreen(diagram); }, 3000);
+      }
+
+      updateCounts();  // only for this sample
+    }
+
+    function addNodeAndGroups(diagram, wholeModel, data) {
+      var model = diagram.model;
+      model.addNodeData(data);
+      var n = diagram.findNodeForData(data);
+      if (n !== null) n.ensureBounds();
+      var groupkey = wholeModel.getGroupKeyForNodeData(data);
+      while (groupkey !== undefined) {
+        var gd = wholeModel.findNodeDataForKey(groupkey);
+        if (gd !== null) {  // is there a containing group data?
+          model.addNodeData(gd);  // make sure it's added to the diagram
+          var g = diagram.findNodeForData(gd);
+          if (g !== null) g.ensureBounds();
+        }
+        // walk up chain of containing group data
+        groupkey = wholeModel.getGroupKeyForNodeData(gd);
+      }
+    }
+
+    function isPartOrGroupSelected(part) {
+      if (!part) return false;
+      if (part.isSelected) return true;
+      return isPartOrGroupSelected(part.containingGroup);
+    }
+
+    // occasionally remove Parts that are offscreen from the Diagram
+    var myRemoveTimer = null;
+
+    function removeOffscreen(diagram) {
+      myRemoveTimer = null;
+
+      var viewb = diagram.viewportBounds;
+      var model = diagram.model;
+      var remove = [];  // collect for later removal
+      var removeLinks = new go.Set();  // links connected to a node data to remove
+      var it = diagram.nodes;
+      while (it.next()) {
+        var n = it.value;
+        var d = n.data;
+        if (d === null) continue;
+        if (!n.actualBounds.intersectsRect(viewb) && !isPartOrGroupSelected(n)) {
+          // even if the node is out of the viewport, keep it if it is selected or
+          // if any link connecting with the node is still in the viewport
+          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) {
+            remove.push(d);
+            if (model instanceof go.GraphLinksModel) {
+              removeLinks.addAll(n.linksConnected);
+            }
+          }
+        }
+      }
+
+      if (remove.length > 0) {
+        var oldskips = diagram.skipsUndoManager;
+        diagram.skipsUndoManager = true;
+        model.removeNodeDataCollection(remove);
+        if (model instanceof go.GraphLinksModel) {
+          removeLinks.each(function(l) { if (!isPartOrGroupSelected(l)) model.removeLinkData(l.data); });
+        }
+        diagram.skipsUndoManager = oldskips;
+      }
+
+      updateCounts();  // only for this sample
+    }
+
+    function onModelChanged(e) {  // handle insertions and removals
+      if (e.model.skipsUndoManager) return;
+      if (e.change === go.ChangedEvent.Insert) {
+        if (e.propertyName === "nodeDataArray") {
+          myWholeModel.addNodeData(e.newValue);
+        } else if (e.propertyName === "linkDataArray") {
+          myWholeModel.addLinkData(e.newValue);
+        }
+      } else if (e.change === go.ChangedEvent.Remove && e.propertyName === "nodeDataArray") {
+        if (e.propertyName === "nodeDataArray") {
+          myWholeModel.removeNodeData(e.oldValue);
+        } else if (e.propertyName === "linkDataArray") {
+          myWholeModel.removeLinkData(e.oldValue);
+        }
+      }
+    }
+    // end of virtualized Diagram
+
+    // This function is only used in this sample to demonstrate the effects of the virtualization.
+    // In a real application you would delete this function and all calls to it.
+    function updateCounts() {
+      document.getElementById("myMessage1").textContent = myWholeModel.nodeDataArray.length;
+      document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
+      document.getElementById("myMessage3").textContent = myWholeModel.linkDataArray.length;
+      document.getElementById("myMessage4").textContent = myDiagram.links.count;
     }
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px blue; width: 100%; height: 600px"></div>
   <div id="description">
   <p>
-  This uses a <a>GraphLinksModel</a> but not any <a>Layout</a>.
+    This uses a <a>GraphLinksModel</a> but not any <a>Layout</a>.
+    It demonstrates the virtualization of Links and Groups as well as simple Nodes.
+    Note that the template for Groups does <em>not</em> use a <a>Placeholder</a>.
   </p>
   Node data in Model: <span id="myMessage1"></span>.
-  Actual Nodes in Diagram: <span id="myMessage2"></span>.
+  Actual Nodes in Diagram: <span id="myMessage2"></span>.<br />
+  Link data in model: <span id="myMessage3"></span>.
+  Actual Links in Diagram: <span id="myMessage4"></span>.
   </div>
 </div>
 </body>

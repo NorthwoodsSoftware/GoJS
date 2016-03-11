@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Radial Partition Layout</title>
+  <meta name="description" content="Arrange people in rings around a central person, in layers according to distance from the central person." />
+  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+
+  var maxLayers = 5;  // how many concentric layers or rings to show, at maximum
+  var layerThickness = 70;  // how thick each ring should be
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
+        {
+          initialAutoScale: go.Diagram.Uniform,
+          initialContentAlignment: go.Spot.Center,
+          padding: 10,
+          isReadOnly: true,
+          maxSelectionCount: 1,
+          "animationManager.isEnabled": false
+        });
+
+    var commonToolTip =
+      $(go.Adornment, "Auto",
+        { isShadowed: true },
+        $(go.Shape, { fill: "#FFFFCC" }),
+        $(go.Panel, "Vertical",
+          { margin: 3 },
+          $(go.TextBlock,  // bound to node data
+            { margin: 4, font: "bold 12pt sans-serif" },
+            new go.Binding("text")),
+          $(go.TextBlock,  // bound to node data
+            new go.Binding("text", "color", function(c) { return "Color: " + c; })),
+          $(go.TextBlock,  // bound to Adornment because of call to Binding.ofObject
+            new go.Binding("text", "", function(ad) { return "Connections: " + ad.adornedPart.linksConnected.count; }).ofObject())
+        )  // end Vertical Panel
+      );  // end Adornment
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        {
+          locationSpot: go.Spot.Center,
+          locationObjectName: "TEXTBLOCK",  // Node.location is the center of the TextBlock
+          selectionAdorned: false,
+          click: nodeClicked,
+          toolTip: commonToolTip
+        },
+        new go.Binding("angle"),
+        $(go.Shape,
+          {
+            name: "SHAPE",
+            fill: "lightgray",  // default value, but also data-bound
+            strokeWidth: 0,
+            portId: ""  // so links will go to the shape, not the whole node
+          },
+          new go.Binding("geometry", "", makeAnnularWedge),
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          {
+            name: "TEXTBLOCK",
+            width: layerThickness,
+            alignment: go.Spot.Right,
+            alignmentFocus: go.Spot.Right,
+            textAlign: "center"
+          },
+          new go.Binding("text"))
+      );
+
+    function makeAnnularWedge(data) {
+      var sweep = data.sweep;
+      var radius = data.radius;
+      var p = new go.Point(radius+layerThickness, 0).rotate(-sweep/2);
+      var q = new go.Point(radius, 0).rotate(sweep/2);
+      var geo = new go.Geometry()
+                    .add(new go.PathFigure(p.x, p.y)
+                        .add(new go.PathSegment(go.PathSegment.Arc, -sweep/2, sweep, 0, 0, radius+layerThickness, radius+layerThickness))
+                        .add(new go.PathSegment(go.PathSegment.Line, q.x, q.y))
+                        .add(new go.PathSegment(go.PathSegment.Arc, sweep/2, -sweep, 0, 0, radius, radius).close()));
+      geo.normalize();
+      return geo;
+    }
+
+    // this is the root node, at the center of the circular layers
+    myDiagram.nodeTemplateMap.add("Root",
+      $(go.Node, "Auto",
+        {
+          locationSpot: go.Spot.Center,
+          selectionAdorned: false,
+          toolTip: commonToolTip,
+          click: nodeClicked,
+          width: layerThickness * 2,
+          height: layerThickness*2
+        },
+        $(go.Shape, "Circle",
+          { fill: "white", strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight }),
+        $(go.TextBlock,
+          { font: "bold 14pt sans-serif", textAlign: "center" },
+          new go.Binding("text"))
+      ));
+
+    // define the Link template -- don't show anything!
+    myDiagram.linkTemplate =
+      $(go.Link);
+
+    generateGraph();
+  }
+
+  function generateGraph() {
+    var names = [
+      "Joshua", "Daniel", "Robert", "Noah", "Anthony",
+      "Elizabeth", "Addison", "Alexis", "Ella", "Samantha",
+      "Joseph", "Scott", "James", "Ryan", "Benjamin",
+      "Walter", "Gabriel", "Christian", "Nathan", "Simon",
+      "Isabella", "Emma", "Olivia", "Sophia", "Ava",
+      "Emily", "Madison", "Tina", "Elena", "Mia",
+      "Jacob", "Ethan", "Michael", "Alexander", "William",
+      "Natalie", "Grace", "Lily", "Alyssa", "Ashley",
+      "Sarah", "Taylor", "Hannah", "Brianna", "Hailey",
+      "Christopher", "Aiden", "Matthew", "David", "Andrew",
+      "Kaylee", "Juliana", "Leah", "Anna", "Allison",
+      "John", "Samuel", "Tyler", "Dylan", "Jonathan"
+    ];
+
+    var nodeDataArray = [];
+    for (var i = 0; i < names.length; i++) {
+      nodeDataArray.push({ key: i, text: names[i], color: go.Brush.randomColor(128, 240) });
+    }
+
+    var linkDataArray = [];
+    var num = nodeDataArray.length;
+    for (var i = 0; i < num * 2; i++) {
+      var a = Math.floor(Math.random() * num);
+      var b = Math.floor(Math.random() * num / 4) + 1;
+      linkDataArray.push({ from: a, to: (a + b) % num, color: go.Brush.randomColor(0, 127) });
+    }
+
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+    var someone = nodeDataArray[Math.floor(Math.random() * nodeDataArray.length)];
+    var somenode = myDiagram.findNodeForData(someone);
+    somenode.click(null, somenode);
+  }
+
+  function nodeClicked(e, node) {
+    var diagram = node.diagram;
+    if (diagram === null) return;
+    // make this Node the root
+    node.category = "Root";
+    // determine new distances from this new root node
+    var results = findDistances(node);
+    radialLayout(node, results);
+  }
+
+  // returns a Map of Nodes with distance values
+  function findDistances(source) {
+    var diagram = source.diagram;
+    // keep track of distances from the source node
+    var distances = new go.Map(go.Node, "number");
+    diagram.nodes.each(function(n) {
+      distances.add(n, Infinity);
+    });
+    // the source node starts with distance 0
+    distances.add(source, 0);
+    // keep track of nodes for we have set a non-Infinity distance,
+    // but which we have not yet finished examining
+    var seen = new go.Set(go.Node);
+    seen.add(source);
+
+    // local function for finding a Node with the smallest distance in a given collection
+    function leastNode(coll, distances) {
+      var bestdist = Infinity;
+      var bestnode = null;
+      var it = coll.iterator;
+      while (it.next()) {
+        var n = it.value;
+        var dist = distances.getValue(n);
+        if (dist < bestdist) {
+          bestdist = dist;
+          bestnode = n;
+        }
+      }
+      return bestnode;
+    }
+
+    // keep track of nodes we have finished examining;
+    // this avoids unnecessary traversals and helps keep the SEEN collection small
+    var finished = new go.Set(go.Node);
+    while (seen.count > 0) {
+      // look at the unfinished node with the shortest distance so far
+      var least = leastNode(seen, distances);
+      var leastdist = distances.getValue(least);
+      // by the end of this loop we will have finished examining this LEAST node
+      seen.remove(least);
+      finished.add(least);
+      // look at all Links connected with this node
+      least.linksConnected.each(function(link) {
+        var neighbor = link.getOtherNode(least);
+        // skip nodes that we have finished
+        if (finished.contains(neighbor)) return;
+        var neighbordist = distances.getValue(neighbor);
+        // assume "distance" along a link is unitary, but could be any non-negative number.
+        var dist = leastdist + 1;  //Math.sqrt(least.location.distanceSquaredPoint(neighbor.location));
+        if (dist < neighbordist) {
+          // if haven't seen that node before, add it to the SEEN collection
+          if (neighbordist == Infinity) {
+            seen.add(neighbor);
+          }
+          // record the new best distance so far to that node
+          distances.add(neighbor, dist);
+        }
+      });
+    }
+
+    return distances;
+  }
+
+  function radialLayout(root, distances) {
+    root.diagram.startTransaction("radial layout");
+    // sort all results into Arrays of Nodes with the same distance
+    var nodes = {};
+    var maxlayer = 0;
+    var it = distances.iterator;
+    while (it.next()) {
+      var node = it.key;
+      if (node !== root) node.category = "";  // remove "Root" category from all non-root nodes
+      node._laid = false;
+      var layer = it.value;
+      if (layer === Infinity) continue;
+      if (layer > maxlayer) maxlayer = layer;
+      var layernodes = nodes[layer];
+      if (layernodes === undefined) {
+        layernodes = [];
+        nodes[layer] = layernodes;
+      }
+      layernodes.push(node);
+    }
+
+    root.diagram.model.setDataProperty(root.data, "angle", 0);
+    root.diagram.model.setDataProperty(root.data, "sweep", 360);
+    root.diagram.model.setDataProperty(root.data, "radius", 0);
+
+    // now recursively position nodes, starting with the root
+    root.location = new go.Point(0, 0);
+    radlay1(root, 1, 0, 360, distances);
+    // finally, hide nodes with distance > maxLayers
+    it = distances.iterator;
+    while (it.next()) {
+      var node = it.key;
+      node.visible = (it.value <= maxLayers);
+    }
+    root.diagram.commitTransaction("radial layout");
+  }
+
+  function radlay1(node, layer, angle, sweep, distances) {
+    if (layer > maxLayers) return;
+    var nodes = [];
+    node.findNodesConnected().each(function(n) {
+      if (n._laid) return;
+      if (distances.getValue(n) === layer) nodes.push(n);
+    });
+    var found = nodes.length;
+    if (found === 0) return;
+
+    var radius = layer * layerThickness;
+    var separator = sweep / found;
+    var start = angle - sweep / 2 + separator / 2;
+    for (var i = 0; i < found; i++) {
+      var n = nodes[i];
+      var a = start + i * separator;
+      var p = new go.Point(radius+layerThickness/2, 0);
+      p.rotate(a);
+      n.location = p;
+      n._laid = true;
+      n.diagram.model.setDataProperty(n.data, "angle", a);
+      n.diagram.model.setDataProperty(n.data, "sweep", separator);
+      n.diagram.model.setDataProperty(n.data, "radius", radius);
+      // make sure text is never upside down
+      var label = n.findObject("TEXTBLOCK");
+      if (label !== null) {
+        label.angle = ((a > 90 && a < 270 || a < -90) ? 180 : 0);
+      }
+      radlay1(n, layer + 1, a, sweep / found, distances);
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
+  <p>
+    Click on a Node to center it and show its relationships.
+  </p>
+</div>
+</body>
+</html>

@@ -16,9 +16,11 @@
       myFullDiagram =
         $(go.Diagram, "fullDiagram",  // each diagram refers to its DIV HTML element by id
           {
-            initialAutoScale: go.Diagram.Uniform,  // automatically scale down to show whole tree
+            initialAutoScale: go.Diagram.UniformToFill,  // automatically scale down to show whole tree
+            maxScale: 0.25,
             contentAlignment: go.Spot.Center,  // center the tree in the viewport
             isReadOnly: true,  // don't allow user to change the diagram
+            "animationManager.isEnabled": false,
             layout: $(go.TreeLayout,
                       { angle: 90, sorting: go.TreeLayout.SortingAscending }),
             maxSelectionCount: 1,  // only one node may be selected at a time in each diagram
@@ -29,11 +31,15 @@
       myLocalDiagram =  // this is very similar to the full Diagram
         $(go.Diagram, "localDiagram",
           {
-            autoScale: go.Diagram.Uniform,
+            autoScale: go.Diagram.UniformToFill,
             contentAlignment: go.Spot.Center,
             isReadOnly: true,
             layout: $(go.TreeLayout,
                       { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            "LayoutCompleted": function(e) {
+              var sel = e.diagram.selection.first();
+              if (sel !== null) myLocalDiagram.scrollToRect(sel.actualBounds);
+            },
             maxSelectionCount: 1,
             // when the selection changes, update the contents of the myLocalDiagram
             "ChangedSelection": showLocalOnLocalClick
@@ -43,13 +49,13 @@
       var myNodeTemplate =
         $(go.Node, "Auto",
           { locationSpot: go.Spot.Center },
-          new go.Binding("text", "key"),  // for sorting
+          new go.Binding("text", "key", go.Binding.toString),  // for sorting
           $(go.Shape, "RoundedRectangle",
             new go.Binding("fill", "color"),
             { stroke: "gray" }),
           $(go.TextBlock,
             { margin: 1 },
-            new go.Binding("text", "key"))
+            new go.Binding("text", "key", function(k) { return "node" + k; }))
         );
       myFullDiagram.nodeTemplate = myNodeTemplate;
       myLocalDiagram.nodeTemplate = myNodeTemplate;
@@ -87,8 +93,9 @@
 
       // Start by focusing the diagrams on the node at the top of the tree.
       // Wait until the tree has been laid out before selecting the root node.
-      myFullDiagram.addDiagramListener("InitialLayoutCompleted", function (e) {
-        myFullDiagram.findPartForKey("node0").isSelected = true;
+      myFullDiagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+        var node0 = myFullDiagram.findPartForKey(0);
+        if (node0 !== null) node0.isSelected = true;
         showLocalOnFullClick();
       });
     }
@@ -106,6 +113,8 @@
     function showLocalOnFullClick() {
       var node = myFullDiagram.selection.first();
       if (node !== null) {
+        // make sure the selected node is in the viewport
+        myFullDiagram.scrollToRect(node.actualBounds);
         // move the large yellow node behind the selected node to highlight it
         highlighter.location = node.location;
         // create a new model for the local Diagram
@@ -127,34 +136,28 @@
           });
         myLocalDiagram.model = model;
         // select the node at the diagram's focus
-        myLocalDiagram.findPartForKey(node.data.key).isSelected = true;
+        var selectedLocal = myLocalDiagram.findPartForKey(node.data.key);
+        if (selectedLocal !== null) selectedLocal.isSelected = true;
       }
     }
 
-    // Create the tree diagram, containing 100 nodes and with each node having up to three children
-    function setupDiagram() {
-      var model = new go.TreeModel();
-      model.addNodeData({
-        key: "node0",
-        color: go.Brush.randomColor()
-      });
-      var layerFirst = 0;
-      var totalNodes = 1;
-      while (totalNodes < 100) {
-        for (var i = layerFirst; i < totalNodes && totalNodes < 100; i++) {
-          var children = Math.floor(Math.random() * 3) + 1;
-          for (var j = 0; j < children && totalNodes < 100; j++) {
-            model.addNodeData({
-              key: "node" + totalNodes,
-              parent: "node" + i,
-              color: go.Brush.randomColor()
-            });
-            totalNodes++;
-          }
-        }
-        layerfirst = totalNodes;
+    // Create the tree model containing TOTAL nodes, with each node having a variable number of children
+    function setupDiagram(total) {
+      if (total === undefined) total = 100;  // default to 100 nodes
+      var nodeDataArray = [];
+      for (var i = 0; i < total; i++) {
+        nodeDataArray.push({
+          key: nodeDataArray.length,
+          color: go.Brush.randomColor()
+        });
       }
-      myFullDiagram.model = model;
+      var j = 0;
+      for (var i = 1; i < total; i++) {
+        var data = nodeDataArray[i];
+        data.parent = j;
+        if (Math.random() < 0.3) j++;  // this controls the likelihood that there are enough children
+      }
+      myFullDiagram.model = new go.TreeModel(nodeDataArray);
     }
   </script>
 </head>
@@ -162,6 +165,7 @@
 <div id="sample">
   <div id="fullDiagram" style="height:250px;width:100%;border:1px solid black;margin:2px"></div>
   <div id="localDiagram" style="height:350px;width:100%;border:1px solid black;margin:2px"></div>
+  <button onclick="setupDiagram()">Create New Tree</button>
   <p>
   This sample includes two diagrams, the one on top showing a full tree and the one below
   focusing on a specific node in the tree and those nodes that are logically "near" it.

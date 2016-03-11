@@ -723,8 +723,11 @@ $(go.Shape, "NotAllowed",
         resizable: true, resizeObjectName: "PH",
         //locationSpot: go.Spot.Center,
         isSubGraphExpanded: false,
-        mouseDrop:
-        function(e, grp) {
+        memberValidation: function(group, part) {
+          return !(part instanceof go.Group) ||
+                 (part.category !== "Pool" && part.category !== "Lane");
+        },
+        mouseDrop: function(e, grp) {
           var ok = grp.addMembers(grp.diagram.selection, true);
           if (!ok) grp.diagram.currentTool.doCancel();
         },
@@ -1085,7 +1088,7 @@ $(go.Shape, "NotAllowed",
   //------------------------------------------the main Diagram----------------------------------------------
 
   window.myDiagram =
-    $(go.Diagram, "myDiagram",
+    $(go.Diagram, "myDiagramDiv",
       {
         nodeTemplateMap: nodeTemplateMap,
         linkTemplateMap: linkTemplateMap,
@@ -1327,7 +1330,7 @@ $(go.Shape, "NotAllowed",
   //------------------------------------------  Overview   ----------------------------------------------
 
   var myOverview =
-    $(go.Overview, "myOverview",
+    $(go.Overview, "myOverviewDiv",
       { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
   // change color of viewport border in Overview
   myOverview.box.elt(0).stroke = "dodgerblue";

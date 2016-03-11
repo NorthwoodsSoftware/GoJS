@@ -58,12 +58,12 @@ PolygonDrawingTool.prototype.canStart = function() {
 */
 PolygonDrawingTool.prototype.doActivate = function() {
   go.Tool.prototype.doActivate.call(this);
+  var diagram = this.diagram;
   this.startTransaction(this.name);
-  this.diagram.isMouseCaptured = true;
-  this.diagram.currentCursor = "crosshair";
+  if (!diagram.lastInput.isTouchEvent) diagram.isMouseCaptured = true;
+  diagram.currentCursor = "crosshair";
   // the first point
-  if (!('ontouchstart' in window)) this.addPoint(this.diagram.lastInput.documentPoint);
-  this.temporaryShape.fill = (this.isPolygon ? "lightgray" : null);
+  if (!diagram.lastInput.isTouchEvent) this.addPoint(diagram.lastInput.documentPoint);
 };
 
 /**
@@ -72,11 +72,12 @@ PolygonDrawingTool.prototype.doActivate = function() {
 */
 PolygonDrawingTool.prototype.doDeactivate = function() {
   go.Tool.prototype.doDeactivate.call(this);
+  var diagram = this.diagram;
   if (this.temporaryShape !== null) {
-    this.diagram.remove(this.temporaryShape.part);
+    diagram.remove(this.temporaryShape.part);
   }
-  this.diagram.currentCursor = "";
-  this.diagram.isMouseCaptured = false;
+  diagram.currentCursor = "";
+  if (diagram.isMouseCaptured) diagram.isMouseCaptured = false;
   this.stopTransaction();
 };
 
@@ -98,7 +99,8 @@ PolygonDrawingTool.prototype.addPoint = function(p) {
     var fig = new go.PathFigure(q.x, q.y, true);  // possibly filled, depending on Shape.fill
     var geo = new go.Geometry().add(fig);  // the Shape.geometry consists of a single PathFigure
     this.temporaryShape.geometry = geo;
-    part.position = viewpt;  // position the Shape's Part
+    // position the Shape's Part, accounting for the stroke width
+    part.position = viewpt.copy().offset(-shape.strokeWidth / 2, -shape.strokeWidth / 2);
     this.diagram.add(part);
   } else {
     // must copy whole Geometry in order to add a PathSegment
@@ -154,7 +156,7 @@ PolygonDrawingTool.prototype.finishShape = function() {
   var shape = this.temporaryShape;
   if (shape !== null && this.archetypePartData !== null) {
     // remove the temporary point, which is last, except on touch devices
-    if (!('ontouchstart' in window)) this.removeLastPoint();
+    if (!diagram.lastInput.isTouchEvent) this.removeLastPoint();
     var tempgeo = shape.geometry;
     // require 3 points (2 segments) if polygon; 2 points (1 segment) if polyline
     if (tempgeo.figures.first().segments.count >= (this.isPolygon ? 2 : 1)) {
@@ -167,16 +169,16 @@ PolygonDrawingTool.prototype.finishShape = function() {
         var seg = segs.elt(segs.count-1);
         seg.isClosed = true;
       }
-      var pos = geo.normalize();
-      pos.x = viewpt.x - pos.x;
-      pos.y = viewpt.y - pos.y;
       // create the node data for the model
       var d = diagram.model.copyNodeData(this.archetypePartData);
       // adding data to model creates the actual Part
       diagram.model.addNodeData(d);
       var part = diagram.findPartForData(d);
-      // assign the location
-      part.location = new go.Point(pos.x + geo.bounds.width/2, pos.y + geo.bounds.height/2);
+      // assign the position for the whole Part
+      var pos = geo.normalize();
+      pos.x = viewpt.x - pos.x - shape.strokeWidth / 2;
+      pos.y = viewpt.y - pos.y - shape.strokeWidth / 2;
+      part.position = pos;
       // assign the Shape.geometry
       var shape = part.findObject("SHAPE");
       if (shape !== null) shape.geometry = geo;
@@ -197,6 +199,9 @@ PolygonDrawingTool.prototype.doMouseDown = function() {
   // a new temporary end point, the previous one is now "accepted"
   this.addPoint(this.diagram.lastInput.documentPoint);
   if (!this.diagram.lastInput.left) {  // e.g. right mouse down
+    this.finishShape();
+  } else if (this.diagram.lastInput.clickCount > 1) {  // e.g. double-click
+    this.removeLastPoint();
     this.finishShape();
   }
 };

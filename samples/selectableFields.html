@@ -14,10 +14,14 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
-        $(go.Diagram, "myDiagram",
+        $(go.Diagram, "myDiagramDiv",
           {
             initialContentAlignment: go.Spot.Center,
             validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
+            // For this sample, automatically show the state of the diagram's model on the page
+            "ModelChanged": function(e) {
+              if (e.isTransactionFinished) showModel();
+            },
             "undoManager.isEnabled": true
           });
 
@@ -28,8 +32,8 @@
           new go.Binding("portId", "name"),  // this Panel is a "port"
           {
             background: "transparent",  // so this port's background can be picked by the mouse
-            fromSpot: go.Spot.Right,  // links only go from the right side to the left side
-            toSpot: go.Spot.Left,
+            fromSpot: go.Spot.LeftRightSides,  // links only go from the right side to the left side
+            toSpot: go.Spot.LeftRightSides,
             // allow drawing links from or to this port:
             fromLinkable: true, toLinkable: true
           },
@@ -180,11 +184,6 @@
         }
       };
 
-      // automatically update the model that is shown on this page
-      myDiagram.model.addChangedListener(function(e) {
-        if (e.isTransactionFinished) showModel();
-      });
-
       showModel();  // show the diagram's initial model
 
       function showModel() {
@@ -200,7 +199,7 @@
   <p>Draw new links by dragging from the background of any field.
      Reconnect a selected link by dragging its diamond-shaped handle.
      The user can delete a selected field.</p>
-  <div id="myDiagram" style="border: solid 1px black; width:100%; height:300px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px"></div>
   <p>The model data, automatically updated after each change or undo or redo:</p>
   <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
   <p>This sample was derived from the <a href="records.html">Records</a> sample.</p>

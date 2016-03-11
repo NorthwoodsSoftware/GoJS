@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS Brushes -- Northwoods Software</title>
+  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+    <script src="go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h2>GoJS Brushes</h2>
+<p>
+A <a>Brush</a> holds color information and describes how to draw the inside of a Shape or the stroke of a shape or a TextBlock or the background of any GraphObject.
+<p>
+A Brush must not be modified once it has been assigned to a GraphObject, such as the <a>Shape.fill</a> or <a>TextBlock.stroke</a> or <a>GraphObject.background</a>. However, a Brush may be shared by multiple GraphObjects.
+
+
+<h3>Solid Brushes</h3>
+
+The simplest brushes are defined by a single solid color. Because they are so simple, anywhere you want a single-color brush you can subsitute a valid CSS color string.
+
+<pre data-language="javascript" id="simpleBrushes">
+  diagram.add($(go.Part,
+      $(go.Shape, "Circle", {
+        fill: $(go.Brush, { color: "palegreen" })
+      })
+    ));
+
+  diagram.add($(go.Part,
+      $(go.Shape, "Circle", {
+        fill: "palegreen"
+      })
+    ));
+</pre>
+<script>goCode("simpleBrushes", 600, 120)</script>
+
+<p>Many CSS color strings are valid, including named colors, hex values, RGB values, and RGBA values.
+
+<pre data-language="javascript" id="simpleBrushes2">
+  diagram.layout = $(go.GridLayout);
+
+  diagram.add($(go.Part,
+      $(go.Shape, "Circle", {
+        fill: "#DFAD83"
+      })
+    ));
+
+  diagram.add($(go.Part,
+      $(go.Shape, "Circle", {
+        fill: "rgba(0,255,0,.3)" // semi transparent green
+      })
+    ));
+
+  diagram.add($(go.Part,
+      $(go.Shape, "Circle", {
+        fill: "rgba(0,255,0,.3)",
+        stroke: '#DFBB00',
+        strokeWidth: 4,
+        background: 'coral'
+      })
+    ));
+</pre>
+<script>goCode("simpleBrushes2", 600, 120)</script>
+
+
+<h3>Gradient Brushes</h3>
+
+<p>Gradient brushes are defined by setting the type and adding a number of color stops to the Brush.</p>
+<pre data-language="javascript">
+  // constructs a Linear gradient brush
+  var brush = new go.Brush(go.Brush.Linear);
+  brush.addColorStop(0, "blue");
+  brush.addColorStop(1, "red");
+</pre>
+
+<p>To simplify the syntax, you can use go.GraphObject.make (see <a href="buildingObjects.html">building objects</a>):
+<pre data-language="javascript">
+  // constructs the same Brush
+  var brush = $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" });
+</pre>
+
+<p>Some examples follow:</p>
+
+<pre data-language="javascript" id="gradients1">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Shape, { row: 0, column: 0,
+                    figure: "Circle", width: 100, height: 100, margin: 5,
+                    // A linear gradient brush from blue to red, going from top to bottom (default)
+                    fill: $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" })
+                  }),
+
+      $(go.Shape, { row: 0, column: 1,
+                    figure: "Circle", width: 100, height: 100, margin: 5,
+                    // A linear gradient brush from blue to red, going from bottom to top
+                    // by defining start and end spots
+                    fill: $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red", start: go.Spot.Bottom, end: go.Spot.Top })
+                  })
+    ));
+</pre>
+<script>goCode("gradients1", 600, 120)</script>
+
+<p>Brushes can have any number of color stops:</p>
+
+<pre data-language="javascript" id="gradients2">
+  diagram.add(
+    $(go.Part, "Table",
+      $(go.Shape, { row: 0, column: 0,
+                    figure: "Rectangle", width: 100, height: 100, margin: 5,
+                    // A rainbow linear gradient brush:
+                    fill: $(go.Brush, "Linear", {
+                      0.0: "rgba(255, 0, 0, 1)",
+                      0.15: "rgba(255, 255, 0, 1)",
+                      0.30: "rgba(0, 255, 0, 1)",
+                      0.50: "rgba(0, 255, 255, 1)",
+                      0.65: "rgba(0, 0, 255, 1)",
+                      0.80: "rgba(255, 0, 255, 1)",
+                      1: "rgba(255, 0, 0, 1)"
+                    })
+                  }),
+
+      $(go.Shape, { row: 0, column: 1,
+                    figure: "Rectangle", width: 100, height: 100, margin: 5,
+                    // A rainbow radial gradient brush:
+                    fill: $(go.Brush, "Radial", {
+                      0.0: "rgba(255, 0, 0, 1)",
+                      0.15: "rgba(255, 255, 0, 1)",
+                      0.30: "rgba(0, 255, 0, 1)",
+                      0.50: "rgba(0, 255, 255, 1)",
+                      0.65: "rgba(0, 0, 255, 1)",
+                      0.80: "rgba(255, 0, 255, 1)",
+                      1: "rgba(255, 0, 0, 1)"
+                    })
+                  })
+    ));
+</pre>
+<script>goCode("gradients2", 600, 120)</script>
+
+<p>Radial gradient brushes can be controlled with <a>Brsuh.startRadius</a> and <a>Brush.endRadius</a>, which default to zero and NaN, respectively, meaning the gradient begins at the very center and goes to the farthest measured edge of the object.
+
+<pre data-language="javascript" id="gradients21">
+  diagram.layout = $(go.GridLayout);
+
+  diagram.add(
+    $(go.Part,
+      $(go.Shape, {
+                    figure: "Rectangle", width: 100, height: 100, margin: 5,
+                    // A rainbow radial gradient brush:
+                    fill: $(go.Brush, "Radial", {
+                      0.0: "red", 1: "black"
+                    })
+                  })
+    ));
+
+  diagram.add(
+    $(go.Part,
+      $(go.Shape, {
+                    figure: "Rectangle", width: 100, height: 100, margin: 5,
+                    // A rainbow radial gradient brush:
+                    fill: $(go.Brush, "Radial", {
+                      startRadius: 30, 0.0: "red", 1: "black"
+                    })
+                  })
+    ));
+
+  diagram.add(
+    $(go.Part,
+      $(go.Shape, {
+                    figure: "Rectangle", width: 100, height: 100, margin: 5,
+                    // A rainbow radial gradient brush:
+                    fill: $(go.Brush, "Radial", {
+                      startRadius: 30, endRadius: 40, 0.0: "red", 1: "black"
+                    })
+                  })
+    ));
+</pre>
+<script>goCode("gradients21", 600, 120)</script>
+
+
+
+<p>Several GraphObjects can share the same Brush:
+
+<pre data-language="javascript" id="gradients3">
+
+  diagram.layout = $(go.GridLayout);
+
+  // Create one brush for several GraphObjects to share:
+  var rainbow = $(go.Brush, "Linear", {
+                        0.0: "rgba(255, 0, 0, 1)",
+                        0.15: "rgba(255, 255, 0, 1)",
+                        0.30: "rgba(0, 255, 0, 1)",
+                        0.50: "rgba(0, 255, 255, 1)",
+                        0.65: "rgba(0, 0, 255, 1)",
+                        0.80: "rgba(255, 0, 255, 1)",
+                        1: "rgba(255, 0, 0, 1)"
+                      });
+  diagram.add(
+    $(go.Part,
+      $(go.Shape, { figure: "Rectangle", width: 100, height: 100, fill: rainbow })
+    ));
+
+  diagram.add(
+    $(go.Part,
+      $(go.Shape, { figure: "Fragile", width: 50, height: 50, angle: 45, fill: rainbow })
+    ));
+
+
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, { figure: "Rectangle", fill: rainbow }),
+      $(go.TextBlock, "text", { font: 'bold 32pt sans-serif', stroke: rainbow, angle: 90 })
+    ));
+
+  diagram.add(
+    $(go.Part,
+      $(go.Shape, { figure: "Circle", width: 70, height: 70, angle: 180, fill: null, strokeWidth: 10, stroke: rainbow })
+    ));
+
+</pre>
+
+
+<script>goCode("gradients3", 600, 120)</script>
+
+
+<h3>Pattern Brushes</h3>
+<p>The following example sets up two Pattern brushes, one using an HTML Canvas with content drawn to it, which looks like this:
+<div id="patternCanvas"></canvas>
+<script type="text/javascript">
+  // set up an 40x40 HTML Canvas and draw on it to create a repeating "tile" to use as a pattern
+    var patternCanvas = document.createElement('canvas');
+    patternCanvas.width = 40;
+    patternCanvas.height = 40;
+    var pctx = patternCanvas.getContext('2d');
+
+    // This creates a shape similar to a diamond leaf
+    pctx.beginPath();
+    pctx.moveTo(0.0, 40.0);
+    pctx.lineTo(26.9, 36.0);
+    pctx.bezierCurveTo(31.7, 36.0, 36.0, 32.1, 36.0, 27.3);
+    pctx.lineTo(40.0, 0.0);
+    pctx.lineTo(11.8, 3.0);
+    pctx.bezierCurveTo(7.0, 3.0, 3.0, 6.9, 3.0, 11.7);
+    pctx.lineTo(0.0, 40.0);
+    pctx.closePath();
+    pctx.fillStyle = "rgb(188, 222, 178)";
+    pctx.fill();
+    pctx.lineWidth = 0.8;
+    pctx.strokeStyle = "rgb(0, 156, 86)";
+    pctx.lineJoin = "miter";
+    pctx.miterLimit = 4.0;
+    pctx.stroke();
+
+    document.getElementById('patternCanvas').appendChild(patternCanvas);
+</script>
+
+<p>The other Pattern Brush uses this image:</p>
+<p><img src="images/pattern.jpg"/></p>
+
+<pre data-language="javascript" id="diagramPre">
+
+  // set up an 40x40 HTML Canvas and draw on it to create a repeating "tile" to use as a pattern
+  function makePattern() {
+    var patternCanvas = document.createElement('canvas');
+    patternCanvas.width = 40;
+    patternCanvas.height = 40;
+    var pctx = patternCanvas.getContext('2d');
+
+    // This creates a shape similar to a diamond leaf
+    pctx.beginPath();
+    pctx.moveTo(0.0, 40.0);
+    pctx.lineTo(26.9, 36.0);
+    pctx.bezierCurveTo(31.7, 36.0, 36.0, 32.1, 36.0, 27.3);
+    pctx.lineTo(40.0, 0.0);
+    pctx.lineTo(11.8, 3.0);
+    pctx.bezierCurveTo(7.0, 3.0, 3.0, 6.9, 3.0, 11.7);
+    pctx.lineTo(0.0, 40.0);
+    pctx.closePath();
+    pctx.fillStyle = "rgb(188, 222, 178)";
+    pctx.fill();
+    pctx.lineWidth = 0.8;
+    pctx.strokeStyle = "rgb(0, 156, 86)";
+    pctx.lineJoin = "miter";
+    pctx.miterLimit = 4.0;
+    pctx.stroke();
+
+    return patternCanvas;
+  }
+
+  if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+  var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+  diagram.nodeTemplate =
+    $(go.Node, "Spot",
+      { resizable: true, resizeObjectName: 'SHAPE' },
+      $(go.Shape, "Rectangle",
+        { name: 'SHAPE', strokeWidth: 0, stroke: null },
+        new go.Binding("fill")),
+      $(go.TextBlock,
+        { margin: 10, font: "bold 18px Verdana" },
+        new go.Binding("text", "key"))
+    );
+
+  var img = new Image();
+  img.src = 'images/pattern.jpg';
+
+  // Use an image as a pattern
+  var patternBrush = $(go.Brush, "Pattern", { pattern: img });
+  // use a reference to an HTML Canvas (with renderings on it) as a pattern:
+  var patternBrush2 = $(go.Brush, "Pattern", { pattern: makePattern() });
+
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", fill: patternBrush },
+      { key: "Beta",  fill: patternBrush2 }
+    ],
+    [
+    ]);
+</pre>
+<div style="width:100%">
+  <span id="diagramSpan" style="display: inline-block; vertical-align: top">
+    <p><b>The result:</b></p>
+  </span>
+</div>
+<script>goCode("diagramPre", 500, 300, go.Diagram, "diagramSpan");</script>
+
+</div>
+</div>
+</body>
+</html>

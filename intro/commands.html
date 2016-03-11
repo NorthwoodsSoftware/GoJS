@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Commands -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Commands</h2>
@@ -38,9 +39,10 @@ The <a>CommandHandler</a> implements the following command bindings for keyboard
   <li>Ctrl-A invokes <a>CommandHandler.selectAll</a></li>
   <li>Ctrl-Z &amp; Alt-Backspace invoke <a>CommandHandler.undo</a></li>
   <li>Ctrl-Y &amp; Alt-Shift-Backspace invoke <a>CommandHandler.redo</a></li>
-  <li>Up &amp; Down &amp; Left &amp; Right (arrow keys) invoke <a>Diagram.scroll</a></li>
-  <li>PageUp &amp; PageDown invoke <a>Diagram.scroll</a></li>
-  <li>Home &amp; End set <a>Diagram.position</a></li>
+  <li>Up &amp; Down &amp; Left &amp; Right (arrow keys) call <a>Diagram.scroll</a></li>
+  <li>PageUp &amp; PageDown call <a>Diagram.scroll</a></li>
+  <li>Home &amp; End call <a>Diagram.scroll</a></li>
+  <li>Space invokes <a>CommandHandler.scrollToPart</a></li>
   <li>Keypad-- (minus) invokes <a>CommandHandler.decreaseZoom</a></li>
   <li>Keypad-+ (plus) invokes <a>CommandHandler.increaseZoom</a></li>
   <li>Ctrl-0 invokes <a>CommandHandler.resetZoom</a></li>
@@ -173,7 +175,7 @@ You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable
     enableAll();
   });
   // notice whenever a transaction or undo/redo has occurred
-  diagram.model.addChangedListener(function(e) {
+  diagram.addModelChangedListener(function(e) {
     if (e.isTransactionFinished) enableAll();
   });
   // perform initial enablements after everything has settled down
@@ -221,6 +223,27 @@ and the functionality of the <a>Tool</a>s mostly depends on mouse or touch event
 We recommend that you implement alternative mechanisms specific to your application
 for those tools that you want your users to access without a pointing device.
 </p>
+
+<h3>More CommandHandler override examples</h3>
+
+<p>
+Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.undo</a> and <a>CommandHandler.redo</a> to be called programatically:
+</p>
+<pre data-language="javascript">
+  myDiagram.commandHandler.doKeyDown = function() {
+    var e = myDiagram.lastInput;
+    // The meta (Command) key substitutes for "control" for Mac commands
+    var control = e.control || e.meta;
+    var key = e.key;
+    // Quit on any undo/redo key combination:
+    if (control && (key === 'Z' || key === 'Y')) return;
+
+    // call base method with no arguments (default functionality)
+    go.CommandHandler.prototype.doKeyDown.call(this);
+  };
+</pre>
+
+</div>
 </div>
 </body>
 </html>

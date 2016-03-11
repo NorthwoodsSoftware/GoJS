@@ -41,6 +41,7 @@
                                 $(go.Shape, { toArrow: "OpenTriangle" })
                               ),
                 initialContentAlignment: go.Spot.Center,
+                "ModelChanged": updateAngular,
                 "undoManager.isEnabled": true
               });
 
@@ -53,15 +54,13 @@
           scope.$watch("model", function(newmodel) {
             var oldmodel = diagram.model;
             if (oldmodel !== newmodel) {
-              if (oldmodel) oldmodel.removeChangedListener(updateAngular);
-              newmodel.addChangedListener(updateAngular);
               diagram.model = newmodel;
             }
           });
 
           scope.$watch("model.selectedNodeData.name", function(newname) {
             // disable recursive updates
-            diagram.model.removeChangedListener(updateAngular);
+            diagram.removeModelChangedListener(updateAngular);
             // change the name
             diagram.startTransaction("change name");
             // the data property has already been modified, so setDataProperty would have no effect
@@ -69,7 +68,7 @@
             if (node !== null) node.updateTargetBindings("name");
             diagram.commitTransaction("change name");
             // re-enable normal updates
-            diagram.model.addChangedListener(updateAngular);
+            diagram.addModelChangedListener(updateAngular);
           });
 
           // update the model when the selection changes
@@ -102,11 +101,11 @@
       $scope.replaceModel = function() {
         $scope.model = new go.GraphLinksModel(
             [
-              { key: "zeta", color: "red" },
-              { key: "eta", color: "green" }
+              { key: 11, name: "zeta", color: "red" },
+              { key: 12, name: "eta", color: "green" }
             ],
             [
-              { from: "zeta", to: "eta" }
+              { from: 11, to: 12 }
             ]
           );
       }
@@ -127,7 +126,7 @@
   <br />
   Number of link data: {{model.linkDataArray.length}}
   <p>
-  This defines an AngularJS directive for creating a <b>GoJS</b> <a>Diagram</a> with certain properties.
+  This defines an <a href="https://angularjs.org/">AngularJS</a> directive for creating a <b>GoJS</b> <a>Diagram</a> with certain properties.
   It also sets up a controller holding a <a>GraphLinksModel</a> that is passed
   to the <b>go-diagram</b> element via the <b>go-model</b> attribute.
   </p>

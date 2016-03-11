@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Transactions -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Transactions and the UndoManager</h2>
@@ -63,9 +64,13 @@ Read the API documentation for details about whether a function is called within
 For example, setting <a>GraphObject.click</a> to an event handler to respond to a click on an object
 needs to perform a transaction if it wants to modify the model or the diagram.
 Most custom click event handlers do not change the diagram but instead update some HTML.
+</p>
+<p>
 But implementing an "ExternalObjectsDropped" <a>DiagramEvent</a> listener, which usually does want to
 modify the just-dropped Parts in the <a>Diagram.selection</a>, is called within the <a>DraggingTool</a>'s
 transaction, so no additional start/commit transaction calls are needed.
+</p>
+<p>
 Finally, some customizations, such as the <a>Node.linkValidation</a> predicate, should not modify the diagram or model at all.
 </p>
 <p>
@@ -143,7 +148,7 @@ corresponding to the data.
   diagram.model.undoManager.isEnabled = true;
 
   // define a function named "incrementData" callable by onclick
-  function incrementData() {
+  incrementData = function() {
     var model = diagram.model;
     // all model changes should happen in a transaction
     model.startTransaction("increment");
@@ -160,6 +165,7 @@ Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
 <input type="button" onclick="incrementData()" value="incrementData()" />
 <script>goCode("changingData", 250, 150)</script>
 
+</div>
 </div>
 </body>
 </html>

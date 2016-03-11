@@ -31,18 +31,16 @@
   #contextMenu li {
     position: relative;
     min-width: 60px;
-  }
-
-  #contextMenu a {
     color: #444;
     display: inline-block;
     padding: 6px;
     text-decoration: none;
+    cursor: default;
   }
-  
+
   #contextMenu li:hover { background: #444; }
-  
-  #contextMenu li:hover a { color: #EEE; }
+
+  #contextMenu li:hover { color: #EEE; }
 </style>
 
 <script src="go.js"></script>
@@ -57,7 +55,7 @@ function init() {
   var $ = go.GraphObject.make;  // for conciseness in defining templates
 
   myDiagram =
-    $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+    $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
       { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
 
   // define a simple Node template (but use the default Link template)
@@ -94,16 +92,31 @@ function init() {
   // This is a dummy context menu for the whole Diagram:
   myDiagram.contextMenu = $(go.Adornment);
 
+  // Override the ContextMenuTool.showContextMenu and hideContextMenu methods
+  // in order to modify the HTML appropriately.
+  var cxTool = myDiagram.toolManager.contextMenuTool;
+
   // This is the actual HTML context menu:
   var cxElement = document.getElementById("contextMenu");
 
   // We don't want the div acting as a context menu to have a (browser) context menu!
-  cxElement.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
-  cxElement.addEventListener("blur", function(e) { cxMenu.stopTool(); }, false);
+  cxElement.addEventListener("contextmenu", function(e) {
+    this.focus();
+    e.preventDefault();
+    return false;
+  }, false);
+  cxElement.addEventListener("blur", function(e) {
+    cxTool.stopTool();
 
-  // Override the ContextMenuTool.showContextMenu and hideContextMenu methods
-  // in order to modify the HTML appropriately.
-  var cxTool = myDiagram.toolManager.contextMenuTool;
+    // maybe start another context menu
+    if (cxTool.canStart()) {
+      myDiagram.currentTool = cxTool;
+      cxTool.doMouseUp();
+    }
+
+  }, false);
+  cxElement.tabIndex = "1";
+
 
   // This is the override of ContextMenuTool.showContextMenu:
   // This does not not need to call the base method.
@@ -118,11 +131,12 @@ function init() {
 
     // Show only the relevant buttons given the current state.
     var cmd = diagram.commandHandler;
-    document.getElementById("cut").style.display = cmd.canCutSelection() ? "block" : "none";
-    document.getElementById("copy").style.display = cmd.canCopySelection() ? "block" : "none";
+    var objExists = obj !== null;
+    document.getElementById("cut").style.display = objExists && cmd.canCutSelection() ? "block" : "none";
+    document.getElementById("copy").style.display = objExists && cmd.canCopySelection() ? "block" : "none";
     document.getElementById("paste").style.display = cmd.canPasteSelection() ? "block" : "none";
-    document.getElementById("delete").style.display = cmd.canDeleteSelection() ? "block" : "none";
-    document.getElementById("color").style.display = obj !== null ? "block" : "none";
+    document.getElementById("delete").style.display = objExists && cmd.canDeleteSelection() ? "block" : "none";
+    document.getElementById("color").style.display = objExists ? "block" : "none";
 
     // Now show the whole context menu element
     cxElement.style.display = "block";
@@ -193,14 +207,14 @@ function changeColor(diagram) {
          This DIV containing both MUST have a non-static CSS position (we use position: relative)
          so that our context menu's absolute coordinates work correctly. -->
     <div style="position: relative;"  >
-      <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
       <div id="contextMenu">
         <ul>
-          <li><a href="#" id="cut" onclick="cxcommand(this.textContent)">Cut</a></li>
-          <li><a href="#" id="copy" onclick="cxcommand(this.textContent)">Copy</a></li>
-          <li><a href="#" id="paste" onclick="cxcommand(this.textContent)">Paste</a></li>
-          <li><a href="#" id="delete" onclick="cxcommand(this.textContent)">Delete</a></li>
-          <li><a href="#" id="color" onclick="cxcommand('Color')">Color</a></li>
+          <li id="cut" onclick="cxcommand(this.textContent)">Cut</li>
+          <li id="copy" onclick="cxcommand(this.textContent)">Copy</li>
+          <li id="paste" onclick="cxcommand(this.textContent)">Paste</li>
+          <li id="delete" onclick="cxcommand(this.textContent)">Delete</li>
+          <li id="color" onclick="cxcommand('Color')">Color</li>
         </ul>
       </div>
     </div>

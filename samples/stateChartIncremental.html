@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>State Chart With Incremental Saves</title>
+<meta name="description" content="A finite state machine chart with editable and interactive features." />
+<!-- /* Copyright 1998-2016 by Northwoods Software Corporation. */ -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
+        {
+          // start everything in the middle of the viewport
+          initialContentAlignment: go.Spot.Center,
+          // have mouse wheel events zoom in and out instead of scroll up and down
+          "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+          // support double-click in background creating a new node
+          "clickCreatingTool.archetypeNodeData": { text: "new node" },
+          "InitialLayoutCompleted": function(e) { showIncremental("InitialLayout"); },
+          "ModelChanged": function(e) {
+            if (e.isTransactionFinished) {
+              // this records each Transaction as a JSON-format string
+              showIncremental(myDiagram.model.toIncrementalJson(e));
+            }
+          },
+          // enable undo & redo
+          "undoManager.isEnabled": true
+        });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx); 
+      }
+    });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, "RoundedRectangle",
+          {
+            parameter1: 20,  // the corner has a large radius
+            fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
+            stroke: "black",
+            portId: "",
+            fromLinkable: true,
+            fromLinkableSelfNode: true,
+            fromLinkableDuplicates: true,
+            toLinkable: true,
+            toLinkableSelfNode: true,
+            toLinkableDuplicates: true,
+            cursor: "pointer"
+          }),
+        $(go.TextBlock,
+          {
+            font: "bold 11pt helvetica, bold arial, sans-serif",
+            editable: true  // editing the text automatically updates the model data
+          },
+          new go.Binding("text", "text").makeTwoWay())
+      );
+
+    // unlike the normal selection Adornment, this one includes a Button
+    myDiagram.nodeTemplate.selectionAdornmentTemplate =
+      $(go.Adornment, "Spot",
+        $(go.Panel, "Auto",
+          $(go.Shape, { fill: null, stroke: "blue", strokeWidth: 2 }),
+          $(go.Placeholder)  // this represents the selected Node
+        ),
+        // the button to create a "next" node, at the top-right corner
+        $("Button",
+          {
+            alignment: go.Spot.TopRight,
+            click: addNodeAndLink  // this function is defined below
+          },
+          $(go.Shape, "PlusLine", { desiredSize: new go.Size(6, 6) })
+        ) // end button
+      ); // end Adornment
+
+    // clicking the button inserts a new node to the right of the selected node,
+    // and adds a link to that new node
+    function addNodeAndLink(e, obj) {
+      var adorn = obj.part;
+      e.handled = true;
+      var diagram = adorn.diagram;
+      diagram.startTransaction("Add State");
+
+      // get the node data for which the user clicked the button
+      var fromNode = adorn.adornedPart;
+      var fromData = fromNode.data;
+      // create a new "State" data object, positioned off to the right of the adorned Node
+      var toData = { text: "new" };
+      var p = fromNode.location.copy();
+      p.x += 200;
+      toData.loc = go.Point.stringify(p);  // the "loc" property is a string, not a Point object
+      // add the new node data to the model
+      var model = diagram.model;
+      model.addNodeData(toData);
+      
+      // create a link data from the old node data to the new node data
+      var linkdata = {
+        from: model.getKeyForNodeData(fromData),  // or just: fromData.id
+        to: model.getKeyForNodeData(toData),
+        text: "transition"
+      };
+      // and add the link data to the model
+      model.addLinkData(linkdata);
+      
+      // select the new Node
+      var newnode = diagram.findNodeForData(toData);
+      diagram.select(newnode);
+      
+      diagram.commitTransaction("Add State");
+      
+      // if the new node is off-screen, scroll the diagram to show the new node
+      diagram.scrollToRect(newnode.actualBounds);
+    }
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      $(go.Link,  // the whole link panel
+        {
+          curve: go.Link.Bezier, adjusting: go.Link.Stretch,
+          reshapable: true, relinkableFrom: true, relinkableTo: true
+        },
+        new go.Binding("points").makeTwoWay(),
+        new go.Binding("curviness", "curviness"),
+        $(go.Shape,  // the link shape
+          { strokeWidth: 1.5 }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "standard", stroke: null }),
+        $(go.Panel, "Auto",
+          $(go.Shape,  // the label background, which becomes transparent around the edges
+            {
+              fill: $(go.Brush, "Radial",
+                      { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
+              stroke: null
+            }),
+          $(go.TextBlock, "transition",  // the label text
+            {
+              textAlign: "center",
+              font: "10pt helvetica, arial, sans-serif",
+              stroke: "black",
+              margin: 4,
+              editable: true  // editing the text automatically updates the model data
+            },
+            new go.Binding("text", "text").makeTwoWay())
+        )
+      );
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+  }
+
+  // Show the diagram's model in JSON format
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+    showIncremental("");
+  }
+  function load() {
+    var model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    // establish GraphLinksModel functions:
+    // node data id's are odd numbers
+    model.makeUniqueKeyFunction = function(model, data) {
+      var i = model.nodeDataArray.length * 2 + 1;
+      while (model.findNodeDataForKey(i) !== null) i += 2;
+      data.id = i;  // assume Model.nodeKeyProperty === "id"
+      return i;
+    };
+    // link data id's are even numbers
+    model.makeUniqueLinkKeyFunction = function(model, data) {
+      var i = model.linkDataArray.length * 2 + 2;
+      while (model.findLinkDataForKey(i) !== null) i += 2;
+      data.id = i;  // assume GraphLinksModel.linkKeyProperty === "id"
+      return i;
+    };
+    myDiagram.model = model;
+    showIncremental("");
+  }
+
+  function showIncremental(str) {
+    // show the last transaction as an incremental update in JSON-formatted text
+    var element = document.getElementById("myTransaction");
+    // don't show anything upon the initial layout
+    if (element.value === "InitialLayout") str = "";
+    element.value = str;
+
+    // show the differences between this model and the saved model
+    // as an incremental update in JSON-formatted text
+    var element2 = document.getElementById("myDifferences");
+    if (str !== "") {
+      var savedModel = go.Model.fromJson(document.getElementById("mySavedModel").value);
+      element2.value = savedModel.computeJsonDifference(myDiagram.model);
+    } else {
+      element2.value = "";
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
+  <p>
+  This sample is derived from the <a href="stateChart.html">State Chart</a> sample.
+  This makes use of the new <a>GraphLinksModel.linkKeyProperty</a> property
+  and the <a>Model.toIncrementalJson</a> and <a>Model.applyIncrementalJson</a> methods.
+  It also demonstrates custom functions for <a>Model.makeUniqueKeyFunction</a> and
+  <a>GraphLinksModel.makeUniqueLinkKeyFunction</a>, which assign odd numbers to new node
+  data and even numbers to new link data.
+  Unlike most models, this example uses "id" as the name of the <a>Model.nodeKeyProperty</a> rather than "key".
+  </p>
+  Last <a>Transaction</a> saved in incremental JSON format:
+  <textarea id="myTransaction" style="width:100%;height:200px"></textarea>
+  Difference between current <a>Model</a> and model saved in JSON-format text below:
+  <textarea id="myDifferences" style="width:100%;height:200px"></textarea>
+  <button id="SaveButton" onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  Diagram Model saved in JSON format:
+  <br />
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "nodeKeyProperty": "id",
+  "linkKeyProperty": "id",
+  "nodeDataArray": [
+    { "id": 1, "loc": "120 120", "text": "Initial" },
+    { "id": 3, "loc": "330 120", "text": "First down" },
+    { "id": 5, "loc": "226 376", "text": "First up" },
+    { "id": 7, "loc": "60 276", "text": "Second down" },
+    { "id": 9, "loc": "226 226", "text": "Wait" }
+  ],
+  "linkDataArray": [
+    { "id": 2, "from": 1, "to": 1, "text": "up or timer", "curviness": -20 },
+    { "id": 4, "from": 1, "to": 3, "text": "down", "curviness": 20 },
+    { "id": 6, "from": 3, "to": 1, "text": "up (moved)\nPOST", "curviness": 20 },
+    { "id": 8, "from": 3, "to": 3, "text": "down", "curviness": -20 },
+    { "id": 10, "from": 3, "to": 5, "text": "up (no move)" },
+    { "id": 12, "from": 3, "to": 9, "text": "timer" },
+    { "id": 14, "from": 5, "to": 1, "text": "timer\nPOST" },
+    { "id": 16, "from": 5, "to": 7, "text": "down" },
+    { "id": 18, "from": 7, "to": 1, "text": "up\nPOST\n(dblclick\nif no move)" },
+    { "id": 20, "from": 7, "to": 7, "text": "down or timer", "curviness": 20 },
+    { "id": 22, "from": 9, "to": 1, "text": "up\nPOST" },
+    { "id": 24, "from": 9, "to": 9, "text": "down" }
+  ]
+}
+</textarea>
+</div>
+</body>
+</html>

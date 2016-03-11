@@ -1,19 +1,25 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Layers -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Layers</h2>
+<h2>Layers and Z-ordering</h2>
 <p>
 All <a>Part</a>s that are in a <a>Diagram</a> actually belong to a <a>Layer</a> in the diagram.
 You can control the visibility, Z-order, and various user permissions for all of the parts in each layer.
+</p>
+
+<p>
+Parts can be individually modified to toggle their visibility using <a>Part.visible</a> or <a>Part.opacity</a>.
+Parts can be individually Z-ordered within layers using <a>Part.zOrder</a>.
 </p>
 
 <h3>Standard Layers</h3>
@@ -111,9 +117,60 @@ Layer visibility:<br />
 <input type="checkbox" checked="checked" onclick="toggleVisible('green', event)" />green
 <input type="checkbox" checked="checked" onclick="toggleVisible('orange', event)" />orange
 <input type="checkbox" checked="checked" onclick="toggleVisible('Foreground', event)" />Foreground
-<script>
-</script>
 
+
+
+<h3>Part.zOrder Example</h3>
+<p>
+This example adds several <a>Part</a>s to one Layer (the default) in the diagram.
+Every <a>Part.zOrder</a> is data-bound to the "zOrder" property of the node data, as is its text.
+</p>
+<p>
+Buttons on the Part can be used to modify the z-order of each.
+</p>
+<pre data-language="javascript" id="zOrder">
+  function changeZOrder(amt, obj) {
+    var data = obj.part.data;
+    diagram.startTransaction('modified zOrder');
+    diagram.model.setDataProperty(data, "zOrder", data.zOrder + amt);
+    diagram.commitTransaction('modified zOrder');
+  }
+
+  diagram.nodeTemplate =
+    $(go.Part,  "Spot",
+      new go.Binding("layerName", "color"),
+      new go.Binding("location", "loc"),
+      new go.Binding("zOrder"),
+      $(go.Shape,
+        { width: 100, height: 100, stroke: 'rgb(50,50,50)', fill: 'rgb(50,100,255)' }),
+      $(go.TextBlock,
+        { font: "52px sans-serif", stroke: 'whitesmoke' },
+        new go.Binding("text", "zOrder")),
+      $("Button",
+        { alignment: go.Spot.BottomLeft, alignmentFocus: go.Spot.BottomLeft,
+          click: function (e, obj) { changeZOrder(-1, obj); } },
+        $(go.Shape, "LineH", { width: 14, height: 14 })),
+      $("Button",
+        { alignment: go.Spot.BottomRight, alignmentFocus: go.Spot.BottomRight,
+          click: function (e, obj) { changeZOrder(1, obj); } },
+        $(go.Shape, "PlusLine", { width: 14, height: 14 }))
+    );
+
+  var array = [];
+  for (var i = 0; i < 12; i++) {
+    var data = { loc: new go.Point(Math.random()*500, Math.random()*150) };
+    data.zOrder = (Math.floor(Math.random()*20))
+    array.push(data);
+  }
+  diagram.model.nodeDataArray = array;
+  diagram.undoManager.isEnabled = true;
+</pre>
+<script>goCode("zOrder", 610, 300)</script>
+
+
+
+
+</div>
 </div>
 </body>
 </html>

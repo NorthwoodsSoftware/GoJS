@@ -16,13 +16,13 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram");
+      $(go.Diagram, "myDiagramDiv");
 
     myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
 
     myDiagram.nodeTemplate =
       $(go.Node,
-        { locationSpot: go.Spot.Center },
+        { locationSpot: go.Spot.Center },  // to support rotation about the center
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         { selectionAdorned: true, selectionObjectName: "SHAPE",
           selectionAdornmentTemplate:  // custom selection adornment: a blue rectangle
@@ -60,6 +60,7 @@
     tool.isEnabled = draw;
     tool.isPolygon = polygon;
     tool.archetypePartData.fill = (polygon ? "yellow" : null);
+    tool.temporaryShape.fill = (polygon ? "yellow" : null);
   }
 
   // this command ends the PolygonDrawingTool
@@ -108,7 +109,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px gray; width: 100%; height: 350px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px gray; width: 100%; height: 350px"></div>
   <div id="buttons">
     <button onclick="mode(false)">Select</button>
     <button onclick="mode(true, true)">Draw Polygon</button>
@@ -133,7 +134,7 @@
     With the GeometryReshapingTool, users can change the geometry (i.e. the "shape") of a <a>Shape</a>s in a selected <a>Node</a>.
   <br/>
     Click a "Draw" button and then click in the diagram to place a new point in a polygon or polyline shape.
-    Right-click or Enter to finish.  Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point.
+    Right-click, double-click, or Enter to finish.  Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point.
     Click the "Select" button to switch back to the normal selection behavior, so that you can select, resize, and rotate the shapes.
     The checkboxes control whether you can resize, reshape, and/or rotate selected shapes.
   </p>

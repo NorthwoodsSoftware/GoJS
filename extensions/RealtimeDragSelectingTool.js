@@ -86,12 +86,6 @@ RealtimeDragSelectingTool.prototype.doKeyUp = function() {
 };
 
 /**
-* @ignore
-* Platform detection to use Meta (Command) key on Mac keyboard
-*/
-RealtimeDragSelectingTool.isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-
-/**
 * @expose
 * @this {RealtimeDragSelectingTool}
 * @param {Rect} r a rectangular bounds in document coordinates.
@@ -107,7 +101,7 @@ RealtimeDragSelectingTool.prototype.selectInRect = function(r) {
                                     function(p) { return (p instanceof go.Part) && p.canSelect(); },
                                     this.isPartialInclusion,
                                     new go.Set(go.Part));
-  if (RealtimeDragSelectingTool.isMac ? e.meta : e.control) {  // toggle or deselect
+  if (e.control || e.meta) {  // toggle or deselect
     if (e.shift) {  // deselect only
       temp.each(function(p) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
       found.each(function(p) { p.isSelected = false; temp.add(p); });

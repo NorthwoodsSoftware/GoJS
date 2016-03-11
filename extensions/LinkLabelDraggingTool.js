@@ -20,6 +20,8 @@ function LinkLabelDraggingTool() {
   /** @type {GraphObject} */
   this.label = null;
   /** @type {Point} */
+  this._offset = new go.Point();  // of the mouse relative to the center of the label object
+  /** @type {Point} */
   this._originalOffset = null;
 }
 go.Diagram.inherit(LinkLabelDraggingTool, go.Tool);
@@ -72,6 +74,8 @@ LinkLabelDraggingTool.prototype.doActivate = function() {
   this.startTransaction("Shifted Label");
   this.label = this.findLabel();
   if (this.label !== null) {
+    // compute the offset of the mouse-down point relative to the center of the label
+    this._offset = this.diagram.firstInput.documentPoint.copy().subtract(this.label.getDocumentPoint(go.Spot.Center));
     this._originalOffset = this.label.segmentOffset.copy();
   }
   go.Tool.prototype.doActivate.call(this);
@@ -140,6 +144,6 @@ LinkLabelDraggingTool.prototype.updateSegmentOffset = function() {
   var last = this.diagram.lastInput.documentPoint;
   var mid = link.midPoint;
   // need to rotate this point to account for the angle of the link segment at the mid-point
-  var p = new go.Point(last.x-mid.x, last.y-mid.y);
+  var p = new go.Point(last.x - this._offset.x - mid.x, last.y - this._offset.y - mid.y);
   this.label.segmentOffset = p.rotate(-link.midAngle);
 }

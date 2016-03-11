@@ -16,12 +16,27 @@
 
     // ****** First Diagram ******
 
-    myDiagram = $(go.Diagram, "myDiagram",
+    myDiagram = $(go.Diagram, "myDiagramDiv",
                   {
                     initialContentAlignment: go.Spot.Center,
                     allowDragOut: true,
                     allowDrop: true,
-                    "commandHandler.archetypeGroupData": { isGroup: true }
+                    "commandHandler.archetypeGroupData": { isGroup: true },
+                    // handle undo or redo maybe changing Diagram properties controlled by check boxes
+                    "ModelChanged": function(e) {
+                        if (e.isTransactionFinished) allChecks(true);
+                      },
+                    // A Diagram listener must be placed on both Diagrams.
+                    // When a collection of Parts is dragged into a diagram and dropped, the normal behavior is
+                    // to copy the data and create new Parts in the destination diagram.
+                    // To simulate a "move", the source Node must be deleted.
+                    // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
+                    "ExternalObjectsDropped": function(e) {
+                      if (myDiagram2.commandHandler.canDeleteSelection() &&
+                          !(myDiagram2.lastInput.control || myDiagram2.lastInput.meta)) {
+                        myDiagram2.commandHandler.deleteSelection();
+                      }
+                    }
                   });
 
     myDiagram.nodeTemplate =
@@ -55,12 +70,28 @@
                     initialContentAlignment: go.Spot.Center,
                     allowDragOut: true,
                     allowDrop: true,
-                    "commandHandler.archetypeGroupData": { isGroup: true }
+                    "commandHandler.archetypeGroupData": { isGroup: true },
+                    // handle undo or redo maybe changing Diagram properties controlled by check boxes
+                    "ModelChanged": function(e) {
+                        if (e.isTransactionFinished) allChecks(true);
+                      },
+                    // A Diagram listener must be placed on both Diagrams.
+                    // When a collection of Parts is dragged into a diagram and dropped, the normal behavior is
+                    // to copy the data and create new Parts in the destination diagram.
+                    // To simulate a "move", the source Node must be deleted.
+                    // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
+                    "ExternalObjectsDropped": function(e) {
+                      if (myDiagram.commandHandler.canDeleteSelection() &&
+                          !(myDiagram.lastInput.control || myDiagram.lastInput.meta)) {
+                        myDiagram.commandHandler.deleteSelection();
+                      }
+                    }
                   });
 
     // share templates with the first diagram
     myDiagram2.nodeTemplate = myDiagram.nodeTemplate;
 
+    // show a different model
     myDiagram2.model = new go.GraphLinksModel(
     [
       { key: "Zeta", color: "lightblue" },
@@ -70,43 +101,12 @@
       { from: "Zeta", to: "Eta" }
     ]);
 
-    // A Diagram listener must be placed on both Diagrams.
-    // When a collection of Parts is dragged into a diagram and dropped, the normal behavior is
-    // to copy the data and create new Parts in the destination diagram.
-    // To simulate a "move", the source Node must be deleted.
-    // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
-    myDiagram2.addDiagramListener("ExternalObjectsDropped", function(e) {
-      if (myDiagram.commandHandler.canDeleteSelection() && !myDiagram.lastInput.control) {
-        myDiagram.commandHandler.deleteSelection();
-      }
-    });
-    myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-      if (myDiagram2.commandHandler.canDeleteSelection() && !myDiagram2.lastInput.control) {
-        myDiagram2.commandHandler.deleteSelection();
-      }
-    });
-
-    // The Diagrams share the same undo manager
+    // But the Diagrams share the same undo manager!
     myDiagram.model.undoManager = myDiagram2.model.undoManager;
     myDiagram.model.undoManager.isEnabled = true;
 
-    // handle undo or redo maybe changing Diagram properties controlled by check boxes
-    myDiagram.addChangedListener(makeHandleUndo(false));
-    myDiagram.model.addChangedListener(makeHandleUndo(true));
-    myDiagram2.model.addChangedListener(makeHandleUndo(true));
-
+    // initialize all the HTML checkboxes
     allChecks(true);
-  }
-
-  function makeHandleUndo(forModel) {
-    return function(e) {
-      if ((forModel && e.model !== null) || (!forModel && e.diagram !== null)) {
-        //if (window.console) window.console.log(e.toString());
-      }
-      if (e.isTransactionFinished) {
-        allChecks(true);
-      }
-    }
   }
 
   function allChecks(set) {
@@ -208,7 +208,7 @@
   <p>Hence an undo or redo in one Diagram affects the other Diagram. This allows Node "moves" to be undone across Diagrams.</p>
   <p>(This is different from the <a href="updateDemo.html">Update Demo</a>, which is an example of two Diagrams sharing/showing the same Model.)</p>
   <div id="Column1" style="float:left; margin-right:20px">
-    <div id="myDiagram" style="border: solid 1px black; width:350px; height:300px"></div>
+    <div id="myDiagramDiv" style="border: solid 1px black; width:350px; height:300px"></div>
     <p>
       <label><input type="checkbox" onclick="allChecks()" id="MD1allowDragOut" />allowDragOut</label>
       <label><input type="checkbox" onclick="allChecks()" id="MD1allowDrop" />allowDrop</label>

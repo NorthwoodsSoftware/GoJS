@@ -14,7 +14,7 @@
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+      $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
           initialAutoScale: go.Diagram.Uniform,  // an initial automatic zoom-to-fit
           contentAlignment: go.Spot.Center,  // align document to the center of the viewport
@@ -26,6 +26,7 @@
     // define each Node's appearance
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",  // the whole node panel
+        { locationSpot: go.Spot.Center },
         // define the node's outer shape, which will surround the TextBlock
         $(go.Shape, "Rectangle",
           { fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }), stroke: "black" }),
@@ -42,10 +43,10 @@
         $(go.Shape,  // the arrowhead
           { toArrow: "standard", stroke: null }),
         $(go.Panel, "Auto",
-          $(go.Shape,  // the link shape
+          $(go.Shape,  // the label background, which becomes transparent around the edges
             { fill: $(go.Brush, "Radial", { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
               stroke: null }),
-          $(go.TextBlock,  // the label
+          $(go.TextBlock,  // the label text
             { textAlign: "center",
               font: "10pt helvetica, arial, sans-serif",
               stroke: "#555555",
@@ -109,7 +110,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 700px"></div>
+  <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 700px"></div>
   <p>
     See also the <a href="interactiveForce.html">Interactive Force</a> sample that uses the exact same data
     but a different node template and a customized <a>ForceDirectedLayout</a>.

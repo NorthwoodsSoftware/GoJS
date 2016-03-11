@@ -14,7 +14,7 @@
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+      $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
           initialAutoScale: go.Diagram.UniformToFill,
           contentAlignment: go.Spot.Center,
@@ -40,7 +40,7 @@
         // the node's outer shape, which will surround the text
         $(go.Panel, "Auto",
           { name: "PANEL" },
-          $(go.Shape, "Ellipse",
+          $(go.Shape, "Circle",
             { fill: "whitesmoke", stroke: "black" },
             new go.Binding("fill", "color")),
           $(go.TextBlock,
@@ -50,6 +50,7 @@
         // the expand/collapse button, at the top-right corner
         $("TreeExpanderButton",
           {
+            width: 20, height: 20,
             alignment: go.Spot.TopRight,
             alignmentFocus: go.Spot.Center,
             // customize the expander behavior to
@@ -71,7 +72,11 @@
                   }
                 }
                 // this behavior is generic for most expand/collapse tree buttons:
-                node.isTreeExpanded = !node.isTreeExpanded;  // expand or collapse
+                if (node.isTreeExpanded) {
+                  diagram.commandHandler.collapseTree(node);
+                } else {
+                  diagram.commandHandler.expandTree(node);
+                }
                 diagram.commitTransaction("CollapseExpandTree");
               }
           }
@@ -114,7 +119,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
   <p>
   This diagram demonstrates the expansion of a tree where nodes are only created "on-demand",
   when the user clicks on the "expand" Button.

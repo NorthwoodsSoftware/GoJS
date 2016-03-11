@@ -38,11 +38,12 @@
         tempPart.data = obj.data;  // bind to the same field data as being dragged
         return tempPart;
       }
-      return null;
+      return go.DraggingTool.prototype.findDraggablePart.call(this);
     };
 
     /** @override */
     FieldDraggingTool.prototype.doActivate = function() {
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doActivate.call(this);
       var diagram = this.diagram;
       this.standardMouseSelect();
       this.isActive = true;
@@ -56,6 +57,7 @@
 
     /** @override */
     FieldDraggingTool.prototype.doDeactivate = function() {
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doDeactivate.call(this);
       var diagram = this.diagram;
       // make sure the temporary Part is no longer in the Diagram
       diagram.remove(this.temporaryPart);
@@ -69,6 +71,7 @@
     /** @override */
     FieldDraggingTool.prototype.doMouseMove = function() {
       if (!this.isActive) return;
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseMove.call(this);
       var diagram = this.diagram;
       // just move the temporaryPart (in draggedParts), without regard to moving or copying permissions of the Node
       var offset = diagram.lastInput.documentPoint.copy().subtract(diagram.firstInput.documentPoint);
@@ -78,6 +81,7 @@
     /** @override */
     FieldDraggingTool.prototype.doMouseUp = function() {
       if (!this.isActive) return;
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseUp.call(this);
       var diagram = this.diagram;
       var data = this.temporaryPart.data;
       var dest = diagram.findPartAt(diagram.lastInput.documentPoint, false);
@@ -87,7 +91,7 @@
         diagram.model.insertArrayItem(dest.data.fields, idx,
                                       { name: data.name, info: data.info, color: data.color, figure: data.figure });
       }
-      if (!(diagram.lastInput.meta || diagram.lastInput.control)) {
+      if (!(diagram.lastInput.control || diagram.lastInput.meta)) {
         var src = this.currentPart;
         var sidx = src.data.fields.indexOf(data);
         if (sidx >= 0) {
@@ -105,11 +109,13 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
-        $(go.Diagram, "myDiagram",
+        $(go.Diagram, "myDiagramDiv",
           {
             initialContentAlignment: go.Spot.Center,
             validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
             draggingTool: $(FieldDraggingTool),  // use custom DraggingTool
+            // automatically update the model that is shown on this page
+            "ModelChanged": function(e) { if (e.isTransactionFinished) showModel(); },
             "undoManager.isEnabled": true
           });
 
@@ -182,6 +188,8 @@
         $(go.GraphLinksModel,
           { linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
+            copiesArrays: true,
+            copiesArrayObjects: true,
             nodeDataArray: [
               { key: "Record1",
                 fields: [
@@ -198,11 +206,6 @@
             ]
           });
 
-      // automatically update the model that is shown on this page
-      myDiagram.model.addChangedListener(function(e) {
-        if (e.isTransactionFinished) showModel();
-      });
-
       showModel();  // show the diagram's initial model
 
       function showModel() {
@@ -217,7 +220,7 @@
   <p>Drag fields between records to move them; dragging within the same node can reorder them.
      Fields can be copied when holding down the control key; they are deleted when dropped in the diagram's background.
      The "record" Nodes are not movable or copyable or deletable.</p>
-  <div id="myDiagram" style="border: solid 1px black; width:100%; height:300px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px"></div>
   <p>The model data, automatically updated after each change or undo or redo:</p>
   <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
 </div>

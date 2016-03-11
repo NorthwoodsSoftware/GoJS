@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Panels -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Panels</h2>
@@ -132,7 +133,7 @@ so that the <a>GraphObject.stretch</a> value is effective.
 </pre>
 <script>goCode("verticalPanels", 600, 150)</script>
 
-<h4>Constrained Width Vertical Panels</h4>
+<h3>Constrained Width Vertical Panels</h3>
 <p>
 A Vertical <a>Panel</a> normally has the width of its widest element and the height that is the sum of all of its elements.
 However, you can also set the width and/or height to be larger or smaller than the natural size.
@@ -175,7 +176,7 @@ because the default value for <a>TextBlock.wrap</a> is to allow wrapping.
     ));
   diagram.add(
     $(go.Part, "Vertical",
-      { position: new go.Point(70, 0), background: "lightgray", width: 50, height: 90 },
+      { position: new go.Point(70, 0), background: "lightgray", width: 50, height: 65 },
       $(go.TextBlock, "a longer string", { background: "lightgreen" }),
       $(go.TextBlock, "left", { background: "lightgreen", alignment: go.Spot.Left }),
       $(go.TextBlock, "center", { background: "lightgreen", alignment: go.Spot.Center }),
@@ -184,6 +185,45 @@ because the default value for <a>TextBlock.wrap</a> is to allow wrapping.
     ));
 </pre>
 <script>goCode("limitedWidth", 600, 150)</script>
+
+<p>
+Here is a Vertical Panel with a default <a>GraphObject.stretch</a> of <a>GraphObject.Horizontal</a>.
+Because no width is specified for the whole panel, its width is the width of the widest element, in this case the second one.
+Note how all of the <a>TextBlock</a>s have the same long width, as highlighted by the lightgreen backgrounds.
+However the last TextBlock has a limited width, so it is not stretched.
+One can limit the width but not the height by supplying a value of <code>NaN</code> or <code>Infinity</code> for the height.
+</p>
+<pre data-language="javascript" id="defaultStretch">
+  diagram.add(
+    $(go.Part, "Vertical",
+      { background: "lightgray", defaultStretch: go.GraphObject.Horizontal },
+      $(go.TextBlock, "short", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "a much longer string", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "medium length", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "short2", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "max 50", { margin: 2, background: "lightgreen", maxSize: new go.Size(50, NaN) })
+    ));
+</pre>
+<script>goCode("defaultStretch", 600, 150)</script>
+
+<p>
+If you change that sample to set the <a>GraphObject.width</a> or <a>GraphObject.desiredSize</a>.width on one or more of the elements
+(just the last one in this case), the panel will get a width that is equal to the maximum of the set widths.
+The reduced width will cause the other, stretched, elements to be measured with the limited width (50 in this case),
+which cause those <a>TextBlock</a>s to wrap to fit within the available width.
+</p>
+<pre data-language="javascript" id="defaultStretch2">
+  diagram.add(
+    $(go.Part, "Vertical",
+      { background: "lightgray", defaultStretch: go.GraphObject.Horizontal },
+      $(go.TextBlock, "short", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "a much longer string", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "medium length", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "short2", { margin: 2, background: "lightgreen" }),
+      $(go.TextBlock, "= 50", { margin: 2, background: "lightgreen", width: 50 })
+    ));
+</pre>
+<script>goCode("defaultStretch2", 600, 150)</script>
 
 
 <h3>Horizontal Panels</h3>
@@ -217,7 +257,8 @@ so that the <a>GraphObject.stretch</a> value may be effective.
 </pre>
 <script>goCode("horizontalPanels", 600, 150)</script>
 
-<h4>Default Alignment and Stretch</h4>
+
+<h3>Default Alignment and Stretch</h3>
 <p>
 Both Vertical and Horizontal <a>Panel</a>s support the <a>Panel.defaultAlignment</a> and <a>Panel.defaultStretch</a> properties.
 This is a convenience so that you do not need to set the <a>GraphObject.alignment</a> or <a>GraphObject.stretch</a> property on each element.
@@ -239,25 +280,11 @@ In this case the <a>GraphObject.margin</a> provides a little extra space around 
     ));
 </pre>
 <script>goCode("defaultAlignment", 600, 150)</script>
-
 <p>
-Here is a Vertical Panel with a default <a>GraphObject.stretch</a> of <a>GraphObject.Horizontal</a>.
-Because no width is specified for the whole panel, its width is the width of the widest element, in this case the second one.
-Note how all of the <a>TextBlock</a>s have the same long width, as highlighted by the lightgreen backgrounds.
-However the last TextBlock has a specific width, 50, so it is not stretched.
+Vertical and Horizontal Panels are relatively simple ways of arranging a column or a row of objects.
+For more options, you may need to use a <a href="tablePanels.html">Table Panel</a>, even with the same set of objects.
+This is especially true when you want more control over the stretching of one or more elements.
 </p>
-<pre data-language="javascript" id="defaultStretch">
-  diagram.add(
-    $(go.Part, "Vertical",
-      { background: "lightgray", defaultStretch: go.GraphObject.Horizontal },
-      $(go.TextBlock, "short", { margin: 2, background: "lightgreen" }),
-      $(go.TextBlock, "a much longer string", { margin: 2, background: "lightgreen" }),
-      $(go.TextBlock, "medium length", { margin: 2, background: "lightgreen" }),
-      $(go.TextBlock, "short2", { margin: 2, background: "lightgreen" }),
-      $(go.TextBlock, "only 50", { margin: 2, background: "lightgreen", width: 50 })
-    ));
-</pre>
-<script>goCode("defaultStretch", 600, 150)</script>
 
 
 <h3>Spots</h3>
@@ -451,11 +478,50 @@ Many of the predefined figures have their own default values for spot1 and spot2
 The spot1 and spot2 properties on the main <a>Shape</a> are more general and more flexible than specifying the <a>GraphObject.margin</a> on the content element(s).
 </p>
 
+<p>
+If you constrain the size of the whole panel, there may be less or more space available to fit all of the "content" elements inside the "main" element.
+In the following example each Part has a total size of 50x50, causing the "content" <a>TextBlock</a>s to be limited in width and height,
+less than the natural width, which results in wrapping of the text.
+However there may not be enough height available to show the whole content element(s), causing them to be clipped.
+You can see that in the third Part the text is clipped, because there is less available area within an ellipse than within a rectangle.
+</p>
+<pre data-language="javascript" id="autoPanelsConstrained">
+  diagram.add(
+    $(go.Part, "Auto",
+      { width: 60, height: 60 },  // set the size of the whole panel
+      { position: new go.Point(0, 0), background: "lightgray" },
+      $(go.Shape, "Rectangle", { fill: "lightgreen" }),
+      $(go.TextBlock, "some text that wraps", { background: "yellow" })
+    ));
+  diagram.add(
+    $(go.Part, "Auto",
+      { width: 60, height: 60 },  // set the size of the whole panel
+      { position: new go.Point(100, 0), background: "lightgray" },
+      $(go.Shape, "RoundedRectangle", { fill: "lightgreen" }),
+      $(go.TextBlock, "some text that wraps", { background: "yellow" })
+    ));
+  diagram.add(
+    $(go.Part, "Auto",
+      { width: 60, height: 60 },  // set the size of the whole panel
+      { position: new go.Point(200, 0), background: "lightgray" },
+      $(go.Shape, "Ellipse", { fill: "lightgreen" }),
+      $(go.TextBlock, "some text that wraps", { background: "yellow" })
+    ));
+</pre>
+<script>goCode("autoPanelsConstrained", 600, 100)</script>
+<p>
+You should not set the size (<a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> or <a>GraphObject.height</a>)
+of the "main" element of an Auto Panel.
+</p>
+<p>
+Auto Panels should have two or more elements in them.
+</p>
+
 
 <h3>Spot Panels</h3>
 <p>
-Spot <a>Panel</a>s are like Auto Panels in that there is a "main" element and there are "content" elements that are not resized.
-The "content" elements are positioned about the "main" element based on the <a>GraphObject.alignment</a> property that has a <a>Spot</a> value.
+Spot <a>Panel</a>s are like Auto Panels in that there is a "main" element and there are "other" elements that are not resized.
+The "other" elements are positioned about the "main" element based on the <a>GraphObject.alignment</a> property that has a <a>Spot</a> value.
 The main feature of Spot Panels is that those elements may extend beyond the bounds of the "main" element.
 </p>
 <p>
@@ -523,18 +589,16 @@ If you use the opposite alignmentFocus as the alignment, the elements will be ju
 <script>goCode("focusOutsideSpotPanels", 600, 100)</script>
 
 <p>
-If you constrain the size of the whole panel, the main element will be sized to fit.
-For example, when the whole panel must be 100x50, the main element (the light green rectangular Shape)
-is limited to be much smaller than 100x50.
-Note that you would <b>not</b> normally specify the <a>GraphObject.desiredSize</a> of the main element in such a case.
-If you did, it might be clipped or there might be extra room around the main element.
+If you constrain the size of the whole panel, the panel may clip its elements.
+For example, when the whole panel must be 100x50, there is room horizontally but not vertically
+for the main element plus all of its other elements after arranging them.
 </p>
 <pre data-language="javascript" id="clipping">
   diagram.add(
     $(go.Part, "Spot",
       { background: "lightgray",
                     width: 100, height: 50 },  // it is unusual to set the size!
-      $(go.Shape, "Rectangle", { fill: "lightgreen" }),
+      $(go.Shape, "Rectangle", { fill: "lightgreen", width: 40, height: 40 }),
       $(go.TextBlock, "TL", { background: "yellow",
                         alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.BottomRight }),
       $(go.TextBlock, "TR", { background: "yellow",
@@ -628,6 +692,7 @@ But because the nested panel is taller than it is wider, there is empty space on
 </pre>
 <script>goCode("viewboxPanel", 600, 270)</script>
 
+</div>
 </div>
 </body>
 </html>

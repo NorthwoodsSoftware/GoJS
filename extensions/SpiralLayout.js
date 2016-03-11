@@ -117,11 +117,6 @@ SpiralLayout.prototype.doLayout = function(coll) {
   this.network = null;
 };
 
-/** only needed for older versions of GoJS, before 1.5.6 */
-SpiralLayout.prototype.commitLayout = function() {
-  this.network.vertexes.each(function(v) { v.commit(); });
-};
-
 /**
 * @ignore
 * Compute the effective diameter of a Node.

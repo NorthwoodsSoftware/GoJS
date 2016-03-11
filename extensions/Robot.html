@@ -35,7 +35,7 @@
     }
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // must name or refer to the DIV HTML element
+      $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
           allowDrop: true,  // must be true to accept drops from the Palette
           nodeTemplate:
@@ -70,7 +70,7 @@
 
     // initialize the Palette that is on the left side of the page
     myPalette =
-      $(go.Palette, "myPalette",  // must name or refer to the DIV HTML element
+      $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
         {
           nodeTemplate: myDiagram.nodeTemplate,
           model: new go.GraphLinksModel([  // specify the contents of the Palette
@@ -97,8 +97,7 @@
     if (alpha === null) return;
     var loc = alpha.actualBounds.center;
 
-    var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    var options = isMac ? { meta: true } : { control: true };
+    var options = { control: true, meta: true };
     // Simulate a mouse drag to move the Alpha node:
     robot.mouseDown(loc.x, loc.y, 0, options);
     robot.mouseMove(loc.x+80, loc.y+50, 50, options);
@@ -198,11 +197,11 @@
 <div id="sample">
   <div style="width:100%; white-space:nowrap;">
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80px">
-      <div id="myPalette" style="border: solid 1px gray; height: 400px"></div>
+      <div id="myPaletteDiv" style="border: solid 1px gray; height: 400px"></div>
     </span>
 
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
-      <div id="myDiagram" style="border: solid 1px gray; height: 400px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px gray; height: 400px"></div>
     </span>
   </div>
   To simulate mouse events the buttons below use the <b>Robot</b> class that is defined in <a href="Robot.js">Robot.js</a>.

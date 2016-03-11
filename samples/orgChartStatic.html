@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <style type="text/css">
 
-#myOverview {
+#myOverviewDiv {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -29,10 +29,16 @@
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // the DIV HTML element
-        { // put the diagram contents at the top center of the viewport
+      $(go.Diagram, "myDiagramDiv",  // the DIV HTML element
+        {
+          // Put the diagram contents at the top center of the viewport
           initialDocumentSpot: go.Spot.TopCenter,
           initialViewportSpot: go.Spot.TopCenter,
+          // OR: Scroll to show a particular node, once the layout has determined where that node is
+          //"InitialLayoutCompleted": function(e) {
+          //  var node = e.diagram.findNodeForKey(28);
+          //  if (node !== null) e.diagram.commandHandler.scrollToPart(node);
+          //},
           layout:
             $(go.TreeLayout,  // use a TreeLayout to position all of the nodes
               {
@@ -173,7 +179,7 @@
 
     // Overview
     myOverview =
-      $(go.Overview, "myOverview",  // the HTML DIV element for the Overview
+      $(go.Overview, "myOverviewDiv",  // the HTML DIV element for the Overview
         { observed: myDiagram, contentAlignment: go.Spot.Center });   // tell it which Diagram to show and pan
   }
 
@@ -190,13 +196,15 @@
     myDiagram.clearHighlighteds();
 
     // search four different data properties for the string, any of which may match for success
-    var results = myDiagram.findNodesByExample({ name: regex },
-                                               { nation: regex },
-                                               { title: regex },
-                                               { headOf: regex });
-    myDiagram.highlightCollection(results);
-    // try to center the diagram at the first node that was found
-    if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+    if (input.value) {  // empty string only clears highlighteds collection
+      var results = myDiagram.findNodesByExample({ name: regex },
+                                                 { nation: regex },
+                                                 { title: regex },
+                                                 { headOf: regex });
+      myDiagram.highlightCollection(results);
+      // try to center the diagram at the first node that was found
+      if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+    }
 
     myDiagram.commitTransaction("highlight search");
   }
@@ -204,8 +212,8 @@
 </head>
 <body onload="init()">
 <div id="sample" style="position: relative;">
-  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
-  <div id="myOverview"></div> <!-- Styled in a <style> tag at the top of the html page -->
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
+  <div id="myOverviewDiv"></div> <!-- Styled in a <style> tag at the top of the html page -->
   <p>
   This sample shows an organizational chart diagram and uses an in-laid GoJS Overview to aid the user in navigation.
   The data was taken from the UN web site in August 2009.

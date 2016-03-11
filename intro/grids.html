@@ -1,19 +1,28 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Grid Patterns -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Grid Patterns</h2>
 <p>
 It is common to want to display a grid of lines drawn at regular intervals.
 You may also want to force dragged parts to be aligned on grid points, and to resize parts to be multiples of the grid cell size.
+</p>
+<p>
+Grids are implemented using a type of <a>Panel</a>, <a>Panel.Grid</a>.
+Grid Panels, like most other types of Panels, can be used within <a>Node</a>s or any other kind of <a>Part</a>.
+However when they are used as the <a>Diagram.grid</a>, they are effectively infinite in extent.
+</p>
+<p>
+Unlike in other kinds of <a>Panel</a>s, Grid Panel elements must be <a>Shape</a>s that are only used to control how the grid lines or grid bars are drawn.
 </p>
 
 <h3>Default Grid</h3>
@@ -242,7 +251,35 @@ To get a tablecloth effect, one can use both vertical and horizontal bars with a
 <p>
 This example limits dragging of all nodes by setting <a>DraggingTool.isGridSnapEnabled</a> to true.
 </p>
+<p>
+Here is an example of using a "Grid" <a>Panel</a> as a regular data bound element in a <a>Node</a>:
+</p>
+<pre data-language="javascript" id="nodeGrid">
+  diagram.initialContentAlignment = go.Spot.Center;
 
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { resizable: true, resizeObjectName: "GRID" },
+      $(go.Shape, "Rectangle", { fill: "transparent" }),
+      $(go.Panel, "Grid",
+        { name: "GRID", desiredSize: new go.Size(100, 100), gridCellSize: new go.Size(20, 20) },
+        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+        new go.Binding("gridCellSize", "cell", go.Size.parse).makeTwoWay(go.Size.stringify),
+        $(go.Shape, "LineV",
+          new go.Binding("stroke")),
+        $(go.Shape, "LineH",
+          new go.Binding("stroke"))
+      ));
+
+  diagram.model = new go.GraphLinksModel([
+    { key: "Alpha", cell: "25 25", stroke: "lightgreen" },
+    { key: "Beta", size: "150 75", cell: "15 30" }
+  ]);
+</pre>
+<script>goCode("nodeGrid", 600, 350)</script>
+
+
+</div>
 </div>
 </body>
 </html>

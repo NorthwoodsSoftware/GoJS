@@ -91,17 +91,16 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
                 name: tablename,
                 column: 0,
                 stretch: go.GraphObject.Fill,
-                //alignment: go.Spot.Top,
-                //stretch: go.GraphObject.Horizontal,
                 background: "whitesmoke",
-                rowSizing: go.RowColumnDefinition.None
+                rowSizing: go.RowColumnDefinition.None,
+                defaultAlignment: go.Spot.Top
               }),
 
             // this is the scrollbar
             $(go.RowColumnDefinition,
               { column: 1, sizing: go.RowColumnDefinition.None }),
             $(go.Panel, "Table",
-              { column: 1, stretch: go.GraphObject.Vertical },
+              { column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD" },
               // the scroll up button
               $("AutoRepeatButton",
                 {
@@ -113,10 +112,7 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
                 },
                 $(go.Shape, "TriangleUp",
                   { stroke: null, desiredSize: new go.Size(6, 6) })),
-              // the filler between the scroll buttons
               // (someday implement a thumb here and support dragging to scroll)
-              $(go.Shape,
-                { row: 1, stretch: go.GraphObject.Fill, fill: "lightgray", stroke: "gray" }),
               // the scroll down button
               $("AutoRepeatButton",
                 {

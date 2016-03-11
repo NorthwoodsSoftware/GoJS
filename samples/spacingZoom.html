@@ -13,10 +13,16 @@
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
                     initialContentAlignment: go.Spot.Center,  // center the content
                     commandHandler: $(SpacingCommandHandler),
+                    // update the SpacingCommandHandler.space from the model at the end of each transaction
+                    "ModelChanged": function(e) {
+                      if (e.isTransactionFinished) {
+                        myDiagram.commandHandler.space = myDiagram.model.modelData.space;
+                      }
+                    },
                     "undoManager.isEnabled": true  // enable undo & redo
                   });
 
@@ -55,12 +61,6 @@
 
     // the "space" property is kept on the Model.modelData too
     myDiagram.model.modelData.space = 1.0;
-    // update the SpacingCommandHandler.space from the model at the end of each transaction
-    myDiagram.model.addChangedListener(function(e) {
-      if (e.isTransactionFinished) {
-        myDiagram.commandHandler.space = myDiagram.model.modelData.space;
-      }
-    });
   }
 
 
@@ -213,7 +213,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px black; width:400px; height:400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
   Spacing factor: <span id="SPACE">1.0</span>
   <br />
   <label><input type="checkbox" onclick="onIsYSpacedToggled()" checked="checked" />Is Y Axis Spaced?</label>

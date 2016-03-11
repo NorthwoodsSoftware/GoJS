@@ -14,7 +14,7 @@
     var $ = go.GraphObject.make;  //for conciseness in defining node templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  //Diagram refers to its DIV HTML element by id
+      $(go.Diagram, "myDiagramDiv",  //Diagram refers to its DIV HTML element by id
         { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -208,12 +208,14 @@
 
   CustomLink.prototype.findSidePortIndexAndCount = function(node, port) {
     var nodedata = node.data;
-    var portdata = port.data;
-    var side = port._side;
-    var arr = nodedata[side + "Array"];
-    var len = arr.length;
-    for (var i = 0; i < len; i++) {
-      if (arr[i] === portdata) return [i, len];
+    if (nodedata !== null) {
+      var portdata = port.data;
+      var side = port._side;
+      var arr = nodedata[side + "Array"];
+      var len = arr.length;
+      for (var i = 0; i < len; i++) {
+        if (arr[i] === portdata) return [i, len];
+      }
     }
     return [-1, len];
   };
@@ -221,23 +223,26 @@
   /** @override */
   CustomLink.prototype.computeEndSegmentLength = function(node, port, spot, from) {
     var esl = go.Link.prototype.computeEndSegmentLength.call(this, node, port, spot, from);
-    var thispt = port.getDocumentPoint(this.computeSpot(from));
-    var otherpt = this.getOtherPort(port).getDocumentPoint(this.computeSpot(!from));
-    if (Math.abs(thispt.x - otherpt.x) > 20 || Math.abs(thispt.y - otherpt.y) > 20) {
-      var info = this.findSidePortIndexAndCount(node, port);
-      var idx = info[0];
-      var count = info[1];
-      if (port._side == "top" || port._side == "bottom") {
-        if (otherpt.x < thispt.x) {
-          return esl + 4 + idx * 8;
-        } else {
-          return esl + (count - idx - 1) * 8;
-        }
-      } else {  // left or right
-        if (otherpt.y < thispt.y) {
-          return esl + 4 + idx * 8;
-        } else {
-          return esl + (count - idx - 1) * 8;
+    var other = this.getOtherPort(port);
+    if (port !== null && other !== null) {
+      var thispt = port.getDocumentPoint(this.computeSpot(from));
+      var otherpt = other.getDocumentPoint(this.computeSpot(!from));
+      if (Math.abs(thispt.x - otherpt.x) > 20 || Math.abs(thispt.y - otherpt.y) > 20) {
+        var info = this.findSidePortIndexAndCount(node, port);
+        var idx = info[0];
+        var count = info[1];
+        if (port._side == "top" || port._side == "bottom") {
+          if (otherpt.x < thispt.x) {
+            return esl + 4 + idx * 8;
+          } else {
+            return esl + (count - idx - 1) * 8;
+          }
+        } else {  // left or right
+          if (otherpt.y < thispt.y) {
+            return esl + 4 + idx * 8;
+          } else {
+            return esl + (count - idx - 1) * 8;
+          }
         }
       }
     }
@@ -370,7 +375,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="width:600px; height:500px; border:1px solid black"></div>
+  <div id="myDiagramDiv" style="width:600px; height:500px; border:1px solid black"></div>
   Add port to selected nodes:
   <button onclick="addPort('top')">Top</button>
   <button onclick="addPort('bottom')">Bottom</button>

@@ -138,11 +138,16 @@ GeometryReshapingTool.prototype.updateAdornments = function(part) {
             case 2: x = seg.point1X; y = seg.point1Y; break;
             case 3: x = seg.point2X; y = seg.point2Y; break;
           }
-          h.alignment = new go.Spot(Math.max(0, Math.min((x-b.x) / b.width, 1)), Math.max(0, Math.min((y-b.y) / b.height, 1)));
+          var bw = b.width;
+          if (bw === 0) bw = 0.001;
+          var bh = b.height;
+          if (bh === 0) bh = 0.001;
+          h.alignment = new go.Spot(Math.max(0, Math.min((x - b.x) / bw, 1)),
+                                    Math.max(0, Math.min((y - b.y) / bh, 1)));
         });
 
         part.addAdornment(this.name, adornment);
-        adornment.location = selelt.getDocumentPoint(go.Spot.Center);
+        adornment.location = selelt.getDocumentPoint(go.Spot.TopLeft);
         adornment.angle = selelt.getDocumentAngle();
         return;
       }
@@ -158,7 +163,7 @@ GeometryReshapingTool.prototype.makeAdornment = function(selelt) {
   var adornment = new go.Adornment();
   adornment.type = go.Panel.Spot;
   adornment.locationObjectName = "BODY";
-  adornment.locationSpot = go.Spot.Center;
+  adornment.locationSpot = new go.Spot(0, 0, -selelt.strokeWidth / 2, -selelt.strokeWidth / 2);
   var h = new go.Shape();
   h.name = "BODY";
   h.fill = null;
@@ -324,9 +329,14 @@ GeometryReshapingTool.prototype.reshape = function(newPoint) {
     case 2: seg.point1X = locpt.x; seg.point1Y = locpt.y; break;
     case 3: seg.point2X = locpt.x; seg.point2Y = locpt.y; break;
   }
-  geo.normalize();  // avoid any negative coordinates in the geometry
-  shape.geometry = geo;
-  this.updateAdornments(shape.part);
+  var offset = geo.normalize();  // avoid any negative coordinates in the geometry
+  shape.geometry = geo;  // modify the Shape
+  var part = shape.part;  // move the Part holding the Shape
+  if (!part.locationSpot.equals(go.Spot.Center)) {  // but only if the locationSpot isn't Center
+    part.move(part.position.copy().subtract(offset));
+  }
+  this.updateAdornments(part);  // update any Adornments of the Part
+  this.diagram.maybeUpdate();  // force more frequent drawing for smoother looking behavior
 };
 
 
@@ -337,5 +347,5 @@ GeometryReshapingTool.prototype.reshape = function(newPoint) {
 * @return {Point}
 */
 GeometryReshapingTool.prototype.computeReshape = function(p) {
-  return p;
+  return p;  // no constraints on the points
 };

@@ -15,14 +15,40 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+      $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
           initialContentAlignment: go.Spot.Center,
           layout: $(go.TreeLayout,
                     { angle: 90,
                       setsPortSpot: false,
                       setsChildPortSpot: false
-                    })
+                    }),
+          "undoManager.isEnabled": true,
+          // When a Node is deleted by the user, also delete all of its Comment Nodes.
+          // When a Comment Link is deleted, also delete the corresponding Comment Node.
+          "SelectionDeleting": function(e) {
+            var parts = e.subject;  // the collection of Parts to be deleted, the Diagram.selection
+            // iterate over a copy of this collection,
+            // because we may add to the collection by selecting more Parts
+            parts.copy().each(function(p) {
+              if (p instanceof go.Node) {
+                var node = p;
+                node.findNodesConnected().each(function(n) {
+                  // remove every Comment Node that is connected with this node
+                  if (n.category === "Comment") {
+                    n.isSelected = true;  // include in normal deletion process
+                  }
+                });
+              } else if (p instanceof go.Link && p.category === "Comment") {
+                var comlink = p;  // a "Comment" Link
+                var comnode = comlink.fromNode;
+                // remove the Comment Node that is associated with this Comment Link,
+                if (comnode.category === "Comment") {
+                  comnode.isSelected = true;  // include in normal deletion process
+                }
+              }
+            });
+          }
         });
 
     myDiagram.nodeTemplate =
@@ -46,7 +72,6 @@
     myDiagram.nodeTemplateMap.add("Comment",
       $(go.Node,  // this needs to act as a rectangular shape for BalloonLink,
         { background: "transparent" },  // which can be accomplished by setting the background.
-        { selectionAdorned: false },    // optional
         $(go.TextBlock,
           { stroke: "brown", margin: 3 },
           new go.Binding("text"))
@@ -88,7 +113,7 @@
 </head>
 <body onload="init()">
   <div id="sample">
-    <div id="myDiagram" style="border: solid 1px blue; width:100%; height:400px;"></div>
+    <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:400px;"></div>
     <p>
       <b>GoJS</b> supports the notion of "Comment"s.
       A "Comment" is a node that is linked with another node but is positioned by some layouts to go along with that other node,
@@ -102,7 +127,7 @@
       The "Comment" link template defined here uses the <code>BalloonLink</code> class defined in <a href="../extensions/BalloonLink.js">BalloonLink.js</a> in the Extensions directory.
     </p>
     <div style="display: inline">
-      Current Diagram.model saved in JSON format:<br />
+      Initial Diagram.model saved in JSON format:<br />
       <pre id="savedModel"></pre>
     </div>
   </div>

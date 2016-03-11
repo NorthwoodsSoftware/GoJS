@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Tree Mapper</title>
+  <meta name="description" content="A tree mapper diagram to show and edit the relationships between items in two different trees." />
+  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function TreeNode() {
+      go.Node.call(this);
+    }
+    go.Diagram.inherit(TreeNode, go.Node);
+
+    /** @override */
+    TreeNode.prototype.findVisibleNode = function() {
+      // redirect links to lowest visible "ancestor" in the tree
+      var n = this;
+      while (n !== null && !n.isVisible()) {
+        n = n.findTreeParentNode();
+      }
+      return n;
+    };
+
+
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            "commandHandler.copiesTree": true,
+            "commandHandler.deletesTree": true,
+            // newly drawn links always map a node in one tree to a node in another tree
+            "linkingTool.archetypeLinkData": { category: "Mapping" },
+            "linkingTool.linkValidation": checkLink,
+            "relinkingTool.linkValidation": checkLink,
+            initialContentAlignment: go.Spot.Center,
+            "undoManager.isEnabled": true,
+            "ModelChanged": function(e) {
+              if (e.isTransactionFinished) {  // show the model data in the page's TextArea
+                document.getElementById("mySavedModel").textContent = e.model.toJson();
+              }
+            }
+          });
+
+      function checkLink(fn, fp, tn, tp, link) {
+        // Do not allow links between nodes within the same tree (i.e. within the same group).
+        // Nor do we allow links from the right side to the left side.
+        return fn.containingGroup !== tn.containingGroup && fn.position.x < tn.position.x;
+      }
+
+      // Each node in a tree is defined using the default nodeTemplate.
+      myDiagram.nodeTemplate =
+        $(TreeNode,
+          { movable: false },  // user cannot move an individual node
+          // no Adornment: instead change panel background color by binding to Node.isSelected
+          { selectionAdorned: false },
+          { fromLinkable: true, toLinkable: true },  // user can draw link to and from such tree nodes
+          $("TreeExpanderButton",  // support expanding/collapsing subtrees
+            { width: 14, height: 14,
+              "ButtonIcon.stroke": "white",
+              "ButtonIcon.strokeWidth": 2,
+              "ButtonBorder.fill": "goldenrod",
+              "ButtonBorder.stroke": null,
+              "ButtonBorder.figure": "Rectangle"
+            }),
+          $(go.Panel, "Horizontal",
+            { position: new go.Point(16, 0) },
+            new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
+            //// optional icon for each tree node
+            //$(go.Picture,
+            //  { width: 14, height: 14,
+            //    margin: new go.Margin(0, 4, 0, 0),
+            //    imageStretch: go.GraphObject.Uniform,
+            //    source: "images/defaultIcon.png" },
+            //  new go.Binding("source", "src")),
+            $(go.TextBlock,
+              new go.Binding("text", "key", function(s) { return "item " + s; }))
+          )  // end Horizontal Panel
+        );  // end Node
+
+      // These are the links connecting tree nodes within each group.
+      
+      myDiagram.linkTemplate = $(go.Link);  // without lines
+
+      myDiagram.linkTemplate =  // with lines
+        $(go.Link,
+          { selectable: false,
+            routing: go.Link.Orthogonal,
+            fromEndSegmentLength: 4,
+            toEndSegmentLength: 4,
+            fromSpot: new go.Spot(0.001, 1, 7, 0),
+            toSpot: go.Spot.Left },
+          $(go.Shape,
+            { stroke: "lightgray" }));
+
+      // These are the blue links connecting a tree node on the left side with one on the right side.
+      myDiagram.linkTemplateMap.add("Mapping",
+        $(go.Link,
+          { isTreeLink: false, isLayoutPositioned: false, layerName: "Foreground" },
+          { fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
+          { relinkableFrom: true, relinkableTo: true },
+          $(go.Shape, { stroke: "blue", strokeWidth: 2 })
+        ));
+
+      myDiagram.groupTemplate =
+        $(go.Group, "Auto",
+          new go.Binding("position", "xy", go.Point.parse).makeTwoWay(go.Point.stringify),
+          {
+            layout:
+              $(go.TreeLayout,
+                {
+                  alignment: go.TreeLayout.AlignmentStart,
+                  angle: 0,
+                  compaction: go.TreeLayout.CompactionNone,
+                  layerSpacing: 16,
+                  layerSpacingParentOverlap: 1,
+                  nodeIndent: 2,
+                  nodeIndentPastParent: 0.88,
+                  nodeSpacing: 0,
+                  setsPortSpot: false,
+                  setsChildPortSpot: false
+                })
+          },
+          $(go.Shape, { fill: "white", stroke: "lightgray" }),
+          $(go.Panel, "Vertical",
+            { defaultAlignment: go.Spot.Left },
+            $(go.TextBlock,
+              { font: "bold 14pt sans-serif", margin: new go.Margin(5, 5, 0, 5) },
+              new go.Binding("text")),
+            $(go.Placeholder, { padding: 5 })
+          )
+        );
+
+      var nodeDataArray = [
+        { isGroup: true, key: -1, text: "Left Side", xy: "0 0" },
+        { isGroup: true, key: -2, text: "Right Side", xy: "300 0" }
+      ];
+      var linkDataArray = [
+        { from: 6, to: 1012, category: "Mapping" },
+        { from: 4, to: 1006, category: "Mapping" },
+        { from: 9, to: 1004, category: "Mapping" },
+        { from: 1, to: 1009, category: "Mapping" }
+      ];
+
+      // initialize tree on left side
+      var root = { key: 0, group: -1 };
+      nodeDataArray.push(root);
+      for (var i = 0; i < 11; ) {
+        i = makeTree(3, i, 11, nodeDataArray, linkDataArray, root, -1, root.key);
+      }
+
+      // initialize tree on right side
+      root = { key: 1000, group: -2 };
+      nodeDataArray.push(root);
+      for (var i = 0; i < 15; ) {
+        i = makeTree(3, i, 15, nodeDataArray, linkDataArray, root, -2, root.key);
+      }
+      myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    }
+
+    // help create a random tree structure
+    function makeTree(level, count, max, nodeDataArray, linkDataArray, parentdata, groupkey, rootkey) {
+      var numchildren = Math.floor(Math.random() * 10);
+      for (var i = 0; i < numchildren; i++) {
+        if (count >= max) return count;
+        count++;
+        var childdata = { key: rootkey+count, group: groupkey };
+        nodeDataArray.push(childdata);
+        linkDataArray.push({ from: parentdata.key, to: childdata.key });
+        if (level > 0 && Math.random() > 0.5) {
+          count = makeTree(level - 1, count, max, nodeDataArray, linkDataArray, childdata, groupkey, rootkey);
+        }
+      }
+      return count;
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <p>
+    This sample is like the <a href="records.html">Mapping Fields of Records</a> sample,
+    but it has a collapsible tree of nodes on each side, rather than a simple list of items.
+    The implementation of the trees comes from the <a href="treeView.html">Tree View</a> sample.
+  </p>
+  <p>
+    Draw new links by dragging from any field (i.e. any tree node).
+    Reconnect a selected link by dragging its diamond-shaped handle. 
+  </p>
+  <div id="myDiagramDiv" style="border: 1px solid blue; width: 700px; height: 350px"></div>
+  <p>The model data, automatically updated after each change or undo or redo:</p>
+  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
+</div>
+</body>
+</html>

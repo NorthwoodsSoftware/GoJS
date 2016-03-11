@@ -14,9 +14,13 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram",
+      $(go.Diagram, "myDiagramDiv",
         {
           initialContentAlignment: go.Spot.Center,
+          // For this sample, automatically show the state of the diagram's model on the page
+          "ModelChanged": function(e) {
+            if (e.isTransactionFinished) showModel();
+          },
           "undoManager.isEnabled": true
         });
 
@@ -80,7 +84,7 @@
             $(go.TextBlock,
               new go.Binding("text", "name"),
               { alignment: go.Spot.Left }),
-            $(go.Picture, "http://gojs.net/latest/samples/images/60x90.png",
+            $(go.Picture, "images/60x90.png",
               { width: 30, height: 45, margin: new go.Margin(10, 10) })
           )
         ),
@@ -180,11 +184,6 @@
             ]
         });
 
-    // automatically update the model that is shown on this page
-    myDiagram.model.addChangedListener(function(e) {
-      if (e.isTransactionFinished) showModel();
-    });
-
     showModel();
 
     function showModel() {
@@ -195,7 +194,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
   <p>
     Click on a port to toggle its selection.
     The Delete command will only delete selected ports, if there are any; otherwise it will delete Nodes and Links as it normally would.

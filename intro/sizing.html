@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Sizing of GraphObjects -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Sizing GraphObjects</h2>
@@ -17,10 +18,16 @@ The size of a <a>GraphObject</a> is determined by the values of the <a>GraphObje
 The actual size of an object after its containing panel measures and arranges it is given by several
 read-only properties: <a>GraphObject.naturalBounds</a>, <a>GraphObject.measuredBounds</a>, and <a>GraphObject.actualBounds</a>.
 </p>
+<p>
+The <a>GraphObject.width</a> property is exactly the same as the <a>Size.width</a> component of the <a>GraphObject.desiredSize</a>.
+Similarly, the <a>GraphObject.height</a> property corresponds to the desiredSize's height.
+The default value of <a>GraphObject.desiredSize</a> is <code>(NaN, NaN)</code> -- meaning that the size must be computed.
+One can set the width to a real number and leave the height to be <code>NaN</code>, or vice-versa.
+</p>
 
 <h4>DesiredSize, MinSize, and MaxSize</h4>
 <p>
-When the <a>GraphObject.desiredSize</a> property is set it normally gets that size.
+When the <a>GraphObject.desiredSize</a> property is set to real numbers it gets that as its natural size.
 When the desiredSize property is not set but there is a <a>GraphObject.stretch</a> value,
 it will get the size of the available space.
 When desiredSize is not set and there is no stretch,
@@ -226,6 +233,7 @@ Finally the value may be inherited from the <a>Panel.defaultAlignment</a> proper
 </p>
 <p>
 If you specify a fill stretch (horizontal or vertical or both) and an alignment, the alignment will be ignored.
+Basically if an object is exactly the size that is available to it, there is only one position for it, so all alignments are the same.
 </p>
 
 <h4>Alignment of Shapes</h4>
@@ -296,6 +304,7 @@ and added a margin to separate the shapes.
 </pre>
 <script>goCode("bigShapeAlignment", 600, 100)</script>
 
+</div>
 </div>
 </body>
 </html>

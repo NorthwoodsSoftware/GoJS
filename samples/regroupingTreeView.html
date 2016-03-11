@@ -14,7 +14,7 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram",
+      $(go.Diagram, "myDiagramDiv",
         {
           // what to do when a drag-drop occurs in the Diagram's background
           mouseDrop: function(e) { finishDrop(e, null); },
@@ -93,7 +93,7 @@
           // when the selection is dropped into a Group, add the selected Parts into that Group;
           // if it fails, cancel the tool, rolling back any changes
           mouseDrop: finishDrop,
-          //???handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+          handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           // Groups containing Groups lay out their members horizontally
           layout:
             $(go.GridLayout,
@@ -135,7 +135,7 @@
           // when the selection is dropped into a Group, add the selected Parts into that Group;
           // if it fails, cancel the tool, rolling back any changes
           mouseDrop: finishDrop,
-          //???handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+          handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           // Groups containing Nodes lay out their members vertically
           layout:
             $(go.GridLayout,
@@ -183,6 +183,28 @@
           },
           new go.Binding("text", "text").makeTwoWay())
       );
+
+    myDiagram.addModelChangedListener(function(e) {
+      if (e.model.skipsUndoManager) return;
+      // don't need to start/commit a transaction because the UndoManager is shared with myTreeView
+      if (e.modelChange === "nodeGroupKey" || e.modelChange === "nodeParentKey") {
+        // handle structural change: group memberships
+        var treenode = myTreeView.findNodeForData(e.object);
+        if (treenode !== null) treenode.updateRelationshipsFromData();
+      } else if (e.change === go.ChangedEvent.Property) {
+        var treenode = myTreeView.findNodeForData(e.object);
+        if (treenode !== null) treenode.updateTargetBindings();
+      } else if (e.change === go.ChangedEvent.Insert && e.propertyName === "nodeDataArray") {
+        // pretend the new data isn't already in the nodeDataArray for myTreeView
+        myTreeView.model.nodeDataArray.splice(e.newParam, 1);
+        // now add to the myTreeView model using the normal mechanisms
+        myTreeView.model.addNodeData(e.newValue);
+      } else if (e.change === go.ChangedEvent.Remove && e.propertyName === "nodeDataArray") {
+        // remove the corresponding node from myTreeView
+        var treenode = myTreeView.findNodeForData(e.oldValue);
+        if (treenode !== null) myTreeView.remove(treenode);
+      }
+    });
 
     // setup the tree view; will be initialized with data by the load() function
     myTreeView =
@@ -260,45 +282,8 @@
     // pretending the "group" relationship is the "tree parent" relationship
     myTreeView.model = $(go.TreeModel, { nodeParentKeyProperty: "group" });
 
-    load();
-  }
-
-  // save a model to and load a model from JSON text, displayed below the Diagram
-  function save() {
-    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-    myDiagram.isModified = false;
-  }
-  function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-
-    myDiagram.model.addChangedListener(function(e) {
-      // don't need to start/commit a transaction because the UndoManager is shared with myTreeView
-      if (e.modelChange === "nodeGroupKey" || e.modelChange === "nodeParentKey") {
-        // handle structural change: group memberships
-        var treenode = myTreeView.findNodeForData(e.object);
-        if (treenode !== null) treenode.updateRelationshipsFromData();
-      } else if (e.change === go.ChangedEvent.Property) {
-        var treenode = myTreeView.findNodeForData(e.object);
-        if (treenode !== null) treenode.updateTargetBindings();
-      } else if (e.change === go.ChangedEvent.Insert && e.propertyName === "nodeDataArray") {
-        // pretend the new data isn't already in the nodeDataArray for myTreeView
-        myTreeView.model.nodeDataArray.splice(e.newParam, 1);
-        // now add to the myTreeView model using the normal mechanisms
-        myTreeView.model.addNodeData(e.newValue);
-      } else if (e.change === go.ChangedEvent.Remove && e.propertyName === "nodeDataArray") {
-        // remove the corresponding node from myTreeView
-        var treenode = myTreeView.findNodeForData(e.oldValue);
-        if (treenode !== null) myTreeView.remove(treenode);
-      }
-    });
-
-    // share all of the data with the tree view
-    myTreeView.model.nodeDataArray = myDiagram.model.nodeDataArray;
-
-    // share the UndoManager too!
-    myTreeView.model.undoManager = myDiagram.model.undoManager;
-
-    myTreeView.model.addChangedListener(function(e) {
+    myTreeView.addModelChangedListener(function(e) {
+      if (e.model.skipsUndoManager) return;
       // don't need to start/commit a transaction because the UndoManager is shared with myDiagram
       if (e.modelChange === "nodeGroupKey" || e.modelChange === "nodeParentKey") {
         // handle structural change: tree parent/children
@@ -320,6 +305,22 @@
       }
     });
 
+    load();
+  }
+
+  // save a model to and load a model from JSON text, displayed below the Diagram
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+
+    // share all of the data with the tree view
+    myTreeView.model.nodeDataArray = myDiagram.model.nodeDataArray;
+
+    // share the UndoManager too!
+    myTreeView.model.undoManager = myDiagram.model.undoManager;
   }
 </script>
 </head>
@@ -330,7 +331,7 @@
       <div id="myTreeView" style="border: solid 1px black; height: 500px"></div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:75%">
-      <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
     </span>
   </div>
   <p>

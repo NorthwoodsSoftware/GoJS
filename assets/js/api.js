@@ -1,10 +1,12 @@
 function showSummaries(yesNo) {
-    if (yesNo == "yes") {
+    if (yesNo) {
       $("span.details").hide();
+      $("div.details").hide();
       $("span.nodetails").show();
     }
     else {
       $("span.details").show();
+      $("div.details").show();
       $("span.nodetails").hide();
     }
     try {
@@ -14,32 +16,28 @@ function showSummaries(yesNo) {
 
 $(document).ready(function(){
   $("#buttonShow").click(function(){
-    showSummaries("no");
+    showSummaries(false);
   });
   $("#buttonHide").click(function(){
-    showSummaries("yes");
+    showSummaries(true);
   });
+
  try {
-    if (localStorage.getItem("showSummaries") ==  "yes") {
-       $("span.details").hide();
-       $("span.nodetails").show();
+    if (localStorage.getItem("showSummaries") ===  "true") {
+       $("span.details").toggle();
+       $("span.nodetails").toggle(); // the "More..." button
+       $("div.details").toggle();
     }
  } catch (e) {};
+
 });
 
-$(function(){
-$(window).hashchange(function() {
-  // Alerts every time the hash changes!
-  $(location.hash).addClass('navhighlight');
-  })
-
-// Trigger the event (useful on page load).
-$(window).hashchange();
-});
 
 function hst(section) {
-  $("#"+section).toggle(500);
-  $("#x"+section).toggle();
+  $("#"+section).toggle(500); // span details
+  $("#d"+section).toggle(500); // div details
+  $("#x"+section).toggle(); // "More..."
+
 }
 
 $('#bluecss').click(function (){

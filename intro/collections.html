@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Collections -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Collections</h2>
@@ -129,7 +130,7 @@ except that the order of the items may vary.
   while (it.next()) {
     console.log(it.value);
   }
-  // This might output, but the order may vary:
+  // This might output, perhaps in different order:
   // A
   // B
   // C
@@ -166,7 +167,8 @@ The two optional arguments to the <a>Map</a> constructor specifies the types of 
 
 <p>
 Iterating over the items in a <a>Map</a> is just like iterating over a <a>List</a>,
-except that the order of the items may vary.
+but offering access to both the keys and the values.
+As with <a>Set</a>s the order of the items may vary.
 </p>
 <pre data-language="javascript">
   var m = new go.Map("string", "number");
@@ -175,15 +177,40 @@ except that the order of the items may vary.
   m.add("C", 3);
   m.add("B", 222);  // replace the value for "B"
 
+  // Normal iteration lets you get both the key and its corresponding value:
   var it = m.iterator;
   while (it.next()) {
     console.log(it.key + ": " + it.value);
   }
-  // This might output, but the order may vary:
+  // This might output, perhaps in different order:
   // A: 1
   // B: 222
   // C: 3
+
+  // To get a collection of the keys, use Map.iteratorKeys:
+  var kit = m.iteratorKeys;
+  while (kit.next()) {
+    console.log(kit.value);
+  }
+  // This might output, perhaps in different order:
+  // A
+  // B
+  // C
+
+  // To get a collection of the values, use Map.iteratorValues:
+  var vit = m.iteratorValues;
+  while (vit.next()) {
+    console.log(vit.value);
+  }
+  // This might output, perhaps in different order:
+  // 1
+  // 222
+  // 3
 </pre>
+<p>
+Typically one uses <a>Map.iteratorKeys</a> or <a>Map.iteratorValues</a>
+when needing to pass a collection on to other methods that take an <a>Iterator</a>.
+</p>
 
 <h3>More Iteration Examples</h3>
 
@@ -251,6 +278,7 @@ If you want to find <a>Node</a>s that are immediate members of a <a>Group</a>:
 </p>
 
 
+</div>
 </div>
 </body>
 </html>

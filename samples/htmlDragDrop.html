@@ -63,7 +63,7 @@
 
     // Next, events intended for the drop target - the Diagram div
 
-    var div = document.getElementById('myDiagram');
+    var div = document.getElementById("myDiagramDiv");
     div.addEventListener("dragenter", function(event) {
       // Here you could also set effects on the Diagram,
       // such as changing the background color to indicate an acceptable drop zone
@@ -110,8 +110,12 @@
         if (!(can instanceof HTMLCanvasElement)) return;
 
         var bbox = can.getBoundingClientRect();
-        var mx = event.clientX - bbox.left * ((can.width/pixelratio) / bbox.width);
-        var my = event.clientY - bbox.top * ((can.height/pixelratio) / bbox.height);
+        var bbw = bbox.width;
+        if (bbw === 0) bbw = 0.001;
+        var bbh = bbox.height;
+        if (bbh === 0) bbh = 0.001;
+        var mx = event.clientX - bbox.left * ((can.width/pixelratio) / bbw);
+        var my = event.clientY - bbox.top * ((can.height/pixelratio) / bbh);
         var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
         myDiagram.startTransaction('new node');
         myDiagram.model.addNodeData({
@@ -138,7 +142,7 @@
 
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    myDiagram = $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
                     initialContentAlignment: go.Spot.Center,
                     "undoManager.isEnabled": true
@@ -187,7 +191,7 @@
       </div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; margin-left: 10px;">
-      <div class="dropzone" id="myDiagram" style="border: solid 1px black; width:400px; height:400px;"></div>
+      <div class="dropzone" id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px;"></div>
     </span>
   </div>
 

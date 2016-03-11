@@ -15,7 +15,7 @@
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // must be the ID or reference to div
+      $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
         {
           initialContentAlignment: go.Spot.Center,
           initialAutoScale: go.Diagram.Uniform,
@@ -29,7 +29,7 @@
       var diagram = this.diagram;
       if (diagram === null || !diagram.allowSelect) return;
       var e = diagram.lastInput;
-      if (!e.control && !e.shift) {
+      if (!(e.control || e.meta) && !e.shift) {
         var part = diagram.findPartAt(e.documentPoint, false);
         if (part !== null) {
           var firstselected = null;  // is this or any containing Group selected?
@@ -192,7 +192,7 @@
       <button type="button" onclick="rebuildGraph()">Generate Tree</button>
     </span>
   </div>
-  <div id="myDiagram" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
   <p>
     This sample demonstrates a custom Layout, TreeMapLayout, which assumes that the diagram consists of nested Groups and simple Nodes.
     Each node is positioned and sized to fill an area of the viewport proportionate to its "size", as determined by its Node.data.size property.

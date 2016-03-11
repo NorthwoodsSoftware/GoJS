@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Fault Tree</title>
+<meta name="description" content="A Fault Tree diagram showing gate shapes at each non-root node." />
+<!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        {
+          allowCopy: false,
+          allowDelete: false,
+          initialContentAlignment: go.Spot.Center,
+          "draggingTool.dragsTree": true,
+          layout:
+            $(go.TreeLayout,
+              { angle: 90, layerSpacing: 30 }),
+          "undoManager.isEnabled": true
+        });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
+
+    myDiagram.nodeTemplate =  // the default node template
+      $(go.Node, "Spot",
+        { selectionObjectName: "BODY", locationSpot: go.Spot.Center, locationObjectName: "BODY" },
+        // the main "BODY" consists of a Rectangle surrounding some text
+        $(go.Panel, "Auto",
+          { name: "BODY", portId: "" },
+          $(go.Shape,
+            { fill: "lightyellow" }),
+          $(go.TextBlock,
+            { margin: new go.Margin(2, 10, 1, 10), maxSize: new go.Size(100, NaN) },
+            new go.Binding("text"))
+        ),  // end "BODY", an Auto Panel
+        $("TreeExpanderButton", { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left }),
+        $(go.Shape, "LineV",
+          new go.Binding("visible", "figure", function(f) { return f !== "None"; }),
+          { strokeWidth: 1.5, height: 20, alignment: new go.Spot(0.5, 1, 0, -1), alignmentFocus: go.Spot.Top }),
+        $(go.Shape,
+          new go.Binding("visible", "figure", function(f) { return f !== "None"; }),
+          { alignment: new go.Spot(0.5, 1, 0, 5), alignmentFocus: go.Spot.Top, width: 30, height: 30 },
+          new go.Binding("figure"),
+          new go.Binding("fill"),
+          new go.Binding("angle", "figure", function(f) { return (f === "OrGate" || f === "AndGate") ? -90 : 0; })),
+        $(go.TextBlock,
+          new go.Binding("visible", "choice", function(f) { return f !== "None"; }),
+          { stroke: "blue", alignment: new go.Spot(0.5, 1, 20, 20), alignmentFocus: go.Spot.Left },
+          new go.Binding("text", "choice"))
+      );
+
+    myDiagram.linkTemplate =
+      $(go.Link, go.Link.Orthogonal,
+        { layerName: "Background", curviness: 20 },
+        $(go.Shape,
+          { strokeWidth: 1.5 })
+      );
+
+    load();
+  }
+
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <p>
+    The Diagram Model data is loaded from the JSON below.
+  </p>
+  <p>
+    <button id="SaveButton" onclick="save()">Save</button>
+    <button onclick="load()">Load</button>
+  </p>
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.TreeModel",
+"nodeDataArray": [
+{"key":1, "text":"No flow to receiver", "figure":"None"},
+{"key":2, "text":"No flow from Component B", "parent":1, "figure":"OrGate", "fill":"blue", "choice":"G02"},
+{"key":3, "text":"No flow into Component B", "parent":2, "figure":"AndGate", "fill":"red", "choice":"G03"},
+{"key":4, "text":"Component B blocks flow", "parent":2, "figure":"Circle", "fill":"green", "choice":"B01"},
+{"key":5, "text":"No flow from Component A1", "parent":3, "figure":"OrGate", "fill":"blue", "choice":"G04"},
+{"key":6, "text":"No flow from Component A2", "parent":3, "figure":"OrGate", "fill":"blue", "choice":"G05"},
+{"key":7, "text":"No flow from source1", "parent":5, "figure":"Triangle", "fill":"red", "choice":"T01"},
+{"key":8, "text":"Component A1 blocks flow", "parent":5, "figure":"Circle", "fill":"green", "choice":"B02"},
+{"key":9, "text":"No flow from source2", "parent":6, "figure":"Triangle", "fill":"red", "choice":"T02"},
+{"key":10, "text":"Component A2 blocks flow", "parent":6, "figure":"Circle", "fill":"green", "choice":"B03"}
+]}
+  </textarea>
+</div>
+</body>
+</html>

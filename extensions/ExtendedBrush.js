@@ -588,7 +588,6 @@ ExtendedBrush['makeColorPalette'] =
  * @param {string} color1 a valid color to be used as the basis for the color palette
  * @param {string=} color2 an additional color that will be used in conjunction with color1
  * @param {number=} number the amount of colors to be generated, the default is 3
- * @function.
  * @return {Array}
  */
 /** @type {Array} */

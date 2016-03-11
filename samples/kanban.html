@@ -68,18 +68,7 @@
     this.wrappingColumn = Infinity;
     this.wrappingWidth = Infinity;
     this.spacing = new go.Size(0, 0);
-    this.isRealtime = false;  // don't continuously layout while dragging
     this.alignment = go.GridLayout.Position;
-    // This sorts based on the location of each Group.
-    // This is useful when Groups can be moved up and down in order to change their order.
-    this.comparer = function(a, b) {
-      var ax = a.location.x;
-      var bx = b.location.x;
-      if (isNaN(ax) || isNaN(bx)) return 0;
-      if (ax < bx) return -1;
-      if (ax > bx) return 1;
-      return 0;
-    };
   }
   go.Diagram.inherit(PoolLayout, go.GridLayout);
 
@@ -114,18 +103,16 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram",
+      $(go.Diagram, "myDiagramDiv",
         {
           // start everything in the middle of the viewport
           initialContentAlignment: go.Spot.Center,
           // use a simple layout to stack the top-level Groups next to each other
           layout: $(PoolLayout),
           allowDrop: true, // support drag-and-drop from the Palette
-          // allow nodes to be dragged to the diagram's background,
-          // to be removed from any group that they were in
+          // disallow nodes to be dragged to the diagram's background
           mouseDrop: function(e) {
-            var ok = e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true);
-            if (!ok) e.diagram.currentTool.doCancel();
+            e.diagram.currentTool.doCancel();
           },
           // a clipboard copied node is pasted into the original node's group (i.e. lane).
           "commandHandler.copiesGroupKey": true,
@@ -154,17 +141,16 @@
           selectionObjectName: "SHAPE",  // selecting a lane causes the body of the lane to be highlit, not the label
           layerName: "Background",  // all lanes are always behind all nodes and links
           background: "transparent",  // can grab anywhere in bounds
-          movable: true, // allows users to re-order by dragging
+          movable: false,  // can't move lanes
           copyable: false,  // can't copy lanes
-          minLocation: new go.Point(-Infinity, NaN),  // only allow horizontal movement
-          maxLocation: new go.Point(Infinity, NaN),
+          deletable: false,  // can't delete lanes
           layout: $(go.GridLayout,  // automatically lay out the lane's subgraph
                     {
                       wrappingColumn: 1,
                       cellSize: new go.Size(1, 1),
                       spacing: new go.Size(5, 5),
                       alignment: go.GridLayout.Position,
-                      comparer: function(a, b) {
+                      comparer: function(a, b) {  // can re-order tasks within a lane
                         var ay = a.location.y;
                         var by = b.location.y;
                         if (isNaN(ay) || isNaN(by)) return 0;
@@ -195,16 +181,13 @@
         },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         new go.Binding("isSubGraphExpanded", "expanded").makeTwoWay(),
-        // the lane header consisting of a Shape and a TextBlock
+        // the lane header consisting of a TextBlock and an expander button
         $(go.Panel, "Horizontal",
           { name: "HEADER",
             angle: 0,  // maybe rotate the header to read sideways going up
             alignment: go.Spot.Center },
           $(go.Panel, "Horizontal",  // this is hidden when the swimlane is collapsed
             new go.Binding("visible", "isSubGraphExpanded").ofObject(),
-            $(go.Shape, "Diamond",
-              { width: 8, height: 8, fill: "white" },
-              new go.Binding("fill", "color")),
             $(go.TextBlock,  // the lane label
               { font: "bold 13pt sans-serif", editable: true, margin: new go.Margin(2, 0, 0, 0) },
               new go.Binding("text", "text").makeTwoWay())
@@ -227,42 +210,10 @@
         )  // end Auto Panel
       );  // end Group
 
-    myDiagram.linkTemplate =
-      $(go.Link,
-        { routing: go.Link.AvoidsNodes, corner: 5 },
-        { relinkableFrom: true, relinkableTo: true },
-        $(go.Shape),
-        $(go.Shape, { toArrow: "Standard" })
-      );
-
-    // define some sample graphs in some of the lanes
-    myDiagram.model = new go.GraphLinksModel(
-    [ // node data
-      { key: "Lane1", text: "Lane1", isGroup: true, color: "lightblue" },
-      { key: "Lane2", text: "Lane2", isGroup: true, color: "lightgreen" },
-      { key: "Lane3", text: "Lane3", isGroup: true, color: "lightyellow" },
-      { key: "Lane4", text: "Lane4", isGroup: true, color: "orange" },
-      { key: "oneA", text: "text for oneA", group: "Lane1" },
-      { key: "oneB", text: "text for oneB", group: "Lane1" },
-      { key: "oneC", text: "text for oneC", group: "Lane1" },
-      { key: "oneD", text: "text for oneD", group: "Lane1" },
-      { key: "twoA", text: "text for twoA", group: "Lane2" },
-      { key: "twoB", text: "text for twoB", group: "Lane2" },
-      { key: "twoC", text: "text for twoC", group: "Lane2" },
-      { key: "twoD", text: "text for twoD", group: "Lane2" },
-      { key: "twoE", text: "text for twoE", group: "Lane2" },
-      { key: "twoF", text: "text for twoF", group: "Lane2" },
-      { key: "twoG", text: "text for twoG", group: "Lane2" },
-      { key: "fourA", text: "text for fourA", group: "Lane4" },
-      { key: "fourB", text: "text for fourB", group: "Lane4" },
-      { key: "fourC", text: "text for fourC", group: "Lane4" },
-      { key: "fourD", text: "text for fourD", group: "Lane4" },
-      { key: "Lane5", text: "Lane5", isGroup: true, color: "lightyellow" },
-      { key: "fiveA", text: "text for fiveA", group: "Lane5" }
-    ]);  // no link data
+    load();
 
     myPalette =
-      $(go.Palette, "myPalette",
+      $(go.Palette, "myPaletteDiv",
         {
           nodeTemplateMap: myDiagram.nodeTemplateMap,
           groupTemplateMap: myDiagram.groupTemplateMap,
@@ -279,16 +230,6 @@
       );
   }  // end init
 
-  function addLane() {
-    myDiagram.startTransaction("add lane");
-    myDiagram.model.addNodeData({
-      isGroup: true,
-      text: "(new lane)",
-      color: "lightyellow"
-    });
-    myDiagram.commitTransaction("add lane");
-  }
-
   // Show the diagram's model in JSON format
   function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
@@ -302,17 +243,55 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myPalette" style="border: solid 1px gray; width:100%; height:100px"></div>
-  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:600px;"></div>
+  <div id="myPaletteDiv" style="border: solid 1px gray; width:100%; height:100px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:400px; background:darkgray"></div>
   <p>
     This design and implementation were adapted from the <a href="swimLanesVertical.html">Swim Lanes (vertical)</a> sample.
+    Unlike that sample:
+    <ul>
+      <li>there are no Links</li>
+      <li>lanes cannot be nested into "pools"</li>
+      <li>lanes cannot be resized</li>
+      <li>the user can drag-and-drop tasks from the <b>Palette</b> at the top</li>
+      <li>the user cannot drop tasks into the diagram's background</li>
+      <li>all tasks are ordered within a single column; the user can rearrange the order</li>
+      <li>tasks can freely be moved into other lanes</li>
+      <li>lanes are not movable or deletable</li>
+    </ul>
   </p>
-  <button onclick="addLane()">Add Lane</button>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   Diagram Model saved in JSON format:
   <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+{"key":"Problems", "text":"Problems", "isGroup":true, "color":"white", "loc":"0 23.52284749830794", "size":"108 200"},
+{"key":"Reproduced", "text":"Reproduced", "isGroup":true, "color":"lightblue", "loc":"109 23.52284749830794", "size":"124.60618337477278 200"},
+{"key":"Identified", "text":"Identified", "isGroup":true, "color":"lightgreen", "loc":"235 23.52284749830794", "size":"107 200"},
+{"key":"Fixing", "text":"Fixing", "isGroup":true, "color":"lightyellow", "loc":"343 23.52284749830794", "size":"107 200"},
+{"key":"Reviewing", "text":"Reviewing", "isGroup":true, "color":"orange", "loc":"451 23.52284749830794", "size":"109.22284444655013 200"},
+{"key":"Testing", "text":"Testing", "isGroup":true, "color":"pink", "loc":"562 23.52284749830794", "size":"108 200"},
+{"key":"Customer", "text":"Customer", "isGroup":true, "color":"white", "loc":"671 23.52284749830794", "size":"108 200"},
+{"key":1, "text":"text for oneA", "group":"Problems", "color":"lightgreen", "loc":"12 35.52284749830794"},
+{"key":2, "text":"text for oneB", "group":"Problems", "color":"lightblue", "loc":"12 65.52284749830794"},
+{"key":3, "text":"text for oneC", "group":"Problems", "color":"orange", "loc":"12 95.52284749830794"},
+{"key":4, "text":"text for oneD", "group":"Problems", "color":"lightyellow", "loc":"12 125.52284749830794"},
+{"key":5, "text":"text for twoA", "group":"Reproduced", "color":"pink", "loc":"121 35.52284749830794"},
+{"key":6, "text":"text for twoB", "group":"Reproduced", "color":"lightblue", "loc":"121 65.52284749830794"},
+{"key":7, "text":"text for twoC", "group":"Identified", "color":"orange", "loc":"247 35.52284749830794"},
+{"key":8, "text":"text for twoD", "group":"Fixing", "color":"pink", "loc":"355 35.52284749830794"},
+{"key":9, "text":"text for twoE", "group":"Reviewing", "color":"lightgreen", "loc":"463 35.52284749830794"},
+{"key":10, "text":"text for twoF", "group":"Reviewing", "color":"orange", "loc":"463 65.52284749830794"},
+{"key":11, "text":"text for twoG", "group":"Testing", "color":"lightyellow", "loc":"574 35.52284749830794"},
+{"key":12, "text":"text for fourA", "group":"Customer", "color":"lightyellow", "loc":"683 35.52284749830794"},
+{"key":13, "text":"text for fourB", "group":"Customer", "color":"pink", "loc":"683 65.52284749830794"},
+{"key":14, "text":"text for fourC", "group":"Customer", "color":"orange", "loc":"683 95.52284749830794"},
+{"key":15, "text":"text for fourD", "group":"Customer", "color":"lightblue", "loc":"683 125.52284749830794"},
+{"key":16, "text":"text for fiveA", "group":"Customer", "color":"lightgreen", "loc":"683 155.52284749830795"}
+],
+  "linkDataArray": []}
+  </textarea>
 </div>
 </body>
 </html>

@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Double Circle</title>
+<meta name="description" content="Arrange nodes into concentric circles." />
+<!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates in this function
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
+        {
+          initialContentAlignment: go.Spot.Center,
+          initialAutoScale: go.Diagram.Uniform,
+          "animationManager.isEnabled": false
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { locationSpot: go.Spot.Center },
+        $(go.Shape, "Circle",
+          { fill: "gray", stroke: "#D8D8D8" },
+          new go.Binding("fill", "color")),
+        // define the node's text
+        $(go.TextBlock,
+          { margin: 5, font: "bold 11px Helvetica, bold Arial, sans-serif" },
+          new go.Binding("text", "key"))
+      );
+
+    // create the model for the double circle
+    var data = [];
+    // if you want a node in the center, set its layer: 0
+    //data.push({ layer: 0, color: "red" });
+    for (var i = 0; i < 10; i++) data.push({ layer: 1, color: go.Brush.randomColor() });
+    for (var i = 0; i < 25; i++) data.push({ layer: 2, color: go.Brush.randomColor() });
+    myDiagram.model = new go.GraphLinksModel(data);
+
+    doubleCircleLayout(myDiagram);
+  }
+
+  function doubleCircleLayout(diagram) {
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+    diagram.startTransaction("Multi Circle Layout");
+
+    var radius = 100;
+    var layer = 1;
+    var nodes = null;
+    while (nodes = nodesByLayer(diagram, layer), nodes.count > 0) {
+      var layout = $(go.CircularLayout,
+                     { radius: radius });
+      layout.doLayout(nodes);
+      // recenter at (0, 0)
+      var cntr = layout.actualCenter;
+      diagram.moveParts(nodes, new go.Point(-cntr.x, -cntr.y));
+      // next layout uses a larger radius
+      radius += 100;
+      layer++;
+    }
+
+    nodesByLayer(diagram, 0).each(function(n) { n.location = new go.Point(0, 0); });
+
+    diagram.commitTransaction("Multi Circle Layout");
+  }
+
+  function nodesByLayer(diagram, layer) {
+    var set = new go.Set(go.Node);
+    diagram.nodes.each(function(part) {
+      if (part instanceof go.Node && part.data.layer === layer) set.add(part);
+    });
+    return set;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <p>
+  This sample displays a diagram of two sets of nodes intended to be arranged in different circles.
+  </p>
+  <p>
+  Unlike many <b>GoJS</b> apps, there is no <a>Diagram.layout</a> assigned.
+  Layouts are performed explicitly in code -- a separate <a>CircularLayout</a> for each subset of nodes.
+  The code will actually work with a variable number of layers/circles, not just two.
+  </p>
+</div>
+</body>
+</html>

@@ -14,7 +14,7 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram",
+      $(go.Diagram, "myDiagramDiv",
         {
           initialContentAlignment: go.Spot.Center,
           "undoManager.isEnabled": true,
@@ -111,29 +111,42 @@
           // header
           $(go.TextBlock,
             {
-              row: 0, margin: 3, alignment: go.Spot.Center,
+              row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
               font: "bold 12pt sans-serif",
               isMultiline: false, editable: true
             },
             new go.Binding("text", "name").makeTwoWay()),
           // properties
-          $(go.Panel, "Vertical",
+          $(go.TextBlock, "Properties",
+            { row: 1, font: "italic 10pt sans-serif" },
+            new go.Binding("visible", "visible", function(v) { return !v; }).ofObject("PROPERTIES")),
+          $(go.Panel, "Vertical", { name: "PROPERTIES" },
             new go.Binding("itemArray", "properties"),
             {
-              row: 1, margin: 3, alignment: go.Spot.Left,
-              defaultAlignment: go.Spot.Left,
+              row: 1, margin: 3, stretch: go.GraphObject.Fill,
+              defaultAlignment: go.Spot.Left, background: "lightyellow",
               itemTemplate: propertyTemplate
             }
           ),
+          $("PanelExpanderButton", "PROPERTIES",
+            { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
+            new go.Binding("visible", "properties", function(arr) { return arr.length > 0; })),
           // methods
-          $(go.Panel, "Vertical",
+          $(go.TextBlock, "Methods",
+            { row: 2, font: "italic 10pt sans-serif" },
+            new go.Binding("visible", "visible", function(v) { return !v; }).ofObject("METHODS")),
+          $(go.Panel, "Vertical", { name: "METHODS" },
             new go.Binding("itemArray", "methods"),
             {
-              row: 2, margin: 3, alignment: go.Spot.Left,
-              defaultAlignment: go.Spot.Left,
+              row: 2, margin: 3, stretch: go.GraphObject.Fill,
+              defaultAlignment: go.Spot.Left, background: "lightyellow",
               itemTemplate: methodTemplate
             }
-          ))
+          ),
+          $("PanelExpanderButton", "METHODS",
+            { row: 2, column: 1, alignment: go.Spot.TopRight, visible: false },
+            new go.Binding("visible", "methods", function(arr) { return arr.length > 0; }))
+        )
       );
 
     function convertIsTreeLink(r) {
@@ -243,7 +256,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px black; width:100%; height:600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
   This sample demonstrates one way of defining a UML Class Diagram.
   Note the use of a separate Panel for the properties and one for the methods,
   allowing for an item template for properties and a separate item template for methods.

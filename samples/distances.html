@@ -14,7 +14,7 @@
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram", // must be the ID or reference to div
+      $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
         {
           initialAutoScale: go.Diagram.UniformToFill,
           padding: 10,
@@ -82,7 +82,7 @@
             if (part !== null) diagram.select(part);
           }
         }
-      } else if (e.left && !(e.control) && !e.shift) {
+      } else if (e.left && !(e.control || e.meta) && !e.shift) {
         // left click on background with no modifier: clear selection
         diagram.clearSelection();
       }
@@ -373,7 +373,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px black; background: white; width: 100%; height: 700px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 700px"></div>
   Click on a node to show distances from that node to each other node.
   Click on a second node to show a shortest path from the first node to the second node.
   (Note that there might not be any path between the nodes.)

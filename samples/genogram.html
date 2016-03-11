@@ -13,7 +13,7 @@
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;
       myDiagram =
-        $(go.Diagram, "myDiagram",
+        $(go.Diagram, "myDiagramDiv",
           {
             initialAutoScale: go.Diagram.Uniform,
             initialContentAlignment: go.Spot.Center,
@@ -244,13 +244,14 @@
       var node = diagram.findNodeForKey(focusId);
       if (node !== null) {
         diagram.select(node);
-        node.linksConnected.each(function(l) {
-          if (!l.isLabeledLink) return;
-          l.opacity = 0;
-          var spouse = l.getOtherNode(node);
-          spouse.opacity = 0;
-          spouse.pickable = false;
-        });
+        // remove any spouse for the person under focus:
+        //node.linksConnected.each(function(l) {
+        //  if (!l.isLabeledLink) return;
+        //  l.opacity = 0;
+        //  var spouse = l.getOtherNode(node);
+        //  spouse.opacity = 0;
+        //  spouse.pickable = false;
+        //});
       }
     }
 
@@ -520,8 +521,8 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:600px"></div>
-  <p>A <em>genogram</em> is an extended family tree diagram that displays information about each person or each relationship.</p>
+  <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:600px"></div>
+  <p>A <em>genogram</em> or <em>pedigree chart</em> is an extended family tree diagram that displays information about each person or each relationship.</p>
   <p>For a simpler family tree see the <a href="familyTree.html">family tree sample</a>.</p>
   <p>The node data representing the people, processed by the <code>setupDiagram</code> function:</p>
   <pre id="peopleData">[

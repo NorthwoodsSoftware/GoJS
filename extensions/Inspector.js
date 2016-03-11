@@ -190,7 +190,7 @@ Inspector.prototype.rebuildViews = function() {
   var spectrums = document.getElementsByClassName("sp-container");
   while (spectrums.length !== 0) document.body.removeChild(spectrums[0]);
   var div = this.div;
-  div.innerHTML = '';
+  while (div.children.length !== 0) div.removeChild(div.children[0]);
   this.acceptResetDiv.innerHTML = '';
   var trackedList = Object.keys(this.tracked);
   for (var i = 0; i < trackedList.length; i++ ) {
@@ -626,7 +626,7 @@ View.prototype.populate = function(val) {
     case "Enum":
       var vals = this.options.enumValues;
       var select = this.dom.children[1];
-      select.innerHTML = "";
+      while (select.children.length !== 0) select.removeChild(select.children[0]);
       if (select.length === 0) {
         for (var i = 0; i < vals.length; i++) {
           var option = document.createElement("option");

@@ -10,15 +10,15 @@
   <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
 
-    var red = "orangered";
-    var green = "ForestGreen";
+    var red = "orangered";  // 0 or false
+    var green = "forestgreen";  // 1 or true
 
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
-        $(go.Diagram, "myDiagram",  // create a new Diagram in the HTML DIV element "myDiagram"
+        $(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
           {
             initialContentAlignment: go.Spot.Center,
             allowDrop: true,  // Nodes from the Palette can be dropped into the Diagram
@@ -43,7 +43,8 @@
       // creates relinkable Links that will avoid crossing Nodes when possible and will jump over other Links in their paths
       myDiagram.linkTemplate =
         $(go.Link,
-          { routing: go.Link.AvoidsNodes,
+          {
+            routing: go.Link.AvoidsNodes,
             curve: go.Link.JumpOver,
             corner: 3,
             relinkableFrom: true, relinkableTo: true,
@@ -340,7 +341,7 @@
       <div id="palette" style="background-color: Snow; border: solid 1px black; height: 500px"></div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
-      <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
     </span>
   </div>
   <div id="description">
@@ -348,6 +349,7 @@
     which are updated whenever a Link is modified and at intervals by a looped setTimeout function.
     The <code>updateStates</code> function calls a function to update each node according to type,
     which uses the color of the links into the node to determine the color of those exiting it.
+    Red means zero or false; green means one or true.
     Mouse over a node to see its category.
   </div>
   <div id="buttons">

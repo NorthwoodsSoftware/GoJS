@@ -15,9 +15,10 @@
     var $ = go.GraphObject.make;
 
     myDiagram =
-      $(go.Diagram, "myDiagram", // the ID of the DIV HTML element
+      $(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element
         {
           initialContentAlignment: go.Spot.Center,
+          "Changed": invalidateLinkRoutes,
           "undoManager.isEnabled": true
         });
 
@@ -43,7 +44,7 @@
           new go.Binding("fill", "color"))
       );
 
-    myDiagram.addChangedListener(function(e) {
+    function invalidateLinkRoutes(e) {
       // when a Node is moved, invalidate the route for all MultiNodePathLinks that go through it
       if (e.change === go.ChangedEvent.Property && e.propertyName === "location" && e.object instanceof go.Node) {
         var diagram = e.diagram;
@@ -71,7 +72,7 @@
           }
         }
       }
-    });
+    }
 
     // create a few nodes and links
     myDiagram.model = new go.GraphLinksModel([
@@ -190,7 +191,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagram" style="border: solid 1px blue; width:100%; height:700px; min-width: 200px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:700px; min-width: 200px"></div>
   <p>
   This sample demonstrates customization of the <a>Link</a>'s routing to go through multiple Nodes.
   The nodes are specified by key in the link data's "path" property, which must be an Array of node keys.

@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Changed Events -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Changed Events</h2>
@@ -136,7 +137,7 @@ the string passed to <a>UndoManager.startTransaction</a> or <a>UndoManager.commi
 The various standard commands and tools that perform transactions document the transaction name(s) that they employ.
 But your code can employ as many transaction names as you like.
 </p>
-<p class="box warning">
+<p class="box bg-danger">
 As a general rule, you should not make any changes to the model or any of its data in a listener
 for any Transaction ChangedEvent.
 </p>
@@ -149,7 +150,7 @@ You'll want to implement a Changed listener as follows:
 </p>
 <pre>
   // notice whenever a transaction or undo/redo has occurred
-  diagram.model.addChangedListener(function(evt) {
+  diagram.addModelChangedListener(function(evt) {
     if (evt.isTransactionFinished) saveModel(evt.model);
   });
 </pre>
@@ -166,7 +167,7 @@ you can iterate over the list of changes to pick out the ones that you care abou
 For example, here is a listener that logs a message only when node data is added to or removed from the <a>Model.nodeDataArray</a>.
 </p>
 <pre>
-  diagram.model.addChangedListener(function(evt) {
+  diagram.addModelChangedListener(function(evt) {
     // ignore unimportant Transaction events
     if (!evt.isTransactionFinished) return;
     var txn = evt.object;  // a Transaction
@@ -197,7 +198,7 @@ This not only checks for insertions to and removals from <a>GraphLinksModel.link
 but also changes to the "from" and the "to" properties of the link data.
 </p>
 <pre>
-  diagram.model.addChangedListener(function(evt) {
+  diagram.addModelChangedListener(function(evt) {
     // ignore unimportant Transaction events
     if (!evt.isTransactionFinished) return;
     var txn = evt.object;  // a Transaction
@@ -226,7 +227,7 @@ Note: the above code only works for a <a>GraphLinksModel</a>, where the link dat
 </p>
 
 <p>
-Look at the <a href="../../samples/UpdateDemo.html">Update Demo</a> for a demonstration of how you can keep
+Look at the <a href="../samples/UpdateDemo.html">Update Demo</a> for a demonstration of how you can keep
 track of changes to a model when a transaction is committed or when an undo or redo is finished.
 The common pattern is to iterate over the ChangedEvents of the current Transaction
 in order to decide what to record in a database.
@@ -249,6 +250,7 @@ Although ChangedEvents for diagrams are important for undo/redo in order to reta
 one normally ignores them when saving models.  Only ChangedEvents for models record state changes to model data.
 </p>
 
+</div>
 </div>
 </body>
 </html>

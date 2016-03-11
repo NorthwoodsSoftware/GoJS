@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Nodes -- Northwoods Software</title>
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-    <link href="goIntro.css" rel="stylesheet" type="text/css"/>
     <script src="go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
+<div id="container" class="container-fluid">
 <div id="content">
 
 <h2>Nodes</h2>
@@ -258,6 +259,65 @@ Another commonly seen kind of node can be implemented using a Horizontal <a>Pane
 </pre>
 <script>goCode("smallicons", 300, 150)</script>
 
+<h3>Nested Panels</h3>
+<p>
+Panels can be nested.
+For example, here is a node consisting of an "Vertical" Panel consisting of an "Auto" Panel surrounding a "Vertical" Panel including a "Horizontal" Panel.
+The outer "Vertical" Panel arranges the main stuff on top and a TextBlock on the bottom.
+The "Auto" Panel supplies a border around everything but the bottom text.
+The inner "Vertical" Panel places three objects vertically in a stack.
+The "Horizontal" Panel which is the first element of the "Vertical" Panel places three objects horizontally in a row.
+</p>
+<pre data-language="javascript" id="nestedpanel1">
+  // common styling for each indicator
+  function makeIndicator(propName) {  // the data property name
+    return $(go.Shape,
+        "Circle",
+        { width: 8, height: 8, fill: "white", strokeWidth: 0, margin: 5 },
+        new go.Binding("fill", propName));
+  }
+
+  function makeImagePath(icon) { return "../samples/images/" + icon; }
+
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      $(go.Panel, "Auto",
+        { background: "white" },
+        { portId: "" },  // this whole panel acts as the only port for the node
+        $(go.Shape,  // the border
+          { fill: "transparent", stroke: "lightgray" }),
+        $(go.Panel, "Vertical",  // everything within the border
+          $(go.Panel, "Horizontal",  // the row of status indicators
+            makeIndicator("ind0"),
+            makeIndicator("ind1"),
+            makeIndicator("ind2")
+          ),  // end Horizontal Panel
+          $(go.Picture,
+            { width: 32, height: 32, margin: 4 },
+            new go.Binding("source", "icon", makeImagePath)),
+          $(go.TextBlock,
+            { stretch: go.GraphObject.Horizontal, textAlign: "center" },
+            new go.Binding("text", "number"),
+            new go.Binding("background", "color"))
+        )  // end Vertical Panel
+      ),  // end Auto Panel
+      $(go.TextBlock,
+        { margin: 4 },
+        new go.Binding("text"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { key: 1, text: "Device Type A", number: 17, icon: "server switch.jpg", color: "moccasin",
+      ind0: "red", ind1: "orange", ind2: "mediumspringgreen" },
+    { key: 2, text: "Device Type B", number: 97, icon: "voice atm switch.jpg", color: "mistyrose",
+      ind0: "lightgray", ind1: "orange", ind2: "green" }
+  ];
+  diagram.model.linkDataArray = [
+    { from: 1, to: 2 }
+  ];
+</pre>
+<script>goCode("nestedpanel1", 300, 150)</script>
+
 <h3>Decorated Content</h3>
 <p>
 Sometimes you want to have a simple node that may display additional visuals
@@ -355,6 +415,7 @@ The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and b
   ]);
 </pre>
 <script>goCode("ribbondecorations", 500, 150)</script>
+</div>
 </div>
 </body>
 </html>

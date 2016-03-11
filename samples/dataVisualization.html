@@ -10,7 +10,7 @@ The div needs an explicit size or else we won't see anything.
 Lets also add a border to help see the edges.
 -->
 <style type="text/css">
-  #myDiagram {
+  #myDiagramDiv {
     border: solid 1px black;
     width:400px;
     height:400px;
@@ -90,13 +90,14 @@ Lets also add a border to help see the edges.
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagram",  // create a Diagram for the DIV HTML element
+      $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
           "animationManager.isEnabled": false,  // don't bother with layout animation
           contentAlignment: go.Spot.Center,  // content is always centered in the viewport
           autoScale: go.Diagram.Uniform,  // scale always has all content fitting in the viewport
           isReadOnly: true,  // don't let users modify anything
-          mouseOver: doMouseOver  // this event handler is defined below
+          mouseOver: doMouseOver,  // this event handler is defined below
+          click: doMouseOver  // this event handler is defined below
         });
 
     // define a simple Node template
@@ -343,7 +344,7 @@ Lets also add a border to help see the edges.
       box.style.top = parseInt(box.style.top)+30 + "px";
     }, false);
 
-    var diagramDiv = document.getElementById("myDiagram");
+    var diagramDiv = document.getElementById("myDiagramDiv");
     // Make sure the infoBox is hidden when the mouse is not over the Diagram
     diagramDiv.addEventListener("mouseout", function(e) {
       if (lastStroked !== null) lastStroked.stroke = null;
@@ -406,7 +407,7 @@ Lets also add a border to help see the edges.
 
     <!--The DIV for the Diagram needs an explicit size or else we won't see anything.
          Also add a border to help see the edges. -->
-    <div id="myDiagram" style="background-color: #3D3D3D; border: solid 1px black; width:500px; height:500px"></div>
+    <div id="myDiagramDiv" style="background-color: #3D3D3D; border: solid 1px black; width:500px; height:500px"></div>
     <!-- This sibling of the Diagram provides information when the mouse is near a Diagram Node -->
     <div id="infoBoxHolder">
       <!-- Initially Empty, it is populated when updateInfoBox is called -->

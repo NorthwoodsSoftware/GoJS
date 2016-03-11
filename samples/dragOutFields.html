@@ -38,11 +38,12 @@
         tempPart.data = obj.data;  // bind to the same field data as being dragged
         return tempPart;
       }
-      return null;
+      return go.DraggingTool.prototype.findDraggablePart.call(this);
     };
 
     /** @override */
     FieldDraggingTool.prototype.doActivate = function() {
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doActivate.call(this);
       var diagram = this.diagram;
       this.standardMouseSelect();
       this.isActive = true;
@@ -56,6 +57,7 @@
 
     /** @override */
     FieldDraggingTool.prototype.doDeactivate = function() {
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doDeactivate.call(this);
       var diagram = this.diagram;
       // make sure the temporary Part is no longer in the Diagram
       diagram.remove(this.temporaryPart);
@@ -69,6 +71,7 @@
     /** @override */
     FieldDraggingTool.prototype.doMouseMove = function() {
       if (!this.isActive) return;
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseMove.call(this);
       var diagram = this.diagram;
       // just move the temporaryPart (in draggedParts), without regard to moving or copying permissions of the Node
       var offset = diagram.lastInput.documentPoint.copy().subtract(diagram.firstInput.documentPoint);
@@ -78,6 +81,7 @@
     /** @override */
     FieldDraggingTool.prototype.doMouseUp = function() {
       if (!this.isActive) return;
+      if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseUp.call(this);
       var diagram = this.diagram;
       var data = this.temporaryPart.data;
       if (diagram.lastInput.event && diagram.lastInput.event.target.id === "myDroppedFields") {
@@ -94,7 +98,7 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
-        $(go.Diagram, "myDiagram",
+        $(go.Diagram, "myDiagramDiv",
           {
             initialContentAlignment: go.Spot.Center,
             validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
@@ -170,6 +174,8 @@
         $(go.GraphLinksModel,
           { linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
+            copiesArrays: true,
+            copiesArrayObjects: true,
             nodeDataArray: [
               { key: "Record1",
                 fields: [
@@ -193,7 +199,7 @@
   <h3>Dragging a Field from a Record Node onto an HTML Element</h3>
   <p>Drag a field from one of the record nodes and drop onto the PRE element below.
      The "record" Nodes are not movable or copyable or deletable.</p>
-  <div id="myDiagram" style="border: solid 1px black; width:100%; height:300px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px"></div>
   <p>Here you can drop a field from one of the records above:</p>
   <pre id="myDroppedFields" style="width:200px;height:300px;border:dashed"></pre>
 </div>

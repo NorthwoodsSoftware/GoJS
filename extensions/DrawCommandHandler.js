@@ -10,7 +10,20 @@
 * This CommandHandler class allows the user to position selected Parts in a diagram
 * relative to the first part selected, in addition to overriding the doKeyDown method
 * of the CommandHandler for handling the arrow keys in additional manners.
-*/
+* <p>
+* Typical usage:
+* <pre>
+*   $(go.Diagram, "myDiagramDiv",
+*     {
+*       commandHandler: $(DrawCommandHandler),
+*       . . .
+*     }
+*   )
+* </pre>
+* or:
+* <pre>
+*    myDiagram.commandHandler = new DrawCommandHandler();
+* </pre>*/
 function DrawCommandHandler() {
   go.CommandHandler.call(this);
   this._arrowKeyBehavior = "move";

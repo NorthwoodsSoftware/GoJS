@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+  <title>Logic Circuit</title>
+  <meta name="description" content="A simple logic circuit editor and simulator." />
+  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+</head>
+<body>
+<div>
+  Logic Circuit emulator
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
+      <div id="palette" style="background-color: Snow; border: solid 1px black; height: 500px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
+      <div id="myDiagram" style="border: solid 1px black; height: 500px"></div>
+    </span>
+  </div>
+  <div>
+    The Logic Circuit sample allows the user to make circuits using gates and wires,
+    which are updated whenever a Link is modified and at intervals by a looped setTimeout function.
+    The <code>updateStates</code> function calls a function to update each node according to type,
+    which uses the color of the links into the node to determine the color of those exiting it.
+    Mouse over a node to see its category.
+  </div>
+  <div id="buttons">
+    <button id="loadModel" onclick="load()">Load</button>
+    <button id="saveModel" onclick="save()">Save</button>
+  </div>
+  <textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"category":"input", "key":"input1", "loc":"-150 -80" },
+{"category":"or", "key":"or1", "loc":"-70 0" },
+{"category":"not", "key":"not1", "loc":"10 0" },
+{"category":"xor", "key":"xor1", "loc":"100 0" },
+{"category":"or", "key":"or2", "loc":"200 0" },
+{"category":"output", "key":"output1", "loc":"200 -100" }
+ ],
+  "linkDataArray": [
+{"from":"input1", "fromPort":"out", "to":"or1", "toPort":"in1"},
+{"from":"or1", "fromPort":"out", "to":"not1", "toPort":"in"},
+{"from":"not1", "fromPort":"out", "to":"or1", "toPort":"in2"},
+{"from":"not1", "fromPort":"out", "to":"xor1", "toPort":"in1"},
+{"from":"xor1", "fromPort":"out", "to":"or2", "toPort":"in1"},
+{"from":"or2", "fromPort":"out", "to":"xor1", "toPort":"in2"},
+{"from":"xor1", "fromPort":"out", "to":"output1", "toPort":""}
+ ]}
+  </textarea>
+</div>
+
+  <script type="text/javascript" src="js/go.js"></script>
+  <script type="text/javascript" src="js/logicCircuit.js"></script>
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+</body>
+</html>
