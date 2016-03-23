@@ -22,6 +22,7 @@
 </style>
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
@@ -78,13 +79,14 @@
     // define the Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
-        { isShadowed: true },
         // the outer shape for the node, surrounding the Table
         $(go.Shape, "Rectangle",
-          new go.Binding("fill", "isHighlighted", function(h) { return h ? "red" : "azure"; }).ofObject()),
+          { stroke: null, strokeWidth: 0 },
+                                                  /* reddish if highlighted, blue otherwise */
+          new go.Binding("fill", "isHighlighted", function(h) { return h ? "#F44336" : "#B2EBF2"; }).ofObject()),
         // a table to contain the different parts of the node
         $(go.Panel, "Table",
-          { margin: 4, maxSize: new go.Size(150, NaN) },
+          { margin: 6, maxSize: new go.Size(200, NaN) },
           // the two TextBlocks in column 0 both stretch in width
           // but align on the left side
           $(go.RowColumnDefinition,
@@ -97,25 +99,26 @@
           $(go.TextBlock,
             {
               row: 0, column: 0,
-              maxSize: new go.Size(120, NaN), margin: 2,
-              font: "bold 8pt sans-serif",
+              maxSize: new go.Size(160, NaN), margin: 2,
+              font: '500 16px Roboto, sans-serif',
               alignment: go.Spot.Top
             },
             new go.Binding("text", "name")),
           // the country flag
           $(go.Picture,
             {
-              row: 0, column: 1,
-              desiredSize: new go.Size(34, 26), margin: 2,
+              row: 0, column: 1, margin: 2,
               imageStretch: go.GraphObject.Uniform,
               alignment: go.Spot.TopRight
             },
+            // only set a desired size if a flag is also present:
+            new go.Binding("desiredSize", "nation", function(){ return new go.Size(34, 26) }),
             new go.Binding("source", "nation", theNationFlagConverter)),
           // the additional textual information
           $(go.TextBlock,
             {
               row: 1, column: 0, columnSpan: 2,
-              font: "8pt sans-serif"
+              font: "12px Roboto, sans-serif"
             },
             new go.Binding("text", "", theInfoTextConverter))
         )  // end Table Panel
@@ -125,7 +128,7 @@
     myDiagram.linkTemplate =
       $(go.Link, go.Link.Orthogonal,
         { selectable: false },
-        $(go.Shape, { stroke: '#222' } ));  // the default black link shape
+        $(go.Shape, { strokeWidth: 2, stroke: '#222' } ));  // the default black link shape
 
 
     // set up the nodeDataArray, describing each person/position
@@ -224,6 +227,9 @@
   </p>
   <input type="search" id="mySearch" onkeypress="if (event.keyCode === 13) searchDiagram()" />
   <button onclick="searchDiagram()">Search</button>
+  <p>
+    To learn how to build an org chart from scratch with GoJS, see the <a href="../learn/index.html">Getting Started tutorial</a>.
+  </p>
 </div>
 </body>
 </html>

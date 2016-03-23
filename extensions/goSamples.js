@@ -161,7 +161,8 @@ var myMenu = '\
     <a href="Dimensioning.html"><li>Dimensioning Links</li></a>\
     <a href="Robot.html"><li>Simulating Input</li></a>\
     <hr />\
-    <a href="Inspector.html"><li>Inspector</li></a>\
+    <a href="DataInspector.html"><li>Data Inspector</li></a>\
+    <a href="DebugInspector.html"><li>Debug Inspector</li></a>\
     <hr />\
     <a target="_blank" href="BPMN.html"><li>BPMN Editor</li></a>\
     <hr />\

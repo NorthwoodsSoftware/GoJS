@@ -13,13 +13,8 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 
-<!-- Spectrum color picker, pre-requisitie for the inspector -->
-<link href="assets/spectrum.css" rel="stylesheet" type="text/css"/>
-<script src="assets/spectrum.js"></script>
-
-<link rel='stylesheet' href='../extensions/inspector.css' />
-<script src="../extensions/inspector.js"></script>
-<script src="../extensions/ExtendedBrush.js"></script>
+<link rel='stylesheet' href='../extensions/DataInspector.css' />
+<script src="../extensions/DataInspector.js"></script>
 
 <script id="code">
   function init() {
@@ -92,14 +87,17 @@
           stop: function(){ myPalette.layoutDiagram(true); }
         });
 
-        var inspector = new Inspector('infoDraggable', myDiagram,
+        $("#infoDraggable").draggable({handle: "#infoDraggableHandle"}).resizable({ });
+
+
+        var inspector = new Inspector('myInfo', myDiagram,
           {
-            acceptButton: true,
-            resetButton: true,
-            propertyNames: {
-              "Node": ["location", "background", "scale", "angle", "isShadowed", "resizable"],
-              "#SHAPE": ["fill", "stroke", "strokeWidth", "figure"],
-              "#TEXT": ["text", "font"]
+            properties: {
+              // key would be automatically added for nodes, but we want to declare it read-only also:
+              "key": { readOnly: true, show: Inspector.showIfPresent },
+              // fill and stroke would be automatically added for nodes, but we want to declare it a color also:
+              "fill": { show: Inspector.showIfPresent, type: 'color' },
+              "stroke": { show: Inspector.showIfPresent, type: 'color' }
             }
           });
         });
@@ -166,19 +164,22 @@ with allowances for the title (top) and the resize handle (bottom)
       </div>
     </div>
 
+    <div id="infoDraggable" class="draggable" style="display: inline-block; vertical-align: top; padding: 5px; top: 20px; left: 520px;">
+      <div id="infoDraggableHandle" class="handle">Info</div>
+      <div id="myInfo">Selecting nodes in the main Diagram will display information here</div>
+    </div>
+
     <div style="display: inline-block; vertical-align: top; padding: 5px; width:400px">
       <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; height: 400px"></div>
     </div>
 
-    <div id="infoDraggable" style="display: inline-block; vertical-align: top; padding: 5px;">
-      <div id="myInfo">Selecting nodes in the main Diagram will display information here</div>
-    </div>
+
 
     <p>
       This sample contains a draggable HTML element (using jQuery UI), which houses a GoJS Palette.
     </p>
     <p>
-      A DIV to the right of the diagram houses a <a href="../extensions/inspector.html">GoJS GraphObject inspector</a>,
+      A DIV to the right of the diagram houses the <a href="../extensions/DataInspector.html">GoJS Data inspector extension</a>,
       which displays some editable information about each Node.
     </p>
 

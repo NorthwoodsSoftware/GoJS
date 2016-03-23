@@ -109,10 +109,12 @@ Here is an adornment that adds a button to the adornment which inserts a node an
     // have the Model add the node data
     var newnode = { key: "N" };
     diagram.model.addNodeData(newnode);
+    // locate the node initially where the parent node is
+    diagram.findNodeForData(newnode).location = node.location;
     // and then add a link data connecting the original node with the new one
     var newlink = { from: node.data.key, to: newnode.key };
     diagram.model.addLinkData(newlink);
-    // finish the transaction
+    // finish the transaction -- will automatically perform a layout
     diagram.commitTransaction("add node and link");
   }
 

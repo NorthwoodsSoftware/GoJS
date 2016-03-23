@@ -18,6 +18,7 @@
         {
           allowDrop: true,
           initialContentAlignment: go.Spot.Center,
+          "linkingTool.direction": go.LinkingTool.ForwardsOnly,
           "undoManager.isEnabled": true
         });
 
@@ -40,7 +41,8 @@
         $(go.Shape, "ACVoltageSource",
           { stroke: "white", strokeWidth: 3, fill: "transparent",
             width: 40, height: 40, margin: 5,
-            portId: "", fromLinkable: true, cursor: "pointer" })
+            portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides
+          })
       ));
 
     myDiagram.nodeTemplateMap.add("Connector",
@@ -50,7 +52,8 @@
         $(go.Shape, "Circle",
           { stroke: null, fill: $(go.Brush, "Linear", { 0: "lightgray", 1: "gray" }),
             width: 20, height: 20, margin: 2,
-            portId: "", fromLinkable: true, cursor: "pointer" })
+            portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides
+          })
       ));
 
     myDiagram.nodeTemplateMap.add("Consumer",
@@ -60,7 +63,8 @@
         new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Picture, "images/pc.jpg",
           { name: "BODY", width: 50, height: 40, margin: 2,
-            portId: "", fromLinkable: true, cursor: "pointer" }),
+          portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides
+          }),
         $(go.TextBlock,
           { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left },
           new go.Binding("text", "key"))
@@ -89,13 +93,19 @@
             minSize: new go.Size(100, 4),
             maxSize: new go.Size(Infinity, 4) },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          new go.Binding("fill"),
           { portId: "", toLinkable: true })
       ));
 
     myDiagram.linkTemplate =
       $(BarLink,  // subclass defined below
-        { routing: go.Link.Orthogonal,
-          relinkableFrom: true, relinkableTo: true },
+        {
+          routing: go.Link.Orthogonal,
+          relinkableFrom: true, relinkableTo: true,
+          toPortChanged: function(link, oldport, newport) {
+            if (newport instanceof go.Shape) link.path.stroke = newport.fill;
+          }
+        },
         $(go.Shape,
           { strokeWidth: 2 })
       );
@@ -147,17 +157,16 @@
 
   /** @override */
   BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-    var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-                        port.getDocumentPoint(go.Spot.BottomRight));
-    var op = otherport.getDocumentPoint(go.Spot.Center);
-    var below = op.y > r.centerY;
-    var y = below ? r.bottom : r.top;
     if (node.category === "HBar") {
+      var op = go.Link.prototype.getLinkPoint.call(this, othernode, otherport, this.computeSpot(!from), !from, ortho, node, port);
+      var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
+                          port.getDocumentPoint(go.Spot.BottomRight));
+      var y = (op.y > r.centerY) ? r.bottom : r.top;
       if (op.x < r.left) return new go.Point(r.left, y);
       if (op.x > r.right) return new go.Point(r.right, y);
       return new go.Point(op.x, y);
     } else {
-      return new go.Point(r.centerX, y);
+      return go.Link.prototype.getLinkPoint.call(this, node, port, spot, from, ortho, othernode, otherport);
     }
   };
 
@@ -198,24 +207,23 @@
   </div>
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
-  "linkFromPortIdProperty": "fromPort",
-  "linkToPortIdProperty": "toPort",
   "nodeDataArray": [ 
 {"key":"Gen1", "category":"Generator", "location":"300 0"},
-{"key":"1", "category":"HBar", "location":"100 100", "size":"500 4"},
+{"key":"1", "category":"HBar", "location":"100 100", "size":"500 4", "fill":"green"},
 {"key":"Cons1", "category":"Consumer", "location":"53 234"},
-{"key":"2", "category":"HBar", "location":"0 300", "size":"600 4"},
+{"key":"2", "category":"HBar", "location":"0 300", "size":"600 4", "fill":"orange"},
 {"key":"Conn1", "category":"Connector", "location":"232.5 207.75"},
 {"key":"Cons3", "category":"Consumer", "location":"357.5 230.75"},
 {"key":"Cons2", "category":"Consumer", "location":"484.5 164.75"}
  ],
   "linkDataArray": [ 
 {"from":"Gen1", "to":"1"},
+{"from":"Gen1", "to":"2"},
 {"from":"Cons1", "to":"2"},
-{"from":"Conn1", "to":"1", "fromPort":"", "toPort":""},
-{"from":"Conn1", "to":"2", "fromPort":"", "toPort":""},
-{"from":"Cons3", "to":"2", "fromPort":"", "toPort":""},
-{"from":"Cons2", "to":"1", "fromPort":"", "toPort":""}
+{"from":"Conn1", "to":"1"},
+{"from":"Conn1", "to":"2"},
+{"from":"Cons3", "to":"2"},
+{"from":"Cons2", "to":"1"}
  ]}
   </textarea>
 </div>

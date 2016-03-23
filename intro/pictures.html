@@ -147,6 +147,21 @@ In this case what must be clipped is at the sides of the image.
 </pre>
 <script>goCode("stretchedPictures", 600, 120)</script>
 
+<h3>Cross Origin Pictures</h3>
+
+<p>Since Pictures are backed by HTMLImageElements, they must abide by the same Cross-origin (CORS) rules that apply to Images. If you are using images that apply to CORS rules, you may need to set the <a>Picture.sourceCrossOrigin</a> property to a function that returns an appropriate value. If <code>sourceCrossOrigin</code> is supplied, the value returned by the function is used as the value of any constructed  <code>image.crossOrigin</code>. Example:
+
+<pre data-language="javascript">
+   $(go.Picture,
+     { width: 64, height: 64 },
+     { sourceCrossOrigin: function(pict) { return "use-credentials"; } },
+     new go.Binding("source", "path"))
+</pre>
+
+<p>Common values to return are "use-credentials" and "anonymous", but other situations may call for other values or conditional values. We suggest researching <a href="http://enable-cors.org/">cross-origin resource sharing</a> to determine what is right for your situation.
+
+<p>If you are using <a>Diagram.makeImage</a>, <a>Diagram.makeImageData</a>, or <a>Diagram.makeSVG</a>, and seeing blank or missing images, CORS-related issues are the first thing to investigate.
+
 <h3>Using SVG as a Picture source</h3>
 
 <p>Almost all browsers accept SVG files as a Picture source, but in many browsers you <strong>must</strong>:</p>

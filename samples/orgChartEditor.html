@@ -8,6 +8,10 @@
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+
+<link rel='stylesheet' href='../extensions/dataInspector.css' />
+<script src="../extensions/dataInspector.js"></script>
+
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -35,9 +39,6 @@
                 alternateAlignment: go.TreeLayout.AlignmentBus,
                 alternateNodeSpacing: 20
               }),
-          // support editing the properties of the selected person in HTML
-          "ChangedSelection": onSelectionChanged,
-          "TextEdited": onTextEdited,
           // enable undo & redo
           "undoManager.isEnabled": true
         });
@@ -213,61 +214,19 @@
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
+
+
+    // support editing the properties of the selected person in HTML
+    if (window.Inspector) myInspector = new Inspector('myInspector', myDiagram,
+      {
+        properties: {
+          'key': { readOnly: true },
+          'comments': {}
+        }
+      });
   }
 
-  // Allow the user to edit text when a single node is selected
-  function onSelectionChanged(e) {
-    var node = e.diagram.selection.first();
-    if (node instanceof go.Node) {
-      updateProperties(node.data);
-    } else {
-      updateProperties(null);
-    }
-  }
 
-  // Update the HTML elements for editing the properties of the currently selected node, if any
-  function updateProperties(data) {
-    if (data === null) {
-      document.getElementById("propertiesPanel").style.display = "none";
-      document.getElementById("name").value = "";
-      document.getElementById("title").value = "";
-      document.getElementById("comments").value = "";
-    } else {
-      document.getElementById("propertiesPanel").style.display = "block";
-      document.getElementById("name").value = data.name || "";
-      document.getElementById("title").value = data.title || "";
-      document.getElementById("comments").value = data.comments || "";
-    }
-  }
-
-  // This is called when the user has finished inline text-editing
-  function onTextEdited(e) {
-    var tb = e.subject;
-    if (tb === null || !tb.name) return;
-    var node = tb.part;
-    if (node instanceof go.Node) {
-      updateProperties(node.data);
-    }
-  }
-
-  // Update the data fields when the text is changed
-  function updateData(text, field) {
-    var node = myDiagram.selection.first();
-    // maxSelectionCount = 1, so there can only be one Part in this collection
-    var data = node.data;
-    if (node instanceof go.Node && data !== null) {
-      var model = myDiagram.model;
-      model.startTransaction("modified " + field);
-      if (field === "name") {
-        model.setDataProperty(data, "name", text);
-      } else if (field === "title") {
-        model.setDataProperty(data, "title", text);
-      } else if (field === "comments") {
-        model.setDataProperty(data, "comments", text);
-      }
-      model.commitTransaction("modified " + field);
-    }
-  }
 
   // Show the diagram's model in JSON format
   function save() {
@@ -283,11 +242,8 @@
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: #696969; border: solid 1px black; height: 500px"></div>
   <div>
-    <div id="propertiesPanel" style="display: none; background-color: aliceblue; border: solid 1px black">
-      <b>Properties</b><br />
-      Name: <input type="text" id="name" value="" onchange="updateData(this.value, 'name')" /><br />
-      Title: <input type="text" id="title" value="" onchange="updateData(this.value, 'title')" /><br />
-      Comments: <input type="text" id="comments" value="" onchange="updateData(this.value, 'comments')" /><br />
+    <div id="myInspector">
+
     </div>
   </div>
   <p>
@@ -301,7 +257,10 @@
     You can also draw a link from a node's background to other nodes that have no "boss".
   </p>
   <p>
-    Select a node to edit/update node data values.
+    Select a node to edit/update node data values. This sample uses the <a href="../extensions/dataInspector.html">Data Inspector</a> extension to display and modify Part data.
+  </p>
+  <p>
+    To learn how to build an org chart from scratch with GoJS, see the <a href="../learn/index.html">Getting Started tutorial</a>.
   </p>
   <div>
     <div>
