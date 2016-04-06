@@ -12,6 +12,9 @@
   // These parameters need to be set before defining the templates.
   var MINLENGTH = 200;  // this controls the minimum length of any swimlane
   var MINBREADTH = 100;  // this controls the minimum breadth of any non-collapsed swimlane
+  var groupColors = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
+  var noteColors = ['#FF8A80', '#C5E1A5', '#FFF176', '#CFD8DC', '#FFFFFF'];
+
 
   // some shared functions
 
@@ -31,7 +34,8 @@
         len = Math.max(len, sz.height);
       }
       var box = lane.selectionObject;
-      len = Math.max(len, box.actualBounds.height);
+      // naturalBounds instead of actualBounds to disregard the shape's stroke width
+      len = Math.max(len, box.naturalBounds.height);
     });
     return new go.Size(NaN, len);
   }
@@ -106,7 +110,10 @@
       $(go.Diagram, "myDiagramDiv",
         {
           // start everything in the middle of the viewport
-          initialContentAlignment: go.Spot.Center,
+          contentAlignment: go.Spot.Center,
+          autoScale: go.Diagram.Uniform,
+          "commandHandler.defaultScale": 1.5,
+          minScale: 0.75,
           // use a simple layout to stack the top-level Groups next to each other
           layout: $(PoolLayout),
           allowDrop: true, // support drag-and-drop from the Palette
@@ -129,9 +136,9 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "Rectangle",
           { fill: "white", strokeWidth: 0 },
-          new go.Binding("fill", "color")),
+          new go.Binding("fill", "color", function(num) { return noteColors[num]; })),
         $(go.TextBlock,
-          { margin: 5, editable: true, maxSize: new go.Size(130, NaN) },
+          { margin: 6, font: 'bold 12px Lato, sans-serif', editable: true, stroke: "#000", maxSize: new go.Size(130, NaN) },
           new go.Binding("text", "text").makeTwoWay())
       );
 
@@ -197,7 +204,7 @@
         $(go.Panel, "Auto",  // the lane consisting of a background Shape and a Placeholder representing the subgraph
           $(go.Shape, "Rectangle",  // this is the resized object
             { name: "SHAPE", fill: "white", stroke: "gray" },
-            new go.Binding("fill", "color"),
+            new go.Binding("fill", "color", function(num) { return groupColors[num]; }),
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
           $(go.Placeholder,
             { padding: 12, alignment: go.Spot.TopLeft }),
@@ -215,16 +222,15 @@
     myPalette =
       $(go.Palette, "myPaletteDiv",
         {
+          scale: 1.5,
           nodeTemplateMap: myDiagram.nodeTemplateMap,
           groupTemplateMap: myDiagram.groupTemplateMap,
           "model.nodeDataArray": [
-            { text: "note\nwith editable text", color: "white" },
-            { text: "note\nwith editable text", color: "lightgray" },
-            { text: "note\nwith editable text", color: "lightblue" },
-            { text: "note\nwith editable text", color: "lightgreen" },
-            { text: "note\nwith editable text", color: "lightyellow" },
-            { text: "note\nwith editable text", color: "orange" },
-            { text: "note\nwith editable text", color: "pink" }
+            { text: "note\nwith editable text", color: "0" },
+            { text: "note\nwith editable text", color: "1" },
+            { text: "note\nwith editable text", color: "2" },
+            { text: "note\nwith editable text", color: "3" },
+            { text: "note\nwith editable text", color: "4" }
           ]
         }
       );
@@ -244,7 +250,8 @@
 <body onload="init()">
 <div id="sample">
   <div id="myPaletteDiv" style="border: solid 1px gray; width:100%; height:100px"></div>
-  <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:400px; background:darkgray"></div>
+  <div id="myDiagramDiv" style="border: solid 1px gray; width:100%; height:400px;"></div>
+  <p>A Kanban board is a work and workflow visualization used to communicate the status and progress of work items.</p>
   <p>
     This design and implementation were adapted from the <a href="swimLanesVertical.html">Swim Lanes (vertical)</a> sample.
     Unlike that sample:
@@ -266,29 +273,29 @@
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
-{"key":"Problems", "text":"Problems", "isGroup":true, "color":"white", "loc":"0 23.52284749830794", "size":"108 200"},
-{"key":"Reproduced", "text":"Reproduced", "isGroup":true, "color":"lightblue", "loc":"109 23.52284749830794", "size":"124.60618337477278 200"},
-{"key":"Identified", "text":"Identified", "isGroup":true, "color":"lightgreen", "loc":"235 23.52284749830794", "size":"107 200"},
-{"key":"Fixing", "text":"Fixing", "isGroup":true, "color":"lightyellow", "loc":"343 23.52284749830794", "size":"107 200"},
-{"key":"Reviewing", "text":"Reviewing", "isGroup":true, "color":"orange", "loc":"451 23.52284749830794", "size":"109.22284444655013 200"},
-{"key":"Testing", "text":"Testing", "isGroup":true, "color":"pink", "loc":"562 23.52284749830794", "size":"108 200"},
-{"key":"Customer", "text":"Customer", "isGroup":true, "color":"white", "loc":"671 23.52284749830794", "size":"108 200"},
-{"key":1, "text":"text for oneA", "group":"Problems", "color":"lightgreen", "loc":"12 35.52284749830794"},
-{"key":2, "text":"text for oneB", "group":"Problems", "color":"lightblue", "loc":"12 65.52284749830794"},
-{"key":3, "text":"text for oneC", "group":"Problems", "color":"orange", "loc":"12 95.52284749830794"},
-{"key":4, "text":"text for oneD", "group":"Problems", "color":"lightyellow", "loc":"12 125.52284749830794"},
-{"key":5, "text":"text for twoA", "group":"Reproduced", "color":"pink", "loc":"121 35.52284749830794"},
-{"key":6, "text":"text for twoB", "group":"Reproduced", "color":"lightblue", "loc":"121 65.52284749830794"},
-{"key":7, "text":"text for twoC", "group":"Identified", "color":"orange", "loc":"247 35.52284749830794"},
-{"key":8, "text":"text for twoD", "group":"Fixing", "color":"pink", "loc":"355 35.52284749830794"},
-{"key":9, "text":"text for twoE", "group":"Reviewing", "color":"lightgreen", "loc":"463 35.52284749830794"},
-{"key":10, "text":"text for twoF", "group":"Reviewing", "color":"orange", "loc":"463 65.52284749830794"},
-{"key":11, "text":"text for twoG", "group":"Testing", "color":"lightyellow", "loc":"574 35.52284749830794"},
-{"key":12, "text":"text for fourA", "group":"Customer", "color":"lightyellow", "loc":"683 35.52284749830794"},
-{"key":13, "text":"text for fourB", "group":"Customer", "color":"pink", "loc":"683 65.52284749830794"},
-{"key":14, "text":"text for fourC", "group":"Customer", "color":"orange", "loc":"683 95.52284749830794"},
-{"key":15, "text":"text for fourD", "group":"Customer", "color":"lightblue", "loc":"683 125.52284749830794"},
-{"key":16, "text":"text for fiveA", "group":"Customer", "color":"lightgreen", "loc":"683 155.52284749830795"}
+{"key":"Problems", "text":"Problems", "isGroup":true, "color":"0", "loc":"0 23.52284749830794", "size":"108 200"},
+{"key":"Reproduced", "text":"Reproduced", "isGroup":true, "color":"1", "loc":"109 23.52284749830794", "size":"124.60618337477278 200"},
+{"key":"Identified", "text":"Identified", "isGroup":true, "color":"2", "loc":"235 23.52284749830794", "size":"107 200"},
+{"key":"Fixing", "text":"Fixing", "isGroup":true, "color":"3", "loc":"343 23.52284749830794", "size":"107 200"},
+{"key":"Reviewing", "text":"Reviewing", "isGroup":true, "color":"4", "loc":"451 23.52284749830794", "size":"109.22284444655013 200"},
+{"key":"Testing", "text":"Testing", "isGroup":true, "color":"5", "loc":"562 23.52284749830794", "size":"108 200"},
+{"key":"Customer", "text":"Customer", "isGroup":true, "color":"6", "loc":"671 23.52284749830794", "size":"108 200"},
+{"key":1, "text":"text for oneA", "group":"Problems", "color":"0", "loc":"12 35.52284749830794"},
+{"key":2, "text":"text for oneB", "group":"Problems", "color":"0", "loc":"12 65.52284749830794"},
+{"key":3, "text":"text for oneC", "group":"Problems", "color":"0", "loc":"12 95.52284749830794"},
+{"key":4, "text":"text for oneD", "group":"Problems", "color":"1", "loc":"12 125.52284749830794"},
+{"key":5, "text":"text for twoA", "group":"Reproduced", "color":"4", "loc":"121 35.52284749830794"},
+{"key":6, "text":"text for twoB", "group":"Reproduced", "color":"1", "loc":"121 65.52284749830794"},
+{"key":7, "text":"text for twoC", "group":"Identified", "color":"1", "loc":"247 35.52284749830794"},
+{"key":8, "text":"text for twoD", "group":"Fixing", "color":"4", "loc":"355 35.52284749830794"},
+{"key":9, "text":"text for twoE", "group":"Reviewing", "color":"0", "loc":"463 35.52284749830794"},
+{"key":10, "text":"text for twoF", "group":"Reviewing", "color":"0", "loc":"463 65.52284749830794"},
+{"key":11, "text":"text for twoG", "group":"Testing", "color":"3", "loc":"574 35.52284749830794"},
+{"key":12, "text":"text for fourA", "group":"Customer", "color":"3", "loc":"683 35.52284749830794"},
+{"key":13, "text":"text for fourB", "group":"Customer", "color":"4", "loc":"683 65.52284749830794"},
+{"key":14, "text":"text for fourC", "group":"Customer", "color":"2", "loc":"683 95.52284749830794"},
+{"key":15, "text":"text for fourD", "group":"Customer", "color":"1", "loc":"683 125.52284749830794"},
+{"key":16, "text":"text for fiveA", "group":"Customer", "color":"0", "loc":"683 155.52284749830795"}
 ],
   "linkDataArray": []}
   </textarea>

@@ -1107,8 +1107,6 @@ $(go.Shape, "NotAllowed",
           if (!ok) myDiagram.currentTool.doCancel();
         },
         linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
-        // set these kinds of Diagram properties after initialization, not now
-        "InitialLayoutCompleted": loadDiagramProperties,  // defined below
         "SelectionMoved": relayoutDiagram,  // defined below
         "SelectionCopied": relayoutDiagram
       });
@@ -1681,6 +1679,7 @@ function loadFile() {
     // actually load the model from the JSON format string
     var savedFile = window.localStorage.getItem(fileName);
     myDiagram.model = go.Model.fromJson(savedFile);
+    loadDiagramProperties();
     myDiagram.model.undoManager.isEnabled = true;
     myDiagram.isModified = false;
     // eventually loadDiagramProperties will be called to finish
@@ -1691,11 +1690,14 @@ function loadFile() {
 
 function loadJSON(file) {
     jQuery.getJSON(file, function (jsondata) {
-    // create the model from the data in the JavaScript object parsed from JSON text
-    //myDiagram.model = new go.GraphLinksModel(jsondata["nodes"], jsondata["links"]);
-    myDiagram.model = go.Model.fromJson(jsondata);
-    myDiagram.model.undoManager.isEnabled = true;
-    myDiagram.isModified = false;
+      // set these kinds of Diagram properties after initialization, not now
+      myDiagram.addDiagramListener("InitialLayoutCompleted", loadDiagramProperties);  // defined below
+      // create the model from the data in the JavaScript object parsed from JSON text
+      //myDiagram.model = new go.GraphLinksModel(jsondata["nodes"], jsondata["links"]);
+      myDiagram.model = go.Model.fromJson(jsondata);
+      loadDiagramProperties();
+      myDiagram.model.undoManager.isEnabled = true;
+      myDiagram.isModified = false;
     });
   }
 
@@ -1705,11 +1707,11 @@ function saveDiagramProperties() {
   myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
 }
 
-// Called by myDiagram.addDiagramListener("InitialLayoutCompleted" ...,
-// NOT directly by loadFile.
+// Called by loadFile and loadJSON.
 function loadDiagramProperties(e) {
+  // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
   var pos = myDiagram.model.modelData.position;
-  if (pos) myDiagram.position = go.Point.parse(pos);
+  if (pos) myDiagram.initialPosition = go.Point.parse(pos);
 }
 
 

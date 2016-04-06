@@ -29,8 +29,6 @@
           // so that combined with Link.adjusting == End the link will retain its reshaped mid points
           // even after nodes are moved
           "LinkReshaped": function(e) { e.subject.routing = go.Link.Orthogonal; },
-          // don't set some properties until after a new model has been loaded
-          "InitialLayoutCompleted": loadDiagramProperties,  // this DiagramEvent listener is defined below
           "animationManager.isEnabled": false,
           "undoManager.isEnabled": true
         });
@@ -165,7 +163,7 @@
   }
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    // loadDiagramProperties gets called later, upon the "InitialLayoutCompleted" DiagramEvent
+    loadDiagramProperties();
   }
 
   function saveDiagramProperties() {
@@ -173,8 +171,9 @@
   }
   // Called by "InitialLayoutCompleted" DiagramEvent listener, NOT directly by load()!
   function loadDiagramProperties(e) {
+    // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
     var pos = myDiagram.model.modelData.position;
-    if (pos) myDiagram.position = go.Point.parse(pos);
+    if (pos) myDiagram.initialPosition = go.Point.parse(pos);
   }
 </script>
 </head>

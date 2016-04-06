@@ -13,6 +13,12 @@
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for more concise visual tree definitions
 
+    // colors used, named for easier identification
+    var blue = "#0288D1";
+    var pink = "#B71C1C";
+    var pinkfill = "#F8BBD0";
+    var bluefill = "#B3E5FC";
+
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
@@ -29,9 +35,9 @@
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
         $(go.Shape, "Rectangle",  // the border
-          { fill: "white" },
-          new go.Binding("stroke", "critical",
-                         function (b) { return (b ? "red" : "blue"); })),
+          { fill: "white", strokeWidth: 2 },
+          new go.Binding("fill", "critical", function (b) { return (b ? pinkfill : bluefill ); }),
+          new go.Binding("stroke", "critical", function (b) { return (b ? pink : blue); })),
         $(go.Panel, "Table",
           { padding: 0.5 },
           $(go.RowColumnDefinition, { column: 1, separatorStroke: "black" }),
@@ -79,12 +85,12 @@
     // of the nodes.  It would be insufficient to change the appearance of any Links.
     function linkColorConverter(linkdata, elt) {
       var link = elt.part;
-      if (!link) return "blue";
+      if (!link) return blue;
       var f = link.fromNode;
-      if (!f || !f.data || !f.data.critical) return "blue";
+      if (!f || !f.data || !f.data.critical) return blue;
       var t = link.toNode;
-      if (!t || !t.data || !t.data.critical) return "blue";
-      return "red";  // when both Link.fromNode.data.critical and Link.toNode.data.critical
+      if (!t || !t.data || !t.data.critical) return blue;
+      return pink;  // when both Link.fromNode.data.critical and Link.toNode.data.critical
     }
 
     // The color of a link (including its arrowhead) is red only when both
@@ -92,10 +98,12 @@
     // This is computed by the binding converter function.
     myDiagram.linkTemplate =
       $(go.Link,
+        { toShortLength: 6, toEndSegmentLength: 20 },
         $(go.Shape,
+          { strokeWidth: 4 },
           new go.Binding("stroke", "", linkColorConverter)),
         $(go.Shape,  // arrowhead
-          { toArrow: "Standard", stroke: null },
+          { toArrow: "Triangle", stroke: null, scale: 1.5 },
           new go.Binding("fill", "", linkColorConverter))
       );
 
@@ -129,11 +137,11 @@
     myDiagram.add(
       $(go.Node, "Auto",
         $(go.Shape, "Rectangle",  // the border
-          { fill: "lightblue" } ),
+          { fill: bluefill } ),
         $(go.Panel, "Table",
           $(go.RowColumnDefinition, { column: 1, separatorStroke: "black" }),
           $(go.RowColumnDefinition, { column: 2, separatorStroke: "black" }),
-          $(go.RowColumnDefinition, { row: 1, separatorStroke: "black", background: "lightblue", coversSeparators: true }),
+          $(go.RowColumnDefinition, { row: 1, separatorStroke: "black", background: bluefill, coversSeparators: true }),
           $(go.RowColumnDefinition, { row: 2, separatorStroke: "black" }),
           $(go.TextBlock, "Early Start",
             { row: 0, column: 0, margin: 5, textAlign: "center" }),

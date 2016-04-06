@@ -4,9 +4,9 @@
 */
 
 /*
-  Inspector code
-  Two classes: Inspector and View
-  An Inspector is a collection of Views
+  DebugInspector code
+  Two classes: DebugInspector and View
+  An DebugInspector is a collection of Views
 
   Each property corresponds to its own View.
   Each View correspondingly has its own DOM elements.
@@ -14,8 +14,8 @@
   and committing information from them, when requested.
   Right now Views have three essential settable functions:
     initialize = Creates DOM. Called once.
-    populate = Fills DOM, ie input.value = some value. Called each time the Inspector asks.
-    use = Returns a value or values from the View's DOM inputs. Inspector solicits this when it wants to commit some values.
+    populate = Fills DOM, ie input.value = some value. Called each time the DebugInspector asks.
+    use = Returns a value or values from the View's DOM inputs. DebugInspector solicits this when it wants to commit some values.
 
   The inspector adds the DOM elements of all Views to its master div (this.div), plus an accept button (or not).
 
@@ -26,7 +26,7 @@
   to all of its Views so that they may re-populate their inputs.
 */
 
-function Inspector(divid, diagram, options) {
+function DebugInspector(divid, diagram, options) {
   this.inspectedProps = {};
   // assume coll is a single object for now TODO fix this,
   // which means looking at every use of this.collection
@@ -136,10 +136,10 @@ function Inspector(divid, diagram, options) {
   }
 
   this.toggleVisibility(false);
-} // end Inspector constructor
+} // end DebugInspector constructor
 
 // Populate the selection box with all GraphObjects inside a node, plus its part.data
-Inspector.prototype.populateDefault = function(graphObjects, pred, selection) {
+DebugInspector.prototype.populateDefault = function(graphObjects, pred, selection) {
   if (pred === null || pred(selection)) {
     graphObjects.push(selection);
   }
@@ -162,17 +162,17 @@ Inspector.prototype.populateDefault = function(graphObjects, pred, selection) {
 }
 
 // populate based on this.propertyNames
-Inspector.prototype.populatePropertyNames = function(graphObjects, pred, selection) {
+DebugInspector.prototype.populatePropertyNames = function(graphObjects, pred, selection) {
   graphObjects.push(this.propertyNames);
 }
 
-Inspector.prototype.change = function(graphObject) {
+DebugInspector.prototype.change = function(graphObject) {
   this.inspectedProps = {};
   this.setCollection(graphObject);
   this.showObjectProperties(graphObject);
 }
 
-Inspector.prototype.toggleVisibility = function(visible) {
+DebugInspector.prototype.toggleVisibility = function(visible) {
   this.div.style.display = visible ? "block" : "none";
   this.acceptResetDiv.style.display = visible ? "block" : "none";
   // Hide the chooser if there's only one observed object being inspected
@@ -181,11 +181,11 @@ Inspector.prototype.toggleVisibility = function(visible) {
 
 // coll = collection of objects (JavaScript Objects, GraphObjects, Parts, etc)
 // assumes coll is a single object for now
-Inspector.prototype.setCollection = function(coll) {
+DebugInspector.prototype.setCollection = function(coll) {
   this.collection = coll;
 }
 
-Inspector.prototype.rebuildViews = function() {
+DebugInspector.prototype.rebuildViews = function() {
   // clear any old spectrum controls that were bound to old inputs
   var spectrums = document.getElementsByClassName("sp-container");
   while (spectrums.length !== 0) document.body.removeChild(spectrums[0]);
@@ -194,7 +194,7 @@ Inspector.prototype.rebuildViews = function() {
   this.acceptResetDiv.innerHTML = '';
   var trackedList = Object.keys(this.tracked);
   for (var i = 0; i < trackedList.length; i++ ) {
-    var section = Inspector.createSection(trackedList[i]);
+    var section = DebugInspector.createSection(trackedList[i]);
     var inspectedProps = this.tracked[trackedList[i]];
     for (var j = 0; j < inspectedProps.length; j++) {
       var propname = inspectedProps[j];
@@ -266,7 +266,7 @@ Inspector.prototype.rebuildViews = function() {
   }
 }
 
-Inspector.prototype.buildButton = function(text, clickFunction) {
+DebugInspector.prototype.buildButton = function(text, clickFunction) {
   var viewName = text + "View";
   if (this[viewName] === undefined) {
     var button = document.createElement("input");
@@ -278,7 +278,7 @@ Inspector.prototype.buildButton = function(text, clickFunction) {
   this.acceptResetDiv.appendChild(this.viewName);
 }
 
-Inspector.prototype.setAllProperties = function() {
+DebugInspector.prototype.setAllProperties = function() {
   var coll = this.collection;
   if (coll === null) return;
   var diagram = this.diagram;
@@ -301,7 +301,7 @@ Inspector.prototype.setAllProperties = function() {
   diagram.commitTransaction(transactionName);
 }
 
-Inspector.prototype.createProperty = function(propname, options, object) {
+DebugInspector.prototype.createProperty = function(propname, options, object) {
   var pred = this.propertyPredicate;
   if (pred === null || pred(object, propname)) {
     // assume propname to be unique, create it if it does not exist
@@ -314,7 +314,7 @@ Inspector.prototype.createProperty = function(propname, options, object) {
 }
 
 // create it if it doesn't exist, then append
-Inspector.prototype.appendProperty = function(propname, options, object) {
+DebugInspector.prototype.appendProperty = function(propname, options, object) {
   var inspectedProps = this.inspectedProps;
   this.createProperty(propname, options, object);
   if (inspectedProps[propname]) {
@@ -322,7 +322,7 @@ Inspector.prototype.appendProperty = function(propname, options, object) {
   }
 }
 
-Inspector.prototype.hideAllProperties = function() {
+DebugInspector.prototype.hideAllProperties = function() {
   var inspectedProps = this.inspectedProps;
   for (var propname in inspectedProps) {
     inspectedProps[propname].visible = false;
@@ -331,7 +331,7 @@ Inspector.prototype.hideAllProperties = function() {
 
 // Show all the relevant properties for a given object
 // If the object is a GoJS object it will look at the Type._inspectedProperties and show those
-Inspector.prototype.showObjectProperties = function(obj) {
+DebugInspector.prototype.showObjectProperties = function(obj) {
   this.hideAllProperties();
   if (obj === null) return; // no object to show
   this.tracked = {};
@@ -347,7 +347,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
       if (go[k] !== undefined && go[k]['_inspectedProperties'] !== undefined) {
         // it's Node/Panel/GraphObject/etc, populate the names in the list
         var name = k;
-        var section = Inspector.createSection(name);
+        var section = DebugInspector.createSection(name);
         this.tracked[name] = [];
         var props = propertyNames[k];
         for (var i = 0; i < props.length; i++) {
@@ -367,7 +367,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
         var name = k.substr(1); // remove the #
         var obj = node.findObject(name);
         if (obj === null) continue;
-        var section = Inspector.createSection(name);
+        var section = DebugInspector.createSection(name);
         this.tracked[name] = [];
         var props = propertyNames[k];
         for (var i = 0; i < props.length; i++) {
@@ -380,7 +380,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
 
   } else if (proto.constructor === Object) { // arbitrary JS Object (for the Part.data)
     var name = 'data';
-    var section = Inspector.createSection(name);
+    var section = DebugInspector.createSection(name);
     this.tracked[name] = [];
     for (var prop in obj) {
       var options = { setter: View.defaultDataSetter };
@@ -397,7 +397,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
       // toString often produces strings such as: Class("someInfo")#ID
       // We want the name to be just the Class.
       var name = (new proto.constructor().toString()).split('#')[0].split('(')[0];
-      var section = Inspector.createSection(name);
+      var section = DebugInspector.createSection(name);
       this.tracked[name] = [];
       for (var x in props) {
         this.tracked[name].push(x);
@@ -411,7 +411,7 @@ Inspector.prototype.showObjectProperties = function(obj) {
 
 
 // node, part, panel, graphobject properties
-Inspector.createSection = function(name) {
+DebugInspector.createSection = function(name) {
   var div = document.createElement("div");
   div.className = "inspector-section";
   var h3 = document.createElement("h3");

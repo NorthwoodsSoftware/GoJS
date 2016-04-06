@@ -17,9 +17,20 @@
       $(go.Diagram, "myDiagramDiv",  // create the Diagram for the HTML DIV element
         { layout: $(go.GridLayout) });  // use a GridLayout
 
+    function mouseEnter(e, obj) {
+      obj.isHighlighted = true;
+    };
+
+    function mouseLeave(e, obj) {
+      obj.isHighlighted = false;
+    };
+
+
     myDiagram.nodeTemplate =
       $(go.Node, "Vertical",
         {
+          mouseEnter: mouseEnter,
+          mouseLeave: mouseLeave,
           locationSpot: go.Spot.Center,  // the location is the center of the Shape
           locationObjectName: "SHAPE",
           selectionAdorned: false,  // no selection handle when selected
@@ -28,22 +39,24 @@
           // don't re-layout when node changes size
           layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized
         },
+        new go.Binding("layerName", "isHighlighted", function(h) { return h ? "Foreground" : ""; }).ofObject(),
         $(go.Shape,
           {
             name: "SHAPE",  // named so that the above properties can refer to this GraphObject
-            width: 50, height: 50,
-            fill: "lightgray",
-            stroke: "lightslategray",
-            strokeWidth: 2
+            width: 70, height: 70,
+            stroke: "#C2185B",
+            fill: "#F48FB1",
+            strokeWidth: 3
           },
           // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
           new go.Binding("figure", "key")),
         $(go.TextBlock,  // the label
           {
-            margin: 2,
-            font: "14px sans-serif",
-            maxSize: new go.Size(86, NaN)  // limit width but not height
+            margin: 4,
+            font: "bold 18px sans-serif",
+            background: 'white'
           },
+          new go.Binding("visible", "isHighlighted").ofObject(),
           new go.Binding("text", "key"))
       );
 
@@ -54,11 +67,14 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <p>All predefined <b>GoJS</b> figures:</p>
   <div id="myDiagramDiv" style="border: solid 1px blue; height:600px"></div>
+  <p>This sample showcases all predefined <b>GoJS</b> figures.
+    This sample also makes use of <a href="../intro/highlighting.html">GoJS Highlighting</a> data-bindings: Mouse-hover over a shape to see its name.</p>
   <p>You can specify a predefined geometry for a <a>Shape</a> by setting its <a>Shape.figure</a>.</p>
+  <p>With GoJS you can also define your own custom shapes with SVG-like path syntax, see the <a href="icons.html">SVG icons</a>
+    sample for examples or the <a href="../intro/geometry.html">Geometry Path Strings intro page</a> to learn more.</p>
   <p>For predefined arrowheads, see the <a href="arrowheads.html">Arrowheads</a> sample.</p>
-  <p>For defining your own shapes with SVG-like path syntax, see the <a href="icons.html">SVG icons</a> sample.</p>
+  
 </div>
 </body>
 </html>

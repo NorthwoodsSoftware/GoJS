@@ -107,8 +107,10 @@ layer when it is selected and back in its normal color layer when it is not sele
 
   // define this function so that the checkbox event handlers can call it
   toggleVisible = function(layername, e) {
+    diagram.startTransaction('toggle ' + layername);
     var layer = diagram.findLayer(layername);
     if (layer !== null) layer.visible = e.currentTarget.checked;
+    diagram.commitTransaction('toggle ' + layername);
   };
 </pre>
 <script>goCode("layers", 610, 260)</script>
@@ -158,14 +160,14 @@ Buttons on the Part can be used to modify the z-order of each.
 
   var array = [];
   for (var i = 0; i < 12; i++) {
-    var data = { loc: new go.Point(Math.random()*500, Math.random()*150) };
+    var data = { loc: new go.Point(Math.random()*500, Math.random()*200) };
     data.zOrder = (Math.floor(Math.random()*20))
     array.push(data);
   }
   diagram.model.nodeDataArray = array;
   diagram.undoManager.isEnabled = true;
 </pre>
-<script>goCode("zOrder", 610, 300)</script>
+<script>goCode("zOrder", 610, 310)</script>
 
 
 

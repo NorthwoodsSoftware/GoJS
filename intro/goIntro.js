@@ -101,7 +101,7 @@ function goIntro() {
   for (var i = 0; i < l; i++) {
     var lowerhref = lis[i].childNodes[0].href.toLowerCase();
     if (lowerhref.indexOf('intro') === -1) continue;
-    if (lowerhref.indexOf(url) !== -1) {
+    if (lowerhref.indexOf('/' + url) !== -1) {
       lis[i].childNodes[0].className = "selected";
       return;
     }

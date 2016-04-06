@@ -62,9 +62,10 @@ function goSamples() {
     var li = lis[i].childNodes[0];
     if (!li.href) continue;
     var lowerhref = li.href.toLowerCase();
-    if (lowerhref.indexOf(url) !== -1) {
+    if (lowerhref.indexOf('/' + url) !== -1) {
       li.className = "selected";
       listed = true;
+      break;
     }
   }
   if (!listed) {

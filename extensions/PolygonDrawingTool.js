@@ -23,6 +23,7 @@ function PolygonDrawingTool() {
   go.Tool.call(this);
   this.name = "PolygonDrawing";
   this._isPolygon = true;
+  this._hasArcs = false;
   this._archetypePartData = {}; // the data to copy for a new polygon Part
 
   // this is the Shape that is shown during a drawing operation
@@ -82,7 +83,7 @@ PolygonDrawingTool.prototype.doDeactivate = function() {
 };
 
 /**
-* This internal method adds a point to the geometry of the {@link #temporaryShape}.
+* This internal method adds a segment to the geometry of the {@link #temporaryShape}.
 * @this {PolygonDrawingTool}
 */
 PolygonDrawingTool.prototype.addPoint = function(p) {
@@ -106,33 +107,57 @@ PolygonDrawingTool.prototype.addPoint = function(p) {
     // must copy whole Geometry in order to add a PathSegment
     var geo = shape.geometry.copy();
     var fig = geo.figures.first();
-    fig.add(new go.PathSegment(go.PathSegment.Line, q.x, q.y));
+    if (this.hasArcs) {
+      var lastseg = fig.segments.last();
+      if (lastseg === null) {
+        fig.add(new go.PathSegment(go.PathSegment.QuadraticBezier, q.x, q.y, (fig.startX + q.x) / 2, (fig.startY + q.y) / 2));
+      } else {
+        fig.add(new go.PathSegment(go.PathSegment.QuadraticBezier, q.x, q.y, (lastseg.endX + q.x) / 2, (lastseg.endY + q.y) / 2));
+      }
+    } else {
+      fig.add(new go.PathSegment(go.PathSegment.Line, q.x, q.y));
+    }
   }
   shape.geometry = geo;
 };
 
 /**
-* This internal method changes the last point of the geometry of the {@link #temporaryShape}.
+* This internal method changes the last segment of the geometry of the {@link #temporaryShape} to end at the given point.
 * @this {PolygonDrawingTool}
 */
 PolygonDrawingTool.prototype.moveLastPoint = function(p) {
   // must copy whole Geometry in order to change a PathSegment
   var shape = this.temporaryShape;
   var geo = shape.geometry.copy();
-  var segs = geo.figures.first().segments;
+  var fig = geo.figures.first();
+  var segs = fig.segments;
   if (segs.count > 0) {
     // for the temporary Shape, normalize the geometry to be in the viewport
     var viewpt = this.diagram.viewportBounds.position;
     var seg = segs.elt(segs.count - 1);
     // modify the last PathSegment to be the given Point p
-    seg.endX = p.x-viewpt.x;
-    seg.endY = p.y-viewpt.y;
+    seg.endX = p.x - viewpt.x;
+    seg.endY = p.y - viewpt.y;
+    if (seg.type === go.PathSegment.QuadraticBezier) {
+      var prevx = 0.0;
+      var prevy = 0.0;
+      if (segs.count > 1) {
+        var prevseg = segs.elt(segs.count - 2);
+        prevx = prevseg.endX;
+        prevy = prevseg.endY;
+      } else {
+        prevx = fig.startX;
+        prevy = fig.startY;
+      }
+      seg.point1X = (seg.endX + prevx)/2;
+      seg.point1Y = (seg.endY + prevy)/2;
+    }
     shape.geometry = geo;
   }
 };
 
 /**
-* This internal method removes the last point of the geometry of the {@link #temporaryShape}.
+* This internal method removes the last segment of the geometry of the {@link #temporaryShape}.
 * @this {PolygonDrawingTool}
 */
 PolygonDrawingTool.prototype.removeLastPoint = function() {
@@ -269,6 +294,18 @@ PolygonDrawingTool.prototype.undo = function() {
 Object.defineProperty(PolygonDrawingTool.prototype, "isPolygon", {
   get: function() { return this._isPolygon; },
   set: function(val) { this._isPolygon = val; }
+});
+
+/**
+* Gets or sets whether this tools draws shapes with quadratic bezier curves for each segment, or just straight lines.
+* The default value is false -- only use straight lines.
+* @name PolygonDrawingTool#hasArcs
+* @function.
+* @return {boolean}
+*/
+Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
+  get: function() { return this._hasArcs; },
+  set: function(val) { this._hasArcs = val; }
 });
 
 /**

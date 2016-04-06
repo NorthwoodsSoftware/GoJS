@@ -209,9 +209,6 @@
           "draggingTool.centerGuidelineColor": "green",
           "draggingTool.guidelineWidth": 1,
 
-          // set these kinds of Diagram properties after initialization, not now
-          "InitialLayoutCompleted": loadDiagramProperties,  // defined below
-
           // notice whenever the selection may have changed
           "ChangedSelection": enableAll,  // defined below, to enable/disable commands
 
@@ -713,7 +710,9 @@
       setCurrentFileName(fileName);
       // actually load the model from the JSON format string
       var savedFile = window.localStorage.getItem(fileName);
+
       myDiagram.model = go.Model.fromJson(savedFile);
+      loadDiagramProperties();
       myDiagram.undoManager.isEnabled = true;
       myDiagram.addModelChangedListener(function(e) {
         if (e.isTransactionFinished) enableAll();
@@ -731,11 +730,11 @@
     myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
   }
 
-  // Called by myDiagram.addDiagramListener("InitialLayoutCompleted" ...,
-  // NOT directly by loadFile.
+  // Called by loadFile.
   function loadDiagramProperties(e) {
+    // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
     var pos = myDiagram.model.modelData.position;
-    if (pos) myDiagram.position = go.Point.parse(pos);
+    if (pos) myDiagram.initialPosition = go.Point.parse(pos);
   }
 
 

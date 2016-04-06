@@ -112,6 +112,7 @@
       { from: 3, to: 1, color: "#6200EA" }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    myDiagram.model.modelData = { "test": true, "hello": "world"};
 
 
     // properties declare which properties to show and how. By default, all properties on the model data objects are shown unless the inspector option "includesOwnProperties" is set to false.
@@ -127,11 +128,44 @@
           "color": { show: Inspector.showIfPresent, type: 'color' },
           // Comments and LinkComments are not in any node or link data (yet), so we add them here:
           "Comments": { show: Inspector.showIfNode  },
+          "Extra bool": { show: Inspector.showIfNode, type: 'boolean', defaultValue: true  },
           "LinkComments": { show: Inspector.showIfLink },
         }
       });
 
-    myDiagram.select(myDiagram.nodes.first())
+    myDiagram.select(myDiagram.nodes.first());
+
+    /*
+    // Alternatively, inspect the model.modelData instead
+    var inspector2 = new Inspector('myInspector2', myDiagram,
+      {
+        // by default the inspector works on the Diagram selection
+        // this lets us inspect our own object using Inspector.inspectObject(object)
+        inspectSelection: false
+      });
+    // If not inspecting a selection, you can programatically decide what to inspect (a Part, or a JavaScript object)
+    inspector2.inspectObject(myDiagram.model.modelData)
+    */
+
+    // Alternatively, inspect the model.modelData instead
+    var inspector2 = new Inspector('myInspector2', myDiagram,
+      {
+        // by default the inspector works on the Diagram selection
+        // this lets us inspect our own object using Inspector.inspectObject(object)
+        inspectSelection: false,
+        properties: {
+          // key would be automatically added for nodes, but we want to declare it read-only also:
+          "key": { readOnly: true, show: Inspector.showIfPresent },
+          // color would be automatically added for nodes, but we want to declare it a color also:
+          "color": { show: Inspector.showIfPresent, type: 'color' },
+          // Comments and LinkComments are not in any node or link data (yet), so we add them here:
+          "Comments": { show: Inspector.showIfNode  },
+          "Extra bool": { show: Inspector.showIfNode, type: 'boolean', defaultValue: true  },
+          "LinkComments": { show: Inspector.showIfLink },
+        }
+      });
+    // If not inspecting a selection, you can programatically decide what to inspect (a Part, or a JavaScript object)
+    inspector2.inspectObject(myDiagram.nodes.first())
 
   }
   </script>
@@ -145,6 +179,7 @@
     </span>
     <span style="display: inline-block; vertical-align: top;">
       <div id = "myInspector" class = "inspector-container"> </div>
+      <div id = "myInspector2" class = "inspector-container"> </div>
     </span>
     <div>
       <p>An HTML-based inspector that displays model data for the selected Part.

@@ -38,8 +38,6 @@
           rotatingTool: $(TopRotatingTool),  // defined below
           "rotatingTool.snapAngleMultiple": 15,
           "rotatingTool.snapAngleEpsilon": 15,
-          // don't set some properties until after a new model has been loaded
-          "InitialLayoutCompleted": loadDiagramProperties,  // this DiagramEvent listener is defined below
           "undoManager.isEnabled": true
         });
 
@@ -270,16 +268,16 @@
   }
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    // loadDiagramProperties gets called later, upon the "InitialLayoutCompleted" DiagramEvent
+    loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
   }
 
   function saveDiagramProperties() {
     myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
   }
-  // Called by "InitialLayoutCompleted" DiagramEvent listener, NOT directly by load()!
   function loadDiagramProperties(e) {
+    // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
     var pos = myDiagram.model.modelData.position;
-    if (pos) myDiagram.position = go.Point.parse(pos);
+    if (pos) myDiagram.initialPosition = go.Point.parse(pos);
   }
 </script>
 </head>
