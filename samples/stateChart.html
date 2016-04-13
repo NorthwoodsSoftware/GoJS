@@ -26,18 +26,6 @@
           "undoManager.isEnabled": true
         });
 
-    // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", function(e) {
-      var button = document.getElementById("SaveButton");
-      if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf("*");
-      if (myDiagram.isModified) {
-        if (idx < 0) document.title += "*";
-      } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx);
-      }
-    });
-
     // define the Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
@@ -47,14 +35,9 @@
           {
             parameter1: 20,  // the corner has a large radius
             fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
-            stroke: "black",
-            portId: "",
-            fromLinkable: true,
-            fromLinkableSelfNode: true,
-            fromLinkableDuplicates: true,
-            toLinkable: true,
-            toLinkableSelfNode: true,
-            toLinkableDuplicates: true,
+            portId: "",  // this Shape is the Node's port, not the whole Node
+            fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+            toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true,
             cursor: "pointer"
           }),
         $(go.TextBlock,
@@ -62,7 +45,7 @@
             font: "bold 11pt helvetica, bold arial, sans-serif",
             editable: true  // editing the text automatically updates the model data
           },
-          new go.Binding("text", "text").makeTwoWay())
+          new go.Binding("text").makeTwoWay())
       );
 
     // unlike the normal selection Adornment, this one includes a Button
@@ -70,7 +53,7 @@
       $(go.Adornment, "Spot",
         $(go.Panel, "Auto",
           $(go.Shape, { fill: null, stroke: "blue", strokeWidth: 2 }),
-          $(go.Placeholder)  // this represents the selected Node
+          $(go.Placeholder)  // a Placeholder sizes itself to the selected Node
         ),
         // the button to create a "next" node, at the top-right corner
         $("Button",
@@ -78,20 +61,19 @@
             alignment: go.Spot.TopRight,
             click: addNodeAndLink  // this function is defined below
           },
-          $(go.Shape, "PlusLine", { desiredSize: new go.Size(6, 6) })
+          $(go.Shape, "PlusLine", { width: 6, height: 6 })
         ) // end button
       ); // end Adornment
 
     // clicking the button inserts a new node to the right of the selected node,
     // and adds a link to that new node
     function addNodeAndLink(e, obj) {
-      var adorn = obj.part;
-      e.handled = true;
-      var diagram = adorn.diagram;
+      var adornment = obj.part;
+      var diagram = e.diagram;
       diagram.startTransaction("Add State");
 
       // get the node data for which the user clicked the button
-      var fromNode = adorn.adornedPart;
+      var fromNode = adornment.adornedPart;
       var fromData = fromNode.data;
       // create a new "State" data object, positioned off to the right of the adorned Node
       var toData = { text: "new" };
@@ -126,10 +108,11 @@
       $(go.Link,  // the whole link panel
         {
           curve: go.Link.Bezier, adjusting: go.Link.Stretch,
-          reshapable: true, relinkableFrom: true, relinkableTo: true
+          reshapable: true, relinkableFrom: true, relinkableTo: true,
+          toShortLength: 3
         },
         new go.Binding("points").makeTwoWay(),
-        new go.Binding("curviness", "curviness"),
+        new go.Binding("curviness"),
         $(go.Shape,  // the link shape
           { strokeWidth: 1.5 }),
         $(go.Shape,  // the arrowhead
@@ -145,22 +128,21 @@
             {
               textAlign: "center",
               font: "10pt helvetica, arial, sans-serif",
-              stroke: "black",
               margin: 4,
-              editable: true  // editing the text automatically updates the model data
+              editable: true  // enable in-place editing
             },
-            new go.Binding("text", "text").makeTwoWay())
+            // editing the text automatically updates the model data
+            new go.Binding("text").makeTwoWay())
         )
       );
 
-    // read in the JSON-format data from the "mySavedModel" element
+    // read in the JSON data from the "mySavedModel" element
     load();
   }
 
   // Show the diagram's model in JSON format
   function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-    myDiagram.isModified = false;
   }
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
@@ -175,6 +157,7 @@
   The text is editable for both the nodes and the links.
   The user can draw as many links from one node to another node as desired,
   and the links can be reshaped or deleted when selected.
+  Double-clicking in the background of the diagram creates a new node.
   </p>
   <p>
   This sample customizes the <a>Part.selectionAdornmentTemplate</a>
@@ -188,7 +171,7 @@
   All of this is done inside a transaction, so that it can be undone by the user
   (Ctrl+Z and Ctrl+Y will undo and redo transactions).
   </p>
-  <button id="SaveButton" onclick="save()">Save</button>
+  <button onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   Diagram Model saved in JSON format:
   <br />

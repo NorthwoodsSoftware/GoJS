@@ -13,9 +13,9 @@
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-1506307-5', 'gojs.net');
+ga('create', 'UA-1506307-5', 'auto');
 ga('send', 'pageview');
 
 </script>
@@ -63,12 +63,12 @@ a:hover img {
           <li><a href="../samples/index.html">Samples</a></li>
           <li><a href="../intro/index.html">Intro</a></li>
           <li><a href="../api/index.html">API</a></li>
-          <li><a href="http://www.nwoods.com/components/evalform.htm">Register</a></li>
+          <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
           <li><a href="../doc/download.html">Download</a></li>
-          <li><a href="http://forum.nwoods.com/c/gojs">Forum</a></li>
-          <li><a href="http://www.nwoods.com/support/query.htm">Contact</a></li>
-          <li class="buy"><a href="http://www.nwoods.com/sales/ordering.htm">Buy</a></li>
-          <li class="activate"><a href="http://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+          <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+          <li><a href="https://www.nwoods.com/support/query.htm">Contact</a></li>
+          <li class="buy"><a href="https://www.nwoods.com/sales/ordering.htm">Buy</a></li>
+          <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
         </ul>
       </div><!--/.nav-collapse -->
     </div>
@@ -106,7 +106,7 @@ a:hover img {
       </p>
 
       <p>
-        <a href="http://www.nwoods.com/components/evalform.htm">Register with us for support during your evaluation.</a>
+        <a href="https://www.nwoods.com/components/evalform.htm">Register with us for support during your evaluation.</a>
       </p>
     </div>
 
@@ -127,7 +127,7 @@ a:hover img {
 </div><!-- /.container -->
 
 <p class="footer mt30">
-GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2016 <a href="http://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
+GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2016 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
 </p>
 
 <script>
@@ -233,6 +233,7 @@ var arr = []; // each samples url[0] title[1] description[2]
     // flowchart (above)
     arr.push(["pageFlow", "Page Flow", "A diagram representation of webpage flow"]);
     arr.push(["processFlow", "Process Flow", "Tanks, valves, and pipes, with animated flow in the pipes."]);
+    arr.push(["productionProcess", "Production Process", "Partially describes the production process for converting natural gas and oil byproducts into their end products."]);
     arr.push(["systemDynamics", "System Dynamics", "A System Dynamics diagram shows the storages and flows of material in some system, and the factors that influence the rates of flow."]);
     // flowBuilder
     // flowgrammer
@@ -333,14 +334,17 @@ var arr2 = [];
 
 var samplesSection = document.getElementById('samplesSection');
 var row = document.createElement('div');
+var couple = document.createElement('div'); // 4 samples per row, but they are grouped into 2 for when 4 won't fit
+couple.className = "couple";
 row.className = "row mt30";
 var rowsize = 4;
+var couplesize = 2; // see "couple" comment above
 var inrow = 0;
 var l = arr.length;
 for (var i = 0; i < l; i++) {
   var sample = arr[i]; // each samples url[0] title[1] description[2]
-  var div = document.createElement('div');
-  div.className = 'col-sm-3 col-xs-7';
+  var samplediv = document.createElement('div');
+  samplediv.className = 'col-sm-3 col-xs-6 samplecontainer';
   var a = document.createElement('a');
   a.href = sample[0] + '.html';
   var img = document.createElement('img');
@@ -351,6 +355,7 @@ for (var i = 0; i < l; i++) {
   }
   img.width = 200;
   img.height = 200;
+  img.className = "img-responsive"
   var title = document.createElement('h2');
   title.textContent = sample[1];
   var desc = document.createElement('p');
@@ -358,10 +363,15 @@ for (var i = 0; i < l; i++) {
 
   a.appendChild(img);
   a.appendChild(title);
-  div.appendChild(a);
-  div.appendChild(desc);
-  row.appendChild(div);
+  samplediv.appendChild(a);
+  samplediv.appendChild(desc);
+  couple.appendChild(samplediv);
+  row.appendChild(couple);
   inrow++;
+  if (inrow === couplesize || inrow === rowsize) {
+    couple = document.createElement('div');
+    couple.className = "couple";
+  }
   if (inrow >= rowsize) {
     samplesSection.appendChild(row);
     row = document.createElement('div');
@@ -380,7 +390,7 @@ var l = arr2.length;
 for (var i = 0; i < l; i++) {
   var sample = arr2[i]; // each samples url[0] title[1] description[2] image[3] if any
   var div = document.createElement('div');
-  div.className = 'col-sm-3 col-xs-7';
+  div.className = 'col-sm-3 col-xs-6';
   var a = document.createElement('a');
   a.href = sample[0] + '.html';
   if (sample[3]) {
@@ -388,6 +398,7 @@ for (var i = 0; i < l; i++) {
     img.src = '../assets/images/screenshots/' + sample[3] + '.png';
     img.width = 200;
     img.height = 200;
+    img.className = "img-responsive"
   }
 
   var title = document.createElement('h2');
