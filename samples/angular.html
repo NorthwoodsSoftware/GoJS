@@ -8,7 +8,7 @@
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
 <script id="code">
   angular.module('minimal', [])
     .directive('goDiagram', function() {
@@ -54,11 +54,14 @@
           scope.$watch("model", function(newmodel) {
             var oldmodel = diagram.model;
             if (oldmodel !== newmodel) {
+              diagram.removeDiagramListener("ChangedSelection", updateSelection);
               diagram.model = newmodel;
+              diagram.addDiagramListener("ChangedSelection", updateSelection);
             }
           });
 
           scope.$watch("model.selectedNodeData.name", function(newname) {
+            if (!diagram.model.selectedNodeData) return;
             // disable recursive updates
             diagram.removeModelChangedListener(updateAngular);
             // change the name
@@ -72,11 +75,12 @@
           });
 
           // update the model when the selection changes
-          diagram.addDiagramListener("ChangedSelection", function(e) {
+          function updateSelection(e) {
             var selnode = diagram.selection.first();
             diagram.model.selectedNodeData = (selnode instanceof go.Node ? selnode.data : null);
             scope.$apply();
-          });
+          }
+          diagram.addDiagramListener("ChangedSelection", updateSelection);
         }
       };
     })
