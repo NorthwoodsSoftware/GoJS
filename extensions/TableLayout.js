@@ -4,7 +4,6 @@
 */
 
 // This layout is patterned after the "Table" Panel layout.
-// This implementation and design is still experimental.
 
 /**
 * @constructor

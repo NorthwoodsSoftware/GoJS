@@ -27,18 +27,6 @@
           "undoManager.isEnabled": true
         });
 
-    // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("saveModel");
-        if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-            if (idx < 0) document.title += "*";
-        } else {
-            if (idx >= 0) document.title = document.title.substr(0, idx); 
-        }
-    });
-
     // There are two templates for Groups, "OfGroups" and "OfNodes".
 
     // this function is used to highlight a Group that the selection may be dropped into
@@ -70,7 +58,7 @@
     }
 
     myDiagram.groupTemplateMap.add("OfGroups",
-      $(go.Group, go.Panel.Auto,
+      $(go.Group, "Auto",
         {
           background: "transparent",
           // highlight when dragging into the Group
@@ -90,8 +78,8 @@
         new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
         $(go.Shape, "Rectangle",
           { fill: null, stroke: "#E69900", strokeWidth: 2 }),
-        $(go.Panel, go.Panel.Vertical,  // title above Placeholder
-          $(go.Panel, go.Panel.Horizontal,  // button next to TextBlock
+        $(go.Panel, "Vertical",  // title above Placeholder
+          $(go.Panel, "Horizontal",  // button next to TextBlock
             { stretch: go.GraphObject.Horizontal, background: "#FFDD33", margin: 1 },
             $("SubGraphExpanderButton",
               { alignment: go.Spot.Right, margin: 5 }),
@@ -111,7 +99,7 @@
       ));  // end Group and call to add to template Map
 
     myDiagram.groupTemplateMap.add("OfNodes",
-      $(go.Group, go.Panel.Auto,
+      $(go.Group, "Auto",
         {
           background: "transparent",
           ungroupable: true,
@@ -132,8 +120,8 @@
         new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
         $(go.Shape, "Rectangle",
           { fill: null, stroke: "#0099CC", strokeWidth: 2 }),
-        $(go.Panel, go.Panel.Vertical,  // title above Placeholder
-          $(go.Panel, go.Panel.Horizontal,  // button next to TextBlock
+        $(go.Panel, "Vertical",  // title above Placeholder
+          $(go.Panel, "Horizontal",  // button next to TextBlock
             { stretch: go.GraphObject.Horizontal, background: "#33D3E5", margin: 1 },
             $("SubGraphExpanderButton",
               { alignment: go.Spot.Right, margin: 5 }),
@@ -152,9 +140,8 @@
         )  // end Vertical Panel
       ));  // end Group and call to add to template Map
 
-    // Nodes have a trivial definition
     myDiagram.nodeTemplate =
-      $(go.Node, go.Panel.Auto,
+      $(go.Node, "Auto",
         { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
           mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
         },
@@ -229,6 +216,7 @@
   <p>
     This sample allows the user to drag nodes, including groups, into and out of groups,
     both from the Palette as well as from within the Diagram.
+    See the <a href="../intro/groups.html">Groups Intro page</a> for an explanation of GoJS Groups.
   </p>
   <p>
     Highlighting to show feedback about potential addition to a group during a drag is implemented

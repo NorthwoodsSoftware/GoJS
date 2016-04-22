@@ -15,8 +15,6 @@
   </div>
 */
 
-
-
 /*
   This class implements an inspector for GoJS model data objects.
   The constructor takes three arguments:
@@ -89,7 +87,7 @@ Inspector.showIfNode = function(part) { return part instanceof go.Node };
 Inspector.showIfLink = function(part) { return part instanceof go.Link };
 Inspector.showIfGroup = function(part) { return part instanceof go.Group };
 // Only show the property if its present. Useful for "key" which will be shown on Nodes and Groups, but not Links
-Inspector.showIfPresent = function(part, propname) { return part.data[propname] !== undefined };
+Inspector.showIfPresent = function(part, propname) { return part.data && part.data[propname] !== undefined };
 
 // object is an optional argument, not used in the default case of inspectSelection: false
 Inspector.prototype.inspectObject = function(object) {
@@ -112,6 +110,7 @@ Inspector.prototype.inspectObject = function(object) {
 
   // use either the Part.data or the object itself (for model.modelData)
   var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
+  if (!data) return;
   // Build table:
   var table = document.createElement('table');
   var tbody = document.createElement('tbody');
@@ -204,7 +203,7 @@ Inspector.prototype.updateAllProperties = function() {
   var diagram = this.diagram;
   var isPart = this.inspectedObject instanceof go.Part;
   var data = isPart ? this.inspectedObject.data : this.inspectedObject;
-
+  if (!data) return;
   for (var name in inspectedProps) {
     var input = inspectedProps[name];
     var propertyValue = data[name];
@@ -213,7 +212,6 @@ Inspector.prototype.updateAllProperties = function() {
     } else {
       input.value = propertyValue;
     }
-
   }
 }
 
@@ -223,6 +221,7 @@ Inspector.prototype.setAllProperties = function() {
   var model = diagram.model;
   var isPart = this.inspectedObject instanceof go.Part;
   var data = isPart ? this.inspectedObject.data : this.inspectedObject;
+  if (!data) return;
   diagram.startTransaction('set all properties');
   for (var name in inspectedProps) {
     var value = inspectedProps[name].value;
