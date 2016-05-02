@@ -3,19 +3,7 @@
 *  Copyright (C) 1998-2016 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-/*
-  HTML Structure of the Inspector:
-
-  <div id="divid" class="inspector">
-    <tr>
-      <td>propertyName</td>
-      <td><input value=propertyValue /></td>
-    </tr>
-    ...
-  </div>
-*/
-
-/*
+/**
   This class implements an inspector for GoJS model data objects.
   The constructor takes three arguments:
     {string} divid a string referencing the HTML ID of the to-be inspector's div.
@@ -33,7 +21,7 @@
 
   Options for properties:
     show: {boolean|function} a boolean value to show or hide the property from the inspector, or a predicate function to show conditionally.
-    readOnly: {boolean} whether or not the property is read-only
+    readOnly: {boolean|function} whether or not the property is read-only
     type: {string} a string describing the data type. Supported values: "string|number|color|boolean" Not yet implemented: "point|rect|size"
     defaultValue: {*} a default value for the property. Defaults to the empty string.
 
@@ -49,16 +37,27 @@
       }
     });
 
+  This is the basic HTML Structure that the Inspector creates within the given DIV element:
+
+  <div id="divid" class="inspector">
+    <tr>
+      <td>propertyName</td>
+      <td><input value=propertyValue /></td>
+    </tr>
+    ...
+  </div>
+
 */
 function Inspector(divid, diagram, options) {
   var mainDiv = document.getElementById(divid);
   mainDiv.className = 'inspector';
   mainDiv.innerHTML = '';
-  this.div = mainDiv;
-  this.diagram = diagram;
+  this._div = mainDiv;
+  this._diagram = diagram;
+  this._inspectedProperties = {};
+
   // Either a GoJS Part or a simple data object, such as Model.modelData
   this.inspectedObject = null;
-  this.inspectedProperties = null;
 
   // Inspector options defaults:
   this.includesOwnProperties = true;
@@ -86,25 +85,35 @@ function Inspector(divid, diagram, options) {
 Inspector.showIfNode = function(part) { return part instanceof go.Node };
 Inspector.showIfLink = function(part) { return part instanceof go.Link };
 Inspector.showIfGroup = function(part) { return part instanceof go.Group };
-// Only show the property if its present. Useful for "key" which will be shown on Nodes and Groups, but not Links
-Inspector.showIfPresent = function(part, propname) { return part.data && part.data[propname] !== undefined };
 
-// object is an optional argument, not used in the default case of inspectSelection: false
+// Only show the property if its present. Useful for "key" which will be shown on Nodes and Groups, but normally not on Links
+Inspector.showIfPresent = function(data, propname) {
+  if (data instanceof go.Part) data = data.data;
+  return typeof data === 'object' && data[propname] !== undefined;
+};
+
+/**
+* Update the HTML state of this Inspector given the properties of the {@link #inspectedObject}.
+* @param {Object} object is an optional argument, used when {@link #inspectSelection} is false to
+*                        set {@link #inspectedObject} and show and edit that object's properties.
+*/
 Inspector.prototype.inspectObject = function(object) {
   var inspectedObject = object;
-  if (inspectedObject === null || inspectedObject === undefined) {
+  if (inspectedObject === undefined) {
     if (this.inspectsSelection)
-      inspectedObject = this.diagram.selection.first();
+      inspectedObject = this._diagram.selection.first();
     else
       inspectedObject = this.inspectedObject;
   }
-  if (inspectedObject === null || inspectedObject === undefined) return; // nothing to inspect
-  if (this.inspectedObject === inspectedObject) {
-    this.updateAllProperties();
+
+  if (inspectedObject === null || this.inspectedObject === inspectedObject) {
+    this.inspectedObject = inspectedObject;
+    this.updateAllHTML();
     return;
   }
+
   this.inspectedObject = inspectedObject;
-  var mainDiv = this.div;
+  var mainDiv = this._div;
   mainDiv.innerHTML = '';
   if (inspectedObject === null) return;
 
@@ -114,7 +123,7 @@ Inspector.prototype.inspectObject = function(object) {
   // Build table:
   var table = document.createElement('table');
   var tbody = document.createElement('tbody');
-  this.inspectedProperties = {};
+  this._inspectedProperties = {};
   this.tabIndex = 0;
   var declaredProperties = this.declaredProperties;
 
@@ -131,7 +140,7 @@ Inspector.prototype.inspectObject = function(object) {
   if (this.includesOwnProperties) {
     for (var k in data) {
       if (k === '__gohashid') continue; // skip internal GoJS hash property
-      if (this.inspectedProperties[k]) continue; // already exists
+      if (this._inspectedProperties[k]) continue; // already exists
       if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
 
       tbody.appendChild(this.buildPropertyRow(k, data[k]));
@@ -142,33 +151,70 @@ Inspector.prototype.inspectObject = function(object) {
   mainDiv.appendChild(table);
 };
 
-Inspector.prototype.canShowProperty = function(propertyName, property, inspectedObject) {
-  if (property.show === false) return false;
+/**
+* @ignore
+* This predicate should be false if the given property should not be shown.
+* Normally it only checks the value of "show" on the property descriptor.
+* The default value is true.
+* @param {string} propertyName the property name
+* @param {Object} propertyDesc the property descriptor
+* @param {Object} inspectedObject the data object
+* @return {boolean} whether a particular property should be shown in this Inspector
+*/
+Inspector.prototype.canShowProperty = function(propertyName, propertyDesc, inspectedObject) {
+  if (propertyDesc.show === false) return false;
   // if "show" is a predicate, make sure it passes or do not show this property
-  if (typeof property.show === "function") return property.show(inspectedObject, propertyName);
+  if (typeof propertyDesc.show === "function") return propertyDesc.show(inspectedObject, propertyName);
   return true;
 }
 
-/*  This sets this.inspectedProperties[propertyName] and creates the HTML table row:
-    <tr>
-      <td>propertyName</td>
-      <td><input value=propertyValue /></td>
-    </tr>
+/**
+* @ignore
+* This predicate should be false if the given property should not be editable by the user.
+* Normally it only checks the value of "readOnly" on the property descriptor.
+* The default value is true.
+* @param {string} propertyName the property name
+* @param {Object} propertyDesc the property descriptor
+* @param {Object} inspectedObject the data object
+* @return {boolean} whether a particular property should be shown in this Inspector
+*/
+Inspector.prototype.canEditProperty = function(propertyName, propertyDesc, inspectedObject) {
+  if (propertyDesc.readOnly === true) return false;
+  // if "readOnly" is a predicate, make sure it passes or do not show this property
+  if (typeof propertyDesc.readOnly === "function") return !propertyDesc.readOnly(inspectedObject, propertyName);
+  return true;
+}
+
+/**
+* @ignore
+* This sets this._inspectedProperties[propertyName] and creates the HTML table row:
+*    <tr>
+*      <td>propertyName</td>
+*      <td><input value=propertyValue /></td>
+*    </tr>
+* @param {string} propertyName the property name
+* @param {*} propertyValue the property value
+* @return the table row
 */
 Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
-  var mainDiv = this.div;
+  var mainDiv = this._div;
   var tr = document.createElement('tr');
+
   var td1 = document.createElement('td');
+  td1.textContent = propertyName;
+  tr.appendChild(td1);
+
   var td2 = document.createElement('td');
   var input = document.createElement('input');
-  td1.textContent = propertyName;
   var decProp = this.declaredProperties[propertyName];
   input.tabIndex = this.tabIndex++;
+
   var self = this;
-  function setprops() { self.setAllProperties(); }
+  function setprops() { self.setAllDataProperties(); }
+
   input.value = propertyValue;
   if (decProp !== undefined) {
-    if (decProp.readOnly) input.disabled = true;
+    input.disabled = !this.canEditProperty(propertyName, decProp, this.inspectedObject);
     if (decProp.type === 'color') {
       input.setAttribute('type', 'color');
       if (input.type === 'color') {
@@ -178,67 +224,87 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
       }
     }
   }
-  if (this.diagram.model.isReadOnly) input.disabled = true;
+  if (this._diagram.model.isReadOnly) input.disabled = true;
 
   if (input.type !== 'color') input.addEventListener('blur', setprops);
 
   td2.appendChild(input);
-  tr.appendChild(td1);
   tr.appendChild(td2);
-  this.inspectedProperties[propertyName] = input;
+
+  this._inspectedProperties[propertyName] = input;
   return tr;
 };
 
+/**
+* @ignore
+* HTML5 color input will only take hex,
+* so let HTML5 canvas convert the color into hex format.
+* This converts "rgb(255, 0, 0)" into "#FF0000", etc.
+* @param {string} propertyValue
+* @return {string}
+*/
 Inspector.prototype.setColor = function(propertyValue) {
-  // hack: HTML5 color input will only take hex,
-  // so let HTML5 canvas convert the color into hex format.
-  // this converts "rgb(255, 0, 0)" into "#FF0000", etc.
   var ctx = document.createElement("canvas").getContext('2d');
   ctx.fillStyle = propertyValue;
   return ctx.fillStyle;
 }
 
-Inspector.prototype.updateAllProperties = function() {
-  var inspectedProps = this.inspectedProperties;
-  var diagram = this.diagram;
+/**
+* @ignore
+* Update all of the HTML in this Inspector.
+*/
+Inspector.prototype.updateAllHTML = function() {
+  var inspectedProps = this._inspectedProperties;
+  var diagram = this._diagram;
   var isPart = this.inspectedObject instanceof go.Part;
   var data = isPart ? this.inspectedObject.data : this.inspectedObject;
-  if (!data) return;
-  for (var name in inspectedProps) {
-    var input = inspectedProps[name];
-    var propertyValue = data[name];
-    if (input.type === 'color') {
-      input.value = this.setColor(propertyValue);
-    } else {
-      input.value = propertyValue;
+  if (!data) {  // clear out all of the fields
+    for (var name in inspectedProps) {
+      var input = inspectedProps[name];
+      input.value = "";
+    }
+  } else {
+    for (var name in inspectedProps) {
+      var input = inspectedProps[name];
+      var propertyValue = data[name];
+      if (input.type === 'color') {
+        input.value = this.setColor(propertyValue);
+      } else {
+        input.value = propertyValue;
+      }
     }
   }
 }
 
-Inspector.prototype.setAllProperties = function() {
-  var inspectedProps = this.inspectedProperties;
-  var diagram = this.diagram;
-  var model = diagram.model;
+/**
+* @ignore
+* Update all of the data properties of {@link #inspectedObject} according to the
+* current values held in the HTML input elements.
+*/
+Inspector.prototype.setAllDataProperties = function() {
+  var inspectedProps = this._inspectedProperties;
+  var diagram = this._diagram;
   var isPart = this.inspectedObject instanceof go.Part;
   var data = isPart ? this.inspectedObject.data : this.inspectedObject;
-  if (!data) return;
+  if (!data) return;  // must not try to update data when there's no data!
+
   diagram.startTransaction('set all properties');
   for (var name in inspectedProps) {
     var value = inspectedProps[name].value;
 
-    // If its a boolean, or if its previous value was boolean,
-    // parse the value to be a boolean and then update the input.value to match
+    // don't update "readOnly" data properties
     var decProp = this.declaredProperties[name];
-    var readonly = false;
-    if (decProp !== undefined && decProp.readOnly !== undefined) {
-      readonly = !!decProp.readOnly;
-    }
-    if (readonly) continue;
+    if (!this.canEditProperty(name, decProp, this.inspectedObject)) continue;
+
+    // If it's a boolean, or if its previous value was boolean,
+    // parse the value to be a boolean and then update the input.value to match
     var type = '';
     if (decProp !== undefined && decProp.type !== undefined) {
       type = decProp.type;
     }
     if (type === '' && this.isBoolean(data[name])) type = 'boolean'; // infer boolean
+
+    // convert to specific type, if needed
     switch (type) {
       case 'boolean':
         value = !(value == false || value === "false");
@@ -247,16 +313,25 @@ Inspector.prototype.setAllProperties = function() {
         value = parseFloat(value);
         break;
     }
-    // In case parsed to be different, such as in the case of boolean values:
+
+    // in case parsed to be different, such as in the case of boolean values,
+    // the value shown match the actual value
     inspectedProps[name].value = value;
 
-    model.setDataProperty(data, name, value);
+    // modify the data object in an undo-able fashion
+    diagram.model.setDataProperty(data, name, value);
+
+    // notify any listener
     if (this.propertyModified !== null) this.propertyModified(name, value);
   }
   diagram.commitTransaction('set all properties');
 };
 
-// whether or not something is strictly a bool value
+/**
+* @ignore
+* @param {*} value some JavaScript value
+* @return whether or not something is strictly a boolean value
+*/
 Inspector.prototype.isBoolean = function(value) {
   return value === true || value === false;
 }
