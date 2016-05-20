@@ -6,15 +6,13 @@
 <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <script src="go.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
-  // These parameters need to be set before defining the templates.
+  // For the layout
   var MINLENGTH = 200;  // this controls the minimum length of any swimlane
   var MINBREADTH = 100;  // this controls the minimum breadth of any non-collapsed swimlane
-  var groupColors = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
-  var noteColors = ['#FF8A80', '#C5E1A5', '#FFF176', '#CFD8DC', '#FFFFFF'];
-
 
   // some shared functions
 
@@ -110,13 +108,9 @@
       $(go.Diagram, "myDiagramDiv",
         {
           // start everything in the middle of the viewport
-          contentAlignment: go.Spot.Center,
-          autoScale: go.Diagram.Uniform,
-          "commandHandler.defaultScale": 1.5,
-          minScale: 0.75,
+          contentAlignment: go.Spot.TopCenter,
           // use a simple layout to stack the top-level Groups next to each other
           layout: $(PoolLayout),
-          allowDrop: true, // support drag-and-drop from the Palette
           // disallow nodes to be dragged to the diagram's background
           mouseDrop: function(e) {
             e.diagram.currentTool.doCancel();
@@ -127,30 +121,99 @@
           "SelectionMoved": relayoutDiagram,  // this DiagramEvent listener is
           "SelectionCopied": relayoutDiagram, // defined above
           "animationManager.isEnabled": false,
-          // enable undo & redo
           "undoManager.isEnabled": true
         });
 
+    // Customize the dragging tool:
+    // When dragging a Node set its opacity to 0.7 and move it to the foreground layer
+    myDiagram.toolManager.draggingTool.doActivate = function() {
+      go.DraggingTool.prototype.doActivate.call(this);
+      this.currentPart.opacity = 0.7;
+      this.currentPart.layerName = "Foreground";
+    }
+    myDiagram.toolManager.draggingTool.doDeactivate = function() {
+      this.currentPart.opacity = 1;
+      this.currentPart.layerName = "";
+      go.DraggingTool.prototype.doDeactivate.call(this);
+    }
+
+    // There are only two note colors by default, blue and red, but you could add more here:
+    var noteColors = ['#009CCC', '#CC293D'];
+    function getNoteColor(num) {
+      return noteColors[Math.min(num, noteColors.length - 1)];
+    }
+
     myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
+      $(go.Node, "Horizontal",
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, "Rectangle",
-          { fill: "white", strokeWidth: 0 },
-          new go.Binding("fill", "color", function(num) { return noteColors[num]; })),
-        $(go.TextBlock,
-          { margin: 6, font: 'bold 12px Lato, sans-serif', editable: true, stroke: "#000", maxSize: new go.Size(130, NaN) },
-          new go.Binding("text", "text").makeTwoWay())
+        $(go.Shape, "Rectangle", {
+            fill: '#009CCC', strokeWidth: 1, stroke: '#009CCC',
+            width: 6, stretch: go.GraphObject.Vertical, alignment: go.Spot.Left
+          },
+          new go.Binding("fill", "color", getNoteColor),
+          new go.Binding("stroke", "color", getNoteColor)
+        ),
+        $(go.Panel, "Auto",
+          $(go.Shape, "Rectangle", { fill: "white", stroke: '#CCCCCC' }),
+          $(go.Panel, "Table",
+            { width: 130, minSize: new go.Size(NaN, 50) },
+            $(go.TextBlock,
+              {
+                name: 'TEXT',
+                margin: 6, font: '11px Lato, sans-serif', editable: true,
+                stroke: "#000", maxSize: new go.Size(130, NaN),
+                alignment: go.Spot.TopLeft
+              },
+              new go.Binding("text", "text").makeTwoWay())
+          )
+        )
       );
+
+    // unmovable node that acts as a button
+    myDiagram.nodeTemplateMap.add('newbutton',
+      $(go.Node, "Horizontal",
+        {
+          selectable: false,
+          click: function(e, node) {
+            myDiagram.startTransaction('add node');
+            var newdata = { group:"Problems", loc:"0 50", text: "New item " + node.containingGroup.memberParts.count };
+            myDiagram.model.addNodeData(newdata);
+            myDiagram.commitTransaction('add node');
+            var node = myDiagram.findNodeForData(newdata);
+            myDiagram.select(node);
+            myDiagram.commandHandler.editTextBlock();
+          },
+          background: 'white'
+        },
+        $(go.Panel, "Auto",
+          $(go.Shape, "Rectangle", { strokeWidth: 0, stroke: null, fill: '#6FB583' }),
+          $(go.Shape, "PlusLine", { margin: 6, strokeWidth: 2, width: 12, height: 12, stroke: 'white', background: '#6FB583' })
+        ),
+        $(go.TextBlock, "New item", { font: '10px Lato, sans-serif', margin: 6,  })
+      )
+    );
+
+    // While dragging, highlight the dragged-over group
+    function highlightGroup(grp, show) {
+      if (show) {
+        var part = myDiagram.toolManager.draggingTool.currentPart;
+        if (part.containingGroup !== grp) {
+          grp.isHighlighted = true;
+          return;
+        }
+      }
+      grp.isHighlighted = false;
+    }
 
     myDiagram.groupTemplate =
       $(go.Group, "Vertical",
         {
-          selectionObjectName: "SHAPE",  // selecting a lane causes the body of the lane to be highlit, not the label
+          copyable: false,
+          movable: false,
+          deletable: false,
+          selectionAdorned: false,
+          selectionObjectName: "SHAPE", // even though its not selectable, this is used in the layout
           layerName: "Background",  // all lanes are always behind all nodes and links
-          background: "transparent",  // can grab anywhere in bounds
-          movable: false,  // can't move lanes
-          copyable: false,  // can't copy lanes
-          deletable: false,  // can't delete lanes
           layout: $(go.GridLayout,  // automatically lay out the lane's subgraph
                     {
                       wrappingColumn: 1,
@@ -168,6 +231,8 @@
                     }),
           computesBoundsAfterDrag: true,  // needed to prevent recomputing Group.placeholder bounds too soon
           handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+          mouseDragEnter: function(e, grp, prev) { highlightGroup(grp, true); },
+          mouseDragLeave: function(e, grp, next) { highlightGroup(grp, false); },
           mouseDrop: function(e, grp) {  // dropping a copy of some Nodes and Links onto this Group adds them to this Group
             // don't allow drag-and-dropping a mix of regular Nodes and Groups
             if (e.diagram.selection.all(function(n) { return !(n instanceof go.Group); })) {
@@ -192,25 +257,25 @@
         $(go.Panel, "Horizontal",
           { name: "HEADER",
             angle: 0,  // maybe rotate the header to read sideways going up
-            alignment: go.Spot.Center },
+            alignment: go.Spot.Left },
+          $("SubGraphExpanderButton", { margin: 5 }),  // this remains always visible
           $(go.Panel, "Horizontal",  // this is hidden when the swimlane is collapsed
             new go.Binding("visible", "isSubGraphExpanded").ofObject(),
             $(go.TextBlock,  // the lane label
-              { font: "bold 13pt sans-serif", editable: true, margin: new go.Margin(2, 0, 0, 0) },
+              { font: "15px Lato, sans-serif", editable: true, margin: new go.Margin(2, 0, 0, 0) },
               new go.Binding("text", "text").makeTwoWay())
-          ),
-          $("SubGraphExpanderButton", { margin: 5 })  // but this remains always visible!
+          )
         ),  // end Horizontal Panel
         $(go.Panel, "Auto",  // the lane consisting of a background Shape and a Placeholder representing the subgraph
           $(go.Shape, "Rectangle",  // this is the resized object
-            { name: "SHAPE", fill: "white", stroke: "gray" },
-            new go.Binding("fill", "color", function(num) { return groupColors[num]; }),
+            { name: "SHAPE", fill: "#F1F1F1", stroke: null, strokeWidth: 4 },
+            new go.Binding("fill", "isHighlighted", function(h) { return h ? "#D6D6D6" : "#F1F1F1"; }).ofObject(),
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
           $(go.Placeholder,
             { padding: 12, alignment: go.Spot.TopLeft }),
           $(go.TextBlock,  // this TextBlock is only seen when the swimlane is collapsed
             { name: "LABEL",
-              font: "bold 13pt sans-serif", editable: true,
+              font: "15px Lato, sans-serif", editable: true,
               angle: 90, alignment: go.Spot.TopLeft, margin: new go.Margin(4, 0, 0, 2) },
             new go.Binding("visible", "isSubGraphExpanded", function(e) { return !e; }).ofObject(),
             new go.Binding("text", "text").makeTwoWay())
@@ -219,21 +284,6 @@
 
     load();
 
-    myPalette =
-      $(go.Palette, "myPaletteDiv",
-        {
-          scale: 1.5,
-          nodeTemplateMap: myDiagram.nodeTemplateMap,
-          groupTemplateMap: myDiagram.groupTemplateMap,
-          "model.nodeDataArray": [
-            { text: "note\nwith editable text", color: "0" },
-            { text: "note\nwith editable text", color: "1" },
-            { text: "note\nwith editable text", color: "2" },
-            { text: "note\nwith editable text", color: "3" },
-            { text: "note\nwith editable text", color: "4" }
-          ]
-        }
-      );
   }  // end init
 
   // Show the diagram's model in JSON format
@@ -249,8 +299,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myPaletteDiv" style="border: solid 1px gray; width:100%; height:100px"></div>
-  <div id="myDiagramDiv" style="border: solid 1px gray; width:100%; height:400px;"></div>
+  <div id="myDiagramDiv" style="border: solid 1px gray; width:100%; height:500px;"></div>
   <p>A Kanban board is a work and workflow visualization used to communicate the status and progress of work items.</p>
   <p>
     This design and implementation were adapted from the <a href="swimLanesVertical.html">Swim Lanes (vertical)</a> sample.
@@ -259,7 +308,6 @@
       <li>there are no Links</li>
       <li>lanes cannot be nested into "pools"</li>
       <li>lanes cannot be resized</li>
-      <li>the user can drag-and-drop tasks from the <b>Palette</b> at the top</li>
       <li>the user cannot drop tasks into the diagram's background</li>
       <li>all tasks are ordered within a single column; the user can rearrange the order</li>
       <li>tasks can freely be moved into other lanes</li>
@@ -273,28 +321,29 @@
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
-{"key":"Problems", "text":"Problems", "isGroup":true, "color":"0", "loc":"0 23.52284749830794", "size":"108 200"},
-{"key":"Reproduced", "text":"Reproduced", "isGroup":true, "color":"1", "loc":"109 23.52284749830794", "size":"124.60618337477278 200"},
-{"key":"Identified", "text":"Identified", "isGroup":true, "color":"2", "loc":"235 23.52284749830794", "size":"107 200"},
-{"key":"Fixing", "text":"Fixing", "isGroup":true, "color":"3", "loc":"343 23.52284749830794", "size":"107 200"},
-{"key":"Reviewing", "text":"Reviewing", "isGroup":true, "color":"4", "loc":"451 23.52284749830794", "size":"109.22284444655013 200"},
-{"key":"Testing", "text":"Testing", "isGroup":true, "color":"5", "loc":"562 23.52284749830794", "size":"108 200"},
-{"key":"Customer", "text":"Customer", "isGroup":true, "color":"6", "loc":"671 23.52284749830794", "size":"108 200"},
+{"key":"Problems", "text":"Problems", "isGroup":true, "loc":"0 23.52284749830794" },
+{"key":"Reproduced", "text":"Reproduced", "isGroup":true, "color":"0", "loc":"109 23.52284749830794" },
+{"key":"Identified", "text":"Identified", "isGroup":true, "color":"0", "loc":"235 23.52284749830794" },
+{"key":"Fixing", "text":"Fixing", "isGroup":true, "color":"0", "loc":"343 23.52284749830794" },
+{"key":"Reviewing", "text":"Reviewing", "isGroup":true, "color":"0", "loc":"451 23.52284749830794"},
+{"key":"Testing", "text":"Testing", "isGroup":true, "color":"0", "loc":"562 23.52284749830794" },
+{"key":"Customer", "text":"Customer", "isGroup":true, "color":"0", "loc":"671 23.52284749830794" },
+{"key":-1, "group":"Problems", "category":"newbutton",  "loc":"12 35.52284749830794" },
 {"key":1, "text":"text for oneA", "group":"Problems", "color":"0", "loc":"12 35.52284749830794"},
-{"key":2, "text":"text for oneB", "group":"Problems", "color":"0", "loc":"12 65.52284749830794"},
+{"key":2, "text":"text for oneB", "group":"Problems", "color":"1", "loc":"12 65.52284749830794"},
 {"key":3, "text":"text for oneC", "group":"Problems", "color":"0", "loc":"12 95.52284749830794"},
 {"key":4, "text":"text for oneD", "group":"Problems", "color":"1", "loc":"12 125.52284749830794"},
-{"key":5, "text":"text for twoA", "group":"Reproduced", "color":"4", "loc":"121 35.52284749830794"},
+{"key":5, "text":"text for twoA", "group":"Reproduced", "color":"1", "loc":"121 35.52284749830794"},
 {"key":6, "text":"text for twoB", "group":"Reproduced", "color":"1", "loc":"121 65.52284749830794"},
-{"key":7, "text":"text for twoC", "group":"Identified", "color":"1", "loc":"247 35.52284749830794"},
-{"key":8, "text":"text for twoD", "group":"Fixing", "color":"4", "loc":"355 35.52284749830794"},
+{"key":7, "text":"text for twoC", "group":"Identified", "color":"0", "loc":"247 35.52284749830794"},
+{"key":8, "text":"text for twoD", "group":"Fixing", "color":"0", "loc":"355 35.52284749830794"},
 {"key":9, "text":"text for twoE", "group":"Reviewing", "color":"0", "loc":"463 35.52284749830794"},
-{"key":10, "text":"text for twoF", "group":"Reviewing", "color":"0", "loc":"463 65.52284749830794"},
-{"key":11, "text":"text for twoG", "group":"Testing", "color":"3", "loc":"574 35.52284749830794"},
-{"key":12, "text":"text for fourA", "group":"Customer", "color":"3", "loc":"683 35.52284749830794"},
-{"key":13, "text":"text for fourB", "group":"Customer", "color":"4", "loc":"683 65.52284749830794"},
-{"key":14, "text":"text for fourC", "group":"Customer", "color":"2", "loc":"683 95.52284749830794"},
-{"key":15, "text":"text for fourD", "group":"Customer", "color":"1", "loc":"683 125.52284749830794"},
+{"key":10, "text":"text for twoF", "group":"Reviewing", "color":"1", "loc":"463 65.52284749830794"},
+{"key":11, "text":"text for twoG", "group":"Testing", "color":"0", "loc":"574 35.52284749830794"},
+{"key":12, "text":"text for fourA", "group":"Customer", "color":"1", "loc":"683 35.52284749830794"},
+{"key":13, "text":"text for fourB", "group":"Customer", "color":"1", "loc":"683 65.52284749830794"},
+{"key":14, "text":"text for fourC", "group":"Customer", "color":"1", "loc":"683 95.52284749830794"},
+{"key":15, "text":"text for fourD", "group":"Customer", "color":"0", "loc":"683 125.52284749830794"},
 {"key":16, "text":"text for fiveA", "group":"Customer", "color":"0", "loc":"683 155.52284749830795"}
 ],
   "linkDataArray": []}

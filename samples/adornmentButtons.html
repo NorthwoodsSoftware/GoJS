@@ -85,16 +85,21 @@
         ),
         $(go.Panel, "Horizontal",
           { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom },
-          $("Button",
-            { click: editText },  // defined below, to support editing the text of the node
+          $("Button", 
+            {
+                click: editText,
+            },  // defined below, to support editing the text of the node
             $(go.TextBlock, "t",
               { font: "bold 10pt sans-serif", desiredSize: new go.Size(15, 15), textAlign: "center" })
           ),
           $("Button",
-            { click: changeColor },  // defined below, to support changing the color of the node
+            {
+                click: changeColor // defined below, to support changing the color of the node
+            },  
             new go.Binding("ButtonBorder.fill", "color", nextColor),
+            new go.Binding("_buttonFillOver", "color", nextColor),
             $(go.Shape,
-              { fill: null, stroke: null, desiredSize: new go.Size(14, 14) })
+              { fill: null, stroke: null, desiredSize: new go.Size(14, 14),  })
           ),
           $("Button",
             { // drawLink is defined below, to support interactively drawing new links
@@ -138,7 +143,10 @@
       if (shape === null) return;
       node.diagram.startTransaction("Change color");
       shape.fill = nextColor(shape.fill);
-      button["_buttonFillNormal"] = nextColor(shape.fill);  // update the button too
+      var color = nextColor(shape.fill)
+      button["_buttonFillNormal"] = color;  // update the button too
+      button["_buttonFillOver"] = color;
+      //button.mouseEnter(e, button, '');
       node.diagram.commitTransaction("Change color");
     }
 
@@ -224,6 +232,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
+  <h3>GoJS Adornment Buttons</h3>
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
   <p>
     The node template uses a custom <a>Part.selectionAdornmentTemplate</a> to

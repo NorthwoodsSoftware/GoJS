@@ -59,13 +59,22 @@ function goSamples() {
   var l = lis.length;
   var listed = false;
   for (var i = 0; i < l; i++) {
-    var li = lis[i].childNodes[0];
-    if (!li.href) continue;
-    var lowerhref = li.href.toLowerCase();
-    if (lowerhref.indexOf('/' + url) !== -1) {
-      li.className = "selected";
+    var anchor = lis[i].childNodes[0];
+    var span = document.createElement('span');
+    span.className = "samplespan";
+    var img = document.createElement('img');
+    img.height = "200";
+    // ....../samples/X.html becomes X.html becomes X
+    var imgname = anchor.href.split('/').pop().split('.')[0];
+    if (imgname === "index") continue;
+    img.src = "../assets/images/screenshots/" + imgname + ".png";
+    span.appendChild(img);
+    anchor.appendChild(span);
+    if (!anchor.href) continue;
+    var lowerhref = anchor.href.toLowerCase();
+    if (!listed && lowerhref.indexOf('/' + url) !== -1) {
+      anchor.className = "selected";
       listed = true;
-      break;
     }
   }
   if (!listed) {
@@ -104,14 +113,13 @@ function goViewSource() {
     script = scripts[scripts.length - 1];
   }
   var sp1 = document.createElement("pre");
-  sp1.setAttribute("data-language", "javascript");
+  sp1.setAttribute("class", "javascript");
   sp1.innerHTML = script.innerHTML;
   var samplediv = document.getElementById("sample") || document.body;
   samplediv.appendChild(sp1);
 
   // show the body:
   var sp2 = document.createElement("pre");
-  sp2.setAttribute("data-language", "javascript");
   sp2.innerHTML = window.bodyHTML;
   samplediv.appendChild(sp2);
 

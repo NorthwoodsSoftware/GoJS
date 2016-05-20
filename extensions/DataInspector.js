@@ -215,7 +215,7 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
   input.tabIndex = this.tabIndex++;
 
   var self = this;
-  function setprops() { self.setAllDataProperties(); }
+  function setprops() { self.updateAllProperties(); }
 
   input.value = propertyValue;
   input.disabled = !this.canEditProperty(propertyName, decProp, this.inspectedObject);
@@ -284,7 +284,7 @@ Inspector.prototype.updateAllHTML = function() {
 * Update all of the data properties of {@link #inspectedObject} according to the
 * current values held in the HTML input elements.
 */
-Inspector.prototype.setAllDataProperties = function() {
+Inspector.prototype.updateAllProperties = function() {
   var inspectedProps = this._inspectedProperties;
   var diagram = this._diagram;
   var isPart = this.inspectedObject instanceof go.Part;

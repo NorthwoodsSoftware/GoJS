@@ -23,21 +23,28 @@
       // define the "sample" Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          $(go.Shape, "RoundedRectangle",  // define the node's outer shape
-            { fill: "white", stroke: "black" },
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,  // define the node's text
-            { margin: 5 },
+          $(go.Shape, { fill: "darkkhaki", stroke: null }),  // assume a dark background
+          $(go.TextBlock,
+            {
+                font: "bold 13px Helvetica, bold Arial, sans-serif",
+                stroke: "black",
+                margin: 3
+            },
+            // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
             new go.Binding("text", "key"))
         );
 
-      // use the default link template
+      myDiagram.linkTemplate =
+        $(go.Link,
+          $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 })
+        );
 
       myDiagram.model = new go.GraphLinksModel([
-        { key: "Alpha", color: "lightblue" },
-        { key: "Beta", color: "pink" }
+        { key: "Alpha" },
+        { key: "Beta" }
       ],[
-        { from: "Alpha", to: "Beta" }
+        { from: "Alpha", to: "Beta" },
+        { from: "Beta", to: "Alpha"}
       ]);
 
 
@@ -61,7 +68,15 @@
               margin: 3
             },
             // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
-            new go.Binding("text", "", function(x) { return x.toString(); } ))
+            new go.Binding("text", "", function (x) {
+                // if the node represents a link, be sure to include the "to/from" data for that link
+                if (x instanceof go.Link) {
+                    s = Util.getClassName(Object.getPrototypeOf(x)) + "#" + Util.hashId(x);
+                    s += "(" + x.data.from + " to " + x.data.to + ");"
+                    return s;
+                }
+                else return x.toString();
+            }))
         );
 
       myVisualTree.linkTemplate =
@@ -108,19 +123,19 @@
 <body onload="init()">
 <div id="sample">
   <h3>GoJS Visual Tree</h3>
-  <p>
-  This sample shows the actual visual tree of a running Diagram.
-  The Diagram that we inspect is named "myDiagramDiv" and initially contains two simple Nodes and one Link.
-  The Diagram below it is named "myVisualTree" and shows the visual tree of "myDiagramDiv".
-  </p>
   <b>myDiagram</b>, the diagram being inspected:<br />
-  <div id="myDiagramDiv" style="border: 1px solid blue; width: 300px; height: 200px"></div>
+  <div id="myDiagramDiv" style="border: 1px solid blue; background:#1F4963; width: 300px; height: 200px"></div>
   <br />
   <input type="button" onclick="drawVisualTree()" value="Draw Visual Tree" />
   <br />
   <br />
   <b>myVisualTree</b>, showing the Layers, Nodes and Links that are in <b>myDiagram</b> above:<br />
   <div id="myVisualTree" style="width: 100%; height: 300px; background:#1F4963"></div>
+  <p>
+        This sample shows the actual visual tree of a running Diagram.
+        The Diagram that we inspect is named "myDiagramDiv" and initially contains two simple Nodes and one Link.
+        The Diagram below it is named "myVisualTree" and shows the visual tree of "myDiagramDiv".
+  </p>
   <p>
   You can also try selecting, copying, and deleting parts in <b>myDiagram</b>
   and then click on "Draw Visual Tree" again to see how the visual tree in <b>myDiagram</b> changes.
@@ -132,7 +147,7 @@
   That object is converted to a text string by using the <b>toString</b> method.
   </p>
   <p>See also the <a href="visualTreeGrouping.html">Visual Tree Using Groups</a> sample,
-  to show the same visual tree using nested groups.</p>
+  to show the same visual tree using nested groups. For more uses of the <a>TreeLayout</a>, see the <a href="DOMTree.html">DOM Tree</a> and <a href="classHierarchy.html">Class Hierarchy Tree</a> samples.</p>
 </div>
 </body>
 </html>

@@ -166,19 +166,19 @@
       var sel = myDiagram.selection.first();
       if (sel !== null) {
         switch (e.id) {
-          case "Links in": linksTo(sel, 1); break;
-          case "Links out": linksFrom(sel, 1); break;
-          case "Links all": linksAll(sel, 1); break;
-          case "Nodes in": nodesTo(sel, 1); break;
-          case "Nodes out": nodesFrom(sel, 1); break;
-          case "Nodes connect": nodesConnect(sel, 1); break;
-          case "Nodes reach": nodesReach(sel, 1); break;
-          case "Group": containing(sel, 1); break;
-          case "Groups all": containingAll(sel, 1); break;
-          case "Nodes member": childNodes(sel, 1); break;
-          case "Nodes members all": allMemberNodes(sel, 1); break;
-          case "Links member": childLinks(sel, 1); break;
-          case "Links members all": allMemberLinks(sel, 1); break;
+          case "linksIn": linksTo(sel, 1); break;
+          case "linksOut": linksFrom(sel, 1); break;
+          case "linksAll": linksAll(sel, 1); break;
+          case "nodesIn": nodesTo(sel, 1); break;
+          case "nodesOut": nodesFrom(sel, 1); break;
+          case "nodesConnect": nodesConnect(sel, 1); break;
+          case "nodesReach": nodesReach(sel, 1); break;
+          case "group": containing(sel, 1); break;
+          case "groupsAll": containingAll(sel, 1); break;
+          case "nodesMember": childNodes(sel, 1); break;
+          case "nodesMembersAll": allMemberNodes(sel, 1); break;
+          case "linksMember": childLinks(sel, 1); break;
+          case "linksMembersAll": allMemberLinks(sel, 1); break;
         }
       }
 
@@ -444,48 +444,45 @@
 </head>
 <body onload="init()">
 <div id="sample">
+  <h3>GoJS Navigation of Graphs</h3>
   <div id="displays" style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; width: 70%;">
-      <div id="myDiagramDiv" style="border: solid 1px black; height: 560px;"></div>
-    </span>
-    <span style="display: inline-block; vertical-align: top; width:200px;">
-      <div id="controls" style="border: solid 1px black; height: 560px;">
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 560px; display: inline-block; vertical-align: top; width: 70%"></div>
+      <div id="controls" style="border: solid 1px black; height: 560px; width: 200px; display: inline-block; vertical-align: top;">
         <div id="buttons" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Related Parts Highlighted</b> <br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="None" checked="checked">Unhighlight All</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links in">Links Into</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links out">Links Out Of</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links all">Links Connected</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes in">Nodes Into</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes out">Nodes Out Of</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes connect">Nodes Connected</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes reach">Nodes Reachable</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Group">Containing Group (Parent)</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Groups all">Containing Groups (All)</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes member">Member Nodes (Children)</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Nodes members all">Member Nodes (All)</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links member">Member Links (Children)</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="Links members all">Member Links (All)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksIn">Links Into</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksOut">Links Out Of</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksAll">Links Connected</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesIn">Nodes Into</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesOut">Nodes Out Of</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesConnect">Nodes Connected</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesReach">Nodes Reachable</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="group">Containing Group (Parent)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="groupsAll">Containing Groups (All)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesMember">Member Nodes (Children)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesMembersAll">Member Nodes (All)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksMember">Member Links (Children)</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksMembersAll">Member Links (All)</label><br />
         </div>
         <div id="colorKey" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Relationship Colors</b>
           <table>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: black;"/> </td>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: black;"></div> </td>
                 <td>Not related            </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: blue;"/>  </td>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: blue;"></div>  </td>
                 <td>Directly related       </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: green;"/> </td>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: green;"></div> </td>
                 <td>2 relationships apart  </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: orange;"/></td>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: orange;"></div></td>
                 <td>3 relationships apart  </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: red;"/>   </td>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: red;"></div>   </td>
                 <td>4 relationships apart  </td></tr>
-            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: purple;"/></td>
+            <tr><td><div style="float: left; margin: 5px; height: 20px; width: 20px; background-color: purple;"></div></td>
                 <td>Very indirectly related</td></tr>
           </table>
         </div>
       </div>
-    </span>
   </div>
   <div>
     <p>This sample displays relationships between different parts of a diagram.</p>
