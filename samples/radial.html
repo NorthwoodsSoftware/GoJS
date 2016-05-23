@@ -146,6 +146,13 @@
     myDiagram.select(somenode);
   }
 
+  function adjustMaxLayer() {
+      var newMaxLayers = document.getElementById("maxLayersChanger").value;
+      maxLayers = newMaxLayers;
+      console.log(myDiagram);
+  }
+
+  // when a new node is selected, adjust the radial layout around the new node
   function nodeSelectionChanged(node) {
     var diagram = node.diagram;
     if (diagram === null) return;
@@ -232,7 +239,7 @@
       if (node !== root) node.category = "";  // remove "Root" category from all non-root nodes
       node._laid = false;
       var layer = it.value;
-      if (layer === Infinity) continue;
+      if (layer === Infinity) continue; // Infinity used as init value (set in findDistances())
       if (layer > maxlayer) maxlayer = layer;
       var layernodes = nodes[layer];
       if (layernodes === undefined) {
@@ -268,7 +275,7 @@
       }
     }
 
-    // now recursively position nodes, starting with the root
+    // now recursively position nodes (using radlay1()), starting with the root
     root.location = new go.Point(0, 0);
     radlay1(root, 1, 0, 360, distances);
     // finally, hide nodes with distance > maxLayers
@@ -279,10 +286,11 @@
     }
     root.diagram.commitTransaction("radial layout");
   }
-
+  
+  // recursively position nodes in a radial layout
   function radlay1(node, layer, angle, sweep, distances) {
-    if (layer > maxLayers) return;
-    var nodes = [];
+    if (layer > maxLayers) return; // no need to position nodes outside of maxLayers
+    var nodes = []; // array of all Nodes connected to 'node' in layer 'layer'
     node.findNodesConnected().each(function(n) {
       if (n._laid) return;
       if (distances.getValue(n) === layer) nodes.push(n);
@@ -291,15 +299,19 @@
     if (found === 0) return;
 
     var radius = layer * layerThickness;
-    var separator = sweep / found;
+    var separator = sweep / found; // distance between nodes in their sweep portion
     var start = angle - sweep / 2 + separator / 2;
+    // for each node in this layer, place it in its correct layer and position
     for (var i = 0; i < found; i++) {
       var n = nodes[i];
-      var a = start + i * separator;
+      var a = start + i * separator; // the angle to rotate the node to
+      // the point to place the node at -- this corresponds with the layer the node is in
+      // all nodes in the same layer are placed at a constant point, then rotated accordingly
       var p = new go.Point(radius, 0);
       p.rotate(a);
       n.location = p;
       n._laid = true;
+      // rotates the node's textblock 
       if (rotateText) {
         n.angle = a;
         var label = n.findObject("TEXTBLOCK");
@@ -307,15 +319,20 @@
           label.angle = ((a > 90 && a < 270 || a < -90) ? 180 : 0);
         }
       }
+      // keep going for all layers
       radlay1(n, layer + 1, a, sweep / found, distances);
     }
   }
+
+  
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
   <h3>GoJS Recentering Radial</h3>
   <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
+  <label for="maxLayersChanger">Max Layers</label><input type="text" id="maxLayersChanger" name="maxLayers" style="width: 50px"  />
+  <button onclick="adjustMaxLayers()">Set Max Layers</button>
   <p>
     Click on a Node to center it and show its relationships.
   </p>

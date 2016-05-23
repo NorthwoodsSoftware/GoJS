@@ -34,10 +34,10 @@
             new go.Binding("text", "key"))
         );
 
-      myDiagram.linkTemplate =
-        $(go.Link,
-          $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 })
-        );
+        myDiagram.linkTemplate =
+          $(go.Link,
+            $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 })
+          );
 
       myDiagram.model = new go.GraphLinksModel([
         { key: "Alpha" },
@@ -71,9 +71,9 @@
             new go.Binding("text", "", function (x) {
                 // if the node represents a link, be sure to include the "to/from" data for that link
                 if (x instanceof go.Link) {
-                    s = Util.getClassName(Object.getPrototypeOf(x)) + "#" + Util.hashId(x);
-                    s += "(" + x.data.from + " to " + x.data.to + ");"
-                    return s;
+                  var s = "Link#" + x.data.__gohashid;
+                  s += "(" + x.data.from + " to " + x.data.to + ")";
+                  return s;
                 }
                 else return x.toString();
             }))
