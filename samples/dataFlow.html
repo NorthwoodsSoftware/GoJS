@@ -24,10 +24,22 @@
         }
       );
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
+
     function makePort(name, leftside) {
       var port = $(go.Shape, "Rectangle",
                    {
-                     fill: "gray", stroke: null, strokeWidth: 0,
+                     fill: "gray", stroke: null,
                      desiredSize: new go.Size(8, 8),
                      portId: name,  // declare this object to be a "port"
                      toMaxLinks: 1,  // don't allow more than one link into a port
@@ -40,6 +52,7 @@
       var panel = $(go.Panel, "Horizontal",
                     { margin: new go.Margin(2, 0) });
 
+      // set up the port/panel based on which side of the node it will be on
       if (leftside) {
         port.toSpot = go.Spot.Left;
         port.toLinkable = true;
@@ -159,16 +172,29 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>
-    This sample demonstrates labelled ports on nodes.
+    This sample demonstrates labeled ports on nodes. These ports are set up as panels, created within
+    the <b>makePort</b> function. This function sets various properties of the <a>Shape</a> and
+    <a>TextBlock</a> that make up the panel, and properties of the panel itself. Most notable are
+    <a>GraphObject.portId</a> to declare the shape as a port, and <a>GraphObject.fromLinkable</a> and
+    <a>GraphObject.toLinkable</a> to set the way the ports can be linked.
+  </p>
+  <p>
+    The diagram also uses the <b>makeTemplate</b> function to create the node templates with shared features.
+    This function takes a type, an image, a background color, and arrays of ports to create the node
+    to be added to the <a>Diagram.nodeTemplateMap</a>.
   </p>
   <p>
     For the same data model rendered somewhat differently, see the <a href="dataFlowVertical.html">Data Flow (vertical)</a> sample.
   </p>
-  <button id="SaveButton" onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeCategoryProperty": "type",
   "linkFromPortIdProperty": "frompid",
@@ -207,7 +233,8 @@
 {"from":51, "frompid":"OUT", "to":61},
 {"from":61, "frompid":"OUT", "to":71}
   ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

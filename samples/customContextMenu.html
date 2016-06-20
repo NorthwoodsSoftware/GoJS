@@ -28,19 +28,39 @@
     padding: 0;
   }
 
-  #contextMenu li {
+  #contextMenu li a {
     position: relative;
     min-width: 60px;
     color: #444;
     display: inline-block;
     padding: 6px;
     text-decoration: none;
-    cursor: default;
+    cursor: pointer;
   }
 
   #contextMenu li:hover { background: #444; }
 
   #contextMenu li:hover { color: #EEE; }
+
+  #contextMenu li ul li {
+      display: none;
+  }
+
+  #contextMenu li ul li a{
+    position: relative;
+    min-width: 60px;
+    padding: 6px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #contextMenu li:hover ul li {
+      display: block;
+      margin-left: 0px; margin-top: 0px;
+  }
+
+
+
 </style>
 
 <script src="go.js"></script>
@@ -76,10 +96,10 @@ function init() {
   // create the model data that will be represented by Nodes and Links
   myDiagram.model = new go.GraphLinksModel(
   [
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta", color: "orange" },
-    { key: "Gamma", color: "lightgreen" },
-    { key: "Delta", color: "pink" }
+    { key: "Alpha", color: "crimson" },
+    { key: "Beta", color: "chartreuse" },
+    { key: "Gamma", color: "aquamarine" },
+    { key: "Delta", color: "gold" }
   ],
   [
     { from: "Alpha", to: "Beta" },
@@ -167,30 +187,25 @@ function cxcommand(val) {
     case "Copy": diagram.commandHandler.copySelection(); break;
     case "Paste": diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); break;
     case "Delete": diagram.commandHandler.deleteSelection(); break;
-    case "Color": changeColor(diagram); break;
+    case "Color": {
+        var color = document.elementFromPoint(event.clientX, event.clientY).parentElement.style.background;
+        changeColor(diagram, color); break;
+    }
   }
   diagram.currentTool.stopTool();
 }
 
 // A custom command, for changing the color of the selected node(s).
-function changeColor(diagram) {
-  // the object with the context menu, in this case a Node, is accessible as:
-  var cmObj = diagram.toolManager.contextMenuTool.currentObject;
-  // but this function operates on all selected Nodes, not just the one at the mouse pointer.
-
+function changeColor(diagram, color) {
   // Always make changes in a transaction, except when initializing the diagram.
   diagram.startTransaction("change color");
   diagram.selection.each(function(node) {
     if (node instanceof go.Node) {  // ignore any selected Links and simple Parts
-      // Examine and modify the data, not the Node directly.
-      var data = node.data;
-      if (data.color === "red") {
+        // Examine and modify the data, not the Node directly.
+        var data = node.data;
         // Call setDataProperty to support undo/redo as well as
         // automatically evaluating any relevant bindings.
-        diagram.model.setDataProperty(data, "color", go.Brush.randomColor());
-      } else {
-        diagram.model.setDataProperty(data, "color", "red");
-      }
+        diagram.model.setDataProperty(data, "color", color);
     }
   });
   diagram.commitTransaction("change color");
@@ -199,8 +214,8 @@ function changeColor(diagram) {
 </head>
 <body onload="init()">
 <div id="sample">
-  <p>HTML Context menu <b>GoJS</b> Sample</p>
-
+    <input />
+  <h3>GoJS HTML Context Menu</h3>
   <div style="display: inline-block;">
     <!-- We make a div to contain both the Diagram div and the context menu (such that they are siblings)
          so that absolute positioning works easily.
@@ -210,11 +225,18 @@ function changeColor(diagram) {
       <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
       <div id="contextMenu">
         <ul>
-          <li id="cut" onclick="cxcommand(this.textContent)">Cut</li>
-          <li id="copy" onclick="cxcommand(this.textContent)">Copy</li>
-          <li id="paste" onclick="cxcommand(this.textContent)">Paste</li>
-          <li id="delete" onclick="cxcommand(this.textContent)">Delete</li>
-          <li id="color" onclick="cxcommand('Color')">Color</li>
+          <li id="cut" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Cut</a></li>
+          <li id="copy" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Copy</a></li>
+          <li id="paste" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Paste</a></li>
+          <li id="delete" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Delete</a></li>
+          <li id="color" class="hasSubMenu"><a href="#" target="_self">Color</a>
+            <ul class="subMenu" id="colorSubMenu">
+                <li style="background: crimson;" onclick="cxcommand('Color')"><a href="#" target="_self">Red</a></li>
+                <li style="background: chartreuse;" onclick="cxcommand('Color')"><a href="#" target="_self">Green</a></li>
+                <li style="background: aquamarine;" onclick="cxcommand('Color')"><a href="#" target="_self">Blue</a></li>
+                <li style="background: gold;" onclick="cxcommand('Color')"><a href="#" target="_self">Yellow</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>

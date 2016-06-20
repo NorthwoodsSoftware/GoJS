@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapping Fields of Records</title>
+  <title>Record Mapper</title>
 <meta name="description" content="A diagram for displaying and editing the N to M relationships from one set of objects to another set of objects." />
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
@@ -44,12 +44,13 @@
             new go.Binding("figure", "figure"),
             new go.Binding("fill", "color")),
           $(go.TextBlock,
-            { margin: new go.Margin(0, 2), column: 1, font: "bold 13px sans-serif",
+            { margin: new go.Margin(0, 5), column: 1, font: "bold 13px sans-serif",
+              alignment: go.Spot.Left,
               // and disallow drawing links from or to this text:
               fromLinkable: false, toLinkable: false },
             new go.Binding("text", "name")),
           $(go.TextBlock,
-            { margin: new go.Margin(0, 2), column: 2, font: "13px sans-serif" },
+            { margin: new go.Margin(0, 5), column: 2, font: "13px sans-serif", alignment: go.Spot.Left },
             new go.Binding("text", "info"))
         );
 
@@ -95,7 +96,10 @@
 
       myDiagram.linkTemplate =
         $(go.Link,
-          { relinkableFrom: true, relinkableTo: true, toShortLength: 4 },  // let user reconnect links
+          {
+            relinkableFrom: true, relinkableTo: true, // let user reconnect links
+            toShortLength: 4,  fromShortLength: 2
+          },
           $(go.Shape, { strokeWidth: 1.5 }),
           $(go.Shape, { toArrow: "Standard", stroke: null })
         );
@@ -139,15 +143,20 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>Mapping Fields of Records</h3>
-  <p>This shows a variable number of "fields" for each "record".</p>
-  <p>Draw new links by dragging from the background of any field.
-     Reconnect a selected link by dragging its diamond-shaped handle.
-     The "record" Nodes are not movable or copyable or deletable.</p>
+  <h3>GoJS Record Mapper</h3>
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px"></div>
-  <p>The model data, automatically updated after each change or undo or redo:</p>
-  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
-  <p>See also the variation on this sample with selectable fields in the record nodes: <a href="selectableFields.html">Selectable Fields</a>.</p>
+  <p>This record mapper shows a number of "fields" for each "record" and how they are mapped between each other.</p>
+  <p>
+    Draw new links by dragging from the background of any field.
+    Reconnect a selected link by dragging its diamond-shaped handle.
+    The "record" Nodes use a <a>Panel.Table</a> to place the various fields into rows.
+    Records are not movable or copyable or deletable.
+  </p>
+  <p>For a variation on this sample with selectable fields in the record nodes, see the <a href="selectableFields.html">selectable fields</a> sample.</p>
+  <div>
+    Diagram Model saved in JSON format, automatically updated after each change or undo or redo:
+    <textarea id="mySavedModel" style="width:100%;height:250px"></textarea>
+  </div>
 </div>
 </body>
 </html>

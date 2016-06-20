@@ -34,7 +34,7 @@
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
-          if (idx >= 0) document.title = document.title.substr(0, idx); 
+          if (idx >= 0) document.title = document.title.substr(0, idx);
         }
       });
 
@@ -335,28 +335,38 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  Logic Circuit emulator
+  <h3>Logic Circuit</h3>
   <div style="width:100%; white-space:nowrap;">
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
-      <div id="palette" style="background-color: Snow; border: solid 1px black; height: 500px"></div>
+      <div id="palette" style="border: solid 1px black; height: 500px"></div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
       <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
     </span>
   </div>
-  <div id="description">
+  <p>
     The Logic Circuit sample allows the user to make circuits using gates and wires,
     which are updated whenever a Link is modified and at intervals by a looped setTimeout function.
-    The <code>updateStates</code> function calls a function to update each node according to type,
+  </p>
+  <p>
+    The <b>updateStates</b> function calls a function to update each node according to type,
     which uses the color of the links into the node to determine the color of those exiting it.
-    Red means zero or false; green means one or true.
-    Mouse over a node to see its category.
-  </div>
-  <div id="buttons">
-    <button id="loadModel" onclick="load()">Load</button>
-    <button id="saveModel" onclick="save()">Save</button>
-  </div>
-  <textarea id="mySavedModel" style="width:100%;height:200px">
+    Red means zero or false; green means one or true. Double-clicking an input node will toggle true/false.
+  </p>
+  <p>
+    Mouse over a node to see its category, displayed using a shared <a>Adornment</a> set as the tooltip.
+    A <a>Palette</a> to the left of the main diagram allows the user to drag and drop new nodes.
+    These nodes can then be linked using ports which are defined on the various node templates.
+    Each input port can only have one input link, while output ports can have many output links.
+    This is controlled by the <a>GraphObject.toMaxLinks</a> property.
+  </p>
+  <div>
+    <div>
+      <button id="saveModel" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:200px">
 { "class": "go.GraphLinksModel",
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
@@ -377,7 +387,8 @@
 {"from":"or2", "fromPort":"out", "to":"xor1", "toPort":"in2"},
 {"from":"xor1", "fromPort":"out", "to":"output1", "toPort":""}
  ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

@@ -13,6 +13,8 @@
 <script src="../extensions/dataInspector.js"></script>
 
 <script id="code">
+  var nodeIdCounter = -1; // use a sequence to guarantee key uniqueness as we add/remove/modify nodes
+
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -23,6 +25,15 @@
           initialContentAlignment: go.Spot.Center,
           maxSelectionCount: 1, // users can select only one part at a time
           validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
+          "clickCreatingTool.archetypeNodeData": {}, // allow double-click in background to create a new node
+          "clickCreatingTool.insertPart": function(loc) {  // customize the data for the new node
+            this.archetypeNodeData = {
+              key: getNextKey(), // assign the key based on the number of nodes
+              name: "(new person)",
+              title: ""
+            };
+            return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+          },
           layout:
             $(go.TreeLayout,
               {
@@ -52,6 +63,28 @@
       }
     });
 
+    // manage boss info manually when a node or link is deleted from the diagram
+    myDiagram.addDiagramListener("SelectionDeleting", function(e) {
+      var part = e.subject.first(); // e.subject is the myDiagram.selection collection,
+                                    // so we'll get the first since we know we only have one selection
+      myDiagram.startTransaction("clear boss");
+      if (part instanceof go.Node) {
+        var it = part.findTreeChildrenNodes(); // find all child nodes
+        while(it.next()) { // now iterate through them and clear out the boss information
+          var child = it.value;
+          var bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
+          if (bossText === null) return;
+          bossText.text = undefined;
+        }
+      } else if (part instanceof go.Link) {
+        var child = part.toNode;
+        var bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
+        if (bossText === null) return;
+        bossText.text = undefined;
+      }
+      myDiagram.commitTransaction("clear boss");
+    });
+
     var levelColors = ["#AC193D/#BF1E4B", "#2672EC/#2E8DEF", "#8C0095/#A700AE", "#5133AB/#643EBF",
                        "#008299/#00A0B1", "#D24726/#DC572E", "#008A00/#00A600", "#094AB2/#0A5BC4"];
 
@@ -70,13 +103,23 @@
       });
     };
 
+    // This function is used to find a suitable ID when modifying/creating nodes.
+    // We used the counter combined with findNodeDataForKey to ensure uniqueness.
+    function getNextKey() {
+      var key = nodeIdCounter;
+      while (myDiagram.model.findNodeDataForKey(key.toString()) !== null) {
+        key = nodeIdCounter -= 1;
+      }
+      return key.toString();
+    }
+
     // when a node is double-clicked, add a child to it
     function nodeDoubleClick(e, obj) {
       var clicked = obj.part;
       if (clicked !== null) {
         var thisemp = clicked.data;
         myDiagram.startTransaction("add employee");
-        var nextkey = (myDiagram.model.nodeDataArray.length + 1).toString();
+        var nextkey = getNextKey();
         var newemp = { key: nextkey, name: "(new person)", title: "", parent: thisemp.key };
         myDiagram.model.addNodeData(newemp);
         myDiagram.commitTransaction("add employee");
@@ -99,10 +142,9 @@
 
     // This converter is used by the Picture.
     function findHeadShot(key) {
-      if (key > 16) return ""; // There are only 16 images on the server
+      if (key < 0 || key > 16) return "images/HSnopic.png"; // There are only 16 images on the server
       return "images/HS" + key + ".png"
-    };
-
+    }
 
     // define the Node template
     myDiagram.nodeTemplate =
@@ -188,7 +230,7 @@
               { row: 2, column: 0 },
               new go.Binding("text", "key", function(v) {return "ID: " + v;})),
             $(go.TextBlock, textStyle(),
-              { row: 2, column: 3, },
+              { name: "boss", row: 2, column: 3, }, // we include a name so we can access this TextBlock when deleting Nodes/Links
               new go.Binding("text", "parent", function(v) {return "Boss: " + v;})),
             $(go.TextBlock, textStyle(),  // the comments
               {
@@ -202,6 +244,64 @@
           )  // end Table Panel
         ) // end Horizontal Panel
       );  // end Node
+
+    // the context menu allows users to make a position vacant,
+    // remove a role and reassign the subtree, or remove a department
+    myDiagram.nodeTemplate.contextMenu =
+      $(go.Adornment, "Vertical",
+        $("ContextMenuButton",
+          $(go.TextBlock, "Vacate Position"),
+          {
+            click: function(e, obj) {
+              var node = obj.part.adornedPart;
+              if (node !== null) {
+                var thisemp = node.data;
+                myDiagram.startTransaction("vacate");
+                // update the key, name, and comments
+                myDiagram.model.setKeyForNodeData(thisemp, getNextKey());
+                myDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
+                myDiagram.model.setDataProperty(thisemp, "comments", "");
+                myDiagram.commitTransaction("vacate");
+              }
+            }
+          }
+        ),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Remove Role"),
+          {
+            click: function(e, obj) {
+              // reparent the subtree to this node's boss, then remove the node
+              var node = obj.part.adornedPart;
+              if (node !== null) {
+                myDiagram.startTransaction("reparent remove");
+                var chl = node.findTreeChildrenNodes();
+                // iterate through the children and set their parent key to our selected node's parent key
+                while(chl.next()) {
+                  var emp = chl.value;
+                  myDiagram.model.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
+                }
+                // and now remove the selected node itself
+                myDiagram.model.removeNodeData(node.data);
+                myDiagram.commitTransaction("reparent remove");
+              }
+            }
+          }
+        ),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Remove Department"),
+          {
+            click: function(e, obj) {
+              // remove the whole subtree, including the node itself
+              var node = obj.part.adornedPart;
+              if (node !== null) {
+                myDiagram.startTransaction("remove dept");
+                myDiagram.removeParts(node.findTreeParts());
+                myDiagram.commitTransaction("remove dept");
+              }
+            }
+          }
+        )
+      );
 
     // define the Link template
     myDiagram.linkTemplate =
@@ -222,8 +322,6 @@
         }
       });
   }
-
-
 
   // Show the diagram's model in JSON format
   function save() {
@@ -247,11 +345,20 @@
     This editable organizational chart sample color-codes the Nodes according to the tree level in the hierarchy.
   </p>
   <p>
-    Double click on a node in order to add a person.
+    Double click on a node in order to add a person or the diagram background to add a new boss. Double clicking the diagram uses the <a>ClickCreatingTool</a>
+    with a custom <a>ClickCreatingTool.insertPart</a> to assign an ID.
   </p>
   <p>
     Drag a node onto another in order to change relationships.
-    You can also draw a link from a node's background to other nodes that have no "boss".
+    You can also draw a link from a node's background to other nodes that have no "boss". Links can also be relinked to change relationships.
+    Right-click or tap-hold a Node to bring up a context menu which allows you to:
+    <ul>
+      <li>Vacate Position - remove the information specfic to the current person in that role</li>
+      <li>Remove Role - removes the role entirely and reparents any children</li>
+      <li>Remove Department - removes the role and the whole subtree</li>
+    </ul>
+    Deleting a Node or Link will orphan the child Nodes and generate a new tree. A custom SelectionDeleting <a>DiagramEvent</a> listener will clear out the boss info
+    when the parent becomes undefined.
   </p>
   <p>
     Select a node to edit/update node data values. This sample uses the <a href="../extensions/dataInspector.html">Data Inspector</a> extension to display and modify Part data.
@@ -261,8 +368,8 @@
   </p>
   <div>
     <div>
-      <button id="SaveButton" onclick="save()">Write</button>
-      <button onclick="load()">Read</button>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width:100%;height:250px">

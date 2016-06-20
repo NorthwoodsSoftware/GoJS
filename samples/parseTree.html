@@ -35,7 +35,7 @@
               new go.Binding("fill"),
               new go.Binding("stroke")),
             $(go.TextBlock,
-              { font: "bold 12pt Arial", margin: new go.Margin(4, 2, 2, 2) },
+              { font: "bold 12pt Arial, sans-serif", margin: new go.Margin(4, 2, 2, 2) },
               new go.Binding("text"))
           ),
           $(go.Panel,  // this is underneath the "BODY"
@@ -48,11 +48,50 @@
         $(go.Link,
           $(go.Shape, { strokeWidth: 1.5 }));
 
-      load();
-    }
+      // set up the nodeDataArray, describing each part of the sentence
+      var nodeDataArray = [
+        { key: 1, text: "Sentence", fill: "#f68c06", stroke: "#4d90fe" },
+        { key: 2, text: "NP", fill: "#f68c06", stroke: "#4d90fe", parent: 1 },
+        { key: 3, text: "DT", fill: "#ccc", stroke: "#4d90fe", parent: 2 },
+        { key: 4, text: "A", fill: "#f8f8f8", stroke: "#4d90fe", parent: 3 },
+        { key: 5, text: "JJ", fill: "#ccc", stroke: "#4d90fe", parent: 2 },
+        { key: 6, text: "rare", fill: "#f8f8f8", stroke: "#4d90fe", parent: 5 },
+        { key: 7, text: "JJ", fill: "#ccc", stroke: "#4d90fe", parent: 2 },
+        { key: 8, text: "black", fill: "#f8f8f8", stroke: "#4d90fe", parent: 7 },
+        { key: 9, text: "NN", fill: "#ccc", stroke: "#4d90fe", parent: 2 },
+        { key: 10, text: "squirrel", fill: "#f8f8f8", stroke: "#4d90fe", parent: 9 },
+        { key: 11, text: "VP", fill: "#f68c06", stroke: "#4d90fe", parent: 1 },
+        { key: 12, text: "VBZ", fill: "#ccc", stroke: "#4d90fe", parent: 11 },
+        { key: 13, text: "has", fill: "#f8f8f8", stroke: "#4d90fe", parent: 12 },
+        { key: 14, text: "VP", fill: "#f68c06", stroke: "#4d90fe", parent: 11 },
+        { key: 15, text: "VBN", fill: "#ccc", stroke: "#4d90fe", parent: 14 },
+        { key: 16, text: "become", fill: "#f8f8f8", stroke: "#4d90fe", parent: 15 },
+        { key: 17, text: "NP", fill: "#f68c06", stroke: "#4d90fe", parent: 14 },
+        { key: 18, text: "NP", fill: "#f68c06", stroke: "#4d90fe", parent: 17 },
+        { key: 19, text: "DT", fill: "#ccc", stroke: "#4d90fe", parent: 18 },
+        { key: 20, text: "a", fill: "#f8f8f8", stroke: "#4d90fe", parent: 19 },
+        { key: 21, text: "JJ", fill: "#ccc", stroke: "#4d90fe", parent: 18 },
+        { key: 22, text: "regular", fill: "#f8f8f8", stroke: "#4d90fe", parent: 21 },
+        { key: 23, text: "NN", fill: "#ccc", stroke: "#4d90fe", parent: 18 },
+        { key: 24, text: "visitor", fill: "#f8f8f8", stroke: "#4d90fe", parent: 23 },
+        { key: 25, text: "PP", fill: "#f68c06", stroke: "#4d90fe", parent: 17 },
+        { key: 26, text: "TO", fill: "#ccc", stroke: "#4d90fe", parent: 25 },
+        { key: 27, text: "to", fill: "#f8f8f8", stroke: "#4d90fe", parent: 26 },
+        { key: 28, text: "NP", fill: "#f68c06", stroke: "#4d90fe", parent: 25 },
+        { key: 29, text: "DT", fill: "#ccc", stroke: "#4d90fe", parent: 28 },
+        { key: 30, text: "a", fill: "#f8f8f8", stroke: "#4d90fe", parent: 29 },
+        { key: 31, text: "JJ", fill: "#ccc", stroke: "#4d90fe", parent: 28 },
+        { key: 32, text: "suburban", fill: "#f8f8f8", stroke: "#4d90fe", parent: 31 },
+        { key: 33, text: "NN", fill: "#ccc", stroke: "#4d90fe", parent: 28 },
+        { key: 34, text: "garden", fill: "#f8f8f8", stroke: "#4d90fe", parent: 33 },
+        { key: 35, text: ".", fill: "#ccc", stroke: "#4d90fe", parent: 1 },
+        { key: 36, text: ".", fill: "#f8f8f8", stroke: "#4d90fe", parent: 35 }
+      ]
 
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+      // create the Model with data for the tree, and assign to the Diagram
+      myDiagram.model =
+        $(go.TreeModel,
+          { nodeDataArray: nodeDataArray });
     }
 
     // Customize the TreeLayout to position all of the leaf nodes at the same vertical Y position.
@@ -83,90 +122,26 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  Parse Tree
+  <h3>GoJS Parse Tree</h3>
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
-  <button onclick="load()">Load</button>
-  <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px">
-{
-  "class": "go.GraphLinksModel",
-  "nodeDataArray":[
-{"key":1,"text":"Sentence","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":2,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":3,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},
-{"key":4,"text":"A","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":5,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
-{"key":6,"text":"rare","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":7,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
-{"key":8,"text":"black","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":9,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},
-{"key":10,"text":"squirrel","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":11,"text":"VP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":12,"text":"VBZ","fill":"#ccc","stroke":"#4d90fe"},
-{"key":13,"text":"has","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":14,"text":"VP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":15,"text":"VBN","fill":"#ccc","stroke":"#4d90fe"},
-{"key":16,"text":"become","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":17,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":18,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":19,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},
-{"key":20,"text":"a","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":21,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
-{"key":22,"text":"regular","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":23,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},
-{"key":24,"text":"visitor","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":25,"text":"PP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":26,"text":"TO","fill":"#ccc","stroke":"#4d90fe"},
-{"key":27,"text":"to","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":28,"text":"NP","fill":"#f68c06","stroke":"#4d90fe"},
-{"key":29,"text":"DT","fill":"#ccc","stroke":"#4d90fe"},
-{"key":30,"text":"a","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":31,"text":"JJ","fill":"#ccc","stroke":"#4d90fe"},
-{"key":32,"text":"suburban","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":33,"text":"NN","fill":"#ccc","stroke":"#4d90fe"},
-{"key":34,"text":"garden","fill":"#f8f8f8","stroke":"#4d90fe"},
-{"key":35,"text":".","fill":"#ccc","stroke":"#4d90fe"},
-{"key":36,"text":".","fill":"#f8f8f8","stroke":"#4d90fe"}
-  ],
-  "linkDataArray":[
-{"from":1,"to":2},
-{"from":2,"to":3},
-{"from":3,"to":4},
-{"from":2,"to":5},
-{"from":5,"to":6},
-{"from":2,"to":7},
-{"from":7,"to":8},
-{"from":2,"to":9},
-{"from":9,"to":10},
-{"from":1,"to":11},
-{"from":11,"to":12},
-{"from":12,"to":13},
-{"from":11,"to":14},
-{"from":14,"to":15},
-{"from":15,"to":16},
-{"from":14,"to":17},
-{"from":17,"to":18},
-{"from":18,"to":19},
-{"from":19,"to":20},
-{"from":18,"to":21},
-{"from":21,"to":22},
-{"from":18,"to":23},
-{"from":23,"to":24},
-{"from":17,"to":25},
-{"from":25,"to":26},
-{"from":26,"to":27},
-{"from":25,"to":28},
-{"from":28,"to":29},
-{"from":29,"to":30},
-{"from":28,"to":31},
-{"from":31,"to":32},
-{"from":28,"to":33},
-{"from":33,"to":34},
-{"from":1,"to":35},
-{"from":35,"to":36}
-  ]
-}
-  </textarea>
+  <p>A <em>parse tree</em> is an ordered, rooted tree representing the structure of a sentence, broken down to parts-of-speech.</p>
+  <p>
+    This diagram uses a custom <a>TreeLayout</a> called <b>FlatTreeLayout</b> that places all leaf nodes at the same Y position.
+    It also makes use of a <b>TreeExpanderButton</b> on the node template. See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
+  </p>
+  <p>
+    The abbreviations used in this diagram are:
+    <ul>
+      <li><b>NP</b>, a noun phrase</li>
+      <li><b>VP</b>, a verb phrase</li>
+      <li><b>PP</b>, a prepositional phrase</li>
+      <li><b>DT</b>, a determiner</li>
+      <li><b>JJ</b>, an adjective</li>
+      <li><b>NN</b>, a common noun</li>
+      <li><b>VBZ</b>, a third person singular present verb</li>
+      <li><b>VBN</b>, a past participle verb</li>
+    </ul>
+  </p>
 </div>
 </body>
 </html>

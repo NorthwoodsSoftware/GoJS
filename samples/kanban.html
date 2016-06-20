@@ -138,7 +138,7 @@
     }
 
     // There are only two note colors by default, blue and red, but you could add more here:
-    var noteColors = ['#009CCC', '#CC293D'];
+    var noteColors = ['#009CCC', '#CC293D', '#FFD700'];
     function getNoteColor(num) {
       return noteColors[Math.min(num, noteColors.length - 1)];
     }
@@ -148,7 +148,16 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "Rectangle", {
             fill: '#009CCC', strokeWidth: 1, stroke: '#009CCC',
-            width: 6, stretch: go.GraphObject.Vertical, alignment: go.Spot.Left
+            width: 6, stretch: go.GraphObject.Vertical, alignment: go.Spot.Left,
+            // if a user clicks the colored portion of a node, cycle through colors
+            click: function (e, obj) {
+                myDiagram.startTransaction("Update node color");
+                var newColor = parseInt(obj.part.data.color) + 1;
+                if (newColor > noteColors.length-1) newColor = 0;
+                obj.part.data.color = newColor;
+                obj.part.updateTargetBindings("color");
+                myDiagram.commitTransaction("Update node color");
+            }
           },
           new go.Binding("fill", "color", getNoteColor),
           new go.Binding("stroke", "color", getNoteColor)
@@ -176,7 +185,7 @@
           selectable: false,
           click: function(e, node) {
             myDiagram.startTransaction('add node');
-            var newdata = { group:"Problems", loc:"0 50", text: "New item " + node.containingGroup.memberParts.count };
+            var newdata = { group:"Problems", loc:"0 50", text: "New item " + node.containingGroup.memberParts.count, color: 0 };
             myDiagram.model.addNodeData(newdata);
             myDiagram.commitTransaction('add node');
             var node = myDiagram.findNodeForData(newdata);
@@ -284,6 +293,35 @@
 
     load();
 
+      // Set up a Part as a legend, and place it directly on the diagram
+    myDiagram.add(
+      $(go.Part, "Table",
+        { position: new go.Point(300, 10), selectable: false },
+        $(go.TextBlock, "Key",
+          { row: 0, font: "700 14px Droid Serif, sans-serif" }),  // end row 0
+        $(go.Panel, "Horizontal",
+          { row: 1, alignment: go.Spot.Left },
+          $(go.Shape, "Rectangle",
+            { desiredSize: new go.Size(10, 10), fill: '#CC293D', margin: 5 }),
+          $(go.TextBlock, "Halted",
+            { font: "700 13px Droid Serif, sans-serif" })
+        ),  // end row 1
+        $(go.Panel, "Horizontal",
+          { row: 2, alignment: go.Spot.Left },
+          $(go.Shape, "Rectangle",
+            { desiredSize: new go.Size(10, 10), fill: '#FFD700', margin: 5 }),
+          $(go.TextBlock, "In Progress",
+            { font: "700 13px Droid Serif, sans-serif" })
+        ),  // end row 2
+        $(go.Panel, "Horizontal",
+          { row: 3, alignment: go.Spot.Left },
+          $(go.Shape, "Rectangle",
+            { desiredSize: new go.Size(10, 10), fill: '#009CCC', margin: 5 }),
+          $(go.TextBlock, "Completed",
+            { font: "700 13px Droid Serif, sans-serif" })
+        )  // end row 3
+      ));
+
   }  // end init
 
   // Show the diagram's model in JSON format
@@ -299,8 +337,9 @@
 </head>
 <body onload="init()">
 <div id="sample">
+  <h3>GoJS Kanban Board</h3>
   <div id="myDiagramDiv" style="border: solid 1px gray; width:100%; height:500px;"></div>
-  <p>A Kanban board is a work and workflow visualization used to communicate the status and progress of work items.</p>
+  <p>A Kanban board is a work and workflow visualization used to communicate the status and progress of work items. Click on the color of a note to cycle through colors.</p>
   <p>
     This design and implementation were adapted from the <a href="swimLanesVertical.html">Swim Lanes (vertical)</a> sample.
     Unlike that sample:

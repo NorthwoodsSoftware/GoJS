@@ -25,6 +25,18 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
+
     myDiagram.nodeTemplateMap.add("Process",
       $(go.Node, "Auto",
         { locationSpot: new go.Spot(0.5, 0.5), locationObjectName: "SHAPE",
@@ -108,12 +120,27 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px gray; width:100%; height:500px"></div>
-  This implements a simple SCADA diagram, with animation of the flow along the pipes.
-  <button type="button" onclick="save()">Save</button>
-  <button type="button" onclick="load()">Load</button>
-  <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <h3>GoJS Process Flow</h3>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+  <p>
+    A <em>process flow diagram</em> is commonly used in chemical and process engineering to indicate the general flow of plant processes and equipment.
+    A simple SCADA diagram, with animation of the flow along the pipes, is implemented here.
+  </p>
+  <p>
+    The diagram displays the background grid layer by setting <b>grid.visible</b> to true,
+    and also allows snapping to the grid using <a>DraggingTool.isGridSnapEnabled</a>,
+    <a>ResizingTool.isGridSnapEnabled</a>, and <a>RotatingTool.snapAngleMultiple</a> alongside <a>RotatingTool.snapAngleEpsilon</a>.
+  </p>
+  <p>
+    The diagram also uses the <b>loop</b> function to animate the links by adjusting the <a>Shape.strokeDashOffset</a> every 100 ms.
+  </p>
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
 {"key":"P1", "category":"Process", "pos":"150 120", "text":"Process"},
@@ -138,7 +165,8 @@
 {"from":"P4", "to":"V5"},
 {"from":"V5", "to":"P2"}
  ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

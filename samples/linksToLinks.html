@@ -22,18 +22,30 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
+
     // the regular node template, which supports user-drawn links from the main Shape
     myDiagram.nodeTemplate =
       $("Node", "Auto",
         { locationSpot: go.Spot.Center,
           layerName: "Background" },  // always have regular nodes behind Links
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $("Shape", "Ellipse",
-          { fill: "white",
+        $("Shape", "RoundedRectangle",
+          { fill: "white", stroke: null,
             portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" },
           new go.Binding("fill", "color")),
         $("TextBlock",
-          { margin: 2 },  // make some extra space for the shape around the text
+          { margin: 8 },  // make some extra space for the shape around the text
           new go.Binding("text", "key"))  // the label shows the node data's key
       );
 
@@ -52,15 +64,15 @@
     myDiagram.linkTemplate =
       $("Link",
         { relinkableFrom: true, relinkableTo: true, toShortLength: 2 },
-        $("Shape", { stroke: "blue", strokeWidth: 2 }),
-        $("Shape", { fill: "blue", stroke: null, toArrow: "Standard" })
+        $("Shape", { stroke: "#2E68CC", strokeWidth: 2 }),
+        $("Shape", { fill: "#2E68CC", stroke: null, toArrow: "Standard" })
       );
 
     // This template shows links connecting with label nodes as green and arrow-less.
     myDiagram.linkTemplateMap.add("linkToLink",
       $("Link",
         { relinkableFrom: true, relinkableTo: true },
-        $("Shape", { stroke: "green", strokeWidth: 1.5 })
+        $("Shape", { stroke: "#2D9945", strokeWidth: 2 })
       ));
 
 
@@ -95,36 +107,39 @@
 </script>
 </head>
 <body onload="init()">
-  <p>
-    This demonstrates the ability for a <a>Link</a> to appear to connect with another Link.
-    Regular links are blue.  Link-connecting links are green.
-    Try moving a node around to see how the links adapt.
-    Initially the "Alpha" node connects with the link between Gamma and Delta.
-    There is also a link between the two horizontal links.
-  </p>
-  <p>
-    This effect is achieved by using "label nodes" that belong to links.
-    Such "label nodes" are real <a>Node</a>s that are referenced from their owning <a>Link</a>.
-    This sample customizes the "Link Label" Node template to allow the user to draw new links to/from such label nodes.
-  </p>
-  <p>
-    Newly drawn links automatically get a label node by the <a>LinkingTool</a> because this sample initializes
-    the <a>LinkingTool.archetypeLabelNodeData</a> property of the <a>ToolManager.linkingTool</a>.
-    The category (i.e. template) of each link is determined by what kinds of nodes the link is connected with.
-  </p>
   <div id="sample">
-    <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:400px;"></div>
-    <button onclick="save()">Save</button>
-    <button onclick="load()">Load</button>
-    Diagram.model saved in JSON format:<br />
-    <textarea id="mySavedModel" style="width:100%;height:400px">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px;"></div>
+    <p>
+      This demonstrates the ability for a <a>Link</a> to appear to connect with another Link.
+      Regular links are blue.  Link-connecting links are green.
+      Try moving a node around to see how the links adapt.
+      Initially the "Alpha" node connects with the link between Gamma and Delta.
+      There is also a link between the two horizontal links.
+    </p>
+    <p>
+      This effect is achieved by using "label nodes" that belong to links.
+      Such "label nodes" are real <a>Node</a>s that are referenced from their owning <a>Link</a>.
+      This sample customizes the "Link Label" Node template to allow the user to draw new links to/from such label nodes.
+    </p>
+    <p>
+      Newly drawn links automatically get a label node by the <a>LinkingTool</a> because this sample initializes
+      the <a>LinkingTool.archetypeLabelNodeData</a> property of the <a>ToolManager.linkingTool</a>.
+      The category (i.e. template) of each link is determined by what kinds of nodes the link is connected with.
+    </p>
+    <div>
+      <div>
+        <button id="SaveButton" onclick="save()">Save</button>
+        <button onclick="load()">Load</button>
+        Diagram.model saved in JSON format:<br />
+      </div>
+      <textarea id="mySavedModel" style="width:100%;height:400px">
 { "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
   "nodeDataArray": [ 
-{"key":"Alpha", "color":"orange", "loc":"27 14"},
-{"key":"Beta", "color":"lightgreen", "loc":"128 14"},
-{"key":"Gamma", "color":"yellow", "loc":"29 86"},
-{"key":"Delta", "color":"lightblue", "loc":"129 84"},
+{"key":"Alpha", "color":"lightblue", "loc":"29 14"},
+{"key":"Beta", "color":"orange", "loc":"129 14"},
+{"key":"Gamma", "color":"lightgreen", "loc":"29 106"},
+{"key":"Delta", "color":"pink", "loc":"129 106"},
 {"key":"A-B", "category":"LinkLabel" },
 {"key":"G-D", "category":"LinkLabel" },
 {"key":"A-G", "category":"LinkLabel" },
@@ -138,7 +153,8 @@
 {"from":"Alpha", "to":"G-D", "labelKeys":[ "A-G-D" ], "category":"linkToLink"},
 {"from":"A-B", "to":"G-D", "labelKeys":[ "A-B-G-D" ], "category":"linkToLink"}
  ]}
-    </textarea>
+      </textarea>
+    </div>
   </div>
 </body>
 </html>

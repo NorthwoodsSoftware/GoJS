@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Minimal System Dynamics diagramming in GoJS</title>
+  <title>System Dynamics</title>
   <meta name="description" content="A simple implementation of a system dynamics editor." />
   <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
@@ -81,13 +81,25 @@
         // install the NodeLabelDraggingTool as a "mouse move" tool
         myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
 
+        // when the document is modified, add a "*" to the title and enable the "Save" button
+        myDiagram.addDiagramListener("Modified", function(e) {
+          var button = document.getElementById("SaveButton");
+          if (button) button.disabled = !myDiagram.isModified;
+          var idx = document.title.indexOf("*");
+          if (myDiagram.isModified) {
+            if (idx < 0) document.title += "*";
+          } else {
+            if (idx >= 0) document.title = document.title.substr(0, idx);
+          }
+        });
+
         // generate unique label for valve on newly-created flow link
         myDiagram.addDiagramListener("LinkDrawn", function(e) {
             var link = e.subject;
             if (link.category === "flow") {
                 myDiagram.startTransaction("updateNode");
-                SD.nodeCounter.valve += 1; 
-                var newNodeId = "flow" + SD.nodeCounter.valve; 
+                SD.nodeCounter.valve += 1;
+                var newNodeId = "flow" + SD.nodeCounter.valve;
                 var labelNode = link.labelNodes.first();
                 myDiagram.model.setDataProperty(labelNode.data, "label", newNodeId);
                 myDiagram.commitTransaction("updateNode");
@@ -252,15 +264,16 @@
 </head>
 <body onload="init()">
   <div id="sample">
+    <h3>GoJS System Dynamics</h3>
+    <div id="myDiagram" style="width:600px; height:500px; border:solid 1px black"></div>
     <button id="pointer_button" class="pointer_selected" onclick="setMode('pointer','pointer');">Pointer</button>
     <button id="stock_button" class="node_normal" onclick="setMode('node','stock');" style="margin-left:20px;">Stock</button>
     <button id="cloud_button" class="node_normal" onclick="setMode('node','cloud');">Cloud</button>
     <button id="variable_button" class="node_normal" onclick="setMode('node','variable');">Variable</button>
     <button id="flow_button" class="link_normal" onclick="setMode('link','flow');" style="margin-left:20px;">Flow</button>
     <button id="influence_button" class="link_normal" onclick="setMode('link','influence');">Influence</button>
-    <div id="myDiagram" style="width:600px; height:500px; border:solid 1px black"></div>
     <p>
-      A System Dynamics diagram shows the storages (stocks) and flows of material in some system,
+      A <em>system dynamics diagram</em> shows the storages (stocks) and flows of material in some system,
       and the factors that influence the rates of flow.
       It is usually a cosmetic interface for building mathematical models --
       you provide values and equations for the stocks and flows,
@@ -270,24 +283,32 @@
       The diagram has two types of link: flow links and influence links.
       In additon to the node attached to each flow, there are 3 types of node:
       <ul>
-        <li><b>stocks</b>, representing the amount of some substance,</li>
-        <li><b>clouds</b>, which are like stocks but outside the system of interest, and</li>
-        <li><b>variables</b>, which might either be numeric constants or calculated from other elements.</li>
+        <li><b>stocks</b>, the amount of some substance</li>
+        <li><b>clouds</b>, like stocks, but outside the system of interest</li>
+        <li><b>variables</b>, either numeric constants or calculated from other elements</li>
       </ul>
     </p>
     <p>
-      The conventional user interface for building System Dynamics diagrams is modal --
+      The conventional user interface for building system dynamics diagrams is modal --
       you select a tool in the toolbar, then either click in an empty part of the diagram to add a node
       or drag from one node to another to add a link.
-      That is the approach used in this example.
+      That is the approach used in this example, accomplished with the <a>clickCreatingTool</a> and <a>linkingTool</a>.
       Note that you need to click on the Pointer tool to revert to the normal mode.
+    </p>
+    <p>
+      In addition to the above, the diagram also installs the <a href="../extensions/NodeLabelDragging.html">NodeLabelDraggingTool</a>
+      extension into <a>ToolManager.mouseMoveTools</a>.
     </p>
     <p>
       This sample is based on a prototype developed by Robert Muetzelfeldt.
     </p>
-    <button id="SaveButton" onclick="save()">Save</button>
-    <button onclick="load()">Load</button>
-    <textarea id="mySavedModel" style="width:100%; height:400px">
+    <div>
+      <div>
+        <button id="SaveButton" onclick="save()">Save</button>
+        <button onclick="load()">Load</button>
+        Diagram Model saved in JSON format:
+      </div>
+      <textarea id="mySavedModel" style="width:100%; height:400px">
 { "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
   "nodeDataArray": [
@@ -300,10 +321,9 @@
 {"key":"grazing", "category":"valve", "label":"grazing","label_offset":"0.5 0.5 45 0" },
 {"key":"growth", "category":"valve", "label":"growth","label_offset":"0.5 0.5 0 20" },
 {"key":"sheep_loss", "category":"valve",  "label":"sheep_loss","label_offset":"0.5 0.5 0 20" },
-{"key":"k1", "category":"variable",  "label":"k1", "loc": "-100 160"},
-{"key":"k2", "category":"variable",  "label":"k2", "loc": "-80 100"},
-{"key":"k3", "category":"variable",  "label":"k3", "loc": "100 150"},
-{"key":"k4", "category":"variable",  "label":"k4", "loc": "150 -40"}
+{"key":"k1", "category":"variable",  "label":"good weather", "loc": "-80 100"},
+{"key":"k2", "category":"variable",  "label":"bad weather", "loc": "100 150"},
+{"key":"k3", "category":"variable",  "label":"wolves", "loc": "150 -40"}
   ],
   "linkDataArray": [
 {"from":"grass", "to":"cloud1", "category":"flow", "labelKeys":[ "grass_loss" ]},
@@ -316,12 +336,13 @@
 {"from":"grass", "to":"grazing", "category":"influence"},
 {"from":"sheep", "to":"grazing", "category":"influence"},
 {"from":"k1", "to":"growth", "category":"influence"},
-{"from":"k2", "to":"grazing", "category":"influence"},
-{"from":"k3", "to":"grass_loss", "category":"influence"},
-{"from":"k4", "to":"sheep_loss", "category":"influence"}
+{"from":"k1", "to":"grazing", "category":"influence"},
+{"from":"k2", "to":"grass_loss", "category":"influence"},
+{"from":"k3", "to":"sheep_loss", "category":"influence"}
   ]
 }
-    </textarea>
+      </textarea>
+    </div>
   </div>
 </body>
 </html>

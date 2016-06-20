@@ -77,10 +77,10 @@
         },
         new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
         $(go.Shape, "Rectangle",
-          { fill: null, stroke: "#E69900", strokeWidth: 2 }),
+          { fill: null, stroke: "#FFDD33", strokeWidth: 2 }),
         $(go.Panel, "Vertical",  // title above Placeholder
           $(go.Panel, "Horizontal",  // button next to TextBlock
-            { stretch: go.GraphObject.Horizontal, background: "#FFDD33", margin: 1 },
+            { stretch: go.GraphObject.Horizontal, background: "#FFDD33" },
             $("SubGraphExpanderButton",
               { alignment: go.Spot.Right, margin: 5 }),
             $(go.TextBlock,
@@ -89,7 +89,8 @@
                 editable: true,
                 margin: 5,
                 font: "bold 18px sans-serif",
-                stroke: "#9A6600"
+                opacity: 0.75,
+                stroke: "#404040"
               },
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
@@ -119,10 +120,10 @@
         },
         new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
         $(go.Shape, "Rectangle",
-          { fill: null, stroke: "#0099CC", strokeWidth: 2 }),
+          { fill: null, stroke: "#33D3E5", strokeWidth: 2 }),
         $(go.Panel, "Vertical",  // title above Placeholder
           $(go.Panel, "Horizontal",  // button next to TextBlock
-            { stretch: go.GraphObject.Horizontal, background: "#33D3E5", margin: 1 },
+            { stretch: go.GraphObject.Horizontal, background: "#33D3E5" },
             $("SubGraphExpanderButton",
               { alignment: go.Spot.Right, margin: 5 }),
             $(go.TextBlock,
@@ -131,7 +132,8 @@
                 editable: true,
                 margin: 5,
                 font: "bold 16px sans-serif",
-                stroke: "#006080"
+                opacity: 0.75,
+                stroke: "#404040"
               },
               new go.Binding("text", "text").makeTwoWay())
           ),  // end Horizontal Panel
@@ -146,14 +148,15 @@
           mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
         },
         $(go.Shape, "Rectangle",
-          { fill: "#ACE600", stroke: "#558000", strokeWidth: 2 },
+          { fill: "#ACE600", stroke: null },
           new go.Binding("fill", "color")),
         $(go.TextBlock,
           {
             margin: 5,
             editable: true,
             font: "bold 13px sans-serif",
-            stroke: "#446700"
+            opacity: 0.75,
+            stroke: "#404040"
           },
           new go.Binding("text", "text").makeTwoWay())
       );
@@ -230,12 +233,17 @@
     adds the selection (the dragged Nodes) to the Group as new members.
   </p>
   <p>
-    The slider controls how many nested levels of Groups are expanded.
+    The <a>TextBlock</a>s use the <a>GraphObject.opacity</a> property, which allows for the text
+    to somewhat match the color of what it's on top of.
+  </p>
+  <p>
+    The slider controls how many nested levels of Groups are expanded. </br>
+    Semantic zoom level: <input id="levelSlider" type="range" min="0" max="5" value="3" />
   </p>
   <div id="buttons">
     <button id="saveModel" onclick="save()">Save</button>
     <button id="loadModel" onclick="load()">Load</button>
-    Semantic zoom level: <input id="levelSlider" type="range" min="0" max="5" value="3" />
+    Diagram Model saved in JSON format:
   </div>
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
@@ -261,5 +269,4 @@
   </textarea>
 </div>
 </body>
-
 </html>

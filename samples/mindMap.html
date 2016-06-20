@@ -149,21 +149,17 @@
           { click: function(e, obj) { load(); } })
       );
 
-
     myDiagram.addDiagramListener("SelectionMoved", function(e) {
       var rootX = myDiagram.findNodeForKey(0).location.x;
       myDiagram.selection.each(function(node) {
           if (node.data.parent !== 0) return; // Only consider nodes connected to the root
           var nodeX = node.location.x;
           if (rootX < nodeX && node.data.dir !== "right") {
-            node.data.dir = 'right';
-            myDiagram.model.updateTargetBindings(node.data);
-            layoutTree(node);
+            updateNodeDirection(node, "right");
           } else if (rootX > nodeX && node.data.dir !== "left") {
-            node.data.dir = 'left';
-            myDiagram.model.updateTargetBindings(node.data);
-            layoutTree(node);
+            updateNodeDirection(node, "left");
           }
+          layoutTree(node);
         });
     });
 
@@ -203,6 +199,16 @@
     adorn.diagram.commitTransaction("Change Text Weight");
   }
 
+  function updateNodeDirection(node, dir) {
+    node.data.dir = dir;
+    myDiagram.model.updateTargetBindings(node.data);
+    // recursively update the direction of the child nodes
+    var chl = node.findTreeChildrenNodes(); // gives us an iterator of the child nodes related to this particular node
+    while(chl.next()) {
+      updateNodeDirection(chl.value, dir);
+    }
+  }
+
   function addNodeAndLink(e, obj) {
     var adorn = obj.part;
     var diagram = adorn.diagram;
@@ -230,7 +236,9 @@
         { angle: angle,
           arrangement: go.TreeLayout.ArrangementFixedRoots,
           nodeSpacing: 5,
-          layerSpacing: 20 });
+          layerSpacing: 20,
+          setsPortSpot: false, // don't set port spots since we're managing them with our spotConverter function
+          setsChildPortSpot: false });
     layout.doLayout(parts);
   }
 
@@ -271,8 +279,8 @@
 </head>
 <body onload="init()">
 <div id="sample">
-
-  <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:300px;"></div>
+  <h3>GoJS Mind Map</h3>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px;"></div>
   <p>
     A mind map is a kind of spider diagram that organizes information around a central concept, with connecting branches.
   </p>
@@ -280,7 +288,9 @@
     The layout is controlled by moving the nodes closest to the tree's root node.
     When one of these nodes is moved horizontally to the other side of the root,
     all of its children will be sent to <a>Layout.doLayout</a> with a new direction,
-    causing text to always be moved outwards from the root.
+    causing text to always be moved outwards from the root. The <b>spotConverter</b> function is used to manage
+    <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a> for nodes manually, so the <a>TreeLayout.setsPortSpot</a> and <a>TreeLayout.setsChildPortSpot</a>
+    properties are set to false so that laying out the diagram will not overwrite the values.
   </p>
   <p>
     When a node is deleted the <a>CommandHandler.deletesTree</a> property ensures that
@@ -289,7 +299,7 @@
     Both of these are set during the the Diagram's initalization.
   </p>
   <p>
-    Additional commands are available on the context menus.
+    Node templates also have a <a>Part.selectionAdornmentTemplate</a> defined to allow for new nodes to be created and a <a>GraphObject.contextMenu</a> with additional commands.
   </p>
 
   <button id="SaveButton" onclick="save()">Save</button>

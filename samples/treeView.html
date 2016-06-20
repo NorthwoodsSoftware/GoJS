@@ -38,8 +38,26 @@
 
       myDiagram.nodeTemplate =
         $(go.Node,
-          // no Adornment: instead change panel background color by binding to Node.isSelected
-          { selectionAdorned: false },
+
+          { // no Adornment: instead change panel background color by binding to Node.isSelected
+            selectionAdorned: false,
+            // a custom function to allow expanding/collapsing on double-click
+            // this uses similar logic to a TreeExpanderButton
+            doubleClick: function(e, node) {
+              var cmd = myDiagram.commandHandler;
+              if (node.isTreeExpanded) {
+                if (!cmd.canCollapseTree(node)) return;
+              } else {
+                if (!cmd.canExpandTree(node)) return;
+              }
+              e.handled = true;
+              if (node.isTreeExpanded) {
+                cmd.collapseTree(node);
+              } else {
+                cmd.expandTree(node);
+              }
+            }
+          },
           $("TreeExpanderButton",
             {
               width: 14,
@@ -53,12 +71,16 @@
             new go.Binding("background", "isSelected", function (s) { return (s ? "lightblue" : "white"); }).ofObject(),
             $(go.Picture,
               {
-                width: 14, height: 14,
+                width: 18, height: 18,
                 margin: new go.Margin(0, 4, 0, 0),
-                imageStretch: go.GraphObject.Uniform,
-                source: "images/50x40.png"
-              }),
+                imageStretch: go.GraphObject.Uniform
+              },
+              // bind the picture source on two properties of the Node
+              // to display open folder, closed folder, or document
+              new go.Binding("source", "isTreeExpanded", imageConverter).ofObject(),
+              new go.Binding("source", "isTreeLeaf", imageConverter).ofObject()),
             $(go.TextBlock,
+              { font: '9pt Verdana, sans-serif' },
               new go.Binding("text", "key", function(s) { return "item " + s; }))
           )  // end Horizontal Panel
         );  // end Node
@@ -66,17 +88,17 @@
       // without lines
       myDiagram.linkTemplate = $(go.Link);
 
-//      // with lines
-//      myDiagram.linkTemplate =
-//        $(go.Link,
-//          { selectable: false,
-//            routing: go.Link.Orthogonal,
-//            fromEndSegmentLength: 4,
-//            toEndSegmentLength: 4,
-//            fromSpot: new go.Spot(0.001, 1, 7, 0),
-//            toSpot: go.Spot.Left },
-//          $(go.Shape,
-//            { stroke: "lightgray" }));
+      // // with lines
+      // myDiagram.linkTemplate =
+      //   $(go.Link,
+      //     { selectable: false,
+      //       routing: go.Link.Orthogonal,
+      //       fromEndSegmentLength: 4,
+      //       toEndSegmentLength: 4,
+      //       fromSpot: new go.Spot(0.001, 1, 7, 0),
+      //       toSpot: go.Spot.Left },
+      //     $(go.Shape,
+      //       { stroke: 'gray', strokeDashArray: [1,2] }));
 
       var nodeDataArray = [{ key: 0 }];
       var max = 499;
@@ -100,24 +122,45 @@
       }
       return count;
     }
+
+    // takes a property change on either isTreeLeaf or isTreeExpanded and selects the correct image to use
+    function imageConverter(prop, picture) {
+      var node = picture.part;
+      if (node.isTreeLeaf) {
+        return "images/document.png";
+      } else {
+        if (node.isTreeExpanded) {
+         return "images/openFolder.png";
+        } else {
+         return "images/closedFolder.png";
+        }
+      }
+    }
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
+  <h3>GoJS Tree View</h3>
+  <div id="myDiagramDiv" style="border: 1px solid black; width: 300px; height: 500px"></div>
   <p>
     This shows how to create a traditional "TreeView" in a <b>GoJS</b> diagram.
     There are 500 nodes in the tree.
   </p>
   <p>
-    Look at this page's source code to see how the <a>TreeLayout</a> is customized.
+    Look at this page's source code to see how the properties on the <a>TreeLayout</a> are set.
   </p>
   <p>
     The node template makes use of a "TreeExpanderButton" panel to implement the expand/collapse button.
+    It also implements a custom doubleClick function to allow nodes to be expanded/collapsed on double-click.
+    Lastly, the source of the picture on each node is bound to two different properties, <a>Node.isTreeLeaf</a> and
+    <a>Node.isTreeExpanded</a>; the <b>imageConverter</b> function is used to select the correct image
+    based on these properties.
   </p>
+  <p>There are two link templates in the source code, one which uses no lines, and one which connects the items with dotted lines.</p>
   <p>
     See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
   </p>
-  <div id="myDiagramDiv" style="border: 1px solid blue; width: 300px; height: 500px"></div>
+
 </div>
 </body>
 </html>

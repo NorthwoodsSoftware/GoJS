@@ -118,7 +118,8 @@
             {
               portId: "", // the default port: if no spot on link data, use closest side
               fromLinkable: true, toLinkable: true, cursor: "pointer",
-              fill: "white"  // default color
+              fill: "white",  // default color
+              strokeWidth: 2
             },
             new go.Binding("figure"),
             new go.Binding("fill")),
@@ -225,11 +226,11 @@
                 { toArrow: "Standard", stroke: null })
             ),
           model: new go.GraphLinksModel([  // specify the contents of the Palette
-            { text: "Start", figure: "Circle", fill: "green" },
+            { text: "Start", figure: "Circle", fill: "#00AD5F" },
             { text: "Step" },
             { text: "DB", figure: "Database", fill: "lightgray" },
             { text: "???", figure: "Diamond", fill: "lightskyblue" },
-            { text: "End", figure: "Circle", fill: "red" },
+            { text: "End", figure: "Circle", fill: "#CE0620" },
             { text: "Comment", figure: "RoundedRectangle", fill: "lightyellow" }
           ], [
             // the Palette also has a disconnected Link, which the user can drag-and-drop
@@ -284,17 +285,17 @@
 <body onload="init()">
 <div id="sample">
   <div style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
-      <div id="myPaletteDiv" style="border: solid 1px gray; height: 620px"></div>
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:110px">
+      <div id="myPaletteDiv" style="border: solid 1px black; height: 620px"></div>
     </span>
 
     <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
-      <div id="myDiagramDiv" style="border: solid 1px gray; height: 620px"></div>
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 620px"></div>
     </span>
   </div>
   <p>
     This sample demonstrates the ability for the user to drag around a Link as if it were a Node.
-    When the either end of the link passes over a valid port, the port is highlighted.
+    When either end of the link passes over a valid port, the port is highlighted.
   </p>
   <p>
     The link-dragging functionality is enabled by setting some or all of the following properties:
@@ -316,9 +317,13 @@
     on the <a>Model.modelData</a> object that is automatically saved and restored when calling <a>Model.toJson</a>
     and <a>Model.fromJson</a>.
   </p>
-  <button id="SaveButton" onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
@@ -326,7 +331,8 @@
  ],
   "linkDataArray": [
  ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

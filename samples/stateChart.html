@@ -26,6 +26,18 @@
           "undoManager.isEnabled": true
         });
 
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
+
     // define the Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
@@ -35,6 +47,7 @@
           {
             parameter1: 20,  // the corner has a large radius
             fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
+            stroke: null,
             portId: "",  // this Shape is the Node's port, not the whole Node
             fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
             toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true,
@@ -127,7 +140,7 @@
           $(go.TextBlock, "transition",  // the label text
             {
               textAlign: "center",
-              font: "10pt helvetica, arial, sans-serif",
+              font: "9pt helvetica, arial, sans-serif",
               margin: 4,
               editable: true  // enable in-place editing
             },
@@ -151,31 +164,39 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 400px"></div>
   <p>
-  This sample creates state charts.
-  The text is editable for both the nodes and the links.
-  The user can draw as many links from one node to another node as desired,
-  and the links can be reshaped or deleted when selected.
-  Double-clicking in the background of the diagram creates a new node.
+    This sample creates state charts, and more specifically, finite-state machines.
+    A <em>finite-state machine</em> is a mathematical model of computation used to design
+    computer programs and sequential logic circuits.
   </p>
   <p>
-  This sample customizes the <a>Part.selectionAdornmentTemplate</a>
-  of the node to a template that contains a button
-  The button is positioned to be at the Top-Right corner of the node by
-  being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
+    The text is editable for both the nodes and the links.
+    The user can draw as many links from one node to another node as desired,
+    and the links can be reshaped or deleted when selected.
+    Double-clicking in the background of the diagram creates a new node.
+    The mouse wheel is set to zoom in and out instead of scroll.
   </p>
   <p>
-  The Button's <a>GraphObject.click</a> method creates a new node data,
-  adds it to the model, and creates a link from the original node data to the new node data.
-  All of this is done inside a transaction, so that it can be undone by the user
-  (Ctrl+Z and Ctrl+Y will undo and redo transactions).
+    This sample customizes the <a>Part.selectionAdornmentTemplate</a>
+    of the node to a template that contains a button
+    The button is positioned to be at the Top-Right corner of the node by
+    being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
   </p>
-  <button onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
-  Diagram Model saved in JSON format:
-  <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <p>
+    The Button's <a>GraphObject.click</a> method creates a new node data,
+    adds it to the model, and creates a link from the original node data to the new node data.
+    All of this is done inside a transaction, so that it can be undone by the user
+    (Ctrl+Z and Ctrl+Y will undo and redo transactions). After the node is created,
+    <a>Diagram.scrollToRect</a> is called in case it is off-screen.
+  </p>
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
 { "nodeKeyProperty": "id",
   "nodeDataArray": [
     { "id": 0, "loc": "120 120", "text": "Initial" },
@@ -199,7 +220,8 @@
     { "from": 4, "to": 4, "text": "down" }
   ]
 }
-</textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

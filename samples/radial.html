@@ -146,10 +146,19 @@
     myDiagram.select(somenode);
   }
 
-  function adjustMaxLayer() {
+  // called when "Set Max Layers" button is clicked
+  function adjustMaxLayers() {
       var newMaxLayers = document.getElementById("maxLayersChanger").value;
-      maxLayers = newMaxLayers;
-      console.log(myDiagram);
+      function IsNumeric(val) {
+          return Number(parseFloat(val)) == val;
+      }
+      if (!IsNumeric(newMaxLayers)) alert("Please enter a number");
+      else {
+          maxLayers = newMaxLayers;
+          var root = myDiagram.findNodesByExample({ category: "Root" }).first();
+          myDiagram.clearSelection();
+          myDiagram.select(root);
+      }
   }
 
   // when a new node is selected, adjust the radial layout around the new node

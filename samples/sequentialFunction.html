@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title> Sequential Function Chart</title>
+<title>Sequential Function Chart</title>
 <meta name="description" content="A sequential function chart." />
 <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
@@ -18,9 +18,21 @@
         {
           // start everything in the middle of the viewport
           initialContentAlignment: go.Spot.Center,
-          layout: $(go.LayeredDigraphLayout, { direction: 90, setsPortSpots: false }),
+          layout: $(go.LayeredDigraphLayout, { direction: 90, layerSpacing: 10, setsPortSpots: false }),
           "undoManager.isEnabled": true  // enable undo & redo
         });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
 
     // define the step Node template
     myDiagram.nodeTemplateMap.add("step",
@@ -110,30 +122,38 @@
 </head>
 <body onload="init()" >
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>
-    Sequential function diagrams are used for programmable logic controllers (PLCs) and other control systems.
+    <em>Sequential function charts</em> are used for programmable logic controllers (PLCs) and other control systems.
   </p>
   <p>
-    You can edit text in-place by clicking on the text of a selected node.
+    You can edit text in-place by clicking on the text of a selected node. The diagram uses 3 categories of node,
+    each added to the <a>Diagram.nodeTemplateMap</a>:
+    <ul>
+      <li><b>step</b></li>
+      <li><b>transition</b></li>
+      <li><b>parallel</b></li>
+    </ul>
   </p>
   <p>
     See also the <a href="grafcet.html">grafcet diagram sample</a>.
   </p>
-  <button onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
-  Diagram Model saved in JSON format:
-  <br />
-  <textarea id="mySavedModel" style="width:100%;height:400px">
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:400px">
 { "nodeDataArray": [
 {"key":"S1", "category":"step", "text":"Step 1"},
 {"key":"TR1", "category":"transition", "text":"Transition 1"},
 {"key":"S2", "category":"step", "text":"Step 2"},
 {"key":"TR2", "category":"transition", "text":"Transition 2"},
-{"key":"BAR1", "category":"parallel", "width":200},
+{"key":"BAR1", "category":"parallel" },
 {"key":"S3", "category":"step", "text":"Step 3"},
 {"key":"S4", "category":"step", "text":"Step 4"},
-{"key":"BAR2", "category":"parallel", "width":200},
+{"key":"BAR2", "category":"parallel" },
 {"key":"TR3", "category":"transition", "text":"Transition 3"},
 {"key":"S5", "category":"step", "text":"Step 5"}
  ],
@@ -149,7 +169,8 @@
 {"from":"BAR2", "to":"TR3"},
 {"from":"TR3", "to":"S5"}
  ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

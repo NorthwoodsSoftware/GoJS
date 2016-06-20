@@ -34,7 +34,7 @@ function init() {
           toLinkable: true, toLinkableDuplicates: true, toLinkableSelfNode: true
         }),
       $(go.TextBlock,
-        { margin: 3, font: "bold 10pt arial", stroke: "whitesmoke", editable: true },
+        { margin: 3, font: "bold 10pt Arial, sans-serif", stroke: "whitesmoke", editable: true },
         new go.Binding("text").makeTwoWay())
     );
 
@@ -67,7 +67,7 @@ function init() {
       $(go.Shape, "Ellipse",
         { fill: "lightgreen", width: 20, height: 20, portId: "" }),
       $(go.TextBlock,
-        { margin: 3, font: "bold 12px Georgia" },
+        { margin: 3, font: "bold 12px Georgia, sans-serif" },
         new go.Binding("text"))
     );
 
@@ -226,10 +226,10 @@ function init() {
   model.addChangedListener(function(e) {
     if (e.isTransactionFinished) {
       var tx = e.object;
-      if (tx instanceof go.Transaction && console) {
-        console.log(tx.toString());
+      if (tx instanceof go.Transaction && window.console) {
+        window.console.log(tx.toString());
         tx.changes.each(function(c) {
-          if (c.model) console.log("  " + c.toString());
+          if (c.model) window.console.log("  " + c.toString());
         });
       }
     }
@@ -299,11 +299,11 @@ function clearLog() {
   model.addChangedListener(function(e) {
     if (e.isTransactionFinished) {
       var tx = e.object;
-      if (tx instanceof go.Transaction && console) {
-        console.log(tx.toString());
+      if (tx instanceof go.Transaction && window.console) {
+            window.console.log(tx.toString());
         tx.changes.each(function(c) {
           // consider which ChangedEvents to record
-          if (c.model) console.log("  " + c.toString());
+          if (c.model) window.console.log("  " + c.toString());
         });
       }
     }

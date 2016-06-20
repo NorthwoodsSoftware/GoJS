@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <script src="go.js"></script>
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
@@ -36,7 +37,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -54,9 +55,11 @@
         $(go.Panel, "Auto",
           { name: "HEADER" },
           $(go.Shape, "Rectangle",
-            { fill: "lightgreen", stroke: "black" }),
+            { fill: $(go.Brush, "Linear", { 0: "#70A6FF", 1: "#A8C8FF" }),
+              stroke: null }),
           $(go.TextBlock,
-            { margin: 5 },
+            { margin: 5,
+              font: "400 10pt Source Sans Pro, sans-serif"},
             new go.Binding("text", "text"))
         ),
         $(go.Shape,
@@ -118,6 +121,7 @@
           { toArrow: "OpenTriangle", stroke: "black" }),
         $(go.TextBlock,
           {
+            font: "400 9pt Source Sans Pro, sans-serif",
             segmentIndex: 0,
             segmentOffset: new go.Point(NaN, NaN),
             isMultiline: false,
@@ -318,11 +322,25 @@
 </head>
 <body onload="init()" >
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 400px"></div>
-  <button id="SaveButton" onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
-  <br />
-  <textarea id="mySavedModel" style="width:100%;height:240px">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 400px"></div>
+  <p>
+    A <em>sequence diagram</em> is an interaction diagram that shows how entities operate with one another and in what order.
+    In this sample, we show the interaction between different people in a restaurant.
+  </p>
+  <p>
+    The diagram uses the <a>Diagram.groupTemplate</a> for "lifelines,"
+    <a>Diagram.nodeTemplate</a> for "activities," and <a>Diagram.linkTemplate</a> for "messages" between the entities.
+    Also featured are a custom Link class and custom <a>LinkingTool</a> to draw links
+    between lifelines and create activities at the end of the new link. Nodes use a binding function on the location
+    property to ensure they are anchored to their lifeline.
+  </p>
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:240px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
 {"key":"Fred", "text":"Fred: Patron", "isGroup":true, "loc":"0 0", "duration":9},
@@ -344,7 +362,8 @@
 {"from":"Bob", "to":"Fred", "text":"serve food", "time":6},
 {"from":"Fred", "to":"Renee", "text":"pay", "time":8}
  ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.6.0
+// Type definitions for GoJS v1.6.10
 // Project: https://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8596,8 +8596,9 @@ declare module go {
         * @param {function(GraphObject):GraphObject | null=} navig An optional custom navigation
         * function to find target objects.
         * @param {function(GraphObject):boolean | null=} pred An optional custom predicate
+        * @return {boolean} true if InputEvent#handled had been set to true on the Diagram#lastInput.
         */
-        standardMouseClick(navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean): void;
+        standardMouseClick(navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean): boolean;
 
         /**
         * Implement the standard behavior for mouse enter, over, and leave events, where the mouse is moving but no button is pressed.

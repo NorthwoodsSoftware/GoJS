@@ -33,7 +33,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -334,11 +334,6 @@
           new go.Binding("visible", "text", function(t) { return t !== ""; }))
       ));
 
-    // initialize Overview
-    myOverview =
-      $(go.Overview, "myOverviewDiv",
-        { observed: myDiagram, contentAlignment: go.Spot.Center });
-
     // start off with a simple diagram
     load();
   }
@@ -399,7 +394,6 @@
   };
   // end BarLink class
 
-
   // save a model to and load a model from JSON text, displayed below the Diagram
   function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
@@ -413,25 +407,24 @@
 <body onload="init()">
 <div id="sample">
   <h3>4 Grafcet Diagrams</h3>
-  <div style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; padding: 2px; width:85%">
-      <div id="myDiagramDiv" style="border: solid 1px black; height: 600px"></div>
-    </span>
-    <span style="display: inline-block; vertical-align: top; padding: 2px; width:14%">
-      <div id="myOverviewDiv" style="border: solid 1px black; height: 300px"></div>
-    </span>
-  </div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 800px; height: 600px"></div>
+  <p>
+    A grafcet diagram is similar to a <a href="sequentialFunction.html">sequential function chart</a>.
+  </p>
   <p>
     Select a Node to show a list of Buttons that enable creating new Nodes or drawing new Links.
+    These buttons are defined as an adornment that is used in a common <a>Part.selectionAdornmentTemplate</a>.
+    This diagram uses many custom functions, including an overridden <a>LinkingTool</a> and a special
+    Link class, <b>BarLink</b>.
   </p>
   <div id="buttons">
-    <button id="loadModel" onclick="load()">Load</button>
     <button id="saveModel" onclick="save()">Save</button>
-    The initial model actually has four separate models mixed together, to show more variety in a single diagram.
+    <button id="loadModel" onclick="load()">Load</button>
+    Diagram Model saved in JSON format:
   </div>
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
-  "nodeDataArray": [ 
+  "nodeDataArray": [
 {"key":1, "category":"Start", "location":"300 50", "step":"1", "text":"Action 1"},
 {"key":2, "category":"Parallel", "location":"300 100"},
 {"key":3, "location":"225 125", "step":"3", "text":"Action 2"},
@@ -455,7 +448,7 @@
 {"key":33, "location":"500 500", "step":"33", "text":"Act 3"},
 {"key":34, "location":"500 550", "step":"34", "text":"Act 4"}
  ],
-  "linkDataArray": [ 
+  "linkDataArray": [
 {"from":1, "to":2, "text":"condition 1"},
 {"from":2, "to":3},
 {"from":2, "to":4},
@@ -482,5 +475,4 @@
   </textarea>
 </div>
 </body>
-
 </html>

@@ -35,33 +35,37 @@
       $(go.Node, "Auto",
         { selectable: false },
         $(go.Shape, "Rectangle",
-          { fill: 'whitesmoke', strokeWidth: 2 },
+          { fill: '#8C8C8C', stroke: null },
           // Shape.fill is bound to Node.data.color
           new go.Binding("fill", "color")),
         $(go.Panel, "Table",
           $(go.RowColumnDefinition, { column: 0, separatorStroke: "black" }),
-          $(go.RowColumnDefinition, { column: 1, separatorStroke: "black" }),
+          $(go.RowColumnDefinition, { column: 1, separatorStroke: "black", background: "#BABABA" }),
           $(go.RowColumnDefinition, { row: 0, separatorStroke: "black" }),
           $(go.RowColumnDefinition, { row: 1, separatorStroke: "black" }),
           $(go.TextBlock, "",
             { row: 0,
               wrap: go.TextBlock.None, margin: 5, width: 90,
-              isMultiline: false, textAlign: 'left' },
+              isMultiline: false, textAlign: 'left',
+              font: '10pt  Segoe UI,sans-serif', stroke: 'white' },
             new go.Binding("text", "player1").makeTwoWay()),
           $(go.TextBlock, "",
             { row: 1,
               wrap: go.TextBlock.None, margin: 5, width: 90,
-              isMultiline: false, textAlign: 'left' },
+              isMultiline: false, textAlign: 'left',
+              font: '10pt  Segoe UI,sans-serif', stroke: 'white' },
             new go.Binding("text", "player2").makeTwoWay()),
           $(go.TextBlock, "",
             { column: 1, row: 0,
               wrap: go.TextBlock.None, margin: 2, width: 25,
-              isMultiline: false, editable: true, textAlign: 'right' },
+              isMultiline: false, editable: true, textAlign: 'center',
+              font: '10pt  Segoe UI,sans-serif', stroke: 'black' },
             new go.Binding("text", "score1").makeTwoWay()),
           $(go.TextBlock, "",
             { column: 1, row: 1,
               wrap: go.TextBlock.None, margin: 2, width: 25,
-              isMultiline: false, editable: true, textAlign: 'right' },
+              isMultiline: false, editable: true, textAlign: 'center',
+              font: '10pt  Segoe UI,sans-serif', stroke: 'black' },
             new go.Binding("text", "score2").makeTwoWay())
         )
       );
@@ -71,7 +75,7 @@
       $(go.Link,
         { routing: go.Link.Orthogonal,
           selectable: false },
-        $(go.Shape));
+        $(go.Shape, { strokeWidth: 2, stroke: 'white' }));
 
 
     // Generates the original graph from an array of player names
@@ -167,13 +171,14 @@
 </head>
 <body onload="init()">
 <div id="sample">
+  <h3>GoJS Tournament Bracket</h3>
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; width:700px; height:600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; background: #4D4D4D; width:700px; height:600px"></div>
   <p>
     Click on the empty score boxes next to names to fill in scores for each player.
-    The scores must be non-negative numbers with at most 3 digits.
-    When two players in a bracket have a score, one of them will automatically advance to the next bracket.
+    The scores must be non-negative numbers with at most 3 digits. Scores are validated using a <a>TextEditingTool.textValidation</a> function.
+    When two players in a "game" have a score, one of them will automatically advance to the next round of the bracket.
   </p>
 </div>
 </body>

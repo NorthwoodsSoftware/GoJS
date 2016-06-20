@@ -37,6 +37,22 @@
       }
     });
 
+    function nodeFillConverter(figure) {
+      switch(figure) {
+        case "AndGate":
+          // right to left so when it's rotated, it goes from top to bottom
+          return $(go.Brush, "Linear", { 0: "#EA8100", 1: "#C66D00", start: go.Spot.Right, end: go.Spot.Left });
+        case "OrGate":
+          return $(go.Brush, "Linear", { 0: "#0058D3", 1: "#004FB7", start: go.Spot.Right, end: go.Spot.Left });
+        case "Circle":
+          return $(go.Brush, "Linear", { 0: "#009620", 1: "#007717" });
+        case "Triangle":
+          return $(go.Brush, "Linear", { 0: "#7A0099", 1: "#63007F" });
+        default:
+          return "whitesmoke";
+      }
+    }
+
     myDiagram.nodeTemplate =  // the default node template
       $(go.Node, "Spot",
         { selectionObjectName: "BODY", locationSpot: go.Spot.Center, locationObjectName: "BODY" },
@@ -44,9 +60,10 @@
         $(go.Panel, "Auto",
           { name: "BODY", portId: "" },
           $(go.Shape,
-            { fill: "lightyellow" }),
+            { fill: $(go.Brush, "Linear", { 0: "#770000", 1: "#600000"}), stroke: null }),
           $(go.TextBlock,
-            { margin: new go.Margin(2, 10, 1, 10), maxSize: new go.Size(100, NaN) },
+            { margin: new go.Margin(2, 10, 1, 10), maxSize: new go.Size(100, NaN),
+              stroke: "whitesmoke", font: "10pt Segoe UI, sans-serif" },
             new go.Binding("text"))
         ),  // end "BODY", an Auto Panel
         $("TreeExpanderButton", { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left }),
@@ -55,19 +72,21 @@
           { strokeWidth: 1.5, height: 20, alignment: new go.Spot(0.5, 1, 0, -1), alignmentFocus: go.Spot.Top }),
         $(go.Shape,
           new go.Binding("visible", "figure", function(f) { return f !== "None"; }),
-          { alignment: new go.Spot(0.5, 1, 0, 5), alignmentFocus: go.Spot.Top, width: 30, height: 30 },
+          { alignment: new go.Spot(0.5, 1, 0, 5), alignmentFocus: go.Spot.Top, width: 30, height: 30,
+            stroke: null },
           new go.Binding("figure"),
-          new go.Binding("fill"),
-          new go.Binding("angle", "figure", function(f) { return (f === "OrGate" || f === "AndGate") ? -90 : 0; })),
+          new go.Binding("fill", "figure", nodeFillConverter),
+          new go.Binding("angle", "figure", function(f) { return (f === "OrGate" || f === "AndGate") ? -90 : 0; })), // ORs and ANDs should point upwards
         $(go.TextBlock,
-          new go.Binding("visible", "choice", function(f) { return f !== "None"; }),
-          { stroke: "blue", alignment: new go.Spot(0.5, 1, 20, 20), alignmentFocus: go.Spot.Left },
+          new go.Binding("visible", "figure", function(f) { return f !== "None"; }), // if we don't have a figure, don't display any choice text
+          { alignment: new go.Spot(0.5, 1, 20, 20), alignmentFocus: go.Spot.Left,
+            stroke: "black", font: "10pt Segoe UI, sans-serif" },
           new go.Binding("text", "choice"))
       );
 
     myDiagram.linkTemplate =
       $(go.Link, go.Link.Orthogonal,
-        { layerName: "Background", curviness: 20 },
+        { layerName: "Background", curviness: 20, corner: 5 },
         $(go.Shape,
           { strokeWidth: 1.5 })
       );
@@ -88,27 +107,46 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
   <p>
-    The Diagram Model data is loaded from the JSON below.
+    <em>Fault trees</em> are used to conduct deductive failure analysis in which an undesired state of a
+    system is analyzed using Boolean logic to combine a series of lower-level events.
   </p>
   <p>
-    <button id="SaveButton" onclick="save()">Save</button>
-    <button onclick="load()">Load</button>
+    This diagram uses a basic <a>TreeModel</a> and <a>TreeLayout</a> to layout nodes in a tree structure.
+    The <a>Diagram.nodeTemplate</a> definition allows for text describing the undesirable states and,
+    when necessary, a figure indicating an event/gate.
   </p>
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <p>
+    The <b>visible</b> property on some of the node template's <a>Shape</a>s is set based on
+    whether a figure is chosen for the node in the <a>Model.nodeDataArray</a>. The nodes also
+    display a <b>TreeExpanderButton</b> allowing for expanding/collapsing of subtrees.
+    See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
+  </p>
+  <p>
+    Related to deductive failure analysis is root cause analysis, or RCA. See the <a href="../extensions/Fishbone.html">fishbone layout</a>
+    extension page for a diagram format typically used in root cause analysis.
+  </p>
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.TreeModel",
 "nodeDataArray": [
 {"key":1, "text":"No flow to receiver", "figure":"None"},
-{"key":2, "text":"No flow from Component B", "parent":1, "figure":"OrGate", "fill":"blue", "choice":"G02"},
-{"key":3, "text":"No flow into Component B", "parent":2, "figure":"AndGate", "fill":"red", "choice":"G03"},
-{"key":4, "text":"Component B blocks flow", "parent":2, "figure":"Circle", "fill":"green", "choice":"B01"},
-{"key":5, "text":"No flow from Component A1", "parent":3, "figure":"OrGate", "fill":"blue", "choice":"G04"},
-{"key":6, "text":"No flow from Component A2", "parent":3, "figure":"OrGate", "fill":"blue", "choice":"G05"},
-{"key":7, "text":"No flow from source1", "parent":5, "figure":"Triangle", "fill":"red", "choice":"T01"},
+{"key":2, "text":"No flow from Component B", "parent":1, "figure":"OrGate", "choice":"G02"},
+{"key":3, "text":"No flow into Component B", "parent":2, "figure":"AndGate", "choice":"G03"},
+{"key":4, "text":"Component B blocks flow", "parent":2, "figure":"Circle", "choice":"B01"},
+{"key":5, "text":"No flow from Component A1", "parent":3, "figure":"OrGate", "choice":"G04"},
+{"key":6, "text":"No flow from Component A2", "parent":3, "figure":"OrGate", "choice":"G05"},
+{"key":7, "text":"No flow from source1", "parent":5, "figure":"Triangle", "choice":"T01"},
 {"key":8, "text":"Component A1 blocks flow", "parent":5, "figure":"Circle", "fill":"green", "choice":"B02"},
-{"key":9, "text":"No flow from source2", "parent":6, "figure":"Triangle", "fill":"red", "choice":"T02"},
-{"key":10, "text":"Component A2 blocks flow", "parent":6, "figure":"Circle", "fill":"green", "choice":"B03"}
+{"key":9, "text":"No flow from source2", "parent":6, "figure":"Triangle", "choice":"T02"},
+{"key":10, "text":"Component A2 blocks flow", "parent":6, "figure":"Circle", "choice":"B03"}
 ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

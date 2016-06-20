@@ -41,14 +41,14 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         new go.Binding("text", "key"),
         { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-          mouseDragEnter: function(e, node, prev) { highlightSeats(node, true); },
-          mouseDragLeave: function(e, node, next) { highlightSeats(node, false); },
+          mouseDragEnter: function(e, node, prev) { highlightSeats(node, node.diagram.selection, true); },
+          mouseDragLeave: function(e, node, next) { highlightSeats(node, node.diagram.selection, false); },
           mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
         },
         $(go.Shape, "Rectangle", { fill: "blanchedalmond", stroke: null }),
         $(go.Panel, "Viewbox",
-          { desiredSize: new go.Size(50, 36) },
-          $(go.TextBlock, { margin: 2, desiredSize: new go.Size(60, NaN), textAlign: "center", stroke: "darkblue" },
+          { desiredSize: new go.Size(50, 38) },
+          $(go.TextBlock,{ margin: 2, desiredSize: new go.Size(55, NaN), font: "8pt Verdana, sans-serif", textAlign: "center", stroke: "darkblue" },
             new go.Binding("text", "", function(data) {
                 var s = data.key;
                 if (data.plus) s += " +" + data.plus.toString();
@@ -69,6 +69,7 @@
                  { name: "SEATSHAPE", desiredSize: new go.Size(40, 40), fill: "burlywood", stroke: "white", strokeWidth: 2 },
                  new go.Binding("fill")),
                $(go.TextBlock, number.toString(),
+                 { font: "10pt Verdana, sans-serif" },
                  new go.Binding("angle", "angle", function(n) { return -n; }))
              );
     }
@@ -82,8 +83,8 @@
         { rotatable: true },
         new go.Binding("angle").makeTwoWay(),
         { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-          mouseDragEnter: function(e, node, prev) { highlightSeats(node, true); },
-          mouseDragLeave: function(e, node, next) { highlightSeats(node, false); },
+          mouseDragEnter: function(e, node, prev) { highlightSeats(node, node.diagram.selection, true); },
+          mouseDragLeave: function(e, node, next) { highlightSeats(node, node.diagram.selection, false); },
           mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
         }
       ];
@@ -98,7 +99,7 @@
             { name: "TABLESHAPE", desiredSize: new go.Size(160, 80), fill: "burlywood", stroke: null },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
             new go.Binding("fill")),
-          $(go.TextBlock, { editable: true, font: "bold 11pt sans-serif" },
+          $(go.TextBlock, { editable: true, font: "bold 11pt Verdana, sans-serif" },
             new go.Binding("text", "name").makeTwoWay(),
             new go.Binding("angle", "angle", function(n) { return -n; }))
         ),
@@ -119,7 +120,7 @@
             { name: "TABLESHAPE", desiredSize: new go.Size(160, 60), fill: "burlywood", stroke: null },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
             new go.Binding("fill")),
-          $(go.TextBlock, { editable: true, font: "bold 11pt sans-serif" },
+          $(go.TextBlock, { editable: true, font: "bold 11pt Verdana, sans-serif" },
             new go.Binding("text", "name").makeTwoWay(),
             new go.Binding("angle", "angle", function(n) { return -n; }))
         ),
@@ -135,7 +136,7 @@
             { name: "TABLESHAPE", desiredSize: new go.Size(120, 120), fill: "burlywood", stroke: null },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
             new go.Binding("fill")),
-          $(go.TextBlock, { editable: true, font: "bold 11pt sans-serif" },
+          $(go.TextBlock, { editable: true, font: "bold 11pt Verdana, sans-serif" },
             new go.Binding("text", "name").makeTwoWay(),
             new go.Binding("angle", "angle", function(n) { return -n; }))
         ),
@@ -244,10 +245,14 @@
   function isTable(n) { return n !== null && n.category !== ""; }
 
   // Highlight the empty and occupied seats at a "Table" Node
-  function highlightSeats(node, show) {
+  function highlightSeats(node, coll, show) {
     if (isPerson(node)) {  // refer to the person's table instead
       node = node.diagram.findNodeForKey(node.data.table);
       if (node === null) return;
+    }
+    if (coll.any(isTable)) {
+      // if dragging a Table, don't do any highlighting
+      return;
     }
     var guests = node.data.guests;
     for (var sit = node.elements; sit.next();) {
@@ -259,9 +264,9 @@
         if (!seatshape) continue;
         if (show) {
           if (guests[seat.name]) {
-            seatshape.stroke = "red";
+              seatshape.stroke = "red";
           } else {
-            seatshape.stroke = "green";
+              seatshape.stroke = "green";
           }
         } else {
           seatshape.stroke = "white";
@@ -402,7 +407,7 @@
     }
   }
 
-  
+
   // Automatically drag people Nodes along with the table Node at which they are seated.
   function SpecialDraggingTool() {
     go.DraggingTool.call(this);
@@ -469,13 +474,14 @@
   When such a person is dropped onto a table, additional nodes are created in <code>myDiagram</code>.
   Those people are seated at the table if there is room.
   <p>
-  Tables can be rotated.  Rotating a table automatically repositions the people seated at that table.
+  Tables can be moved or rotated. Moving or rotating a table automatically repositions the people seated at that table.
   <p>
   The <a>UndoManager</a> is shared between the two Diagrams, so that one can undo/redo in either diagram
   and have it automatically handle drags between diagrams, as well as the usual changes within the diagram.
-  The JSON shown below is updated automatically as each transaction completes.
-  <div style="display: inline">
-    <pre id="savedModel"></pre>
+  </p>
+  <div>
+    Diagram Model saved in JSON format, automatically updated after each transaction:
+    <pre id="savedModel" style="height:250px"></pre>
   </div>
 </div>
 </body>
