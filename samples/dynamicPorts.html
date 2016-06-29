@@ -29,36 +29,44 @@
       }
     });
 
+    // To simplify this code we define a function for creating a context menu button:
+    function makeButton(text, action, visiblePredicate) {
+      return $("ContextMenuButton",
+               $(go.TextBlock, text),
+               { click: action },
+               // don't bother with binding GraphObject.visible if there's no predicate
+               visiblePredicate ? new go.Binding("visible", "", visiblePredicate).ofObject() : {});
+    }
+
     var nodeMenu =  // context menu for each Node
       $(go.Adornment, "Vertical",
-        $("ContextMenuButton",
-          $(go.TextBlock, "Add top port"),
-          { click: function (e, obj) { addPort("top"); } }),
-        $("ContextMenuButton",
-          $(go.TextBlock, "Add left port"),
-          { click: function (e, obj) { addPort("left"); } }),
-        $("ContextMenuButton",
-          $(go.TextBlock, "Add right port"),
-          { click: function (e, obj) { addPort("right"); } }),
-        $("ContextMenuButton",
-          $(go.TextBlock, "Add bottom port"),
-          { click: function (e, obj) { addPort("bottom"); } })
+        makeButton("Copy",
+                   function(e, obj) { e.diagram.commandHandler.copySelection(); }),
+        makeButton("Delete",
+                   function(e, obj) { e.diagram.commandHandler.deleteSelection(); }),
+        $(go.Shape, "LineH", { strokeWidth: 2, height: 1, stretch: go.GraphObject.Horizontal }),
+        makeButton("Add top port",
+                   function (e, obj) { addPort("top"); }),
+        makeButton("Add left port",
+                   function (e, obj) { addPort("left"); }),
+        makeButton("Add right port",
+                   function (e, obj) { addPort("right"); }),
+        makeButton("Add bottom port",
+                   function (e, obj) { addPort("bottom"); })
       );
 
     var portSize = new go.Size(8, 8);
 
     var portMenu =  // context menu for each port
       $(go.Adornment, "Vertical",
-        $("ContextMenuButton",
-          $(go.TextBlock, "Remove port"),
-          // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
-          { click: function (e, obj) { removePort(obj.part.adornedObject); } }),
-        $("ContextMenuButton",
-          $(go.TextBlock, "Change color"),
-          { click: function (e, obj) { changeColor(obj.part.adornedObject); } }),
-        $("ContextMenuButton",
-          $(go.TextBlock, "Remove side ports"),
-          { click: function (e, obj) { removeAll(obj.part.adornedObject); } })
+        makeButton("Remove port",
+                   // in the click event handler, the obj.part is the Adornment;
+                   // its adornedObject is the port
+                   function (e, obj) { removePort(obj.part.adornedObject); }),
+        makeButton("Change color",
+                   function (e, obj) { changeColor(obj.part.adornedObject); }),
+        makeButton("Remove side ports",
+                   function (e, obj) { removeAll(obj.part.adornedObject); })
       );
 
     // the node template
@@ -80,8 +88,8 @@
             { fill: "#AC193D", stroke: null, strokeWidth: 0,
               minSize: new go.Size(56, 56) }),
           $(go.TextBlock,
-            { margin: 10, textAlign: "center", font: "14px  Segoe UI,sans-serif", stroke: "white" },
-            new go.Binding("text", "key"))
+            { margin: 10, textAlign: "center", font: "14px  Segoe UI,sans-serif", stroke: "white", editable: true },
+            new go.Binding("text", "name").makeTwoWay())
         ),  // end Auto Panel body
 
         // the Panel holding the left port elements, which are themselves Panels,
@@ -187,12 +195,25 @@
 
     // support double-clicking in the background to add a copy of this data as a node
     myDiagram.toolManager.clickCreatingTool.archetypeNodeData = {
-      key: "Unit",
+      name: "Unit",
       leftArray: [],
       rightArray: [],
       topArray: [],
       bottomArray: []
     };
+
+    myDiagram.contextMenu =
+      $(go.Adornment, "Vertical",
+          makeButton("Paste",
+                     function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); },
+                     function(o) { return o.diagram.commandHandler.canPasteSelection(); }),
+          makeButton("Undo",
+                     function(e, obj) { e.diagram.commandHandler.undo(); },
+                     function(o) { return o.diagram.commandHandler.canUndo(); }),
+          makeButton("Redo",
+                     function(e, obj) { e.diagram.commandHandler.redo(); },
+                     function(o) { return o.diagram.commandHandler.canRedo(); })
+      );
 
     // load the diagram from JSON data
     load();
@@ -368,7 +389,7 @@
     // Thus Model.copiesArrays and Model.copiesArrayObjects both need to be true.
 
     // Link data includes the names of the to- and from- ports;
-    // the GraphLinksModel needs to set these property names:
+    // so the GraphLinksModel needs to set these property names:
     // linkFromPortIdProperty and linkToPortIdProperty.
   }
 </script>
@@ -409,35 +430,35 @@
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
   "nodeDataArray": [
-{"key":"unit One", "loc":"101 204",
+{"key":1, "name":"unit One", "loc":"101 204",
  "leftArray":[ {"portColor":"#425e5c", "portId":"left0"} ],
  "topArray":[ {"portColor":"#d488a2", "portId":"top0"} ],
  "bottomArray":[ {"portColor":"#316571", "portId":"bottom0"} ],
  "rightArray":[ {"portColor":"#923951", "portId":"right0"},{"portColor":"#ef3768", "portId":"right1"} ] },
-{"key":"unit Two", "loc":"320 152",
+{"key":2, "name":"unit Two", "loc":"320 152",
  "leftArray":[ {"portColor":"#7d4bd6", "portId":"left0"},{"portColor":"#cc585c", "portId":"left1"},{"portColor":"#b1273a", "portId":"left2"} ],
  "topArray":[ {"portColor":"#14abef", "portId":"top0"} ],
  "bottomArray":[ {"portColor":"#dd45c7", "portId":"bottom0"},{"portColor":"#995aa6", "portId":"bottom1"},{"portColor":"#6b95cb", "portId":"bottom2"} ],
  "rightArray":[  ] },
-{"key":"unit Three", "loc":"384 319",
+{"key":3, "name":"unit Three", "loc":"384 319",
  "leftArray":[ {"portColor":"#bd8f27", "portId":"left0"},{"portColor":"#c14617", "portId":"left1"},{"portColor":"#47fa60", "portId":"left2"} ],
  "topArray":[ {"portColor":"#d08154", "portId":"top0"} ],
  "bottomArray":[ {"portColor":"#6cafdb", "portId":"bottom0"} ],
  "rightArray":[  ] },
-{"key":"unit Four", "loc":"138 351",
+{"key":4, "name":"unit Four", "loc":"138 351",
  "leftArray":[ {"portColor":"#491389", "portId":"left0"} ],
  "topArray":[ {"portColor":"#77ac1e", "portId":"top0"} ],
  "bottomArray":[ {"portColor":"#e9701b", "portId":"bottom0"} ],
  "rightArray":[ {"portColor":"#24d05e", "portId":"right0"},{"portColor":"#cfabaa", "portId":"right1"} ] }
  ],
   "linkDataArray": [
-{"from":"unit Four", "to":"unit One", "fromPort":"top0", "toPort":"bottom0"},
-{"from":"unit Four", "to":"unit Two", "fromPort":"top0", "toPort":"bottom0"},
-{"from":"unit Three", "to":"unit Two", "fromPort":"top0", "toPort":"bottom1"},
-{"from":"unit Four", "to":"unit Three", "fromPort":"right0", "toPort":"left0"},
-{"from":"unit Four", "to":"unit Three", "fromPort":"right1", "toPort":"left2"},
-{"from":"unit One", "to":"unit Two", "fromPort":"right0", "toPort":"left1"},
-{"from":"unit One", "to":"unit Two", "fromPort":"right1", "toPort":"left2"}
+{"from":4, "to":2, "fromPort":"top0", "toPort":"bottom0"},
+{"from":4, "to":2, "fromPort":"top0", "toPort":"bottom0"},
+{"from":3, "to":2, "fromPort":"top0", "toPort":"bottom1"},
+{"from":4, "to":3, "fromPort":"right0", "toPort":"left0"},
+{"from":4, "to":3, "fromPort":"right1", "toPort":"left2"},
+{"from":1, "to":2, "fromPort":"right0", "toPort":"left1"},
+{"from":1, "to":2, "fromPort":"right1", "toPort":"left2"}
  ]}
     </textarea>
   </div>

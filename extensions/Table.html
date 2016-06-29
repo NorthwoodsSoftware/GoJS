@@ -21,12 +21,15 @@
           // use TableLayout, and don't layout continuously while dragging a Node in a Group
           layout: $(TableLayout, { isRealtime: false }),
           allowDrop: true,
-          // when dropped in the background, not on a Node or a Group:
+          // feedback that dropping in the background is not allowed
+          mouseDragOver: function(e) { e.diagram.currentCursor = "not-allowed"; },
+          // when dropped in the background, not on a Node or a Group, cancel the drop
           mouseDrop: function(e) { e.diagram.currentTool.doCancel(); },
+          "animationManager.isInitial": false,
           "undoManager.isEnabled": true
         });
 
-    myDiagram.nodeTemplate =
+    myDiagram.nodeTemplate =  // for regular nodes within cells (groups); you'll want to extend this
       $(go.Node, "Auto",
         { width: 100, height: 50 },
         new go.Binding("row"),
@@ -37,52 +40,65 @@
           new go.Binding("text", "key"))
       );
 
-    myDiagram.nodeTemplateMap.add("Column",
-      $(go.Part, "Table",
-        { selectable: false, pickable: false, layerName: "Background" },
-        { row: 0, rowSpan: 9999, stretch: go.GraphObject.Fill, minSize: new go.Size(100, 100), margin: 4 },
-        new go.Binding("row"),
-        new go.Binding("column", "col"),
-        $(go.TextBlock,
-          { row: 0, alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.BottomLeft,
-            font: "10pt sans-serif" },
-          new go.Binding("text")),
-        $(go.Shape, { row: 1, fill: "lightgray", stretch: go.GraphObject.Fill },
-          new go.Binding("fill", "color"))
-      ));
-
-    myDiagram.nodeTemplateMap.add("Header",
+    myDiagram.nodeTemplateMap.add("Header",  // an overall table header, at the top
       $(go.Part, "Auto",
         { selectable: false, pickable: false },
-        { column: 0, columnSpan: 9999, stretch: go.GraphObject.Horizontal, margin: 4 },
-        new go.Binding("row"),
-        $(go.Shape, { fill: "lightgray", height: 22 },
+        { row: 0, column: 0, columnSpan: 9999, stretch: go.GraphObject.Horizontal },
+        $(go.Shape, { fill: "lightgray", height: 32 },
           new go.Binding("fill", "color")),
-        $(go.TextBlock, { alignment: go.Spot.Left, stroke: "white", font: "bold 12pt sans-serif", margin: 2 },
+        $(go.TextBlock, { alignment: go.Spot.Center, stroke: "white", font: "bold 12pt sans-serif" },
           new go.Binding("text"))
       ));
 
-    myDiagram.groupTemplate =
+    myDiagram.nodeTemplateMap.add("Sider",  // an overall table header, on the left side
+      $(go.Part, "Auto",
+        { selectable: false, pickable: false },
+        { row: 0, rowSpan: 9999, column: 0, stretch: go.GraphObject.Vertical },
+        $(go.Shape, { fill: "white", width: 32 },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif", angle: 270 },
+          new go.Binding("text"),
+          new go.Binding("stroke", "textcolor"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Column Header",  // for each column
+      $(go.Part, "Auto",
+        { selectable: false, pickable: false },
+        { row: 1, rowSpan: 9999, column: 2, stretch: go.GraphObject.Fill, minSize: new go.Size(100, 22) },
+        new go.Binding("column", "col"),
+        $(go.Shape, { fill: "transparent" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { alignment: go.Spot.Top, font: "bold 10pt sans-serif", margin: 2 },
+          new go.Binding("text"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Row Sider",  // for each row
+      $(go.Part, "Auto",
+        { selectable: false, pickable: false },
+        { row: 2, column: 1, columnSpan: 9999, stretch: go.GraphObject.Fill, minSize: new go.Size(22, 100) },
+        new go.Binding("row"),
+        $(go.Shape, { fill: "transparent" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { alignment: go.Spot.Left, font: "bold 10pt sans-serif", margin: 2, angle: 270 },
+          new go.Binding("text"))
+      ));
+
+    myDiagram.groupTemplate =  // for cells
       $(go.Group, "Auto",
-        { movable: false, deletable: false, copyable: false },
-        { margin: 8, alignment: go.Spot.TopLeft },
+        { selectable: false, margin: 8, minSize: new go.Size(220, 70) },
         new go.Binding("row"),
         new go.Binding("column", "col"),
-        // leave room for "Column" part's header TextBlock in first row;
-        // the margin is double that of the "Column" part
-        new go.Binding("margin", "row", function(r) { return new go.Margin((r === 1 ? 22 : 0), 8, 8, 8); }),
-        $(go.Shape, { fill: "white" },
+        // leave room for the headers
+        new go.Binding("margin", "", function(d) { return new go.Margin((d.row === 2 ? 22 : 8), 8, 8, (d.col === 2 ? 22 : 8)); }),
+        // the group is normally unseen -- it is completely transparent except when given a color or when highlighted 
+        $(go.Shape, { fill: "transparent", stroke: "transparent", strokeWidth: 2 },
           new go.Binding("fill", "color"),
-          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; }).ofObject()),
-        $(go.Panel, "Vertical",
-          { margin: 4 },
-          $(go.TextBlock, { alignment: go.Spot.TopLeft, font: "bold 10pt sans-serif" },
-            new go.Binding("text", "key"),
-            new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; }).ofObject()),
-          $(go.Placeholder)
-        ),
+          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject()),
+        $(go.Placeholder),
         {
-          layout: $(go.GridLayout, { wrappingColumn: 1 }),
+          //layout: $(go.GridLayout, { wrappingColumn: 2 }),
           handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           mouseDragEnter: function(e, group, prev) { group.isHighlighted = true; },
           mouseDragLeave: function(e, group, next) { group.isHighlighted = false; },
@@ -94,18 +110,26 @@
       );
 
     myDiagram.model = new go.GraphLinksModel([
-      { text: "Title", color: "firebrick", row: 0, category: "Header" },
-      { text: "Column 0", color: "lightyellow", row: 1, col: 0, category: "Column" },
-      { text: "Column 1", color: "lightyellow", row: 1, col: 1, category: "Column" },
-      { text: "Column 2", color: "lightyellow", row: 1, col: 2, category: "Column" },
-      { key: "Group 1", color: "cyan", row: 1, col: 1, isGroup: true },
-      { key: "Group 2", color: "lightgreen", row: 1, col: 2, isGroup: true },
-      { key: "Group 3", color: "yellow", row: 2, col: 2, isGroup: true },
-      { key: "Delta", color: "orange", size: "100 100", group: "Group 1" },
-      { key: "Epsilon", color: "coral", size: "100 50", group: "Group 1" },
-      { key: "Zeta", color: "tomato", size: "50 70", group: "Group 2" },
-      { key: "Eta", color: "coral", size: "50 50", group: "Group 3" },
-      { key: "Theta", color: "tomato", size: "100 50", group: "Group 3" }
+      // headers
+      { text: "Vacation Leaves", textcolor: "black", category: "Sider" },
+      { text: "Employee", row: 2, category: "Row Sider" },
+      { text: "Manager", row: 3, category: "Row Sider" },
+      { text: "Administration", row: 4, category: "Row Sider" },
+      { text: "Request", col: 2, category: "Column Header" },
+      { text: "Approval", col: 3, category: "Column Header" },
+      // cells
+      { key: "EmpReq", row: 2, col: 2, isGroup: true },
+      { key: "EmpApp", row: 2, col: 3, isGroup: true },
+      { key: "ManReq", row: 3, col: 2, isGroup: true },
+      { key: "ManApp", row: 3, col: 3, isGroup: true },
+      { key: "AdmReq", row: 4, col: 2, isGroup: true },
+      { key: "AdmApp", row: 4, col: 3, isGroup: true },
+      // nodes
+      { key: "Delta", color: "orange", size: "100 100", group: "EmpReq" },
+      { key: "Epsilon", color: "coral", size: "100 50", group: "EmpReq" },
+      { key: "Zeta", color: "tomato", size: "50 70", group: "ManReq" },
+      { key: "Eta", color: "coral", size: "50 50", group: "ManApp" },
+      { key: "Theta", color: "tomato", size: "100 50", group: "AdmApp" }
     ]);
 
     myPalette =
@@ -142,8 +166,8 @@
   Drops must occur inside Groups; otherwise the action is cancelled.
   </p>
   <p>
-  This example assumes the Groups are predefined and fixed at a particular row/column,
-  but this sample could be extended to allow Groups to be added, moved, and removed.
+  This example assumes the Groups are predefined and exist in each cell at a particular row/column,
+  but this sample could be extended to allow adding and removing rows and/or columns.
   </p>
 </div>
 </body>

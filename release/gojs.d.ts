@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.6.10
+// Type definitions for GoJS v1.6.11
 // Project: https://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -205,7 +205,6 @@ declare module go {
         /**
         * This predicate controls whether or not the user can invoke the scrollToPart command.
         * This returns false if there is no argument Part and there are no selected Parts.
-        * @this {CommandHandler}
         * @param {Part=} part This defaults to the first selected Part of Diagram.selection
         * @return {boolean}
         * This returns true if Diagram.allowHorizontalScroll and Diagram.allowVerticalScroll are true.
@@ -360,8 +359,6 @@ declare module go {
         * <p>
         * This is normally invoked by the <code>Space</code> keyboard shortcut.
         * If there is no argument and there is no highlighted or selected Part, this command does nothing.
-        * @expose
-        * @this {CommandHandler}
         * @param {Part=} part This defaults to the first highlighted Part of Diagram.highlighteds,
         *                     or, if there are no highlighted Parts, the first selected Part.
         */
@@ -805,7 +802,7 @@ declare module go {
         * @param {Diagram} diagram  The destination diagram; if null, the copied parts are not added to this diagram.
         * @param {boolean} check  Whether to check Part.canCopy on each part.
         */
-        copyParts(coll: Iterable<Part>, diagram: Diagram, check: boolean): void;
+        copyParts(coll: Iterable<Part>, diagram: Diagram, check: boolean): Map<Part, Part>;
 
         /**
         * Updates the diagram immediately, then resets initialization flags so that actions taken in the argument function will be considered part of Diagram initialization, and will participate in initial layouts, .initialAutoScale, .initialContentAlignment, etc.

@@ -17,18 +17,19 @@
 <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
 <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
+  // General Parameters for this app, used during initialization
+  var AllowTopLevel = false;
+  var CellSize = new go.Size(50, 50);
+
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;
-
-    // Initialize the main Diagram
-    var cellSize = new go.Size(50, 50);
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
           grid: $(go.Panel, "Grid",
-                  { gridCellSize: cellSize },
+                  { gridCellSize: CellSize },
                   $(go.Shape, "LineH", { stroke: "lightgray" }),
                   $(go.Shape, "LineV", { stroke: "lightgray" })
                 ),
@@ -43,6 +44,7 @@
                 document.getElementById("savedModel").textContent = myDiagram.model.toJson();
               }
             },
+          "animationManager.isEnabled": false,
           "undoManager.isEnabled": true
         });
 
@@ -53,7 +55,7 @@
         {
           resizable: true, resizeObjectName: "SHAPE",
           // because the gridSnapCellSpot is Center, offset the Node's location
-          locationSpot: new go.Spot(0, 0, cellSize.width / 2, cellSize.height / 2),
+          locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
           // provide a visual warning about dropping anything onto an "item"
           mouseDragEnter: function(e, node) {
             e.handled = true;
@@ -73,8 +75,8 @@
         $(go.Shape, "Rectangle",
           { name: "SHAPE",
             fill: "white",
-            minSize: cellSize,
-            desiredSize: cellSize  // initially 1x1 cell
+            minSize: CellSize,
+            desiredSize: CellSize  // initially 1x1 cell
           },
           new go.Binding("fill", "color"),
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
@@ -109,9 +111,11 @@
 
     myDiagram.groupTemplate =
       $(go.Group,
-        { resizable: true, resizeObjectName: "SHAPE",
+        {
+          layerName: "Background",
+          resizable: true, resizeObjectName: "SHAPE",
           // because the gridSnapCellSpot is Center, offset the Group's location
-          locationSpot: new go.Spot(0, 0, cellSize.width/2, cellSize.height/2)
+          locationSpot: new go.Spot(0, 0, CellSize.width/2, CellSize.height/2)
         },
         // always save/load the point that is the top-left corner of the node, not the location
         new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -121,31 +125,49 @@
           mouseDrop: function(e, grp) {
             var ok = grp.addMembers(grp.diagram.selection, true);
             if (!ok) grp.diagram.currentTool.doCancel();
-          },
-          handlesDragDropForMembers: true  // don't need to define handlers on member Nodes and Links
+          }
         },
         $(go.Shape, "Rectangle",  // the rectangular shape around the members
           { name: "SHAPE",
             fill: groupFill,
             stroke: groupStroke,
-            minSize: new go.Size(cellSize.width*2, cellSize.height*2)
+            minSize: new go.Size(CellSize.width*2, CellSize.height*2)
           },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           new go.Binding("fill", "isHighlighted", function(h) { return h ? dropFill : groupFill; }).ofObject(),
           new go.Binding("stroke", "isHighlighted", function(h) { return h ? dropStroke: groupStroke; }).ofObject())
       );
 
-    // decide what kinds of Parts can be added to a Group or to top-level
+    // decide what kinds of Parts can be added to a Group
     myDiagram.commandHandler.memberValidation = function(grp, node) {
       if (grp instanceof go.Group && node instanceof go.Group) return false;  // cannot add Groups to Groups
+      // but dropping a Group onto the background is always OK
       return true;
     };
 
     // what to do when a drag-drop occurs in the Diagram's background
+    myDiagram.mouseDragOver = function(e) {
+      if (!AllowTopLevel) {
+        // but OK to drop a group anywhere
+        if (!e.diagram.selection.all(function(p) { return p instanceof go.Group; })) {
+          e.diagram.currentCursor = "not-allowed";
+        }
+      }
+    };
+
     myDiagram.mouseDrop = function(e) {
-      // disallow dropping any regular nodes onto the background, but allow dropping "racks"
-      var ok = myDiagram.selection.all(function(p) { return p instanceof go.Group; });
-      if (!ok) myDiagram.currentTool.doCancel();
+      if (AllowTopLevel) {
+        // when the selection is dropped in the diagram's background,
+        // make sure the selected Parts no longer belong to any Group
+        if (!e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true)) {
+          e.diagram.currentTool.doCancel();
+        }
+      } else {
+        // disallow dropping any regular nodes onto the background, but allow dropping "racks"
+        if (!e.diagram.selection.all(function(p) { return p instanceof go.Group; })) {
+          e.diagram.currentTool.doCancel();
+        }
+      }
     };
 
     // start off with four "racks" that are positioned next to each other

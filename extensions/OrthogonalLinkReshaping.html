@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Orthogonal Link Reshaping Tool</title>
+<!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<script src="OrthogonalLinkReshapingTool.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        {
+          initialContentAlignment: go.Spot.Center,
+          "undoManager.isEnabled": true,
+          "linkReshapingTool": new OrthogonalLinkReshapingTool()
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        {
+          width: 80,
+          height: 50,
+          locationSpot: go.Spot.Center
+        },
+        new go.Binding("location"),
+        $(go.Shape, { fill: "lightgray" }),
+        $(go.TextBlock, { margin: 10 },
+          new go.Binding("text", "key"))
+      );
+
+    myDiagram.linkTemplate =
+      $(go.Link,
+        {
+          routing: go.Link.Orthogonal,
+          reshapable: true,
+          resegmentable: true
+        },
+        $(go.Shape, { strokeWidth: 2 })
+      );
+
+    myDiagram.model = new go.GraphLinksModel([
+      { key: "Alpha", location: new go.Point(0, 0) },
+      { key: "Beta", location: new go.Point(200, 200) },
+      { key: "Gamma", location: new go.Point(100,100) }
+    ],[
+      { from: "Alpha", to: "Beta" }
+    ]);
+  }
+
+  function updateRouting() {
+    var routing = getRadioValue("routing");
+    var newRouting = (routing === "orthogonal") ? go.Link.Orthogonal : go.Link.AvoidsNodes;
+    myDiagram.startTransaction("update routing");
+    myDiagram.linkTemplate.routing = newRouting;
+    myDiagram.links.each(function(l) {
+      l.routing = newRouting;
+    });
+    myDiagram.commitTransaction("update routing");
+  }
+
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++)
+      if (radio[i].checked) return radio[i].value;
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  Routing:
+        <input type="radio" name="routing" onclick="updateRouting()" value="orthogonal" checked="checked" />Orthogonal
+        <input type="radio" name="routing" onclick="updateRouting()" value="avoidsnodes" />AvoidsNodes
+  <p>
+    This sample demonstrates the OrthogonalLinkReshapingTool that is defined in its own file, as <a href="OrthogonalLinkReshapingTool.js">OrthogonalLinkReshapingTool.js</a>.
+    This tool allow users to shift the sections of orthogonal links in addition to resegmenting them.
+    The Diagram's <a>ToolManager.linkReshapingTool</a> and link template's <a>Part.reshapable</a> properties must be set to use this tool. 
+    The <a>Link.resegmentable</a> property can still optionally be used.
+  </p>
+</div>
+</body>
+</html>
