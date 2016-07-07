@@ -328,8 +328,8 @@ TableLayout.prototype.measureTable = function(width, height, children, union, mi
 
         if (stretch !== go.GraphObject.None) {
           var unrestrictedSize = new go.Size(NaN, NaN);
-          if (stretch !== go.GraphObject.Horizontal) unrestrictedSize.height = rowHerald.minimum;
-          if (stretch !== go.GraphObject.Vertical) unrestrictedSize.width = colHerald.minimum;
+          //if (stretch !== go.GraphObject.Horizontal) unrestrictedSize.height = rowHerald.minimum;
+          //if (stretch !== go.GraphObject.Vertical) unrestrictedSize.width = colHerald.minimum;
           //??? allow resizing during measure phase
           child.resizeObject.desiredSize = unrestrictedSize;
           child.ensureBounds();

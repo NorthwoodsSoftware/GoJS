@@ -47,10 +47,15 @@
             }
           });
 
+      // All links must go from a node inside the "Left Side" Group to a node inside the "Right Side" Group.
       function checkLink(fn, fp, tn, tp, link) {
-        // Do not allow links between nodes within the same tree (i.e. within the same group).
-        // Nor do we allow links from the right side to the left side.
-        return fn.containingGroup !== tn.containingGroup && fn.position.x < tn.position.x;
+        // make sure the nodes are inside different Groups
+        if (fn.containingGroup === null || fn.containingGroup.data.key !== -1) return false;
+        if (tn.containingGroup === null || tn.containingGroup.data.key !== -2) return false;
+        //// optional limit to a single mapping link per node
+        //if (fn.linksConnected.any(function(l) { return l.category === "Mapping"; })) return false;
+        //if (tn.linksConnected.any(function(l) { return l.category === "Mapping"; })) return false;
+        return true;
       }
 
       // Each node in a tree is defined using the default nodeTemplate.
@@ -59,7 +64,9 @@
           { movable: false },  // user cannot move an individual node
           // no Adornment: instead change panel background color by binding to Node.isSelected
           { selectionAdorned: false },
-          { fromLinkable: true, toLinkable: true },  // user can draw link to and from such tree nodes
+          // whether the user can start drawing a link from or to this node depends on which group it's in
+          new go.Binding("fromLinkable", "group", function(k) { return k === -1; }),
+          new go.Binding("toLinkable", "group", function(k) { return k === -2; }),
           $("TreeExpanderButton",  // support expanding/collapsing subtrees
             { width: 14, height: 14,
               "ButtonIcon.stroke": "white",
@@ -182,6 +189,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
+  <div id="myDiagramDiv" style="border: 1px solid blue; width: 700px; height: 350px"></div>
   <p>
     This sample is like the <a href="records.html">Mapping Fields of Records</a> sample,
     but it has a collapsible tree of nodes on each side, rather than a simple list of items.
@@ -189,9 +197,8 @@
   </p>
   <p>
     Draw new links by dragging from any field (i.e. any tree node).
-    Reconnect a selected link by dragging its diamond-shaped handle. 
+    Reconnect a selected link by dragging its diamond-shaped handle.
   </p>
-  <div id="myDiagramDiv" style="border: 1px solid blue; width: 700px; height: 350px"></div>
   <p>The model data, automatically updated after each change or undo or redo:</p>
   <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
 </div>

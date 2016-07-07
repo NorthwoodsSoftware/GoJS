@@ -10,6 +10,57 @@
 <script src="TableLayout.js"></script>
 
 <script id="code">
+  // define a custom ResizingTool to limit how far one can shrink a row or column
+  function LaneResizingTool() {
+    go.ResizingTool.call(this);
+  }
+  go.Diagram.inherit(LaneResizingTool, go.ResizingTool);
+
+  /** @override */
+  LaneResizingTool.prototype.computeMinSize = function() {
+    var diagram = this.diagram;
+    var lane = this.adornedObject.part;  // might be row or column
+    var horiz = (lane.category === "Column Header");  // or "Row Header"
+    var margin = diagram.nodeTemplate.margin;
+    var bounds = new go.Rect();
+    diagram.findTopLevelGroups().each(function(g) {
+      if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
+        var b = diagram.computePartsBounds(g.memberParts);
+        if (b.isEmpty()) return;  // nothing in there?  ignore it
+        b.unionPoint(g.location);  // keep any empty space on the left and top
+        b.addMargin(margin);  // assume the same node margin applies to all nodes
+        if (bounds.isEmpty()) {
+          bounds = b;
+        } else {
+          bounds.unionRect(b);
+        }
+      }
+    });
+
+    // limit the result by the standard value of computeMinSize
+    var msz = go.ResizingTool.prototype.computeMinSize.call(this);
+    if (bounds.isEmpty()) return msz;
+    return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
+  };
+
+  /** @override */
+  LaneResizingTool.prototype.resize = function(newr) {
+    var lane = this.adornedObject.part;
+    var horiz = (lane.category === "Column Header");
+    var lay = this.diagram.layout;  // the TableLayout
+    if (horiz) {
+      var col = lane.column;
+      var coldef = lay.getColumnDefinition(col);
+      coldef.width = newr.width;
+    } else {
+      var row = lane.row;
+      var rowdef = lay.getRowDefinition(row);
+      rowdef.height = newr.height;
+    }
+    lay.invalidateLayout();
+  };
+  // end LaneResizingTool class
+
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;
@@ -18,8 +69,12 @@
       $(go.Diagram, "myDiagramDiv",
         {
           initialContentAlignment: go.Spot.Center,
-          // use TableLayout, and don't layout continuously while dragging a Node in a Group
-          layout: $(TableLayout, { isRealtime: false }),
+          layout: $(TableLayout,
+                    $(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
+                    $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
+                  ),
+          "SelectionMoved": function(e) { e.diagram.layoutDiagram(true); },
+          "resizingTool": new LaneResizingTool(),
           allowDrop: true,
           // feedback that dropping in the background is not allowed
           mouseDragOver: function(e) { e.diagram.currentCursor = "not-allowed"; },
@@ -29,9 +84,111 @@
           "undoManager.isEnabled": true
         });
 
+    myDiagram.nodeTemplateMap.add("Header",  // an overall table header, at the top
+      $(go.Part, "Auto",
+        {
+          row: 0, column: 1, columnSpan: 9999,
+          stretch: go.GraphObject.Horizontal,
+          selectable: false, pickable: false
+        },
+        $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
+        $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif" },
+          new go.Binding("text"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Sider",  // an overall table header, on the left side
+      $(go.Part, "Auto",
+        {
+          row: 1, rowSpan: 9999, column: 0,
+          stretch: go.GraphObject.Vertical,
+          selectable: false, pickable: false
+        },
+        $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
+        $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif", angle: 270 },
+          new go.Binding("text"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Column Header",  // for each column header
+      $(go.Part, "Spot",
+        {
+          row: 1, rowSpan: 9999, column: 2,
+          minSize: new go.Size(100, NaN),
+          stretch: go.GraphObject.Fill,
+          movable: false,
+          resizable: true,
+          resizeAdornmentTemplate:
+            $(go.Adornment, "Spot",
+              $(go.Placeholder),
+              $(go.Shape,  // for changing the length of a lane
+                {
+                  alignment: go.Spot.Right,
+                  desiredSize: new go.Size(7, 50),
+                  fill: "lightblue", stroke: "dodgerblue",
+                  cursor: "col-resize"
+                })
+            )
+        },
+        new go.Binding("column", "col"),
+        $(go.Shape, { fill: null },
+          new go.Binding("fill", "color")),
+        $(go.Panel, "Auto",
+          { // this is positioned above the Shape, in row 1
+            alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
+            stretch: go.GraphObject.Horizontal,
+            height: myDiagram.layout.getRowDefinition(1).height
+          },
+          $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
+          $(go.TextBlock,
+            {
+              font: "bold 10pt sans-serif", isMultiline: false,
+              wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
+            },
+            new go.Binding("text"))
+        )
+      ));
+
+    myDiagram.nodeTemplateMap.add("Row Sider",  // for each row header
+      $(go.Part, "Spot",
+        {
+          row: 2, column: 1, columnSpan: 9999,
+          minSize: new go.Size(NaN, 100),
+          stretch: go.GraphObject.Fill,
+          movable: false,
+          resizable: true,
+          resizeAdornmentTemplate:
+            $(go.Adornment, "Spot",
+              $(go.Placeholder),
+              $(go.Shape,  // for changing the breadth of a lane
+                {
+                  alignment: go.Spot.Bottom,
+                  desiredSize: new go.Size(50, 7),
+                  fill: "lightblue", stroke: "dodgerblue",
+                  cursor: "row-resize"
+                })
+            )
+        },
+        new go.Binding("row"),
+        $(go.Shape, { fill: null },
+          new go.Binding("fill", "color")),
+        $(go.Panel, "Auto",
+          { // this is positioned to the left of the Shape, in column 1
+            alignment: go.Spot.Left, alignmentFocus: go.Spot.Right,
+            stretch: go.GraphObject.Vertical, angle: 270,
+            height: myDiagram.layout.getColumnDefinition(1).width
+          },
+          $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
+          $(go.TextBlock,
+            {
+              font: "bold 10pt sans-serif", isMultiline: false,
+              wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
+            },
+            new go.Binding("text"))
+        )
+      ));
+
     myDiagram.nodeTemplate =  // for regular nodes within cells (groups); you'll want to extend this
       $(go.Node, "Auto",
-        { width: 100, height: 50 },
+        { width: 100, height: 50, margin: 4 },  // assume uniform Margin, all around
         new go.Binding("row"),
         new go.Binding("column", "col"),
         $(go.Shape, { fill: "white" },
@@ -40,91 +197,69 @@
           new go.Binding("text", "key"))
       );
 
-    myDiagram.nodeTemplateMap.add("Header",  // an overall table header, at the top
-      $(go.Part, "Auto",
-        { selectable: false, pickable: false },
-        { row: 0, column: 0, columnSpan: 9999, stretch: go.GraphObject.Horizontal },
-        $(go.Shape, { fill: "lightgray", height: 32 },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock, { alignment: go.Spot.Center, stroke: "white", font: "bold 12pt sans-serif" },
-          new go.Binding("text"))
-      ));
-
-    myDiagram.nodeTemplateMap.add("Sider",  // an overall table header, on the left side
-      $(go.Part, "Auto",
-        { selectable: false, pickable: false },
-        { row: 0, rowSpan: 9999, column: 0, stretch: go.GraphObject.Vertical },
-        $(go.Shape, { fill: "white", width: 32 },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif", angle: 270 },
-          new go.Binding("text"),
-          new go.Binding("stroke", "textcolor"))
-      ));
-
-    myDiagram.nodeTemplateMap.add("Column Header",  // for each column
-      $(go.Part, "Auto",
-        { selectable: false, pickable: false },
-        { row: 1, rowSpan: 9999, column: 2, stretch: go.GraphObject.Fill, minSize: new go.Size(100, 22) },
-        new go.Binding("column", "col"),
-        $(go.Shape, { fill: "transparent" },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          { alignment: go.Spot.Top, font: "bold 10pt sans-serif", margin: 2 },
-          new go.Binding("text"))
-      ));
-
-    myDiagram.nodeTemplateMap.add("Row Sider",  // for each row
-      $(go.Part, "Auto",
-        { selectable: false, pickable: false },
-        { row: 2, column: 1, columnSpan: 9999, stretch: go.GraphObject.Fill, minSize: new go.Size(22, 100) },
-        new go.Binding("row"),
-        $(go.Shape, { fill: "transparent" },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          { alignment: go.Spot.Left, font: "bold 10pt sans-serif", margin: 2, angle: 270 },
-          new go.Binding("text"))
-      ));
-
     myDiagram.groupTemplate =  // for cells
       $(go.Group, "Auto",
-        { selectable: false, margin: 8, minSize: new go.Size(220, 70) },
-        new go.Binding("row"),
-        new go.Binding("column", "col"),
-        // leave room for the headers
-        new go.Binding("margin", "", function(d) { return new go.Margin((d.row === 2 ? 22 : 8), 8, 8, (d.col === 2 ? 22 : 8)); }),
-        // the group is normally unseen -- it is completely transparent except when given a color or when highlighted 
-        $(go.Shape, { fill: "transparent", stroke: "transparent", strokeWidth: 2 },
-          new go.Binding("fill", "color"),
-          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject()),
-        $(go.Placeholder),
         {
-          //layout: $(go.GridLayout, { wrappingColumn: 2 }),
+          layerName: "Background",
+          stretch: go.GraphObject.Fill,
+          selectable: false,
+          computesBoundsAfterDrag: true,
+          computesBoundsIncludingLocation: true,
           handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           mouseDragEnter: function(e, group, prev) { group.isHighlighted = true; },
           mouseDragLeave: function(e, group, next) { group.isHighlighted = false; },
           mouseDrop: function(e, group) {
-            var ok = group.addMembers(group.diagram.selection, true);
-            if (!ok) group.diagram.currentTool.doCancel();
+            // if any dropped part wasn't already a member of this group, we'll want to let the group's row
+            // column allow themselves to be resized automatically, in case the row height or column width
+            // had been set manually by the LaneResizingTool
+            var anynew = e.diagram.selection.any(function(p) { return p.containingGroup !== group; });
+            var ok = group.addMembers(e.diagram.selection, true);
+            if (ok) {
+              if (anynew) {
+                e.diagram.layout.getRowDefinition(group.row).height = NaN;
+                e.diagram.layout.getColumnDefinition(group.column).width = NaN;
+              }
+            } else {  // failure upon trying to add parts to this group
+              e.diagram.currentTool.doCancel();
+            }
           }
-        }
+        },
+        new go.Binding("row"),
+        new go.Binding("column", "col"),
+        // the group is normally unseen -- it is completely transparent except when given a color or when highlighted 
+        $(go.Shape,
+          {
+            fill: "transparent", stroke: "transparent",
+            strokeWidth: myDiagram.nodeTemplate.margin.left,
+            stretch: go.GraphObject.Fill
+          },
+          new go.Binding("fill", "color"),
+          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject()),
+        $(go.Placeholder,
+          { // leave a margin around the member nodes of the group which is the same as the member node margin
+            alignment: (function(m) { return new go.Spot(0, 0, m.top, m.left); })(myDiagram.nodeTemplate.margin),
+            padding: (function(m) { return new go.Margin(0, m.right, m.bottom, 0); })(myDiagram.nodeTemplate.margin)
+          })
       );
 
     myDiagram.model = new go.GraphLinksModel([
       // headers
-      { text: "Vacation Leaves", textcolor: "black", category: "Sider" },
-      { text: "Employee", row: 2, category: "Row Sider" },
-      { text: "Manager", row: 3, category: "Row Sider" },
-      { text: "Administration", row: 4, category: "Row Sider" },
-      { text: "Request", col: 2, category: "Column Header" },
-      { text: "Approval", col: 3, category: "Column Header" },
-      // cells
-      { key: "EmpReq", row: 2, col: 2, isGroup: true },
-      { key: "EmpApp", row: 2, col: 3, isGroup: true },
-      { key: "ManReq", row: 3, col: 2, isGroup: true },
-      { key: "ManApp", row: 3, col: 3, isGroup: true },
-      { key: "AdmReq", row: 4, col: 2, isGroup: true },
-      { key: "AdmApp", row: 4, col: 3, isGroup: true },
-      // nodes
+      { key: "Header", text: "Vacation Procedures", category: "Header" },
+      { key: "Sider", text: "Personnel", category: "Sider" },
+      // column and row headers
+      { key: "Request", text: "Request", col: 2, category: "Column Header" },
+      { key: "Approval", text: "Approval", col: 3, category: "Column Header" },
+      { key: "Employee", text: "Employee", row: 2, category: "Row Sider" },
+      { key: "Manager", text: "Manager", row: 3, category: "Row Sider" },
+      { key: "Administrator", text: "Administrator", row: 4, category: "Row Sider" },
+      // cells, each a group assigned to a row and column
+      { key: "EmpReq", row: 2, col: 2, isGroup: true, color: "lightyellow" },
+      { key: "EmpApp", row: 2, col: 3, isGroup: true, color: "lightgreen" },
+      { key: "ManReq", row: 3, col: 2, isGroup: true, color: "lightgreen" },
+      { key: "ManApp", row: 3, col: 3, isGroup: true, color: "lightyellow" },
+      { key: "AdmReq", row: 4, col: 2, isGroup: true, color: "lightyellow" },
+      { key: "AdmApp", row: 4, col: 3, isGroup: true, color: "lightgreen" },
+      // nodes, each assigned to a group/cell
       { key: "Delta", color: "orange", size: "100 100", group: "EmpReq" },
       { key: "Epsilon", color: "coral", size: "100 50", group: "EmpReq" },
       { key: "Zeta", color: "tomato", size: "50 70", group: "ManReq" },
@@ -151,7 +286,7 @@
     <span style="display:inline-block; vertical-align:top; width:120px">
       <div id="myPaletteDiv" style="border: solid 1px black; height:600px"></div>
     </span>
-    <span style="display:inline-block; vertical-align:top; width:70%">
+    <span style="display:inline-block; vertical-align:top; width:80%">
       <div id="myDiagramDiv" style="border: solid 1px black; height:600px"></div>
     </span>
   </div>
@@ -164,6 +299,12 @@
   You can drag-and-drop nodes from the Palette into any Group.
   Dragging into a Group highlights the Group.
   Drops must occur inside Groups; otherwise the action is cancelled.
+  </p>
+  <p>
+  Each row and each column is <a>Part.resizable</a> and has a custom <a>Part.resizeAdornmentTemplate</a>
+  showing a single resize handle on the right side or on the bottom.
+  There is a custom LaneResizingTool to provide a minimum width or height based on the contents of all of the
+  groups (cells) in that column or row.
   </p>
   <p>
   This example assumes the Groups are predefined and exist in each cell at a particular row/column,
