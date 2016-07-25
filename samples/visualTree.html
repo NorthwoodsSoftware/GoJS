@@ -23,6 +23,7 @@
       // define the "sample" Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
+          new go.Binding("location"),
           $(go.Shape, { fill: "darkkhaki", stroke: null }),  // assume a dark background
           $(go.TextBlock,
             {
@@ -36,12 +37,13 @@
 
         myDiagram.linkTemplate =
           $(go.Link,
-            $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 })
+            $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 }),
+            $(go.Shape, { toArrow: "Standard", fill: "khaki", strokeWidth: 0 })
           );
 
       myDiagram.model = new go.GraphLinksModel([
-        { key: "Alpha" },
-        { key: "Beta" }
+        { key: "Alpha", location: new go.Point(0, 0) },
+        { key: "Beta", location: new go.Point(60, 80) }
       ],[
         { from: "Alpha", to: "Beta" },
         { from: "Beta", to: "Alpha"}
@@ -53,6 +55,7 @@
         $(go.Diagram, "myVisualTree",
           {
             initialContentAlignment: go.Spot.Left,
+            initialAutoScale: go.Diagram.Uniform,
             isReadOnly: true,  // do not allow users to modify or select in this view
             allowSelect: false,
             layout: $(go.TreeLayout, { nodeSpacing: 5 })  // automatically laid out as a tree
@@ -133,7 +136,7 @@
   <div id="myVisualTree" style="width: 100%; height: 300px; background:#1F4963"></div>
   <p>
         This sample shows the actual visual tree of a running Diagram.
-        The Diagram that we inspect is named "myDiagramDiv" and initially contains two simple Nodes and one Link.
+        The Diagram that we inspect is named "myDiagramDiv" and initially contains two simple Nodes and two Links.
         The Diagram below it is named "myVisualTree" and shows the visual tree of "myDiagramDiv".
   </p>
   <p>
@@ -147,7 +150,8 @@
   That object is converted to a text string by using the <b>toString</b> method.
   </p>
   <p>See also the <a href="visualTreeGrouping.html">Visual Tree Using Groups</a> sample,
-  to show the same visual tree using nested groups. For more uses of the <a>TreeLayout</a>, see the <a href="DOMTree.html">DOM Tree</a> and <a href="classHierarchy.html">Class Hierarchy Tree</a> samples.</p>
+  to show the same visual tree using nested groups. For more uses of the <a>TreeLayout</a>,
+  see the <a href="DOMTree.html">DOM Tree</a> and <a href="classHierarchy.html">Class Hierarchy Tree</a> samples.</p>
 </div>
 </body>
 </html>

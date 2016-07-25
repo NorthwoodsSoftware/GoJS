@@ -316,9 +316,9 @@ GeometryReshapingTool.prototype.doMouseUp = function() {
 */
 GeometryReshapingTool.prototype.reshape = function(newPoint) {
   var shape = this.adornedShape;
-  shape.desiredSize = new go.Size(NaN, NaN);
   var locpt = shape.getLocalPoint(newPoint);
   var geo = shape.geometry.copy();
+  shape.desiredSize = new go.Size(NaN, NaN); // set the desiredSize once we've gotten our Geometry so we don't clobber
   var type = this.handle._typ;
   if (type === undefined) return;
   var fig = geo.figures.elt(this.handle._fig);

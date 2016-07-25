@@ -43,53 +43,53 @@
         { selectable: false },
         $(go.Shape));  // the link shape
 
-
-    var nodeDataArray = [];
-
-    // Walk the DOM, starting at document
-    function traverseDom(node, parentName) {
-      // skip everything but HTML Elements
-      if (!(node instanceof Element)) return;
-      // Ignore the menu on the left of the page
-      if (node.id === "menu") return;
-      // add this node to the nodeDataArray
-      var name = getName(node);
-      var data = { key: name, name: name };
-      nodeDataArray.push(data);
-      // add a link to its parent
-      if (parentName !== null) {
-        data.parent = parentName;
-      }
-      // find all children
-      var l = node.childNodes.length;
-      for (var i = 0; i < l; i++) {
-        traverseDom(node.childNodes[i], name);
-      }
-    }
-
-    // Give every node a unique name
-    function getName(node) {
-      var n = node.nodeName;
-      if (node.id) n = n + " (" + node.id + ")";
-      var namenum = n;
-      var i = 1;
-      while (names[namenum] !== undefined) {
-        namenum = n + i;
-        i++;
-      }
-      names[namenum] = node;
-      return namenum;
-    }
-
-    // build up the tree
-    traverseDom(document.activeElement, null);
-
     // create the model for the DOM tree
     myDiagram.model =
       $(go.TreeModel, {
         isReadOnly: true,  // don't allow the user to delete or copy nodes
-        nodeDataArray: nodeDataArray
+        // build up the tree in an Array of node data
+        nodeDataArray: traverseDom(document.activeElement)
       });
+  }
+
+  // Walk the DOM, starting at document, and return an Array of node data objects representing the DOM tree
+  // Typical usage: traverseDom(document.activeElement)
+  // The second and third arguments are internal, used when recursing through the DOM
+  function traverseDom(node, parentName, dataArray) {
+    if (parentName === undefined) parentName = null;
+    if (dataArray === undefined) dataArray = [];
+    // skip everything but HTML Elements
+    if (!(node instanceof Element)) return;
+    // Ignore the menu on the left of the page
+    if (node.id === "menu") return;
+    // add this node to the nodeDataArray
+    var name = getName(node);
+    var data = { key: name, name: name };
+    dataArray.push(data);
+    // add a link to its parent
+    if (parentName !== null) {
+      data.parent = parentName;
+    }
+    // find all children
+    var l = node.childNodes.length;
+    for (var i = 0; i < l; i++) {
+      traverseDom(node.childNodes[i], name, dataArray);
+    }
+    return dataArray;
+  }
+
+  // Give every node a unique name
+  function getName(node) {
+    var n = node.nodeName;
+    if (node.id) n = n + " (" + node.id + ")";
+    var namenum = n;  // make sure the name is unique
+    var i = 1;
+    while (names[namenum] !== undefined) {
+      namenum = n + i;
+      i++;
+    }
+    names[namenum] = node;
+    return namenum;
   }
 
   // When a Node is selected, highlight the corresponding HTML element.

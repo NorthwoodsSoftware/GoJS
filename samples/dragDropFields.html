@@ -85,14 +85,15 @@
       var diagram = this.diagram;
       var data = this.temporaryPart.data;
       var dest = diagram.findPartAt(diagram.lastInput.documentPoint, false);
-      if (dest && dest.data && dest.data.fields) {
+      if (dest !== null && dest.data && dest.data.fields) {
         var panel = dest.findObject("TABLE");
         var idx = panel.findRowForLocalY(panel.getLocalPoint(diagram.lastInput.documentPoint).y);
-        diagram.model.insertArrayItem(dest.data.fields, idx,
+        diagram.model.insertArrayItem(dest.data.fields, idx+1,
                                       { name: data.name, info: data.info, color: data.color, figure: data.figure });
       }
+      var src = this.currentPart;
+      // whether or not there was a destination node, delete the original field
       if (!(diagram.lastInput.control || diagram.lastInput.meta)) {
-        var src = this.currentPart;
         var sidx = src.data.fields.indexOf(data);
         if (sidx >= 0) {
           diagram.model.removeArrayItem(src.data.fields, sidx);
@@ -146,9 +147,12 @@
       // This template represents a whole "record".
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          { movable: false,
+          {
+            movable: false,
             copyable: false,
-            deletable: false },
+            deletable: false,
+            locationSpot: go.Spot.Center
+          },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           // this rectangular shape surrounds the content of the node
           $(go.Shape,
@@ -168,7 +172,7 @@
                   textAlign: "center",
                   font: "bold 12pt sans-serif"
                 },
-                new go.Binding("text", "key"))),
+                new go.Binding("text", "title"))),
             // this Panel holds a Panel for each item object in the itemArray;
             // each item Panel is defined by the itemTemplate to be a TableRow in this Table
             $(go.Panel, "Table",
@@ -186,23 +190,30 @@
 
       myDiagram.model =
         $(go.GraphLinksModel,
-          { linkFromPortIdProperty: "fromPort",
+          {
+            linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
             copiesArrays: true,
             copiesArrayObjects: true,
             nodeDataArray: [
-              { key: "Record1",
+              {
+                key: 1,
+                title: "Record1",
                 fields: [
                   { name: "field1", info: "", color: "#F7B84B", figure: "Ellipse" },
                   { name: "field2", info: "the second one", color: "#F25022", figure: "Ellipse" },
                   { name: "fieldThree", info: "3rd", color: "#00BCF2" }
                 ],
-                loc: "0 0" },
-              { key: "Record2",
+                loc: "0 0"
+              },
+              {
+                key: 2,
+                title: "Record2",
                 fields: [
-                  { name: "fieldA", info: "",       color: "#FFB900", figure: "Diamond" }
+                  { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond" }
                 ],
-                loc: "250 0" }
+                loc: "250 0"
+              }
             ]
           });
 

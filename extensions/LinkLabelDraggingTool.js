@@ -138,12 +138,34 @@ LinkLabelDraggingTool.prototype.doMouseUp = function() {
 * @this {LinkLabelDraggingTool}
 */
 LinkLabelDraggingTool.prototype.updateSegmentOffset = function() {
-  if (this.label === null) return;
-  var link = this.label.part;
-  if (link === null) return;
+  var lab = this.label;
+  if (lab === null) return;
+  var link = lab.part;
+  if (!(link instanceof go.Link)) return;
   var last = this.diagram.lastInput.documentPoint;
-  var mid = link.midPoint;
-  // need to rotate this point to account for the angle of the link segment at the mid-point
-  var p = new go.Point(last.x - this._offset.x - mid.x, last.y - this._offset.y - mid.y);
-  this.label.segmentOffset = p.rotate(-link.midAngle);
+  var idx = lab.segmentIndex;
+  var numpts = link.pointsCount;
+  // if the label is a "mid" label, assume it is positioned differently from a label at a particular segment
+  if (idx < -numpts || idx >= numpts) {
+    var mid = link.midPoint;
+    // need to rotate this point to account for the angle of the link segment at the mid-point
+    var p = new go.Point(last.x - this._offset.x - mid.x, last.y - this._offset.y - mid.y);
+    lab.segmentOffset = p.rotate(-link.midAngle);
+  } else {  // handle the label point being on a partiular segment with a given fraction
+    var frac = lab.segmentFraction;
+    var a, b;
+    if (idx >= 0) {  // indexing forwards
+      a = link.getPoint(idx);
+      b = (idx < numpts - 1) ? link.getPoint(idx + 1) : a;
+    } else {  // or backwards if segmentIndex is negative
+      var i = numpts + idx;
+      a = link.getPoint(i);
+      b = (i > 0) ? link.getPoint(i - 1) : a;
+    }
+    var labx = a.x + (b.x - a.x) * frac;
+    var laby = a.y + (b.y - a.y) * frac;
+    var p = new go.Point(last.x - this._offset.x - labx, last.y - this._offset.y - laby);
+    var segangle = (idx >= 0) ? a.directionPoint(b) : b.directionPoint(a);
+    lab.segmentOffset = p.rotate(-segangle);
+  }
 }

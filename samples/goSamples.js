@@ -258,6 +258,7 @@ var myMenu = '\
     <!--<li><a href="pieCharts.html">Pie Charts</a></li>-->\
     <!--<li><a href="candlestickCharts.html">Candlestick Charts</a></li>-->\
     <!--<li><a href="sparklineGraphs.html">Sparkline Graphs</a></li>-->\
+    <!--<li><a href="dynamicPieChart.html">Dynamic Pie Chart</a></li>-->\
     <hr />\
     <li><a href="contentAlign.html">Content Alignment</a></li>\
     <!--<li><a href="absolute.html">Absolute Positioning</a></li>-->\

@@ -198,7 +198,7 @@ DragCreatingTool.prototype.insertPart = function(bounds) {
   }
   if (part !== null) {
     part.position = bounds.position;
-    part.desiredSize = bounds.size;
+    part.resizeObject.desiredSize = bounds.size;
     if (diagram.allowSelect) {
       diagram.select(part);  // raises ChangingSelection/Finished
     }

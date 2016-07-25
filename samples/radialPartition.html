@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Radial Partition Layout</title>
-  <meta name="description" content="Arrange people in rings around a central person, in layers according to distance from the central person." />
-  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
-  <script src="go.js"></script>
-  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-  <script id="code">
-
+<title>Radial Partition Layout</title>
+<meta name="description" content="Arrange people in rings around a central person, in layers according to distance from the central person." />
+<!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="go.js"></script>
+<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
   var maxLayers = 5;  // how many concentric layers or rings to show, at maximum
   var layerThickness = 70;  // how thick each ring should be
 
@@ -22,7 +21,6 @@
         {
           initialAutoScale: go.Diagram.Uniform,
           initialContentAlignment: go.Spot.Center,
-          padding: 10,
           isReadOnly: true,
           maxSelectionCount: 1,
           "animationManager.isEnabled": false
@@ -48,57 +46,67 @@
     myDiagram.nodeTemplate =
       $(go.Node, "Spot",
         {
+          location: new go.Point(0, 0),  // always at 0,0
           locationSpot: go.Spot.Center,
-          locationObjectName: "TEXTBLOCK",  // Node.location is the center of the TextBlock
           selectionAdorned: false,
+          mouseEnter: function(e, node) { node.layerName = "Foreground"; },
+          mouseLeave: function(e, node) { node.layerName = ""; },
           click: nodeClicked,
           toolTip: commonToolTip
         },
-        new go.Binding("angle"),
-        $(go.Shape,
-          {
-            name: "SHAPE",
-            fill: "lightgray",  // default value, but also data-bound
-            strokeWidth: 0,
-            portId: ""  // so links will go to the shape, not the whole node
-          },
+        $(go.Shape, // this always occupies the full circle
+          { fill: "lightgray", strokeWidth: 0 },
           new go.Binding("geometry", "", makeAnnularWedge),
           new go.Binding("fill", "color")),
         $(go.TextBlock,
-          {
-            name: "TEXTBLOCK",
-            width: layerThickness,
-            alignment: go.Spot.Right,
-            alignmentFocus: go.Spot.Right,
-            textAlign: "center"
-          },
+          { width: layerThickness, textAlign: "center" },
+          new go.Binding("alignment", "", computeTextAlignment),
+          new go.Binding("angle", "angle", ensureUpright),
           new go.Binding("text"))
       );
 
     function makeAnnularWedge(data) {
+      var angle = data.angle;
       var sweep = data.sweep;
-      var radius = data.radius;
-      var p = new go.Point(radius+layerThickness, 0).rotate(-sweep/2);
-      var q = new go.Point(radius, 0).rotate(sweep/2);
+      var radius = data.radius;  // the inner radius
+      if (angle === undefined || sweep === undefined || radius === undefined) return null;
+
+      var outer = radius + layerThickness;  // the outer radius
+      var p = new go.Point(outer, 0).rotate(angle - sweep / 2);
+      var q = new go.Point(radius, 0).rotate(angle + sweep / 2);
       var geo = new go.Geometry()
-                    .add(new go.PathFigure(p.x, p.y)
-                        .add(new go.PathSegment(go.PathSegment.Arc, -sweep/2, sweep, 0, 0, radius+layerThickness, radius+layerThickness))
-                        .add(new go.PathSegment(go.PathSegment.Line, q.x, q.y))
-                        .add(new go.PathSegment(go.PathSegment.Arc, sweep/2, -sweep, 0, 0, radius, radius).close()));
-      geo.normalize();
+                    .add(new go.PathFigure(-outer, -outer))  // always make sure the Geometry includes the top left corner
+                    .add(new go.PathFigure(outer, outer))    // and the bottom right corner of the whole circular area
+                    .add(new go.PathFigure(p.x, p.y)  // start at outer corner, go clockwise
+                        .add(new go.PathSegment(go.PathSegment.Arc, angle - sweep / 2, sweep, 0, 0, outer, outer))
+                        .add(new go.PathSegment(go.PathSegment.Line, q.x, q.y))  // to opposite inner corner, then anticlockwise
+                        .add(new go.PathSegment(go.PathSegment.Arc, angle + sweep / 2, -sweep, 0, 0, radius, radius).close()));
       return geo;
+    }
+
+    function computeTextAlignment(data) {
+      var angle = data.angle;
+      var radius = data.radius;
+      if (angle === undefined || radius === undefined) return go.Spot.Center;
+      var p = new go.Point(radius + layerThickness / 2, 0).rotate(angle);
+      return new go.Spot(0.5, 0.5, p.x, p.y);
+    }
+
+    function ensureUpright(angle) {
+      if (angle > 90 && angle < 270) return angle + 180;
+      return angle;
     }
 
     // this is the root node, at the center of the circular layers
     myDiagram.nodeTemplateMap.add("Root",
       $(go.Node, "Auto",
         {
+          location: new go.Point(0, 0),
           locationSpot: go.Spot.Center,
           selectionAdorned: false,
           toolTip: commonToolTip,
-          click: nodeClicked,
           width: layerThickness * 2,
-          height: layerThickness*2
+          height: layerThickness * 2
         },
         $(go.Shape, "Circle",
           { fill: "white", strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight }),
@@ -145,9 +153,10 @@
 
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
+    // layout based on a random person
     var someone = nodeDataArray[Math.floor(Math.random() * nodeDataArray.length)];
     var somenode = myDiagram.findNodeForData(someone);
-    somenode.click(null, somenode);
+    nodeClicked(null, somenode);
   }
 
   function nodeClicked(e, node) {
@@ -228,11 +237,11 @@
     // sort all results into Arrays of Nodes with the same distance
     var nodes = {};
     var maxlayer = 0;
+    var already = new go.Set();  // already laid out
     var it = distances.iterator;
     while (it.next()) {
       var node = it.key;
       if (node !== root) node.category = "";  // remove "Root" category from all non-root nodes
-      node._laid = false;
       var layer = it.value;
       if (layer === Infinity) continue;
       if (layer > maxlayer) maxlayer = layer;
@@ -244,13 +253,14 @@
       layernodes.push(node);
     }
 
+    // the root node always gets a full circle for itself, just in case the "Root"
+    // template has any bindings using these properties
     root.diagram.model.setDataProperty(root.data, "angle", 0);
     root.diagram.model.setDataProperty(root.data, "sweep", 360);
     root.diagram.model.setDataProperty(root.data, "radius", 0);
 
-    // now recursively position nodes, starting with the root
-    root.location = new go.Point(0, 0);
-    radlay1(root, 1, 0, 360, distances);
+    // now traverse the nodes recursively, starting with the root
+    radlay1(root, 1, 0, 360, distances, already);
     // finally, hide nodes with distance > maxLayers
     it = distances.iterator;
     while (it.next()) {
@@ -260,11 +270,12 @@
     root.diagram.commitTransaction("radial layout");
   }
 
-  function radlay1(node, layer, angle, sweep, distances) {
+  function radlay1(node, layer, angle, sweep, distances, already) {
     if (layer > maxLayers) return;
+
     var nodes = [];
     node.findNodesConnected().each(function(n) {
-      if (n._laid) return;
+      if (already.contains(n)) return;
       if (distances.getValue(n) === layer) nodes.push(n);
     });
     var found = nodes.length;
@@ -276,19 +287,14 @@
     for (var i = 0; i < found; i++) {
       var n = nodes[i];
       var a = start + i * separator;
-      var p = new go.Point(radius+layerThickness/2, 0);
+      if (a < 0) a += 360; else if (a > 360) a -= 360;
+      var p = new go.Point(radius + layerThickness / 2, 0);
       p.rotate(a);
-      n.location = p;
-      n._laid = true;
+      already.add(n);
       n.diagram.model.setDataProperty(n.data, "angle", a);
       n.diagram.model.setDataProperty(n.data, "sweep", separator);
       n.diagram.model.setDataProperty(n.data, "radius", radius);
-      // make sure text is never upside down
-      var label = n.findObject("TEXTBLOCK");
-      if (label !== null) {
-        label.angle = ((a > 90 && a < 270 || a < -90) ? 180 : 0);
-      }
-      radlay1(n, layer + 1, a, sweep / found, distances);
+      radlay1(n, layer + 1, a, sweep / found, distances, already);
     }
   }
 </script>
@@ -298,6 +304,14 @@
   <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
   <p>
     Click on a Node to center it and show its relationships.
+  </p>
+  <p>
+    The <code>findDistances</code> function computes the distance of each node from the root node,
+    thereby establishing which layer each node should be in.
+    The <code>radialLayout</code> uses that distance information to set the <code>angle</code>,
+    <code>sweep</code>, and <code>radius</code> data properties.
+    Bindings in the node template will produce the appropriate <a>Shape.geometry</a>
+    and the <a>GraphObject.alignment</a> and <a>GraphObject.angle</a> for each <a>TextBlock</a>.
   </p>
 </div>
 </body>
