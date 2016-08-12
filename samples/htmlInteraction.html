@@ -60,6 +60,13 @@
             name: "TEXT" },
           new go.Binding("text", "text").makeTwoWay())));
 
+    // On selection changed, make sure infoDraggable will resize as necessary
+    myDiagram.addDiagramListener("ChangedSelection", function(diagramEvent) {
+      var idrag = document.getElementById("infoDraggable");
+      idrag.style.width = "";
+      idrag.style.height = "";
+    });
+
 
     // initialize the Palette that is in a floating, draggable HTML container
     myPalette = new go.Palette("myPaletteDiv");  // must name or refer to the DIV HTML element
@@ -168,7 +175,7 @@ with allowances for the title (top) and the resize handle (bottom)
     <div id="infoDraggable" class="draggable" style="display: inline-block; vertical-align: top; padding: 5px; top: 20px; left: 520px;">
       <div id="infoDraggableHandle" class="handle">Info</div>
       <div>
-      <div id="myInfo">Selecting nodes in the main Diagram will display information here</div>
+      <div id="myInfo"></div>
       </div>
     </div>
 
