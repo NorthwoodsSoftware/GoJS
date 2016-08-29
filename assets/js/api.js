@@ -49,6 +49,14 @@ $('#colorfulcss').click(function (){
    $('link[title="blue"]').attr('rel','alternate stylesheet');
 });
 
+var hash = null;
+function changeHash() {
+  if (hash !== null) $(hash).css('background-color', '');
+  hash = window.location.hash;
+  $(hash).css('background-color', '#feffd3'); // light yellow
+}
+$(document).ready(changeHash);
+$(window).on('hashchange', changeHash);
 
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
