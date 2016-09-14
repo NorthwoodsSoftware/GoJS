@@ -317,10 +317,10 @@ TableLayout.prototype.measureTable = function(width, height, children, union, mi
         var realheight = !(isNaN(dsize.height));
         var realsize = realwidth && realheight;
         if (!spanner && stretch !== go.GraphObject.None && !realsize) {
-          if (nosizeCols[j] === undefined) {
+          if (nosizeCols[j] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal)) {
             nosizeCols[j] = -1; nosizeCols.count++;
           }
-          if (nosizeRows[i] === undefined) {
+          if (nosizeRows[i] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
             nosizeRows[i] = -1; nosizeRows.count++;
           }
           nosize.push(child);
@@ -393,12 +393,12 @@ TableLayout.prototype.measureTable = function(width, height, children, union, mi
     var margw = marg.right + marg.left;
     var margh = marg.top + marg.bottom;
 
-    if (colHerald.actual === 0) {
+    if (colHerald.actual === 0 && nosizeCols[child.column] !== undefined) {
       nosizeCols[child.column] = Math.max(mb.width + margw, nosizeCols[child.column]);
     } else {
       nosizeCols[child.column] = null; // obey the column herald
     }
-    if (rowHerald.actual === 0) {
+    if (rowHerald.actual === 0 && nosizeRows[child.row]!== undefined) {
       nosizeRows[child.row] = Math.max(mb.height + margh, nosizeRows[child.row]);
     } else {
       nosizeRows[child.row] = null; // obey the row herald
@@ -456,12 +456,14 @@ TableLayout.prototype.measureTable = function(width, height, children, union, mi
 
     // Which way do we care about fill:
     var stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
+    // This used to set allowedSize height/width to Infinity,
+    // but we can only set it to the current row/column space, plus rowleft/colleft values, at most.
     switch (stretch) {
       case go.GraphObject.Horizontal: // H stretch means it can be as large as its wants vertically
-        allowedSize.height = Infinity;
+        allowedSize.height = Math.max(allowedSize.height, rowHerald.actual + rowleft);
         break;
       case go.GraphObject.Vertical: // vice versa
-        allowedSize.width = Infinity;
+        allowedSize.width = Math.max(allowedSize.width, colHerald.actual + colleft);
         break;
     }
 

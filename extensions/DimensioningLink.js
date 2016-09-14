@@ -21,6 +21,8 @@
 */
 function DimensioningLink() {
   go.Link.call(this);
+  this.isLayoutPositioned = false;
+  this.isTreeLink = false;
   this.routing = go.Link.Orthogonal;
   /** @type {number} */
   this._direction = 0;
