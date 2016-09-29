@@ -10,6 +10,8 @@
 * A custom tool for rotating multiple objects at a time. When more than one
 * part is selected, rotates all parts, revolving them about their collective center.
 * If the control key is held down during rotation, rotates all parts individually.
+* <p>
+* Caution: this only works for Groups that do *not* have a Placeholder.
 */
 function RotateMultipleTool() {
   go.RotatingTool.call(this);
@@ -41,16 +43,30 @@ RotateMultipleTool.prototype.doActivate = function() {
   var infos = new go.Map(go.Part, PartInfo);
   var tool = this;
   diagram.selection.each(function(part) {
-    if (part instanceof go.Link || part instanceof go.Group) return;  // only Nodes and simple Parts
-    // distance from centerPoint to locationSpot of part
-    var dist = Math.sqrt(tool.centerPoint.distanceSquaredPoint(part.location));
-    // calculate initial relative angle
-    var dir = tool.centerPoint.directionPoint(part.location);
-    // saves part-angle combination in array
-    infos.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
+    tool.walkTree(part, infos);
   });
   this.initialInfo = infos;
 }
+
+/**
+* @ignore
+* @param {Part} part
+* @param {Map} infos
+*/
+RotateMultipleTool.prototype.walkTree = function(part, infos) {
+  if (part === null || part instanceof go.Link) return;
+  // distance from centerPoint to locationSpot of part
+  var dist = Math.sqrt(this.centerPoint.distanceSquaredPoint(part.location));
+  // calculate initial relative angle
+  var dir = this.centerPoint.directionPoint(part.location);
+  // saves part-angle combination in array
+  infos.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
+  // recurse into Groups
+  if (part instanceof go.Group) {
+    var it = part.memberParts.iterator;
+    while (it.next()) this.walkTree(it.value, infos);
+  }
+};
 
 /**
 * @ignore
@@ -83,11 +99,12 @@ RotateMultipleTool.prototype.rotate = function(newangle) {
   // when rotating individual parts, remember the original angle difference
   var angleDiff = newangle - this.adornedObject.part.rotateObject.angle;
   var tool = this;
-  diagram.selection.each(function(part) {
-    if (part instanceof go.Link || part instanceof go.Group) return; // only Nodes and simple Parts
+  this.initialInfo.each(function(kvp) {
+    var part = kvp.key;
+    if (part instanceof go.Link) return; // only Nodes and simple Parts
+    var partInfo = kvp.value;
     // rotate every selected non-Link Part
     // find information about the part set in RotateMultipleTool.initialInformation
-    var partInfo = tool.initialInfo.getValue(part);
     if (e.control || e.meta) {
       if (tool.adornedObject.part === part) {
         part.rotateObject.angle = newangle;

@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.6.13
+// Type definitions for GoJS v1.6.17
 // Project: https://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -4747,7 +4747,7 @@ declare namespace go {
         * @param {string=} sourceprop A string naming the source property on the bound data object.
         *   If this is the empty string, the whole Panel.data object is used.
         *   If this argument is not supplied, the source property is assumed to be the same as the target property.
-        * @param {function(*,*=) | null=} conv A function converting the data property value to the value to set the target property.
+        * @param {function(*,*) | null=} conv A function converting the data property value to the value to set the target property.
         *   If the function is null or not supplied, no conversion takes place.
         */
         constructor(targetprop?: string, sourceprop?: string, conv?: (a: any, b: any) => any);
@@ -4833,7 +4833,7 @@ declare namespace go {
         * Use TwoWay bindings to keep model data in sync with changes to GraphObject properties.
         * For efficiency, avoid TwoWay bindings on GraphObject properties that do not change value in your app.
         * You should not have a TwoWay binding on a node data object's key property.
-        * @param {function(*,*=) | null=} backconv
+        * @param {function(*,*) | null=} backconv
         */
         makeTwoWay(backconv?: (a: any, b: any) => any): Binding;
 
@@ -9457,11 +9457,4 @@ declare namespace go {
     }
 } //END go
 
-// for TypeScript 1.*:
-declare module "go" {  // comment out module declaration for TypeScript 2.0
-  export = go;         // but keep export = go in all versions for compatibility with AMD and CommonJS
-}
-
-// for TypeScript 2.0:
-//export = go;
-//export as namespace go;
+export = go;

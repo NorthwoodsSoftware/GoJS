@@ -52,7 +52,7 @@ $('#colorfulcss').click(function (){
 var hash = null;
 function changeHash() {
   if (hash !== null) $(hash).css('background-color', '');
-  hash = window.location.hash;
+  hash = window.location.hash.replace("#.", "#\\.");
   $(hash).css('background-color', '#feffd3'); // light yellow
 }
 $(document).ready(changeHash);
