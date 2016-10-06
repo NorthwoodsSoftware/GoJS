@@ -45,7 +45,9 @@ SpiralLayout.prototype.doLayout = function(coll) {
   if (this.network === null) {
     this.network = this.makeNetwork(coll);
   }
-
+  this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
+  var originx = this.arrangementOrigin.x;
+  var originy = this.arrangementOrigin.y;
   var root = null;
   // find a root vertex -- one without any incoming edges
   var it = this.network.vertexes.iterator;
@@ -71,8 +73,8 @@ SpiralLayout.prototype.doLayout = function(coll) {
   // treat the root node specially: it goes in the center
   var dia = this.diameter(root);
   var angle = cw * Math.PI;
-  root.centerX = 0;
-  root.centerY = 0;
+  root.centerX = originx;
+  root.centerY = originy;
 
   var edge = root.destinationEdges.first();
   if (edge !== null && edge.link !== null) edge.link.curviness = cw * rad;
@@ -91,8 +93,8 @@ SpiralLayout.prototype.doLayout = function(coll) {
       x -= offset.x;
       y -= offset.y;
     }
-    vert.centerX = x;
-    vert.centerY = y;
+    vert.centerX = x + originx;
+    vert.centerY = y + originy;
 
     var nextedge = vert.destinationEdges.first();
     var nextvert = (nextedge !== null ? nextedge.toVertex : null);

@@ -203,6 +203,7 @@ TableLayout.prototype.getEffectiveTableStretch = function(child, row, col) {
 * @this {TableLayout}
 */
 TableLayout.prototype.doLayout = function(coll) {
+  this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
   // put all eligible Parts that are not Links into an Array
   var parts = new go.List(go.Part);
   this.collectParts(coll).each(function(p) {
@@ -618,6 +619,8 @@ TableLayout.prototype.measureTable = function(width, height, children, union, mi
 */
 TableLayout.prototype.arrangeTable = function(children, union, rowcol) {
   var l = children.length;
+  var originx = this.arrangementOrigin.x;
+  var originy = this.arrangementOrigin.y;
   var x = 0.0;
   var y = 0.0;
 
@@ -634,12 +637,12 @@ TableLayout.prototype.arrangeTable = function(children, union, rowcol) {
     if (!rowcol[i]) continue;
     lcol = rowcol[i].length; // column length in this row
     var rowHerald = this.getRowDefinition(i);
-    y = rowHerald.position + rowHerald.computeEffectiveSpacingTop();
+    y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop();
     for (var j = 0; j < lcol; j++) {
       //foreach column j in row i...
       if (!rowcol[i][j]) continue;
       var colHerald = this.getColumnDefinition(j);
-      x = colHerald.position + colHerald.computeEffectiveSpacingTop();
+      x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop();
       var cell = rowcol[i][j];
       var len = cell.length;
 
