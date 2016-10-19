@@ -42,12 +42,30 @@
                               ),
                 initialContentAlignment: go.Spot.Center,
                 "ModelChanged": updateAngular,
+                "ChangedSelection": updateSelection,
                 "undoManager.isEnabled": true
               });
 
           // whenever a GoJS transaction has finished modifying the model, update all Angular bindings
           function updateAngular(e) {
-            if (e.isTransactionFinished) scope.$apply();
+            if (e.isTransactionFinished) {
+              scope.$apply();
+            }
+          }
+
+          // update the Angular model when the Diagram.selection changes
+          function updateSelection(e) {
+            diagram.model.selectedNodeData = null;
+            var it = diagram.selection.iterator;
+            while (it.next()) {
+              var selnode = it.value;
+              // ignore a selected link or a deleted node
+              if (selnode instanceof go.Node && selnode.data !== null) {
+                diagram.model.selectedNodeData = selnode.data;
+                break;
+              }
+            }
+            scope.$apply();
           }
 
           // notice when the value of "model" changes: update the Diagram.model
@@ -73,14 +91,6 @@
             // re-enable normal updates
             diagram.addModelChangedListener(updateAngular);
           });
-
-          // update the model when the selection changes
-          function updateSelection(e) {
-            var selnode = diagram.selection.first();
-            diagram.model.selectedNodeData = (selnode instanceof go.Node ? selnode.data : null);
-            scope.$apply();
-          }
-          diagram.addDiagramListener("ChangedSelection", updateSelection);
         }
       };
     })
