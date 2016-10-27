@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GoJS JavaScript diagram samples for HTML, including many kinds of flowcharts, org charts, BPMN, and other visual graph types." />
+  <title>GoJS Sample Diagrams for JavaScript and HTML, by Northwoods Software</title>
+  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-1506307-5', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <!-- list of tags and samples -->
+  <script src="indexList.js"></script>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <!-- custom CSS after bootstrap -->
+  <link href="../assets/css/main.css" rel="stylesheet" type="text/css"/>
+
+  <style type="text/css">
+    img {
+      border: solid 3px #ccc;
+    }
+
+    a:hover, a:focus {
+      text-decoration: none;
+    }
+
+    a:hover img {
+      border-color: #00A9C9;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <!--<a class="navbar-brand" href="#">GoJS</a>-->
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="../index.html">Home</a></li>
+          <li><a href="../learn/index.html">Learn</a></li>
+          <li><a href="../samples/index.html">Samples</a></li>
+          <li><a href="../intro/index.html">Intro</a></li>
+          <li><a href="../api/index.html">API</a></li>
+          <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+          <li><a href="../doc/download.html">Download</a></li>
+          <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+          <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+          <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </nav>
+</div>
+
+<div class="container-fluid mt30" id="container">
+  <div class="row mt30">
+    <div class="col-md-12">
+      <h1>GoJS Samples</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        Our samples demonstrate how to build several Diagram types and showcase specific features and layouts. You can use the HTML and JavaScript in these samples as the starting point for your application.
+      </p>
+      <p>
+        If you are done looking around and are ready to experiment with GoJS, <a href="../learn/index.html">read the getting started tutorial.</a>
+      </p>
+    </div>
+    <div class="col-md-6">
+      <p>
+        If you are looking for examples of a particular GoJS method or property, you can search the source code of all samples and extensions and documentation on GitHub:
+      </p>
+      <p>
+        <input id="searchInput" type="text" placeholder="setDataProperty" />
+        <a id="searchAnchor" href="https://github.com/NorthwoodsSoftware/GoJS/search?q=setDataProperty&amp;type=Code" target="_blank" >
+          <span id="searchButton" class="btn btn-primary">Search source code</span>
+        </a>
+      </p>
+      <p>
+        <a href="https://www.nwoods.com/components/evalform.htm">Register with us for support during your evaluation.</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="">
+    <div id="tagsDiv">
+    </div>
+    <div id="samplesDiv">
+    </div>
+  </div>
+
+</div><!-- /.container -->
+
+<p class="footer mt30">
+GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2016 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
+</p>
+
+<script>
+  var searchInput = document.getElementById('searchInput');
+  var searchAnchor = document.getElementById('searchAnchor');
+  searchInput.addEventListener('input', function(e) {
+    var searchterm = searchInput.value;
+    if (searchterm === '') searchterm = "setDataProperty";
+    searchAnchor.href = "https://github.com/NorthwoodsSoftware/GoJS/search?q=" + searchterm +  "\&type=Code";
+  });
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.which === 13) searchAnchor.click();
+  });
+
+  // Set that tracks which tags have been selected
+  var selectedTags = new Set();
+
+  buildSamples();
+
+  function buildSamples() {
+    var sampleListDiv = document.getElementById("samplesDiv");
+    sampleListDiv.innerHTML = ""; // empty the div to start off
+    var filteredSamples = filterSamples();
+    if (filteredSamples.size === 0) return;
+    var row = document.createElement('div');
+    var couple = document.createElement('div'); // 4 samples per row, but they are grouped into 2 for when 4 won't fit
+    couple.className = "couple";
+    row.className = "row mt30";
+    var rowsize = 4;
+    var couplesize = 2; // see "couple" comment above
+    var inrow = 0;
+    var l = arr.length;
+    for (var sample of filteredSamples) {
+      var samplediv = document.createElement('div');
+      samplediv.className = 'col-sm-3 col-xs-6 samplecontainer';
+      var a = document.createElement('a');
+      a.href = sample[0] + '.html';
+      var img = document.createElement('img');
+      img.src = '../assets/images/screenshots/' + sample[3] + '.png';
+      img.width = 200;
+      img.height = 200;
+      img.className = "img-responsive";
+      a.appendChild(img);
+      var title = document.createElement('h2');
+      title.textContent = sample[1];
+      var desc = document.createElement('p');
+      desc.textContent = sample[2];
+
+      a.appendChild(title);
+      samplediv.appendChild(a);
+      samplediv.appendChild(desc);
+      couple.appendChild(samplediv);
+      row.appendChild(couple);
+      inrow++;
+      if (inrow === couplesize || inrow === rowsize) {
+        couple = document.createElement('div');
+        couple.className = "couple";
+      }
+      if (inrow >= rowsize) {
+        sampleListDiv.appendChild(row);
+        row = document.createElement('div');
+        row.className = "row mt30";
+        inrow = 0;
+      }
+    }
+    if (inrow > 0) {
+      sampleListDiv.appendChild(row);
+    }
+    buildTags(filteredSamples);
+  }
+
+  function filterSamples() {
+    var filteredSamples = new Set();
+    for (var i = 0; i < arr.length; i++) {
+      var sample = arr[i];
+      if (selectedTags.size === 0 || containsTags(sample[4])) {
+        filteredSamples.add(sample);
+      }
+    }
+    return filteredSamples;
+  }
+
+  function containsTags(searchArr) {
+    for (var tag of selectedTags) {
+      if (searchArr.indexOf(tag) < 0) return false;
+    }
+    return true;
+  }
+
+  // add tags to the page: "all," then selected, then related
+  function buildTags(filteredSamples) {
+    var tagDiv = document.getElementById("tagsDiv");
+    tagDiv.innerHTML = ""; // empty the div to start off
+    var relatedTags = getRelatedTags(filteredSamples);
+    createTagButton(tagDiv, "all", false);
+    for (var tag of selectedTags) {
+      createTagButton(tagDiv, tag, true);
+    }
+    for (var i = 1; i < tags.length; i++) { // start from 1 since "all" is added already
+      var tag = tags[i];
+      if (selectedTags.has(tag)) continue;
+      if (relatedTags.has(tag)) {
+        createTagButton(tagDiv, tag, false);
+      }
+    }
+  }
+
+  function getRelatedTags(filteredSamples) {
+    var filteredTags = new Set();
+    for (var sample of filteredSamples) {
+      var tags = sample[4];
+      for (var i = 0; i < tags.length; i++) {
+        var tag = tags[i];
+        if (!selectedTags.has(tag))
+          filteredTags.add(tag);
+      }
+    }
+    return filteredTags;
+  }
+
+  function createTagButton(tagDiv, tag, selected) {
+    var tagButton = document.createElement('button');
+    tagButton.id = tag;
+    tagButton.value = tag;
+    tagButton.innerHTML = tag;
+    tagButton.onclick = onTagClick;
+    if (selected) {
+      tagButton.className = "btn btn-primary btn-sm btn-selected-tag";
+      var glyphHtml = document.createElement('span');
+      glyphHtml.className = "glyphicon glyphicon-remove";
+      glyphHtml.style.margin = "0px 0px 0px 5px";
+      tagButton.appendChild(glyphHtml);
+    } else {
+      tagButton.className = "btn btn-primary btn-sm btn-tag";
+    }
+    tagDiv.appendChild(tagButton);
+  }
+
+  function onTagClick(e) {
+    if (this.value !== "all") {
+      if (!selectedTags.has(this.value))
+        selectedTags.add(this.value);
+      else
+        selectedTags.delete(this.value);
+    } else {
+      selectedTags.clear();
+    }
+    buildSamples();
+  }
+</script>
+
+<script src="../assets/js/jquery.min.js"></script>
+<script async src="../assets/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
