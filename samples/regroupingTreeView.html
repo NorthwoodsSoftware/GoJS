@@ -184,8 +184,12 @@
           new go.Binding("text", "text").makeTwoWay())
       );
 
+    var myChangingModel = false;  // to protect against recursive model changes
+
     myDiagram.addModelChangedListener(function(e) {
       if (e.model.skipsUndoManager) return;
+      if (myChangingModel) return;
+      myChangingModel = true;
       // don't need to start/commit a transaction because the UndoManager is shared with myTreeView
       if (e.modelChange === "nodeGroupKey" || e.modelChange === "nodeParentKey") {
         // handle structural change: group memberships
@@ -204,6 +208,7 @@
         var treenode = myTreeView.findNodeForData(e.oldValue);
         if (treenode !== null) myTreeView.remove(treenode);
       }
+      myChangingModel = false;
     });
 
     // setup the tree view; will be initialized with data by the load() function
@@ -284,6 +289,8 @@
 
     myTreeView.addModelChangedListener(function(e) {
       if (e.model.skipsUndoManager) return;
+      if (myChangingModel) return;
+      myChangingModel = true;
       // don't need to start/commit a transaction because the UndoManager is shared with myDiagram
       if (e.modelChange === "nodeGroupKey" || e.modelChange === "nodeParentKey") {
         // handle structural change: tree parent/children
@@ -303,6 +310,7 @@
         var node = myDiagram.findNodeForData(e.oldValue);
         if (node !== null) myDiagram.remove(node);
       }
+      myChangingModel = false;
     });
 
     load();

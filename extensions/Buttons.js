@@ -235,7 +235,7 @@ go.GraphObject.defineBuilder("PanelExpanderButton", function(args) {
 
   var button = /** @type {Panel} */ (
     go.GraphObject.make("Button",
-      go.GraphObject.make(Shape, "TriangleUp",
+      go.GraphObject.make(go.Shape, "TriangleUp",
                           { desiredSize: new go.Size(6, 4) },
                           new go.Binding("figure", "visible",
                                          function(vis) { return vis ? "TriangleUp" : "TriangleDown"; })

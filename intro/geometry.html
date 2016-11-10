@@ -324,6 +324,52 @@ diagram.commandHandler.selectAll();
 </pre>
 <script>goCode("b", 600, 180)</script>
 
+
+<h3>Flipping (mirroring) Geometries Horizontally and Vertically</h3>
+<p>GoJS Geometries have several methods for modifying the geometry's points by a transformation matrix. We can use these methods to flip (mirror) the geometries if needed.</p>
+<p><code>geometry.scale(-1, 1)</code> will flip a geometry horizontally. <code>geometry.scale(-1, 1)</code> will flip a geometry vertically.
+
+
+<pre data-language="javascript" id="b2">
+var pathstring = "M30 100 C 50 50, 70 20, 100 100, 110, 130, 45, 150, 65, 100";
+var geo = go.Geometry.parse(pathstring);
+geo.normalize();
+
+diagram.add(
+$(go.Part, "Vertical",
+  $(go.Shape,
+    { geometry: geo,
+      strokeWidth: 10, stroke: "lightgreen",
+      background: "whitesmoke" }),
+  $(go.TextBlock, "geometry from string\n(normalized)")
+));
+
+var geo2 = geo.copy();
+geo2.scale(-1, 1); // flips a geometry horizontally
+diagram.add(
+$(go.Part, "Vertical",
+  $(go.Shape,
+    { geometry: geo2,
+      strokeWidth: 10, stroke: "lightgreen",
+      background: "whitesmoke" }),
+  $(go.TextBlock, "flipped horizontally")
+));
+
+var geo3 = geo.copy();
+geo3.scale(1, -1); // flips a geometry vertically
+diagram.add(
+$(go.Part, "Vertical",
+  $(go.Shape,
+    { geometry: geo3,
+      strokeWidth: 10, stroke: "lightgreen",
+      background: "whitesmoke" }),
+  $(go.TextBlock, "flipped vertically")
+));
+
+diagram.layout = $(go.GridLayout);
+</pre>
+<script>goCode("b2", 600, 180)</script>
+
 <h3>Converting Path Strings</h3>
 <p>
 The static method <a>Geometry.stringify</a> can be used to output a Geometry as a string.
