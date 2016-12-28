@@ -38,9 +38,10 @@
     cursor: pointer;
   }
 
-  #contextMenu li:hover { background: #444; }
-
-  #contextMenu li:hover { color: #EEE; }
+  #contextMenu li:hover {
+    background: #CEDFF2;
+    color: #EEE;
+  }
 
   #contextMenu li ul li {
       display: none;
@@ -55,8 +56,9 @@
   }
 
   #contextMenu li:hover ul li {
-      display: block;
-      margin-left: 0px; margin-top: 0px;
+    display: block;
+    margin-left: 0px;
+    margin-top: 0px;
   }
 
 
@@ -179,16 +181,16 @@ function init() {
 }
 
 // This is the general menu command handler, parameterized by the name of the command.
-function cxcommand(val) {
+function cxcommand(event, val) {
+  if (val === undefined) val = event.currentTarget.id;
   var diagram = myDiagram;
-  if (!(diagram.currentTool instanceof go.ContextMenuTool)) return;
   switch (val) {
-    case "Cut": diagram.commandHandler.cutSelection(); break;
-    case "Copy": diagram.commandHandler.copySelection(); break;
-    case "Paste": diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); break;
-    case "Delete": diagram.commandHandler.deleteSelection(); break;
-    case "Color": {
-        var color = document.elementFromPoint(event.clientX, event.clientY).parentElement.style.background;
+    case "cut": diagram.commandHandler.cutSelection(); break;
+    case "copy": diagram.commandHandler.copySelection(); break;
+    case "paste": diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); break;
+    case "delete": diagram.commandHandler.deleteSelection(); break;
+    case "color": {
+      var color = window.getComputedStyle(document.elementFromPoint(event.clientX, event.clientY).parentElement)['background-color'];
         changeColor(diagram, color); break;
     }
   }
@@ -224,16 +226,16 @@ function changeColor(diagram, color) {
       <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
       <div id="contextMenu">
         <ul>
-          <li id="cut" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Cut</a></li>
-          <li id="copy" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Copy</a></li>
-          <li id="paste" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Paste</a></li>
-          <li id="delete" onclick="cxcommand(this.textContent)"><a href="#" target="_self">Delete</a></li>
+          <li id="cut" onclick="cxcommand(event)"><a href="#" target="_self">Cut</a></li>
+          <li id="copy" onclick="cxcommand(event)"><a href="#" target="_self">Copy</a></li>
+          <li id="paste" onclick="cxcommand(event)"><a href="#" target="_self">Paste</a></li>
+          <li id="delete" onclick="cxcommand(event)"><a href="#" target="_self">Delete</a></li>
           <li id="color" class="hasSubMenu"><a href="#" target="_self">Color</a>
             <ul class="subMenu" id="colorSubMenu">
-                <li style="background: crimson;" onclick="cxcommand('Color')"><a href="#" target="_self">Red</a></li>
-                <li style="background: chartreuse;" onclick="cxcommand('Color')"><a href="#" target="_self">Green</a></li>
-                <li style="background: aquamarine;" onclick="cxcommand('Color')"><a href="#" target="_self">Blue</a></li>
-                <li style="background: gold;" onclick="cxcommand('Color')"><a href="#" target="_self">Yellow</a></li>
+                <li style="background: crimson;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Red</a></li>
+                <li style="background: chartreuse;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Green</a></li>
+                <li style="background: aquamarine;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Blue</a></li>
+                <li style="background: gold;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Yellow</a></li>
             </ul>
           </li>
         </ul>
