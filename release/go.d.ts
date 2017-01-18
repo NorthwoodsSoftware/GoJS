@@ -3,7 +3,7 @@
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
 
-/* Copyright (C) 1998-2016 by Northwoods Software Corporation. */
+/* Copyright (C) 1998-2017 by Northwoods Software Corporation. */
 
 declare namespace go {
     /** A number in place of a Margin object is treated as a uniform Margin with that thickness */

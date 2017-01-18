@@ -33,7 +33,7 @@ link.rel = "stylesheet";
 link.href = "../assets/css/main.css";
 head.appendChild(link);
 
-/* Copyright (C) 1998-2016 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved. */
 
 // Create a DIV and add it to the document just after the PRE element.
 // Evaluate the JavaScript text that is in the PRE element in order to initialize the Diagram.
@@ -84,7 +84,7 @@ function goIntro() {
   // footer
   var footer = document.createElement("div");
   footer.className = "footer";
-  var msg = "Copyright &copy; 1998-2016 by Northwoods Software Corporation.";
+  var msg = "Copyright &copy; 1998-2017 by Northwoods Software Corporation.";
   if (go && go.version) {
     msg = "GoJS&reg; version " + go.version + ". " + msg;
   }

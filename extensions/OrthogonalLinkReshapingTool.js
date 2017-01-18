@@ -1,6 +1,6 @@
 "use strict"
 /*
-*  Copyright (C) 1998-2016 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Tool for dragging a segment of an orthogonal link.

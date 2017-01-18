@@ -1,3 +1,5 @@
+/* Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved. */
+
 // When adding samples or extensions, modify this file, samples/all.html, and samples/indexList.js
 // along with adding a 400x400 screenshot in assets/images/screenshots.
 
@@ -40,8 +42,6 @@ link.type = "text/css";
 link.rel = "stylesheet";
 link.href = "../assets/css/main.css";
 head.appendChild(link);
-
-/* Copyright (C) 1998-2016 by Northwoods Software Corporation. All Rights Reserved. */
 
 function goSamples() {
   // determine if it's an extension
@@ -91,7 +91,7 @@ function goSamples() {
   samplediv.appendChild(hdr);
   var footer = document.createElement("div");
   footer.className = "footer";
-  var msg = "Copyright &copy; 1998-2016 by Northwoods Software Corporation.";
+  var msg = "Copyright &copy; 1998-2017 by Northwoods Software Corporation.";
   if (go && go.version) {
     msg = "GoJS&reg; version " + go.version + ". " + msg;
   }
