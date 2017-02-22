@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Ports in Nodes-- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Ports in Nodes</h2>
+<h1>Ports in Nodes</h1>
 <p>
 Although you have some control over where links will connect at a node (at a particular spot, along one or
 more sides, or at the intersection with the edge), there are times when you want to have different logical
@@ -28,8 +29,13 @@ which is why they are properties of <a>GraphObject</a> rather than <a>Node</a>.
 Port-like GraphObjects can only be in <a>Node</a>s or <a>Group</a>s, not in <a>Link</a>s or <a>Adornment</a>s or simple <a>Part</a>s.
 So there is no reason to try to set <a>GraphObject.portId</a> on any object in a Link.
 </p>
+<p>
+<p>
+See samples that make use of ports in the <a href="../samples/index.html#ports">samples index</a>.
+</p>
+</p>
 
-<h3>Single Ports</h3>
+<h2 id="SinglePorts">Single Ports</h2>
 <p>
 In many situations you want to consider links logically related to the node as a whole but you don't want links
 connecting to the whole node.
@@ -106,7 +112,7 @@ Note that we move the other port-related properties, such as the port spots, to 
 Notice how the links nicely connect the circular shapes by ignoring the text labels.
 </p>
 
-<h3>General Ports</h3>
+<h2 id="GeneralPorts">General Ports</h2>
 <p>
 It is also common to have diagrams where you want more than one port in a node.
 The number of ports might even vary dynamically.
@@ -194,7 +200,7 @@ in order for the user to be able to link with those ports.
 </pre>
 <script>goCode("ports", 600, 150)</script>
 
-<h3>Drawing new Links</h3>
+<h2 id="DrawingNewLinks">Drawing new Links</h2>
 <p>
 Setting either or both of the <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>
 properties to true allows users to interactively draw new links between ports.
@@ -269,10 +275,16 @@ and then mouse-up to complete the link.
 <p>
 By default the user may not draw more than one link in the same direction between any pair of ports,
 nor may the user draw a link connecting a node with itself.
+Please read a general discussion of <a href="validation.html">Linking Validation</a>.
 </p>
 <p>
 By setting <a>GraphObject.toMaxLinks</a> to 1, as shown in this example, the user may draw at most one link going into that port.
 And because <a>GraphObject.fromLinkable</a> is false for that port element, the user will not be able to connect any links coming out of that port.
+</p>
+<p>
+  If you want to prevent the user from connecting any more than one Link with a Node, regardless of direction,
+  you will need to implement a <a>LinkingBaseTool.linkValidation</a> or a <a>Node.linkValidation</a> predicate.
+  See the discussion about <a href="validation.html#GeneralLinkingValidation">General Linking Validation</a>
 </p>
 
 </div>

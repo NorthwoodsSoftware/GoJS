@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geometry Reshaping</title>
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="GeometryReshapingTool.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                  {
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
+
+    myDiagram.nodeTemplate =
+      $(go.Node,
+        { reshapable: true },  // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+        $(go.Shape,
+          { name: "SHAPE", fill: "lightgray", strokeWidth: 1.5 },
+          new go.Binding("geometryString", "geo").makeTwoWay()
+        )
+      );
+    
+    myDiagram.model = new go.GraphLinksModel([ { geo:"F M0 145 L75 2 L131 87 L195 0 L249 143z", key:-1} ], [ ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 350px"></div>
+  <p>
+    The GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user via the dragging of tool handles.
+    Reshape handles are drawn as Adornments at each point in the geometry.
+    It is defined in its own file, as <a href="GeometryReshapingTool.js">GeometryReshapingTool.js</a>.
+  </p>
+  <p>
+    Usage can also be seen in the <a href="FreehandDrawing.html">Freehand Drawing</a> and <a href="PolygonDrawing.html">Polygon Drawing</a> samples.
+  </p>
+</div>
+</body>
+</html>

@@ -18,6 +18,8 @@
 //      { click: function(e, obj) { alert("I was clicked"); } }
 //    )
 
+// Note that a button click event handler is not invoked upon a click if isEnabledObject() returns false.
+
 go.GraphObject.defineBuilder("Button", function(args) {
   // default brushes for "Button" shape
   var buttonFillNormal = go.GraphObject.make(go.Brush, "Linear", { 0: "white", 1: "lightgray" });
@@ -26,17 +28,27 @@ go.GraphObject.defineBuilder("Button", function(args) {
   var buttonFillOver = go.GraphObject.make(go.Brush, "Linear", { 0: "white", 1: "dodgerblue" });
   var buttonStrokeOver = "blue";
 
+  var buttonFillDisabled = "darkgray";
+
   // offset identical to that needed to match the original RoundedRectangle figure, to keep the same size
   var offset = 2.761423749153968;
 
   var button = /** @type {Panel} */ (
     go.GraphObject.make(go.Panel, "Auto",
-        { isActionable: true },  // needed so that the ActionTool intercepts mouse events
-        { // save these values for the mouseEnter and mouseLeave event handlers
+        {
+          isActionable: true,  // needed so that the ActionTool intercepts mouse events
+          enabledChanged: function(button, enabled) {
+            var shape = button.findObject("ButtonBorder");
+            if (shape !== null) {
+              shape.fill = enabled ? button["_buttonFillNormal"] : button["_buttonFillDisabled"];
+            }
+          },
+          // save these values for the mouseEnter and mouseLeave event handlers
           "_buttonFillNormal": buttonFillNormal,
           "_buttonStrokeNormal": buttonStrokeNormal,
           "_buttonFillOver": buttonFillOver,
-          "_buttonStrokeOver": buttonStrokeOver
+          "_buttonStrokeOver": buttonStrokeOver,
+          "_buttonFillDisabled": buttonFillDisabled
         },
         go.GraphObject.make(go.Shape,  // the border
           {
@@ -46,10 +58,11 @@ go.GraphObject.defineBuilder("Button", function(args) {
             spot2: new go.Spot(1, 1, -offset, -offset),
             fill: buttonFillNormal,
             stroke: buttonStrokeNormal
-          }))
+          })
+        )
   );
 
-  // There"s no GraphObject inside the button shape -- it must be added as part of the button definition.
+  // There's no GraphObject inside the button shape -- it must be added as part of the button definition.
   // This way the object could be a TextBlock or a Shape or a Picture or arbitrarily complex Panel.
 
   // mouse-over behavior
@@ -99,8 +112,8 @@ go.GraphObject.defineBuilder("TreeExpanderButton", function(args) {
           // bind the Shape.figure to the Node.isTreeExpanded value using this converter:
           new go.Binding("figure", "isTreeExpanded",
                          function(exp, shape) {
-                           var button = shape.panel;
-                           return exp ? button["_treeExpandedFigure"] : button["_treeCollapsedFigure"];
+                           var but = shape.panel;
+                           return exp ? but["_treeExpandedFigure"] : but["_treeCollapsedFigure"];
                          })
               .ofObject()),
         // assume initially not visible because there are no links coming out
@@ -158,8 +171,8 @@ go.GraphObject.defineBuilder("SubGraphExpanderButton", function(args) {
           // bind the Shape.figure to the Group.isSubGraphExpanded value using this converter:
           new go.Binding("figure", "isSubGraphExpanded",
                          function(exp, shape) {
-                           var button = shape.panel;
-                           return exp ? button["_subGraphExpandedFigure"] : button["_subGraphCollapsedFigure"];
+                           var but = shape.panel;
+                           return exp ? but["_subGraphExpandedFigure"] : but["_subGraphCollapsedFigure"];
                          })
               .ofObject()))
   );
@@ -235,10 +248,14 @@ go.GraphObject.defineBuilder("PanelExpanderButton", function(args) {
 
   var button = /** @type {Panel} */ (
     go.GraphObject.make("Button",
+      { // set these values for the visible binding conversion
+        "_buttonExpandedFigure": "TriangleUp",
+        "_buttonCollapsedFigure": "TriangleDown"
+      },
       go.GraphObject.make(go.Shape, "TriangleUp",
-                          { desiredSize: new go.Size(6, 4) },
+                          { name: "ButtonIcon", desiredSize: new go.Size(6, 4) },
                           new go.Binding("figure", "visible",
-                                         function(vis) { return vis ? "TriangleUp" : "TriangleDown"; })
+                                         function(vis) { return vis ? button["_buttonExpandedFigure"] : button["_buttonCollapsedFigure"]; })
                               .ofObject(eltname)))
   );
 
@@ -252,11 +269,15 @@ go.GraphObject.defineBuilder("PanelExpanderButton", function(args) {
     var diagram = button.diagram;
     if (diagram === null) return;
     if (diagram.isReadOnly) return;
-    var elt = obj.part.findObject(eltname);
+    var elt = button.findTemplateBinder();
+    if (elt === null) elt = button.part;
     if (elt !== null) {
-      diagram.startTransaction("Collapse/Expand Panel");
-      elt.visible = !elt.visible;
-      diagram.commitTransaction("Collapse/Expand Panel");
+      var pan = elt.findObject(eltname);
+      if (pan !== null) {
+        diagram.startTransaction('Collapse/Expand Panel');
+        pan.visible = !pan.visible;
+        diagram.commitTransaction('Collapse/Expand Panel');
+      }
     }
   }
 
@@ -297,19 +318,20 @@ go.GraphObject.defineBuilder("CheckBoxButton", function(args) {
             },
             // create a data Binding only if PROPNAME is supplied and not the empty string
             (propname !== "" ? new go.Binding("visible", propname).makeTwoWay() : []))
-      )
+    )
   );
 
-  button.click = function(e, obj) {
-    if (e.diagram.isReadOnly) return;
-    if (propname !== "" && e.diagram.model.isReadOnly) return;
+  button.click = function(e, button) {
+    var diagram = e.diagram;
+    if (diagram === null || diagram.isReadOnly) return;
+    if (propname !== "" && diagram.model.isReadOnly) return;
     e.handled = true;
-    var shape = obj.findObject("ButtonIcon");
-    shape.diagram.startTransaction("checkbox");
+    var shape = button.findObject("ButtonIcon");
+    diagram.startTransaction("checkbox");
     shape.visible = !shape.visible;  // this toggles data.checked due to TwoWay Binding
     // support extra side-effects without clobbering the click event handler:
-    if (typeof obj["_doClick"] === "function") obj["_doClick"](e, obj);
-    shape.diagram.commitTransaction("checkbox");
+    if (typeof button["_doClick"] === "function") button["_doClick"](e, button);
+    diagram.commitTransaction("checkbox");
   };
 
   return button;
@@ -347,6 +369,7 @@ go.GraphObject.defineBuilder("CheckBox", function(args) {
           "_buttonStrokeNormal": button["_buttonStrokeNormal"],
           "_buttonFillOver": button["_buttonFillOver"],
           "_buttonStrokeOver": button["_buttonStrokeOver"],
+          "_buttonFillDisabled": button["_buttonFillDisabled"],
           mouseEnter: button.mouseEnter,
           mouseLeave: button.mouseLeave,
           click: button.click,

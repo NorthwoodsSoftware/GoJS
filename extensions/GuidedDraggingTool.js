@@ -121,6 +121,16 @@ GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
 }
 
 /**
+* When nodes are shifted due to being guided upon a drop, make sure all connected link routes are invalidated,
+* since the node is likely to have moved a different amount than all its connected links in the regular
+* operation of the DraggingTool.
+* @this {GuidedDraggingTool}
+*/
+GuidedDraggingTool.prototype.invalidateLinks = function(node) {
+  if (node instanceof go.Node) node.invalidateConnectedLinks();
+}
+
+/**
 * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
 * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
 * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
@@ -182,6 +192,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
       if (snap) {
         // call Part.move in order to automatically move member Parts of Groups
         part.move(new go.Point(partBounds.x, bestPoint.y - partBounds.height / 2));
+        this.invalidateLinks(part);
       }
       if (guideline) {
         this.guidelineHcenter.position = new go.Point(x0, bestPoint.y);
@@ -191,6 +202,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
     } else if (bestSpot === go.Spot.Top) {
       if (snap) {
         part.move(new go.Point(partBounds.x, bestPoint.y));
+        this.invalidateLinks(part);
       }
       if (guideline) {
         this.guidelineHtop.position = new go.Point(x0, bestPoint.y);
@@ -200,6 +212,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
     } else if (bestSpot === go.Spot.Bottom) {
       if (snap) {
         part.move(new go.Point(partBounds.x, bestPoint.y - partBounds.height));
+        this.invalidateLinks(part);
       }
       if (guideline) {
         this.guidelineHbottom.position = new go.Point(x0, bestPoint.y);
@@ -272,6 +285,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
       if (snap) {
         // call Part.move in order to automatically move member Parts of Groups
         part.move(new go.Point(bestPoint.x - partBounds.width / 2, partBounds.y));
+        this.invalidateLinks(part);
       }
       if (guideline) {
         this.guidelineVcenter.position = new go.Point(bestPoint.x, y0);
@@ -281,6 +295,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
     } else if (bestSpot === go.Spot.Left) {
       if (snap) {
         part.move(new go.Point(bestPoint.x, partBounds.y));
+        this.invalidateLinks(part);
       }
       if (guideline) {
         this.guidelineVleft.position = new go.Point(bestPoint.x, y0);
@@ -290,6 +305,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
     } else if (bestSpot === go.Spot.Right) {
       if (snap) {
         part.move(new go.Point(bestPoint.x - partBounds.width, partBounds.y));
+        this.invalidateLinks(part);
       }
       if (guideline) {
         this.guidelineVright.position = new go.Point(bestPoint.x, y0);

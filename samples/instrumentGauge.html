@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An Instrument Gauge</title>
+<meta name="description" content="An instrument gauge implemented in GoJS using a Graduated Panel." />
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        { initialContentAlignment: go.Spot.Center });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "Circle",
+          { stroke: "orange", strokeWidth: 5, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight },
+          new go.Binding("stroke", "color")),
+        $(go.Panel, "Spot",
+          $(go.Panel, "Graduated",
+            {
+              name: "SCALE", margin: 14,
+              graduatedTickUnit: 2.5,  // tick marks at each multiple of 2.5
+              graduatedMax: 100,  // this is actually the default value
+              stretch: go.GraphObject.None  // needed to avoid unnecessary re-measuring!!!
+            },
+            new go.Binding("graduatedMax", "max"),  // controls the range of the gauge
+            // the main path of the graduated panel, an arc starting at 135 degrees and sweeping for 270 degrees
+            $(go.Shape, { name: "SHAPE", geometryString: "M-70.7 70.7 B135 270 0 0 100 100 M0 100", stroke: "white", strokeWidth: 4 }),
+            // three differently sized tick marks
+            $(go.Shape, { geometryString: "M0 0 V10", stroke: "white", strokeWidth: 1.5 }),
+            $(go.Shape, { geometryString: "M0 0 V12", stroke: "white", strokeWidth: 2.5, interval: 2 }),
+            $(go.Shape, { geometryString: "M0 0 V15", stroke: "white", strokeWidth: 3.5, interval: 4 }),
+            $(go.TextBlock,
+              { // each tick label
+                interval: 4,
+                alignmentFocus: go.Spot.Center,
+                font: "bold italic 14pt sans-serif", stroke: "white",
+                segmentOffset: new go.Point(0, 30)
+              })
+          ),
+          $(go.TextBlock,
+            { alignment: new go.Spot(0.5, 0.9), stroke: "orange", font: "bold italic 14pt sans-serif" },
+            new go.Binding("text", "key"),
+            new go.Binding("stroke", "color")),
+          $(go.Shape, { fill: "red", strokeWidth: 0, geometryString: "F1 M-6 0 L0 -6 100 0 0 6z x M-100 0" },
+            new go.Binding("angle", "value", convertValueToAngle)),
+          $(go.Shape, "Circle", { width: 2, height: 2, fill: "#444" })
+        )
+      );
+
+    // this determines the angle of the needle, based on the data.value argument
+    function convertValueToAngle(v, shape) {
+      var scale = shape.part.findObject("SCALE");
+      var p = scale.graduatedPointForValue(v);
+      var shape = shape.part.findObject("SHAPE");
+      var c = shape.actualBounds.center;
+      return c.directionPoint(p);
+    }
+
+    myDiagram.model = new go.GraphLinksModel([
+      { key: "Alpha", value: 35 },
+      { key: "Beta", color: "green", max: 140, value: 70 }
+    ], [
+      { from: "Alpha", to: "Beta" }
+    ]);
+
+    loop();
+  }
+
+  // change each gauge's value several times a second
+  function loop() {
+    setTimeout(function() {
+      myDiagram.startTransaction();
+      myDiagram.nodes.each(function(node) {
+        var scale = node.findObject("SCALE");
+        if (scale === null || scale.type !== go.Panel.Graduated) return;
+        // keep the new value within the range of the graduated panel
+        var min = scale.graduatedMin;
+        var max = scale.graduatedMax;
+        var v = node.data.value || Math.floor((max - min) / 2);  // default to middle value
+        if (v < min) v++;
+        else if (v > max) v--;
+        else v += (Math.random() < 0.5) ? -0.5 : 0.5;  // random walk
+        myDiagram.model.setDataProperty(node.data, "value", v);
+      });
+      myDiagram.commitTransaction("modified Graduated Panel");
+      loop();
+    }, 1000/6);
+  }
+</script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:350px"></div>
+    <p>
+      This makes use of a <a href="../intro/graduatedPanels.html">"Graduated"</a> <a>Panel</a>,
+      which holds the main path of the scale, a Shape whose <a>Shape.geometry</a> is a circular arc.
+      In addition that Graduated Panel holds three different Shapes acting as templates for tick marks and
+      a TextBlock acting as a template for tick labels.
+    </p>
+    <p>
+      In a Spot Panel with the Graduated Panel scale are an italic TextBlock showing the node identifier and a red elongated diamond "needle" Shape.
+      The needle's angle is determined by <code>convertValueToAngle</code>, which finds the point on the Graduated Panel's
+      main path element corresponding to <code>data.value</code> and computes the angle from the center to that point.
+      The data value is updated several times per second.
+      A circle Shape surrounds the Spot Panel.
+    </p>
+  </div>
+</body>
+</html>

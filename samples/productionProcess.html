@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Production Process GoJS Sample</title>
 <meta name="description" content="Oil and gas byproduct production diagram." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 
 <style type="text/css">
-#infobox {
-  display: inline-block;
-  width: 256px;
-  background-color: #757575;
-  color: #FFF;
-  padding: 20px;
-  font-family: Lato, sans-serif;
-}
+  #infobox {
+    width: 256px;
+    background: #757575;
+    color: #FFF;
+    padding: 20px;
+  }
 </style>
 
 <script id="code">
@@ -92,7 +90,8 @@
                   {
                     maxSelectionCount: 1, // users can select only one part at a time
                     "toolManager.hoverDelay": 10,  // how quickly tooltips are shown
-                    initialContentAlignment: go.Spot.Left,  // center the content
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    initialAutoScale: go.Diagram.Uniform,  // scale to show all of the contents
                     "ChangedSelection": onSelectionChanged, // view additional information
                   });
 
@@ -108,9 +107,14 @@
       return msg;
     }
 
-    // A data binding conversion function. Given an name, return the a geometry path string.
+    // A data binding conversion function. Given an name, return the Geometry.
+    // If there is only a string, replace it with a Geometry object, which can be shared by multiple Shapes.
     function geoFunc(geoname) {
-      return icons[geoname];
+      var geo = icons[geoname];
+      if (typeof geo === "string") {
+        geo = icons[geoname] = go.Geometry.parse(geo, true);
+      }
+      return geo;
     }
 
     myDiagram.nodeTemplate =
@@ -137,7 +141,7 @@
             new go.Binding("fill", "color"),
             new go.Binding("width", "iconWidth"),
             new go.Binding("height", "iconHeight"),
-            new go.Binding("geometryString", "icon", geoFunc)),
+            new go.Binding("geometry", "icon", geoFunc)),
           $(go.Shape, {
               name: 'main',
               width: 40, height: 40,
@@ -228,7 +232,6 @@
     var image = document.getElementById('Image');
     var title = document.getElementById('Title');
     var description = document.getElementById('Description');
-    var extra = document.getElementById('Extra');
 
     if (data.imgsrc) {
       image.src = data.imgsrc;
@@ -244,33 +247,20 @@
 
 </script>
 </head>
-<body onload="init();">
+<body onload="init()">
 <div id="sample">
-
-<div id="display">
-  <div style="display: inline-block;">
-    <div id="myDiagramDiv" style="border: solid 1px black; width:700px; height:550px"></div>
+  <div style="width:100%">
+      <div id="myDiagramDiv" style="border: solid 1px black; width:70%; height:550px; display: inline-block; vertical-align: top"></div>
+      <div id="infobox" style="display: inline-block; vertical-align: top;">
+        <img id="Image" width="216" alt="" src=""/>
+        <h3 id="Title"></h3>
+        <p id="Description">Select a node to see more information.</p>
+      </div>
   </div>
-  <div style="display: inline-block; vertical-align: top;">
-    <div id="infobox">
-
-    <img id="Image" width="256" alt="" src=""/>
-    <h3 id="Title"></h3>
-    <p id="Description">Select a node to see more information.</p>
-    </div>
-  </div>
-
-
-</div>
-
-
-
-
-  <p>This process flow diagram partially simulates the production process for gas and oil byproducts into their end products.</p>
-
-
-  <p>Below is the JSON data for the model:</p>
-  <textarea id="mySavedModel" style="width: 800px; height: 400px;">
+  <div>
+    <p>This process flow diagram partially simulates the production process for gas and oil byproducts into their end products.</p>
+    <p>Below is the JSON data for the model:</p>
+    <textarea id="mySavedModel" style="width: 800px; height: 400px;">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
 {
@@ -368,7 +358,8 @@
 {"from":5, "to":8, "fromSpot":"rightsingle", "color":"#FFBC00" },
 {"from":5, "to":9, "fromSpot":"rightsingle", "color":"#FFBC00" }
  ]}
-  </textarea>
+    </textarea>
+  </div>
 </div>
 </body>
 </html>

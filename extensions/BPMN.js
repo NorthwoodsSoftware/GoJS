@@ -8,19 +8,30 @@
 // Setup all of the Diagrams and what they need.
 // This is called after the page is loaded.
 function init() {
-  if (typeof (Storage) === "undefined") {
+
+    function checkLocalStorage() {
+        try {
+            window.localStorage.setItem('item', 'item');
+            window.localStorage.removeItem('item');
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+  if (!checkLocalStorage()) {
     var currentFile = document.getElementById("currentFile");
-    currentFile.textContent = "Sorry! No web storage support.\nIf you're using Internet Explorer, you must load the page from a server for local storage to work.";
+    currentFile.textContent = "Sorry! No web storage support. If you're using Internet Explorer / Microsoft Edge, you must load the page from a server for local storage to work.";
   }
 
-// setup the menubar    
+// setup the menubar
 jQuery( "#menuui" ).menu();
 jQuery(function() {
         jQuery( "#menuui" ).menu({ position: { my: "left top", at: "left top+30" } });
-        });    
+        });
 jQuery( "#menuui" ).menu({
   icons: { submenu: "ui-icon-triangle-1-s" }
-});      
+});
 
   // hides open HTML Element
   var openDocument = document.getElementById("openDocument");
@@ -394,6 +405,7 @@ jQuery( "#menuui" ).menu({
        locationSpot: go.Spot.Center,
        selectionAdorned: false
      },
+    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
     $(go.Panel, "Spot",
       { name: "PANEL",
           desiredSize: new go.Size(ActivityNodeWidth / palscale, ActivityNodeHeight / palscale)
@@ -592,6 +604,7 @@ $(go.Shape, "NotAllowed",
         locationObjectName: "SHAPE",
         locationSpot: go.Spot.Center,
         resizeObjectName: "SHAPE" },
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Panel, "Spot",
         $(go.Shape, "Diamond",
           { strokeWidth: 1, fill: GatewayNodeFill, stroke: GatewayNodeStroke, name: "SHAPE",
@@ -702,6 +715,7 @@ $(go.Shape, "NotAllowed",
   var poolTemplateForPalette =
     $(go.Group, "Vertical",
       { locationSpot: go.Spot.Center,
+        computesBoundsIncludingLinks: false,
         isSubGraphExpanded: false
       },
       $(go.Shape, "Process",
@@ -720,7 +734,6 @@ $(go.Shape, "NotAllowed",
     $(go.Group, "Spot",
       { locationSpot: go.Spot.Center,
         locationObjectName: "PH",
-        resizable: true, resizeObjectName: "PH",
         //locationSpot: go.Spot.Center,
         isSubGraphExpanded: false,
         memberValidation: function(group, part) {
@@ -746,7 +759,6 @@ $(go.Shape, "NotAllowed",
               portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
               fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
             },
-            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
             new go.Binding("strokeWidth", "isCall", function(s) { return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth; })
            ),
           $(go.Panel, "Vertical",
@@ -762,7 +774,7 @@ $(go.Shape, "NotAllowed",
           )  // end Vertical Panel
         )
       );  // end Group
-    
+
     //** need this in the subprocess group template above.
     //        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
     //          { margin: 3,
@@ -772,7 +784,7 @@ $(go.Shape, "NotAllowed",
     //          },
     //          new go.Binding("visible", "isTransaction")
     //         ),
-    
+
 
   function groupStyle() {  // common settings for both Lane and Pool Groups
       return [
@@ -916,7 +928,10 @@ $(go.Shape, "NotAllowed",
             fill: "lightblue", stroke: "dodgerblue",
             cursor: "col-resize"
         },
-        new go.Binding("visible", "", function(ad) { return ad.adornedPart.isSubGraphExpanded; }).ofObject()),
+        new go.Binding("visible", "", function(ad) {
+          if (ad.adornedPart === null) return false;
+          return ad.adornedPart.isSubGraphExpanded;
+        }).ofObject()),
       $(go.Shape,  // for changing the breadth of a lane
         {
             alignment: go.Spot.Bottom,
@@ -924,13 +939,18 @@ $(go.Shape, "NotAllowed",
             fill: "lightblue", stroke: "dodgerblue",
             cursor: "row-resize"
         },
-        new go.Binding("visible", "", function(ad) { return ad.adornedPart.isSubGraphExpanded; }).ofObject())
+        new go.Binding("visible", "", function(ad) {
+          if (ad.adornedPart === null) return false;
+          return ad.adornedPart.isSubGraphExpanded;
+        }).ofObject())
     );
 
  var poolGroupTemplate =
     $(go.Group, "Auto", groupStyle(),
-      { // use a simple layout that ignores links to stack the "lane" Groups on top of each other
-          layout: $(PoolLayout, { spacing: new go.Size(0, 0) })  // no space between lanes
+      {
+        computesBoundsIncludingLinks: false,
+        // use a simple layout that ignores links to stack the "lane" Groups on top of each other
+        layout: $(PoolLayout, { spacing: new go.Size(0, 0) })  // no space between lanes
       },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Shape,
@@ -1076,7 +1096,7 @@ $(go.Shape, "NotAllowed",
       new go.Binding("points").makeTwoWay(),
       $(go.Shape, { stroke: "black", strokeWidth: 1, strokeDashArray: [1, 3] }),
       $(go.Shape, { toArrow: "OpenTriangle", scale: 1, stroke: "black" })
-   );   
+   );
 
   var linkTemplateMap = new go.Map("string", go.Link);
   linkTemplateMap.add("msg", messageFlowLinkTemplate);
@@ -1122,7 +1142,7 @@ $(go.Shape, "NotAllowed",
       e.subject.category = "data"; // data association
     }
   });
-    
+
 //  uncomment this if you want a subprocess to expand on drop.  We decided we didn't like this behavior
 //  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
 //    // e.subject is the collection that was just dropped
@@ -1335,7 +1355,7 @@ $(go.Shape, "NotAllowed",
 
   // start with a simple preset model:
   loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json")
-        
+
 } // end init
 
 

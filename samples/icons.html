@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Icons GoJS Sample</title>
 <meta name="description" content="Use SVG geometry path strings to create vector icons, rather than using images." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 
 <script src="icons.js"></script>  <!-- load SVG definitions for many icons in the "icons" variable -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
-
-    // "icons" is defined in icons.js
-    // SVG paths have no flag for being filled or not, but GoJS Geometry paths do.
-    // We want to mark each SVG path as filled:
-    for (var k in icons) {
-      icons[k] = go.Geometry.fillPath(icons[k]);
-    }
 
     // a collection of colors
     var colors = {
@@ -39,10 +32,18 @@
                     layout: $(go.TreeLayout)
                   });
 
-    // A data binding conversion function. Given an icon name, return the icon's Path string.
+    // "icons" is defined in icons.js
+
+    // A data binding conversion function. Given an icon name, return a Geometry.
+    // This assumes that all icons want to be filled.
+    // This caches the Geometry, because the Geometry may be shared by multiple Shapes.
     function geoFunc(geoname) {
-      if (icons[geoname]) return icons[geoname];
-      else return icons["heart"]; // default icon
+      var geo = icons[geoname];
+      if (geo === undefined) geo = "heart";  // use this for an unknown icon name
+      if (typeof geo === "string") {
+        geo = icons[geoname] = go.Geometry.parse(geo, true);  // fill each geometry
+      }
+      return geo;
     }
 
     // Define a simple template consisting of the icon surrounded by a filled circle
@@ -53,7 +54,7 @@
             new go.Binding("fill", "color")),
         $(go.Shape,
           { margin: 3, fill: colors["white"], strokeWidth: 0 },
-          new go.Binding("geometryString", "geo", geoFunc)),
+          new go.Binding("geometry", "geo", geoFunc)),
         // Each node has a tooltip that reveals the name of its icon
         { toolTip:
             $(go.Adornment, "Auto",
@@ -112,8 +113,6 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>SVG Icons Sample</h3>
-
   <div id="myDiagramDiv" style="border: solid 1px black; width:450px; height:300px"></div>
 
   <p>This sample shows several "icons" that were originally SVG paths, used as Shapes in GoJS.</p>

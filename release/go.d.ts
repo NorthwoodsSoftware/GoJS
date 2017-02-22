@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.6.17
+// Type definitions for GoJS v1.7.0
 // Project: https://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -15,7 +15,7 @@ declare namespace go {
     /** A Key is the type of the unique identifier managed by Models for each node data object. */
     export type Key = string | number;
 
-    /** Either name a property or get the value of a property from an object. */
+    /** Either name a property or get/set the value of a property of an object. */
     export type PropertyAccessor = string | ((data: any, newval: any) => any);
 
     /** A constructor */
@@ -206,7 +206,6 @@ declare namespace go {
         * This predicate controls whether or not the user can invoke the scrollToPart command.
         * This returns false if there is no argument Part and there are no selected Parts.
         * @param {Part=} part This defaults to the first selected Part of Diagram.selection
-        * @return {boolean}
         * This returns true if Diagram.allowHorizontalScroll and Diagram.allowVerticalScroll are true.
         */
         canScrollToPart(part?: Part): boolean;
@@ -504,8 +503,8 @@ declare namespace go {
         /**Gets or sets the function to execute when the user single-secondary-clicks on the background of the Diagram.*/
         contextClick: (e: InputEvent) => void;
 
-        /**This Adornment is shown when the use context clicks in the background.*/
-        contextMenu: Adornment;
+        /**This Adornment or HTMLInfo is shown when the use context clicks in the background.*/
+        contextMenu: Adornment | HTMLInfo;
 
         /**Gets or sets the current cursor for the Diagram, overriding the .defaultCursor.*/
         currentCursor: string;
@@ -690,8 +689,8 @@ declare namespace go {
         /**This read-only property returns the ToolManager for this Diagram.*/
         toolManager: ToolManager;
 
-        /**This Adornment is shown when the mouse stays motionless in the background.*/
-        toolTip: Adornment;
+        /**This Adornment or HTMLInfo is shown when the mouse stays motionless in the background.*/
+        toolTip: Adornment | HTMLInfo;
 
         /**This read-only property returns the UndoManager for this Diagram, which actually belongs to the .model.*/
         undoManager: UndoManager;
@@ -793,8 +792,9 @@ declare namespace go {
         /**
         * Find the union of the GraphObject.actualBounds of all of the Parts in the given collection.
         * @param {Iterable<Part>} coll a collection of Parts.
+        * @param {boolean=} includeLinks, defaults to false
         */
-        computePartsBounds(coll: Iterable<Part>): Rect;
+        computePartsBounds(coll: Iterable<Part>, includesLinks?: boolean): Rect;
 
         /**
         * Make a copy of a collection of Parts and return them in a Map mapping each original Part to its copy.
@@ -922,6 +922,7 @@ declare namespace go {
 
         /**
         * Look for a Part or Node or Group corresponding to a model's data object's unique key.
+        * May return a Link if the GraphLinksModel is maintaining keys for link data.
         * @param {*} key a string or number.
         */
         findPartForKey(key: Key): Part;
@@ -992,7 +993,7 @@ declare namespace go {
           }): HTMLImageElement;
 
         /**
-        * Create a bitmap of the current Diagram encoded as a base64 string.
+        * Create a bitmap of the current Diagram encoded as an ImageData, or a base64-encoded string describing the image.
         * @param {Object=} properties a JavaScript object detailing optional arguments for image creation, to be passed to makeImageData.
         */
         makeImageData(properties?: {
@@ -1006,15 +1007,16 @@ declare namespace go {
             showTemporary?: boolean,
             showGrid?: boolean,
             document?: Document,
+            returnType?: string,
+            callback?: void,
             type?: string,
             details?: any
-          }): string;
+          }): ImageData | string;
 
         /**
         * Create an SVGElement that contains a SVG rendering of the current Diagram.
         * By default this method returns a snapshot of the visible diagram, but optional arguments give more options.
         * @param {Object=} properties a JavaScript object detailing optional arguments for SVG creation.
-        * @return {SVGElement}
         */
         makeSvg(properties?: {
             size?: Size,
@@ -1206,17 +1208,11 @@ declare namespace go {
         /**This value for Diagram.scrollMode states that the viewport does not constrain scrolling to the Diagram document bounds.*/
         static InfiniteScroll: EnumValue;
 
-        /** This value for Diagram.treeCollapsePolicy states that only the Node.findTreeParentNode's Node.isTreeExpanded property determines whether a "child" node is visible.*/
-        static TreeParentCollapsed: EnumValue;  // undocumented
-
-        /** This value for Diagram.treeCollapsePolicy states that all of the Node.findNodesInto or Node.findNodesOutOf, depending on Diagram.isTreePathToChildren being true or false, need to be not Node.isTreeExpanded in order for a "child" node to be not visible.*/
-        static AllParentsCollapsed: EnumValue;  // undocumented
-
-        treeCollapsePolicy: EnumValue;  // undocumented
         getRenderingHint(name: string): any;  // undocumented
         setRenderingHint(name: string, val: any): void;  // undocumented
         getInputOption(name: string): any;  // undocumented
         setInputOption(name: string, val: any): void;  // undocumented
+        doFocus(): void;  // undocumented
         maybeUpdate(): void;  // undocumented
         reset(): void;  // undocumented
         simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
@@ -1242,9 +1238,6 @@ declare namespace go {
         */
         constructor();
 
-        /**Gets or sets whether any default actions associated with this diagram event should be avoided or cancelled.*/
-        cancel: boolean;
-
         /**This read-only property returns the diagram associated with the event.*/
         diagram: Diagram;
 
@@ -1256,6 +1249,8 @@ declare namespace go {
 
         /**Gets or sets an optional object that is the subject of the diagram event.*/
         subject: any;
+
+        cancel: boolean;  // undocumented, deprecated
     }
 
     /**
@@ -1309,8 +1304,8 @@ declare namespace go {
         /**Gets or sets the function to execute when the user single-secondary-clicks on this object.*/
         contextClick: (e: InputEvent, obj: GraphObject) => void;
 
-        /**This Adornment is shown upon a context click on this object.*/
-        contextMenu: Adornment;
+        /**This Adornment or HTMLInfo is shown upon a context click on this object.*/
+        contextMenu: Adornment | HTMLInfo;
 
         /**Gets or sets the mouse cursor to use when the mouse is over this object with no mouse buttons pressed.*/
         cursor: string;
@@ -1323,9 +1318,6 @@ declare namespace go {
 
         /**Gets or sets the function to execute when the user double-primary-clicks on this object.*/
         doubleClick: (e: InputEvent, obj: GraphObject) => void;
-
-        /**Gets or sets how the direction of the last segment of a link coming from this port is computed when the node is rotated.*/
-        fromEndSegmentDirection: EnumValue;
 
         /**Gets or sets the length of the last segment of a link coming from this port.*/
         fromEndSegmentLength: number;
@@ -1353,6 +1345,9 @@ declare namespace go {
 
         /**This property determines whether or not this GraphObject's events occur before all other events, including selection.*/
         isActionable: boolean;
+
+        /**Gets or sets a function that is called when the value of any containing Panel's Panel.isEnabled has changed*/
+        enabledChanged: (obj: GraphObject, enabled: boolean) => void;
 
         /**Gets or sets whether a GraphObject is the "main" object for some types of Panel.*/
         isPanelMain: boolean;
@@ -1447,9 +1442,6 @@ declare namespace go {
         /**Gets or sets the stretch of the GraphObject.*/
         stretch: EnumValue;
 
-        /**Gets or sets how the direction of the last segment of a link going to this port is computed when the node is rotated.*/
-        toEndSegmentDirection: EnumValue;
-
         /**Gets or sets the length of the last segment of a link going to this port.*/
         toEndSegmentLength: number;
 
@@ -1465,8 +1457,8 @@ declare namespace go {
         /**Gets or sets the maximum number of links that may go into this port.*/
         toMaxLinks: number;
 
-        /**This Adornment is shown when the mouse hovers over this object.*/
-        toolTip: Adornment;
+        /**This Adornment or HTMLInfo is shown when the mouse hovers over this object.*/
+        toolTip: Adornment | HTMLInfo;
 
         /**Gets or sets how far the end segment of a link going to this port stops short of the actual port.*/
         toShortLength: number;
@@ -1507,7 +1499,6 @@ declare namespace go {
         * @param {*=} defval the default value to return if the argument is optional and not present as the first argument
         * @param {function(*):boolean|null=} pred a predicate to determine the acceptability of the argument;
         *        the default predicate checks whether the argument is a string
-        * @return {*}
         */
         static takeBuilderArgument(args: Array<any>, defval?: any, pred?: (arg: any) => boolean): any;
 
@@ -1519,9 +1510,16 @@ declare namespace go {
         /**
         * Returns the Point in document coordinates for a given Spot in this object's bounds.
         * @param {Spot} s a real Spot describing a location relative to the GraphObject.
-        * @param {Point=} result an optional Point that is modified and returned.
+        * @param {Point=} result an optional Point that is modified and returned in document coordinates.
         */
         getDocumentPoint(s: Spot, result?: Point): Point;
+
+        /**
+        * Returns the Point in document coordinates for a given Point in this object's local coordinates.
+        * @param {Point} p a Point in local coordinates.
+        * @param {Point=} result an optional Point that is modified and returned in document coordinates.
+        */
+        getDocumentPoint(p: Point, result?: Point): Point;
 
         /**
         * Returns the total scale that the object is drawn at, in document coordinates.
@@ -1542,6 +1540,11 @@ declare namespace go {
         * to any depth; false if the argument is null or is not a Panel.
         */
         isContainedBy(panel: GraphObject): boolean;
+
+        /**
+        * This predicate is false if this object is inside any Panel that is not Panel#isEnabled, or if this is itself a disabled panel.
+        */
+        isEnabledObject(): boolean;
 
         /**
         * This predicate is true if this object is .visible and each of its visual containing panels are also visible.
@@ -1590,9 +1593,14 @@ declare namespace go {
         /**GraphObjects with this as the value of GraphObject.stretch are scaled as much as possible in the y-axis*/
         static Vertical: EnumValue;
 
+        fromEndSegmentDirection: EnumValue;  // undocumented, deprecated
+        toEndSegmentDirection: EnumValue;  // undocumented, deprecated
         spanAllocation: (obj: GraphObject, r: RowColumnDefinition, n: number) => number;  // undocumented
         protected cloneProtected(copy: GraphObject): void;  // undocumented
-        static getBuilders(): Map<string,(args: Array<any>) => Object>;  // undocumented
+        findTemplateBinder(): Panel;  // undocumented
+        static FlipHorizontal: EnumValue; // undocumented
+        static FlipVertical: EnumValue; // undocumented
+        static FlipBoth: EnumValue; // undocumented
     }
 
     /**
@@ -1720,9 +1728,6 @@ declare namespace go {
         /**Gets or sets whether the alt key is being held down.*/
         alt: boolean;
 
-        /**Gets or sets whether the underlying .event is prevented from bubbling up the hierarchy of HTML elements outside of the Diagram and whether any default action is canceled.*/
-        bubbles: boolean;
-
         /**Gets or sets the mouse button that caused this event.*/
         button: number;
 
@@ -1800,6 +1805,7 @@ declare namespace go {
         */
         copy(): InputEvent;
 
+        bubbles: boolean;  // undocumented
         isMac: boolean;  // undocumented
     }
 
@@ -1956,9 +1962,6 @@ declare namespace go {
         /**Gets or sets how far the control points are offset when the .curve is .Bezier or when there are multiple links between the same two ports.*/
         curviness: number;
 
-        /**Gets or sets how the direction of the last segment is computed when the node is rotated.*/
-        fromEndSegmentDirection: EnumValue;
-
         /**Gets or sets the length of the last segment.*/
         fromEndSegmentLength: number;
 
@@ -2024,9 +2027,6 @@ declare namespace go {
 
         /**Gets or sets how far the control points are from the points of the route when .routing is .Orthogonal and .curve is .Bezier.*/
         smoothness: number;
-
-        /**Gets or sets how far the control points are from the points of the route when .routing is .Orthogonal and .curve is .Bezier.*/
-        toEndSegmentDirection: EnumValue;
 
         /**Gets or sets the length of the last segment.*/
         toEndSegmentLength: number;
@@ -2288,7 +2288,11 @@ declare namespace go {
         /**Used as a value for Link.adjusting, to indicate that the link route computation should linearly interpolate the intermediate points so that the link's shape looks stretched; if the routing is orthogonal, this value is treated as if it were Link.End.*/
         static Stretch: EnumValue;
 
+        fromEndSegmentDirection: EnumValue;  // undocumented, deprecated
+        toEndSegmentDirection: EnumValue;  // undocumented, deprecated
         routeBounds: Rect;  // undocumented
+        firstPickIndex: number;  // undocumented
+        lastPickIndex: number;  // undocumented
         protected computeCorner(): number;  // undocumented
         protected computeShortLength(from: boolean): number;  // undocumented
         findMidLabel(): GraphObject;  // undocumented
@@ -2296,7 +2300,6 @@ declare namespace go {
         protected setPointAt(i: number, x: number, y: number): void;  // undocumented
         protected insertPointAt(i: number, x: number, y: number): void;  // undocumented
         protected addPointAt(x: number, y: number): void;  // undocumented
-        invalidateGeometry(): void;  // undocumented
     }
 
     /**
@@ -2447,6 +2450,11 @@ declare namespace go {
         findTreeLevel(): number;
 
         /**
+        * Return a collection of Parts including this Node, its tree parent link and node, and so on up the chain to the root node.
+        */
+        findTreeParentChain(): Set<Part>;
+
+        /**
         * Returns the Link that connects with the tree parent Node of this node if the graph is tree-structured, if there is such a link and Link.isTreeLink is true.
         */
         findTreeParentLink(): Link;
@@ -2474,18 +2482,6 @@ declare namespace go {
         */
         isInTreeOf(node: Node): boolean;
 
-        /**This value for GraphObject.fromEndSegmentDirection and GraphObject.toEndSegmentDirection indicates that the link's end segment angle stays the same even if the node is rotated.*/
-        static DirectionAbsolute: EnumValue;
-
-        /**This value for Link.fromEndSegmentDirection and Link.toEndSegmentDirection indicates that the real value is inherited from the corresponding connected port.*/
-        static DirectionDefault: EnumValue;
-
-        /**This value for GraphObject.fromEndSegmentDirection and GraphObject.toEndSegmentDirection indicates that the link's end segment angle is rotated to match the node's angle.*/
-        static DirectionRotatedNode: EnumValue;
-
-        /**This value for GraphObject.fromEndSegmentDirection and GraphObject.toEndSegmentDirection indicates that the link's end segment angle is rotated to match the node's angle, but only in increments of 90 degrees.*/
-        static DirectionRotatedNodeOrthogonal: EnumValue;
-
         /**This value for Node.portSpreading indicates that links connecting with a port should be distributed evenly along the side(s) indicated by a Spot that is a "side" Spot.*/
         static SpreadingEvenly: EnumValue;
 
@@ -2495,7 +2491,10 @@ declare namespace go {
         /**This value for Node.portSpreading indicates that links connecting with a port should be packed together based on the link's shape's width on the side(s) indicated by a Spot that is a "side" Spot.*/
         static SpreadingPacked: EnumValue;
 
-        canAvoid(): boolean;  // undocumented
+        static DirectionAbsolute: EnumValue;  // undocumented, deprecated
+        static DirectionDefault: EnumValue;  // undocumented, deprecated
+        static DirectionRotatedNode: EnumValue;  // undocumented, deprecated
+        static DirectionRotatedNodeOrthogonal: EnumValue;  // undocumented, deprecated
         findVisibleNode(): Node;  // undocumented
         getAvoidableRect(result: Rect): Rect;  // undocumented
         invalidateLinkBundle(other: Node, thisportid?: string, otherportid?: string): void;  // undocumented
@@ -2556,6 +2555,9 @@ declare namespace go {
         */
         constructor(type?: EnumValue);
 
+        /** For Panels which are elements of Spot Panels, this gets or sets the name of this Panel's element that should be used as the alignment object instead of this Panel. */
+        alignmentFocusName: string;
+
         /**This read-only property returns the number of columns in this Panel if it is of .type Panel.Table.*/
         columnCount: number;
 
@@ -2595,11 +2597,35 @@ declare namespace go {
         /**This read-only property returns an iterator over the collection of the GraphObjects that this panel manages.*/
         elements: Iterator<GraphObject>;
 
+        /**Gets or sets the maximum value represented on a .Graduated panel.*/
+        graduatedMax: number;
+
+        /**Gets or sets the minimum value represented on a .Graduated panel.*/
+        graduatedMin: number;
+
+        /**This read-only property returns the range of values represented by a .Graduated panel.*/
+        graduatedRange: number;
+
+        /**Gets or sets the base value which is marked with a tick.*/
+        graduatedTickBase: number;
+
+        /**Gets or sets the difference between two consecutive values marked by ticks.*/
+        graduatedTickUnit: number;
+
         /**Gets or sets the distance between lines in a .Grid panel.*/
         gridCellSize: Size;
 
         /**Gets or sets an origin point for the grid cells in a .Grid panel.*/
         gridOrigin: Point;
+
+        /**Gets or sets whether this Panel's main element clips instead of fills. The main element will not paint its stroke, if it has any. Only works with Spot panels, and assumes that the main element is a Shape.*/
+        isClipping: boolean;
+
+        /**Gets or sets whether this Panel actually responds to user click events, for Panels that are GraphObject#isActionable.*/
+        isEnabled: boolean;
+
+        /** For Horizontal and Vertical panels, gets or sets whether this Panel arranges its contents from the typical side (left and top, respectively), or the opposite side (right and bottom, respectively).*/
+        isOpposite: boolean;
 
         /**Gets or sets a JavaScript Array of values or objects, each of which will be represented by a Panel as elements in this Panel.*/
         itemArray: Array<any>;
@@ -2697,6 +2723,20 @@ declare namespace go {
         getRowDefinition(idx: number): RowColumnDefinition;
 
         /**
+        * Returns the point that corresponds with a value along this Graduated Panel.
+        * The Point will be in the panel's coordinates.
+        * @param {number} val a value between .graduatedMin and .graduatedMax.
+        * @param {Point=} result an optional Point that is modified and returned
+        */
+        graduatedPointForValue(val: number, result?: Point): Point;
+
+        /**
+        * Returns the value that corresponds with a Point near this Graduated Panel.
+        * @param {number} pt a Point in the Graduated Panel's coordinates
+        */
+        graduatedValueForPoint(pt: Point): number;
+
+        /**
         * Adds a GraphObject to the Panel's list of elements at the specified index.
         * @param {number} index
         * @param {GraphObject} element A GraphObject.
@@ -2742,6 +2782,9 @@ declare namespace go {
 
         /**This value for .type resizes the main element to fit around the other elements; the main element is the first GraphObject with GraphObject.isPanelMain set to true, or else the first GraphObject if none have that property set to true.*/
         static Auto: EnumValue;
+
+        /**This value for .type is used to draw regular tick marks along some shape.*/
+        static Graduated: EnumValue;
 
         /**This value for .type is used to draw regular patterns of lines.*/
         static Grid: EnumValue;
@@ -2814,6 +2857,9 @@ declare namespace go {
 
         /**Gets or sets whether the user may group this part to be a member of a new Group.*/
         groupable: boolean;
+
+        /**Gets or sets the function to execute when this part is highlighted or de-highlighted.*/
+        highlightedChanged: (p: Part) => void;
 
         /**Gets or sets whether this Part may be animated.*/
         isAnimated: boolean;
@@ -3126,11 +3172,14 @@ declare namespace go {
         */
         constructor();
 
-        /**Gets or sets the Picture's HTML element, an Image or Video or Canvas element.*/
-        element: HTMLElement;
+        /**Gets or sets the Picture's HTML Element, an Image or Video or Canvas element.*/
+        element: Element;
 
         /**Gets or sets the function to call if an image fails to load.*/
         errorFunction: (pic: Picture, e: Event) => void;
+
+        /**Gets or sets the Spot to align the source image to, when the source image is smaller than the Picture.*/
+        imageAlignment: Spot;
 
         /**Gets or sets how the Picture's image is stretched within its bounding box.*/
         imageStretch: EnumValue;
@@ -3147,7 +3196,10 @@ declare namespace go {
         /**Gets or sets the rectangular area of the source image that this picture should display.*/
         sourceRect: Rect;
 
-        successFunction: (pic: Picture, e: Event) => void;  // undocumented
+        /**Gets or sets the function to call when an image loads successfully.*/
+        successFunction: (pic: Picture, e: Event) => void;
+
+        flip: EnumValue;  // undocumented
         static clearCache(url?: string): void;  // undocumented
     }
 
@@ -3285,7 +3337,13 @@ declare namespace go {
         /**When set, creates a Geometry and normalizes it from a given path string, then sets the Geometry on this Shape and offsets the GraphObject.position by an appropriate amount.*/
         geometryString: string;
 
-        /**Gets or sets how frequently this shape should be drawn within a Grid Panel, in multiples of the Panel.gridCellSize.*/
+        /**Gets or sets the fractional distance along the main shape of a Graduated Panel at which this kind of tick should end.*/
+        graduatedEnd: number;
+
+        /**Gets or sets the fractional distance along the main shape of a Graduated Panel at which this kind of tick should start.*/
+        graduatedStart: number;
+
+        /**Gets or sets how frequently this shape should be drawn within a Grid or Graduated Panel, in multiples of the Panel.gridCellSize or Panel.graduatedTickUnit.*/
         interval: number;
 
         /**Gets or sets the whether the .position denotes the panel coordinates of the geometry or of the stroked area.*/
@@ -3332,7 +3390,6 @@ declare namespace go {
 
         /**
         * This static function returns a read-only Map of named geometry generators.
-        * @return {Map} the keys are figure names; the values are either synonymed names or generator functions
         */
         static getFigureGenerators(): Map<string,(shape: Shape, width: number, height: number) => Geometry>;
 
@@ -3351,7 +3408,6 @@ declare namespace go {
 
         /**
         * This static function returns a read-only Map of named arrowhead geometries.
-        * @return {Map} the keys are arrowhead names; the values are Geometry objects
         */
         static getArrowheadGeometries(): Map<string,Geometry>;
 
@@ -3378,6 +3434,9 @@ declare namespace go {
         */
         constructor();
 
+        /**Gets or sets the an array of possible options for a custom TextEditingTool.*/
+        choices: Array<string>;
+
         /**Gets or sets whether or not this TextBlock allows in-place editing of the .text string by the user with the help of the TextEditingTool.*/
         editable: boolean;
 
@@ -3386,6 +3445,18 @@ declare namespace go {
 
         /**Gets or sets the current font settings.*/
         font: string;
+
+        /**Gets or sets the fractional distance along the main shape of a Graduated Panel at which this kind of tick text should end.*/
+        graduatedEnd: number;
+
+        /**Gets or sets the function to convert from a value along a Graduated Panel to a string.*/
+        graduatedFunction: (val: number) => string;
+
+        /**Gets or sets the fractional distance along the main shape of a Graduated Panel at which this text should start.*/
+        graduatedStart: number;
+
+        /**Gets or sets how frequently this text should be drawn within a Graduated Panel, in multiples of the Panel.graduatedTickUnit.*/
+        interval: number;
 
         /**Gets or sets whether or not the text allows or displays multiple lines or embedded newlines.*/
         isMultiline: boolean;
@@ -3417,11 +3488,17 @@ declare namespace go {
         /**Gets or sets the current text alignment property.*/
         textAlign: string;
 
-        /**Gets or sets the HTMLElement that this TextBlock uses as its text editor in the TextEditingTool.*/
-        textEditor: HTMLElement;
+        /**Gets or sets the function that is called after the TextBlock's text has been edited by the TextEditingTool.*/
+        textEdited: (tb: TextBlock, oldstr: string, newstr: string) => void;
+
+        /**Gets or sets the HTML Element that this TextBlock uses as its text editor in the TextEditingTool.*/
+        textEditor: HTMLInfo | Element;  // Element is deprecated
 
         /**Gets or sets the predicate that determines whether or not a string of text is valid.*/
         textValidation: (tb: TextBlock, oldstr: string, newstr: string) => boolean;
+
+        /**Gets or sets the vertical alignment when the TextBlock has more available vertical space than it needs to draw.*/
+        verticalAlignment: Spot;
 
         /**Gets or sets whether the text should be wrapped if it is too long to fit on one line.*/
         wrap: EnumValue;
@@ -3443,9 +3520,10 @@ declare namespace go {
 
         spacingAbove: number;  // undocumented
         spacingBelow: number;  // undocumented
-        static isValidFont(font: string): boolean;  // undocumented
+        flip: EnumValue;  // undocumented
         static getEllipsis(): string;  // undocumented
         static setEllipsis(val: string): void;  // undocumented
+        static isValidFont(font: string): boolean;  // undocumented
     }
 
 
@@ -3528,7 +3606,61 @@ declare namespace go {
         /**For simple, solid color brushes, used as the value for Brush.type.*/
         static Solid: EnumValue;
 
-        static isValidColor(color: string): boolean;  // undocumented
+        /** For lightening and darkening, used as the color-space value for mode.*/
+        static Lab: EnumValue;
+
+        /** For lightening and darkening, used as the color-space value for mode.*/
+        static HSL: EnumValue;
+
+        /**
+        * This static function returns true if a given color string is well-formed for drawing.
+        * @param {string} color A color string to check
+        */
+        static isValidColor(color: string): boolean;
+
+        /**
+        * This static function takes a color and lightens it by 20% in the Lab color space.
+        * This is a convenience function which calls Brush.lightenBy.
+        * @param {string} color a valid CSS color string
+        */
+        static lighten(color: string): string;
+
+        /**
+        * Modifies all colors within this Brush, lightening them by some fraction.
+        * @param {number=} fraction to lighten the colors, defaults to 0.2, must be between zero and one
+        * @param {EnumValue=} mode color space to use for adjusting; can be Brush.Lab or Brush.HSL, defaults to Brush.Lab
+        */
+        lightenBy(fraction?: number, mode?: EnumValue): Brush;
+
+        /**
+        * This static function takes a color and lightens it.
+        * @param {string} color a valid CSS color string
+        * @param {number=} fraction  to lighten the color, defaults to 0.2, must be between zero and one
+        * @param {EnumValue=} mode color space to use for adjusting; can be Brush.Lab or Brush.HSL, defaults to Brush.Lab
+        */
+        static lightenBy(color: string, fraction?: number, mode?: EnumValue): string;
+
+        /**
+        * This static function takes a color and darkens it by 20% in the Lab color space.
+        * This is a convenience function which calls Brush.darkenBy.
+        * @param {string} color a valid CSS color string
+        */
+        static darken(color: string): string;
+
+        /**
+        * Modifies all colors within this Brush, darkening them by some fraction.
+        * @param {number=} fraction to darken the colors, defaults to 0.2, must be between zero and one
+        * @param {EnumValue=} mode color space to use for adjusting; can be Brush.Lab or Brush.HSL, defaults to Brush.Lab
+        */
+        darkenBy(fraction?: number, mode?: EnumValue): Brush;
+
+        /**
+        * This static function takes a color and darkens it.
+        * @param {string} color a valid CSS color string
+        * @param {number=} fraction to darken the color, defaults to 0.2, must be between zero and one
+        * @param {EnumValue=} mode color space to use for adjusting; can be Brush.Lab or Brush.HSL, defaults to Brush.Lab
+        */
+        static darkenBy(color: string, fraction?: number, mode?: EnumValue): string;
     }
 
     /**
@@ -3580,7 +3712,6 @@ declare namespace go {
         /**
         * Add a PathFigure to the figures list.
         * @param {PathFigure} figure a newly allocated unshared PathFigure that will become owned by this Geometry
-        * @return {Geometry} this
         */
         add(figure: PathFigure): Geometry;
 
@@ -3610,7 +3741,6 @@ declare namespace go {
         * Offsets the Geometry in place by a given (x, y) amount
         * @param {number} x The x-axis offset factor.
         * @param {number} y The y-axis offset factor.
-        * @return {Geometry} this
         */
         offset(x: number, y: number): Geometry;
 
@@ -3631,7 +3761,6 @@ declare namespace go {
         * @param {number} angle The angle to rotate by.
         * @param {number=} x The optional X point to rotate the geometry about. If no point is given, this value is 0.
         * @param {number=} y The optional Y point to rotate the geometry about. If no point is given, this value is 0.
-        * @return {Geometry} this
         */
         rotate(angle: number, x?: number, y?: number): Geometry;
 
@@ -3639,9 +3768,21 @@ declare namespace go {
         * Scales the Geometry in place by a given (x, y) scale factor
         * @param {number} x The x-axis scale factor.
         * @param {number} y The y-axis scale factor.
-        * @return {Geometry} this
         */
         scale(x: number, y: number): Geometry;
+
+       /**
+        * Set spot1 and spot2 without allocating new Spots.
+        * @param {number} f1x spot1.x
+        * @param {number} f1y spot1.y
+        * @param {number} f2x spot2.x
+        * @param {number} f2y spot2.y
+        * @param {number=} o1x offset1.x, default is zero
+        * @param {number=} o1y offset1.y, default is zero
+        * @param {number=} o2x offset2.x, default is zero
+        * @param {number=} o2y offset2.y, default is zero
+        */
+        setSpots(f1x: number, f1y: number, f2x: number, f2y: number, o1x?: number, o1y?: number, o2x?: number, o2y?: number): Geometry;
 
         /**
         * This static function can be used to write out a Geometry as a string
@@ -3666,6 +3807,8 @@ declare namespace go {
         static Rectangle: EnumValue;
 
         equalsApprox(g: Geometry): boolean;  // undocumented
+        getPointAlongPath(fraction: number, result?: Point): Point;  // undocumented
+        getFractionForPoint(pt: Point): number;  // undocumented
     }
 
     /**
@@ -3804,7 +3947,6 @@ declare namespace go {
         /**
         * Add a PathSegment to the segments list.
         * @param {PathSegment} segment a newly allocated unshared PathSegment that will become owned by this PathFigure
-        * @return {PathFigure} this
         */
         add(segment: PathSegment): PathFigure;
 
@@ -4750,7 +4892,7 @@ declare namespace go {
         * @param {function(*,*) | null=} conv A function converting the data property value to the value to set the target property.
         *   If the function is null or not supplied, no conversion takes place.
         */
-        constructor(targetprop?: string, sourceprop?: string, conv?: (a: any, b: any) => any);
+        constructor(targetprop?: string, sourceprop?: string, conv?: (a: any, b: GraphObject | RowColumnDefinition) => any);
 
         /**
         * Gets or sets a converter function to apply to the GraphObject property value
@@ -4763,13 +4905,14 @@ declare namespace go {
         * However, the return value is ignored when the .sourceProperty
         * is the empty string.
         * The function is passed the value from the target
-        * (the first argument) and the source Panel.data object (the second argument).
+        * (the first argument), the source Panel.data object (the second argument),
+        * and the Model.
         * If the .sourceProperty is a property name, that property is set to
         * the function's return value.
         * If the .sourceProperty is the empty string, the function should
         * modify the second argument, which will be the source data object.
         */
-        backConverter: (a: any, b: any) => any;
+        backConverter: (a: any, b: any, model: Model) => any;
 
         /**
         * Gets or sets a converter function to apply to the data property value
@@ -4788,7 +4931,7 @@ declare namespace go {
         * If the .targetProperty is the empty string, the function should
         * modify the second argument, which will be the target object.
         */
-        converter: (a: any, b: any) => any;
+        converter: (a: any, b: GraphObject | RowColumnDefinition) => any;
 
         /**
         * Gets or sets the directions and frequency in which the binding may be evaluated.
@@ -4835,7 +4978,13 @@ declare namespace go {
         * You should not have a TwoWay binding on a node data object's key property.
         * @param {function(*,*) | null=} backconv
         */
-        makeTwoWay(backconv?: (a: any, b: any) => any): Binding;
+        makeTwoWay(backconv?: (a: any, b: any, model: Model) => any): Binding;
+
+        /**
+        * Modify this Binding so that the source is the Model#modelData object,
+        * not a regular node data object or another GraphObject in the Part.
+        */
+        ofModel(): Binding;
 
         /**
         * Modify this Binding to set its .sourceName property so as to identify
@@ -4873,8 +5022,6 @@ declare namespace go {
 
         /**This value for Binding.mode uses data source values and GraphObject properties and keeps them in sync.*/
         static TwoWay: EnumValue;
-
-        ofModel(): Binding;  // undocumented
     }
 
     /**
@@ -5450,7 +5597,7 @@ declare namespace go {
 
         /**
          * Copies properties from this model to the given model, which must be of the same class as this model.
-         * @param {Model} copy 
+         * @param {Model} copy
          */
         protected cloneProtected(copy: Model): void;
 
@@ -5676,12 +5823,11 @@ declare namespace go {
         * The purpose of this method is to make it easier to send incremental changes to the server/database,
         * instead of sending the whole model.
         * <p>
-        * For GraphLinksModels, this method requires that GraphLinksModel#linkKeyProperty is not an empty string.
+        * For GraphLinksModels, this method requires that GraphLinksModel.linkKeyProperty is not an empty string.
         * The incremental JSON for GraphLinksModels will include "modifiedLinkData", "insertedLinkKeys", and "removedLinkKeys"
         * properties that are Arrays.
         * @param {ChangedEvent} e a Transaction ChangedEvent for which ChangedEvent.isTransactionFinished is true
         * @param {string=} classname for the written model, defaults to the name of the class of the model
-        * @return {string}
         */
         toIncrementalJson(e: ChangedEvent, classname?: string): string;
 
@@ -6627,9 +6773,17 @@ declare namespace go {
 
         /**
          * Copies properties from this layout to the given layout, which must be of the same class as this layout.
-         * @param {Layout} copy 
+         * @param {Layout} copy
          */
         protected cloneProtected(copy: Layout): void;
+
+        /**
+         * A convenient way of converting the Diagram|Group|Iterable argument to doLayout to an actual collection of eligible Parts.
+         * The resulting Set will not include any Nodes or Links for which Part.canLayout is false.
+         * If the argument includes a Group for which Group.layout is null, the resulting Set
+         * will include the member parts of that group rather than that group itself.
+         */
+        collectParts(coll: Iterable<Part>): Set<Part>;
 
         /**
         * When using a LayoutNetwork, commit changes to the diagram by setting Node positions and by routing the Links.
@@ -6668,7 +6822,7 @@ declare namespace go {
         */
         updateParts(): void;
 
-        collectParts(coll: Iterable<Part>): void;  // undocumented
+        initialOrigin(origin: Point): Point;  // undocumented
     }
 
     /**
@@ -7471,7 +7625,10 @@ declare namespace go {
         constructor();
 
         /**Gets or sets the currently showing context menu, or null if there is none.*/
-        currentContextMenu: Adornment;
+        currentContextMenu: Adornment | HTMLInfo;
+
+        /**Gets or sets the Adornment or HTMLInfo that acts as the default touch context menu.*/
+        defaultTouchContextMenu: Adornment | HTMLInfo;
 
         /**Gets or sets the GraphObject found at the mouse point that has a context menu.*/
         currentObject: GraphObject;
@@ -7502,7 +7659,7 @@ declare namespace go {
         /**
         * Find a GraphObject at the current mouse point with a GraphObject.contextMenu, or return the Diagram if there is a Diagram.contextMenu.
         */
-        findObjectWithContextMenu(): GraphObject | Diagram;
+        protected findObjectWithContextMenu(): GraphObject | Diagram;
 
         /**
         * Hide any context menu.
@@ -7519,19 +7676,41 @@ declare namespace go {
         * @param {Adornment} contextmenu
         * @param {GraphObject} obj
         */
-        positionContextMenu(contextmenu: Adornment, obj: GraphObject): void;
+        positionContextMenu(contextmenu: Adornment | HTMLInfo, obj: GraphObject): void;
 
         /**
-        * Show an Adornment as a context menu.
-        * @param {Adornment} contextmenu
+        * Show an Adornment or HTMLInfo as a context menu.
+        * @param {Adornment|HTMLInfo} contextmenu
         * @param {GraphObject} obj
         */
-        showContextMenu(contextmenu: Adornment, obj: GraphObject): void;
+        showContextMenu(contextmenu: Adornment | HTMLInfo, obj: GraphObject): void;
 
         /**
         * Show a series of HTML elements acting as a context menu.
         */
         showDefaultContextMenu(): void;
+    }
+
+
+    /**
+    * HTMLInfo is used to show and hide a custom object, such as a context menu or tooltip made of HTML.
+    */
+    export class HTMLInfo {
+      /**
+      * Newly constructed HTMLInfo can be assigned as a value of TextEditingTool.defaultTextEditor, TextBlock.textEditor, GraphObject.contextMenu, Diagram.contextMenu, GraphObject.toolTip, or Diagram.toolTip.
+      */
+      constructor();
+
+      /**Gets or sets the function to call when an HTMLInfo is shown.*/
+      show: (obj: GraphObject, diagram: Diagram, arg: Tool) => void;
+      /**Gets or sets the function to call when an HTMLInfo is to be hidden.*/
+      hide: (diagram: Diagram, arg: Tool) => void;
+      /**Gets or sets the primary HTML Element that represents this HTMLInfo.*/
+      mainElement: Element;
+      /**Gets or sets whether this HTMLInfo is modal. If true, clicking on the diagram after activation will automatically stop the tool associated with this HTMLInfo.*/
+      isModal: boolean;
+      /**Gets or sets a function that returns the primary value associated with this HTMLInfo, such as the value of a text editor, which would be solicited by the TextEditingTool.*/
+      value: () => any;
     }
 
     /**
@@ -7675,17 +7854,17 @@ declare namespace go {
         /**
         * Return the selectable and movable/copyable Part at the mouse-down point.
         */
-        findDraggablePart(): Part;
+        protected findDraggablePart(): Part;
 
         /**
         * This predicate is true when the diagram allows objects to be copied and inserted, and some object in the selection is copyable, and the user is holding down the Control key.
         */
-        mayCopy(): boolean;
+        protected mayCopy(): boolean;
 
         /**
         * This predicate is true when the diagram allows objects to be moved, and some object in the selection is movable.
         */
-        mayMove(): boolean;
+        protected mayMove(): boolean;
 
         /**
         Move a collection of Parts by a given offset.
@@ -7732,7 +7911,7 @@ declare namespace go {
         /**
         * This just returns a Rect stretching from the mouse-down point to the current mouse point.
         */
-        computeBoxBounds(): Rect;
+        protected computeBoxBounds(): Rect;
 
         /**
         * Capture the mouse and show the .box.
@@ -7829,7 +8008,7 @@ declare namespace go {
         * @param {GraphObject} tempport
         * @param {boolean} toend
         */
-        copyPortProperties(realnode: Node, realport: GraphObject, tempnode: Node, tempport: GraphObject, toend: boolean): void;
+        protected copyPortProperties(realnode: Node, realport: GraphObject, tempnode: Node, tempport: GraphObject, toend: boolean): void;
 
         /**
         * Mouse movement results in a temporary node moving to where a valid target port is located, or to where the mouse is if there is no valid target port nearby.
@@ -7840,7 +8019,7 @@ declare namespace go {
         * Find a port with which the user could complete a valid link.
         * @param {boolean} toend true if looking for a "to" port.
         */
-        findTargetPort(toend: boolean): GraphObject;
+        protected findTargetPort(toend: boolean): GraphObject;
 
         /**
         * This predicate is true if both argument ports are in the same Node.
@@ -7863,7 +8042,6 @@ declare namespace go {
         * @param {Node} from
         * @param {Node} to
         * @param {Link} ignore may be null; this is useful during relinking to ignore the originalLink
-        * @return {boolean}
         */
         isValidCycle(from: Node, to: Node, ignore: Link): boolean;
 
@@ -7913,7 +8091,7 @@ declare namespace go {
         * @param {GraphObject} tempport
         * @param {boolean} toend
         */
-        setNoTargetPortProperties(tempnode: Node, tempport: GraphObject, toend: boolean): void;
+        protected setNoTargetPortProperties(tempnode: Node, tempport: GraphObject, toend: boolean): void;
     }
 
     /**
@@ -7957,9 +8135,19 @@ declare namespace go {
         doMouseUp(): void;
 
         /**
+        * This method is called upon a mouse up when no new link is drawn,
+        * either because no valid LinkingBaseTool.targetPort was found or because insertLink returned null.
+        * @param {Node} fromnode
+        * @param {GraphObject} fromport the from-port, or null to use the node itself
+        * @param {Node} tonode
+        * @param {GraphObject} toport the to-port, or null to use the node itself
+        */
+        doNoLink(fromnode: Node, fromport: GraphObject, tonode: Node, toport: GraphObject): void;
+
+        /**
         * Return the GraphObject at the mouse-down point, if it is part of a node and if it is valid to link with it.
         */
-        findLinkablePort(): GraphObject;
+        protected findLinkablePort(): GraphObject;
 
         /**
         * Make a copy of the .archetypeLinkData, set its node and port properties, and add it to the model.
@@ -8020,7 +8208,7 @@ declare namespace go {
         * This is called by .doMouseMove and .doMouseUp to limit the input point before calling .reshape.
         * @param {Point} p
         */
-        computeReshape(p: Point): Point;
+        protected computeReshape(p: Point): Point;
 
         /**
         * Start reshaping, if .findToolHandleAt finds a reshape handle at the mouse down point.
@@ -8161,7 +8349,7 @@ declare namespace go {
         * @param {Link} reallink
         * @param {Link} templink
         */
-        copyLinkProperties(reallink: Link, templink: Link): void;
+        protected copyLinkProperties(reallink: Link, templink: Link): void;
 
         /**
         * Start the relinking operation.
@@ -8177,6 +8365,13 @@ declare namespace go {
         * A mouse-up ends the relinking operation; if there is a valid .targetPort nearby, this modifies the old link to connect with the target port.
         */
         doMouseUp(): void;
+
+        /**
+        * This method is called upon a mouse up when reconnectLink is not called.
+        * @param {Link} existinglink
+        * @param {boolean} toend If true, the user was trying to modify the link's "to" node and port.
+        */
+        doNoRelink(existinglink: Link, toend: boolean): void;
 
         /**
         * Modify an existing Link to connect to a new node and port.
@@ -8240,17 +8435,22 @@ declare namespace go {
         /**
         * The size should be a multiple of the value returned by this method.
         */
-        computeCellSize(): Size;
+        protected computeCellSize(): Size;
 
         /**
         * The effective maximum resizing size is the minimum of the .maxSize and the .adornedObject's GraphObject.maxSize.
         */
-        computeMaxSize(): Size;
+        protected computeMaxSize(): Size;
 
         /**
         * The effective minimum resizing size is the maximum of .minSize and the .adornedObject's GraphObject.minSize.
         */
-        computeMinSize(): Size;
+        protected computeMinSize(): Size;
+
+        /**
+        * Decide whether to allow arbitrary reshaping or whether to keep the same aspect ratio of the object being resized.
+        */
+        protected computeReshape(): boolean;
 
         /**
         * Given a Spot in the original bounds of the object being resized and a new Point, compute the new Rect.
@@ -8261,7 +8461,7 @@ declare namespace go {
         * @param {Size} cell the result of the call to .computeCellSize.
         * @param {boolean} reshape true if the new size may change the aspect ratio from that of the natural bounds of the .adornedObject.
         */
-        computeResize(newPoint: Point, spot: Spot, min: Size, max: Size, cell: Size, reshape: boolean): Rect;
+        protected computeResize(newPoint: Point, spot: Spot, min: Size, max: Size, cell: Size, reshape: boolean): Rect;
 
         /**
         * Capture the mouse, remember the object's original bounds, and start a transaction.\
@@ -8299,6 +8499,8 @@ declare namespace go {
         * @param {Part} part
         */
         updateAdornments(part: Part): void;
+
+        updateResizeHandles(elt: GraphObject, angle: number);  // undocumented
     }
 
     /**
@@ -8340,7 +8542,7 @@ declare namespace go {
         * Compute the new angle given a point.
         * @param{Point} newPoint
         */
-        computeRotate(newPoint: Point): number;
+        protected computeRotate(newPoint: Point): number;
 
         /**
         * Capture the mouse, remember the original GraphObject.angle, and start a transaction.
@@ -8391,11 +8593,11 @@ declare namespace go {
         */
         constructor();
 
-        /**Gets or sets the HTML element that edits the text.*/
-        currentTextEditor: Element;
+        /**Gets or sets the HTMLInfo or HTML Element that edits the text.*/
+        currentTextEditor: HTMLInfo | Element;  // Element is deprecated
 
-        /**Gets or sets the HTML element that edits the text.*/
-        defaultTextEditor: Element;
+        /**Gets or sets the HTMLInfo or HTML Element that edits the text.*/
+        defaultTextEditor: HTMLInfo | Element;  // Element is deprecated
 
         /**Gets or sets how user gestures can start in-place editing of text.*/
         starting: EnumValue;
@@ -8464,6 +8666,9 @@ declare namespace go {
 
         /**The user has clicked somewhere else in the diagram.*/
         static MouseDown: EnumValue;
+
+        /**A double click on a TextBlock with TextBlock.editable property set to true will start in-place editing.*/
+        static DoubleClick: EnumValue;
 
         /**A single click on a TextBlock with TextBlock.editable property set to true will start in-place editing.*/
         static SingleClick: EnumValue;
@@ -8594,7 +8799,6 @@ declare namespace go {
         * @param {function(GraphObject):GraphObject | null=} navig An optional custom navigation
         * function to find target objects.
         * @param {function(GraphObject):boolean | null=} pred An optional custom predicate
-        * @return {boolean} true if InputEvent#handled had been set to true on the Diagram#lastInput.
         */
         standardMouseClick(navig?: (obj: GraphObject) => GraphObject, pred?: (obj: GraphObject) => boolean): boolean;
 
@@ -8675,7 +8879,7 @@ declare namespace go {
         contextMenuTool: ContextMenuTool;
 
         /**This read-only property returns the currently showing tooltip, or null if there is none.*/
-        currentToolTip: Adornment;
+        currentToolTip: Adornment | HTMLInfo;
 
         /**Gets or sets the mode-less DraggingTool, normally one of the .mouseMoveTools.*/
         draggingTool: DraggingTool;
@@ -8685,6 +8889,9 @@ declare namespace go {
 
         /**Gets or sets the distance in view coordinates within which a mouse down-and-up is considered a click and beyond which a mouse movement is considered a drag.*/
         dragSize: Size;
+
+        /** Gets or sets the ToolManager's default gestureBehavior behavior. Allowed values are ToolManager#GestureZoom and ToolManager#GestureCancel and ToolManager#GestureNone. The default value is ToolManager#GestureZoom. */
+        gestureBehavior: EnumValue;
 
         /**Gets or sets the time between when the mouse stops moving and a hold event, in milliseconds.*/
         holdDelay: number;
@@ -8791,7 +8998,7 @@ declare namespace go {
         * @param {Adornment} tooltip
         * @param {GraphObject} obj The GraphObject getting the tooltip.
         */
-        positionToolTip(tooltip: Adornment, obj: GraphObject): void;
+        positionToolTip(tooltip: Adornment | HTMLInfo, obj: GraphObject): void;
 
         /**
         * Replace a mouse tool of a given name with a new tool.
@@ -8806,7 +9013,7 @@ declare namespace go {
         * @param {Adornment} tooltip
         * @param {GraphObject} obj The GraphObject getting the tooltip; this is null if the tooltip is being shown for the diagram background.
         */
-        showToolTip(tooltip: Adornment, obj: GraphObject): void;
+        showToolTip(tooltip: Adornment | HTMLInfo, obj: GraphObject): void;
 
         /**This value for gestureBehavior indicates that the pointer/touch pinch gestures on the canvas intend to have no effect on the Diagram, but also no effect on the page.*/
         static GestureCancel: EnumValue;
@@ -9080,10 +9287,10 @@ declare namespace go {
 
         /**
         * Removes a range of values from the List.
-        * @param {number} to
-        * @param {number} from
+        * @param {number} from The starting index of the range to remove, inclusive.
+        * @param {number} to The ending index of the range to remove, inclusive.
         */
-        removeRange(to: number, from: number): void;
+        removeRange(from: number, to: number): List<T>;
 
         /**
         * Reverse the order of items in this List.
@@ -9458,3 +9665,4 @@ declare namespace go {
 } //END go
 
 export = go;
+

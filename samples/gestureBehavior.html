@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ToolManager.gestureBehavior Sample</title>
+<meta name="description" content="Example of ToolManager.gestureBehavior property." />
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    // define a simple Node template
+    var myNodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8 },
+          new go.Binding("text", "key"))
+      );
+
+    var myModel = new go.GraphLinksModel(
+      [
+        { key: "Alpha", color: "lightblue" },
+        { key: "Beta", color: "orange" },
+        { key: "Gamma", color: "lightgreen" },
+        { key: "Delta", color: "pink" }
+      ],
+      [
+        { from: "Alpha", to: "Beta" },
+        { from: "Alpha", to: "Gamma" },
+        { from: "Beta", to: "Beta" },
+        { from: "Gamma", to: "Delta" },
+        { from: "Delta", to: "Alpha" }
+      ]);
+
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                  {
+                    allowHorizontalScroll: false, allowVerticalScroll: false,
+                    "panningTool.isEnabled": false,
+                    "toolManager.gestureBehavior": go.ToolManager.GestureCancel,
+                    model: myModel,
+                    nodeTemplate: myNodeTemplate,
+                    initialContentAlignment: go.Spot.Center  // center the content
+                  });
+
+  }
+
+  function changegestureBehavior(id) {
+    switch (id) {
+      case "GestureZoom":
+        myDiagram.toolManager.gestureBehavior = go.ToolManager.GestureZoom;
+        break;
+      case "GestureCancel":
+        myDiagram.toolManager.gestureBehavior = go.ToolManager.GestureCancel;
+        break;
+      case "GestureNone":
+        myDiagram.toolManager.gestureBehavior = go.ToolManager.GestureNone;
+        break;
+    }
+  }
+
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+
+  <p>
+    This sample demonstrates the different values of <a>ToolManager.gestureBehavior</a>.
+  </p>
+  <p>
+    <ul>
+      <li><a>ToolManager.GestureZoom</a> is the default value: Pinch gestures will zoom the Diagram.
+      <li><a>ToolManager.GestureCancel</a>: Pinch gestures zoom the browser page instead of the Diagram.
+      <li><a>ToolManager.GestureNone</a>: Pinch gestures will do nothing.
+    </ul>
+  </p>
+  <p>
+    Set the value for the Diagram below:
+  </p>
+
+  <p><label><input type="radio" id="GestureZoom" onclick="changegestureBehavior(this.id)" name="group1"><code>go.ToolManager.GestureZoom;</code></label>
+  <p><label><input type="radio" id="GestureCancel" onclick="changegestureBehavior(this.id)" name="group1" checked="checked"><code>go.ToolManager.GestureCancel;</code></label>
+  <p><label><input type="radio" id="GestureNone" onclick="changegestureBehavior(this.id)" name="group1"><code>go.ToolManager.GestureNone;</code></label>
+
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+
+</div>
+</body>
+</html>

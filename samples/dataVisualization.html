@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Visualization GoJS Sample</title>
 <meta name="description" content="Interactive visualization of multi-dimensional data with HTML tooltips." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
@@ -21,7 +22,7 @@ Lets also add a border to help see the edges.
 
   #controls {
     border: solid 1px gray;
-    width: 300px;
+    width: 250px;
     background: #ffffff;
     padding: 5px;
     float: left;
@@ -74,9 +75,8 @@ Lets also add a border to help see the edges.
   label:hover, label:focus { background: #CEDFF2; }
 </style>
 
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   var myDiagram;
   var myLocation = {  // this controls the data properties used by data binding conversions
@@ -89,12 +89,18 @@ Lets also add a border to help see the edges.
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
+    var myToolTip = $(go.HTMLInfo, {
+      show: showToolTip,
+      // do nothing on hide: This tooltip doesn't hide unless the mouse leaves the diagram
+    })
+
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
           "animationManager.isEnabled": false,  // don't bother with layout animation
           contentAlignment: go.Spot.Center,  // content is always centered in the viewport
           autoScale: go.Diagram.Uniform,  // scale always has all content fitting in the viewport
+          "toolManager.hoverDelay": 10,  // how quickly tooltips are shown
           isReadOnly: true,  // don't let users modify anything
           mouseOver: doMouseOver,  // this event handler is defined below
           click: doMouseOver  // this event handler is defined below
@@ -105,7 +111,7 @@ Lets also add a border to help see the edges.
       $(go.Node, "Auto",
         {
           selectable: false,
-          mouseOver: doMouseOver  // this event handler is defined below
+          toolTip: myToolTip
         },
         new go.Binding("location", "", function(nothing, elt) {
             return new go.Point(elt.data[myLocation.x]*200,
@@ -318,12 +324,14 @@ Lets also add a border to help see the edges.
           closest = node;
         }
       });
-      highlightNode(e, closest);
+      showToolTip(closest, myDiagram);
     }
 
     // Called with a Node (or null) that the mouse is over or near
-    function highlightNode(e, node) {
-      if (node !== null) {
+    function showToolTip(obj, diagram) {
+      if (obj !== null) {
+        var node = obj.part;
+        var e = diagram.lastInput;
         var shape = node.findObject("SHAPE");
         shape.stroke = "white";
         if (lastStroked !== null && lastStroked !== shape) lastStroked.stroke = null;
@@ -353,13 +361,14 @@ Lets also add a border to help see the edges.
       var infoBox = document.getElementById("infoBox");
       var elem = document.elementFromPoint(e.clientX, e.clientY);
       if (elem !== null && (elem === infoBox || elem.parentNode === infoBox)) {
-        // do nothing
+        var box = document.getElementById("infoBoxHolder");
+        box.style.left = parseInt(box.style.left) + "px";
+        box.style.top = parseInt(box.style.top)+30 + "px";
       } else {
         var box = document.getElementById("infoBoxHolder");
         box.innerHTML = "";
       }
     }, false);
-
   } // end init
 
   // This function is called to update the tooltip information
@@ -379,9 +388,8 @@ Lets also add a border to help see the edges.
 
     var box = document.getElementById("infoBoxHolder");
     box.innerHTML = x;
-
-    box.style.left = mousePt.x + 160 + "px";
-    box.style.top = mousePt.y + 80 + "px";
+    box.style.left = mousePt.x + 30 + "px";
+    box.style.top = mousePt.y + 20 + "px";
   }
 
   // This function is called which a radio button is pressed.
@@ -402,7 +410,6 @@ Lets also add a border to help see the edges.
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>GoJS Data Visualization</h3>
   <div style="display: inline-block">
 
     <!--The DIV for the Diagram needs an explicit size or else we won't see anything.

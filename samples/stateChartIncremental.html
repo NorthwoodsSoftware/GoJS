@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>State Chart With Incremental Saves</title>
 <meta name="description" content="A finite state machine chart with editable and interactive features." />
 <!-- /* Copyright 1998-2017 by Northwoods Software Corporation. */ -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -41,7 +41,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -108,7 +108,7 @@
       // add the new node data to the model
       var model = diagram.model;
       model.addNodeData(toData);
-      
+
       // create a link data from the old node data to the new node data
       var linkdata = {
         from: model.getKeyForNodeData(fromData),  // or just: fromData.id
@@ -117,13 +117,13 @@
       };
       // and add the link data to the model
       model.addLinkData(linkdata);
-      
+
       // select the new Node
       var newnode = diagram.findNodeForData(toData);
       diagram.select(newnode);
-      
+
       diagram.commitTransaction("Add State");
-      
+
       // if the new node is off-screen, scroll the diagram to show the new node
       diagram.scrollToRect(newnode.actualBounds);
     }

@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS SubGraphs -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Groups as SubGraphs</h2>
+<h1>Groups as SubGraphs</h1>
 <p>
 There are some common ways of treating the nodes and links that are the members of a group as if it were its own graph.
-A <a>Group</a> has its own <a>Group.layout</a> that is responsible for the positioning of member <a>Node</a>s
-and the routing of member <a>Link</a>s.
 One way to declutter a diagram is to "collapse" a <a>Group</a> to hide the subgraph that it holds.
 </p>
 <p>
+A <a>Group</a> has its own <a>Group.layout</a> that is responsible for the positioning of member <a>Node</a>s
+and the routing of member <a>Link</a>s.
+This is exactly like a <a>Diagram</a> having its own <a>Diagram.layout</a> that positions top-level Nodes and routes top-level Links.
+</p>
+<p>
 Keep in mind that subgraphs are not separate Diagrams and that Groups are just one way of organizing Parts.
+Because subgraphs are collections of Nodes and Links in the same Diagram as the Group itself,
+it is possible to have Links that connect Nodes that are inside a Group with Nodes that are outside of the group.
+It is also possible to have links that connect nodes with the group of which they are a member.
 </p>
 
-<h3>Layouts of SubGraphs</h3>
+<h2 id="LayoutsOfSubgraphs">Layouts of SubGraphs</h2>
 <p>
 You can specify a <a>Layout</a> that applies to a group's subgraph by setting the <a>Group.layout</a> property.
 This operates on the group's member nodes and links as if it were its own diagram.
@@ -94,7 +101,7 @@ Nodes and Links as if the Group did not exist.
 This is possible because a subgraph is not another <a>Diagram</a>.
 </p>
 
-<h3>Collapsing and Expanding Groups</h3>
+<h2 id="CollapsingAndExpandingGroups">Collapsing and Expanding Groups</h2>
 <p>
 One common technique to visually simplify a diagram is to hide parts of them by "collapsing" them.
 In the case of <a>Group</a>s, it may make sense to be able to hide the subgraph.
@@ -169,6 +176,46 @@ If you do not want a layout to be performed again when the group changes size,
 you can set the <a>Part.layoutConditions</a> property to control the circumstances under which
 the layout will be invalidated.
 </p>
+
+<p>
+  <a>Placeholder</a>s can be part of complex panels.
+  The following example demonstrates a different way to have each Group have a header holding a button and some text.
+</p>
+<pre data-language="javascript" id="collapseExpand2">
+  diagram.groupTemplate =
+    $(go.Group, "Auto",
+      { layout: $(go.TreeLayout) },
+      $(go.Shape, "Rectangle", { fill: "orange", stroke: "darkorange" }),
+      $(go.Panel, "Table",
+        { margin: 0.5 },  // avoid overlapping border with table contents
+        $(go.RowColumnDefinition, { row: 0, background: "white" }),  // header is white
+        $("SubGraphExpanderButton", { row: 0, column: 0, margin: 3 }),
+        $(go.TextBlock,  // title is centered in header
+          { row: 0, column: 1, font: "bold 14px Sans-Serif", stroke: "darkorange",
+            textAlign: "center", stretch: go.GraphObject.Horizontal },
+          new go.Binding("text")),
+        $(go.Placeholder,  // becomes zero-sized when Group.isSubGraphExpanded is false
+          { row: 1, columnSpan: 2, padding: 10, alignment: go.Spot.TopLeft },
+          new go.Binding("padding", "isSubGraphExpanded",
+                         function(exp) { return exp ? 10 : 0; } ).ofObject())
+      )
+    );
+
+  diagram.layout = $(go.TreeLayout);
+
+  diagram.model = new go.GraphLinksModel([
+      { key: 1, text: "Alpha" },
+      { key: 2, text: "GROUP", isGroup: true },
+      { key: 3, text: "Beta", group: 2 },
+      { key: 4, text: "Gamma", group: 2 },
+      { key: 5, text: "Delta" }
+    ], [
+      { from: 1, to: 3 },
+      { from: 3, to: 4 },
+      { from: 1, to: 5 }
+    ]);
+</pre>
+<script>goCode("collapseExpand2", 600, 200)</script>
 
 </div>
 </div>

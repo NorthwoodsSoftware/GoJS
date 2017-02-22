@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Using Models -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Using Models and Templates</h2>
+<h1>Using Models and Templates</h1>
 <p>
 You can build a diagram of nodes and links programmatically.
 But <b>GoJS</b> offers a way to build diagrams in a more declarative manner.
@@ -20,7 +21,7 @@ and instances of parts (i.e. the templates) that are automatically copied into t
 Those templates may be parameterized by properties of the node and link data.
 </p>
 
-<h3>Building diagrams with code</h3>
+<h2 id="BuildingDiagramsWithCode">Building diagrams with code</h2>
 <p>
 Let us try to build two nodes and connect them with a link.
 Here is one way of doing that:
@@ -86,7 +87,7 @@ What we are looking for is the separation of the appearance, definition, and con
 of all of the nodes from the application data needed to describe the unique aspects of each particular node.
 </p>
 
-<h3>Using a Model and Templates</h3>
+<h2 id="UsingModelAndTemplates">Using a Model and Templates</h2>
 <p>
 One way of achieving the separation of node appearance from node data is to use a data model and node templates.
 A model is basically just a collection of data that holds the essential information for each node and each link.
@@ -172,7 +173,7 @@ Now the graph looks better, but the nodes have not been parameterized -- they ar
 We can achieve that parameterization by using data binding.
 </p>
 
-<h3>Parameterizing Nodes using data binding</h3>
+<h2 id="ParameterizingNodesUsingDataBindings">Parameterizing Nodes using data binding</h2>
 <p>
 A data binding is a declarative statement that the value of the property of one object
 should be used to set the value of a property of another object.
@@ -233,14 +234,24 @@ A template is a <a>Part</a> that may have some data <a>Binding</a>s and that is 
 but may be copied to create parts that are added to a diagram.
 </p>
 
-<h3>Kinds of Models</h3>
+<h3 id="TemplateDefinitions">Template Definitions</h3>
+<p>
+The implementations of all predefined templates are provided in <a href="../extensions/Templates.js">Templates.js</a> in the Extensions directory.
+You may wish to copy and adapt these definitions when creating your own templates.
+</p>
+<p>
+Those definitions might not be an up-to-date description
+of the actual standard template implementations that are in <b>GoJS</b>.
+</p>
+
+<h2 id="KindsOfModels">Kinds of Models</h2>
 <p>
 A model is a way of interpreting a collection of data objects as an abstract graph
 with various kinds of relationships determined by data properties and the assumptions that the model makes.
 The simplest kind of model, <a>Model</a>, can only hold "parts" without any relationships between them --
 no links or groups.  But that model class acts as the base class for other kinds of models.
 </p>
-<h4>GraphLinksModel</h4>
+<h3 id="GraphLinksModel">GraphLinksModel</h3>
 <p>
 The kind of model you have seen above, <a>GraphLinksModel</a>, is actually the most general kind.
 It supports link relationships using a separate link data object for each <a>Link</a>.
@@ -262,7 +273,7 @@ A <a>GraphLinksModel</a> also supports the group-membership relationship.
 Any <a>Part</a> can belong to at most one <a>Group</a>; no group can be contained in itself, directly or indirectly.
 You can learn more about grouping in other pages, such as <a href="groups.html">Groups</a>.
 </p>
-<h4>TreeModel</h4>
+<h3 id="TreeModel">TreeModel</h3>
 <p>
 A simpler kind of model, the <a>TreeModel</a>, only supports link relationships that form a tree-structured graph.
 There is no separate link data, so there is no "linkDataArray".
@@ -301,7 +312,7 @@ Or you may want to use other features that TreeModel does not support.
 Other pages such as <a href="trees.html">Trees</a> discuss tree-oriented features of <b>GoJS</b> in more detail.
 </p>
 
-<h3>Modifying Models</h3>
+<h2 id="ModifyingModels">Modifying Models</h2>
 <p>
 If you want to add or remove nodes programmatically, you will probably want to call the
 <a>Model.addNodeData</a> and <a>Model.removeNodeData</a> methods.
@@ -340,7 +351,7 @@ or when initializing a JavaScript Object as a new node data object, such calls a
 But once the data is part of the Model, calling the model's methods to effect changes is necessary.
 </p>
 
-<h3>Saving and Loading Models</h3>
+<h2 id="SavingAndLoadingModels">Saving and Loading Models</h2>
 <p>
 <b>GoJS</b> does not require you to save models in any particular medium or format.
 But because this is JavaScript and JSON is the most popular data-interchange format,

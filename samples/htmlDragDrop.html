@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Drag and Drop Example</title>
 <meta name="description" content="Use HTML5 drag-and-drop to implement dragging HTML elements onto a GoJS Diagram to create new nodes." />
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <style>
   .draggable {
@@ -17,19 +18,16 @@
   }
 
   .palettezone {
-    width: 140px;
-    height: 380px;
+    width: 160px;
+    height: 400px;
     background: lightblue;
-    margin-bottom: 10px;
     padding: 10px;
     padding-top: 1px;
-    padding-bottom: 20px;
     float: left;
   }
 </style>
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -39,6 +37,20 @@
     // *********************************************************
 
     var dragged = null; // A reference to the element currently being dragged
+
+    // highlight stationary nodes during an external drag-and-drop into a Diagram
+    function highlight(node) {  // may be null
+      var oldskips = myDiagram.skipsUndoManager;
+      myDiagram.skipsUndoManager = true;
+      myDiagram.startTransaction("highlight");
+      if (node !== null) {
+        myDiagram.highlight(node);
+      } else {
+        myDiagram.clearHighlighteds();
+      }
+      myDiagram.commitTransaction("highlight");
+      myDiagram.skipsUndoManager = oldskips;
+    }
 
     // This event should only fire on the drag targets.
     // Instead of finding every drag target,
@@ -59,6 +71,7 @@
     document.addEventListener("dragend", function(event) {
       // reset the border of the dragged element
       dragged.style.border = "";
+      highlight(null);
     }, false);
 
     // Next, events intended for the drop target - the Diagram div
@@ -77,6 +90,29 @@
       // But on divs that already contain an element,
       // we want to disallow dropping
 
+      if (this === myDiagram.div) {
+        var can = event.target;
+        var pixelratio = window.PIXELRATIO;
+
+        // if the target is not the canvas, we may have trouble, so just quit:
+        if (!(can instanceof HTMLCanvasElement)) return;
+
+        var bbox = can.getBoundingClientRect();
+        var bbw = bbox.width;
+        if (bbw === 0) bbw = 0.001;
+        var bbh = bbox.height;
+        if (bbh === 0) bbh = 0.001;
+        var mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw);
+        var my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh);
+        var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
+        var curnode = myDiagram.findPartAt(point, true);
+        if (curnode instanceof go.Node) {
+          highlight(curnode);
+        } else {
+          highlight(null);
+        }
+      }
+
       if (event.target.className === "dropzone") {
         // Disallow a drop by returning before a call to preventDefault:
         return;
@@ -91,15 +127,16 @@
       if (event.target.className == "dropzone") {
         event.target.style.background = "";
       }
+      highlight(null);
     }, false);
 
+    // handle the user option for removing dragged items from the Palette
     var remove = document.getElementById('remove');
-    
+
     div.addEventListener("drop", function(event) {
       // prevent default action
       // (open as link for some elements in some browsers)
       event.preventDefault();
-
 
       // Dragging onto a Diagram
       if (this === myDiagram.div) {
@@ -120,7 +157,8 @@
         myDiagram.startTransaction('new node');
         myDiagram.model.addNodeData({
           location: point,
-          text: dragged.textContent
+          text: dragged.textContent,
+          color: "lightyellow"
         });
         myDiagram.commitTransaction('new node');
 
@@ -128,13 +166,9 @@
         if (remove.checked) dragged.parentNode.removeChild(dragged);
       }
 
-
       // If we were using drag data, we could get it here, ie:
       // var data = event.dataTransfer.getData('text');
     }, false);
-
-
-
 
     // *********************************************************
     // Second, set up a GoJS Diagram
@@ -146,7 +180,7 @@
                   {
                     initialContentAlignment: go.Spot.Center,
                     "undoManager.isEnabled": true
-                  });  // center the content
+                  });
     window.PIXELRATIO = myDiagram.computePixelRatio(); // constant needed to determine mouse coordinates on the canvas
 
     // define a simple Node template
@@ -157,7 +191,13 @@
         $(go.Shape, "Rectangle",
           { fill: 'white' },
           // Shape.fill is bound to Node.data.color
-          new go.Binding("fill", "color")),
+          new go.Binding("fill", "color"),
+          // this binding changes the Shape.fill when Node.isHighlighted changes value
+          new go.Binding("fill", "isHighlighted", function(h, shape) {
+            if (h) return "red";
+            var c = shape.part.data.color;
+            return c ? c : "white";
+          }).ofObject()),  // binding source is Node.isHighlighted
         $(go.TextBlock,
           { margin: 3, font: "bold 16px sans-serif", width: 140, textAlign: 'center' },
           // TextBlock.text is bound to Node.data.key
@@ -183,20 +223,18 @@
 
 <div id="sample">
   <div style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; padding: 5px;">
+    <span style="display: inline-block; vertical-align: top">
       <div class="palettezone">
         <div class="draggable" draggable="true">Water</div>
         <div class="draggable" draggable="true">Coffee</div>
         <div class="draggable" draggable="true">Tea</div>
       </div>
     </span>
-    <span style="display: inline-block; vertical-align: top; padding: 5px; margin-left: 10px;">
+    <span style="display: inline-block; vertical-align: top">
       <div class="dropzone" id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px;"></div>
     </span>
   </div>
-
   <input id="remove" type="checkbox" /><label for="remove">Remove HTML item after drag</label>
-
   <p>
   The "Palette" in this sample is not a Palette (or GoJS control) at all.
   It is a collection of HTML elements with draggable attributes using the
@@ -204,11 +242,8 @@
   </p>
   <p>
   This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes.
+  As the mouse passes over stationary nodes in the Diagram, they are highlighted.
   </p>
 </div>
-
-
-
-
 </body>
 </html>

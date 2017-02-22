@@ -7,9 +7,7 @@
   <title>GoJS Sample Diagrams for JavaScript and HTML, by Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 
-
   <script>
-
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -17,9 +15,7 @@
 
     ga('create', 'UA-1506307-5', 'auto');
     ga('send', 'pageview');
-
   </script>
-
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
   <!-- custom CSS after bootstrap -->
   <link href="../assets/css/main.css" rel="stylesheet" type="text/css"/>
@@ -36,29 +32,28 @@
     a:hover img {
       border-color: #00A9C9;
     }
-
   </style>
-
-
 </head>
 <body>
-<div class="container">
-
-  <!-- Fixed navbar -->
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
+  <!-- non-fixed navbar -->
+  <nav class="navbar navbar-inverse navbar-top">
+    <div class="container-fluid">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <div class="navheader-container">
+          <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+            <a id="toplogo" class="navbar-brand" href="../index.html">GoJS</a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
               <span class="sr-only">Toggle navigation</span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-        <!--<a class="navbar-brand" href="#">GoJS</a>-->
           </div>
+        </div>
+      </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="../index.html">Home</a></li>
+          <li><a href="../index.html">Home</a></li>
           <li><a href="../learn/index.html">Learn</a></li>
           <li><a href="../samples/index.html">Samples</a></li>
           <li><a href="../intro/index.html">Intro</a></li>
@@ -74,25 +69,21 @@
     </div>
   </nav>
 
-</div>
-
-<div class="container-fluid mt30" id="container">
-
-  <div class="row mt30">
+<div class="container-fluid plr15" id="container">
+  <div class="row">
     <div class="col-md-12">
       <h1>GoJS Samples</h1>
     </div>
   </div>
+
   <div class="row">
     <div class="col-md-6">
       <p>
         Our samples demonstrate how to build several Diagram types and showcase specific features and layouts. You can use the HTML and JavaScript in these samples as the starting point for your application.
       </p>
-
       <p>
         If you are done looking around and are ready to experiment with GoJS, <a href="../learn/index.html">read the getting started tutorial.</a>
       </p>
-
     </div>
     <div class="col-md-6">
       <p>
@@ -104,237 +95,91 @@
           <span id="searchButton" class="btn btn-primary">Search source code</span>
         </a>
       </p>
-
       <p>
         <a href="https://www.nwoods.com/components/evalform.htm">Register with us for support during your evaluation.</a>
       </p>
     </div>
-
-
   </div>
 
-  <div id="samplesSection">
-
+  <div>
+    <div id="tagsDiv">
     </div>
-
-  <div class="row">
-    <h1 class = "col-md-12">Additional resources</h1>
+    <div id="samplesDiv">
     </div>
-  <div id="extras" class="">
-
+    <div>
+      <h4><a href="all.html">Complete list of all samples</a></h4>
     </div>
+  </div>
 
 </div><!-- /.container -->
 
-<p class="footer mt30">
+<p class="footer">
 GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2017 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
 </p>
 
+<script src="indexList.js"></script>
+<script src="../assets/js/jquery.min.js"></script>
+<script async src="../assets/js/bootstrap.min.js"></script>
 <script>
-var arr = []; // each samples url[0] title[1] description[2]
-  
-    // These 8 are considered to be "above the fold":
-    arr.push(["flowchart", "Flowchart", "A standard flowchart, showing different node templates and several data-bindings. Each node has 3 or 4 port elements. Links are orthogonal and avoid nodes."]);
-    arr.push(["orgChartStatic", "OrgChart (Static)", "Shows an organizational chart diagram and uses an in-laid GoJS Overview to aid the user in navigation."]);
-    arr.push(["orgChartEditor", "OrgChart Editor", "An organizational chart that allows user editing and re-organizing of the hierarchy."]);
-    arr.push(["stateChart", "State Chart", "A state chart diagram that also shows dynamic creation of new nodes and links on a button press."]);
+  var searchInput = document.getElementById('searchInput');
+  var searchAnchor = document.getElementById('searchAnchor');
+  searchInput.addEventListener('input', function(e) {
+    var searchterm = searchInput.value;
+    if (searchterm === '') searchterm = "setDataProperty";
+    searchAnchor.href = "https://github.com/NorthwoodsSoftware/GoJS/search?q=" + searchterm +  "\&type=Code";
+  });
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.which === 13) searchAnchor.click();
+  });
 
-    arr.push(["minimal", "Minimal", "Shows default Diagram interactivity and basic data-binding. Select, move, copy, delete, undo, redo with keyboard or touch."]);
-    arr.push(["basic", "Basic", "Shows many of the commands possible in GoJS, templates for Links and for Groups, plus tooltips and context menus for Nodes, for Links, for Groups, and for the Diagram."]);
-    arr.push(["shapes", "Shapes", "Showcases all pre-defined GoJS figures. You can define your own named Shape figures."]);
-    arr.push(["icons", "SVG Icons", "Create your own custom Shapes using SVG path strings. This sample uses SVG strings from a free icon set."]);
+  var hash = null;
+  var selectedTag = "all";
+  buildTags();
 
-    // Here's the complete list, copied from goSamples.js:
-    // minimal (above)
-    // minimalJSON
-    // minimalXML
-    // require
-    // angular
-    // basic (above)
+  $(document).ready(changeHash);
+  $(window).on('hashchange', changeHash);
 
-    arr.push(["distances", "Distances & Paths", "Show distances from a node and highlighting paths between two nodes."]);
-    arr.push(["sankey", "Sankey", "Sankey diagrams show the amount of flow between nodes by the width of the links."]);
-    arr.push(["PERT", "PERT", "A simple PERT chart, showcasing GoJS table panels and RowColumnDefinition properties."]);
-    arr.push(["gantt", "Gantt", "Demonstrates a simple Gantt chart."]);
+  function buildTags() {
+    var tagDiv = document.getElementById("tagsDiv");
+    for (var i = 0; i < tags.length; i++) {
+      var tag = tags[i];
+      var tagButton = document.createElement('button');
+      if (tag !== selectedTag) {
+        tagButton.className = "btn btn-primary btn-sm btn-tag";
+      } else {
+        tagButton.className = "btn btn-primary btn-sm btn-selected-tag";
+      }
+      tagButton.id = tag + "Btn";
+      tagButton.value = tag;
+      tagButton.innerHTML = tag;
+      tagButton.onclick = onTagClick;
+      tagDiv.appendChild(tagButton);
+    }
+  }
 
-    arr.push(["leaflet", "GoJS and Leaflet Map", "A GoJS diagram atop a Leaflet.js map, with nodes placed at latitude and longitude based locations."]);
-    arr.push(["euler", "Euler Diagram", "A read-only diagram where clicking on a node will open a new webpage."]);
-    arr.push(["dataVisualization", "Data Visualization", "A data-visualization demonstration that showcases GoJS interacting with other elements on the page."]);
-    arr.push(["entityRelationship", "Entity Relationship", "An entity relationship diagram, showcasing data-binding with item arrays."]);
+  function onTagClick(e) {
+    this.blur(); // we want to be able to see the styles, so blur once we've clicked
+    if (selectedTag === this.value) return;
+    window.location.hash = "#" + this.value;
+  }
 
-    arr.push(["planogram", "Planogram", "Drag-and-drop items from the Palette onto racks in the Diagram."]);
-    arr.push(["seatingChart", "Seating Chart", "This sample demonstrates custom logic in a GoJS diagram - a \"Person\" node can be dropped onto a \"Table\" node, causing the person to be assigned a position at the closest empty seat at that table."]);
-    arr.push(["regrouping", "Regrouping", "Allows the user to drag nodes, including groups, into and out of groups, both from the Palette as well as from within the Diagram."]);
-    // regroupingScaled
-    // regroupingTreeView
-    arr.push(["pipes", "Pipes", "Showcasing nodes (Pipes) that can be joined, and will snap and drag together."]);
+  function changeHash() {
+    document.getElementById(selectedTag + "Btn").className = "btn btn-primary btn-sm btn-tag"; // clear current selected tag's style
+    hash = window.location.hash;
+    if (tags.indexOf(hash.substring(1)) < 0) {
+      selectedTag = "all";
+    } else {
+      selectedTag = hash.substring(1);
+    }
+    document.getElementById(selectedTag + "Btn").className = "btn btn-primary btn-sm btn-selected-tag"; // set new selected tag's style
+    buildSamples();
+  }
 
-    // shapes (above)
-    // tiger
-    // icons (above)
-    arr.push(["arrowheads", "Arrowheads", "Showcases all pre-defined Link arrowheads. You can define your own named arrowhead geometries."]);
-    arr.push(["relationships", "Relationships", "Shows how you can create custom renderings for Links by repeatedly drawing GraphObjects along the route."])
-    arr.push(["navigation", "Navigation", "Displays relationships between different parts of a diagram."]);
-    arr.push(["adornmentButtons", "Adornment Buttons", "Selected nodes show a row of buttons that execute commands or start tools."]);
-
-    arr.push(["classHierarchy", "Class Hierarchy", "Displays the GoJS Class Hierarchy as a series of trees. Double-click to go to the class's API documentation."]);
-    arr.push(["DOMTree", "DOM Tree", "Shows the DOM of this page displayed as a tree. Selection highlights the DOM element in the page."]);
-    arr.push(["visualTree", "Visual Tree", "This sample shows the actual visual tree of a running Diagram, using a second Diagram."]);
-    arr.push(["visualTreeGrouping", "Visual Tree Using Groups", "This shows the same visual tree using nested Groups instead of nodes and links."]);
-
-    // hoverButtons
-    //
-    arr.push(["familyTree", "Family Tree", "Shows a standard family tree."]);
-    // familyTreeJP
-    arr.push(["localView", "Local View", "Two diagrams, the one on top showing a full tree and the one below focusing on a specific node in the tree and those nodes that are logically \"near\" it."]);
-    arr.push(["decisionTree", "Decision Tree", "Allows a user to make progressive decisions."]);
-    arr.push(["incrementalTree", "Incremental Tree", "Demonstrates the expansion of a tree where nodes are only created \"on-demand\", when the user clicks on the \"expand\" Button."]);
-    arr.push(["doubleTree", "Double Tree", "Displays a single diagram of two trees sharing a single root node growing in opposite directions, using two layouts."]);
-    // doubleTreeJSON
-    // orgChartStatic (above)
-    // orgChartEditor (above)
-    // orgChartExtras
-    arr.push(["mindMap", "Mind Map", "Mind Map demonstration."]);
-    arr.push(["tournament", "Tournament", "Tournament bracket with dynamic advancement as scores are entered."]);
-    arr.push(["treeView", "Tree View", "Demonstrates a traditional \"Tree View\" in a GoJS diagram."]);
-    arr.push(["pipeTree", "Pipe Tree", "A tree layout with rectangular nodes at alternating angles and no links."]);
-    arr.push(["genogram", "Genogram", "A genogram or pedigree chart is an extended family tree diagram that show information about each person or each relationship."]);
-    arr.push(["IVRtree", "IVR Tree", "Diagram representation of an Interactive Voice Response Tree (IVR tree)"]);
-    arr.push(["parseTree", "Parse Tree", "A Parse tree representing the syntactic structure of a sentence."]);
-    arr.push(["faultTree", "Fault Tree", "A fault tree diagram with collapsing/expanding subtrees and gates at each non-root node."]);
-    //
-    arr.push(["beatPaths", "Beat Paths", "Demonstrates reading JSON data describing the relative rankings of NFL teams at a particular moment of time and generating a diagram from that data."]);
-    arr.push(["conceptMap", "Concept Map", "A web of interlinked concepts displayed with a ForceDirected Layout, and showcasing link labels."]);
-    arr.push(["pathAnimation", "Path Animation", "Animation of diagram parts (tokens) along link paths."]);
-
-
-    arr.push(["doubleCircle", "Double Circle", "Multiple circles using repeated CircularLayouts."]);
-    arr.push(["friendWheel", "Friend Wheel", "Demonstrates a customized CircularLayout."]);
-    arr.push(["radial", "Recentering Radial", "Arrange people in circles around a central person, in layers according to distance from the central person."]);
-    arr.push(["radialPartition", "Radial Partition", "Arrange people in rings around a central person, in layers according to distance from the central person."]);
-
-    arr.push(["timeline", "Timeline", "A simple timeline with events arranged along a line."]);
-    arr.push(["shopFloorMonitor", "Shop Floor Monitor", "Shows the continuously updating state of a number of stations on an imaginary shop floor."]);
-    arr.push(["kittenMonitor", "Kitten Monitor", "A monitoring diagram where the nodes (kittens) move about a house, with tooltips for each kitten."]);
-    // constantSize
-    // spacingZoom
-    arr.push(["grouping", "Grouping", "Demonstrates subgraphs that are created only as groups are expanded."]);
-    arr.push(["swimBands", "Layer Bands", "Layer Bands are automatically created for each \"layer\" of a TreeLayout, and run perpendicular to the layout."]);
-    arr.push(["swimLanes", "Swim Lanes", "Demonstrates collapsible resizable re-orderable swimlanes, a kind of process-flow diagram, with custom dragging rules that disallow nodes from leaving their lane."]);
-    arr.push(["swimLanesVertical", "Swim Lanes Vertical", "Demonstrates collapsible resizable re-orderable swimlanes, a kind of process-flow diagram, with custom dragging rules that disallow nodes from leaving their lane."]);
-    arr.push(["kanban", "Kanban Board", "A Kanban board editor, allowing the categorization of tasks."]);
-    arr.push(["spreadsheet", "Spreadsheet", "An example of nested Table Panels forming a spreadsheet-like grid."]);
-    arr.push(["umlClass", "UML Class", "A UML Class diagram shows software classes and their properties and methods, and the relationships between them."]);
-    // virtualized
-    arr.push(["virtualizedTree", "Virtualized Tree", "An example of virtualization where the model holds 123,456 node data yet the diagram only creates a few nodes at a time."]);
-    // virtualizedTreeLayout
-    // virtualizedForceLayout
-    //
-    // flowchart (above)
-    arr.push(["pageFlow", "Page Flow", "A diagram representation of webpage flow"]);
-    arr.push(["processFlow", "Process Flow", "Tanks, valves, and pipes, with animated flow in the pipes."]);
-    arr.push(["productionProcess", "Production Process", "Partially describes the production process for converting natural gas and oil byproducts into their end products."]);
-    arr.push(["systemDynamics", "System Dynamics", "A System Dynamics diagram shows the storages and flows of material in some system, and the factors that influence the rates of flow."]);
-    // flowBuilder
-    // flowgrammer
-    // network
-    // stateChart (above)
-    // stateChartIncremental
-    arr.push(["sharedStates", "Shared States", "Demonstrating nodes that simultaneously belong to multiple containers."]);
-    arr.push(["sequentialFunction", "Sequential Function", "A sequence diagram that shows different node templates, LayeredDigraphLayout and in-place text editing."]);
-    arr.push(["grafcet", "Grafcet Diagrams", "A Grafcet is a kind of sequential function chart used in automation design."]);
-    arr.push(["sequenceDiagram", "Sequence Diagram", "A sequence diagram illustrates how different processes interact with one-another and in what order."]);
-    arr.push(["logicCircuit", "Logic Circuit", "A functioning logic circuit diagram, which allows the user to make circuits using gates and wires."]);
-    arr.push(["records", "Record Mapper", "Displays a variable number of fields for each record, with links mapping one field to another."]);
-    arr.push(["selectableFields", "Selectable Fields", "Records with fields that the user can select."]);
-    arr.push(["treeMapper", "Tree Mapper", "Displays two trees, allowing the user to draw or delete or reconnect links mapping one tree node to another."]);
-    arr.push(["addRemoveColumns", "Add/Remove Table Columns", "Adding and removing columns of a Table Panel."]);
-    // dragDropFields
-    // dragOutFields
-    arr.push(["dataFlow", "Data Flow", "Show the processing steps involved in a database transformation or query, with labeled ports."]);
-    arr.push(["dataFlowVertical", "Data Flow Vertical", "Same as Data Flow, but vertically oriented, and with slightly different styling."]);
-    arr.push(["dynamicPorts", "Dynamic Ports", "Add ports to a selected nodes by clicking the above buttons or by using the context menu. Draw links between ports by dragging between ports. If you select a link you can relink or reshape it."]);
-    arr.push(["selectablePorts", "Selectable Ports", "A Node with ports that can be selected and deleted."]);
-    arr.push(["draggablePorts", "Draggable Ports", "A Group with Nodes acting as ports that can be dragged within and between nodes."]);
-
-    arr.push(["draggableLink", "Draggable Link", "Showcases draggable, disconnected links."]);
-    arr.push(["linksToLinks", "Links to Links", "Demonstrates the ability for a Link to appear to connect with another Link. "]);
-    arr.push(["updateDemo", "Update Demo", "Showcases two Diagrams observing the same Model. Modifying positions in one Diagram will modify them in the model, updating the other Diagram as well."]);
-    // twoDiagrams
-    //
-    arr.push(["curviness", "Curviness of Links", "An example customization of the Link.curviness property."]);
-    arr.push(["multiNodePathLinks", "Multi-Node Path Links", "Demonstrates custom routing for Links running through other Nodes."]);
-    arr.push(["taperedLinks", "Tapered Links", "Demonstrates custom geometries for Links."]);
-    arr.push(["multiArrow", "Multiple Arrowheads", "A custom orthogonal Link that draws arrowheads at the end of each segment."]);
-    arr.push(["barCharts", "Bar Charts", "Simple bar charts or histograms within nodes."]);
-    arr.push(["pieCharts", "Pie Charts", "Simple pie charts within nodes."]);
-    arr.push(["candlestickCharts", "Candlestick Charts", "Simple candlestick or range charts within nodes."]);
-    arr.push(["sparklineGraphs", "Sparkline Graphs", "Simple sparkline charts within nodes."]);
-    arr.push(["dynamicPieChart", "Dynamic Pie Chart", "Dynamic pie chart with selectable slices that can change size."]);
-    //
-    arr.push(["contentAlign", "Content Alignment", "Showcases alignment properties of the Diagram."]);
-    arr.push(["absolute", "Absolute Positioning", "A diagram that does not scroll or zoom or allow parts to be dragged out of a fixed area."]);
-    arr.push(["htmlInteraction", "HTML Interaction", "Contains two draggable HTML elements (using jQuery UI). One of the two HTML elements houses a panel that interacts with the main Diagram."]);
-    // htmlDragDrop
-    // jQueryDragDrop
-    // macros
-    arr.push(["customTextEditingTool", "Custom Text Editor", "Demonstrates using a custom HTML element for in-place editing of a TextBlock."]);
-    arr.push(["customContextMenu", "Context Menu", "Demonstrates the implementation of a custom HTML context menu."]);
-    // htmlLightBoxContextMenu
-    // tabs
-    arr.push(["canvases", "Canvases", "Shows how HTML Canvas Elements, such as those created from other libraries, can be used inside of GoJS as Pictures."]);
-    arr.push(["magnifier", "Magnifier", "An Overview used as a magnifying glass."]);
-    arr.push(["comments", "Comments", "GoJS supports the notion of \"Comments\", including the ability to create balloon-like comments."]);
-    //
-    arr.push(["gLayout", "Grid Layout", "Shows GridLayout and options. Places all of the Parts in a grid-like arrangement, ordered, spaced apart, and wrapping as needed."]);
-    arr.push(["tLayout", "Tree Layout", "Shows TreeLayout and options. Positions nodes of a tree-structured graph in layers (rows or columns). "]);
-    arr.push(["fdLayout", "Force Directed", "Shows ForceDirectedLayout and options. Treats the graph as if it were a system of physical bodies with forces acting on them and between them."]);
-    arr.push(["ldLayout", "Layered Digraph", "Shows LayeredDigraphLayout and options. Arranges nodes of directed graphs into layers (rows or columns)."]);
-    arr.push(["cLayout", "Circular Layout", "Shows CircularLayout and options. This layout positions nodes in a circular arrangement."]);
-    arr.push(["interactiveForce", "Interactive Force", "A continuous ForceDirectedLayout that occurs as the user drags around a node."]);
-
-    // Extensions:
-    arr.push(["../extensions/Fishbone", "Fishbone Layout", "The Fishbone or Ishikawa layout is a tree layout for cause-and-effect relationships.", "Fishbone"]);
-    arr.push(["../extensions/Parallel", "Parallel Layout", "A custom Layout that assumes there is a single 'split' and a single 'merge' node with parallel lines of nodes connecting them.", "Parallel"]);
-    arr.push(["../extensions/Serpentine", "Serpentine Layout", "A custom Layout that positions a chain of nodes in rows of alternating direction.", "Serpentine"]);
-    arr.push(["../extensions/Spiral", "Spiral Layout", "A custom Layout that positions a chain of nodes in a spiral.", "Spiral"]);
-    arr.push(["../extensions/TreeMap", "Tree Map Layout", "A custom Layout that renders nested Groups into the viewport with each Node having an area proportional to its declared 'size'.", "TreeMap"]);
-    arr.push(["../extensions/Table", "Table Layout", "A custom Layout that arranges Nodes just as a Table Panel arranges GraphObjects.", "Table"]);
-    //
-    // RealtimeDragSelecting
-    arr.push(["../extensions/DragCreating", "DragCreating", "A custom Tool that lets a user draw a box showing where and how large a new node should be.", "DragCreating"]);
-    arr.push(["../extensions/DragZooming", "DragZooming", "A custom Tool that lets a user draw a box showing what to zoom in to.", "DragZooming"]);
-    arr.push(["../extensions/FreehandDrawing", "Freehand Drawing", "A custom Tool that lets the user interactively draw a line, converting it into a Shape.", "FreehandDrawing"]);
-    arr.push(["../extensions/CurvedLinkReshaping", "Curved Link Reshaping", "A custom Tool that lets the user reshape curved links with a single handle.", "CurvedLinkReshaping"]);
-    arr.push(["../extensions/OrthogonalLinkReshaping", "Orthogonal Link Reshaping", "A custom Tool that lets the user reshape orthogonal links by dragging entire segments.", "OrthogonalLinkReshaping"]);
-    arr.push(["../extensions/PolygonDrawing", "Polygon Drawing", "A custom Tool that lets the user interactively draw polygons and polyline Shapes.", "PolygonDrawing"]);
-    arr.push(["../extensions/PolylineLinking", "Polyline Linking", "A custom LinkingTool that lets the user determine the route of a new Link by clicking.", "PolylineLinking"]);
-    arr.push(["../extensions/LinkShifting", "Link Shifting", "A custom Tool that adds handles on Links to allow the user to shift the end point of the Link along the sides of the port without disconnecting it.", "LinkShifting"]);
-    arr.push(["../extensions/LinkLabelDragging", "Link Label Dragging", "A custom Tool that lets the user drag a label on a Link and that keeps its relative position to the link.", "LinkLabelDragging"]);
-    arr.push(["../extensions/NodeLabelDragging", "Node Label Dragging", "A custom Tool that lets the user drag a label in a Spot Panel of a Node.", "NodeLabelDragging"]);
-    arr.push(["../extensions/PortShifting", "Port Shifting", "A custom Tool that lets the user drag a port in a Spot Panel of a Node.", "PortShifting"]);
-    arr.push(["../extensions/ColumnResizing", "Column Resizing", "Two custom Tools that let the user resize the width of columns or the height of rows in a Table Panel of a Node.", "ColumnResizing"]);
-    //
-    // CheckBoxes
-    arr.push(["../extensions/ScrollingTable", "ScrollingTable", "Demonstrates the implementation of a custom Table Panel with a scrollbar implemented in GoJS, including two AutoRepeatButtons.", "ScrollingTable"]);
-    arr.push(["../extensions/Dimensioning", "Dimensioning", "Demonstrates custom Links that show the distance between two points.", "Dimensioning"]);
-    // Robot
-    //
-    arr.push(["../extensions/DataInspector", "Data Inspector", "A simple drop-in for inspecting and editing Part data.", "DataInspector"]);
-    arr.push(["../extensions/DebugInspector", "Debug Inspector", "A more complex inspector for inspecting all sorts of GraphObject, Node, Link, Shape, etc properties, and Part data.", "DebugInspector"]);
-    //
-    arr.push(["../extensions/BPMN", "BPMN Editor", "The start of a Business Process Model and Notation editor.", "BPMN"]);
-    //
-    arr.push(["../extensions/FloorPlanEditor", "Floor Plan Editor", "An editor for users to position, resize, and rotate furniture in a room.", "FloorPlanEditor"]);
-    // FloorPlanMonitor
-    //
-
-var arr2 = [];
-    arr2.push(["../learn/index", "Getting Started", "A tutorial on the basics of GoJS -- how to build an Org Chart.", "learn"]);
-    arr2.push(["../extensions/index", "GoJS Extensions", "GoJS Extensions are additional samples that showcase custom and overridden classes. The Layouts and Tools can just be loaded into your app and initialized. Editors require more significant adaptation and often use multiple custom tools.", "extensions"]);
-    arr2.push(["unlisted", "Unlisted Samples", "Unlisted samples demonstrate more specific or purpose-built functionality, including variations of the above listed samples.", "unlisted"]);
-
-var samplesSection = document.getElementById('samplesSection');
+  function buildSamples() {
+    var sampleListDiv = document.getElementById("samplesDiv");
+    sampleListDiv.innerHTML = ""; // empty the div to start off
+    var filteredSamples = filterSamples();
+    if (filteredSamples.length === 0) return;
     var row = document.createElement('div');
     var couple = document.createElement('div'); // 4 samples per row, but they are grouped into 2 for when 4 won't fit
     couple.className = "couple";
@@ -343,27 +188,23 @@ var samplesSection = document.getElementById('samplesSection');
     var couplesize = 2; // see "couple" comment above
     var inrow = 0;
     var l = arr.length;
-for (var i = 0; i < l; i++) {
-  var sample = arr[i]; // each samples url[0] title[1] description[2]
+    for (var i = 0; i < filteredSamples.length; i++) {
+      var sample = filteredSamples[i];
       var samplediv = document.createElement('div');
       samplediv.className = 'col-sm-3 col-xs-6 samplecontainer';
       var a = document.createElement('a');
       a.href = sample[0] + '.html';
       var img = document.createElement('img');
-  if (sample[3]) {
       img.src = '../assets/images/screenshots/' + sample[3] + '.png';
-  } else {
-    img.src = '../assets/images/screenshots/' + sample[0] + '.png';
-  }
       img.width = 200;
       img.height = 200;
-  img.className = "img-responsive"
+      img.className = "img-responsive";
+      a.appendChild(img);
       var title = document.createElement('h2');
       title.textContent = sample[1];
       var desc = document.createElement('p');
       desc.textContent = sample[2];
 
-  a.appendChild(img);
       a.appendChild(title);
       samplediv.appendChild(a);
       samplediv.appendChild(desc);
@@ -375,73 +216,28 @@ for (var i = 0; i < l; i++) {
         couple.className = "couple";
       }
       if (inrow >= rowsize) {
-    samplesSection.appendChild(row);
+        sampleListDiv.appendChild(row);
         row = document.createElement('div');
         row.className = "row mt30";
         inrow = 0;
       }
     }
     if (inrow > 0) {
-    samplesSection.appendChild(row);
+      sampleListDiv.appendChild(row);
     }
-var samplesSection = document.getElementById('extras');
-inrow = 0;
-row = document.createElement('div');
-row.className = "row mt30";
-var l = arr2.length;
-for (var i = 0; i < l; i++) {
-  var sample = arr2[i]; // each samples url[0] title[1] description[2] image[3] if any
-  var div = document.createElement('div');
-  div.className = 'col-sm-3 col-xs-6';
-  var a = document.createElement('a');
-  a.href = sample[0] + '.html';
-  if (sample[3]) {
-    var img = document.createElement('img');
-    img.src = '../assets/images/screenshots/' + sample[3] + '.png';
-    img.width = 200;
-    img.height = 200;
-    img.className = "img-responsive"
   }
 
-  var title = document.createElement('h2');
-  title.textContent = sample[1];
-  var desc = document.createElement('p');
-  desc.textContent = sample[2];
-
-  if (sample[3]) a.appendChild(img);
-  a.appendChild(title);
-  div.appendChild(a);
-  div.appendChild(desc);
-  row.appendChild(div);
-  inrow++;
-  if (inrow >= rowsize) {
-    samplesSection.appendChild(row);
-    row = document.createElement('div');
-    row.className = "row mt30";
-    inrow = 0;
+  function filterSamples() {
+    var filteredSamples = [];
+    for (var i = 0; i < arr.length; i++) {
+      var sample = arr[i];
+      if (selectedTag === "all" || sample[4].indexOf(selectedTag) >= 0) {
+        filteredSamples.push(sample);
       }
     }
-if (inrow > 0) {
-    samplesSection.appendChild(row);
+    return filteredSamples;
   }
-
-var searchInput = document.getElementById('searchInput');
-var searchAnchor = document.getElementById('searchAnchor');
-searchInput.addEventListener('input', function(e) {
-  var searchterm = searchInput.value;
-  if (searchterm === '') searchterm = "setDataProperty";
-  searchAnchor.href = "https://github.com/NorthwoodsSoftware/GoJS/search?q=" + searchterm +  "\&type=Code";
-});
-searchInput.addEventListener('keydown', function(e) {
-  if (e.which === 13) searchAnchor.click();
-});
-
-
 </script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script async src="../assets/js/bootstrap.min.js"></script>
-
 </body>
 </html>
 

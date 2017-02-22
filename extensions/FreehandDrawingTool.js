@@ -24,6 +24,7 @@ function FreehandDrawingTool() {
   go.Tool.call(this);
   this.name = "FreehandDrawing";
   this._archetypePartData = {}; // the data to copy for a new polyline Part
+  this._isBackgroundOnly = true; // affects canStart()
 
   // this is the Shape that is shown during a drawing operation
   this._temporaryShape = go.GraphObject.make(go.Shape, { name: "SHAPE", fill: null, strokeWidth: 1.5 });
@@ -31,6 +32,25 @@ function FreehandDrawingTool() {
   go.GraphObject.make(go.Part, { layerName: "Tool" }, this._temporaryShape);
 }
 go.Diagram.inherit(FreehandDrawingTool, go.Tool);
+
+/**
+* Only start if the diagram is modifiable and allows insertions.
+* OPTIONAL: if the user is starting in the diagram's background, not over an existing Part.
+* @this {FreehandDrawingTool}
+*/
+FreehandDrawingTool.prototype.canStart = function() {
+  if (!this.isEnabled) return false;
+  var diagram = this.diagram;
+  if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;
+  if (!diagram.allowInsert) return false;
+  // don't include the following check when this tool is running modally
+  if (diagram.currentTool !== this && this.isBackgroundOnly) {
+    // only operates in the background, not on some Part
+    var part = diagram.findPartAt(diagram.lastInput.documentPoint, true);
+    if (part !== null) return false;
+  }
+  return true;
+};
 
 /**
 * Capture the mouse and use a "crosshair" cursor.
@@ -188,4 +208,17 @@ Object.defineProperty(FreehandDrawingTool.prototype, "temporaryShape", {
 Object.defineProperty(FreehandDrawingTool.prototype, "archetypePartData", {
   get: function() { return this._archetypePartData; },
   set: function(val) { this._archetypePartData = val; }
+});
+
+/**
+* Gets or sets whether this tool can only run if the user starts in the diagram's background
+* rather than on top of an existing Part.
+* The default value is true.
+* @name FreehandDrawingTool#isBackgroundOnly
+* @function.
+* @return {Object}
+*/
+Object.defineProperty(FreehandDrawingTool.prototype, "isBackgroundOnly", {
+  get: function() { return this._isBackgroundOnly; },
+  set: function(val) { this._isBackgroundOnly = val; }
 });

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GoJS Class Hierarchy Tree</title>
 <meta name="description" content="The JavaScript class hierarchy defined by the GoJS library." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../extensions/HyperlinkText.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -20,23 +21,24 @@
                     });
 
     // Define a node template showing class names.
-    // Double-clicking opens up the documentation for that class.
+    // Clicking on the node opens up the documentation for that class.
     diagram.nodeTemplate =
-      $(go.Node, "Auto",
-        {
-          doubleClick: nodeDoubleClick,  // this function is defined below
-          toolTip:
-            $(go.Adornment, "Auto",
-              $(go.Shape, { fill: "lightyellow" }),
-              $(go.TextBlock, "double-click\nfor documentation",
-                { margin: 5 })
-            )
-        },
-        $(go.Shape, { fill: "#1F4963", stroke: null }),
-        $(go.TextBlock,
-          { font: "bold 13px Helvetica, bold Arial, sans-serif",
-            stroke: "white", margin: 3 },
-          new go.Binding("text", "key")));
+      $(go.Node,
+        $("HyperlinkText",
+          // compute the URL to open for the documentation
+          function(node) { return "../api/symbols/" + node.data.key + ".html"; },
+          // define the visuals for the hyperlink, basically the whole node:
+          $(go.Panel, "Auto",
+            $(go.Shape, { fill: "#1F4963", stroke: null }),
+            $(go.TextBlock,
+              {
+                font: "bold 13px Helvetica, bold Arial, sans-serif",
+                stroke: "white", margin: 3
+              },
+              new go.Binding("text", "key"))
+          )
+        )
+      );
 
     // Define a trivial link template with no arrowhead
     diagram.linkTemplate =
@@ -94,24 +96,18 @@
           model: new go.Model(singlesArray)  // use a separate model
         });
   }
-
-  // When a Node is double clicked, open the documentation for the corresponding class in a new window
-  function nodeDoubleClick(event, node) {
-    window.open("../api/symbols/" + node.data.key + ".html");
-  }
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>GoJS Class Hierarchy Tree</h3>
   <div>
     <!-- Each DIV needs an explicit size or else we won't see anything. -->
-    <div id="myDiagramDiv" style="border:1px solid blue; width:80%; height:725px; float: left"></div>
-    <div id="mySingletons" style="border:1px solid blue; width:19%; height:725px; float: right"></div>
+    <div id="myDiagramDiv" style="border:1px solid black; width:80%; height:725px; float: left"></div>
+    <div id="mySingletons" style="border:1px solid black; width:19%; height:725px; float: right"></div>
   </div>
   <p>The JavaScript class hierarchy defined by the GoJS library, laid out by a <a>TreeLayout</a>.
      Classes that do not have any inheritance relationship are shown at the right.</p>
-  <p>Double-clicking on a node will open the API reference for that class in a new window.</p>
+  <p>Clicking on a node will open the API reference for that class in a new window.</p>
   <p>For more uses of the Tree Layout, see the <a href="DOMTree.html">DOM Tree</a> and <a href="visualTree.html">Visual Tree</a> samples.</p>
 </div>
 </body>

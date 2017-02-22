@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Data Binding -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Data Binding</h2>
+<h1>Data Binding</h1>
 <p>
 Data binding is a way to extract a value from a source object and set a property on a target object.
 The target objects are normally <a>GraphObject</a>s;
@@ -31,7 +32,7 @@ that you can see in the console log.  Always check the console log for any kinds
 are normally suppressed by the binding system.
 </p>
 
-<h3>Binding string and number properties</h3>
+<h2 id="BindingStringAndNumberProperties">Binding string and number properties</h2>
 <p>
 It is easy to data bind <a>GraphObject</a> properties to data properties.
 In this example we not only data bind <a>TextBlock.text</a> and <a>Shape.fill</a> in nodes to property values of node data,
@@ -85,7 +86,8 @@ each binds the <a>Shape.stroke</a> property.
 Remember that there is no <code>Node.key</code> property.
 However the key for a Node is accessible via <code>someNode.data.key</code>.
 </p>
-<h3>Binding object properties such as <b>Part.location</b></h3>
+
+<h2 id="BindingObjectPropertiesSuchAsLocation">Binding object properties such as <b>Part.location</b></h2>
 <p>
 You can also data bind properties that have values that are objects.
 For example it is common to data bind the <a>Part.location</a> property.
@@ -120,7 +122,7 @@ The value of Part.location is a <a>Point</a>, so in this example the data proper
 For conciseness the rest of these examples make use of the default <a>Diagram.linkTemplate</a>.
 </p>
 
-<h3>Conversion functions</h3>
+<h2 id="ConversionFunctions">Conversion functions</h2>
 <p>
 But what if you want the data property value for the location to be something other than a <a>Point</a>?
 You can provide a conversion function that converts the actual data property value to the needed value type or format.
@@ -166,7 +168,7 @@ Trying to read/write classes of objects would take extra space and would require
 <p>
 Conversion functions can be named or anonymous functions.
 They take a data property value and return a value suitable for the property that is being set.
-They should not have any side-effects (other than the effect of setting the target property).
+They should not have any side-effects.
 </p>
 <p>
 Here is an example that has several <a>Shape</a> properties data-bound to the same boolean data property named "highlight".
@@ -209,7 +211,7 @@ If you really want different visual structures
 you can use multiple templates (<a href="templateMaps.html">Template Maps</a>).
 </p>
 
-<h3>Changing data values</h3>
+<h2 id="ChangingDataValues">Changing data values</h2>
 <p>
 The examples above all depend on the data bindings being evaluated when the <a>Part</a>
 has been created and its <a>Panel.data</a> property is set to refer to the corresponding
@@ -262,7 +264,7 @@ For fun, this modification occurs about twice a second.
 </pre>
 <script>goCode("changeBoundValue", 250, 150)</script>
 
-<h3>Changing graph structure</h3>
+<h2 id="ChangingGraphStructure">Changing graph structure</h2>
 <p>
 For data properties that the model knows about, such as "to" or "from" for link data,
 you must call the appropriate model methods in order to modify the data property.
@@ -327,7 +329,7 @@ connect to a different node.
 </pre>
 <script>goCode("changeLinkTo", 250, 150)</script>
 
-<h3>Binding to <b>GraphObject</b> sources</h3>
+<h2 id="BindingToGraphObjectSources">Binding to <b>GraphObject</b> sources</h2>
 <p>
 The binding source object need not be a plain JavaScript data object held in the diagram's model.
 The source object may instead be a named <a>GraphObject</a> in the same <a>Part</a>.
@@ -376,7 +378,54 @@ The property on the GraphObject must be settable, so it does not work on read-on
 such as ones that return computed values (e.g. <a>Part.isTopLevel</a>) or Iterators (e.g. <a>Node.linksConnected</a>).
 </p>
 
-<h3>Two-way data binding</h3>
+<h2 id="BindingToSharedModelDataSource">Binding to the shared <b>Model.modelData</b> source</h2>
+<p>
+  The binding source object may be a third kind of source, besides the <a>Panel.data</a> or some <a>GraphObject</a> within the panel.
+  It can also be the JavaScript Object that is the shared <a>Model.modelData</a> object.
+  This permits binding of Node or Link element properties to shared properties in the model
+  that will exist and may be modified even though no nodes or links exist in the model.
+</p>
+<p>
+  In the example below, the <a>Shape.fill</a> is bound to the "color" property on the <a>Model.modelData</a> object.
+  When the node is selected or de-selected, the <a>Part.isSelected</a> property changes value, so the binding is evaluated.
+  The conversion function gets a boolean value and returns the desired brush color to be used as the shape's fill.
+  This example also turns off selection adornments, so that the only visual way to tell that a node is selected is by the shape's fill color.
+</p>
+<pre data-language="javascript" id="bindingModel">
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "RoundedRectangle",
+      { fill: "white" },  // the default value if there is no modelData.color property
+      new go.Binding("fill", "color").ofModel()),  // meaning a property of Model.modelData
+    $(go.TextBlock,
+      { margin: 5 },
+      new go.Binding("text"))
+  );
+
+// start all nodes yellow
+diagram.model.modelData.color = "yellow";
+
+diagram.model.nodeDataArray = [
+  { text: "Alpha" },
+  { text: "Beta" }
+];
+
+diagram.undoManager.isEnabled = true;
+
+changeColor = function() {
+  var model = diagram.model;
+  diagram.startTransaction();
+  // alternate between lightblue and lightgreen colors
+  var oldcolor = model.modelData.color;
+  var newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
+  model.setDataProperty(model.modelData, "color", newcolor);
+  diagram.commitTransaction("changed shared color");
+}
+</pre>
+<script>goCode("bindingModel", 450, 100)</script>
+<button id="changeColorButton" onclick="changeColor()">Change shared color</button>
+
+<h2 id="TwoWayDataBinding">Two-way data binding</h2>
 <p>
 All of the bindings above only transfer values from the source data to target properties.
 But sometimes you would like to be able to transfer values from <a>GraphObject</a>s back to the model data,
@@ -429,7 +478,7 @@ nodedata.loc: <code id="bindTwoWayData"></code>
 <p>
 Just as you can use a conversion function when going from source to target,
 you can supply a conversion function to <a>Binding.makeTwoWay</a> for going from target to source.
-For example, to represent the location as a string instead of as a <a>Point</a>:
+For example, to represent the location as a string in the model data instead of as a <a>Point</a>:
 </p>
 <pre>
 // storage representation of Points/Sizes/Rects/Margins/Spots is as strings, not objects:
@@ -442,7 +491,7 @@ That property value must always be unique among all node data within the model a
 A TwoWay binding might change the value, causing a multitude of problems.
 </p>
 
-<h3>Reasons for TwoWay Bindings</h3>
+<h2 id="ReasonsForTwoWayBindings">Reasons for TwoWay Bindings</h2>
 <p>
 The basic reason for using a TwoWay <a>Binding</a> on a settable property is to make sure that any changes to that property
 will be copied to the corresponding model data.
@@ -452,7 +501,7 @@ If you are careful to only hold JSON-serializable data in the model data, you ca
 and <a>Model.fromJson</a> methods for converting a model to and from a textual representation.
 </p>
 <p>
-Most bindings do not need to be TwoWay.
+<em>Most bindings do not need to be TwoWay.</em>
 For performance reasons you should not make a Binding be TwoWay unless you actually need to propagate changes back to the data.
 Most settable properties are only set on initialization and then never change.
 </p>
@@ -483,6 +532,7 @@ depending on a OneWay Binding to update the GraphObject property.
 It is also possible to use TwoWay Bindings where the source is a GraphObject rather than model data.
 This is needed less frequently, when you do <em>not</em> want to have the state stored in the model,
 but you do want to synchronize properties of GraphObjects within the same Part.
+<em>Use TwoWay Bindings sparingly.</em>
 </p>
 
 </div>

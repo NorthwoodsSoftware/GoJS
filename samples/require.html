@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Minimal GoJS Sample using RequireJS</title>
 <meta name="description" content="How to 'require' the GoJS library as an anonymous Asynchronous Module Definition (AMD) module." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  <!-- only needed for the sample framework -->
 <script src="assets/require.js"></script>
 <script id="code">
   require.config({
@@ -20,14 +20,37 @@
           $(go.Diagram, "myDiagramDiv",
             { initialContentAlignment: go.Spot.Center });
 
-        myDiagram.model = new go.GraphLinksModel([
-          { key: "Alpha" },
-          { key: "Beta" }
-        ], [
-          { from: "Alpha", to: "Beta" }
+        // define a simple Node template
+        myDiagram.nodeTemplate =
+          $(go.Node, "Auto",  // the Shape will go around the TextBlock
+            $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
+              // Shape.fill is bound to Node.data.color
+              new go.Binding("fill", "color")),
+            $(go.TextBlock,
+              { margin: 8 },  // some room around the text
+              // TextBlock.text is bound to Node.data.key
+              new go.Binding("text", "key"))
+          );
+
+        // but use the default Link template, by not setting Diagram.linkTemplate
+
+        // create the model data that will be represented by Nodes and Links
+        myDiagram.model = new go.GraphLinksModel(
+        [
+          { key: "Alpha", color: "lightblue" },
+          { key: "Beta", color: "orange" },
+          { key: "Gamma", color: "lightgreen" },
+          { key: "Delta", color: "pink" }
+        ],
+        [
+          { from: "Alpha", to: "Beta" },
+          { from: "Alpha", to: "Gamma" },
+          { from: "Beta", to: "Beta" },
+          { from: "Gamma", to: "Delta" },
+          { from: "Delta", to: "Alpha" }
         ]);
 
-        require(["goSamples"], function() {  // only for the GoJS Samples framework -- you don't need to call this
+        require(["../assets/js/goSamples"], function() {  // only for the GoJS Samples framework -- you don't need to call this
             if (window.goSamples) goSamples();
         });
     });

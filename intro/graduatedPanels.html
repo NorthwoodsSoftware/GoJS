@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS Graduated Panels -- Northwoods Software</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>Graduated Panels</h1>
+<p>
+  The "Graduated" Panel, <a>Panel.Graduated</a>,
+  draws regular tick marks and/or text labels along the stroke of the main child <a>Shape</a>.
+  Graduated Panels can be considered scales showing a range of values.
+</p>
+<p>
+  For examples of Graduated Panels see the <a href="../samples/timeline.html">Timeline</a>,
+  <a href="../samples/thermometer.html">Thermometer</a>,
+  <a href="../samples/instrumentGauge.html">Instrument Gauge</a>,
+  and <a href="../samples/ruleredDiagram.html">Rulered Diagram</a> samples.
+</p>
+
+<h2 id="SimpleGraduatedPanels">Simple Graduated Panels</h2>
+<p>
+  Similar to Auto and Spot Panels, Graduated Panels should have two or more elements in them.
+  Elements must be either <a>Shape</a>s or <a>TextBlock</a>s.
+  The main Shape element may be declared by setting <a>GraphObject.isPanelMain</a> to true;
+  but no such setting is needed if it is the very first element of the panel.
+  Shapes and TextBlocks, other than the main Shape, basically act as templates for the drawing of each tick mark and label.
+</p>
+<p>
+  Tick mark <a>Shape</a>s within a Graduated Panel should have a measured size, either by setting a <a>GraphObject.desiredSize</a>
+  (or <code>width</code> and <code>height</code> properties), or by setting its <a>Shape.geometry</a>.
+  For basic tick marks drawn normal to the main Shape's path,
+  it is easiest to use a simple vertical line geometry string: <code>M0 0 V10</code>.
+  The height of the geometry will determine the length of the tick mark.
+</p>
+
+<pre data-language="javascript" id="graduatedSimple">
+diagram.add(
+  // all Parts are Panels
+  $(go.Part, go.Panel.Graduated,  // or "Graduated"
+    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main shape, a horizontal line
+    $(go.Shape, { geometryString: "M0 0 V10" })  // a tick mark, a vertical line
+  ));
+</pre>
+<script>goCode("graduatedSimple", 500, 100)</script>
+
+<p>
+  Any shape, including custom geometries, can be used as the main Shape or as a tick mark Shape of a Graduated Panel.
+</p>
+<pre data-language="javascript" id="graduatedCircle">
+diagram.add(
+  $(go.Part, "Graduated",
+    { background: "transparent" }, // make panel pickable
+    // main shape is a whole circle
+    $(go.Shape, "Circle",
+      { fill: null, desiredSize: new go.Size(150, 150) }),
+    // tick shape is a double line
+    $(go.Shape, { geometryString: "M0 0 V10 M3 0 V10" })
+  ));
+</pre>
+<script>goCode("graduatedCircle", 200, 200)</script>
+
+<p>
+  Graduated Panels can also be labeled with TextBlocks denoting the values along the scale.
+  Often, these will be offset from the main stroke using <a>GraphObject.segmentOffset</a>, as one would
+  with Link labels, so that the text does not overlap the main stroke.
+  More detail on placing labels is in the "Appearance" section below.
+</p>
+<pre data-language="javascript" id="graduatedLabels">
+diagram.add(
+  $(go.Part, "Graduated",
+    { background: "transparent" }, // make panel pickable
+    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main shape
+    $(go.TextBlock, { segmentOffset: new go.Point(0, 12) })  // tick labels
+  ));
+</pre>
+<script>goCode("graduatedLabels", 500, 100)</script>
+
+<h2 id="GraduatedPanelProperties">Graduated Panel Properties</h2>
+<p>
+  There are a number of properties that govern the appearance of tick marks and labels.
+</p>
+
+<h3 id="TickMarkValues">Tick Mark Values</h3>
+<p>
+  The graduated values of a Graduated Panel will range on a linear scale from the start of the
+  main shape's stroke to the end of the stroke.
+  The values and frequency of tick marks and labels are governed by a few properties:
+</p>
+<ul>
+  <li><a>Panel.graduatedMin</a>
+    - the minimum value represented on the scale, at the beginning of the stroke of the main shape</li>
+  <li><a>Panel.graduatedMax</a>
+    - the maximum value represented on the scale, at the end of the main shape</li>
+  <li><a>Panel.graduatedTickBase</a>
+    - the value of the "origin" tick mark, the first tick mark if it is the same as graduatedMin</li>
+  <li><a>Panel.graduatedTickUnit</a>
+    - tick marks are positioned at multiples of the graduatedTickUnit added to the graduatedTickBase</li>
+  <li><a>Shape.interval</a>/<a>TextBlock.interval</a>
+    - a multiple of the graduatedTickUnit at which to draw a tick or label</li>
+</ul>
+<p>
+  Graduated Panels can have multiple Shapes as tick marks and multiple TextBlocks as labels,
+  with the interval property controlling at what multiples of the <code>graduatedTickUnit</code> they are drawn.
+  In many of the examples below, larger ticks are drawn at intervals of 4; some have an interval of 5.
+</p>
+
+<p>
+  A <code>graduatedMin</code> of <code>0</code>, <code>graduatedMax</code> of <code>77</code>,
+  <code>graduatedTickBase</code> of <code>0</code>, <code>graduatedTickUnit</code> of <code>2.5</code>,
+  and intervals of 4 result in a scale that might appear as:
+</p>
+<pre data-language="javascript" id="graduatedVals1">
+diagram.add(
+  $(go.Part, "Graduated",
+    {
+      graduatedMin: 0, graduatedMax: 77,
+      graduatedTickBase: 0, graduatedTickUnit: 2.5,
+      background: "transparent"
+    },
+    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main Shape
+    // a short, frequent tick mark
+    $(go.Shape, { geometryString: "M0 0 V5" }),
+    // a longer tick mark every four ticks
+    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),
+    // text label only every four ticks, with a vertical offset
+    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })
+  ));
+</pre>
+<script>goCode("graduatedVals1", 500, 100)</script>
+
+<p>
+  Changing <code>graduatedMin</code> to <code>-23</code> results in:
+</p>
+<pre data-language="javascript" id="graduatedVals2">
+diagram.add(
+  $(go.Part, "Graduated",
+    {
+      graduatedMin: -23, graduatedMax: 77,
+      graduatedTickBase: 0, graduatedTickUnit: 2.5,
+      background: "transparent"
+    },
+    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main Shape
+    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
+    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
+    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
+  ));
+</pre>
+<script>goCode("graduatedVals2", 500, 100)</script>
+<p>
+  The range from the min to the max value (<a>Panel.graduatedRange</a>) has increased from 77 to 100,
+  so the tick marks are closer to each other for the same length main path.
+</p>
+
+<p>
+  Changing <code>graduatedTickBase</code> to <code>1.2</code> results in:
+</p>
+<pre data-language="javascript" id="graduatedVals3">
+diagram.add(
+  $(go.Part, "Graduated",
+    {
+      graduatedMin: -23, graduatedMax: 77,
+      graduatedTickBase: 1.2, graduatedTickUnit: 2.5,
+      background: "transparent"
+    },
+    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main Shape
+    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
+    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
+    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
+  ));
+</pre>
+<script>goCode("graduatedVals3", 500, 100)</script>
+<p>
+  Basically, the "origin" for the scale has shifted slightly, even though the end values remain the same.
+  There will always be a tick mark at the <code>graduatedTickBase</code>
+  if that value is within the range of the graduated scale.
+</p>
+
+<p>
+  Doubling the <code>graduatedTickUnit</code> to <code>5</code> results in:
+</p>
+<pre data-language="javascript" id="graduatedVals4">
+diagram.add(
+  $(go.Part, "Graduated",
+    {
+      graduatedMin: -23, graduatedMax: 77,
+      graduatedTickBase: 1.2, graduatedTickUnit: 5,
+      background: "transparent"
+    },
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
+    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
+    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
+  ));
+</pre>
+<script>goCode("graduatedVals4", 500, 100)</script>
+<p>
+  Doubling the tick unit halves the number of ticks for the same length path, but again the end values are unchanged.
+</p>
+
+<p>
+  Changing <code>graduatedTickBase</code> back to <code>0</code> and the intervals to <code>5</code> results in:
+</p>
+<pre data-language="javascript" id="graduatedVals5">
+diagram.add(
+  $(go.Part, "Graduated",
+    {
+      graduatedMin: -23, graduatedMax: 77,
+      graduatedTickBase: 0, graduatedTickUnit: 5,
+      background: "transparent"
+    },
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
+    $(go.Shape, { geometryString: "M0 0 V10", interval: 5 }),  // long tick mark
+    $(go.TextBlock, { interval: 5, segmentOffset: new go.Point(0, 12) })
+  ));
+</pre>
+<script>goCode("graduatedVals5", 500, 100)</script>
+
+<p>
+  You can have more than one label.  For example, small text that is more frequent than larger text:  
+</p>
+<pre data-language="javascript" id="graduated2Labels">
+diagram.add(
+  $(go.Part, "Graduated",
+    {
+      graduatedMin: 0, graduatedMax: 140,
+      graduatedTickBase: 0, graduatedTickUnit: 5,
+      background: "transparent"
+    },
+    $(go.Shape, { geometryString: "M0 0 H450" }),  // longer line
+    $(go.Shape, { geometryString: "M0 0 V5" }),
+    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),
+    // minor label
+    $(go.TextBlock, { interval: 2, segmentOffset: new go.Point(0, 8),
+                      stroke: "blue", font: "7pt sans-serif" }),
+    // major label
+    $(go.TextBlock, { interval: 4, segmentOffset: new go.Point(0, 12),
+                      stroke: "red", font: "bold 12pt sans-serif" })
+  ));
+</pre>
+<script>goCode("graduated2Labels", 500, 100)</script>
+
+<h3 id="TickMarkAppearance">Tick Mark Appearance</h3>
+<p>
+  The appearance of tick marks relative to the main shape path is controlled by a few properties:
+</p>
+<ul>
+  <li><a>Shape.graduatedStart</a>/<a>TextBlock.graduatedStart</a>
+    - the fractional distance along the main stroke at which drawing this tick or label may begin</li>
+  <li><a>Shape.graduatedEnd</a>/<a>TextBlock.graduatedEnd</a>
+    - the fractional distance along the main stroke beyond which it will not draw this tick or label</li>
+  <li><a>GraphObject.alignmentFocus</a>
+    - the spot on the tick or label to align with the calculated path points, defaulting to the top center</li>
+  <li><a>GraphObject.segmentOffset</a>
+    - how much to offset a TextBlock label from the main stroke -- the Y value specifies distance from the path</li>
+  <li><a>GraphObject.segmentOrientation</a>
+    - how to rotate a TextBlock label relative to the main stroke</li>
+</ul>
+<p>
+  Only TextBlock labels should set the <a>GraphObject.segmentOffset</a> or <a>GraphObject.segmentOrientation</a>.
+  They have no impact on the main shape or tick shapes.
+  These GraphObject properties are also commonly used to place Link labels,
+  as seen in the <a href="linkLabels.html">Introduction page on Link labels</a>,
+  and are used by Graduated Panels in a similar manner.
+</p>
+
+<p>
+  Setting <code>graduatedStart</code> and/or <code>graduatedEnd</code> allows for drawing ticks only along part of the main stroke:
+</p>
+<pre data-language="javascript" id="graduatedAppr1">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10", graduatedStart: .25, graduatedEnd: .75 })
+  ));
+</pre>
+<script>goCode("graduatedAppr1", 500, 100)</script>
+<p>
+  In this case, tick marks are now only drawn in the middle half of the main shape.
+</p>
+
+<p>
+  Setting <code>alignmentFocus</code> to <code>go.Spot.Bottom</code> will cause the ticks to have their bottoms aligned to the main stroke:
+</p>
+<pre data-language="javascript" id="graduatedAppr2">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom })
+  ));
+</pre>
+<script>goCode("graduatedAppr2", 500, 100)</script>
+
+<p>
+  Setting <code>alignmentFocus</code> to <code>go.Spot.Center</code> will cause the ticks to be centered across the path:
+</p>
+<pre data-language="javascript" id="graduatedAppr21">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10 M0 20 V30", alignmentFocus: go.Spot.Center })
+  ));
+</pre>
+<script>goCode("graduatedAppr21", 500, 100)</script>
+<p>
+  Note the gap in the geometry of the shape.
+</p>
+
+<p>
+  Setting <code>segmentOffset</code> for labels can make them more readable near tick marks:
+</p>
+<pre data-language="javascript" id="graduatedAppr3">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10" }),
+    // offset to display below ticks
+    $(go.TextBlock, { segmentOffset: new go.Point(0, 12) })
+  ));
+</pre>
+<script>goCode("graduatedAppr3", 500, 100)</script>
+
+<p>
+  Setting <code>segmentOrientation</code> for labels can alter the angle at which they are drawn relative to the main stroke:
+</p>
+<pre data-language="javascript" id="graduatedAppr4">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10" }),
+    // change the angle of the text
+    $(go.TextBlock, { segmentOrientation: go.Link.OrientMinus90 })
+  ));
+</pre>
+<script>goCode("graduatedAppr4", 500, 100)</script>
+<p>
+  Note that the top-center point of each label is exactly at the point along the path for that value.
+</p>
+
+<p>
+  Combining these two properties and re-aligning the tick marks:
+</p>
+<pre data-language="javascript" id="graduatedAppr5">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+    $(go.TextBlock,
+      {
+        alignmentFocus: go.Spot.Left,
+        segmentOffset: new go.Point(0, -12),
+        segmentOrientation: go.Link.OrientMinus90
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedAppr5", 500, 100)</script>
+<p>
+  These properties behave similarly to Link labels, in that they respond to the direction of the main stroke.
+  For example, let us turn the main shape so that it goes diagonally down from the top-left to the bottom-right.
+</p>
+<pre data-language="javascript" id="graduatedApprDiag">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 L285 285" }),
+    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+    $(go.TextBlock,
+      {
+        alignmentFocus: go.Spot.Left,
+        segmentOffset: new go.Point(0, -12),
+        segmentOrientation: go.Link.OrientMinus90
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedApprDiag", 350, 350)</script>
+
+<p>
+  Now let us try a curve:
+</p>
+<pre data-language="javascript" id="graduatedApprCurve">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, "Curve1", { desiredSize: new go.Size(285, 285) }),
+    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+    $(go.TextBlock,
+      {
+        alignmentFocus: go.Spot.Left,
+        segmentOffset: new go.Point(0, -12),
+        segmentOrientation: go.Link.OrientMinus90
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedApprCurve", 350, 350)</script>
+
+<p>
+  Here's another commonplace configuration:
+</p>
+<pre data-language="javascript" id="graduatedApprCurve2">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 A120 120 0 0 1 200 0" }),  // an arc
+    $(go.Shape, { geometryString: "M0 0 V10" }),
+    $(go.TextBlock,
+      {
+        segmentOffset: new go.Point(0, 12),
+        segmentOrientation: go.Link.OrientAlong
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedApprCurve2", 350, 100)</script>
+
+<p>
+  For vertical lines, it's not necessary to rotate the text:
+</p>
+<pre data-language="javascript" id="graduatedApprVert">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 V400" }),
+    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+    $(go.TextBlock,
+      {
+        alignmentFocus: go.Spot.Left,
+        segmentOffset: new go.Point(0, -12)
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedApprVert", 100, 450)</script>
+
+<p>
+  We can also go from bottom to top:
+</p>
+<pre data-language="javascript" id="graduatedApprVertUp">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 V-400" }),
+    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Top }),
+    $(go.TextBlock,
+      {
+        alignmentFocus: go.Spot.Left,
+        segmentOffset: new go.Point(0, 12)
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedApprVertUp", 100, 450)</script>
+<p>
+  Note how the Geometry goes from 0,0 to 0,-400, because negative Y values are higher on the screen/page.
+  Note how because everything is relative to the path, the tick marks and labels would be on the opposite side,
+  so we have also changed the <code>alignmentFocus</code> and <code>segmentOffset</code> to have opposite values
+  from the previous example.
+</p>
+
+
+<h3 id="TickMarkLabelText">Tick Mark Label Text</h3>
+<p>
+  Labels have an additional property to control the way the label text is generated.
+  <a>TextBlock.graduatedFunction</a> is used to convert from a value
+  along a Graduated Panel to a string to be displayed at that value.
+  If no <code>graduatedFunction</code> is defined, the default returns the value rounded to at most two decimals.
+</p>
+<pre data-language="javascript" id="graduatedFunc">
+diagram.add(
+  $(go.Part, "Graduated",
+    $(go.Shape, { geometryString: "M0 0 H400" }),
+    $(go.Shape, { geometryString: "M0 0 V10" }),
+    $(go.TextBlock,
+      { // always display two decimals
+        graduatedFunction: function(val) { return val.toFixed(2); },
+        segmentOffset: new go.Point(0, 12)
+      }
+    )
+  ));
+</pre>
+<script>goCode("graduatedFunc", 500, 100)</script>
+
+<h3 id="GraduatedValueComputations">Graduated Value Computations</h3>
+<p>
+  There are some methods available for computing points along graduated paths:
+</p>
+<ul>
+  <li><a>Panel.graduatedPointForValue</a>
+    - returns the Point along the main shape at some value between graduatedMin and graduatedMax in Panel coordinates</li>
+  <li><a>Panel.graduatedValueForPoint</a>
+    - returns the value along the main shape nearest a given Point</li>
+</ul>
+<p>
+  In the following example, the red marker uses a <a>Part.dragComputation</a> function that
+  keeps it along the path of the Graduated Panel using the above functions.
+</p>
+
+<pre data-language="javascript" id="graduatedPointValueCalc">
+var gauge =
+  $(go.Part, "Auto",
+    { location: new go.Point(10, 20) },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Graduated",
+      { name: "SCALE", margin: 10 },
+      $(go.Shape, { name: "PATH", geometryString: "M0 0 A120 120 0 0 1 200 0" }),
+      $(go.Shape, { geometryString: "M0 0 V10" }),
+      $(go.TextBlock,
+        { segmentOffset: new go.Point(0, 12), segmentOrientation: go.Link.OrientAlong })
+    )
+  );
+diagram.add(gauge);
+
+var marker =
+  $(go.Part, "Spot",
+    { locationSpot: go.Spot.Center, selectionAdorned: false },
+    $(go.Shape, "Circle", { fill: "transparent", strokeWidth: 0, cursor: "pointer" }),
+    $(go.Shape, "Circle", { fill: "red", strokeWidth: 0, width: 8, height: 8 }),
+    {
+      dragComputation: function(node, pt) {
+        var scale = gauge.findObject("SCALE");
+        var loc = scale.getLocalPoint(pt);
+        var val = scale.graduatedValueForPoint(loc);
+        var gpt = scale.graduatedPointForValue(val);
+        return scale.getDocumentPoint(gpt);
+      }
+    }
+  );
+diagram.add(marker);
+
+// once everything has been positioned, give the marker its location
+diagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+  var scale = gauge.findObject("SCALE");
+  var gpt = scale.graduatedPointForValue(0);
+  marker.location = scale.getDocumentPoint(gpt);
+});
+</pre>
+<script>goCode("graduatedPointValueCalc", 350, 200)</script>
+<p>
+  As you drag the red circle, you will notice that it always stays on the main shape's stroke.
+  The computation converts the point to the panel's coordinate system, computes the closest graduated value,
+  computes the point on the shape geometry for that value, and finally converts it back to document coordinates
+  for use as the marker's location.
+</p>
+<p>
+  Note that for demonstration purposes this example has the marker being a separate Part from the "gauge" Part.
+  A real gauge would have the marker be part of the gauge as an indicator of a particular value.
+</p>
+
+<h2 id="OtherConsiderations">Other Considerations</h2>
+<p>
+  By default, only the main shape of a Graduated Panel can be used to pick the panel.
+  As with Grid Panels, a Graduated Panel should have a non-null <code>background</code> if the entire panel needs to be pickable.
+  You cannot set or bind the <a>Panel.itemArray</a> of a Graduated Panel.
+  You can set and bind properties on tick <a>Shape</a>s and <a>TextBlock</a> labels
+  as you can with any other <a>GraphObject</a> properties.
+</p>
+<pre data-language="javascript" id="graduatedBackground">
+diagram.add(
+  $(go.Part, "Graduated",  // or "Graduated"
+    { background: "white" },
+    $(go.Shape, { geometryString: "M0 0 H150", stroke: "blue", strokeWidth: 2 }),
+    $(go.Shape, { geometryString: "M0 0 V20", stroke: "blue", strokeDashArray: [2, 2] })
+  ));
+</pre>
+<script>goCode("graduatedBackground", 500, 100)</script>
+<p>
+  Events on the tick Shapes and TextBlock labels will be ignored.
+  Rotating the main shape will not rotate the ticks, just as rotating a Spot Panel's main element
+  won't rotate its children. Rotation should generally be done at the Panel level. Another similarity
+  to Spot Panels is that resizing of a Graduated Panel should generally be done on the main shape.
+  TextBlock labels cannot be edited.
+</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Introduction -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-  <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
-
 </head>
 <body onload="goIntro()">
-  <div id="container" class="container-fluid">
+<div id="container" class="container-fluid">
 <div id="content">
 
   <h1>Introduction to GoJS Diagramming Components</h1>
@@ -23,7 +23,7 @@
   Customization of appearance and behavior is mostly a matter of setting properties.
   </p>
 
-  <h3>A Simple GoJS Diagram</h3>
+  <h2 id="SimpleGoJSDiagram">A Simple GoJS Diagram</h2>
   <p>
   The following code defines a node template and model data, which produces a small diagram with a handful of nodes and links.
   </p>
@@ -69,6 +69,7 @@
   <script>goCode("minimal", 400, 150)</script>
   <p>
   You can interact with this diagram in many ways:
+  </p>
   <ul>
     <li>You can select a part by clicking on it.
         Selected nodes are highlighted with an <a>Adornment</a> that is a blue rectangle surrounding the node.
@@ -88,7 +89,6 @@
     <li>Use the mouse wheel to scroll up and down and Shift-mouse-wheel to scroll left and right.
         Ctrl-mouse-wheel zooms in and out.</li>
   </ul>
-  </p>
   <p>
   You can also pan, pinch zoom, select, copy, move, delete, undo, and redo with your fingers on a touch device.
   Most commands that can be invoked from a keyboard can be invoked from the default context menu that you get by pressing your finger and holding it motionless for a moment.
@@ -102,12 +102,16 @@
 
   <p>
   If you'd like to see more examples of what <b>GoJS</b> can do, see the <a href="../samples/index.html" target="samples">GoJS Samples directory</a>.
-  To make it easier to search the JavaScript code and documentation or to experiment by modifying the samples, you can download a ZIP file of the
-  whole web site for the current version of <b>GoJS</b> from <a href="../index.html">GoJS Home</a>.
-  Or you can visit <a href="https://github.com/NorthwoodsSoftware/GoJS">GoJS on GitHub</a>.
+  To make it easier to search the JavaScript code and documentation or to experiment by modifying the samples,
+  you can install the <b>GoJS</b> kit in various manners:
+  <ul>
+    <li>Download a ZIP file from <a href="../doc/download.html">Download</a>.</li>
+    <li>Download us from <a href="https://github.com/NorthwoodsSoftware/GoJS">GoJS on GitHub</a>.</li>
+    <li>Install GoJS using <code>npm install gojs</code>.</li>
+  </ul>
   </p>
 
-  <h3>GoJS Concepts</h3>
+  <h2 id="GoJSConcepts">GoJS Concepts</h2>
   <p>
   <a>Diagram</a>s consist of <a>Part</a>s: <a>Node</a>s that may be connected by <a>Link</a>s and that may be grouped together into <a>Group</a>s.
   All of these parts are gathered together in <a>Layer</a>s and are arranged by <a>Layout</a>s.
@@ -174,16 +178,18 @@
   </p>
 
 
-  <h3>Creating a Diagram</h3>
+  <h2 id="CreatingDiagram">Creating a Diagram</h2>
+  <b>GoJS</b> does not depend on any JavaScript library or framework, so you should be able to use it in any environment.
+  However it does require that the environment support modern HTML and JavaScript.
+
+  <h3 id="LoadingGoJS">Loading GoJS</h3>
   <p>
-  Before you can execute any JavaScript code to build a Diagram, you will need to load the <b>GoJS</b> library, "go.js".
-  When you include the library, the "<code>go</code>" JavaScript object will hold all of the <b>GoJS</b> types.
-  During development we recommend that you load "go-debug.js" instead of "go.js", for additional run-time error checking and debugging ability.
+    Before you can execute any JavaScript code to build a Diagram, you will need to load the <b>GoJS</b> library, "go.js".
+    When you include the library, the "<code>go</code>" JavaScript object will hold all of the <b>GoJS</b> types.
+    During development we recommend that you load "go-debug.js" instead of "go.js", for additional run-time error checking and debugging ability.
   </p>
   <p>
-  <b>GoJS</b> does not depend on any JavaScript library or framework, so you should be able to use it in any environment.
-  However it does require that the environment support modern HTML and JavaScript, so we recommend that you
-  declare that your web page supports modern HTML:
+    We recommend that you declare that your web page supports modern HTML:
   </p>
   <pre>
   &lt;!DOCTYPE html&gt;  &lt;!-- Declare standards mode. --&gt;
@@ -194,15 +200,20 @@
     &lt;script src="go.js"&gt;&lt;/script&gt;
   </pre>
   <p>
-  If you are using <a href="http://requirejs.org" target="_blank">RequireJS</a>, <b>GoJS</b> supports AMD module definitions.
-  See the <a href="../samples/require.html" target="samples">Require sample</a> for an example.
+    If you are using <a href="http://requirejs.org" target="_blank">RequireJS</a>, <b>GoJS</b> supports UMD module definitions.
+    See the <a href="../samples/require.html" target="samples">Require sample</a> for an example.
+  </p>
+  <p>
+    In ES6 (ECMAScript 2015) or TypeScript code, just import the "go.js" library:
+    <pre>import * as go from "go";</pre>
   </p>
 
+  <h3 id="HostingGoJSinaDivElement">Hosting GoJS in a Div Element</h3>
   <p>
-  Every <a>Diagram</a> must be hosted by an HTML Div element.
-  <b>GoJS</b> will manage the contents of that Div element, but you may position and size and style the Div as you would any HTML element.
-  The diagram will add a Canvas element to that Div element that the diagram will draw in -- this is what users actually see.
-  The Canvas element is automatically sized to have the same size as the Div element.
+    Every <a>Diagram</a> must be hosted by an HTML Div element.
+    <b>GoJS</b> will manage the contents of that Div element, but you may position and size and style the Div as you would any HTML element.
+    The diagram will add a Canvas element to that Div element that the diagram will draw in -- this is what users actually see.
+    The Canvas element is automatically sized to have the same size as the Div element.
   </p>
 
   <pre>
@@ -215,9 +226,9 @@
   <div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"></div>
 
   <p>
-  Then you can create the <a>Diagram</a> in JavaScript with a reference to that Div element.
-  Build the diagram by constructing plain JavaScript objects and adding them to the diagram's model.
-  Note that all references in JavaScript code to <b>GoJS</b> types such as <a>Diagram</a> are prefixed with "<code>go.</code>".
+    Then you can create the <a>Diagram</a> in JavaScript with a reference to that Div element.
+    Build the diagram by constructing plain JavaScript objects and adding them to the diagram's model.
+    Note that all references in JavaScript code to <b>GoJS</b> types such as <a>Diagram</a> are prefixed with "<code>go.</code>".
   </p>
   <pre>
   &lt;!-- Create the Diagram in the DIV element using JavaScript. --&gt;
@@ -246,44 +257,39 @@
   This completes the implementation of the "Hello World!" live diagram that you see above.
   </p>
 
+  <h3 id="DevelopingYourDiagram">Developing your Diagram</h3>
   <p class="box bg-danger">
-  <b>GoJS</b> outputs error or warning messages when something goes wrong.
-  When developing with <b>GoJS</b>, be sure to check your browser's developer console for information.
-  The "go-debug.js" version of the library contains extra type-checking and error-checking code, and should be used during development.
-  The "go.js" version has less error checking, but is faster as a result, and should be used in production.
+    <b>GoJS</b> outputs error or warning messages when something goes wrong.
+    When developing with <b>GoJS</b>, be sure to check your browser's developer console for information.
+    The "go-debug.js" version of the library contains extra type-checking and error-checking code, and should be used during development.
+    The "go.js" version has less error checking, but is faster as a result, and should be used in production.
   </p>
 
   <p>
-  Your JavaScript code should only use properties and methods that are documented in the <a href="../api/index.html">API</a>.
-  The <b>GoJS</b> libraries are "minified", so if you look at an instance of a <b>GoJS</b> class in the debugger,
-  you will see many one or two letter property names.  All of those are internal names that you should not use.
-  At the current time the only one letter property names are "x" and "y" on <a>Point</a>, <a>Rect</a>, <a>Spot</a> and <a>LayoutVertex</a>.
-  The only two letter property name is <a>InputEvent.up</a>.
-  Otherwise you should not try to use any one or two letter property names on any <b>GoJS</b>-defined objects.
+    Your JavaScript code should only use properties and methods that are documented in the <a href="../api/index.html" target="api">API</a>.
+    The <b>GoJS</b> libraries are "minified", so if you look at an instance of a <b>GoJS</b> class in the debugger,
+    you will see many one or two letter property names.  All of those are internal names that you should not use.
+    At the current time the only one letter property names are "x" and "y" on <a>Point</a>, <a>Rect</a>, <a>Spot</a> and <a>LayoutVertex</a>.
+    The only two letter property name is <a>InputEvent.up</a>.
+    Otherwise you should not try to use any one or two letter property names on any <b>GoJS</b>-defined objects.
   </p>
 
   <p class="box bg-danger">
-  Do not modify the prototypes of the <b>GoJS</b> classes.<br />
-  Only use the properties and methods documented in the <a href="../api/index.html">API</a>.
+    Do not modify the prototypes of the <b>GoJS</b> classes.<br />
+    Only use the properties and methods documented in the <a href="../api/index.html" target="api">API</a>.
   </p>
 
   <p>
-  You can also use <a href="http://www.typescriptlang.org/">TypeScript</a> in order to get better "compile-time" type-checking.
-  In your TypeScript code, just reference the "go.d.ts" definition file for the "go.js" library:
-  <pre>
-  ///&lt;reference path="go.d.ts"/&gt;
-  </pre>
-  Or import the library:
-  <pre>
-  import go = require("go");
-  </pre>
-  If you are using Visual Studio, this definition file also greatly improves Intellisense feedback while editing TypeScript code.
+    You can also use <a href="http://www.typescriptlang.org/">TypeScript</a> in order to get better "compile-time" type-checking.
+    The TypeScript definition file for <b>GoJS</b> is named "go.d.ts" and is located in the same directory as the "go.js" and "go-debug.js" libraries.
+    In some editors, access to the definition file also greatly improves documentation feedback while editing TypeScript code.
+  </p>
 
   <p>
-  You can see the variety of kinds of diagrams that you can build at <a href="../samples/index.html" target="samples">GoJS Samples</a>.
+    You can see the variety of kinds of diagrams that you can build at <a href="../samples/index.html" target="samples">GoJS Samples</a>.
   </p>
   <p>
-  In the next introduction page we discuss <a href="buildingObjects.html">building <b>GoJS</b> Parts and adding them into Diagrams.</a>
+    In the next introduction page we discuss <a href="buildingObjects.html">building <b>GoJS</b> Parts and adding them into Diagrams.</a>
   </p>
 </div>
 </div>

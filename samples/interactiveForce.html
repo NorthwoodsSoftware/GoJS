@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Interactive Force Directed Layout</title>
 <meta name="description" content="A continuously operating ForceDirectedLayout lets the user push and pull nodes around." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   // This variation on ForceDirectedLayout does not move any selected Nodes
   // but does move all other nodes (vertexes).
@@ -32,8 +32,12 @@
       var lay = this;
       this.diagram.addModelChangedListener(function (e) {
         // modelChanges include a few cases that we don't actually care about, such as
-        // "nodeCategory" or "linkToPortId", but we'll go ahead and recreate the network anyway
-        if (e.modelChange !== "") lay.network = null;
+        // "nodeCategory" or "linkToPortId", but we'll go ahead and recreate the network anyway.
+        // Also clear the network when replacing the model.
+        if (e.modelChange !== "" ||
+            (e.change === go.ChangedEvent.Transaction && e.propertyName === "StartingFirstTransaction")) {
+          lay.network = null;
+        }
       });
     }
     var net = this.network;
@@ -158,6 +162,15 @@
       { from: 18, to: 20, text: "between" }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+
+  function reload() {
+    //myDiagram.layout.network = null;
+    var text = myDiagram.model.toJson();
+    myDiagram.model = go.Model.fromJson(text);
+    //myDiagram.layout =
+    //  go.GraphObject.make(ContinuousForceDirectedLayout,  // automatically spread nodes apart while dragging
+    //    { defaultSpringLength: 30, defaultElectricalCharge: 100 });
   }
 </script>
 </head>

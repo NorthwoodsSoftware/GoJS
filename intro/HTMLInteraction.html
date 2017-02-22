@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS HTML Interaction -- Northwoods Software</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+
+<h1>HTML Interaction</h1>
+
+<p>
+This intro page explains how to use GoJS Diagrams alongside other HTML elements in a webapp.
+
+<p>
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a>HTMLInfo</a> class. <code>HTMLInfo</code> is described in the second section of this page.
+
+
+
+<h2 id="UsingHTMLAlongsideGoJS">Using HTML Alongside GoJS</h2>
+
+
+<h3 id="EditingPartsWithHTMLDataInspector">Editing Parts with the HTML Data Inspector</h3>
+
+<p>
+Generally, GoJS can interact with the rest of the page via JavaScript that programatically moves and modifies GoJS objects and the Diagram. If you have not read about programatically interacting with Parts and the Model, there is a <a href="../learn/graphobject.html">GraphObject Manipulation tutorial</a> for this purpose.
+
+<p>
+To help programmers get started with HTML controls we have implemented a simple <a href="../extensions/DataInspector.html">Data Inspector Extension</a>, an HTML-based property editor that displays and allows editing of data for the selected Part.
+
+<p>
+The Data Inspector chiefly works via a <code>"ChangedSelection"</code> <a href="events.html">Diagram Listener</a>. When triggered, it populates HTML Fields. Editing those fields and clicking away then update the selected Part by calling <code>diagram.model.setDataProperty</code> to update the model.
+
+<h3 id="JQueryAndGoJS">jQuery and GoJS</h3>
+
+<p>
+GoJS does not depend on jQuery, but the two can be used together. The <a href="../samples/tabs.html">Tabs Sample</a> shows how to use GoJS inside a jQuery tab. The <a href="../samples/htmlInteraction.html">HTML Interaction Sample</a> places a GoJS Palette inside of a jQuery movable window, and a data inspector that modifies the current selected node inside another.
+
+<p>
+jQuery normally sets the <code>$</code> variable.  If you are copying code from our samples or documentation, be aware that we usually do this:
+<code>var $ = go.GraphObject.make;</code> so that uses of <code>$</code> in our examples will build <a>GraphObject</a>s and other GoJS objects.
+Caution: calling jQuery when trying to build <b>GoJS</b> objects will cause unusual and cryptic errors.
+So you should locally assign the <code>$</code> variable or use a different variable for building <b>GoJS</b> objects.
+
+<h3 id="HTMLFocusOnDiagrams">HTML Focus on Diagrams</h3>
+
+<p>
+When browser elements are focused, they are scrolled into view as much as possible, which may be unwelcome in some web apps. You can disable this effect by overriding <code>Diagram.doFocus</code>.
+
+<pre data-language="javascript">// Save and restore the window scroll values
+// so that the browser does not modify the window scroll when a Diagram is focused
+myDiagram.doFocus = function() {
+  var x = window.scrollX || window.pageXOffset;
+  var y = window.scrollY || window.pageYOffset;
+  go.Diagram.prototype.doFocus.call(this);
+  window.scrollTo(x, y);
+}
+</pre>
+
+<p>
+You can remove the outline while the Diagram is in focus. This is a CSS effect, not a GoJS effect, and can be removed by removing the CSS outline from all canvas elements inside the Diagram div:
+
+<pre data-language="css">/* affect all canvas elements inside myDiagramDiv */
+#myDiagramDiv canvas {
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
+}
+</pre>
+
+<p>
+If you use no other HTML Canvas elements on your page, you could do this for all canvas elements, so that it will affect all Diagrams, instead of just the one within a particular DIV ID.
+
+
+<h2 id="HTMLInfoClass">The HTMLInfo Class</h2>
+<p>
+Use the <a>HTMLInfo</a> class to display custom HTML page elements, such as a context menu, tooltip, or text editor made of HTML.
+
+<p>
+Properties that can be set to an instance of <code>HTMLInfo</code> include:
+
+<ul>
+  <li><a>TextEditingTool.defaultTextEditor</a>
+  <li><a>TextBlock.textEditor</a>
+  <li><a>GraphObject.contextMenu</a>
+  <li><a>Diagram.contextMenu</a>
+  <li><a>GraphObject.toolTip</a>
+  <li><a>Diagram.toolTip</a>
+</ul>
+
+<h3 id="Usage">Usage</h3>
+
+<p>
+When replacing GoJS functionality with custom functionality, the main concern is when to show and hide the custom content. <code>HTMLInfo</code> does this with two settable functions defined by the programmer and called by GoJS:
+
+<ul>
+<li><a>HTMLInfo.show</a>, called by GoJS when custom information should be displayed, for example when activating a ToolTip, ContextMenuTool, or TextEditingTool.
+<li><a>HTMLInfo.hide</a>, called by GoJS when custom information is finished, and should no longer be displayed, for example when ending these tools.
+</ul>
+
+<p>
+In lieu of setting <a>HTMLInfo.hide</a>, you can set the <a>HTMLInfo.mainElement</a> property to the primary HTML Element that you are showing/hiding, and HTMLInfo will automatically hide the provided element by calling:
+
+<pre><code>mainElement.style.display = "none";</code></pre>
+
+
+<h3 id="HTMLInfoSamples">HTMLInfo samples</h3>
+
+<ul>
+  <li>Text Editors: <a href="../samples/customTextEditingTool.html">Custom Text Editors sample</a> and <a href="../extensions/TextEditor.html">Re-implementation of the default Text Editor</a>
+  <li>Context Menus: <a href="../samples/customContextMenu.html">Custom Context Menu</a> and <a href="../samples/htmlLightBoxContextMenu.html">HTML Lightbox Context Menu</a> (a re-implementation of the default touch context menu)
+  <li>Tooltips: <a href="../samples/dataVisualization.html">Data Visualization Tooltip</a>
+</ul>
+
+<h3 id="Tooltips">Tooltips</h3>
+
+<p>
+For tooltips, if a <a>GraphObject.toolTip</a> or <a>Diagram.toolTip</a> is set to an instance of <code>HTMLInfo</code>, GoJS calls <code>HTMLInfo.show</code> in <a>ToolManager.showToolTip</a>. After the tooltip delay, GoJS will call <code>HTMLInfo.hide</code> in <a>ToolManager.hideToolTip</a>.
+
+<p>
+What follows is an example using <code>HTMLInfo.show</code> and <code>HTMLInfo.hide</code>, but the <code>HTMLInfo.hide</code> is simple enough that setting the <code>HTMLInfo.mainElement</code> to the tooltip div instead would be sufficient.
+
+<div id="diagramParent" style="position: relative;">
+  <div id="toolTipDIV" style="position: absolute; background: white; z-index: 1000; display: none;">
+    <p id="toolTipParagraph">Tooltip
+  </div>
+</div>
+
+<pre data-language="javascript" id="toolTipExample">
+  function showToolTip(obj, diagram, tool) {
+    var toolTipDIV = document.getElementById('toolTipDIV');
+    var pt = diagram.lastInput.viewPoint;
+    toolTipDIV.style.left = (pt.x + 10) + "px";
+    toolTipDIV.style.top = (pt.y + 10) + "px";
+    document.getElementById('toolTipParagraph').textContent = "Tooltip for: " + obj.data.key;
+    toolTipDIV.style.display = "block";
+  }
+
+  function hideToolTip(diagram, tool) {
+   var toolTipDIV = document.getElementById('toolTipDIV');
+   toolTipDIV.style.display = "none";
+  }
+
+  var myToolTip = $(go.HTMLInfo, {
+    show: showToolTip,
+    hide: hideToolTip
+    /*
+      since hideToolTip is very simple,
+      we could have set mainElement instead of setting hide:
+    mainElement: document.getElementById('toolTipDIV')
+    */
+  });
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      {
+        toolTip: myToolTip
+      },
+      $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 8 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ]);
+</pre>
+
+<pre data-language="HTML">
+  &lt;!-- this must be added as a sibling of the Diagram --&gt;
+  &lt;div id="toolTipDIV" style="position: absolute; background: white; z-index: 1000; display: none;"&gt;
+    &lt;p id="toolTipParagraph"&gt;Tooltip
+  &lt;/div&gt;
+</pre>
+
+<script>goCode("toolTipExample", 600, 160, go.Diagram, "diagramParent")</script>
+
+<h3 id="ContextMenus">Context Menus</h3>
+
+<p>
+For context menus, <a>ContextMenuTool.showContextMenu</a> will call <code>HTMLInfo.show</code>. <a>ContextMenuTool.hideContextMenu</a> will call <code>HTMLInfo.hide</code>.
+
+<pre><code>// Assign an HTMLInfo to the Diagram:
+myDiagram.contextMenu = $(go.HTMLInfo, {
+  show: showContextMenu,
+  hide: hideContextMenu
+});
+
+function showContextMenu(obj, diagram, tool) {
+  // Show the context menu HTML element:
+  SomeDOMElement.style.display = "block";
+
+  // Also show relevant buttons given the current state
+  // and the GraphObject obj; if null, the context menu is for the whole Diagram
+}
+
+function hideContextMenu() {
+  SomeDOMElement.style.display = "none";
+}
+
+function buttonClick() {
+  // do some action when a context menu button is clicked
+
+  // then:
+  myDiagram.currentTool.stopTool();
+}
+</code></pre>
+
+<h3 id="TextEditors">Text Editors</h3>
+
+<p>
+For custom text editors, <a>TextEditingTool.doActivate</a> will call <code>HTMLInfo.show</code>. <a>TextEditingTool.doDeactivate</a> will call <code>HTMLInfo.hide</code>.
+
+<p>
+HTMLInfos used as text editors must also define a <a>HTMLInfo.valueFunction</a>. On <a>TextEditingTool.acceptText</a> is called, GoJS will call <code>HTMLInfo.valueFunction</code> and use the return value as the value for the TextEditingTool completion.
+
+<p>
+
+The example below constructs an HTMLInfo that uses <code>HTMLInfo.show</code> and <code>HTMLInfo.hide</code> to dynamically add, populate, and remove HTML elements from the page.
+
+
+
+<div id="diagramParent2" style="position: relative;">
+</div>
+<pre data-language="javascript" id="textEditorExample">
+// Diagram setup. The HTMLInfo is set at the end of this code block.
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { editable: true, margin: 8, choices: ['Alpha', 'Beta', 'Gamma', 'Delta'] },
+      new go.Binding("text"))
+  );
+
+diagram.model = new go.GraphLinksModel(
+[
+  { text: "Alpha", color: "lightblue" },
+  { text: "Beta",  color: "orange" },
+  { text: "Gamma", color: "lightgreen" },
+  { text: "Delta", color: "pink" }
+]);
+
+// Create an HTMLInfo and dynamically create some HTML to show/hide
+var customEditor = new go.HTMLInfo();
+var customSelectBox = document.createElement("select");
+
+customEditor.show = function(textBlock, diagram, tool) {
+  if (!(textBlock instanceof go.TextBlock)) return;
+
+  // Populate the select box:
+  customSelectBox.innerHTML = "";
+
+  // this sample assumes textBlock.choices is not null
+  var list = textBlock.choices;
+  for (var i = 0; i < list.length; i++) {
+    var op = document.createElement("option");
+    op.text = list[i];
+    op.value = list[i];
+    customSelectBox.add(op, null);
+  }
+
+  // After the list is populated, set the value:
+  customSelectBox.value = textBlock.text;
+
+  // Do a few different things when a user presses a key
+  customSelectBox.addEventListener("keydown", function(e) {
+    var keynum = e.which;
+    if (keynum == 13) { // Accept on Enter
+      tool.acceptText(go.TextEditingTool.Enter);
+      return;
+    } else if (keynum == 9) { // Accept on Tab
+      tool.acceptText(go.TextEditingTool.Tab);
+      e.preventDefault();
+      return false;
+    } else if (keynum === 27) { // Cancel on Esc
+      tool.doCancel();
+      if (tool.diagram) tool.diagram.focus();
+    }
+  }, false);
+
+  var loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
+  var pos = diagram.transformDocToView(loc);
+  customSelectBox.style.left = pos.x + "px";
+  customSelectBox.style.top  = pos.y + "px";
+  customSelectBox.style.position = 'absolute';
+  customSelectBox.style.zIndex = 100; // place it in front of the Diagram
+
+  diagram.div.appendChild(customSelectBox);
+}
+
+customEditor.hide = function(diagram, tool) {
+  diagram.div.removeChild(customSelectBox);
+}
+
+// This is necessary for HTMLInfo instances that are used as text editors
+customEditor.valueFunction = function() { return customSelectBox.value; }
+
+// Set the HTMLInfo:
+diagram.toolManager.textEditingTool.defaultTextEditor = customEditor;
+
+</pre>
+<script>goCode("textEditorExample", 600, 160, go.Diagram, "diagramParent2")</script>
+
+
+
+
+
+
+</div>
+</div>
+</body>
+</html>

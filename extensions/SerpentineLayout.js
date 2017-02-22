@@ -46,13 +46,7 @@ SerpentineLayout.prototype.cloneProtected = function(copy) {
 */
 SerpentineLayout.prototype.doLayout = function(coll) {
   var diagram = this.diagram;
-  if (coll instanceof go.Diagram) {
-    diagram = coll;
-    coll = coll.nodes;  // use all links connecting with these nodes
-  } else if (coll instanceof go.Group) {
-    diagram = coll.diagram;
-    coll = coll.memberParts;
-  }
+  coll = this.collectParts(coll);
 
   var root = null;
   // find a root node -- one without any incoming links

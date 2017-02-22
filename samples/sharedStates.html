@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shared States</title>
 <meta name="description" content="A diagram where nodes may belong to multiple groups." />
 <!-- /* Copyright 1998-2017 by Northwoods Software Corporation. */ -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -80,9 +80,7 @@
 
   /** @override */
   CustomLayout.prototype.doLayout = function(coll) {
-    if (coll === this.diagram) {
-      coll = this.diagram.nodes;
-    }
+    coll = this.collectParts(coll);
 
     var supers = new go.Set(go.Node);
     coll.each(function(p) {
@@ -90,13 +88,13 @@
     });
 
     function membersOf(sup, diag) {
-      var coll = new go.Set(go.Part);
+      var set = new go.Set(go.Part);
       var arr = sup.data._members;
       for (var i = 0; i < arr.length; i++) {
         var d = arr[i];
-        coll.add(diag.findNodeForData(d));
+        set.add(diag.findNodeForData(d));
       }
-      return coll;
+      return set;
     }
 
     function isReady(sup, supers, diag) {
@@ -181,7 +179,7 @@
   }
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    
+
     // make sure all data have up-to-date "members" collections
     // this does not prevent any "cycles" of membership, which would result in undefined behavior
     var arr = myDiagram.model.nodeDataArray;

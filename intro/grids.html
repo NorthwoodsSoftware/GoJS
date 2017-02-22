@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Grid Patterns -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Grid Patterns</h2>
+<h1>Grid Patterns</h1>
 <p>
 It is common to want to display a grid of lines drawn at regular intervals.
 You may also want to force dragged parts to be aligned on grid points, and to resize parts to be multiples of the grid cell size.
@@ -24,8 +25,11 @@ However when they are used as the <a>Diagram.grid</a>, they are effectively infi
 <p>
 Unlike in other kinds of <a>Panel</a>s, Grid Panel elements must be <a>Shape</a>s that are only used to control how the grid lines or grid bars are drawn.
 </p>
+<p>
+See samples that make use of grids in the <a href="../samples/index.html#grid">samples index</a>.
+</p>
 
-<h3>Default Grid</h3>
+<h2 id="DefaultGrid">Default Grid</h2>
 <p>
 To display a grid pattern in the background of the diagram, you can just make the <a>Diagram.grid</a> visible:
 </p>
@@ -47,7 +51,7 @@ To display a grid pattern in the background of the diagram, you can just make th
 </pre>
 <script>goCode("defaultGrid", 600, 150)</script>
 
-<h3>Grid Snapping</h3>
+<h2 id="GridSnapping">Grid Snapping</h2>
 <p>
 The <a>DraggingTool</a> and <a>ResizingTool</a> can change their behavior based on the background grid pattern,
 if you set the <a>DraggingTool.isGridSnapEnabled</a> and/or <a>ResizingTool.isGridSnapEnabled</a> properties to true.
@@ -73,7 +77,7 @@ if you set the <a>DraggingTool.isGridSnapEnabled</a> and/or <a>ResizingTool.isGr
 </pre>
 <script>goCode("gridSnapping", 600, 150)</script>
 
-<h3>Simple Grid Customization</h3>
+<h2 id="SimpleGridCustomization">Simple Grid Customization</h2>
 <p>
 You can change the size of the grid cell by setting <a>Panel.gridCellSize</a>:
 </p>
@@ -129,7 +133,7 @@ The value of <a>DraggingTool.gridSnapCellSize</a> takes precedence over the <a>P
 </pre>
 <script>goCode("gridSnapping2", 600, 150)</script>
 
-<h3>Custom Grids</h3>
+<h2 id="CustomGrids">Custom Grids</h2>
 <p>
 Grid patterns are implemented by the <a>Panel</a> class when its <a>Panel.type</a> is <a>Panel.Grid</a>.
 The elements of a Grid Panel must be <a>Shape</a>s whose <a>Shape.figure</a> is one of a small set of known kinds of figures.
@@ -185,6 +189,30 @@ Note that the Shapes are drawn in the order in which they appear in the Panel,
 so you can see that the dark blue horizontal lines are drawn in front of the light green vertical lines,
 and that the dark green vertical line crosses in front of the dark blue horizontal lines.
 </p>
+<p>
+Here is the definition of the predefined <a>Diagram.grid</a>:
+</p>
+  <pre data-language="javascript" id="standardGrid">
+  diagram.grid =
+    $(go.Panel, "Grid",
+      {
+        name: "GRID",
+        visible: false,
+        gridCellSize: new go.Size(10, 10),
+        gridOrigin: new go.Point(0, 0)
+      },
+      $(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5, interval: 1 }),
+      $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5, interval: 5 }),
+      $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 1.0, interval: 10 }),
+      $(go.Shape, "LineV", { stroke: "lightgray", strokeWidth: 0.5, interval: 1 }),
+      $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5, interval: 5 }),
+      $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 1.0, interval: 10 })
+    );
+
+  diagram.grid.visible = true;  // so that this example shows the standard grid
+  diagram.div.style.background = "white";
+</pre>
+<script>goCode("standardGrid", 600, 150)</script>
 <p>
 You can get a green-bar pattern by using the "BarH" figure.  Note the use of <a>Shape.fill</a>
 instead of <a>Shape.stroke</a> and explicitly setting the <a>GraphObject.height</a>:
@@ -278,6 +306,15 @@ Here is an example of using a "Grid" <a>Panel</a> as a regular data bound elemen
 </pre>
 <script>goCode("nodeGrid", 600, 350)</script>
 
+<h2 id="OtherConsiderations">Other Considerations</h2>
+<p>
+  A Grid Panel should have a non-null <code>background</code> if it needs to be pickable.
+  One cannot set or bind the <a>Panel.itemArray</a> of a Grid Panel.
+</p>
+<p>
+  Events on the Shapes will be ignored.
+  Shapes in a Grid Panel must not be scaled or rotated.
+</p>
 
 </div>
 </div>

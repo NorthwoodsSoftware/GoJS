@@ -1,147 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Text Editing Examples</title>
 <meta name="description" content="Custom text editing using different HTML elements." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<!-- custom text editors -->
+<script src="../extensions/TextEditorSelectBox.js"></script>
+<script src="../extensions/TextEditorRadioButtons.js"></script>
+
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
 function init() {
   if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
   var $ = go.GraphObject.make;
 
   myDiagram = $(go.Diagram, "myDiagramDiv",  // must identify the DIV
-                { "undoManager.isEnabled": true });
-
-  // *******************************************
-  // Make a custom tool for the TextEditingTool
-  // *******************************************
-  var customEditor = document.createElement("select");
-  var op;
-  var list = ["Alpha", "Beta", "Gamma", "Theta"];
-  var l = list.length;
-  for (var i = 0; i < l; i++) {
-    op = document.createElement("option");
-    op.text = list[i];
-    op.value = list[i];
-    customEditor.add(op, null);
-  }
-
-  // The TextEditingTool calls onActivate when a custom control is present
-  // during the execution of TextEditingTool.doActivate
-  // We need to have at least one place where acceptText is called.
-
-  // The TextEditingTool also calls onDecativate when a custom control is present
-  // during the execution of TextEditingTool.doDeactivate in case additional custom deactivation is needed
-  // GoJS always handles the adding and removing of the textEditingTool.textEditor to and from the DOM.
-
-  // The text used in acceptText is always the textEditingTool.textEditor's "value" property.
-  // This is set naturally on elements such as Input, TextArea, and Select, but you would
-  // need to set it yourself if your custom textEditor was a container Div.
-
-  customEditor.onActivate = function() {
-    customEditor.value = customEditor.textEditingTool.textBlock.text;
-
-    // Do a few different things when a user presses a key
-    customEditor.addEventListener("keydown", function(e) {
-      var keynum = e.which;
-      var tool = customEditor.textEditingTool;
-      if (tool === null) return;
-      if (keynum == 13) { // Accept on Enter
-        tool.acceptText(go.TextEditingTool.Enter);
-        return;
-      } else if (keynum == 9) { // Accept on Tab
-        tool.acceptText(go.TextEditingTool.Tab);
-        e.preventDefault();
-        return false;
-      } else if (keynum === 27) { // Cancel on Esc
-        tool.doCancel();
-        if (tool.diagram) tool.diagram.focus();
-      }
-    }, false);
-
-    var loc = customEditor.textEditingTool.textBlock.getDocumentPoint(go.Spot.TopLeft);
-    var pos = myDiagram.transformDocToView(loc);
-    customEditor.style.left = pos.x + "px";
-    customEditor.style.top  = pos.y + "px";
-  }
-  myDiagram.toolManager.textEditingTool.defaultTextEditor = customEditor;
-
-
-  // *******************************************
-  // Make a custom tool for a single TextBlock
-  // *******************************************
-
-  // You can create the elements in HTML the DOM somewhere and then get them here
-  // Here we create one in the DOM but have its style.visibility set to hidden.
-  // Once activated, it is removed from the DOM and we unhide it
-  var customText = document.getElementById("customTextEditor");
-  customText.onActivate = function() {
-    customText.style.visibility = "";
-    var startingValue = customText.textEditingTool.textBlock.text;
-
-    // Finish immediately when a radio button is pressed
-    var onClick = function(e) {
-      var tool = customText.textEditingTool;
-      if (tool === null) return;
-      tool.acceptText(go.TextEditingTool.Tab);
-    }
-
-    var children = customText.children
-    var l = children.length;
-    for (var i = 0; i < l; i++) {
-      var child = children[i];
-      if (!(child instanceof HTMLInputElement)) continue;
-      // Make sure the radio button that equals the text is checked
-      if (child.value == startingValue) {
-        child.checked = true;
-      }
-      // We want an event to fire when any of the radio buttons is changed
-      customText.addEventListener("change", onClick, false);
-    }
-
-    // customText is a div and doesn't have a "value" field
-    // So we will make value into a function that will return
-    // the "value" of the checked radio button
-    customText.value = function() {
-      var children = customText.children
-      var l = children.length;
-      for (var i = 0; i < l; i++) {
-        var child = children[i];
-        if (!(child instanceof HTMLInputElement)) continue;
-        if (child.checked) {
-          return child.value;
-        }
-      }
-      return "";
-    }
-
-    // Do a few different things when a user presses a key
-    customText.addEventListener("keydown", function(e) {
-      var keynum = e.which;
-      var tool = customText.textEditingTool;
-      if (tool === null) return;
-      if (keynum == 13) { // Accept on Enter
-        tool.acceptText(go.TextEditingTool.Enter);
-        return;
-      } else if (keynum == 9) { // Accept on Tab
-        tool.acceptText(go.TextEditingTool.Tab);
-        e.preventDefault();
-        return false;
-      } else if (keynum === 27) { // Cancel on Esc
-        tool.doCancel();
-        if (tool.diagram) tool.diagram.focus();
-      }
-    }, false);
-
-    var loc = customText.textEditingTool.textBlock.getDocumentPoint(go.Spot.TopLeft);
-    var pos = myDiagram.transformDocToView(loc);
-    customText.style.left = pos.x + "px";
-    customText.style.top  = pos.y + "px";
-  }
+                {
+                  // default text editor is now a SelectBox
+                  "textEditingTool.defaultTextEditor": window.TextEditorSelectBox, // defined in textEditorSelectBox.js
+                  "undoManager.isEnabled": true
+                });
 
   var brush = new go.Brush(go.Brush.Linear);
   brush.addColorStop(0, "rgb(255, 211, 89)");
@@ -156,33 +37,40 @@ function init() {
       $(go.TextBlock,
         { text: "Alpha",
           editable: true,
-          font: "32pt Verdana, sans-serif",
-          areaBackground: "lightblue" }),
+          font: "32pt Georgia, serif",
+          areaBackground: "lightblue" },
+          new go.Binding("choices")),
       $(go.TextBlock,
         { text: "Beta",
           editable: true,
-          font: "22pt Georgia, sans-serif",
+          font: "22pt Georgia, serif",
           areaBackground: "lightgreen",
-          scale: 2 }),
+          scale: 2 },
+          new go.Binding("choices")),
       $(go.TextBlock,
         { text: "Gamma",
           editable: true,
-          font: "60pt Georgia, sans-serif",
+          font: "60pt Georgia, serif",
           areaBackground: "orangered",
-          scale: 0.4 }),
+          scale: 0.4 },
+          new go.Binding("choices")),
       $(go.TextBlock,
         { text: "One",
           editable: true,
-          font: "11pt Georgia, sans-serif",
+          font: "bold 16pt Arial, Helvetica, sans-serif",
           areaBackground: brush,
           scale: 2,
-          textEditor: customText})
+          // this specific TextBlock uses a RadioButtons for editing text
+          textEditor: window.TextEditorRadioButtons, // defined in textEditorRadioButtons.js
+          // this specific TextBlock has its own choices:
+          choices: ['One', 'Two', 'Three', 'Four']
+        })
     );
 
   myDiagram.model = new go.GraphLinksModel(
     [
-      {key: 1, loc: new go.Point(250,150)},
-      {key: 2, loc: new go.Point(50,50)}
+      {key: 1, choices: ['Alpha', 'Beta', 'Gamma', 'Theta'], loc: new go.Point(250,150) },
+      {key: 2, choices: ['Alpha', 'Beta', 'Gamma', 'Theta'], loc: new go.Point(50,50) }
     ],
     [
       { from: 1, to: 2 }
@@ -193,34 +81,32 @@ function init() {
 </head>
 <body onload="init()">
 <div id="sample">
-    <!--
-    The div needs an explicit size or else we won't see anything.
-    Lets also add a border to help see the edges.
-    -->
-    <div id="myDiagramDiv"
-         style="border: solid 1px gray; width:500px; height:400px; min-width: 200px"></div>
-    <p>
-    This example shows how create custom textEditors for the TextEditingTool.
-    </p>
-    <p>
-    Above is a Diagram with two nodes, each holding several TextBlocks.
-    The TextEditingTool on the diagram has a custom editor that consists of an HTML select box with several preset values.
-    This editor will change the text as soon as the user presses Enter, Tab, or clicks away from the select box.
-    </p>
-    <p>
-    TextBlocks can also have their own custom editors that override the TextEditingTool's editor.
-    The last TextBlock in each node has its own custom editor that consists of an HTML div with several radio buttons.
-    This editor will change the text as soon as an option is selected.
-    </p>
+  <!--
+  The div needs an explicit size or else we won't see anything.
+  Lets also add a border to help see the edges.
+  -->
+  <div id="myDiagramDiv"
+       style="border: solid 1px black; width:500px; height:400px; min-width: 200px"></div>
+  <p>
+  This example shows how create custom textEditors for the TextEditingTool.
+  </p>
+  <p>
+  Above is a Diagram with two nodes, each holding several TextBlocks.
+  The TextEditingTool on the diagram has a custom editor that consists of an HTML select box with several preset values.
+  This editor will change the text as soon as the user presses Enter, Tab, or clicks away from the select box.
+  </p>
+  <p>
+  TextBlocks can also have their own custom editors that override the TextEditingTool's editor, by setting <a>TextBlock.textEditor</a>.
+  The last TextBlock in each node has its own custom editor that consists of an HTML div with several radio buttons.
+  This editor will change the text as soon as an option is selected.
+  </p>
+  <p>
+  TextBlocks in this sample make use of <a>TextBlock.choices</a> to inform the custom text editing tools.
+  </p>
+  <p>The code for these text editors is in <a href="../extensions/TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a>
+    and <a href="../extensions/TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a>.
+  <p>You can see a re-implementation of the default text editors in the <a href="../extensions/TextEditor.html">Text Editor extension</a>.
 
-    <!-- the following div is used for a custom textEditor. It is hidden until the text editor activates.
-         When the textEditor activates it will remove the div from here -->
-    <div id="customTextEditor" style="width: 85px; height: 85px; border: 1px solid black; background-color: white; visibility: hidden;">
-      <label for="One">One</label> <input type="radio" name="group1" id="One" value="One"> <br/>
-      <label for="Two">Two</label> <input type="radio" name="group1" id="Two" value="Two"> <br/>
-      <label for="Three">Three</label> <input type="radio" name="group1" id="Three" value="Three"> <br/>
-      <label for="Four">Four</label> <input type="radio" name="group1" id="Four" value="Four">
-    </div>
 </div>
 </body>
 </html>

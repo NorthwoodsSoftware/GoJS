@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dynamic Pie Chart</title>
 <meta name="description" content="A GoJS pie chart that updates dynamically as counts change." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -36,20 +36,20 @@
           var sliceindex = nodedata.slices.indexOf(slicedata);
           var slice = myDiagram.findNodeForKey(nodedata.key).findObject("PIE").elt(sliceindex);
           var sliceshape = slice.findObject("SLICE");
-          if (slicedata.count === 0) 
+          if (slicedata.count === 0)
             sliceshape.visible = false;
-          else 
+          else
             sliceshape.visible = true;
         }
       }
     }
 
-    var sliceTemplate = 
+    var sliceTemplate =
       $(go.Panel,
         $(go.Shape,
-          { 
+          {
             name: "SLICE",
-            strokeWidth: 2, stroke: "transparent", 
+            strokeWidth: 2, stroke: "transparent",
             isGeometryPositioned: true
           },
           new go.Binding("fill", "color"),
@@ -60,9 +60,9 @@
           click: function(e, slice) {
             var sliceShape = slice.findObject("SLICE");
             var oldskips = slice.diagram.skipsUndoManager;
-            slice.diagram.skipsUndoManager = true; 
+            slice.diagram.skipsUndoManager = true;
             if (sliceShape.stroke === "transparent") {
-              sliceShape.stroke = adjustColorBrightness(slice.data.color, -.4);
+              sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
               // Move the slice out from the pie when selected
               var nodedata = findNodeDataForSlice(slice.data);
               if (nodedata) {
@@ -85,7 +85,7 @@
           toolTip:
             $(go.Adornment, "Auto",
               $(go.Shape, { fill: "lightgray" }),
-              $(go.TextBlock, 
+              $(go.TextBlock,
                 { font: "10pt Verdana, sans-serif", margin: 4 },
                 new go.Binding("text", "", function(data) {
                       // Display text and percentage rounded to 2 decimals
@@ -97,10 +97,10 @@
                       return "";
                     }))
             )
-        }  
+        }
       );
 
-    var optionTemplate = 
+    var optionTemplate =
       $(go.Panel, "TableRow",
         $(go.TextBlock,
           { column: 0,
@@ -112,8 +112,8 @@
           { column: 1 },
           $(go.Shape, { fill: "#F2F2F2" }),
           $(go.TextBlock,
-            { 
-              font: "10pt Verdana, sans-serif", 
+            {
+              font: "10pt Verdana, sans-serif",
               textAlign: "right", margin: 2,
               wrap: go.TextBlock.None, width: 40,
               editable: true, isMultiline: false,
@@ -125,13 +125,13 @@
         $(go.Panel, "Horizontal",
           { column: 2 },
           $("Button",
-            { 
+            {
               click: incrementCount
             },
             $(go.Shape, "PlusLine", { margin: 3, desiredSize: new go.Size(7, 7) })
           ),
           $("Button",
-            { 
+            {
               click: decrementCount
             },
             $(go.Shape, "MinusLine", { margin: 3, desiredSize: new go.Size(7, 7) })
@@ -139,7 +139,7 @@
         )
       );
 
-    myDiagram.nodeTemplate = 
+    myDiagram.nodeTemplate =
       $(go.Node, "Vertical",
         { deletable: false },
         $(go.TextBlock,
@@ -151,7 +151,7 @@
             {
               name: "PIE",
               // account for slices offsetting when selected so the node won't change size
-              desiredSize: new go.Size(pieRadius * 2.2  + 5, pieRadius * 2.2 + 5), 
+              desiredSize: new go.Size(pieRadius * 2.2  + 5, pieRadius * 2.2 + 5),
               itemTemplate: sliceTemplate
             },
             new go.Binding("itemArray", "slices")
@@ -168,7 +168,7 @@
 
     myDiagram.model = new go.Model(
       [
-        { key: 0, 
+        { key: 0,
           text: "Sample Poll",
           slices: [
             { text: "Option 1", count: 21, color: "#B378C1" },
@@ -316,18 +316,6 @@
       if (slicedata.count > 0)
         myDiagram.model.setDataProperty(slicedata, "count", slicedata.count - 1);
       myDiagram.model.commitTransaction("decrement count");
-    }
-
-    // Take a hex color and lighten/darken it, which is useful for nice selection stroke colors
-    function adjustColorBrightness(color, percent) {   
-      var f = parseInt(color.slice(1), 16); 
-      var t = percent < 0 ? 0 : 255; 
-      var p = percent < 0 ? percent * -1 : percent; 
-      var R = f >> 16;
-      var G = f >> 8 & 0x00FF; 
-      var B = f & 0x0000FF;
-      return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) *
-        0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
     }
   }
 </script>

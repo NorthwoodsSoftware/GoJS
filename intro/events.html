@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Events -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Events</h2>
+<h1>Events</h1>
 <p>
 There are three basic kinds of events that <b>GoJS</b> deals with:
 <a>DiagramEvent</a>s, <a>InputEvent</a>s, and <a>ChangedEvent</a>s.
 This page discusses the first two; see <a href="changedEvents.html">Changed Events</a> for the last kind of event.
 </p>
 
-<h3>Diagram Events</h3>
+<h2 id="DiagramEvents">Diagram Events</h2>
 <p>
 <a>DiagramEvent</a>s represent general user-initiated changes to a diagram.
 You can register diagram event handlers by calling <a>Diagram.addDiagramListener</a>.
@@ -53,7 +54,7 @@ Currently defined diagram event names include:
   <li>"<b>ObjectContextClicked</b>", when a mouse right-button single-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
   <li>"<b>SelectionMoved</b>", when the <a>DraggingTool</a> has moved some Parts; the moved Parts are held in the <a>Diagram.selection</a> collection</li>
   <li>"<b>SelectionCopied</b>", when the <a>DraggingTool</a> has copied some Parts; the copied Parts are held in the <a>Diagram.selection</a> collection</li>
-  <li>"<b>SelectionDeleting</b>", before <a>CommandHandler.deleteSelection</a> deletes the <a>Diagram.selection</a> Parts; set <a>DiagramEvent.cancel</a> to true in order to cancel the deletion</li>
+  <li>"<b>SelectionDeleting</b>", before <a>CommandHandler.deleteSelection</a> deletes the <a>Diagram.selection</a> Parts</li>
   <li>"<b>SelectionDeleted</b>", after <a>CommandHandler.deleteSelection</a> has deleted the <a>Diagram.selection</a>, which is now empty</li>
   <li>"<b>SelectionGrouped</b>", after <a>CommandHandler.groupSelection</a> has create a new Group from the <a>Diagram.selection</a>, which now holds the new Group</li>
   <li>"<b>SelectionUngrouped</b>", after <a>CommandHandler.ungroupSelection</a> has removed the selected Group and kept the member Parts as the new <a>Diagram.selection</a></li>
@@ -110,7 +111,7 @@ See the discussion of <a href="changedEvents.html">Changed Events</a> and the <a
 
 <p>
 This example demonstrates handling several diagram events: <b>"ObjectSingleClicked"</b>,
-<b>"BackgroundDoubleClicked"</b>, <b>"ClipboardPasted"</b>, and <b>"SelectionDeleting"</b>.
+<b>"BackgroundDoubleClicked"</b>, and <b>"ClipboardPasted"</b>.
 </p>
 <pre data-language="javascript" id="diagramEvents">
   function showMessage(s) {
@@ -128,14 +129,6 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
 
   diagram.addDiagramListener("ClipboardPasted",
       function(e) { showMessage("Pasted " + e.diagram.selection.count + " parts"); });
-
-  diagram.addDiagramListener("SelectionDeleting",
-      function(e) {
-        if (e.diagram.selection.count > 1) {
-          e.cancel = true;
-          showMessage("Cannot delete multiple selected parts");
-        }
-      });
 
   var nodeDataArray = [
     { key: "Alpha" },
@@ -155,7 +148,7 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
 <span id="diagramEventsMsg" style="color: red">(message)</span>
 
 
-<h3>Input Events</h3>
+<h2 id="InputEvents">Input Events</h2>
 <p>
 When a low-level HTML DOM event occurs, <b>GoJS</b> canonicalizes the keyboard/mouse/touch event information
 into a new <a>InputEvent</a> that can be passed to various event-handling methods and saved for later examination.
@@ -181,7 +174,7 @@ Some tools find the "current" <a>GraphObject</a> at the mouse point.
 This is remembered as the <a>InputEvent.targetObject</a>.
 </p>
 
-<h3>Higher-level input events</h3>
+<h2 id="HigherLevelInputEvents">Higher-level input events</h2>
 <p>
 Some tools detect a sequence of input events to compose somewhat more abstract user events.
 Examples include "click" (mouse-down-and-up very close to each other) and "hover" (motionless mouse for some time).
@@ -268,7 +261,7 @@ clicking on nodes and entering/leaving groups.
 <span id="inputEventsMsg" style="color: red">(message)</span>
 
 
-<h3>Clicking and Selecting</h3>
+<h2 id="ClickingAndSelecting">Clicking and Selecting</h2>
 <p>
 This example demonstrates both the "click" and the "selectionChanged" events:
 </p>

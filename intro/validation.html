@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Validation -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Validation</h2>
+<h1>Validation</h1>
 <p>
 Some operations require more sophisticated controls than the binary permission flags discussed in the previous <a href="permissions.html">section</a>.
 When the user tries to draw a new link or reconnect an existing link, your application may want to restrict which links may be made,
@@ -24,13 +25,13 @@ When the user edits some text, your application may want to limit the kinds of s
 Although not exactly "validation", you can also limit how users drag (move or copy) parts by setting several properties on <a>Part</a> and customizing the <a>DraggingTool</a>.
 </p>
 
-<h3>Linking Validation</h3>
+<h2 id="LinkingValidation">Linking Validation</h2>
 <p>
 There are a number of <a>GraphObject</a> properties that let you control what links the user may draw or reconnect.
 These properties apply to each port element and affect the links that may connect with that port.
 </p>
 
-<h4>Linkable properties</h4>
+<h3 id="LinkableProperties">Linkable properties</h3>
 <p>
 The primary properties are <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>.
 If you do not have a <a>Node</a> containing an element with fromLinkable: true and another node
@@ -67,7 +68,7 @@ Note how the only permitted links are those going from a "From" node to a "To" n
 This is true even if you start the linking gesture on a "To" node.
 </p>
 
-<h4>Span of Linkable properties</h4>
+<h3 id="SpanOfLinkableProperties">Span of Linkable properties</h3>
 <p>
 Because the <a>TextBlock</a> in the above example is not declared to be a port (i.e. there is no value for <a>GraphObject.portId</a>),
 mouse events on the TextBlock do not start the <a>LinkingTool</a>.
@@ -82,7 +83,7 @@ You can do that by explicitly setting <a>GraphObject.fromLinkable</a> and/or <a>
 The default value for those two properties is null, which means the "linkable"-ness is inherited from the containing panel.
 </p>
 
-<h3>Other linking permission properties</h3>
+<h2 id="OtherLinkingPermissionProperties">Other linking permission properties</h2>
 <p>
 Just because you have set <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>
 to true on the desired port objects
@@ -90,7 +91,7 @@ does not mean that you want to allow users to create a link from every such port
 There are other <a>GraphObject</a> properties governing linkability for both the "from" and the "to" ends.
 </p>
 
-<h4>LinkableDuplicates properties</h4>
+<h3 id="LinkableDuplicatesProperties">LinkableDuplicates properties</h3>
 <p>
 One restriction that you may have noticed before is that the user cannot draw a second link between the same pair
 of nodes in the same direction.
@@ -130,7 +131,7 @@ Try dragging one of the nodes to see what happens with the link routing.
 A similar effect occurs also when the link's <a>Link.curve</a> is <a>Link.Bezier</a>.
 </p>
 
-<h4>LinkableSelfNode properties</h4>
+<h3 id="LinkableSelfNodeProperties">LinkableSelfNode properties</h3>
 <p>
 Another standard restriction is that the user cannot draw a link from a node to itself.
 Again it is easy to remove that restriction: just set <a>GraphObject.fromLinkableSelfNode</a>
@@ -173,7 +174,7 @@ But the restrictions of the "LinkableSelfNode" properties do span the whole node
 so they must be applied to both ports within a node for a link to connect to its own node.
 </p>
 
-<h4>MaxLinks properties</h4>
+<h3 id="MaxLinksProperties">MaxLinks properties</h3>
 <p>
 The final linking restriction properties control how many links may connect to a node/port.
 This example sets the <a>GraphObject.toMaxLinks</a> property to 2,
@@ -215,7 +216,7 @@ If this property is set, it is most commonly set to one.
 Of course it depends on the nature of the application.
 </p>
 
-<h3>Cycles in graphs</h3>
+<h2 id="CyclesInGraphs">Cycles in graphs</h2>
 <p>
 If you want to make sure that the graph structure that your users create never have any cycles of links,
 or that the graph is always tree-structured, <b>GoJS</b> makes that easy to enforce.
@@ -256,7 +257,7 @@ a second incoming link to any node and also ensures that the user draw no cycles
 As you draw more links you can see how the set of potential linking destinations keeps getting smaller.
 </p>
 
-<h3>General linking validation</h3>
+<h2 id="GeneralLinkingValidation">General linking validation</h2>
 <p>
 It may be the case that the semantics of your application will cause the set of valid link destinations to depend
 on the node data (i.e. at the node and port at which the link started from and at the possible destination node/port)
@@ -336,7 +337,7 @@ To emphasize the color restriction, links have their colors bound to the "from" 
 </p>
 
 
-<h3>Grouping validation</h3>
+<h2 id="GroupingValidation">Grouping validation</h2>
 <p>
 When you want to limit the kinds of nodes that the user may add to a particular group,
 you can implement a predicate as the <a>CommandHandler.memberValidation</a> or <a>Group.memberValidation</a> property.
@@ -446,7 +447,7 @@ This would be behavior similar to that implemented above when dragging inside a 
 </p>
 
 
-<h3>Text editing validation</h3>
+<h2 id="TextEditingValidation">Text editing validation</h2>
 <p>
 You can also limit what text the user enters when they do in-place text editing of a <a>TextBlock</a>.
 First, to enable any editing at all, you will need to set <a>TextBlock.editable</a> to true.

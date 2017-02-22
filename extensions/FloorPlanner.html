@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Floor Planner</title>
+    <!-- Copyright 1998-2017 by Northwoods Software Corporation -->
+    <script src="../release/go.js"></script>
+    <script src="WallBuildingTool.js"></script>
+    <script src="WallReshapingTool.js"></script>
+    <script src="FloorPlanner.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="FloorPlanner.css" />
+</head>
+<body id="body" onload="init()">
+    <div id="currentFile">(Unsaved File)</div>
+    <!-- File menus-->
+    <nav>
+        <ul id="fileMenus">
+            <li>
+                <a href="#">File</a>
+                <ul>
+                    <li><a href="#" onclick="newDocument()">New <p class="shortcut">(Ctrl + D)</p></a></li>
+                    <li><a href="#" onclick="openDocument()">Open... <p class="shortcut">(Ctrl + O)</p></a></li>
+                    <li><a href="#" onclick="saveDocument()">Save <p class="shortcut">(Ctrl + S)</p></a></li>
+                    <li><a href="#" onclick="saveDocumentAs()">Save As...</a></li>
+                    <li><a href="#" onclick="removeDocument()">Remove... <p class="shortcut">(Ctrl + R)</p></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">Edit</a>
+                <ul>
+                    <li><a href="#" onclick="myDiagram.commandHandler.undo()">Undo <p class="shortcut">(Ctrl + Z)</p></a></li>
+                    <li><a href="#" onclick="myDiagram.commandHandler.redo()">Redo <p class="shortcut">(Ctrl + Y)</p></a></li>
+                    <li><a href="#" onclick="myDiagram.commandHandler.copySelection()">Copy <p class="shortcut">(Ctrl + C)</p></a></li>
+                    <li><a href="#" onclick="myDiagram.commandHandler.cutSelection()">Cut <p class="shortcut">(Ctrl + X)</p></a></li>
+                    <li><a href="#" onclick="myDiagram.commandHandler.pasteSelection()">Paste <p class="shortcut">(Ctrl + V)</p></a></li>
+                    <li><a href="#" onclick="myDiagram.commandHandler.deleteSelection()">Delete <p class="shortcut">(Del)</p></a></li>
+                    <li><a href="#" onclick="myDiagram.commandHandler.selectAll()">Select All <p class="shortcut">(Ctrl + A)</p></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">View</a>
+                <ul>
+                    <li><a href="#" onclick="hideShow('diagramHelpDiv')" id="diagramHelpDivButton">Hide Diagram Help <p class="shortcut"> (Ctrl + H)</p></a></li>
+                    <li><a href="#" onclick="hideShow('selectionInfoWindow')" id="selectionInfoWindowButton">Show Selection Help <p class="shortcut"> (Ctrl + I)</p></a></li>
+                    <li><a href="#" onclick="hideShow('myPaletteWindow')" id="myPaletteWindowButton">Hide Palettes <p class="shortcut"> (Ctrl + P)</p></a></li>
+                    <li><a href="#" onclick="hideShow('myOverviewWindow')" id="myOverviewWindowButton">Show Overview <p class="shortcut"> (Ctrl + E)</p></a></li>
+                    <li><a href="#" onclick="hideShow('statisticsWindow')" id="statisticsWindowButton">Show Statistics <p class="shortcut"> (Ctrl + G)</p></a></li>
+                    <li>
+                        <a href="#" id="optionsWindowButton" onclick="hideShow('optionsWindow')">Show Options <p class="shortcut"> (Ctrl + B)</p> </a>
+                    </li>
+                    <li>
+                        <a href="#" class="scaleItems" onclick="adjustScale('-')">-</a>
+                        <a href="#" class="scaleItems" id="scaleDisplay">Scale: 100%</a>
+                        <a href="#" class="scaleItems" onclick="adjustScale('+')">+</a>
+                    </li>
+                </ul>
+            </li>
+            <li><button class="setBehavior toolIcons" id="wallBuildingButton" title="Wall Building Tool (Ctrl + 1)" onclick="setBehavior('wallBuilding')">&nbsp;</button></li>
+            <li><button class="setBehavior toolIcons" id="draggingButton" title="Select/Move Tool (Ctrl + 2)" onclick="setBehavior('dragging')">&nbsp;</button></li>
+            <p id="wallWidthBox">
+                <label for="wallWidthInput" id="wallWidthInputLabel">Wall Width:</label>
+                <input id="wallWidthInput" class="unitsInput" placeholder="width" />
+                <input id="wallWidthUnitsInput" class="unitsBox" value="cm" disabled="disabled" />
+            </p>
+        </ul>
+    </nav>
+
+    <div id="myDiagramDiv"></div>
+    <div id="diagramHelpDiv" style="visibility: visible">
+        <div id="diagramHelpTextDiv">
+            <p>Drag a node to the Diagram or select the Wall Drawing Tool (Ctrl + 1) to begin</p>
+        </div>
+    </div>
+
+    <!-- Floating windows-->
+    <div id="myPaletteWindow" style="visibility: visible" class="draggable ui-draggable">
+        <div id="myPaletteWindowHandle" class="handle ui-draggable-handle">Palettes<button id="myPaletteClose" class="windowButtons clickable" onclick="closeElement('myPaletteWindow')">X</button></div>
+        <div id="palettes">
+            <!-- jQuery accordion -->
+            <h3 class="paletteLabel">Furniture</h3>
+            <div>
+                <input id="furnitureSearchBar" placeholder="Search Furniture" oninput="searchFurniture()" />
+                <div id="myPaletteDiv" class="paletteClass"></div>
+            </div>
+            <h3 class="paletteLabel">Wall Parts</h3>
+            <div id="myPalette2Div" class="paletteClass"></div>
+        </div>
+    </div>
+
+    <div id="openDocument" style="visibility: hidden;" class="draggable ui-draggable">
+        <div id="openDocumentHandle" class="handle ui-draggable-handle">Open File<button id="openDocumentClose" class="windowButtons clickable" onclick="closeElement('openDocument')">X</button></div>
+        <div id="openText" class="elementText">Choose file to open...</div>
+        <select id="mySavedFiles" class="mySavedFiles"></select>
+        <br />
+        <button id="openBtn" class="elementBtn" type="button" onclick="loadFile()">Open</button>
+    </div>
+
+    <div id="removeDocument" style="visibility: hidden;" class="draggable ui-draggable">
+        <div id="removeDocumentHandle" class="handle">Delete File <button id="removeDocumentClose" class="windowButtons clickable" onclick="closeElement('removeDocument')">X</button></div>
+        <div id="removeText" class="elementText">Choose file to remove...</div>
+        <select id="mySavedFiles2" class="mySavedFiles"></select>
+        <br />
+        <button id="removeBtn" class="elementBtn" type="button" onclick="removeFile()" style="margin-left:70px">Remove</button>
+    </div>
+
+    <div id="myOverviewWindow" style="visibility: hidden;" class="draggable ui-draggable">
+        <div id="myOverviewWindowHandle" class="handle ui-draggable-handle">Overview<button id="myOverviewClose" title="Close" class="windowButtons clickable" onclick="closeElement('myOverviewWindow')">X</button></div>
+        <div id="myOverviewDiv" style="height:187px; width: 300px;"></div>
+    </div>
+
+    <div id="selectionInfoWindow" style="visibility: hidden" class="draggable ui-draggable">
+        <div id="selectionInfoWindowHandle" class="handle ui-draggable-handle">Selection Info <button id="selectionInfoClose" class="windowButtons clickable" onclick="closeElement('selectionInfoWindow')">X</button></div>
+        <div id="selectionInfoTextDiv" class="grid-container">Nothing selected</div>
+    </div>
+
+    <div id="optionsWindow" style="visibility: hidden" class="draggable ui-draggable">
+        <div id="optionsWindowHandle" class="handle ui-draggable-handle">Options <button id="optionsWindowClose" class="windowButtons clickable" onclick="closeElement('optionsWindow')">X</button></div>
+        Units
+        <div id="unitsRow" class="row data">
+            <form id="unitsForm" onchange="changeUnits()">
+                <div class="col-4">
+                    <input type="radio" name="units" id="centimeters" checked />cm
+                </div>
+                <div class="col-4">
+                    <input type="radio" name="units" id="meters" /> m
+                </div>
+                <div class="col-4">
+                    <input type="radio" name="units" id="inches" />in
+                </div>
+                <div class="col-4">
+                    <input type="radio" name="units" id="feet" />ft
+                </div>
+            </form>
+        </div>
+        Grid
+        <div id="gridRow" class="row">
+            <div class="col-2">
+                <input id="gridSizeInput" placeholder="grid size" class="unitsInput" />
+                <input id="gridSizeUnitsInput" class="unitsBox" value="cm" disabled />
+                <button id="setGridButton" onclick="changeGridSize()">Set Grid</button>
+            </div>
+            <div class="col-2">
+                <input type="checkbox" id="showGridCheckbox" onchange="checkboxChanged('showGridCheckbox')" checked />Show Grid
+            </div>
+        </div>
+        Preferences
+        <div id="miscRow" class="row data">
+            <div class="col-1">
+                <input type="checkbox" id="gridSnapCheckbox" onchange="checkboxChanged('gridSnapCheckbox')" checked />Grid Snap
+            </div>
+            <div class="col-1">
+                <input type="checkbox" id="wallGuidelinesCheckbox" onchange="checkboxChanged('wallGuidelinesCheckbox')" checked /> Show Wall Guidelines
+            </div>
+            <div class="col-1">
+                <input type="checkbox" id="wallLengthsCheckbox" onchange="checkboxChanged('wallLengthsCheckbox')" checked /> Show Wall Lengths
+            </div>
+            <div class="col-1">
+                <input type="checkbox" id="wallAnglesCheckbox" onchange="checkboxChanged('wallAnglesCheckbox')" checked /> Show Wall Angles
+            </div>
+            <div class="col-1">
+                <input type="checkbox" id="smallWallAnglesCheckbox" onchange="checkboxChanged('smallWallAnglesCheckbox')" unchecked /> Show Only Small Wall Angles
+            </div>
+        </div>
+    </div>
+
+    <div id="statisticsWindow" style="visibility: hidden" class="draggable ui-draggable">
+        <div id="statisticsWindowHandle" class="handle ui-draggable-handle">Floor Plan Statistics <button id="statisticsWindowClose" class="windowButtons clickable" onclick="closeElement('statisticsWindow')">X</button></div>
+        Stats
+        <div id="statisticsWindowTextDiv" class="grid-container"></div>
+    </div>
+
+    <p>
+        This sample allows for users to create detailed floor plans. Furniture can be directly dragged from the Furniture Palette onto the main grid.
+        Doors and windows may be dragged directly onto walls from the Wall Parts Palette.
+        Pertinent selection information can be viewed and edited from the Selection Info Window (Ctrl + I or right click -> 'Show Selection Info' or double click a node).
+    </p>
+    <p>
+        Users may drag walls from the Wall Parts Palette, or they may create walls with the <a href="WallBuildingTool.js">Wall Building Tool</a> (Ctrl + 1 or simply click on the tool icon to the right of the 'View' menu).
+        The Wall Building Tool allows users to click anywhere on the diagram, use that point as a startpoint for the wall, then hold the mouse button and drag to the desired wall endpoint.
+        The dragging functionality is supplied by the <a href="WallReshapingTool.js">Wall Reshaping Tool</a>. The Wall Reshaping Tool also allows for selected walls to be reshaped from their endpoints.
+    </p>
+    <p>
+        Core functionality for this sample can be found in <a href="FloorPlanner.js">FloorPlanner.js</a>.
+    </p>
+
+    <textarea id="initialModel" style="visibility: hidden;">
+        { "class": "go.GraphLinksModel",
+        "modelData": {"units":"centimeters", "unitsAbbreviation":"cm", "gridSize":10, "wallWidth":5, "preferences":{"showWallGuidelines":true, "showWallLengths":true, "showWallAngles":true, "showOnlySmallWallAngles":true, "showGrid":true, "gridSnap":true}, "position":"-921.9822330470338 -335.51776695296644"},
+        "nodeDataArray": [
+        {"key":"wall", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-480, "y":-300}, "endpoint":{"class":"go.Point", "x":300, "y":-300}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall2", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":300, "y":-300}, "endpoint":{"class":"go.Point", "x":400, "y":-200}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall3", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":400, "y":-200}, "endpoint":{"class":"go.Point", "x":400, "y":140}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall4", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":400, "y":140}, "endpoint":{"class":"go.Point", "x":-480, "y":140}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall5", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-480, "y":140}, "endpoint":{"class":"go.Point", "x":-480, "y":-300}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall6", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-320, "y":-300}, "endpoint":{"class":"go.Point", "x":-320, "y":-80}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall7", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-320, "y":-80}, "endpoint":{"class":"go.Point", "x":120, "y":-80}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall8", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":120, "y":-80}, "endpoint":{"class":"go.Point", "x":120, "y":-300}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"door", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"left", "notes":"", "loc":"-399.80000019073486 -300", "group":"wall", "angle":180},
+        {"category":"WindowNode", "key":"window", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":40, "notes":"", "loc":"-447.80000019073486 -300", "group":"wall"},
+        {"category":"WindowNode", "key":"window2", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":40, "notes":"", "loc":"-346.80000019073486 -300", "group":"wall"},
+        {"category":"MultiPurposeNode", "key":"MultiPurposeNode", "color":"#ffffff", "stroke":"#000000", "name":"Writable Node", "type":"Writable Node", "shape":"Rectangle", "text":"Boottray", "width":60, "height":30, "notes":"", "loc":"-455 -220", "angle":270},
+        {"category":"MultiPurposeNode", "key":"MultiPurposeNode2", "color":"#000000", "stroke":"#FFFFFF", "name":"Writable Node", "type":"Writable Node", "shape":"Rectangle", "text":"TV", "width":140, "height":20, "notes":"", "loc":"-110 -280"},
+        {"category":"WindowNode", "key":"window3", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":60, "notes":"", "loc":"-239.80000019073486 -300", "group":"wall"},
+        {"category":"WindowNode", "key":"window4", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":60, "notes":"", "loc":"10.199999809265137 -300", "group":"wall"},
+        {"key":"sofaMedium", "color":"#ff8080", "stroke":"#007F7F", "caption":"Sofa", "type":"Sofa", "geo":"F1 M0 0 L80 0 80 40 0 40 0 0 M10 35 L10 10 M0 0 Q8 0 10 10 M0 40 Q40 15 80 40 M70 10 Q72 0 80 0 M70 10 L70 35", "height":45, "width":90, "notes":"", "loc":"-193.18019484660536 -113.18019484660536", "group":-32},
+        {"key":"wall9", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-480, "y":10}, "endpoint":{"class":"go.Point", "x":-50, "y":10}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall10", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-50, "y":10}, "endpoint":{"class":"go.Point", "x":-50, "y":140}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall11", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":120, "y":140}, "endpoint":{"class":"go.Point", "x":120, "y":80}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"wall12", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":210, "y":-30}, "endpoint":{"class":"go.Point", "x":400, "y":-30}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"key":"door2", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"left", "notes":"", "loc":"120 112.20000076293945", "group":"wall11", "angle":90},
+        {"key":"door3", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"left", "notes":"", "loc":"-50 76.20000076293945", "group":"wall10", "angle":270},
+        {"key":"door4", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"left", "notes":"", "loc":"-422.80000019073486 10", "group":"wall9", "angle":180},
+        {"key":"wall13", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-290, "y":10}, "endpoint":{"class":"go.Point", "x":-290, "y":140}, "strokeWidth":5, "isGroup":true, "notes":""},
+        {"category":"MultiPurposeNode", "key":"MultiPurposeNode3", "color":"#ffffff", "stroke":"#000000", "name":"Writable Node", "type":"Writable Node", "shape":"Rectangle", "text":"Washer", "width":60, "height":60, "notes":"", "loc":"-252 46"},
+        {"category":"MultiPurposeNode", "key":"MultiPurposeNode4", "color":"#ffffff", "stroke":"#000000", "name":"Writable Node", "type":"Writable Node", "shape":"Rectangle", "text":"Dryer", "width":60, "height":60, "notes":"", "loc":"-253 104"},
+        {"category":"MultiPurposeNode", "key":"MultiPurposeNode5", "color":"#515151", "stroke":"#AEAEAE", "name":"Writable Node", "type":"Writable Node", "shape":"Rectangle", "text":"Fridge", "width":50, "height":40, "notes":"", "loc":"240 -270", "angle":0},
+        {"key":"sofaMedium2", "color":"#ff8080", "stroke":"#007F7F", "caption":"Sofa", "type":"Sofa", "geo":"F1 M0 0 L80 0 80 40 0 40 0 0 M10 35 L10 10 M0 0 Q8 0 10 10 M0 40 Q40 15 80 40 M70 10 Q72 0 80 0 M70 10 L70 35", "height":45, "width":90, "notes":"", "loc":"-103.18019484660539 -113.18019484660536", "group":-32},
+        {"key":"sofaMedium22", "color":"#ff8080", "stroke":"#007F7F", "caption":"Sofa", "type":"Sofa", "geo":"F1 M0 0 L80 0 80 40 0 40 0 0 M10 35 L10 10 M0 0 Q8 0 10 10 M0 40 Q40 15 80 40 M70 10 Q72 0 80 0 M70 10 L70 35", "height":45, "width":90, "notes":"", "loc":"-13.180194846605374 -113.18019484660536", "group":-32},
+        {"key":"armChair", "color":"#8080c0", "stroke":"#7F7F3F", "caption":"Arm Chair", "type":"Arm Chair", "geo":"F1 M0 0 L40 0 40 40 0 40 0 0 M10 30 L10 10 M0 0 Q8 0 10 10 M0 40 Q20 15 40 40 M30 10 Q32 0 40 0 M30 10 L30 30", "width":45, "height":45, "notes":"", "loc":"-273.1801948466054 -143.18019484660545", "angle":45, "group":-32},
+        {"key":"armChair2", "color":"#8080c0", "stroke":"#7F7F3F", "caption":"Arm Chair", "type":"Arm Chair", "geo":"F1 M0 0 L40 0 40 40 0 40 0 0 M10 30 L10 10 M0 0 Q8 0 10 10 M0 40 Q20 15 40 40 M30 10 Q32 0 40 0 M30 10 L30 30", "width":45, "height":45, "notes":"", "loc":"66.81980515339461 -143.18019484660545", "angle":315, "group":-32},
+        {"isGroup":true, "key":-32, "caption":"Group", "notes":""},
+        {"key":"shower", "color":"#ffffff", "stroke":"#000000", "caption":"Shower/Tub", "type":"Shower/Tub", "geo":"F1 M0 0 L40 0 40 60 0 60 0 0 M35 15 L35 55 5 55 5 15 Q5 5 20 5 Q35 5 35 15 M22.5 20 A2.5 2.5 180 1 1 22.5 19.99", "width":50, "height":90, "notes":"", "loc":"-320 80"},
+        {"key":"sink", "color":"#ffffff", "stroke":"#000000", "caption":"Sink", "type":"Sink", "geo":"F1 M0 0 L40 0 40 40 0 40 0 0z M5 7.5 L18.5 7.5 M 21.5 7.5 L35 7.5 35 35 5 35 5 7.5 M 15 21.25 A 5 5 180 1 0 15 21.24 M23 3.75 A 3 3 180 1 1 23 3.74 M21.5 6.25 L 21.5 12.5 18.5 12.5 18.5 6.25 M15 3.75 A 1 1 180 1 1 15 3.74 M 10 4.25 L 10 3.25 13 3.25 M 13 4.25 L 10 4.25 M27 3.75 A 1 1 180 1 1 27 3.74 M 26.85 3.25 L 30 3.25 30 4.25 M 26.85 4.25 L 30 4.25", "width":27, "height":27, "notes":"", "loc":"-370 110", "angle":180},
+        {"key":"toilet", "color":"#ffffff", "stroke":"#000000", "caption":"Toilet", "type":"Toilet", "geo":"F1 M0 0 L25 0 25 10 0 10 0 0 M20 10 L20 15 5 15 5 10 20 10 M5 15 Q0 15 0 25 Q0 40 12.5 40 Q25 40 25 25 Q25 15 20 15", "width":25, "height":35, "notes":"", "loc":"-450 110", "angle":180},
+        {"key":"door5", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"left", "notes":"", "loc":"-320 -186.79999923706055", "group":"wall6", "angle":90},
+        {"key":"door6", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"right", "notes":"", "loc":"-320 -226.79999923706055", "group":"wall6", "angle":90},
+        {"key":"door62", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"left", "notes":"", "loc":"120 -229.79999923706055", "group":"wall8", "angle":270},
+        {"key":"door52", "category":"DoorNode", "color":"rgba(0, 0, 0, 0)", "caption":"Door", "type":"Door", "width":40, "doorOpeningHeight":5, "swing":"right", "notes":"", "loc":"120 -189.79999923706055", "group":"wall8", "angle":270},
+        {"key":"diningTable", "color":"#804040", "stroke":"#7FBFBF", "caption":"Dining Table", "type":"Dining Table", "geo":"F1 M 0 0 L 0 100 200 100 200 0 0 0 M 25 0 L 25 -10 75 -10 75 0 M 125 0 L 125 -10 175 -10 175 0 M 200 25 L 210 25 210 75 200 75 M 125 100 L 125 110 L 175 110 L 175 100 M 25 100 L 25 110 75 110 75 100 M 0 75 -10 75 -10 25 0 25", "width":125, "height":62.5, "notes":"", "loc":"260 -150"},
+        {"key":"stove", "color":"#ffffff", "stroke":"#000000", "caption":"Stove", "type":"Stove", "geo":"F1 M 0 0 L 0 100 100 100 100 0 0 0 M 30 15 A 15 15 180 1 0 30.01 15 M 70 15 A 15 15 180 1 0 70.01 15M 30 55 A 15 15 180 1 0 30.01 55 M 70 55 A 15 15 180 1 0 70.01 55", "width":60, "height":50, "notes":"", "loc":"303.5355339059328 -254.14213562373095", "angle":45},
+        {"key":"staircase", "color":"#ffffff", "stroke":"#000000", "caption":"Staircase", "type":"Staircase", "geo":"F1 M0 0 L 0 100 250 100 250 0 0 0 M25 100 L 25 0 M 50 100 L 50 0 M 75 100 L 75 0 M 100 100 L 100 0 M 125 100 L 125 0 M 150 100 L 150 0 M 175 100 L 175 0 M 200 100 L 200 0 M 225 100 L 225 0", "width":125, "height":50, "notes":"", "loc":"330 -70", "angle":0},
+        {"key":"bed", "color":"#ffffff", "stroke":"#000000", "caption":"Bed", "type":"Bed", "geo":"F1 M0 0 L40 0 40 60 0 60 0 0 M 7.5 2.5 L32.5 2.5 32.5 17.5 7.5 17.5 7.5 2.5 M0 20 L40 20 M0 25 L40 25", "width":76.2, "height":101.6, "notes":"", "loc":"340 90", "angle":90},
+        {"key":"roundTable", "color":"#ffffff", "stroke":"#000000", "caption":"Nightstand", "type":"Round Table", "shape":"Ellipse", "width":30, "height":31, "notes":"", "loc":"370 30", "text":"Nightstand"},
+        {"category":"WindowNode", "key":"window5", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":60, "notes":"", "loc":"-376.80000019073486 140", "group":"wall4", "angle":180},
+        {"category":"WindowNode", "key":"window6", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":60, "notes":"", "loc":"329.4735930304595 -270.5264069695405", "group":"wall2", "angle":45},
+        {"category":"WindowNode", "key":"window7", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":60, "notes":"", "loc":"371.89999990165234 -228.10000009834766", "group":"wall2", "angle":45},
+        {"category":"WindowNode", "key":"window8", "color":"white", "caption":"Window", "type":"Window", "shape":"Rectangle", "height":5, "width":60, "notes":"", "loc":"400 11.599999994039536", "group":"wall3", "angle":90},
+        {"category":"MultiPurposeNode", "key":"MultiPurposeNode6", "color":"#ffffff", "stroke":"#000000", "name":"Writable Node", "type":"Writable Node", "shape":"Rectangle", "text":"Counter", "width":60, "height":50, "notes":"", "loc":"343.53553390593277 -213.53553390593277", "angle":45, "caption":"Counter"},
+        {"key":"wall14", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":210, "y":-30}, "endpoint":{"class":"go.Point", "x":120, "y":80}, "strokeWidth":5, "isGroup":true, "notes":""}
+        ],
+        "linkDataArray": []}
+    </textarea>
+
+    <script>
+        // enables draggable windows (jQuery), defining their handles and behavior (most recently dragged window stacks over other windows)
+        $(function () {
+            $("#palettes").accordion({
+                activate: function (event, ui) {
+                    myPalette.requestUpdate();
+                    myPalette2.requestUpdate();
+                }
+            });
+            $("#openDocument").draggable({ handle: "#openDocumentHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $('#optionsWindow').draggable({ handle: "#optionsWindowHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $("#removeDocument").draggable({ handle: "#removeDocumentHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $("#myOverviewWindow").draggable({ handle: "#myOverviewWindowHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $('#statisticsWindow').draggable({ handle: "#statisticsWindowHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $("#selectionInfoWindow").draggable({ handle: "#selectionInfoWindowHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $("#myPaletteWindow").draggable({ handle: "#myPaletteWindowHandle", stack: ".draggable", containment: 'window', scroll: false });
+            $("#myPaletteWindow").resizable();
+            $("#myPaletteWindow").resize(function () {
+                myPalette.requestUpdate();
+                myPalette2.requestUpdate();
+            });
+        });
+    </script>
+</body>
+</html>

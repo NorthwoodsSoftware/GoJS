@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Freehand Drawing Tool</title>
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script src="FreehandDrawingTool.js"></script>
 <script src="GeometryReshapingTool.js"></script>
 
@@ -48,15 +48,16 @@
     // provide the default JavaScript object for a new polygon in the model
     tool.archetypePartData =
       { stroke: "green", strokeWidth: 3 };
-    // install as first mouse-down-tool
-    myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
+    // allow the tool to start on top of an existing Part
+    tool.isBackgroundOnly = false;
+    // install as last mouse-move-tool
+    myDiagram.toolManager.mouseMoveTools.add(tool);
 
     load();  // load a simple diagram from the textarea
   }
 
   function mode(draw) {
-    // assume FreehandDrawingTool is the first tool in the mouse-down-tools list
-    var tool = myDiagram.toolManager.mouseDownTools.elt(0);
+    var tool = myDiagram.toolManager.findTool("FreehandDrawing");
     tool.isEnabled = draw;
   }
 

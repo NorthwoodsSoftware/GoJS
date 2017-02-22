@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Panels -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Panels</h2>
+<h1>Panels</h1>
 <p>
 <a>Panel</a>s are <a>GraphObject</a>s that hold other <a>GraphObject</a>s as their elements.
 A Panel is responsible for sizing and positioning all of its elements.
@@ -32,8 +33,9 @@ These are the kinds of panels that exist:
 <li><a>Panel.Spot</a></li>
 <li><a>Panel.Table</a> (see the next section about <a href="tablePanels.html">Table Panels</a>)</li>
 <li><a>Panel.Viewbox</a></li>
-<li><a>Panel.Link</a> (see the section about <a href="linkLabels.html">Link Labels)</a></li>
-<li><a>Panel.Grid</a> (see the section about <a href="grids.html">Grid Patterns)</a></li>
+<li><a>Panel.Link</a> (see the section about <a href="linkLabels.html">Link Labels</a>)</li>
+<li><a>Panel.Grid</a> (see the section about <a href="grids.html">Grid Patterns</a>)</li>
+<li><a>Panel.Graduated</a> (see the section about <a href="graduatedPanels.html">Graduated Panels</a>)</li>
 </ul>
 <p>
 In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
@@ -47,7 +49,7 @@ Thus these examples make use of Parts as top-level objects whereas within a Node
 </p>
 
 
-<h3>Position Panels</h3>
+<h2 id="PositionPanels">Position Panels</h2>
 <p>
 The simplest kind of <a>Panel</a> is "Position" (<a>Panel.Position</a>).
 Each element gets its normal size, whether its natural size or a specified <a>GraphObject.desiredSize</a>
@@ -101,7 +103,7 @@ line up with each other, independent of how thick their strokes are, set
 </p>
 
 
-<h3>Vertical Panels</h3>
+<h2 id="VerticalPanels">Vertical Panels</h2>
 <p>
 A very common kind of <a>Panel</a> is "Vertical" (<a>Panel.Vertical</a>).
 In this Panel all of the panel elements are arranged vertically from top to bottom.
@@ -133,7 +135,7 @@ so that the <a>GraphObject.stretch</a> value is effective.
 </pre>
 <script>goCode("verticalPanels", 600, 150)</script>
 
-<h3>Constrained Width Vertical Panels</h3>
+<h2 id="ConstrainedWidthVerticalPanels">Constrained Width Vertical Panels</h2>
 <p>
 A Vertical <a>Panel</a> normally has the width of its widest element and the height that is the sum of all of its elements.
 However, you can also set the width and/or height to be larger or smaller than the natural size.
@@ -226,7 +228,7 @@ which cause those <a>TextBlock</a>s to wrap to fit within the available width.
 <script>goCode("defaultStretch2", 600, 150)</script>
 
 
-<h3>Horizontal Panels</h3>
+<h2 id="HorizontalPanels">Horizontal Panels</h2>
 <p>
 Horizontal <a>Panel</a>s are just like Vertical Panels, except that the elements are arranged horizontally instead of vertically.
 Elements are never stretched horizontally, but they may be stretched vertically.
@@ -257,8 +259,36 @@ so that the <a>GraphObject.stretch</a> value may be effective.
 </pre>
 <script>goCode("horizontalPanels", 600, 150)</script>
 
+<h3 id="FillingHorizontalAndVerticalPanelsInOppositeDirection">Filling Horizontal and Vertical Panels in Opposite Direction</h3>
+<p>
+  Both Vertical and Horizontal <a>Panel</a>s can have their elements be arranged in the opposite direction:
+  bottom-to-top for Vertical Panels and right-to-left for Horizontal Panels.
+  Just set <a>Panel.isOpposite</a> to true.
+</p>
+<pre data-language="javascript" id="opposite">
+  diagram.add(
+    $(go.Part, "Horizontal",
+      { background: "lightgray", isOpposite: true },
+      $(go.TextBlock, "0", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "1", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "2", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "3", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "4", { margin: 5, background: "lightgreen" })
+    ));
 
-<h3>Default Alignment and Stretch</h3>
+  diagram.add(
+    $(go.Part, "Vertical",
+      { background: "lightgray", isOpposite: true },
+      $(go.TextBlock, "0", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "1", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "2", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "3", { margin: 5, background: "lightgreen" }),
+      $(go.TextBlock, "4", { margin: 5, background: "lightgreen" })
+    ));
+</pre>
+<script>goCode("opposite", 600, 150)</script>
+
+<h2 id="DefaultAlignmentAndStretch">Default Alignment and Stretch</h2>
 <p>
 Both Vertical and Horizontal <a>Panel</a>s support the <a>Panel.defaultAlignment</a> and <a>Panel.defaultStretch</a> properties.
 This is a convenience so that you do not need to set the <a>GraphObject.alignment</a> or <a>GraphObject.stretch</a> property on each element.
@@ -287,7 +317,7 @@ This is especially true when you want more control over the stretching of one or
 </p>
 
 
-<h3>Spots</h3>
+<h2 id="Spots">Spots</h2>
 <p>
 Before we discuss other kinds of <a>Panel</a>s, we should elaborate a bit about the concept of spots.
 <a>Spot</a>s are a way of providing both relative and absolute positioning information.
@@ -370,7 +400,7 @@ TextBlocks are also given a semi-transparent red background to help distinguish 
 <script>goCode("spotOffsets", 600, 100)</script>
 
 
-<h3>Auto Panels</h3>
+<h2 id="AutoPanels">Auto Panels</h2>
 <p>
 Auto <a>Panel</a>s fit a "main" element just around the other elements of the panel.
 The main element is usually the furthest back in the Z-order, i.e. the first element, so that the other elements are not obscured by it.
@@ -518,7 +548,7 @@ Auto Panels should have two or more elements in them.
 </p>
 
 
-<h3>Spot Panels</h3>
+<h2 id="SpotPanels">Spot Panels</h2>
 <p>
 Spot <a>Panel</a>s are like Auto Panels in that there is a "main" element and there are "other" elements that are not resized.
 The "other" elements are positioned about the "main" element based on the <a>GraphObject.alignment</a> property that has a <a>Spot</a> value.
@@ -650,8 +680,58 @@ the Shape would cover all of the other TextBlocks, so the user might not see any
 depending on the size and alignment of those other TextBlocks.
 </p>
 
+<h3 id="ClippingWithSpotPanels">Clipping with Spot Panels</h3>
+<p>
+Spot Panels can set <a>Panel.isClipping</a> to true to use the main Panel element as a clipping area instead of a drawn Shape. If used, the main element must be a Shape and its stroke will not be drawn.
 
-<h3>Viewbox Panels</h3>
+<p>
+Example:
+
+
+<pre data-language="javascript" id="clipPictures">
+  diagram.layout = $(go.GridLayout);
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  // Without Panel.isClipping
+  diagram.add(
+    $(go.Node, "Spot",
+      { scale: 2  },
+      $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+      $(go.Picture, "../samples/images/55x55.png",
+        { width: 55, height: 55 }
+       )
+    )
+  );
+
+  // Using Panel.isClipping
+  diagram.add(
+    $(go.Node, "Spot",
+      { isClipping: true, scale: 2  },
+      $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+      $(go.Picture, "../samples/images/55x55.png",
+        { width: 55, height: 55 }
+       )
+    )
+  );
+
+  // Using Panel.isClipping and also having a surrounding panel
+  diagram.add(
+    $(go.Node, "Spot",
+      { scale: 2 },
+      $(go.Shape, "Ellipse", { width: 65, height: 65, strokeWidth: 0, fill: 'red' } ),
+      $(go.Panel, "Spot",
+        { isClipping: true  },
+        $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+        $(go.Picture, "../samples/images/55x55.png",
+          { width: 55, height: 55 }
+         )
+      )
+    )
+  );
+</pre>
+<script>goCode("clipPictures", 500, 200)</script>
+
+<h2 id="ViewboxPanels">Viewbox Panels</h2>
 <p>
 Viewbox <a>Panel</a>s contain only a single element that is rescaled to fit the size of the Panel.
 </p>

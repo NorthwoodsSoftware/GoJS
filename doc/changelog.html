@@ -24,34 +24,31 @@
 
 </head>
 
-<style type="text/css">
-  #container {
-    max-width: 60em;
-  }
-</style>
 
 <script src="../release/go.js"></script>
 <script src="../assets/js/goDoc.js"></script>
 </head>
 
 <body onload="goDoc()">
-
-<div class="container">
-
-  <!-- Fixed navbar -->
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
+<!-- fixed navbar -->
+<nav id="fixed-nav" class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+      <div class="navheader-container">
+        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+          <a id="toplogo" class="navbar-brand" href="../index.html">GoJS</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
         </div>
+      </div>
+    </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="../index.html">Home</a></li>
+        <li><a href="../index.html">Home</a></li>
         <li><a href="../learn/index.html">Learn</a></li>
         <li><a href="../samples/index.html">Samples</a></li>
         <li><a href="../intro/index.html">Intro</a></li>
@@ -67,17 +64,429 @@
   </div>
 </nav>
 
-</div>
-
-<div class="container-fluid mt30" id="container">
-  <div class="row mt30">
+<div class="container-fluid mt70 plr15">
   <h2>GoJS Change Log</h2>
+  <p id="ver"></p>
   <script>
     if (go && go.version) {
-      document.write("Version: " + go.version);
+      var p = document.getElementById('ver');
+      if (p !== null) p.textContent = ("Version: " + go.version);
     }
   </script>
+
+  <div style="border: 2px solid #1F4963; padding: 6px; margin-top: 30px; margin-bottom: 30px;">
+    <p><strong>GoJS version 1.7</strong> brings several new features and samples. Here are some highlights:</p>
+    <ul>
+      <li>
+        From GoJS 1.7 onward there is a new method of licensing that does not require a separate <code>go.js</code> file download, instead it uses a license key.
+        Read more on the <a href="../intro/deployment.html">Deployment Intro page</a>.
+      </li>
+      <li>
+        Added a new sample: <a href="../extensions/FloorPlanner.html" target="_blank">Floor Planner</a> in the extensions folder.
+      </li>
+      <li>
+        More intelligent link routing:
+        GoJS now attempts to preserve Link routes when elements of a Node resize or move, but do not affect the link ports.
+      </li>
+      <li>
+        Improved support for customizing tooltips, context menus and the <a>TextEditingTool</a> using a new class:
+        <a>HTMLInfo</a>, which contains methods to show and hide custom HTML.
+        HTMLInfo can be assigned as a value of <a>GraphObject.contextMenu</a>, <a>Diagram.contextMenu</a>,
+        <a>GraphObject.toolTip</a>, <a>Diagram.toolTip</a>, or <a>TextBlock.defaultTextEditor</a>.
+        Read more on the <a href="../intro/HTMLInteraction.html">HTML Interaction Intro page</a>.
+      </li>
+      <li>
+        New <a>Panel.type</a>: <a>Panel.Graduated</a>, used to draw regular tick marks and text along a main <a>Shape</a> element.
+        Read more on the <a href="../intro/graduatedPanels.html">Graduated Panels Intro page</a>.
+      </li>
+      <li>
+        Added the <a>Panel.isEnabled</a> property, the <a>GraphObject.isEnabledObject</a> method, and the <a>GraphObject.enabledChanged</a> event.
+      </li>
+      <li>
+        Added the <a>Panel.isClipping</a> property, which allows Spot Panels to designate their main Shape element as a clipping region instead of a drawn Shape.
+      </li>
+      <li>
+        Added <a>Brush</a> methods for computing lighter or darker colors or Brushes.
+      </li>
+      <li>
+        Added <a>Binding.ofModel</a> method, to support data binding of <a>GraphObject</a> properties to data
+        properties that are on the <a>Model.modelData</a> shared JavaScript Object.
+      </li>
+    </ul>
   </div>
+
+  <h4>Changes for 1.7 since 1.6.*</h4>
+  <ul>
+    <li>
+      <b>Samples and documentation:</b>
+      <ul>
+        <li>
+          Copied definitions for all <a>Shape.figure</a> figures to the <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file.
+          All of the old figures are still predefined, so you will not need to load any section of this file.
+          This file provides information about how each figure is defined, so that you can customize them or copy-and-adapt them.
+        </li>
+        <li>
+          Copied definitions for all predefined templates to the <a href="../extensions/Templates.js" target="_blank">Templates.js</a> file
+          in the Extensions directory.
+          The predefined templates are still predefined, so you will not need to load this file in order to use those definitions.
+          This file provides information about how each template is defined, so that you can customize them or copy-and-adapt them.
+        </li>
+        <li>
+          Added a new sample: <a href="../extensions/FloorPlanner.html" target="_blank">Floor Planner</a> in the extensions folder.
+        </li>
+        <li>
+          Added the <a href="../samples/customExpandCollapse.html" target="_blank">Custom Expand Collapse</a> sample,
+          demonstrating an alternative to the "TreeExpanderButton" and the use of the <a>Node.isTreeExpanded</a>.
+          This sample is tolerant of cycles in the graph.
+        </li>
+        <li>
+          Added the <a href="../extensions/Hyperlink.html" target="_blank">Hyperlink</a> sample,
+          demonstrating a "HyperlinkText" GraphObject builder that implements a standard hyperlink or "HTML anchor" control.
+          The "HyperlinkText" builder is defined in the <a href="../extensions/HyperlinkText.js" target="_blank">HyperlinkText.js</a>
+          file in the Extensions directory.
+        </li>
+        <li>
+          Added the <a href="../samples/orgChartAssistants.html" target="_blank">Org Chart Assistants</a> sample,
+          demonstrating a custom <a>TreeLayout</a> that positions "assistant" child nodes to the side, above the regular child nodes.
+        </li>
+        <li>
+          Added the <a href="../extensions/RadialLayout.js" target="_blank">Radial Layout</a> extension class,
+          used by the <a href="../samples/radial.html" target="_blank">Recentering Radial</a> sample and the
+          <a href="../samples/radialPartition.html" target="_blank">Radial Partition</a> sample.
+        </li>
+        <li>
+          Added several new HTML pages that showcase existing extensions as standalone samples:
+          <a href="../extensions/DrawCommandHandler.html" target="_blank">Draw CommandHandler</a>
+          <a href="../extensions/GeometryReshaping.html" target="_blank">Geometry Reshaping</a>,
+          <a href="../extensions/GuidedDragging.html" target="_blank">Guided Dragging</a>,
+          <a href="../extensions/HyperLink.html" target="_blank">HyperLink</a>,
+          <a href="../extensions/LocalStorageCommandHandler.html" target="_blank">Local Storage CommandHandler</a>,
+          <a href="../extensions/ResizeMultiple.html" target="_blank">Resize Multiple</a>,
+          <a href="../extensions/RotateMultiple.html" target="_blank">Rotate Multiple</a>.
+        </li>
+        <li>
+          Added the <a href="../samples/htmlLightBoxContextMenu.html" target="_blank">HTML Light Box Context Menu</a> sample,
+          a re-implementation of the default touch context menu using <a>HTMLInfo</a>, and references
+          <a href="../extensions/LightBoxContextMenu.js" target="_blank">LightBoxContextMenu.js</a> and
+          <a href="../extensions/LightBoxContextMenu.css" target="_blank">LightBoxContextMenu.css</a>.
+        </li>
+        <li>
+          Added the <a href="../extensions/TextEditor.html" target="_blank">Text Editor</a> sample,
+          a re-implementation of the default text editor using <a>HTMLInfo</a>.
+          It uses the <a href="../extensions/TextEditor.js" target="_blank">TextEditor.js</a> extension.
+        </li>
+        <li>
+          Reworked the <a href="../samples/customTextEditingTool.html" target="_blank">CustomTextEditingTool</a> sample
+          to use two <a>HTMLInfo</a> instances, defined in
+          <a href="../extensions/TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a> and
+          <a href="../extensions/TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a>.
+        </li>
+        <li>
+          Reworked the <a href="../samples/timeline.html" target="_blank">Timeline</a> sample to use a Graduated Panel.
+          Added several samples demonstrating Graduated Panels:
+          <a href="../samples/thermometer.html" target="_blank">Thermometer</a>,
+          <a href="../samples/instrumentGauge.html" target="_blank">Instrument Gauge</a>,
+          <a href="../samples/ruleredDiagram.html" target="_blank">Rulered Diagram</a>,
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Diagram and Layer:</b>
+      <ul>
+        <li>
+          Enhanced the "ViewportBoundsChanged" <a>DiagramEvent</a> to provide the previous <a>Diagram.scale</a> as the "scale" property
+          of the <a>DiagramEvent.subject</a>; the previous <a>Diagram.position</a> is available as the "position" property of that subject,
+          and the previous <a>Diagram.viewportBounds</a> is also available as the "bounds" property of that same subject.
+        </li>
+        <li>
+          Enhanced <a>Diagram.computePartsBounds</a> to take optional argument whether to include the bounds of all <a>Link</a>s in the given collection.
+        </li>
+        <li>
+          <a>Diagram.makeImageData</a> has a new option, <code>returnType</code>, which allows you to specify a <code>string</code> (default),
+          <code>ImageData</code> (new), or <code>Blob</code> (new) as the returned type.
+          <a>Diagram.makeImageData</a> also has a new option <code>callback</code> which is used in conjunction with <code>returnType: "Blob"</code>.
+          See the <a href="../samples/minimalBlob.html">Minimal Blob Sample</a> for usage details.
+        </li>
+        <li>
+          <a>Part</a>s that are added and selected or highlighted, and then are removed upon an undo, no longer remain selected or highlighted.
+          This policy avoids having non-existent nodes and links (due to undo of their insertion) remaining in
+          the <a>Diagram.selection</a> or <a>Diagram.highlighteds</a> collections.
+        </li>
+        <li>
+          Extended <a>Diagram.findPartForKey</a> to return <a>Link</a>s if the <a>Diagram.model</a> is a <a>GraphLinksModel</a> that is keeping keys for link data.
+          If <a>GraphLinksModel.findLinkDataForKey</a> returns a link data object, <a>Diagram.findPartForKey</a> may return the corresponding Link.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Parts:</b>
+      <ul>
+        <li>
+          Added <a>Node.findTreeParentChain</a> method, to return a collection of the <a>Node</a>s and <a>Link</a>s
+          following links up to a root node.
+        </li>
+        <li>
+          GoJS now attempts to preserve Link routes when elements of a Node resize or move but do not affect the absolute position of ports.
+        </li>
+        <li>
+          Improved Orthogonal <a>Link</a> routing for links coming out of and going into the same port.
+        </li>
+        <li>
+          <a>Link.AvoidsNodes</a> routing when <a>Link.adjusting</a> is <a>Link.End</a> now tries to preserve earlier routing not near the end(s) of the route that were adjusted.
+        </li>
+        <li>
+          <a>Link.AvoidsNodes</a> routing may be more likely to turn immediately when <a>Node.avoidable</a> Nodes overlap either or both ports.
+        </li>
+        <li>
+          Added <a>Part.highlightedChanged</a>, when one wants to modify the appearance of a Part in a manner that is inconvenient to implement using data Binding.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Panels</b>
+      <ul>
+        <li>
+          Added the <a>Panel.isEnabled</a> property, the <a>GraphObject.isEnabledObject</a> method,
+          and the <a>GraphObject.enabledChanged</a> functional property,
+          for use by <a>Panels</a> such as "Button"s that are <a>GraphObject.isActionable</a>,
+          to control whether or not the user may click them.
+        </li>
+        <li>
+          Added the <a>Panel.isClipping</a> property, which allows Spot Panels to designate their main Shape element as a clipping region instead of a drawn Shape.
+        </li>
+        <li>
+          Added the <a>Panel.isOpposite</a> property, which allows Horizontal and Vertical panels to arrange their contents
+          from the right and bottom side (respectively) instead of the top and left side.
+        </li>
+        <li>
+          Added the <a>Panel.alignmentFocusName</a> property, which allows elements of Spot Panels to name a nested Element to be the alignment object instead of the Panel.
+        </li>
+        <li>
+          Added the new <a>Panel.type</a>: <a>Panel.Graduated</a>, used to draw regular tick marks and text along a main <a>Shape</a> element.
+          Read more on the <a href="../intro/graduatedPanels.html">Graduated Panels Intro page</a>.
+        </li>
+        <li>
+          Added <a>Panel.graduatedMin</a>, <a>Panel.graduatedMax</a>, <a>Panel.graduatedRange</a>, <a>Panel.graduatedTickUnit</a>, <a>Panel.graduatedTickBase</a>,
+          <a>Panel.graduatedPointForValue</a>, <a>Panel.graduatedValueForPoint</a>, <a>Shape.graduatedStart</a>, <a>Shape.graduatedEnd</a>, <a>TextBlock.interval</a>,
+          <a>TextBlock.graduatedStart</a>, <a>TextBlock.graduatedEnd</a>, and <a>TextBlock.graduatedFunction</a>, all for use with Graduated Panels.
+        </li>
+        <li>
+          Improved the "PanelExpanderButton" to work in nested <a>Panel.itemTemplates</a>.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>GraphObjects and Geometry:</b>
+      <ul>
+        <li>
+          Added <a>Picture.successFunction</a>, a function called when the Picture's image loads successfully.
+        </li>
+        <li>
+          Added <a>Picture.imageAlignment</a>, a Spot to align the source image to, when the source image is smaller than the Picture.
+        </li>
+        <li>
+          Added <a>TextBlock.verticalAlignment</a>, which controls the vertical position of the glyphs
+          when the TextBlock has more available vertical space than it needs for drawing.
+        </li>
+        <li>
+          Added <a>TextBlock.textEdited</a>, a settable function that is called on a TextBlock when the <a>TextEditingTool</a> is completing.
+        </li>
+        <li>
+          Added <a>TextBlock.choices</a>, a settable/bindable Array that can help implement custom <a>TextEditingTool</a>s.
+          See the <a href="../samples/customTextEditingTool.html">Custom TextEditingTool Sample</a>.
+        </li>
+        <li>
+          Added <a>TextBlock.interval</a>, <a>TextBlock.graduatedFunction</a>, <a>TextBlock.graduatedStart</a>, <a>TextBlock.graduatedEnd</a>
+          for use in "Graduated" Panels to implement scales, gauges, rulers, and similar devices.
+        </li>
+        <li>
+          Added <a>Shape.graduatedStart</a> and <a>Shape.graduatedEnd</a> for use in "Graduated" Panels.
+        </li>
+        <li>
+          Added <a>Brush.lightenBy</a> and <a>Brush.darkenBy</a> instance and static methods, which lighten or darken colors in a Brush or a CSS color string.
+          There are also convenience methods <a>Brush.lighten</a> and <a>Brush.darken</a> which provide default behavior.
+        </li>
+        <li>
+          Extended <a>Placeholder.padding</a> to allow negative values.
+        </li>
+        <li>
+          Extended <a>GraphObject.getDocumentPoint</a> to take a <a>Point</a> in local coordinates, as well as a <a>Spot</a> in this GraphObject.
+          This is for convenience and clarity the opposite transformation performed by <a>GraphObject.getLocalPoint</a>.
+        </li>
+        <li>
+          Added support for zero-width spaces and soft hyphens wrapping lines in <a>TextBlock</a>.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Models:</b>
+        <ul>
+          <li>
+            Added <a>Binding.ofModel</a> method, to support data binding of <a>GraphObject</a> properties to data
+            properties that are on the <a>Model.modelData</a> shared JavaScript Object.
+          </li>
+          <li>
+            Enhanced <a>Diagram.updateAllRelationshipsFromData</a> to also add and remove <a>Node</a>s and <a>Link</a>s
+            for any additional and missing data in the model.  Remember that it is more efficient to call
+            methods on the model to modify it and also notify all diagrams about the change
+            than it is to call <a>Diagram.updateAllRelationshipsFromData</a>.  Calling methods such as
+            <a>Model.addNodeData</a> and <a>Model.setDataProperty</a> also have the benefit of supporting undo/redo --
+            the "update..." methods do not.
+          </li>
+          <li>
+            It is now possible for a TwoWay <a>Binding</a> in an item template to replace an item in the <a>Panel.itemArray</a>.
+            For an example, please see the updated documentation for the <a>Binding</a> class.
+          </li>
+          <li>
+            A third argument, the <a>Model</a>, is now passed to back-converter (source-to-target) functions in TwoWay <a>Binding</a>s.
+            This permits access to the model from the data object without having to explicitly add a reference to the model in each data object.
+            Such an argument is not needed for the regular source-to-target converters because one can always walk up the visual tree
+            of <a>GraphObject</a>s via <a>GraphObject.part</a>, <a>GraphObject.panel</a>, or <a>GraphObject.diagram</a>.
+          </li>
+          <li>
+            Fixed a call to <a>Model.removeNodeData</a> not potentially invalidating a <a>Layout</a>.
+          </li>
+        </ul>
+    </li>
+    <li>
+      <b>Layouts:</b>
+      <ul>
+        <li>
+          Added the <a>Layout.collectParts</a> method, a convenience method to be called by overrides of <a>Layout.doLayout</a>
+          to process the argument in order to get a collection of <a>Part</a>s that should be laid out by that custom <a>Layout</a>,
+          when <em>not</em> using a <a>LayoutNetwork</a>.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Tools and Commands:</b>
+      <ul>
+        <li>
+          Added new class <a>HTMLInfo</a>, which contains methods to show and hide custom HTML.
+          HTMLInfo can be assigned as a value of <a>GraphObject.contextMenu</a>, <a>Diagram.contextMenu</a>, <a>GraphObject.toolTip</a>, or <a>Diagram.toolTip</a>.
+          Read more on the <a href="../intro/HTMLInteraction.html">HTML Interaction Intro page</a>.
+
+          For examples, see:
+          <ul>
+            <li>Text Editors: <a href="../samples/customTextEditingTool.html">Custom Text Editors sample</a> and
+            <a href="../extensions/TextEditor.html">Re-implementation of the default Text Editor</a>
+            <li>Context Menus: <a href="../samples/customContextMenu.html">Custom Context Menu</a> and
+            <a href="../samples/htmlLightBoxContextMenu.html">HTML Lightbox Context Menu</a> (a re-implementation of the default touch context menu)
+            <li>Tooltips: <a href="../samples/dataVisualization.html">Data Visualization Tooltip</a>
+          </ul>
+        </li>
+        <li>
+          Added <a>TextEditingTool.state</a> and <a>TextEditingTool.measureTemporaryTextBlock</a> that can be used
+          by custom <a>HTMLInfo</a> text editors.
+        </li>
+        <li>
+          Added the <a>ContextMenuTool.defaultTouchContextMenu</a> property, which is an instance of <a>HTMLInfo</a> by default.
+          This may be set to another instance of HTMLInfo, or may be set to null to disable the default touch context menu.
+        </li>
+        <li>
+          Extended the <a>DragSelectingTool</a> to auto-scroll when the mouse point is just within the edge of the viewport.
+        </li>
+        <li>
+          Added the overridable method <a>LinkingTool.doNoLink</a>, which is called when a mouse up during a linking operation does <em>not</em> actually draw a new Link.
+        </li>
+        <li>
+          Added the overridable method <a>RelinkingTool.doNoRelink</a>, which is called when a mouse up during a relinking operation does <em>not</em> actually reconnect the Link.
+        </li>
+        <li>
+          Improved the <a>LinkingTool</a> and <a>RelinkingTool</a> to auto-scroll during a linking operation
+          even when snapped to a valid target port.
+        </li>
+        <li>
+          Added the overridable method <a>ResizingTool.computeReshape</a>, to make it easier to change when the user may change the aspect ratio of the object being resized.
+        </li>
+        <li>
+          Fixed the <a>ResizingTool</a> to work better when resizing rotated parts.
+          <span style="color:red;">Potentially Incompatible:</span> Previously the <a>Part.locationSpot</a> would determine where an resizing object expanded or contracted from.
+          Now, resizing objects always resize from their dragged handle, so that the opposite handle always stays in place.
+        </li>
+        <li>
+          Added <a>TextEditingTool.DoubleClick</a> as an additional option for <a>TextEditingTool.starting</a>.
+        </li>
+        <li>
+          <span style="color:red;">CSS Style incompatibility:</span> The <a>TextEditingTool.defaultTextEditor</a> Input element is no longer given the CSS class "start".
+          This CSS class had been undocumented and unsupported.
+        </li>
+        <li>
+          <span style="color:red;">CSS Style incompatibility:</span> The default context menu used the classes "defaultCXul", "defaultCXli", and "defaultCXa",
+          they have been renamed "goCXul", "goCXli", and "goCXa", respectively.
+          These CSS classes had been undocumented and unsupported.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b style="color:red;">Deprecated features:</b>
+      <p>
+        These features will remain in the library until version 2.0, but they will no longer be documented and their use is discouraged.
+      </p>
+      <ul>
+        <li>
+          <b>Most Predefined Shape figures</b>
+          <p>
+            In order to shrink the size of the GoJS library we will be not be defining most predefined figures in the library.
+            Instead, you can find all of their definitions in the <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file.
+            You can simply load only those figures that you want to use by copying their definitions into your code.
+          <p>
+            Until version 2.0 all of the predefined figures remain defined in the GoJS library,
+            so you do not yet have to load any figures from the extensions file.
+            However, a number of very common figures will remain predefined even in version 2.0.
+            The figures that will remain in 2.0 are: "Rectangle", "Square", "RoundedRectangle", "Border", "Ellipse", "Circle",
+            "TriangleRight", "TriangleDown", "TriangleLeft", "TriangleUp", "Triangle", "Diamond", "LineH", "LineV",
+            "BarH", "BarV", "MinusLine", "PlusLine", "XLine".
+          <p>
+            Note also that the definitions that are in the <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file
+            are <em>not</em> entirely the same as their current definitions in the library.
+            A number of figures have been improved and some figure parameters have changed meaning.
+        </li>
+        <li>
+          <b>DiagramEvent.cancel</b>
+          <p>
+            The only use for this property was with the "SelectionDeleting" <a>DiagramEvent</a> in order to prevent the user from deleting the selection.
+            Where one might have written this Diagram listener:
+            <pre>"SelectionDeleting": function(e) {
+    if (e.diagram.selection.any(function(p) { return p.data.key.indexOf("e") >= 0; })) {
+        e.cancel = true;
+    }
+  },</pre>
+            one can write the equivalent functionality with this <a>CommandHandler.canDeleteSelection</a> method override:
+            <pre>"commandHandler.canDeleteSelection": function() {
+    return !this.diagram.selection.any(function(p) { return p.data.key.indexOf("e") >= 0; })
+           && go.CommandHandler.prototype.canDeleteSelection.call(this);
+  },</pre>
+            Overriding the method supports the updating/enablement of commands that call <a>CommandHandler.deleteSelection</a>.
+            Furthermore not having a "cancel" property on the DiagramEvent avoids any potential problems that might occur if there
+            are multiple listeners for the "SelectionDeleting" event.
+            The "SelectionDeleting" <a>DiagramEvent</a> remains useful, but not for controlling whether or not the deletion should happen.
+        </li>
+        <li>
+          <b>GraphObject.fromEndSegmentDirection</b> and <b>GraphObject.toEndSegmentDirection</b>
+          <p>
+            These properties have not been useful.  One can override <a>Link.getLinkDirection</a> to achieve the same effects.
+        </li>
+        <li>
+          <b>TextEditingTool.doFocus</b> and <b>TextEditingTool.doBlur</b>
+          <p>
+            These undocumented properties were used to modify the default functionality of the TextEditingTool.
+            That is now done by setting <a>TextBlock.defaultTextEditor</a> to an instance of <a>HTMLInfo</a> (new in 1.7).
+          <p>For examples, see <a href="../samples/customTextEditingTool.html">Custom TextEditingTool sample</a> and
+            <a href="../extensions/TextEditor.html">Text Editor default implementation extension</a>.
+        </li>
+        <li>
+          <b>TextBlock.textEditor</b>, <b>TextEditingTool.defaultTextEditor</b>, and <b>TextEditingTool.currentTextEditor</b>
+          <p>
+            These properties are now primarily used with <a>HTMLInfo</a> values.
+            HTML Elements will still work until version 2.0.
+          </p>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <hr class="changelog" />
 
   <h4>Changes for 1.6.24</h4>
   <ul>
@@ -92,7 +501,8 @@
   <h4>Changes for 1.6.23</h4>
   <ul>
     <li>
-      Fixed a bug with <a>Picture.sourceCrossOrigin</a> setting the CORS flag too late. Some browsers require it be set before an image source is set.
+      Fixed a bug with <a>Picture.sourceCrossOrigin</a> setting the CORS flag too late.
+      Some browsers require it be set before an image source is set.
     </li>
     <li>
       Fixed a bug in recent Chrome browsers and Edge where shift-scroll-wheel did not scroll horizontally.
@@ -153,9 +563,6 @@
     </li>
     <li>
       Updated <a href="../extensions/TableLayout.js">TableLayout.js</a> extension to take the <a>Layout.arrangementOrigin</a> into account.
-    </li>
-    <li>
-      Fixed re-routing of individually invalidated <a>Link</a> routes of duplicate links connecting with "...Sides" ports.
     </li>
   </ul>
 
@@ -692,7 +1099,7 @@
     </li>
   </ul>
 
-  <hr />
+  <hr class="changelog" />
 
   <h4>Changes for 1.5.23</h4>
   <ul>
@@ -1418,7 +1825,7 @@
     </li>
   </ul>
 
-  <hr />
+  <hr class="changelog" />
 
   <h4>Changes for 1.4.28</h4>
   <ul>
@@ -1662,7 +2069,7 @@
   <ul>
     <li>Animations no longer continuously update the <a>Diagram.documentBounds</a>.</li>
     <li>Fixed window resizing accidentally invalidating (viewport-sized) layouts on fixed-size diagrams.</li>
-    <li<a>Diagram.makeSvg</a> now includes a clipping region to fix IE's SVG behavior,
+    <li><a>Diagram.makeSvg</a> now includes a clipping region to fix IE's SVG behavior,
         which does not clip to its SVG viewport by default.</li>
     <li>
       New option for <a>Diagram.makeImage</a> and <a>Diagram.makeSvg</a>: document, which accepts an optional
@@ -1852,7 +2259,7 @@
     </li>
   </ul>
 
-  <hr />
+  <hr class="changelog" />
 
   <h4>Changes for 1.3.11</h4>
   <ul>
@@ -2214,7 +2621,7 @@
     </li>
   </ul>
 
-  <hr />
+  <hr class="changelog" />
 
   <h4>Changes for 1.2.8</h4>
   <ul>
@@ -2471,7 +2878,7 @@
     </li>
   </ul>
 
-  <hr />
+  <hr class="changelog" />
 
   <h4>Changes for 1.1.12</h4>
   <ul>
@@ -2674,7 +3081,7 @@
         <li>Added <a>Shape.isGeometryPositioned</a> property to position a Shape in a Position Panel ignoring the <a>Shape.strokeWidth</a>.</li>
         <li>Added <a>Shape.strokeDashArray</a> and <a>Shape.strokeDashOffset</a> properties, to draw customizable dashed or dotted lines.</li>
         <li>Fixed some cases of <a>GraphObject.stretch</a> improperly affecting <a>GraphObject.margin</a> calculations.</li>
-        <hr />
+        <hr class="changelog" />
         <li>
           Added <a>PathSegment.SvgArc</a> enum value to allow the creation of SVG-like arcs.
           <a>Geometry.parse</a> now parses SVG "a" commands as well as <b>GoJS</b>-specific commands.
@@ -2794,7 +3201,7 @@
     </li>
   </ul>
 
-  <hr />
+  <hr class="changelog" />
 
   <h4>Changes for 1.0.8</h4>
   <ul>
@@ -2881,5 +3288,7 @@
 
   <hr style="margin-top:50px;" />
 </div> <!-- end container -->
+<script src="../assets/js/jquery.min.js"></script>
+<script async src="../assets/js/bootstrap.min.js"></script>
 </body>
 </html>

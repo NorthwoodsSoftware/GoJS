@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Org Chart Editor</title>
 <meta name="description" content="An organization chart editor -- edit details and change relationships." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 
-<link rel='stylesheet' href='../extensions/dataInspector.css' />
+<link rel="stylesheet" href="../extensions/dataInspector.css" />
 <script src="../extensions/dataInspector.js"></script>
 
 <script id="code">
-  var nodeIdCounter = -1; // use a sequence to guarantee key uniqueness as we add/remove/modify nodes
-
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -74,19 +72,19 @@
           var child = it.value;
           var bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
           if (bossText === null) return;
-          bossText.text = undefined;
+          bossText.text = "";
         }
       } else if (part instanceof go.Link) {
         var child = part.toNode;
         var bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
         if (bossText === null) return;
-        bossText.text = undefined;
+        bossText.text = "";
       }
       myDiagram.commitTransaction("clear boss");
     });
 
-    var levelColors = ["#AC193D/#BF1E4B", "#2672EC/#2E8DEF", "#8C0095/#A700AE", "#5133AB/#643EBF",
-                       "#008299/#00A0B1", "#D24726/#DC572E", "#008A00/#00A600", "#094AB2/#0A5BC4"];
+    var levelColors = ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
+                       "#008299", "#D24726", "#008A00", "#094AB2"];
 
     // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
     myDiagram.layout.commitNodes = function() {
@@ -96,9 +94,9 @@
       myDiagram.layout.network.vertexes.each(function(v) {
         if (v.node) {
           var level = v.level % (levelColors.length);
-          var colors = levelColors[level].split("/");
+          var color = levelColors[level];
           var shape = v.node.findObject("SHAPE");
-          if (shape) shape.fill = $(go.Brush, "Linear", { 0: colors[0], 1: colors[1], start: go.Spot.Left, end: go.Spot.Right });
+          if (shape) shape.fill = $(go.Brush, "Linear", { 0: color, 1: go.Brush.lightenBy(color, 0.05), start: go.Spot.Left, end: go.Spot.Right });
         }
       });
     };
@@ -107,11 +105,13 @@
     // We used the counter combined with findNodeDataForKey to ensure uniqueness.
     function getNextKey() {
       var key = nodeIdCounter;
-      while (myDiagram.model.findNodeDataForKey(key.toString()) !== null) {
-        key = nodeIdCounter -= 1;
+      while (myDiagram.model.findNodeDataForKey(key) !== null) {
+        key = nodeIdCounter--;
       }
-      return key.toString();
+      return key;
     }
+
+    var nodeIdCounter = -1; // use a sequence to guarantee key uniqueness as we add/remove/modify nodes
 
     // when a node is double-clicked, add a child to it
     function nodeDoubleClick(e, obj) {
@@ -119,8 +119,7 @@
       if (clicked !== null) {
         var thisemp = clicked.data;
         myDiagram.startTransaction("add employee");
-        var nextkey = getNextKey();
-        var newemp = { key: nextkey, name: "(new person)", title: "", parent: thisemp.key };
+        var newemp = { key: getNextKey(), name: "(new person)", title: "", parent: thisemp.key };
         myDiagram.model.addNodeData(newemp);
         myDiagram.commitTransaction("add employee");
       }
@@ -195,7 +194,7 @@
         $(go.Panel, "Horizontal",
           $(go.Picture,
             {
-              name: 'Picture',
+              name: "Picture",
               desiredSize: new go.Size(39, 50),
               margin: new go.Margin(6, 8, 6, 10),
             },
@@ -314,11 +313,11 @@
 
 
     // support editing the properties of the selected person in HTML
-    if (window.Inspector) myInspector = new Inspector('myInspector', myDiagram,
+    if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
       {
         properties: {
-          'key': { readOnly: true },
-          'comments': {}
+          "key": { readOnly: true },
+          "comments": {}
         }
       });
   }
@@ -358,13 +357,18 @@
       <li>Remove Department - removes the role and the whole subtree</li>
     </ul>
     Deleting a Node or Link will orphan the child Nodes and generate a new tree. A custom SelectionDeleting <a>DiagramEvent</a> listener will clear out the boss info
-    when the parent becomes undefined.
+    when the parent is removed.
   </p>
   <p>
     Select a node to edit/update node data values. This sample uses the <a href="../extensions/dataInspector.html">Data Inspector</a> extension to display and modify Part data.
   </p>
   <p>
     To learn how to build an org chart from scratch with GoJS, see the <a href="../learn/index.html">Getting Started tutorial</a>.
+  </p>
+  <p>
+    If you want to have some "assistant" nodes on the side, above the regular reports,
+    see the <a href="orgChartAssistants.html">Org Chart Assistants</a> sample, which is a copy of this sample
+    that uses a custom <a>TreeLayout</a> to position "assistants" that way.
   </p>
   <div>
     <div>
@@ -375,22 +379,22 @@
     <textarea id="mySavedModel" style="width:100%;height:250px">
 { "class": "go.TreeModel",
   "nodeDataArray": [
-{"key":"1", "name":"Stella Payne Diaz", "title":"CEO"},
-{"key":"2", "name":"Luke Warm", "title":"VP Marketing/Sales", "parent":"1"},
-{"key":"3", "name":"Meg Meehan Hoffa", "title":"Sales", "parent":"2"},
-{"key":"4", "name":"Peggy Flaming", "title":"VP Engineering", "parent":"1"},
-{"key":"5", "name":"Saul Wellingood", "title":"Manufacturing", "parent":"4"},
-{"key":"6", "name":"Al Ligori", "title":"Marketing", "parent":"2"},
-{"key":"7", "name":"Dot Stubadd", "title":"Sales Rep", "parent":"3"},
-{"key":"8", "name":"Les Ismore", "title":"Project Mgr", "parent":"5"},
-{"key":"9", "name":"April Lynn Parris", "title":"Events Mgr", "parent":"6"},
-{"key":"10", "name":"Xavier Breath", "title":"Engineering", "parent":"4"},
-{"key":"11", "name":"Anita Hammer", "title":"Process", "parent":"5"},
-{"key":"12", "name":"Billy Aiken", "title":"Software", "parent":"10"},
-{"key":"13", "name":"Stan Wellback", "title":"Testing", "parent":"10"},
-{"key":"14", "name":"Marge Innovera", "title":"Hardware", "parent":"10"},
-{"key":"15", "name":"Evan Elpus", "title":"Quality", "parent":"5"},
-{"key":"16", "name":"Lotta B. Essen", "title":"Sales Rep", "parent":"3"}
+{"key":1, "name":"Stella Payne Diaz", "title":"CEO"},
+{"key":2, "name":"Luke Warm", "title":"VP Marketing/Sales", "parent":1},
+{"key":3, "name":"Meg Meehan Hoffa", "title":"Sales", "parent":2},
+{"key":4, "name":"Peggy Flaming", "title":"VP Engineering", "parent":1},
+{"key":5, "name":"Saul Wellingood", "title":"Manufacturing", "parent":4},
+{"key":6, "name":"Al Ligori", "title":"Marketing", "parent":2},
+{"key":7, "name":"Dot Stubadd", "title":"Sales Rep", "parent":3},
+{"key":8, "name":"Les Ismore", "title":"Project Mgr", "parent":5},
+{"key":9, "name":"April Lynn Parris", "title":"Events Mgr", "parent":6},
+{"key":10, "name":"Xavier Breath", "title":"Engineering", "parent":4},
+{"key":11, "name":"Anita Hammer", "title":"Process", "parent":5},
+{"key":12, "name":"Billy Aiken", "title":"Software", "parent":10},
+{"key":13, "name":"Stan Wellback", "title":"Testing", "parent":10},
+{"key":14, "name":"Marge Innovera", "title":"Hardware", "parent":10},
+{"key":15, "name":"Evan Elpus", "title":"Quality", "parent":5},
+{"key":16, "name":"Lotta B. Essen", "title":"Sales Rep", "parent":3}
  ]
 }
     </textarea>

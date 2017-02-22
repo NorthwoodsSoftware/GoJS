@@ -1,139 +1,164 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Timeline Sample</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timeline</title>
 <meta name="description" content="A stretchable timeline." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",
-        {
-          isTreePathToChildren: false,  // arrows from children (events) to the parent (timeline bar)
-          initialContentAlignment: go.Spot.Center,
-          layout: $(TimelineLayout),  // defined below
-          "PartResized": function(e) { e.diagram.layoutDiagram(true); }
-        });
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    // The template for each "event":
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                  {
+                    layout: $(TimelineLayout),
+                    isTreePathToChildren: false,  // arrows from children (events) to the parent (timeline bar)
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                  });
+
     myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        { locationSpot: go.Spot.Center },
-        $(go.Shape, { fill: "lightyellow", stroke: "gray" }),
-        $(go.Panel, "Vertical",
-          { defaultStretch: go.GraphObject.Horizontal },
-          $(go.TextBlock,
-            {
-              font: "bold 12pt sans-serif", textAlign: "center",
-              background: "slateblue", stroke: "white"
-            },
-            new go.Binding("text", "name")),
-          $(go.TextBlock,
-            { maxSize: new go.Size(100, NaN), textAlign: "center", margin: 4 },
-            new go.Binding("text", "time", function(d) { return d.toLocaleDateString(); }))
+      $(go.Node, "Table",
+        { locationSpot: go.Spot.Center, movable: false },
+        $(go.Panel, "Auto",
+          $(go.Shape, "RoundedRectangle", 
+            { fill: "#252526", stroke: "#519ABA", strokeWidth: 3 }
+          ),
+          $(go.Panel, "Table",
+            $(go.TextBlock,
+              {
+                row: 0,
+                stroke: "#CCCCCC",
+                wrap: go.TextBlock.WrapFit,
+                font: "bold 12pt sans-serif", 
+                textAlign: "center", margin: 4
+              },
+              new go.Binding("text", "event")
+            ),
+            $(go.TextBlock,
+              {
+                row: 1,
+                stroke: "#A074C4",
+                textAlign: "center", margin: 4
+              },
+              new go.Binding("text", "date", function(d) { return d.toLocaleDateString(); })
+            )
+          )
         )
       );
 
-    // The template for the timeline bar:
-
-    // convert a Date object to a string to be shown in the timeline bar
-    function formatDate(d) {
-      var s = d.toDateString();
-      return s.substr(s.indexOf(' '));  // don't need time of day
-    }
-
-    // these parameters define the size of the timeline bar
-    var MINGRIDWIDTH = 200;
-    var GRIDHEIGHT = 28;
-
     myDiagram.nodeTemplateMap.add("Line",
-      $(go.Node, "Auto",
+      $(go.Node, "Graduated",
         {
-          location: new go.Point(0, 0), locationObjectName: "BAR", locationSpot: go.Spot.Left,
-          background: "lightgray",
-          selectionAdorned: false,
           movable: false, copyable: false,
-          resizable: true, resizeObjectName: "BAR",
+          resizable: true, resizeObjectName: "MAIN",
+          background: "transparent",
+          graduatedMin: 0,
+          graduatedMax: 365,
+          graduatedTickUnit: 1,
           resizeAdornmentTemplate:  // only resizing at right end
             $(go.Adornment, "Spot",
               $(go.Placeholder),
-              //$(go.Shape, { alignment: go.Spot.Left, cursor: "w-resize", desiredSize: new go.Size(6, 16), fill: "lightblue", stroke: "deepskyblue" }),
-              $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", desiredSize: new go.Size(6, 16), fill: "lightblue", stroke: "deepskyblue" })
-            )
+              $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", desiredSize: new go.Size(4, 16), fill: "lightblue", stroke: "deepskyblue" })
+            ) 
         },
-        // this is the timeline bar
-        $(go.Panel, "Grid",
-          {
-            name: "BAR", width: MINGRIDWIDTH, height: GRIDHEIGHT,
-            minSize: new go.Size(MINGRIDWIDTH, GRIDHEIGHT), maxSize: new go.Size(9999, GRIDHEIGHT)
-          },
-          new go.Binding("width", "length").makeTwoWay(),
-          $(go.Shape, "LineV", { stroke: "white" })
+        new go.Binding("graduatedMax", "", timelineDays),
+        $(go.Shape, "LineH",
+          { name: "MAIN", stroke: "#519ABA", height: 1, strokeWidth: 3 },
+          new go.Binding("width", "length").makeTwoWay()
         ),
-        // this holds all of the text
-        $(go.Panel, "Table",
-          {
-            name: "TABLE",
-            alignment: go.Spot.TopLeft,
-            // itemArray is set in TimelineLayout
-            itemTemplate:
-              $(go.Panel, "TableColumn",
-                $(go.TextBlock,
-                  { alignment: go.Spot.TopLeft, stretch: go.GraphObject.Horizontal, margin: new go.Margin(1, 0) },
-                  new go.Binding("text", "", formatDate))
-              )
-          }
+        $(go.Shape, { geometryString: "M0 0 V10", interval: 7, stroke: "#519ABA", strokeWidth: 2 }),
+        $(go.TextBlock, 
+          { 
+            font: "10pt sans-serif",
+            stroke: "#CCCCCC",
+            interval: 14,
+            alignmentFocus: go.Spot.MiddleRight,
+            segmentOrientation: go.Link.OrientMinus90,
+            segmentOffset: new go.Point(0, 12),
+            graduatedFunction: valueToDate
+          },
+          new go.Binding("interval", "length", calculateLabelInterval)
         )
-      ));
+      )
+    );
+
+    function calculateLabelInterval(len) {
+      if (len >= 800) return 7;
+      else if (400 <= len && len < 800) return 14;
+      else if (200 <= len && len < 400) return 21;
+      else if (140 <= len && len < 200) return 28;
+      else if (110 <= len && len < 140) return 35;
+      else return 365;
+    }
 
     // The template for the link connecting the event node with the timeline bar node:
     myDiagram.linkTemplate =
       $(BarLink,  // defined below
-        { routing: go.Link.Orthogonal, toShortLength: 2 },
-        $(go.Shape, { stroke: "gray" }),
-        $(go.Shape, { toArrow: "Standard", fill: "gray", stroke: "gray" })
+        { toShortLength: 2 , layerName: "Background" },
+        $(go.Shape, { stroke: "#E37933", strokeWidth: 2 })
       );
 
     // Setup the model data -- an object describing the timeline bar node
     // and an object for each event node:
     var data = [
       { // this defines the actual time "Line" bar
-        key: 0, category: "Line",
-        length: 500,  // length of bar
-        lineSpacing: 30,  // distance between bar and event nodes
-        start: new Date("1 Dec 2013"),
-        end: new Date("1 Apr 2014")
+        key: "timeline", category: "Line",
+        lineSpacing: 30,  // distance between timeline and event nodes
+        length: 700,  // the width of the timeline
+        start: new Date("1 Jan 2016"),
+        end: new Date("31 Dec 2016")
       },
 
       // the rest are just "events" --
       // you can add as much information as you want on each and extend the
       // default nodeTemplate to show as much information as you want
-      { name: "Alpha", time: new Date("12 Feb 2014") },
-      { name: "Beta", time: new Date("17 Mar 2014") },
-      { name: "Gamma", time: new Date("3 Jan 2014") },
-      { name: "Delta", time: new Date("31 Jan 2014") }
+      { event: "New Year's Day", date: new Date("1 Jan 2016") },
+      { event: "MLK Jr. Day", date: new Date("18 Jan 2016") },
+      { event: "Presidents Day", date: new Date("15 Feb 2016") },
+      { event: "Memorial Day", date: new Date("30 May 2016") },
+      { event: "Independence Day", date: new Date("4 Jul 2016") },
+      { event: "Labor Day", date: new Date("5 Sep 2016") },
+      { event: "Columbus Day", date: new Date("10 Oct 2016") },
+      { event: "Veterans Day", date: new Date("11 Nov 2016") },
+      { event: "Thanksgiving", date: new Date("24 Nov 2016") },
+      { event: "Christmas", date: new Date("25 Dec 2016") }
     ];
 
     // prepare the model by adding links to the Line
     for (var i = 0; i < data.length; i++) {
       var d = data[i];
-      if (d.key !== 0) d.parent = 0;
+      if (d.key !== "timeline") d.parent = "timeline";
     }
 
     myDiagram.model = $(go.TreeModel, { nodeDataArray: data });
-  }  // end init
+  }
 
+  function timelineDays() {
+    var timeline = myDiagram.model.findNodeDataForKey("timeline");
+    var startDate = timeline.start;
+    var endDate = timeline.end;
+
+    function treatAsUTC(date) {
+      var result = new Date(date);
+      result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+      return result;
+    }
+
+    function daysBetween(startDate, endDate) {
+      var millisecondsPerDay = 24 * 60 * 60 * 1000;
+      return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
+    }
+    return daysBetween(startDate, endDate);
+  }
 
   // This custom Layout locates the timeline bar at (0,0)
   // and alternates the event Nodes above and below the bar at
-  // the X-coordinate locations determined by their data.time values.
+  // the X-coordinate locations determined by their data.date values.
   function TimelineLayout() {
     go.Layout.call(this);
   };
@@ -142,11 +167,7 @@
   TimelineLayout.prototype.doLayout = function(coll) {
     var diagram = this.diagram;
     if (diagram === null) return;
-    if (coll instanceof go.Diagram) {
-      coll = coll.nodes;
-    } else if (coll instanceof go.Group) {
-      coll = coll.memberParts;
-    }
+    coll = this.collectParts(coll);
     diagram.startTransaction("TimelineLayout");
 
     var line = null;
@@ -157,121 +178,48 @@
       if (part instanceof go.Link) continue;
       if (part.category === "Line") { line = part; continue; }
       parts.push(part);
-      var x = part.data.time;
-      if (x === undefined) { x = new Date(); part.data.time = x; }
+      var x = part.data.date;
+      if (x === undefined) { x = new Date(); part.data.date = x; }
     }
     if (!line) throw Error("No node of category 'Line' for TimelineLayout");
 
     line.location = new go.Point(0, 0);
-    var linebnds = line.actualBounds;
 
+    // lay out the events above the timeline
     if (parts.length > 0) {
-      parts.sort(function(a, b) {
-        var ad = a.data;
-        var bd = b.data;
-        if (ad.time < bd.time) return -1; else if (ad.time > bd.time) return 1; else return 0;
-      });
-
-      // compute the first and last dates
-      var first = parts[0].data.time;
-      var start = line.data.start;
-      if (typeof start === "string") start = new Date(start);
-      if (!start) start = first;
-      // a start date might be earlier than the first date in the data
-      start = Math.min(start, first);
-
-      var last = parts[parts.length - 1].data.time;
-      var end = line.data.end;
-      if (typeof end === "string") end = new Date(end);
-      if (!end) end = last;
-      // an end date might be later than the last date in the data
-      end = Math.max(end, last);
-
-      // calculate how many days and weeks the data covers
-      start = Math.min(start, end);
-      end = Math.max(start, end);
-      var numdays = (end-start) / (24 * 60 * 60 * 1000);
-      var numweeks = numdays/7;
-
-      var firstsunday = new Date(start);  // before or on the start date
-      var dayofweek = firstsunday.getDay();
-      firstsunday.setDate(firstsunday.getDate() - dayofweek);
-      firstsunday.setHours(0);  // set to midnight
-      firstsunday.setMinutes(0);
-      firstsunday.setSeconds(0);
-      firstsunday.setMilliseconds(0);
-
-      // given a Date, determine the X coordinate
-      function convertDateToX(d) {
-        if (end - start <= 0) return 0;  // handle zero!
-        var frac = (d - start) / (end - start);
-        return frac * length;
-      }
-
-      // draw gridlines at the beginning of each week
-      var bar = line.findObject("BAR");
-      var length = 100;
-      var cellw = 100;
-      if (bar && numweeks > 0) {
-        length = bar.actualBounds.width;
-        cellw = length / numweeks;
-        // set the size of each cell
-        bar.gridCellSize = new go.Size(cellw, bar.gridCellSize.height);
-        // offset to account for starting on a non-first day of the week
-        bar.gridOrigin = new go.Point(convertDateToX(firstsunday), bar.gridOrigin.y);
-      }
-
-      // show the date of the first day of each week
-      var table = line.findObject("TABLE");
-      if (table) {
-        // offset to account for starting on a non-first day of the week
-        table.margin = new go.Margin(0, 0, 0, convertDateToX(firstsunday));
-        // build the itemArray of Date objects, if needed
-        var periods = table.itemArray;
-        if (!periods || periods.length !== Math.floor(numweeks+1)) {
-          // create an Array of Dates to be shown in the timeline bar
-          var periods = [];
-          var date = new Date(firstsunday);
-          periods.push(date);
-          for (var i = 1; i < numweeks; i++) {
-            date = new Date(date);
-            date.setDate(date.getDate() + 7);
-            periods.push(date);
-          }
-          // this creates as many itemTemplate copies as there are Dates in the Array
-          table.itemArray = periods;
-        }
-        // make sure they all have the same width
-        for (var i = 0; i < periods.length; i++) {
-          table.getColumnDefinition(i).width = cellw;
-        }
-      }
-
-      // This layout is not smart enough (yet) to have multiple rows of event nodes
-      // when the nodes are too close to each other and start overlapping.
-
-      var above = true;
+      // determine the offset from the main shape to the timeline's boundaries
+      var main = line.findMainElement();
+      var sw = main.strokeWidth;
+      var mainOffX = main.actualBounds.x;
+      var mainOffY = main.actualBounds.y;
       // spacing is between the Line and the closest Nodes, defaults to 30
       var spacing = line.data.lineSpacing;
       if (!spacing) spacing = 30;
       for (var i = 0; i < parts.length; i++) {
         var part = parts[i];
         var bnds = part.actualBounds;
-        var t = part.data.time;
-        var x = convertDateToX(t);
-        if (above) {
-          part.location = new go.Point(x, -bnds.height/2 - spacing - linebnds.height/2);
-        } else {
-          part.location = new go.Point(x, bnds.height/2 + spacing + linebnds.height/2);
+        var dt = part.data.date;
+        var val = dateToValue(dt);
+        var pt = line.graduatedPointForValue(val);
+        var tempLoc = new go.Point(pt.x, pt.y - bnds.height / 2 - spacing);
+        // check if this node will overlap with previously placed events, and offset if needed
+        for (var j = 0; j < i; j++) {
+          var partRect = new go.Rect(tempLoc.x, tempLoc.y, bnds.width, bnds.height);
+          var otherLoc = parts[j].location;
+          var otherBnds = parts[j].actualBounds;
+          var otherRect = new go.Rect(otherLoc.x, otherLoc.y, otherBnds.width, otherBnds.height);
+          if (partRect.intersectsRect(otherRect)) {
+            tempLoc.offset(0, -otherBnds.height - 10);
+            j = 0; // now that we have a new location, we need to recheck in case we overlap with an event we didn't overlap before
+          }
         }
-        above = !above;
+        part.location = tempLoc;
       }
     }
 
     diagram.commitTransaction("TimelineLayout");
   };
   // end TimelineLayout class
-
 
   // This custom Link class was adapted from several of the samples
   function BarLink() {
@@ -283,36 +231,63 @@
     var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
                         port.getDocumentPoint(go.Spot.BottomRight));
     var op = otherport.getDocumentPoint(go.Spot.Center);
-    var below = op.y > r.centerY;
-    var y = below ? r.bottom : r.top;
+    var main = node.category === "Line" ? node.findMainElement(): othernode.findMainElement();
+    var mainOffY = main.actualBounds.y;
+    var y = r.top;
     if (node.category === "Line") {
+      y += mainOffY;
       if (op.x < r.left) return new go.Point(r.left, y);
       if (op.x > r.right) return new go.Point(r.right, y);
       return new go.Point(op.x, y);
     } else {
-      return new go.Point(r.centerX, y);
+      return new go.Point(r.centerX, r.bottom);
     }
   };
 
   BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
-    var p = port.getDocumentPoint(go.Spot.Center);
-    var op = otherport.getDocumentPoint(go.Spot.Center);
-    var below = op.y > p.y;
-    return below ? 90 : 270;
+    return 270;
   };
   // end BarLink class
 
+  function valueToDate(n) {
+    var timeline = myDiagram.model.findNodeDataForKey("timeline");
+    var startDate = timeline.start;
+    var startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+    var msPerDay = 24 * 60 * 60 * 1000;
+    var date = new Date(startDateMs + n * msPerDay);
+    return date.toLocaleDateString();
+  }
+
+  function dateToValue(d) {
+    var timeline = myDiagram.model.findNodeDataForKey("timeline");
+    var startDate = timeline.start;
+    var startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+    var dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
+    var msSinceStart = dateInMs - startDateMs;
+    var msPerDay = 24 * 60 * 60 * 1000;
+    return msSinceStart / msPerDay;
+  }
 </script>
 </head>
-<body onload="init()">
+<body onload="init();">
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; background: #252526; width:100%; height:400px"></div>
   <p>
-    Try resizing the timeline: select the timeline and drag the resize handle that is on the right side.
+    This sample demonstrates an example usage of a Graduated Panel, <a>Panel.Graduated</a>, to draw ticks and text labels along a timeline.
   </p>
   <p>
-    This sample includes a <code>TimelineLayout</code> which is responsible for rendering the timeline bar
-    and for positioning the event nodes.
+    The Panel uses a <a>Panel.graduatedTickUnit</a> of 1 to represent one day, and ticks are drawn at <a>Shape.interval</a>s of 7 to represent weeks.
+  </p>
+  <p>
+    Labels are drawn at <a>TextBlock.interval</a>s of 14, or every two weeks. As the timeline is resized, the interval is updated to prevent overlaps.
+    Text strings are generated by setting the <a>TextBlock.graduatedFunction</a>to convert from values in the graduated range to date strings.
+    Also notice that labels use the <a>GraphObject.alignmentFocus</a>, <a>GraphObject.segmentOrientation</a>,
+    and <a>GraphObject.segmentOffset</a> properties to place text below the timeline bar.
+  </p>
+  <p>
+    Try resizing the timeline: select the timeline and drag the resize handle that is on the right side. Event nodes
+    will automatically be laid out relative to the timeline using the <code>TimelineLayout</code>. TimelineLayout converts
+    a date to a value, then uses <a>Panel.graduatedPointForValue</a> to help determine where event nodes will be placed.
   </p>
 </div>
 </body>

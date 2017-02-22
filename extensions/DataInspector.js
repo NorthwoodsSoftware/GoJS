@@ -264,7 +264,12 @@ Inspector.prototype.updateAllHTML = function() {
   if (!data) {  // clear out all of the fields
     for (var name in inspectedProps) {
       var input = inspectedProps[name];
-      input.value = "";
+      if (input.type === "color") {
+        input.value = "#000000";
+      } else {
+        input.value = "";
+      }
+
     }
   } else {
     for (var name in inspectedProps) {

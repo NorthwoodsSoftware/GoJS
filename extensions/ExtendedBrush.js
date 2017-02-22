@@ -102,7 +102,7 @@ ExtendedBrush._pxToPercent = function(px, l, w, angle) {
 }
 
 ExtendedBrush._parseLinearGradientCSS = function(cssstring, w, h) {
-  css = cssstring.match(/\((.*)\)/g);
+  var css = cssstring.match(/\((.*)\)/g);
   if (css === null) throw new Error("Invalid CSS Linear Gradient: " + cssstring);
   css = css[0];
 
@@ -549,16 +549,13 @@ ExtendedBrush._parseExtentKeyword = function(str, w, h, center) {
 
 
 ExtendedBrush._makePaletteFromOneColor = function(color, number) {
-  color = ExtendedBrush._RGB_to_Lab(ExtendedBrush.CSSStringToRGB(color));
+  var colorArr = ExtendedBrush._RGB_to_Lab(ExtendedBrush.CSSStringToRGB(color));
   var arr = [];
   var inc = 100 / (number + 2);
-  var numBelow = Math.floor(color[0] / inc) - 1;
-  if (color[0] >= 100) numBelow--;
+  var numBelow = Math.floor(colorArr[0] / inc) - 1;
 
   for (var i = 1; i <= number; i++) {
-    var rgb = ExtendedBrush._Lab_to_RGB([color[0] + inc * (i - numBelow), color[1], color[2]]);
-    var css = ExtendedBrush._RGBArrayToCSS(rgb);
-    arr[i - 1] = css;
+    arr[i - 1] = go.Brush.lightenBy(color, inc * (i - numBelow) / 100);
   }
   return arr;
 };

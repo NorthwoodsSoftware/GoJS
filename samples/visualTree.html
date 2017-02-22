@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Visual Tree</title>
   <meta name="description" content="Show the visual elements of a simple diagram as a tree diagram -- each Node is data bound to an element of the other Diagram." />
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
-  <script src="go.js"></script>
-  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../release/go.js"></script>
+    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -24,26 +24,23 @@
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           new go.Binding("location"),
-          $(go.Shape, { fill: "darkkhaki", stroke: null }),  // assume a dark background
-          $(go.TextBlock,
-            {
-                font: "bold 13px Helvetica, bold Arial, sans-serif",
-                stroke: "black",
-                margin: 3
-            },
-            // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+          $(go.Shape, "RoundedRectangle",  // define the node's outer shape
+            { fill: "white", strokeWidth: 0 },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,  // define the node's text
+            { margin: 5 },
             new go.Binding("text", "key"))
         );
 
         myDiagram.linkTemplate =
-          $(go.Link,
-            $(go.Shape, { stroke: "darkkhaki", strokeWidth: 2 }),
-            $(go.Shape, { toArrow: "Standard", fill: "khaki", strokeWidth: 0 })
+          $(go.Link, go.Link.Bezier,
+            $(go.Shape, { strokeWidth: 1.5 }),
+            $(go.Shape, { toArrow: "Standard" })
           );
 
       myDiagram.model = new go.GraphLinksModel([
-        { key: "Alpha", location: new go.Point(0, 0) },
-        { key: "Beta", location: new go.Point(60, 80) }
+        { key: "Alpha", color: "lightblue", location: new go.Point(0, 0) },
+        { key: "Beta", color: "pink", location: new go.Point(60, 80) }
       ],[
         { from: "Alpha", to: "Beta" },
         { from: "Beta", to: "Alpha"}
@@ -125,15 +122,14 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>GoJS Visual Tree</h3>
   <b>myDiagram</b>, the diagram being inspected:<br />
-  <div id="myDiagramDiv" style="border: 1px solid blue; background:#1F4963; width: 300px; height: 200px"></div>
+  <div id="myDiagramDiv" style="border: 1px solid black; width: 300px; height: 200px"></div>
   <br />
   <input type="button" onclick="drawVisualTree()" value="Draw Visual Tree" />
   <br />
   <br />
   <b>myVisualTree</b>, showing the Layers, Nodes and Links that are in <b>myDiagram</b> above:<br />
-  <div id="myVisualTree" style="width: 100%; height: 300px; background:#1F4963"></div>
+  <div id="myVisualTree" style="border: 1px solid black; background:#1F4963; width: 100%; height: 300px"></div>
   <p>
         This sample shows the actual visual tree of a running Diagram.
         The Diagram that we inspect is named "myDiagramDiv" and initially contains two simple Nodes and two Links.

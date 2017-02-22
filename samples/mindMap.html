@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mind Map</title>
 <meta name="description" content="A mind map editor, showing how subtrees can be moved, copied, deleted, and laid out." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -136,11 +136,11 @@
         $("ContextMenuButton",
           $(go.TextBlock, "Undo"),
           { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
-          new go.Binding("visible", "", function(o) { return o.diagram.commandHandler.canUndo(); }).ofObject()),
+          new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canUndo(); }).ofObject()),
         $("ContextMenuButton",
           $(go.TextBlock, "Redo"),
           { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
-          new go.Binding("visible", "", function(o) { return o.diagram.commandHandler.canRedo(); }).ofObject()),
+          new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canRedo(); }).ofObject()),
         $("ContextMenuButton",
           $(go.TextBlock, "Save"),
           { click: function(e, obj) { save(); } }),
@@ -278,7 +278,6 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>GoJS Mind Map</h3>
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px;"></div>
   <p>
     A mind map is a kind of spider diagram that organizes information around a central concept, with connecting branches.

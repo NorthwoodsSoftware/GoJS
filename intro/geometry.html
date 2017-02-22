@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Geometry Path Strings -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Geometry Path Strings</h2>
+<h1>Geometry Path Strings</h1>
 <p>
 The <b>GoJS</b> <a>Geometry</a> class controls the "shape" of a <a>Shape</a>,
 whereas the <a>Shape.fill</a> and <a>Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
@@ -23,8 +24,11 @@ One can construct any Geometry by allocating and initializing a <a>Geometry</a> 
 But you may find that using the string representation of a Geometry is easier to write and save in a database.
 Use the static method <a>Geometry.parse</a> or the <a>Shape.geometryString</a> property to transform a geometry path string into a <a>Geometry</a> object.
 </p>
+<p>
+See samples that make use of Geometries in the <a href="../samples/index.html#geometries">samples index</a>.
+</p>
 
-<h3>Geometry Path String Syntax</h3>
+<h2 id="GeometryPathStringSyntax">Geometry Path String Syntax</h2>
 <p>
 The syntax for a geometry path string is an extension of the SVG path string syntax.
 The string consists of a number of commands, each a single letter followed by some command-specific numeric parameters.
@@ -100,7 +104,7 @@ This is placed at the beginning of a figure.
 Case does not matter with this command.</li>
 </ul>
 
-<h3>Geometry Path String Examples</h3>
+<h2 id="GeometryPathStringExamples">Geometry Path String Examples</h2>
 <p>
 Here is a simple usage of a geometry path string when initializing a <a>Shape</a> without setting <a>Shape.figure</a>:
 </p>
@@ -189,7 +193,7 @@ diagram.add(
 <script>goCode("a2", 600, 140)</script>
 The first and last PathFigures are shadowed; the second and third are unshadowed.
 
-<h4>Geometry.parse</h4>
+<h3 id="GeometryParse">Geometry.parse</h3>
 <p>
 Use the static method <a>Geometry.parse</a> to convert a <b>GoJS</b> syntax path string into a <a>Geometry</a>.
 </p>
@@ -268,7 +272,7 @@ diagram.add(
 </pre>
 <script>goCode("s12a", 600, 140)</script>
 
-<h4>Shape.geometryString</h4>
+<h3 id="ShapeGeometryString">Shape.geometryString</h3>
 <p>
 The <a>Shape.geometryString</a> property setter parses a given <b>GoJS</b> path string as a Geometry, normalizes it,
 sets the <a>Shape.geometry</a> to this new Geometry, and offsets the Shape's position by the amount it was shifted in normalization.
@@ -325,10 +329,15 @@ diagram.commandHandler.selectAll();
 <script>goCode("b", 600, 180)</script>
 
 
-<h3>Flipping (mirroring) Geometries Horizontally and Vertically</h3>
-<p>GoJS Geometries have several methods for modifying the geometry's points by a transformation matrix. We can use these methods to flip (mirror) the geometries if needed.</p>
-<p><code>geometry.scale(-1, 1)</code> will flip a geometry horizontally. <code>geometry.scale(-1, 1)</code> will flip a geometry vertically.
-
+<h2 id="FlippingGeometriesHorizontallyAndVertically">Flipping Geometries Horizontally and Vertically</h2>
+<p>
+  GoJS Geometries have several methods for modifying the geometry's points by a transformation matrix.
+  We can use these methods to flip or mirror the geometries if needed.
+</p>
+<p>
+  <code>geometry.scale(-1, 1)</code> will flip a geometry horizontally.
+  <code>geometry.scale(1, -1)</code> will flip a geometry vertically.
+</p>
 
 <pre data-language="javascript" id="b2">
 var pathstring = "M30 100 C 50 50, 70 20, 100 100, 110, 130, 45, 150, 65, 100";
@@ -370,7 +379,7 @@ diagram.layout = $(go.GridLayout);
 </pre>
 <script>goCode("b2", 600, 180)</script>
 
-<h3>Converting Path Strings</h3>
+<h2 id="ConvertingPathStrings">Converting Path Strings</h2>
 <p>
 The static method <a>Geometry.stringify</a> can be used to output a Geometry as a string.
 This string will have the <b>GoJS</b> path string syntax.
@@ -402,6 +411,17 @@ go.Geometry.fillPath("M0 0 L20 20 L20 0");
 </pre>
 The result can then be passed to <a>Geometry.parse</a> or <a>Shape.geometryString</a>.
 
+<h2 id="ParameterizedGeometries">Parameterized Geometries</h2>
+<p>
+  Although individual <a>Geometry</a> objects cannot be dynamically parameterized based on the intended size or other properties,
+  the <a>Shape</a> class does support such parameterization via <a>Shape.defineFigureGenerator</a>.
+  When you set or bind the <a>Shape.figure</a> property, the shape will call the named figure generator
+  to generate a Geometry appropriate for the desired width and height and other Shape properties.
+</p>
+<p>
+  You can see the definitions of all of the predefined figures in the extensions file:
+  <a href="../extensions/Figures.js" target="_blank">Figures.js</a>.
+</p>
 </div>
 </div>
 </body>

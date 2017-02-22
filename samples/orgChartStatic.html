@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Org Chart Static</title>
 <meta name="description" content="A larger org chart with an Overview and searching capability." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
@@ -17,10 +18,9 @@
     border: solid 1px blue;
   }
 </style>
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
+<script src="../release/go.js"></script>
 <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -99,7 +99,7 @@
             {
               row: 0, column: 0,
               maxSize: new go.Size(160, NaN), margin: 2,
-              font: '500 16px Roboto, sans-serif',
+              font: "500 16px Roboto, sans-serif",
               alignment: go.Spot.Top
             },
             new go.Binding("text", "name")),
@@ -191,14 +191,12 @@
     if (!input) return;
     input.focus();
 
-    // create a case insensitive RegExp from what the user typed
-    var regex = new RegExp(input.value, "i");
-
     myDiagram.startTransaction("highlight search");
-    myDiagram.clearHighlighteds();
 
-    // search four different data properties for the string, any of which may match for success
-    if (input.value) {  // empty string only clears highlighteds collection
+    if (input.value) {
+      // search four different data properties for the string, any of which may match for success
+      // create a case insensitive RegExp from what the user typed
+      var regex = new RegExp(input.value, "i");
       var results = myDiagram.findNodesByExample({ name: regex },
                                                  { nation: regex },
                                                  { title: regex },
@@ -206,6 +204,8 @@
       myDiagram.highlightCollection(results);
       // try to center the diagram at the first node that was found
       if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+    } else {  // empty string only clears highlighteds collection
+      myDiagram.clearHighlighteds();
     }
 
     myDiagram.commitTransaction("highlight search");
@@ -229,6 +229,11 @@
   <button onclick="searchDiagram()">Search</button>
   <p>
     To learn how to build an org chart from scratch with GoJS, see the <a href="../learn/index.html">Getting Started tutorial</a>.
+  </p>
+  <p>
+    If you want to have some "assistant" nodes on the side, above the regular reports,
+    see the <a href="orgChartAssistants.html">Org Chart Assistants</a> sample, which is a copy of this sample
+    that uses a custom <a>TreeLayout</a> to position "assistants" that way.
   </p>
 </div>
 </body>

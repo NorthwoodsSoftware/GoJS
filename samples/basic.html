@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Basic GoJS Sample</title>
 <meta name="description" content="Interactive GoJS diagram demonstrating creating new nodes and links, reconnecting links, grouping and ungrouping, and context menus and tooltips for nodes, for links, and for the diagram background." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -39,7 +39,7 @@
                $(go.TextBlock, text),
                { click: action },
                // don't bother with binding GraphObject.visible if there's no predicate
-               visiblePredicate ? new go.Binding("visible", "", visiblePredicate).ofObject() : {});
+               visiblePredicate ? new go.Binding("visible", "", function(o, e) { return o.diagram ? visiblePredicate(o, e) : false; }).ofObject() : {});
     }
 
     // a context menu is an Adornment with a bunch of buttons in them
@@ -98,7 +98,7 @@
         { locationSpot: go.Spot.Center },
         $(go.Shape, "RoundedRectangle",
           {
-            fill: "white", // the default fill, if there is no data-binding
+            fill: "white", // the default fill, if there is no data bound value
             portId: "", cursor: "pointer",  // the Shape is the port, not the whole Node
             // allow all kinds of links from and to this port
             fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
@@ -183,8 +183,14 @@
         $(go.Panel, "Auto",
           { name: "PANEL" },
           $(go.Shape, "Rectangle",  // the rectangular shape around the members
-            { fill: "rgba(128,128,128,0.2)", stroke: "gray", strokeWidth: 3 }),
-          $(go.Placeholder, { padding: 10 })  // represents where the members are
+            {
+              fill: "rgba(128,128,128,0.2)", stroke: "gray", strokeWidth: 3,
+              portId: "", cursor: "pointer",  // the Shape is the port, not the whole Node
+              // allow all kinds of links from and to this port
+              fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+              toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true
+            }),
+          $(go.Placeholder, { margin: 10, background: "transparent" })  // represents where the members are
         ),
         { // this tooltip Adornment is shared by all groups
           toolTip:
@@ -247,27 +253,33 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>Basic GoJS Sample</h3>
   <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
   <p>
-        This sample demonstrates tooltips and context menus for all parts and for the diagram background,
-        as well as several other powerful diagram editing abilities.
+    This sample demonstrates tooltips and context menus for all parts and for the diagram background,
+    as well as several other powerful diagram editing abilities.
   </p>
-  <p>Unlike the <a href="minimal.html">Minimal</a> sample, this sample has templates for Links and for Groups,
-  plus tooltips and context menus for Nodes, for Links, for Groups, and for the Diagram.</p>
-  <p>This sample additionally allows the user to:</p>
+  <p>
+    Unlike the <a href="minimal.html">Minimal</a> sample, this sample has templates for Links and for Groups,
+    plus tooltips and context menus for Nodes, for Links, for Groups, and for the Diagram.
+  </p>
+  <p>This sample has all of the functionality of the Minimal sample, but additionally allows the user to:</p>
   <ul>
     <li>create new nodes: double-click in the background of the diagram</li>
     <li>edit text: select the node and then click on the text, or select the node and press F2</li>
-    <li>draw new links: drag from the inner edge of the node's shape</li>
+    <li>draw new links: drag from the inner edge of the node's or the group's shape</li>
     <li>reconnect existing links: select the link and then drag the diamond-shaped handle at either end of the link</li>
-    <li>group nodes and links: select some nodes and links and then type Ctrl-G</li>
-    <li>ungroup an existing group: select a group and then type Ctrl-Shift-G</li>
+    <li>group nodes and links: select some nodes and links and then type Ctrl-G (or invoke via context menu)</li>
+    <li>ungroup an existing group: select a group and then type Ctrl-Shift-G (or invoke via context menu)</li>
   </ul>
-  <p>GoJS contains many other possible commands, which can be invoked by either mouse/keyboard/touch or programatically.
-  <a href="../intro/commands.html">See an overview of possible commands here.</a></p>
-  <p>On touch devices, hold your finger stationary to bring up a context menu.
-  The default context menu supports most of the standard commands that are enabled at that time for that object.</p>
+  <p>
+    GoJS contains many other possible commands, which can be invoked by either mouse/keyboard/touch or programatically.
+    <a href="../intro/commands.html">See an overview of possible commands here.</a>
+    On a Mac, use CMD instead of Ctrl.
+  </p>
+  <p>
+    On touch devices, hold your finger stationary to bring up a context menu.
+    The default context menu supports most of the standard commands that are enabled at that time for that object.
+  </p>
 </div>
 </body>
 </html>

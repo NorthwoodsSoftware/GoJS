@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Commands -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Commands</h2>
+<h1>Commands</h1>
 <p>
 Commands such as <b>Delete</b> or <b>Paste</b> or <b>Undo</b> are implemented by the <a>CommandHandler</a> class.
 </p>
@@ -26,8 +27,12 @@ Basically, the diagram handles a keyboard event, creates an <a>InputEvent</a> de
 and then calls <a>ToolManager.doKeyDown</a>.  That in turn just calls <a>CommandHandler.doKeyDown</a>.
 The same sequence happens for key-up events.
 </p>
+<p>
+Please note that the handling of keyboard commands depends on the diagram getting focus and then getting keyboard events.
+Do not apply any styling such as <pre>canvas:focus { display: none; }</pre>.
+</p>
 
-<h3>Keyboard command bindings</h3>
+<h2 id="KeyboardCommandBindings">Keyboard command bindings</h2>
 <p>
 The <a>CommandHandler</a> implements the following command bindings for keyboard input:
 </p>
@@ -70,7 +75,7 @@ That DrawCommandHandler extension also demonstrates a customization of the <b>Co
 to automatically shift the location of pasted copies.
 </p>
 
-<h3>CommandHandler</h3>
+<h2 id="CommandHandler">CommandHandler</h2>
 <p>
 The <a>CommandHandler</a> class implements pairs of methods:
 a method to execute a command and a predicate that is true when the command may be executed.
@@ -121,7 +126,7 @@ Note that calling the base method involves getting the base class's prototype's 
 If the base method takes arguments, be sure to pass arguments to the call to the base method.
 </p>
 
-<h3>Updating command UI</h3>
+<h2 id="UpdatingCommandUI">Updating command UI</h2>
 <p>
 It is common to have HTML elements outside of the diagram that invoke commands.
 You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable UI that would invoke the command.
@@ -209,7 +214,7 @@ Whenever the selection changes or whenever a transaction or undo or redo occurs,
 the enableAll function is called to update the "disabled" property of each of the buttons.
 </p>
 
-<h3>Accessibility</h3>
+<h2 id="Accessibility">Accessibility</h2>
 <p>
 Since <b>GoJS</b> is based on the HTML Canvas element,
 making an app that is accessible to screen-readers or other accessibility devices
@@ -224,7 +229,7 @@ We recommend that you implement alternative mechanisms specific to your applicat
 for those tools that you want your users to access without a pointing device.
 </p>
 
-<h3>More CommandHandler override examples</h3>
+<h2 id="MoreCommandHandlerOverrideExamples">More CommandHandler override examples</h2>
 
 <p>
 Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.undo</a> and <a>CommandHandler.redo</a> to be called programatically:

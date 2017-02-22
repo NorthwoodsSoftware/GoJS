@@ -1,17 +1,41 @@
-// Highlight.js:
+/* Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved. */
+
+// Load necessary scripts:
 if (window.require) {
-  require(["https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"], function() {});
-  require(["../assets/js/bootstrap.min.js"], function() {});
-  require(["../assets/js/highlight.js"], function() {});
+  // declare required libraries and ensure Bootstrap's dependency on jQuery
+  require.config({
+    paths: {
+      "highlight": "../assets/js/highlight",
+      "jquery": "../assets/js/jquery.min", // 1.11.3
+      "bootstrap": "../assets/js/bootstrap.min" },
+    shim: {
+      "bootstrap": ["jquery"]
+    }
+  });
+  require(["highlight", "jquery", "bootstrap"], function() {});
 } else {
-  document.write('<script src="../assets/js/highlight.js"></script>');
-  document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>');
-  document.write('<script src="../assets/js/bootstrap.min.js"></script>');
+  function goLoadSrc(filenames) {
+    var scripts = document.getElementsByTagName("script");
+    var script = null;
+    for (var i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.indexOf("goIntro") > 0) {
+        script = scripts[i];
+        break;
+      }
+    }
+    for (var i = 0; i < arguments.length; i++) {
+      var filename = arguments[i];
+      if (!filename) continue;
+      var selt = document.createElement("script");
+      selt.async = false;
+      selt.defer = false;
+      selt.src = "../assets/js/" + filename;
+      script.parentNode.insertBefore(selt, script.nextSibling);
+      script = selt;
+    }
+  }
+  goLoadSrc("highlight.js", (window.jQuery ? "" : "jquery.min.js"), "bootstrap.min.js");
 }
-
-
-
-
 
 var head = document.getElementsByTagName("head")[0];
 
@@ -32,8 +56,6 @@ link.type = "text/css";
 link.rel = "stylesheet";
 link.href = "../assets/css/main.css";
 head.appendChild(link);
-
-/* Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved. */
 
 // Create a DIV and add it to the document just after the PRE element.
 // Evaluate the JavaScript text that is in the PRE element in order to initialize the Diagram.
@@ -73,13 +95,13 @@ function goIntro() {
   navindex.className = "col-md-2";
   navindex.innerHTML = myMenu;
   var container = document.getElementById('container');
-  document.body.insertBefore(navindex, container);
+  container.insertBefore(navindex, content);
 
 
-  // fixed navbar
+  // top navbar
   var navbar = document.createElement('div');
   navbar.innerHTML = myNavbar;
-  document.body.insertBefore(navbar, navindex);
+  document.body.insertBefore(navbar, container);
 
   // footer
   var footer = document.createElement("div");
@@ -142,18 +164,22 @@ ga('send', 'pageview');
 var myMenu = '\
   <div class="sidebar-nav">\
   <div class="navbar navbar-default" role="navigation">\
-    <div class="navbar-header" data-toggle="collapse" data-target="#DiagramNavbar">\
+    <div class="navbar-header">\
+      <div class="navheader-container">\
+        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">\
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">\
             <span class="sr-only">Toggle navigation</span>\
             <span class="icon-bar"></span>\
             <span class="icon-bar"></span>\
             <span class="icon-bar"></span>\
           </button>\
-      <span class="navbar-brand">GoJS Introduction</span>\
+        </div>\
+        <span class="navbar-brand">Introduction</span>\
+      </div>\
     </div>\
     <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">\
     <ul id="sections" class="classList nav navbar-nav">\
-      <li><a href="index.html">Introduction</a></li>\
+      <li><a href="index.html">Basics</a></li>\
       <li><a href="buildingObjects.html">Building Parts</a></li>\
       <li><a href="textBlocks.html">TextBlocks</a></li>\
       <li><a href="shapes.html">Shapes</a></li>\
@@ -190,6 +216,7 @@ var myMenu = '\
       <li><a href="commands.html">Commands</a></li>\
       <li><a href="permissions.html">Permissions</a></li>\
       <li><a href="validation.html">Validation</a></li>\
+      <li><a href="HTMLInteraction.html">HTML Interaction</a></li>\
       <li><a href="layers.html">Layers &amp; Z-ordering</a></li>\
       <li><a href="palette.html">Palette</a></li>\
       <li><a href="overview.html">Overview</a></li>\
@@ -200,6 +227,7 @@ var myMenu = '\
       <li><a href="extensions.html">Extensions</a></li>\
       <li><a href="geometry.html">Geometry Strings</a></li>\
       <li><a href="grids.html">Grid Patterns</a></li>\
+      <li><a href="graduatedPanels.html">Graduated Panels</a></li>\
       <li><a href="makingImages.html">Diagram Images</a></li>\
       <li><a href="makingSVG.html">Diagram SVG</a></li>\
       <li><a href="printing.html">Printing</a></li>\
@@ -216,24 +244,28 @@ var myMenu = '\
 //<![CDATA[
 var myNavbar = '\
   <!-- non-fixed navbar -->\
-  <nav id="api-nav" class="navbar navbar-inverse navbar-top">\
-    <div class="container">\
-      <div class="navbar-header" data-toggle="collapse" data-target="#navbar">\
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">\
+  <nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">\
+    <div class="container-fluid">\
+      <div class="navbar-header">\
+        <div class="navheader-container">\
+          <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">\
+            <a id="toplogo" class="navbar-brand" href="../index.html">GoJS</a>\
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">\
               <span class="sr-only">Toggle navigation</span>\
               <span class="icon-bar"></span>\
               <span class="icon-bar"></span>\
               <span class="icon-bar"></span>\
             </button>\
-        <!--<a class="navbar-brand" href="#">GoJS</a>-->\
+          </div>\
+        </div>\
       </div>\
       <div id="navbar" class="navbar-collapse collapse">\
         <ul class="nav navbar-nav navbar-right">\
-          <li class="active"><a href="../index.html">Home</a></li>\
+          <li><a href="../index.html">Home</a></li>\
           <li><a href="../learn/index.html">Learn</a></li>\
           <li><a href="../samples/index.html">Samples</a></li>\
           <li><a href="../intro/index.html">Intro</a></li>\
-          <li><a href="../api/index.html">API</a></li>\
+          <li><a href="../api/index.html" target="api">API</a></li>\
           <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>\
           <li><a href="../doc/download.html">Download</a></li>\
           <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>\

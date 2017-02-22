@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Balloon Links</title>
+<meta name="description" content="A demonstration of the BalloonLink extension." />
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="BalloonLink.js"></script>
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                  {
+                    initialContentAlignment: go.Spot.Center,  // center the content
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",  // the Shape will go around the TextBlock
+        $(go.Shape, "Rectangle", { strokeWidth: 0 },
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8 },  // some room around the text
+          // TextBlock.text is bound to Node.data.key
+          new go.Binding("text", "key"))
+      );
+
+    myDiagram.linkTemplate =
+      $(BalloonLink,
+        $(go.Shape,
+          { stroke: "limegreen", strokeWidth: 3, fill: "limegreen" }
+        )
+      );
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:300px; height:300px"></div>
+  <p>
+    A <b>BalloonLink</b> is a custom <a>Link</a> that draws a "balloon" shape around the Link.fromNode.
+    It will create a triangular shape with the base at the fromNode and the other point at the toNode.
+    It is defined in its own file, as <a href="BalloonLink.js">BalloonLink.js</a>.
+  </p>
+  <p>
+    Usage can also be seen in the <a href="../samples/comments.html">Comments</a> sample.
+  </p>
+</div>
+</body>
+</html>

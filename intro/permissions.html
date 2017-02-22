@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS User Permissions -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>User Permissions</h2>
+<h1>User Permissions</h1>
 <p>
 Programmatically there are no restrictions on what you can do.
 However you may want to restrict the actions that your users may perform.
@@ -127,7 +128,7 @@ If you are loading new Models, you will need to set this Diagram property after 
 </pre>
 <script>goCode("isModelReadOnly", 600, 150)</script>
 
-<h3>Specific permissions</h3>
+<h2 id="SpecificPermissions">Specific permissions</h2>
 <p>
 More precise restrictions on the user can be imposed by setting properties of the <a>Diagram</a> or of a particular <a>Layer</a>
 or of a particular <a>Part</a> or <a>GraphObject</a>.
@@ -139,31 +140,35 @@ Finally some may apply to any <a>GraphObject</a>, for example properties for por
 or to text objects such as <a>TextBlock.editable</a>.
 </p>
 <p>
+Any <a>Tool</a> can be disabled by setting <a>Tool.isEnabled</a> to false.
+By default all Tools are enabled, but many cannot run because the conditions are not right for <a>Tool.canStart</a> to return true.
+</p>
+<p>
 Here is a listing of what users can do and the properties that limit that functionality.
 Most of these properties have a default value of true.
 </p>
 
-<h4>Cut command</h4>
+<h3 id="CutCommand">Cut command (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowCopy</a>, <a>Diagram.allowDelete</a>, <a>Diagram.allowClipboard</a></li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
 </ul>
 
-<h4>Copy command</h4>
+<h3 id="CopyCommand">Copy command (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowCopy</a>, <a>Diagram.allowClipboard</a></li>
   <li><a>Layer.allowCopy</a></li>
   <li><a>Part.copyable</a></li>
 </ul>
 
-<h4>Paste command</h4>
+<h3 id="PasteCommand">Paste command (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowInsert</a>, <a>Diagram.allowClipboard</a></li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
   <li>The clipboard's data format must be the same as the <a>Model.dataFormat</a></li>
 </ul>
 
-<h4>Delete command</h4>
+<h3 id="DeleteCommand">Delete command (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowDelete</a></li>
   <li><a>Layer.allowDelete</a></li>
@@ -171,7 +176,7 @@ Most of these properties have a default value of true.
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
 </ul>
 
-<h4>Drag-and-drop within diagram</h4>
+<h3 id="DragAndDropWithinDiagram">Drag-and-drop within diagram (<a>DraggingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowMove</a>, <a>Diagram.allowCopy</a>, <a>Diagram.allowInsert</a></li>
   <li><a>Layer.allowMove</a>, <a>Layer.allowCopy</a></li>
@@ -181,21 +186,24 @@ Most of these properties have a default value of true.
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> for copying (default values are false)</li>
   <li>Many properties affect dragging, including: <a>Part.maxLocation</a>, <a>Part.minLocation</a>, <a>Part.dragComputation</a>, and <a>DraggingTool.isGridSnapEnabled</a>.
       Read about limiting user drags to be only horizontal or only vertical or only within the containing <a>Group</a> in the documentation for <a>DraggingTool</a>.</li>
+  <li><a>DraggingTool.isEnabled</a></li>
 </ul>
 
-<h4>Drag-and-drop out of diagram</h4>
+<h3 id="DragAndDropOutOfDiagram">Drag-and-drop out of diagram (<a>DraggingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowDragOut</a> (default value is false except for <a>Palette</a> where it is true)</li>
+  <li><a>DraggingTool.isEnabled</a></li>
 </ul>
 
-<h4>Drag-and-drop into diagram</h4>
+<h3 id="DragAndDropIntoDiagram">Drag-and-drop into diagram (<a>DraggingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowDrop</a> (default value is false)</li>
   <li><a>Diagram.allowInsert</a></li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
+  <li><a>DraggingTool.isEnabled</a></li>
 </ul>
 
-<h4>In-place text editing</h4>
+<h3 id="InPlaceTextEditing">In-place text editing (<a>TextEditingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowTextEdit</a></li>
   <li><a>Layer.allowTextEdit</a></li>
@@ -205,7 +213,7 @@ Most of these properties have a default value of true.
   <li><a>Diagram.isReadOnly</a> (default value is false)</li>
 </ul>
 
-<h4>Group command</h4>
+<h3 id="GroupCommand">Group command (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowGroup</a>, <a>Diagram.allowInsert</a></li>
   <li><a>Layer.allowGroup</a></li>
@@ -219,7 +227,7 @@ Most of these properties have a default value of true.
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
 </ul>
 
-<h4>Ungroup command</h4>
+<h3 id="UngroupCommand">Ungroup command (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowUngroup</a>, <a>Diagram.allowDelete</a></li>
   <li><a>Layer.allowUngroup</a></li>
@@ -227,7 +235,7 @@ Most of these properties have a default value of true.
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
 </ul>
 
-<h4>Click-creating</h4>
+<h3 id="ClickCreating">Click-creating (<a>ClickCreatingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowInsert</a></li>
   <li>The <a>ClickCreatingTool</a> requires that <a>ClickCreatingTool.archetypeNodeData</a>
@@ -236,9 +244,10 @@ Most of these properties have a default value of true.
       You will need to set the property to an object so that newly created nodes have the desired
       property values for any data binding by the node template.</li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
+  <li><a>ClickCreatingTool.isEnabled</a></li>
 </ul>
 
-<h4>Drawing a new link</h4>
+<h3 id="DrawingNewLink">Drawing a new link (<a>LinkingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowLink</a></li>
   <li><a>Layer.allowLink</a></li>
@@ -255,9 +264,10 @@ Most of these properties have a default value of true.
       You may need to want to set properties on this object so that newly created links have the desired
       property values for any data binding by the link template.</li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
+  <li><a>LinkingTool.isEnabled</a></li>
 </ul>
 
-<h4>Relinking an existing link</h4>
+<h3 id="RelinkingExistingLink">Relinking an existing link (<a>RelinkingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowRelink</a></li>
   <li><a>Layer.allowRelink</a></li>
@@ -270,18 +280,20 @@ Most of these properties have a default value of true.
       (these are discussed in the section about <a href="validation.html">Validation</a>)
   </li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
+  <li><a>RelinkingTool.isEnabled</a></li>
 </ul>
 
-<h4>Reshaping a link</h4>
+<h3 id="ReshapingLink">Reshaping a link (<a>LinkReshapingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowReshape</a></li>
   <li><a>Layer.allowReshape</a></li>
   <li><a>Part.reshapable</a> (default value is false)</li>
   <li><a>Link.resegmentable</a> also affects whether segments can be added or removed (default value is false)</li>
   <li><a>Diagram.isReadOnly</a> (default value is false)</li>
+  <li><a>LinkReshapingTool.isEnabled</a></li>
 </ul>
 
-<h4>Resizing an object</h4>
+<h3 id="ResizingObject">Resizing an object (<a>ResizingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowResize</a></li>
   <li><a>Layer.allowResize</a></li>
@@ -289,44 +301,56 @@ Most of these properties have a default value of true.
   <li><a>Part.resizeCellSize</a>, <a>GraphObject.maxSize</a>, and <a>GraphObject.minSize</a> limit the size to which the user may resize the <a>Part.resizeObject</a></li>
   <li><a>ResizingTool.maxSize</a>, <a>RotatingTool.minSize</a>, and <a>RotatingTool.cellSize</a> limit the size to which the user may resize the <a>Part.resizeObject</a></li>
   <li><a>Diagram.isReadOnly</a> (default value is false)</li>
+  <li><a>ResizingTool.isEnabled</a></li>
 </ul>
 
-<h4>Rotating an object</h4>
+<h3 id="RotatingObject">Rotating an object (<a>RotatingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowRotate</a></li>
   <li><a>Layer.allowRotate</a></li>
   <li><a>Part.rotatable</a> (default value is false)</li>
   <li><a>RotatingTool.snapAngleMultiple</a> and <a>RotatingTool.snapAngleEpsilon</a> limit the angles to which the user may rotate the <a>Part.rotateObject</a></li>
   <li><a>Diagram.isReadOnly</a> (default value is false)</li>
+  <li><a>RotatingTool.isEnabled</a></li>
 </ul>
 
-<h4>Arrow and Page commands, panning/scrolling the diagram</h4>
+<h3 id="ArrowAndPageCommands">Arrow and Page commands (<a>CommandHandler</a>), panning/scrolling the diagram (<a>PanningTool</a> and scrollbars)</h3>
 <ul>
   <li><a>Diagram.allowHorizontalScroll</a>, <a>Diagram.allowVerticalScroll</a></li>
+  <li><a>Diagram.hasHorizontalScrollbar</a>, <a>Diagram.hasVerticalScrollbar</a></li>
   <li><a>ToolManager.mouseWheelBehavior</a> controls whether mouse wheel events scroll or zoom</li>
   <li>See the DrawCommandHandler in the <a href="../extensions">Extensions</a> directory for
       a <a>CommandHandler</a> that customizes the behavior of the arrow keys</li>
+  <li><a>PanningTool.isEnabled</a></li>
 </ul>
 
-<h4>SelectAll command, click selecting, drag selecting</h4>
+<h3 id="SelectAllCommand">SelectAll command (<a>CommandHandler</a>), click selecting (<a>ClickSelectingTool</a>), drag selecting (<a>DragSelectingTool</a>)</h3>
 <ul>
   <li><a>Diagram.allowSelect</a></li>
   <li><a>Layer.allowSelect</a></li>
   <li><a>Part.selectable</a></li>
   <li><a>Diagram.maxSelectionCount</a> limits how many selectable <a>Part</a>s the user may select</li>
+  <li><a>DragSelectingTool.isEnabled</a></li>
 </ul>
 
-<h4>Undo/Redo commands</h4>
+<h3 id="UndoRedoCommands">Undo/Redo commands (<a>CommandHandler</a>)</h3>
 <ul>
   <li><a>Diagram.allowUndo</a></li>
   <li><a>UndoManager.isEnabled</a> (default value is false)</li>
   <li><a>Diagram.isReadOnly</a> and <a>Model.isReadOnly</a> (default values are false)</li>
 </ul>
 
-<h4>Zoom commands, zooming/rescaling the diagram</h4>
+<h3 id="ZoomCommands">Zoom commands (<a>CommandHandler</a>), zooming/rescaling the diagram (<a>ToolManager</a>)</h3>
 <ul>
   <li><a>Diagram.allowZoom</a></li>
   <li><a>ToolManager.mouseWheelBehavior</a> controls whether mouse wheel events scroll or zoom</li>
+</ul>
+
+<h3 id="ContextMenus">Context Menus (<a>ContextMenuTool</a>)</h3>
+<ul>
+  <li><a>GraphObject.contextMenu</a></li>
+  <li><a>Diagram.contextMenu</a></li>
+  <li><a>ContextMenuTool.isEnabled</a></li>
 </ul>
 
 </div>

@@ -623,7 +623,7 @@ TableLayout.prototype.arrangeTable = function(children, union, rowcol) {
   var originy = this.arrangementOrigin.y;
   var x = 0.0;
   var y = 0.0;
-
+  
   var lrow = rowcol.length; //number of rows
   var lcol = 0;
   for (var i = 0; i < lrow; i++) {

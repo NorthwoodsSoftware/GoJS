@@ -18,9 +18,27 @@ if (window.require) {
   });
   require(["highlight", "jquery", "bootstrap"], function() {});
 } else {
-  document.write('<script src="../assets/js/highlight.js"></script>');
-  window.jQuery || document.write('<script src="../assets/js/jquery.min.js"></script>'); // 1.11.3
-  document.write('<script src="../assets/js/bootstrap.min.js"></script>');
+  function goLoadSrc(filenames) {
+    var scripts = document.getElementsByTagName("script");
+    var script = null;
+    for (var i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.indexOf("goSamples") > 0) {
+        script = scripts[i];
+        break;
+      }
+    }
+    for (var i = 0; i < arguments.length; i++) {
+      var filename = arguments[i];
+      if (!filename) continue;
+      var selt = document.createElement("script");
+      selt.async = false;
+      selt.defer = false;
+      selt.src = "../assets/js/" + filename;
+      script.parentNode.insertBefore(selt, script.nextSibling);
+      script = selt;
+    }
+  }
+  goLoadSrc("highlight.js", (window.jQuery ? "" : "jquery.min.js"), "bootstrap.min.js");
 }
 
 var head = document.getElementsByTagName("head")[0];
@@ -61,7 +79,7 @@ function goSamples() {
   document.body.appendChild(container);
 
   // sample content
-  var samplediv = document.getElementById('sample') || document.body;
+  var samplediv = document.getElementById('sample') || document.body.firstChild;
   samplediv.className = "col-md-10";
   container.appendChild(samplediv);
 
@@ -346,6 +364,7 @@ var myExtensionMenu = '\
           <li><a href="BPMN.html" target="_blank">BPMN Editor</a></li>\
           <li><a href="FloorPlanEditor.html" target="_blank">Floor Plan Editor</a></li>\
           <li><a href="FloorPlanMonitor.html" target="_blank">Floor Plan Monitor</a></li>\
+          <li><a href="FloorPlanner.html" target="_blank">Floor Planner</a></li>\
           <hr>\
           <li><a href="CheckBoxes.html">CheckBoxes</a></li>\
           <li><a href="Hyperlink.html">Hyperlinks</a></li>\
@@ -354,9 +373,10 @@ var myExtensionMenu = '\
           <li><a href="Buttons.js" target="_blank">Buttons.js</a></li>\
           <li><a href="Figures.js" target="_blank">Figures.js</a></li>\
           <li><a href="Arrowheads.js" target="_blank">Arrowheads.js</a></li>\
+          <li><a href="Templates.js" target="_blank">Templates.js</a></li>\
           <li><a href="TextEditor.js" target="_blank">TextEditor.js</a></li>\
-          <li><a href="TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons</a></li>\
-          <li><a href="TextEditorSelectBox.js" target="_blank">TextEditorSelectBox</a></li>\
+          <li><a href="TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a></li>\
+          <li><a href="TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a></li>\
           <li><a href="../samples/flowchart.html">GoJS Samples</a></li>\
           <li><a href="../samples/all.html">Complete List</a></li>\
         </ul>\
@@ -387,7 +407,7 @@ var myNavbar = '\
           <li><a href="../learn/index.html">Learn</a></li>\
           <li><a href="../samples/index.html">Samples</a></li>\
           <li><a href="../intro/index.html">Intro</a></li>\
-          <li><a href="../api/index.html">API</a></li>\
+          <li><a href="../api/index.html" target="api">API</a></li>\
           <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>\
           <li><a href="../doc/download.html">Download</a></li>\
           <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>\

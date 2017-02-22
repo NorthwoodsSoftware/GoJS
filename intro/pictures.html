@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Pictures -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Pictures</h2>
+<h1>Pictures</h1>
 <p>
 Use the <a>Picture</a> class to display images.
 The most common usage is to set the <a>Picture.source</a> property with a URL string,
@@ -37,7 +38,7 @@ However for more sophisticated control you can set the <a>Picture.element</a>
 to an <b>HTMLImageElement</b> or an <b>HTMLCanvasElement</b>.
 </p>
 
-<h3>Sizing</h3>
+<h2 id="Sizing">Sizing</h2>
 <p>
 If you do not set the <a>GraphObject.desiredSize</a> of a <a>Picture</a>, it will get the picture's natural size.
 But when you set the desiredSize to be something different than the natural size, the picture may be stretched or compressed to fit.
@@ -84,7 +85,7 @@ the Panel(s) holding the Picture will not have to rearrange themselves once the 
 However for the times when you cannot know the natural size ahead of time, there are alternative ways of stretching images to fit in a given space.
 </p>
 
-<h3>Image Stretch</h3>
+<h2 id="ImageStretch">Image Stretch</h2>
 <p>
 Instead of always stretching or compressing to fill the desiredSize,
 you can set the <a>Picture.imageStretch</a> property to control the size and aspect ratio of the drawn image.
@@ -147,7 +148,81 @@ In this case what must be clipped is at the sides of the image.
 </pre>
 <script>goCode("stretchedPictures", 600, 120)</script>
 
-<h3>Cross Origin Pictures</h3>
+<h2 id="Clipping">Clipping</h2>
+
+<p>
+  If you have a Picture that must be clipped to a geometry, such as to produce a circlular Picture, there are two options.
+  The first is to use a "frame" geometry to hide part of the image.
+  Typically this frame is the same color as the Diagram background or the background of the Node.
+  This method does not change the area of the Picture, does not allow for true transparency and clicking anywhere in the bounds will always pick the picture.
+
+<p>
+  A second method uses <a>Panel.isClipping</a>. This property on a Spot panel allows the filled area of the main Shape to serve as a clipping region instead of a drawn shape.
+  This method does not change the area of the Picture, but does allow for transparency and affect object picking so that only the resultant clipped area is pickable.
+
+  <p>
+  Examples of both follow:
+
+
+<pre data-language="javascript" id="clipPictures">
+
+  diagram.layout = $(go.GridLayout);
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  // Using a black "frame" geometry to hide part of the image.
+  // Typically this frame is the same color as the Diagram background or the background of the Node.
+  diagram.add(
+    $(go.Node, "Spot",
+      { scale: 2 },
+      $(go.Picture, "../samples/images/55x55.png",
+        {
+          name: 'Picture',
+          desiredSize: new go.Size(55, 55),
+          background: 'red'
+        }
+      ),
+      $(go.Shape,
+      {
+        strokeWidth: 0,
+        stroke: null,
+        geometryString: "f M0 0 L100 0 L100 100 L0 100 z M5,50a45,45 0 1,0 90,0a45,45 0 1,0 -90,0 z",
+        width: 56,
+        height: 56,
+        fill: 'black'
+      })
+    )
+  );
+
+  // Using Panel.isClipping
+  diagram.add(
+    $(go.Node, "Spot",
+      { isClipping: true, scale: 2  },
+      $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+      $(go.Picture, "../samples/images/55x55.png",
+        { width: 55, height: 55 }
+       )
+    )
+  );
+
+  // Using Panel.isClipping and also having a surrounding panel
+  diagram.add(
+    $(go.Node, "Spot",
+      { scale: 2 },
+      $(go.Shape, "Ellipse", { width: 65, height: 65, strokeWidth: 0, fill: 'red' } ),
+      $(go.Panel, "Spot",
+        { isClipping: true  },
+        $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+        $(go.Picture, "../samples/images/55x55.png",
+          { width: 55, height: 55 }
+         )
+      )
+    )
+  );
+</pre>
+<script>goCode("clipPictures", 500, 200)</script>
+
+
+<h2 id="CrossOriginPictures">Cross Origin Pictures</h2>
 
 <p>Since Pictures are backed by HTMLImageElements, they must abide by the same Cross-origin (CORS) rules that apply to Images. If you are using images that apply to CORS rules, you may need to set the <a>Picture.sourceCrossOrigin</a> property to a function that returns an appropriate value. If <code>sourceCrossOrigin</code> is supplied, the value returned by the function is used as the value of any constructed  <code>image.crossOrigin</code>. Example:
 
@@ -162,7 +237,7 @@ In this case what must be clipped is at the sides of the image.
 
 <p>If you are using <a>Diagram.makeImage</a>, <a>Diagram.makeImageData</a>, or <a>Diagram.makeSvg</a>, and seeing blank or missing images, CORS-related issues are the first thing to investigate.
 
-<h3>Using SVG as a Picture source</h3>
+<h2 id="UsingSVGAsPictureSource">Using SVG as a Picture source</h2>
 
 <p>Almost all browsers accept SVG files as a Picture source, but in many browsers you <strong>must</strong>:</p>
 <ul>

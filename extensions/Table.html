@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Table Layout</title>
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script src="TableLayout.js"></script>
 
 <script id="code">
@@ -213,8 +213,11 @@
             // column allow themselves to be resized automatically, in case the row height or column width
             // had been set manually by the LaneResizingTool
             var anynew = e.diagram.selection.any(function(p) { return p.containingGroup !== group; });
-            var ok = group.addMembers(e.diagram.selection, true);
-            if (ok) {
+            // Don't allow headers/siders to be dropped
+            var anyHeadersSiders = e.diagram.selection.any(function(p) {
+              return p.category === "Column Header" || p.category === "Row Sider";
+            });
+            if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true)) {
               if (anynew) {
                 e.diagram.layout.getRowDefinition(group.row).height = NaN;
                 e.diagram.layout.getColumnDefinition(group.column).width = NaN;
@@ -226,7 +229,7 @@
         },
         new go.Binding("row"),
         new go.Binding("column", "col"),
-        // the group is normally unseen -- it is completely transparent except when given a color or when highlighted 
+        // the group is normally unseen -- it is completely transparent except when given a color or when highlighted
         $(go.Shape,
           {
             fill: "transparent", stroke: "transparent",

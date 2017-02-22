@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Swim Lanes</title>
 <meta name="description" content="Horizontal swim lanes and pools with collapsible lanes and limited dragging." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<script src="go.js"></script>
-<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-<script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   // These parameters need to be set before defining the templates.
   var MINLENGTH = 200;  // this controls the minimum length of any swimlane
@@ -346,7 +346,10 @@
             fill: "lightblue", stroke: "dodgerblue",
             cursor: "col-resize"
           },
-          new go.Binding("visible", "", function(ad) { return ad.adornedPart.isSubGraphExpanded; }).ofObject()),
+          new go.Binding("visible", "", function(ad) {
+            if (ad.adornedPart === null) return false;
+            return ad.adornedPart.isSubGraphExpanded;
+          }).ofObject()),
         $(go.Shape,  // for changing the breadth of a lane
           {
             alignment: go.Spot.Bottom,
@@ -354,7 +357,10 @@
             fill: "lightblue", stroke: "dodgerblue",
             cursor: "row-resize"
           },
-          new go.Binding("visible", "", function(ad) { return ad.adornedPart.isSubGraphExpanded; }).ofObject())
+          new go.Binding("visible", "", function(ad) {
+            if (ad.adornedPart === null) return false;
+            return ad.adornedPart.isSubGraphExpanded;
+          }).ofObject())
       );
 
     myDiagram.groupTemplateMap.add("Pool",
@@ -449,8 +455,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <h3>GoJS Swim Lanes</h3>
-  <div id="myDiagramDiv" style="border: solid 1px blue; width:100%; height:700px;"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:700px;"></div>
   <p>
     In this design each swimlane is implemented by a <a>Group</a>, and all lanes are inside a "Pool" Group.
     Each lane Group has its own <a>Group.layout</a>, which in this case is a <a>LayeredDigraphLayout</a>.

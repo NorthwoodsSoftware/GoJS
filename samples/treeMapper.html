@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Tree Mapper</title>
   <meta name="description" content="A tree mapper diagram to show and edit the relationships between items in two different trees." />
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
-  <script src="go.js"></script>
-  <link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css" />  <!-- you don't need to use this -->
-  <script src="goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../release/go.js"></script>
+    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function TreeNode() {
       go.Node.call(this);
+      this.treeExpandedChanged = function(node) {
+        if (node.containingGroup !== null) {
+          node.containingGroup.findExternalLinksConnected().each(function(l) { l.invalidateRoute(); });
+        }
+      };
     }
     go.Diagram.inherit(TreeNode, go.Node);
 
@@ -23,7 +28,25 @@
       }
       return n;
     };
+    // end TreeNode
 
+    function MappingLink() {
+      go.Link.call(this);
+      this.isTreeLink = false;
+      this.isLayoutPositioned = false;
+    }
+    go.Diagram.inherit(MappingLink, go.Link);
+
+    MappingLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
+      var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
+                          port.getDocumentPoint(go.Spot.BottomRight));
+      var group = node.containingGroup;
+      var b = (group !== null) ? group.actualBounds : node.actualBounds;
+      var op = othernode.getDocumentPoint(go.Spot.Center);
+      var x = (op.x > r.centerX) ? b.right : b.left;
+      return new go.Point(x, r.centerY);
+    };
+    // end MappingLink
 
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -91,7 +114,7 @@
         );  // end Node
 
       // These are the links connecting tree nodes within each group.
-      
+
       myDiagram.linkTemplate = $(go.Link);  // without lines
 
       myDiagram.linkTemplate =  // with lines
@@ -107,8 +130,8 @@
 
       // These are the blue links connecting a tree node on the left side with one on the right side.
       myDiagram.linkTemplateMap.add("Mapping",
-        $(go.Link,
-          { isTreeLink: false, isLayoutPositioned: false, layerName: "Foreground" },
+        $(MappingLink,
+          { layerName: "Foreground" },
           { fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
           { relinkableFrom: true, relinkableTo: true },
           $(go.Shape, { stroke: "blue", strokeWidth: 2 })
@@ -189,7 +212,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="border: 1px solid blue; width: 700px; height: 350px"></div>
+  <div id="myDiagramDiv" style="border: 1px solid black; width: 700px; height: 350px"></div>
   <p>
     This sample is like the <a href="records.html">Mapping Fields of Records</a> sample,
     but it has a collapsible tree of nodes on each side, rather than a simple list of items.

@@ -37,6 +37,12 @@ PoolLink.prototype.computeOtherPoint = function(othernode, otherport) {
   if (node === othernode) node = this.fromNode;
   if (othernode.category === "privateProcess") {
     op.x = node.getDocumentPoint(go.Spot.MiddleBottom).x;
+  } else {
+    if ((node === this.fromNode) ^ (node.actualBounds.centerY < othernode.actualBounds.centerY)) {
+      op.x -= 1;
+    } else {
+      op.x += 1;
+    }
   }
   return op;
 };

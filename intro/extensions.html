@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Extending GoJS -- Northwoods Software</title>
   <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
-    <script src="go.js"></script>
+  <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
 <div id="content">
 
-<h2>Extending GoJS</h2>
+<h1>Extending GoJS</h1>
 <p>
   <b>GoJS</b> can be extended in a variety of ways.
   The most common way to change the standard behavior is to set properties on the <a>GraphObject</a>, <a>Diagram</a>, <a>CommandHandler</a>, <a>Tool</a>, or <a>Layout</a>.
@@ -30,14 +31,14 @@
   In addition to our samples, <b>GoJS</b> provides an <strong><a href="../extensions/">extensions gallery</a></strong>, showcasing the creation of custom tools and layouts.
 </p>
 
-<h3>Command Handler</h3>
+<h2 id="CommandHandler">Command Handler</h2>
 <p>
   Overriding the <a>CommandHandler</a> allows you to alter default functionality and create your own key bindings.
   See the <a href="commands.html">intro page on Commands</a> for more.
   However, the techniques shown below for overriding methods on Tools and Layouts also applies to the CommandHandler.
 </p>
 
-<h3>Tools and Layouts</h3>
+<h2 id="ToolsAndLayouts">Tools and Layouts</h2>
 <p>
   <b>GoJS</b> operates on nodes and links using many tools and layouts, all of which are subclasses of the <a>Tool</a> and <a>Layout</a> classes.
   See the <a href="tools.html">intro page on Tools</a> for more about Tools, and the <a href="layouts.html">intro page on Layouts</a> for more about Layouts.
@@ -62,7 +63,7 @@
   More custom layout examples are available in the <a href="../extensions/">extensions gallery</a>.
 </p>
 
-<h3>Overriding a Method Without Defining a Subclass</h3>
+<h2 id="OverridingMethodWithoutDefiningSubclass">Overriding a Method Without Defining a Subclass</h2>
 <p>
   Often we can avoid subclassing a Tool in its entirety and merely override a single method.
   This is common when we want to make a small change to the behavior of a method.
@@ -153,7 +154,7 @@
 <script>goCode("tool", 300, 130)</script>
 
 
-<h3>Overriding Methods by Subclassing a Layout</h3>
+<h2 id="OverridingMethodsBySubclassingLayout">Overriding Methods by Subclassing a Layout</h2>
 <p>
   Layouts can be subclassed to create custom Layouts that inherit the properties and methods of an existing layout.
   Subclassing in <b>GoJS</b> requires a few key steps:
@@ -187,31 +188,31 @@
 
 <p>
   Layouts commonly need additional properties that act as layout options.
-  To add a "spacing" property to <code>CascadeLayout</code>, we will use the convention that an underscore member is private, and will set a default value in the constructor:
+  To add a "offset" property to <code>CascadeLayout</code>, we will use the convention that an underscore member is private, and will set a default value in the constructor:
 </p>
 
 <pre data-language="javascript">
   function CascadeLayout() {
     go.Layout.call(this);
-    this._spacing = new go.Size(12, 12);
+    this._offset = new go.Size(12, 12);
   }
 </pre>
 
 <p>
   Then, we use <code>Object.defineProperty</code> to make a "public" getter and setter.
   Getters and setters allow us to do type checking and have side effects.
-  This setter makes sure the spacing value is a <code>go.Size</code> object and invalidates the layout only if the value has changed.
+  This setter makes sure the offset value is a <code>go.Size</code> object and invalidates the layout only if the value has changed.
 </p>
 
 <pre data-language="javascript">
-  Object.defineProperty(CascadeLayout.prototype, "spacing", {
-    get: function() { return this._spacing; },
+  Object.defineProperty(CascadeLayout.prototype, "offset", {
+    get: function() { return this._offset; },
     set: function(val) {
       if (!(val instanceof go.Size)) {
-        throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+        throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
       }
-      if (!this._spacing.equals(val)) {
-        this._spacing = val;
+      if (!this._offset.equals(val)) {
+        this._offset = val;
         this.invalidateLayout();
       }
     }
@@ -230,22 +231,22 @@
   * @constructor
   * @extends Layout
   * @class
-  * This layout arranges nodes in a cascade specified by the spacing property
+  * This layout arranges nodes in a cascade specified by the offset property
   */
   function CascadeLayout() {
     go.Layout.call(this);
-    this._spacing = new go.Size(12, 12);
+    this._offset = new go.Size(12, 12);
   }
   go.Diagram.inherit(CascadeLayout, go.Layout);
 
-  Object.defineProperty(CascadeLayout.prototype, "spacing", {
-    get: function() { return this._spacing; },
+  Object.defineProperty(CascadeLayout.prototype, "offset", {
+    get: function() { return this._offset; },
     set: function(val) {
       if (!(val instanceof go.Size)) {
-        throw new Error("new value for CascadeLayout.spacing must be a Size, not: " + val);
+        throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
       }
-      if (!this._spacing.equals(val)) {
-        this._spacing = val;
+      if (!this._offset.equals(val)) {
+        this._offset = val;
         this.invalidateLayout();
       }
     }
@@ -257,24 +258,21 @@
   * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
   */
   CascadeLayout.prototype.doLayout = function(coll) {
-    if (coll === this.diagram) {
-      coll = this.diagram.nodes;
-    } else if (coll === this.group) {
-      coll = this.group.memberParts;
-    }
+    // get the Nodes and Links to be laid out
+    var parts = this.collectParts(coll);
 
     // Start the layout at the arrangement origin, a property inherited from Layout
     var x = this.arrangementOrigin.x;
     var y = this.arrangementOrigin.y;
-    var spacing = this.spacing;
+    var offset = this.offset;
 
-    var it = coll.iterator;
+    var it = parts.iterator;
     while (it.next()) {
       var node = it.value;
-      if (!(node instanceof go.Node)) continue;
+      if (!(node instanceof go.Node)) continue;  // ignore Links
       node.move(new go.Point(x, y));
-      x += spacing.width;
-      y += spacing.height;
+      x += offset.width;
+      y += offset.height;
     }
   }
   // end of CascadeLayout

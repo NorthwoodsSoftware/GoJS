@@ -16,8 +16,21 @@
 function BalloonLink() {
   go.Link.call(this);
   this.layerName = "Background";
+  this.base = 10;
 }
 go.Diagram.inherit(BalloonLink, go.Link);
+
+/*
+* The width of the base of the triangle at the center point of the Link.fromNode.
+* The default value is 10.
+* @name BalloonLink#base
+* @function.
+* @return {number}
+*/
+Object.defineProperty(BalloonLink.prototype, "base", {
+  get: function() { return this._base; },
+  set: function(value) { this._base = value; }
+});
 
 /**
 * Produce a Geometry from the Link's route that draws a "balloon" shape around the Link.fromNode
@@ -39,10 +52,9 @@ BalloonLink.prototype.makeGeometry = function() {
   var pos = this.routeBounds;
 
   // compute the intersection points for the triangular arrow
-  var base = 10;
   var ang = pn.directionPoint(p0);
-  var L = new go.Point(base, 0).rotate(ang - 90).add(p0);
-  var R = new go.Point(base, 0).rotate(ang + 90).add(p0);
+  var L = new go.Point(this.base, 0).rotate(ang - 90).add(p0);
+  var R = new go.Point(this.base, 0).rotate(ang + 90).add(p0);
   this.getLinkPointFromPoint(this.fromNode, this.fromNode, L, pn, true, L);
   this.getLinkPointFromPoint(this.fromNode, this.fromNode, R, pn, true, R);
 
