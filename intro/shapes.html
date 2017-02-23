@@ -21,6 +21,10 @@ You can control what kind of shape is drawn and how it is stroked and filled.
 Shapes, like <a>TextBlock</a>s and <a>Picture</a>s, are "atomic" objects -- they cannot contain any other objects.
 So a Shape will never draw some text or an image.
 </p>
+<p>
+In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
+Once you learn about models and data binding you will generally not create parts (nodes or links) programmatically.
+</p>
 
 <h2 id="Figures">Figures</h2>
 <p>
@@ -130,13 +134,18 @@ Clicking in the last shape will only result in a click on the diagram background
 <p>
 Every <a>Shape</a> gets its "shape" from the <a>Geometry</a> that it uses.
 A Geometry is just a saved description of how to draw some lines given a set of points.
-Setting <a>Shape.figure</a> uses a named predefined geometry.
+Setting <a>Shape.figure</a> uses a named predefined geometry that can be parameterized.
+In general it is most efficient to give a Shape a Geometry rather than giving it a figure.
 </p>
 <p>
 If you want something different from all of the predefined figures in <b>GoJS</b>,
 you can construct your own Geometry and set <a>Shape.geometry</a>.
 One way of building your own <a>Geometry</a> is by building <a>PathFigure</a>s
-consisting of <a>PathSegment</a>s.  But an easier way to create geometries is by
+consisting of <a>PathSegment</a>s.
+This is often necessary when building a geometry whose points are computed based on some data.
+</p>
+<p>
+But an easier way to create constant geometries is by
 calling <a>Geometry.parse</a> to read a string that has a geometry-defining path expression,
 or to set <a>Shape.geometryString</a> to such a string.
 These expressions have commands for moving an imaginary "pen".
@@ -147,8 +156,8 @@ This example creates a Geometry that looks like the letter "W"
 and uses it in several Shape objects with different stroke characteristics.
 Geometry objects may be shared by multiple Shapes.
 Note that there may be no need to specify the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a>,
-because the Geometry defines its own sizes.
-If the size is set or if is imposed by the containing Panel, the effective geometry is determined by the <a>Shape.geometryStretch</a> property.
+because the Geometry defines its own size.
+If the size is set or if it is imposed by the containing Panel, the effective geometry is determined by the <a>Shape.geometryStretch</a> property.
 Depending on the value of the geometryStretch property, this may result in extra empty space or the clipping of the shape.
 </p>
 <pre data-language="javascript" id="geometries">
@@ -213,25 +222,29 @@ The <a>GraphObject.areaBackground</a> is drawn in the containing panel's coordin
 so it is not affected by the object's scale or angle.
 </p>
 <p>
-The following shapes each use three separate linear gradient brushes, one for each of the three properties.
+The following two shapes each use three separate linear gradient brushes, one for each of the three properties.
 Note the unrotated shape on the left.  Because its <a>GraphObject.background</a> brush is opaque,
 you cannot see the <a>GraphObject.areaBackground</a> brush that fills the same area behind it.
 </p>
 <pre data-language="javascript" id="backgrounds">
+  var bluered = $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" });
+  var yellowgreen = $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" });
+  var grays = $(go.Brush, "Linear", { 0.0: "black", 1.0: "lightgray" });
+
   diagram.add(
     $(go.Part, "Table",
       $(go.Shape, { row: 0, column: 0,
                     figure: "Club", width: 40, height: 40, angle: 0, scale: 1.5,
-                    fill: $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" }),
-                    background: $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" }),
-                    areaBackground: $(go.Brush, "Linear", { 0.0: "gray", 1.0: "lightgray" })
+                    fill: bluered,
+                    background: yellowgreen,
+                    areaBackground: grays
                   }),
       $(go.Shape, { row: 0, column: 1, width: 10, fill: null, stroke: null }),
       $(go.Shape, { row: 0, column: 2,
                     figure: "Club", width: 40, height: 40, angle: 45, scale: 1.5,
-                    fill: $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" }),
-                    background: $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" }),
-                    areaBackground: $(go.Brush, "Linear", { 0.0: "black", 1.0: "lightgray" })
+                    fill: bluered,
+                    background: yellowgreen,
+                    areaBackground: grays
                   })
     ));
 </pre>
@@ -249,8 +262,8 @@ The static function <a>Shape.defineFigureGenerator</a> can be used to define new
 The second argument is a function that is called with the <a>Shape</a> and the expected width and height
 in order to generate and return a <a>Geometry</a>.
 This permits parameterization of the geometry based on properties of the Shape and the expected size.
-In particular, the <a>Shape.parameter1</a> and <a>Shape.parameter2</a> properties can be considered
-while producing the Geometry.
+In particular, the <a>Shape.parameter1</a> and <a>Shape.parameter2</a> properties can be considered,
+in addition to the width and height, while producing the Geometry.
 </p>
 <pre data-language="javascript" id="defineFigure">
   go.Shape.defineFigureGenerator("RoundedTopRectangle", function(shape, w, h) {

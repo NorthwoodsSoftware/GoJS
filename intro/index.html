@@ -81,7 +81,7 @@
         Parts that are in the box when the mouse-up occurs are selected.
         The Shift and Control modifiers work then as well.</li>
     <li>Ctrl-A selects all parts in the diagram.</li>
-    <li>Move one or more parts by selecting them and dragging.</li>
+    <li>Move one or more nodes by selecting them and dragging.</li>
     <li>Copying selected parts works with either copy/paste (Ctrl-C/Ctrl-V) or with Ctrl-mouse-drag.</li>
     <li>Delete selected parts with the Delete key.</li>
     <li>If scrollbars are visible or if the whole collection of parts is smaller than the viewable area of the diagram (the "viewport"),
@@ -123,6 +123,7 @@
   Most parts are data-bound to your application data.
   The diagram automatically creates a <a>Node</a> or a <a>Group</a> for each data item in the model's <a>Model.nodeDataArray</a>
   and a <a>Link</a> for each data item in the model's <a>GraphLinksModel.linkDataArray</a>.
+  You can add whatever properties you need to each data object, but there are just a few properties that each kind of model expects.
   </p>
 
   <p>
@@ -130,6 +131,7 @@
   Each template consists of <a>Panel</a>s of <a>GraphObject</a>s such as <a>TextBlock</a>s or <a>Shape</a>s.
   There are default templates for all parts, but almost all applications will specify custom templates
   in order to achieve the desired appearance and behavior.
+  Data bindings of <a>GraphObject</a> properties to model data properties make each Node or Link unique for the data.
   </p>
 
   <p>
@@ -156,8 +158,8 @@
   </p>
 
   <p>
-  The <a>Overview</a> control allows the user to see the whole model and to control what part of it that the diagram displays.
-  The <a>Palette</a> control holds parts that the user may drag-and-drop into a diagram.
+  The <a>Overview</a> class allows the user to see the whole model and to control what part of it that the diagram displays.
+  The <a>Palette</a> class holds parts that the user may drag-and-drop into a diagram.
   </p>
 
   <p>
@@ -223,13 +225,13 @@
          In this case we also add a border to help see the edges. --&gt;
     &lt;div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"&gt;&lt;/div&gt;
   </pre>
-  <div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"></div>
 
   <p>
     Then you can create the <a>Diagram</a> in JavaScript with a reference to that Div element.
     Build the diagram by constructing plain JavaScript objects and adding them to the diagram's model.
     Note that all references in JavaScript code to <b>GoJS</b> types such as <a>Diagram</a> are prefixed with "<code>go.</code>".
   </p>
+
   <pre>
   &lt;!-- Create the Diagram in the DIV element using JavaScript. --&gt;
   &lt;!-- The "go" object is the "namespace" that holds all of the GoJS types. --&gt;
@@ -238,18 +240,21 @@
     diagram.model = new go.GraphLinksModel(
       [{ key: "Hello" },   // two node data, in an Array
        { key: "World!" }],
-      [{ from: "Hello", to: "World!"}]  // one link, in an Array
+      [{ from: "Hello", to: "World!"}]  // one link data, in an Array
     );
   &lt;/script&gt;
   </pre>
+
+  <div id="myDiagramDiv" style="border: solid 1px blue; width:400px; height:150px"></div>
+
   <!-- Create the Diagram using JavaScript. -->
   <!-- The "go" object is the "namespace" that holds all of the GoJS types. -->
   <script>
     var diagram = new go.Diagram("myDiagramDiv");
     diagram.model = new go.GraphLinksModel(
-      [{ key: "Hello" },
+      [{ key: "Hello" },   // two node data, in an Array
        { key: "World!" }],
-      [{ from: "Hello", to: "World!"}]
+      [{ from: "Hello", to: "World!" }]  // one link data, in an Array
     );
   </script>
 

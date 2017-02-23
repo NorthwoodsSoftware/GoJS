@@ -32,9 +32,10 @@
     var defaultZoom = 6;
     var mapOrigin = [50.02185841773444, 0.15380859375];
     myLeafletMap = L.map("map", { }).setView(mapOrigin, defaultZoom);
-    L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw", {
+    L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
       maxZoom: 18,
-      id: "mapbox.streets"
+      id: "mapbox.streets",
+      accessToken: "pk.eyJ1IjoiZ29qcyIsImEiOiJjaXppcnNkbDgwMzQ3MnFsNDFnY2phb2QwIn0.7AuVKrWdxQnJxa_W7qC3-w"
     }).addTo(myLeafletMap);
 
     myLeafletMap.on("move", function(e) {
@@ -216,22 +217,27 @@
 <body onload="init()">
 
 <div id="sample">
- <div id="map" class="mapDiagram">
-   <div id="myDiagramDiv" class="mapDiagram"></div>
- </div>
- <p>
-   This sample integrates GoJS as a layer above the <a href="http://leafletjs.com/">Leaflet mapping library</a>.
-   This demonstrates how to use GoJS within a GIS application by displaying a Diagram of nodes and links atop the map, using latitude and longitude for their coordinates.
- </p>
- <p>
-   You can pan and zoom with Leaflet, and select and drag with GoJS.
-   The GoJS div is on top of the Leaflet map, but this sample selectively bubbles events to leaflet by using a custom Tool.
-   Dragged nodes will update their latitude and longitude data in the <a>Diagram.model</a>.
- </p>
- <p>
-   This diagram displays a few train stations and routes in France, Belgium, and the UK.
-   The data is only meant as an example of using GoJS and is not meant to be accurate.
- </p>
+  <div id="map" class="mapDiagram">
+    <div id="myDiagramDiv" class="mapDiagram"></div>
+  </div>
+  <p>
+    This sample integrates GoJS as a layer above the <a href="http://leafletjs.com/">Leaflet mapping library</a>.
+    This demonstrates how to use GoJS within a GIS application by displaying a Diagram of nodes and links atop the map,
+    using latitude and longitude for their coordinates.
+  </p>
+  <p>
+    You can pan and zoom with Leaflet, and select and drag with GoJS.
+    The GoJS div is on top of the Leaflet map, but this sample selectively bubbles events to leaflet by using a custom Tool.
+    Dragged nodes will update their latitude and longitude data in the <a>Diagram.model</a>.
+  </p>
+  <p>
+    This diagram displays a few train stations and routes in France, Belgium, and the UK.
+    The data is only meant as an example of using GoJS and is not meant to be accurate.
+  </p>
+  <p>
+    Note that the map is fetched through the <a href="http://mapbox.com/">Mapbox</a> API.
+    Access tokens can expire, and you'll need to get your own token.
+  </p>
 </div>
 
 </body>

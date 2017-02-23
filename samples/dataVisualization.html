@@ -374,20 +374,26 @@ Lets also add a border to help see the edges.
   // This function is called to update the tooltip information
   // depending on the bound data of the Node that is closest to the pointer.
   function updateInfoBox(mousePt, data) {
-    var x =
-    "<div id='infoBox'>" +
-    "<div>" + data.species + "</div>" +
-    "<div class='infoTitle'>Sepal Length</div>" +
-    "<div class='infoValues'>" + data.sepalLength + "</div>" +
-    "<div class='infoTitle'>Sepal Width</div>" +
-    "<div class='infoValues'>" + data.sepalWidth + "</div>" +
-    "<div class='infoTitle'>Petal Length</div>" +
-    "<div class='infoValues'>" + data.petalLength + "</div>" +
-    "<div class='infoTitle'>Petal Width</div>" +
-    "<div class='infoValues'>" + data.petalWidth + "</div></div>"
-
     var box = document.getElementById("infoBoxHolder");
-    box.innerHTML = x;
+    box.innerHTML = "";
+    var infobox = document.createElement("div");
+    infobox.id = "infoBox";
+    box.appendChild(infobox);
+    for (var i = 0; i < 9; i++) {
+      var child = document.createElement("div");
+      switch (i) {
+        case 0: child.textContent = data.species; break;
+        case 1: child.className = "infoTitle"; child.textContent = "Sepal Length"; break;
+        case 2: child.className = "infoValues"; child.textContent = data.sepalLength; break;
+        case 3: child.className = "infoTitle"; child.textContent = "Sepal Width"; break;
+        case 4: child.className = "infoValues"; child.textContent = data.sepalWidth; break;
+        case 5: child.className = "infoTitle"; child.textContent = "Petal Length"; break;
+        case 6: child.className = "infoValues"; child.textContent = data.petalLength; break;
+        case 7: child.className = "infoTitle"; child.textContent = "Petal Width"; break;
+        case 8: child.className = "infoValues"; child.textContent = data.petalWidth; break;
+      }
+      infobox.appendChild(child);
+    }
     box.style.left = mousePt.x + 30 + "px";
     box.style.top = mousePt.y + 20 + "px";
   }

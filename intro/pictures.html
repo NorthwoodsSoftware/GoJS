@@ -147,23 +147,27 @@ In this case what must be clipped is at the sides of the image.
     ));
 </pre>
 <script>goCode("stretchedPictures", 600, 120)</script>
+<p>
+  When images are clipped you can control what part of the image is drawn by using the <a>Picture.imageAlignment</a> property.
+</p>
 
 <h2 id="Clipping">Clipping</h2>
 
 <p>
-  If you have a Picture that must be clipped to a geometry, such as to produce a circlular Picture, there are two options.
+  If you have a Picture that must be clipped to a geometry, such as to produce a circular image, there are two options.
   The first is to use a "frame" geometry to hide part of the image.
   Typically this frame is the same color as the Diagram background or the background of the Node.
-  This method does not change the area of the Picture, does not allow for true transparency and clicking anywhere in the bounds will always pick the picture.
-
+  This method does not change the area of the Picture, does not allow for true transparency, and clicking anywhere in the bounds will always pick the picture.
+</p>
 <p>
-  A second method uses <a>Panel.isClipping</a>. This property on a Spot panel allows the filled area of the main Shape to serve as a clipping region instead of a drawn shape.
-  This method does not change the area of the Picture, but does allow for transparency and affect object picking so that only the resultant clipped area is pickable.
-
-  <p>
+  A second method uses <a>Panel.isClipping</a>.
+  This property on a "Spot" Panel allows the filled area of the main Shape to serve as a clipping region instead of a drawn shape.
+  This method does not change the area of the Picture, but does allow for transparency
+  It affects object picking so that only the resultant drawn area is pickable; areas of the image that are not drawn cannot be "hit".
+</p>
+<p>
   Examples of both follow:
-
-
+</p>
 <pre data-language="javascript" id="clipPictures">
 
   diagram.layout = $(go.GridLayout);
@@ -172,7 +176,7 @@ In this case what must be clipped is at the sides of the image.
   // Using a black "frame" geometry to hide part of the image.
   // Typically this frame is the same color as the Diagram background or the background of the Node.
   diagram.add(
-    $(go.Node, "Spot",
+    $(go.Part, "Spot",
       { scale: 2 },
       $(go.Picture, "../samples/images/55x55.png",
         {
@@ -195,9 +199,9 @@ In this case what must be clipped is at the sides of the image.
 
   // Using Panel.isClipping
   diagram.add(
-    $(go.Node, "Spot",
+    $(go.Part, "Spot",
       { isClipping: true, scale: 2  },
-      $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+      $(go.Shape, "Circle", { width: 55, strokeWidth: 0 } ),
       $(go.Picture, "../samples/images/55x55.png",
         { width: 55, height: 55 }
        )
@@ -206,12 +210,12 @@ In this case what must be clipped is at the sides of the image.
 
   // Using Panel.isClipping and also having a surrounding panel
   diagram.add(
-    $(go.Node, "Spot",
+    $(go.Part, "Spot",
       { scale: 2 },
-      $(go.Shape, "Ellipse", { width: 65, height: 65, strokeWidth: 0, fill: 'red' } ),
+      $(go.Shape, "Circle", { width: 65, strokeWidth: 0, fill: 'red' } ),
       $(go.Panel, "Spot",
         { isClipping: true  },
-        $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+        $(go.Shape, "Circle", { width: 55, strokeWidth: 0 } ),
         $(go.Picture, "../samples/images/55x55.png",
           { width: 55, height: 55 }
          )
@@ -224,28 +228,38 @@ In this case what must be clipped is at the sides of the image.
 
 <h2 id="CrossOriginPictures">Cross Origin Pictures</h2>
 
-<p>Since Pictures are backed by HTMLImageElements, they must abide by the same Cross-origin (CORS) rules that apply to Images. If you are using images that apply to CORS rules, you may need to set the <a>Picture.sourceCrossOrigin</a> property to a function that returns an appropriate value. If <code>sourceCrossOrigin</code> is supplied, the value returned by the function is used as the value of any constructed  <code>image.crossOrigin</code>. Example:
-
+<p>
+  Since Pictures are backed by HTMLImageElements, they must abide by the same Cross-origin (CORS) rules that apply to Images.
+  If you are using images that apply to CORS rules, you may need to set the <a>Picture.sourceCrossOrigin</a> property to a function that returns an appropriate value.
+  If <code>sourceCrossOrigin</code> is supplied, the value returned by the function is used as the value of any constructed  <code>image.crossOrigin</code>.
+  Example:
+</p>
 <pre data-language="javascript">
    $(go.Picture,
      { width: 64, height: 64 },
      { sourceCrossOrigin: function(pict) { return "use-credentials"; } },
      new go.Binding("source", "path"))
 </pre>
-
-<p>Common values to return are "use-credentials" and "anonymous", but other situations may call for other values or conditional values. We suggest researching <a href="http://enable-cors.org/">cross-origin resource sharing</a> to determine what is right for your situation.
-
-<p>If you are using <a>Diagram.makeImage</a>, <a>Diagram.makeImageData</a>, or <a>Diagram.makeSvg</a>, and seeing blank or missing images, CORS-related issues are the first thing to investigate.
-
+<p>
+  Common values to return are "use-credentials" and "anonymous", but other situations may call for other values or conditional values.
+  We suggest researching <a href="http://enable-cors.org/">cross-origin resource sharing</a> to determine what is right for your situation.
+</p>
+<p>
+  If you are using <a>Diagram.makeImage</a>, <a>Diagram.makeImageData</a>, or <a>Diagram.makeSvg</a>,
+  and you are seeing blank or missing images, CORS-related problems are the first thing to investigate.
+</p>
 <h2 id="UsingSVGAsPictureSource">Using SVG as a Picture source</h2>
 
-<p>Almost all browsers accept SVG files as a Picture source, but in many browsers you <strong>must</strong>:</p>
+<p>
+  Almost all browsers accept SVG files as a Picture source, but in many browsers you <strong>must</strong>:
+</p>
 <ul>
   <li>Assign width and height attributes to the SVG element. These values should be integers. (necessary for Firefox)</li>
   <li>Assign the Picture element a desired size, which <strong>must</strong> be the same as its width and height attributes (necessary for Internet Explorer).</li>
 </ul>
-
-<p>This first SVG element has a width and height specified in its SVG element, and also has its desired size set. It should display in most browsers:</p>
+<p>
+  This first SVG element has a width and height specified in its SVG element, and also has its desired size set. It should display in most browsers:
+</p>
 
 <pre>
 &lt;svg xmlns="http://www.w3.org/2000/svg"
@@ -263,7 +277,9 @@ In this case what must be clipped is at the sides of the image.
 </pre>
 <script>goCode("svg1", 300, 300)</script>
 
-<p style="color: red;"><strong>This SVG element does not specify width and height attributes in its SVG element, and as a result some browsers may not render it:</strong></p>
+<p style="color: red;"><strong>
+  This SVG element does not specify width and height attributes in its SVG element, and as a result some browsers may not render it:
+</strong></p>
 
 <pre>
 &lt;svg xmlns="http://www.w3.org/2000/svg"

@@ -21,6 +21,10 @@ Setting the <a>TextBlock.text</a> property is the only way to show a text string
 Because TextBlock inherits from <a>GraphObject</a>, some GraphObject properties will affect text.
 But there are additional text-only options regarding how that text is formatted and drawn.
 </p>
+<p>
+In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
+Once you learn about models and data binding you will generally not create parts (nodes or links) programmatically.
+</p>
 
 <h2 id="FontAndColors">Font and colors</h2>
 <p>
@@ -82,7 +86,7 @@ To better show the actual size of the TextBlocks below, we have given them light
 <h2 id="NaturalSizingOfTextBlocksVariesByBrowser">Natural Sizing of TextBlocks Varies by Browser</h2>
 <p>
 Because different browsers measure canvas text differently,
-TextBlocks are the only objects in <b>GoJS</b> that may have inconsistent natural sizes per browser.
+TextBlocks are the only objects in <b>GoJS</b> that may have inconsistent natural sizes between browsers or different devices.
 For this reason, if you need objects to measure precisely and consistently across all browsers,
 TextBlocks without an explicit size (<a>GraphObject.desiredSize</a>) should not be used to dictate
 the size of any objects (ie, a TextBlock with no explicit size should not be the main element
@@ -151,6 +155,18 @@ which controls where to place the object within the area allocated by the parent
   The <a>TextBlock.verticalAlignment</a> property controls the vertical alignment of the glyphs within the bounds.
   Neither <a>TextBlock.textAlign</a> nor <a>TextBlock.verticalAlignment</a> affect the sizing of the TextBlock.
 </p>
+  <pre data-language="javascript" id="verticalAlignment">
+  diagram.add(
+    $(go.Part, "Horizontal",
+      $(go.TextBlock, { text: "verticalAlignment: Top", verticalAlignment: go.Spot.Top,
+                        width: 170, height: 60, background: "lightgreen", margin: 10 }),
+      $(go.TextBlock, { text: "verticalAlignment: Center", verticalAlignment: go.Spot.Center,
+                        width: 170, height: 60, background: "lightgreen", margin: 10 }),
+      $(go.TextBlock, { text: "verticalAlignment: Bottom", verticalAlignment: go.Spot.Bottom,
+                        width: 170, height: 60, background: "lightgreen", margin: 10 })
+    ));
+</pre>
+<script>  goCode("verticalAlignment", 600, 100)</script>
 
 <h2 id="TextAlignAndMultilineOrWrapping">TextAlign and Multiline or Wrapping</h2>
 <p>

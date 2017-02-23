@@ -411,7 +411,7 @@ but often no such element is present, so it uses the very first element of the p
 Typically the Auto Panel will measure the non-"main" elements,
 determine a width and a height that can enclose all of them,
 and make the "main" element that size or slightly bigger.
-You do not set the <a>GraphObject.desiredSize</a> (or <a>GraphObject.width</a> or <a>GraphObject.height</a>) of the "main" element.
+You do <em>not</em> set the <a>GraphObject.desiredSize</a> (or <a>GraphObject.width</a> or <a>GraphObject.height</a>) of the "main" element.
 </p>
 <p>
 An Auto Panel is the normal way to implement a border around an object.
@@ -508,6 +508,7 @@ Many of the predefined figures have their own default values for spot1 and spot2
 The spot1 and spot2 properties on the main <a>Shape</a> are more general and more flexible than specifying the <a>GraphObject.margin</a> on the content element(s).
 </p>
 
+<h2 id="ConstrainedSizeAutoPanels">Constrained Size Auto Panels</h2>
 <p>
 If you constrain the size of the whole panel, there may be less or more space available to fit all of the "content" elements inside the "main" element.
 In the following example each Part has a total size of 50x50, causing the "content" <a>TextBlock</a>s to be limited in width and height,
@@ -521,21 +522,21 @@ You can see that in the third Part the text is clipped, because there is less av
       { width: 60, height: 60 },  // set the size of the whole panel
       { position: new go.Point(0, 0), background: "lightgray" },
       $(go.Shape, "Rectangle", { fill: "lightgreen" }),
-      $(go.TextBlock, "some text that wraps", { background: "yellow" })
+      $(go.TextBlock, "Some Wrapping Text", { background: "yellow" })
     ));
   diagram.add(
     $(go.Part, "Auto",
       { width: 60, height: 60 },  // set the size of the whole panel
       { position: new go.Point(100, 0), background: "lightgray" },
       $(go.Shape, "RoundedRectangle", { fill: "lightgreen" }),
-      $(go.TextBlock, "some text that wraps", { background: "yellow" })
+      $(go.TextBlock, "Some Wrapping Text", { background: "yellow" })
     ));
   diagram.add(
     $(go.Part, "Auto",
       { width: 60, height: 60 },  // set the size of the whole panel
       { position: new go.Point(200, 0), background: "lightgray" },
       $(go.Shape, "Ellipse", { fill: "lightgreen" }),
-      $(go.TextBlock, "some text that wraps", { background: "yellow" })
+      $(go.TextBlock, "Some Wrapping Text", { background: "yellow" })
     ));
 </pre>
 <script>goCode("autoPanelsConstrained", 600, 100)</script>
@@ -552,7 +553,7 @@ Auto Panels should have two or more elements in them.
 <p>
 Spot <a>Panel</a>s are like Auto Panels in that there is a "main" element and there are "other" elements that are not resized.
 The "other" elements are positioned about the "main" element based on the <a>GraphObject.alignment</a> property that has a <a>Spot</a> value.
-The main feature of Spot Panels is that those elements may extend beyond the bounds of the "main" element.
+The main feature of Spot Panels, unlike Auto Panels, is that those elements may extend beyond the bounds of the "main" element.
 </p>
 <p>
 This is useful for having the main shape be a specific size and positioning smaller elements at particular places relative to the main shape.
@@ -682,11 +683,11 @@ depending on the size and alignment of those other TextBlocks.
 
 <h3 id="ClippingWithSpotPanels">Clipping with Spot Panels</h3>
 <p>
-Spot Panels can set <a>Panel.isClipping</a> to true to use the main Panel element as a clipping area instead of a drawn Shape. If used, the main element must be a Shape and its stroke will not be drawn.
-
+  Spot Panels can set <a>Panel.isClipping</a> to true to use the main Panel element as a clipping area instead of a drawn Shape.
+  If used, the main element must be a Shape and its stroke and fill will not be drawn.
+</p>
 <p>
 Example:
-
 
 <pre data-language="javascript" id="clipPictures">
   diagram.layout = $(go.GridLayout);
@@ -694,9 +695,9 @@ Example:
 
   // Without Panel.isClipping
   diagram.add(
-    $(go.Node, "Spot",
+    $(go.Part, "Spot",
       { scale: 2  },
-      $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+      $(go.Shape, "Circle", { width: 55, height: 55, strokeWidth: 0 } ),
       $(go.Picture, "../samples/images/55x55.png",
         { width: 55, height: 55 }
        )
@@ -705,9 +706,9 @@ Example:
 
   // Using Panel.isClipping
   diagram.add(
-    $(go.Node, "Spot",
+    $(go.Part, "Spot",
       { isClipping: true, scale: 2  },
-      $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+      $(go.Shape, "Circle", { width: 55, height: 55, strokeWidth: 0 } ),
       $(go.Picture, "../samples/images/55x55.png",
         { width: 55, height: 55 }
        )
@@ -716,12 +717,12 @@ Example:
 
   // Using Panel.isClipping and also having a surrounding panel
   diagram.add(
-    $(go.Node, "Spot",
+    $(go.Part, "Spot",
       { scale: 2 },
-      $(go.Shape, "Ellipse", { width: 65, height: 65, strokeWidth: 0, fill: 'red' } ),
+      $(go.Shape, "Circle", { width: 65, height: 65, strokeWidth: 0, fill: 'red' } ),
       $(go.Panel, "Spot",
         { isClipping: true  },
-        $(go.Shape, "Ellipse", { width: 55, height: 55, strokeWidth: 0 } ),
+        $(go.Shape, "Circle", { width: 55, height: 55, strokeWidth: 0 } ),
         $(go.Picture, "../samples/images/55x55.png",
           { width: 55, height: 55 }
          )
