@@ -328,6 +328,106 @@ The simplest brushes are defined by a single solid color. Because they are so si
 </div>
 <script>goCode("diagramPre", 500, 300, go.Diagram, "diagramSpan");</script>
 
+<h2 id="BrushFunctions">Brush Functions</h2>
+<p>
+  There are some functions available for generating different colors or modifying Brush colors:
+</p>
+<ul>
+  <li>
+    <a>Brush.randomColor</a> - returns a random hexadecimal color value
+  <li>
+    <a>Brush.lightenBy</a> and <a>Brush.darkenBy</a> - return lightened or darkened colors/brushes; there are both instance
+    and static versions
+  </li>
+  <li>
+    <a>Brush.lighten</a> and <a>Brush.darken</a> - convenience static functions which return lightened or darkened colors
+  </li>
+</ul>
+<p>
+  In the following example, parts use the lighten and darken functions to get suitable colors for their stroke/fill.
+</p>
+<pre data-language="javascript" id="functions">
+  diagram.layout = $(go.GridLayout);
+  var color1 = "rgb(80, 130, 210)";
+  var color2 = go.Brush.randomColor(192, 224);
+  var gradBrush = $(go.Brush, "Linear", {
+                    0: color1, 1: color2
+                  });
+
+  // static methods
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: color1, stroke: go.Brush.darken(color1)
+        }),
+      $(go.TextBlock, "dark stroke")
+    ));
+
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: color1, stroke: go.Brush.darkenBy(color1, .4)
+        }),
+      $(go.TextBlock, "darker stroke")
+    ));
+
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: go.Brush.lighten(color1), stroke: color1
+        }),
+      $(go.TextBlock, "light fill")
+    ));
+
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: go.Brush.lightenBy(color1, .4), stroke: color1
+        }),
+      $(go.TextBlock, "lighter fill")
+    ));
+
+  // instance methods
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: gradBrush.copy().lightenBy(.2)
+        }),
+      $(go.TextBlock, "lighter")
+    ));
+
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: gradBrush
+        }),
+      $(go.TextBlock, "normal")
+    ));
+
+  diagram.add(
+    $(go.Part, "Auto",
+      $(go.Shape, "Ellipse", 
+        {
+          width: 120, height: 80,
+          fill: gradBrush.copy().darkenBy(.2)
+        }),
+      $(go.TextBlock, "darker")
+    ));
+</pre>
+<script>goCode("functions", 600, 200)</script>
+
 </div>
 </div>
 </body>

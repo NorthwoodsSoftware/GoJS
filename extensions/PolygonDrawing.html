@@ -20,7 +20,7 @@
 
     myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
 
-    myDiagram.nodeTemplate =
+    myDiagram.nodeTemplateMap.add("PolygonDrawing",
       $(go.Node,
         { locationSpot: go.Spot.Center },  // to support rotation about the center
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -40,13 +40,14 @@
           new go.Binding("geometryString", "geo").makeTwoWay(),
           new go.Binding("fill"),
           new go.Binding("stroke"),
-          new go.Binding("strokeWidth")));
+          new go.Binding("strokeWidth"))
+      ));
 
     // create polygon drawing tool for myDiagram, defined in PolygonDrawingTool.js
     var tool = new PolygonDrawingTool();
     // provide the default JavaScript object for a new polygon in the model
     tool.archetypePartData =
-      { fill: "yellow", stroke: "blue", strokeWidth: 3 };
+      { fill: "yellow", stroke: "blue", strokeWidth: 3, category: "PolygonDrawing" };
     tool.isPolygon = true;  // for a polyline drawing tool set this property to false
     // install as first mouse-down-tool
     myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
@@ -145,7 +146,7 @@
   <textarea id="mySavedDiagram" style="width:100%;height:300px">
 { "position": "0 0",
   "model": { "class": "go.GraphLinksModel",
-  "nodeDataArray": [ {"loc":"183 148", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
+  "nodeDataArray": [ {"loc":"183 148", "category": "PolygonDrawing", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
   "linkDataArray": [  ]
 } }
   </textarea>

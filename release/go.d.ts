@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.7.0
+// Type definitions for GoJS v1.7
 // Project: https://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -9662,7 +9662,8 @@ declare namespace go {
     export class EnumValue {  // undocumented
         //Rawr!
     }
+
+    export let licenseKey: string;
 } //END go
 
 export = go;
-
