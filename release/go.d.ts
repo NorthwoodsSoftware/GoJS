@@ -7710,7 +7710,7 @@ declare namespace go {
       /**Gets or sets whether this HTMLInfo is modal. If true, clicking on the diagram after activation will automatically stop the tool associated with this HTMLInfo.*/
       isModal: boolean;
       /**Gets or sets a function that returns the primary value associated with this HTMLInfo, such as the value of a text editor, which would be solicited by the TextEditingTool.*/
-      value: () => any;
+      valueFunction: () => any;
     }
 
     /**
@@ -8500,7 +8500,7 @@ declare namespace go {
         */
         updateAdornments(part: Part): void;
 
-        updateResizeHandles(elt: GraphObject, angle: number);  // undocumented
+        updateResizeHandles(elt: GraphObject, angle: number): void;  // undocumented
     }
 
     /**
