@@ -6,10 +6,70 @@
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
 // This file exposes one instance of HTMLInfo, window.TextEditor
-// see also TextEditor.html
+// See also TextEditor.html
 (function(window) {
   var textarea = document.createElement('textarea');
   textarea.id = "myTextArea";
+
+  textarea.addEventListener('input', function(e) {
+    var tool = TextEditor.tool;
+    if (tool.textBlock === null) return;
+    var tempText = tool.measureTemporaryTextBlock(this.value);
+    var scale = this.textScale;
+    this.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
+    this.style.height = 10 + tempText.measuredBounds.height * scale + "px";
+    this.rows = tempText.lineCount;
+  }, false);
+
+  textarea.addEventListener('keydown', function(e) {
+    var tool = TextEditor.tool;
+    if (tool.textBlock === null) return;
+    var keynum = e.which;
+    if (keynum === 13) { // Enter
+      if (tool.textBlock.isMultiline === false) e.preventDefault();
+      tool.acceptText(go.TextEditingTool.Enter);
+      return;
+    } else if (keynum === 9) { // Tab
+      tool.acceptText(go.TextEditingTool.Tab);
+      e.preventDefault();
+      return;
+    } else if (keynum === 27) { // Esc
+      tool.doCancel();
+      if (tool.diagram !== null) tool.diagram.doFocus();
+    }
+  }, false);
+
+  // handle focus:
+  textarea.addEventListener('focus', function(e) {
+    var tool = TextEditor.tool;
+    if (tool.currentTextEditor === null) return;
+
+    if (tool.state === go.TextEditingTool.StateActive) {
+      tool.state = go.TextEditingTool.StateEditing;
+    }
+
+    if (tool.selectsTextOnActivate) {
+      textarea.select();
+      textarea.setSelectionRange(0, 9999);
+    }
+  }, false);
+
+  // Disallow blur.
+  // If the textEditingTool blurs and the text is not valid,
+  // we do not want focus taken off the element just because a user clicked elsewhere.
+  textarea.addEventListener('blur', function(e) {
+    var tool = TextEditor.tool;
+    if (tool.currentTextEditor === null) return;
+
+    textarea.focus();
+
+    if (tool.selectsTextOnActivate) {
+      textarea.select();
+      textarea.setSelectionRange(0, 9999);
+    }
+  }, false);
+
+
   var TextEditor = new go.HTMLInfo();
 
   TextEditor.valueFunction = function() { return textarea.value; }
@@ -20,64 +80,14 @@
   TextEditor.show = function(textBlock, diagram, tool) {
     if (!(textBlock instanceof go.TextBlock)) return;
 
+    TextEditor.tool = tool;  // remember the TextEditingTool for use by listeners
+
     // This is called during validation, if validation failed:
     if (tool.state === go.TextEditingTool.StateInvalid) {
       textarea.style.border = '3px solid red';
       textarea.focus();
       return;
     }
-
-    textarea.addEventListener('input', function(e) {
-      var tempText = tool.measureTemporaryTextBlock(this.value);
-      var scale = this.textScale;
-      this.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
-      this.style.height = 10 + tempText.measuredBounds.height * scale + "px";
-      this.rows = tempText.lineCount;
-    }, false);
-
-    textarea.addEventListener('keydown', function(e) {
-      var keynum = e.which;
-      if (keynum === 13) { // Enter
-        if (textBlock.isMultiline === false) e.preventDefault();
-        tool.acceptText(go.TextEditingTool.Enter);
-        return;
-      } else if (keynum === 9) { // Tab
-        tool.acceptText(go.TextEditingTool.Tab);
-        e.preventDefault();
-        return;
-      } else if (keynum === 27) { // Esc
-        tool.doCancel();
-        if (tool.diagram !== null) tool.diagram.doFocus();
-      }
-    }, false);
-
-    // handle focus:
-    textarea.addEventListener('focus', function(e) {
-      if (tool.currentTextEditor === null) return;
-
-      if (tool.state === go.TextEditingTool.StateActive) {
-        tool.state = go.TextEditingTool.StateEditing;
-      }
-
-      if (tool.selectsTextOnActivate) {
-        textarea.select();
-        textarea.setSelectionRange(0, 9999);
-      }
-    }, false);
-
-    // Disallow blur.
-    // If the textEditingTool blurs and the text is not valid,
-    // we do not want focus taken off the element just because a user clicked elsewhere.
-    textarea.addEventListener('blur', function(e) {
-      if (tool.currentTextEditor === null) return;
-
-      textarea.focus();
-
-      if (tool.selectsTextOnActivate) {
-        textarea.select();
-        textarea.setSelectionRange(0, 9999);
-      }
-    }, false);
 
     // This part is called during initalization:
 
@@ -131,9 +141,9 @@
     }
   };
 
-
   TextEditor.hide = function(diagram, tool) {
     diagram.div.removeChild(textarea);
+    TextEditor.tool = null;  // forget reference to TextEditingTool
   }
 
   window.TextEditor = TextEditor;

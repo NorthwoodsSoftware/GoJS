@@ -1217,6 +1217,7 @@ declare namespace go {
         reset(): void;  // undocumented
         simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
         simulatedMouseUp(e: Event, other: Diagram, modelpt: Point, curdiag?: Diagram): boolean;  // undocumented
+        computePixelRatio(): number;  // undocumented
     }
 
     /**

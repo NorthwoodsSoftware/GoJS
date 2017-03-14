@@ -1064,8 +1064,16 @@ arr.push([
 arr.push([
   "../extensions/GeometryReshaping",
   "Geometry Reshaping",
-  "A custom Tool that allows reshaping of Geometries.",
+  "A custom Tool that supports interactive reshaping of Geometries.",
   "GeometryReshaping",
+  ["tools", "extensions", "geometries"]
+]);
+
+arr.push([
+  "../extensions/SectorReshaping",
+  "Sector Reshaping",
+  "A custom Tool that supports interactive reshaping of pie-shaped sectors of circles.",
+  "SectorReshaping",
   ["tools", "extensions", "geometries"]
 ]);
 

@@ -342,6 +342,7 @@ var myExtensionMenu = '\
           <li><a href="OrthogonalLinkReshaping.html">Orth. Link Reshaping</a></li>\
           <li><a href="SnapLinkReshaping.html">Snap Link Reshaping</a></li>\
           <li><a href="GeometryReshaping.html">Geometry Reshaping</a></li>\
+          <li><a href="SectorReshaping.html">Sector Reshaping</a></li>\
           <li><a href="FreehandDrawing.html">Freehand Drawing</a></li>\
           <li><a href="PolygonDrawing.html">Polygon Drawing</a></li>\
           <li><a href="PolylineLinking.html">Polyline Linking</a></li>\
