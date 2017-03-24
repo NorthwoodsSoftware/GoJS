@@ -106,20 +106,25 @@ not at the top-left corner of the whole Part.
   function showPoint(loc) {
     var docloc = diagram.transformDocToView(loc);
     var elt = document.getElementById("Message1");
-    elt.textContent = "Node location, document coordinates: " + loc.x.toFixed(2) + " " + loc.y.toFixed(2) +
-                      "  view coordinates: " + docloc.x.toFixed(2) + " " + docloc.y.toFixed(2);
+    elt.textContent = "Selected node location,\ndocument coordinates: " + loc.x.toFixed(2) + " " + loc.y.toFixed(2) +
+                      "\nview coordinates: " + docloc.x.toFixed(2) + " " + docloc.y.toFixed(2);
   }
 
   myDiagram = diagram;  // make accessible to the HTML buttons
 </pre>
 <script>goCode("coordsystems", 300, 150)</script>
+<textarea id="Message1" style="width: 300px; height: 70px">(move mouse over node to see points in document and in view coordinates)</textarea>
 <input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
 <input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
-<span id="Message1">(object location in document and in view coordinates)</span>
 <p>
-Then try zooming in and looking at the locations of those parts in view coordinates.
+Then try scrolling or zooming in and looking at the locations of those parts in view coordinates.
 Zooming in increases the <a>Diagram.scale</a> by a small factor.
 That changes the locations in view coordinates, even though the locations in document coordinates did not change.
+</p>
+<p class="box bg-info">
+  To "move" a node one must change its <a>GraphObject.position</a> or <a>Part.location</a> in document coordinates.
+  To "scroll" a diagram one must change the <a>Diagram.position</a>.
+  Either way will cause a node to appear at a different point in the viewport.
 </p>
 
 <h2 id="DocumentBounds">Document bounds</h2>
@@ -260,39 +265,38 @@ The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all t
 <script>goCode("scrollmodes", 400, 400)</script>
 <p>
   <label><input id="infscroll" type="checkbox" />Enable Infinite Scrolling, setting <a>Diagram.scrollMode</a></label>
-  <pre data-language="javascript"><code>
-    myDiagram.scrollMode = checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
-  </code></pre>
 </p>
+<pre data-language="javascript"><code>
+  myDiagram.scrollMode = checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
+</code></pre>
 
 <p>
   <label><input id="poscomp" type="checkbox" />Enable <a>Diagram.positionComputation</a> function</label>
-  <pre data-language="javascript"><code>
-    function positionfunc(diagram, pos) {
-      var size = diagram.grid.gridCellSize;
-      return new go.Point(
-        Math.round(pos.x / size.width) * size.width,
-        Math.round(pos.y / size.height) * size.height);
-    }
-  </code></pre>
 </p>
+<pre data-language="javascript"><code>
+  function positionfunc(diagram, pos) {
+    var size = diagram.grid.gridCellSize;
+    return new go.Point(
+      Math.round(pos.x / size.width) * size.width,
+      Math.round(pos.y / size.height) * size.height);
+  }
+</code></pre>
 
 <p>
   <label><input id="scalecomp" type="checkbox" />Enable <a>Diagram.scaleComputation</a> function</label>
-  <pre data-language="javascript"><code>
-    function scalefunc(diagram, scale) {
-      var oldscale = diagram.scale;
-      if (scale > oldscale) {
-        return oldscale + 0.25;
-      } else if (scale < oldscale) {
-        return oldscale - 0.25;
-      }
-      return oldscale;
-    }
-  </code></pre>
 </p>
+<pre data-language="javascript"><code>
+  function scalefunc(diagram, scale) {
+    var oldscale = diagram.scale;
+    if (scale > oldscale) {
+      return oldscale + 0.25;
+    } else if (scale < oldscale) {
+      return oldscale - 0.25;
+    }
+    return oldscale;
+  }
+</code></pre>
 <script type="text/javascript">
-
   function positionfunc(diagram, pos) {
     var size = diagram.grid.gridCellSize;
     return new go.Point(

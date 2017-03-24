@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Minimal Image Blob and Download</title>
-<meta name="description" content="Minimal, showing image Blob creation and download with Diagram.makeImageData." />
+<title>Minimal SVG Download</title>
+<meta name="description" content="Minimal, showing SVG rednering and download with Diagram.makeSvg." />
 <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <script src="../release/go.js"></script>
@@ -50,7 +50,7 @@
       { from: "Delta", to: "Alpha" }
     ]);
 
-    document.getElementById("blobButton").addEventListener("click", makeBlob);
+    document.getElementById("svgButton").addEventListener("click", makeSvg);
   }
 
   // When the blob is complete, make an anchor tag for it and use the tag to initiate a download
@@ -60,7 +60,7 @@
   // * Firefox
   function myCallback(blob) {
     var url = window.URL.createObjectURL(blob);
-    var filename = "myBlobFile.png";
+    var filename = "mySVGFile.svg";
 
     var a = document.createElement("a");
     a.style = "display: none";
@@ -81,8 +81,11 @@
     });
   }
 
-  function makeBlob() {
-    var blob = myDiagram.makeImageData( { background: "white", returnType: "blob", callback: myCallback });
+  function makeSvg() {
+    var svg = myDiagram.makeSvg({ scale: 1, background: "white" });
+    var svgstr = new XMLSerializer().serializeToString(svg);
+    var blob = new Blob([svgstr], { type: "image/svg+xml" });
+    myCallback(blob);
   }
 </script>
 </head>
@@ -91,14 +94,10 @@
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        This also adds a border to help see the edges of the viewport. -->
   <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
-  <button id="blobButton">Make Blob and Download</button>
+  <button id="svgButton">Make SVG and Download</button>
   <p>
-    This sample shows how to use <a>Diagram.makeImageData</a> with the <code>returnType: "blob"</code> option
-    and the necessary <code>callback</code> option.
-  </p>
-  <p>
-    Blobs may not be supported or work consistently on all browsers.
-    This code was tested with Chrome, Firefox, IE11 and Edge.
+    This sample shows how to use <a>Diagram.makeSvg</a> function to render all or part of a diagram
+    and to initiate a file download.
   </p>
 </div>
 </body>

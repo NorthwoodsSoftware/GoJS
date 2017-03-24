@@ -9664,7 +9664,7 @@ declare namespace go {
         //Rawr!
     }
 
-    export let licenseKey: string;
+    export var licenseKey: string;
 } //END go
 
 export = go;

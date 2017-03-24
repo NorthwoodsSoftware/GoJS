@@ -3,7 +3,6 @@ that demonstrates how to show a GoJS diagram in a component.
 
 First, assuming you already have npm:
 ```
-$ npm install gojs --save
 $ npm update
 ```
 

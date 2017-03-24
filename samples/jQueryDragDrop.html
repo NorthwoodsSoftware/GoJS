@@ -22,7 +22,7 @@
 
     myDiagram =
       $$(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
-         { initialPosition: new go.Point(0, 0) });
+         { initialPosition: new go.Point(0, 0), "animationManager.isEnabled": false });
 
     myDiagram.nodeTemplate =
       $$(go.Node, "Auto",
@@ -45,8 +45,8 @@
       drop: function(event, ui) {
         var elt = ui.draggable.first();
         var text = elt[0].textContent;
-        var x = ui.offset.left - myDiagram.div.offsetLeft;
-        var y = ui.offset.top - myDiagram.div.offsetTop;
+        var x = ui.offset.left - $(this).offset().left;
+        var y = ui.offset.top - $(this).offset().top;
         var p = new go.Point(x, y);
         var q = myDiagram.transformViewToDoc(p);
         var model = myDiagram.model;

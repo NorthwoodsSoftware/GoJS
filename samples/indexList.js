@@ -1290,8 +1290,16 @@ arr.push([
 
 arr.push([
   "minimalBlob",
-  "Minimal Blob",
-  "Minimal, showing Blob creation and download with Diagram.makeImageData.",
+  "Minimal Image Download",
+  "Minimal, showing image Blob creation with Diagram.makeImageData, and download.",
+  "minimal",
+  []
+]);
+
+arr.push([
+  "minimalSVG",
+  "Minimal SVG Download",
+  "Minimal, showing SVG creation with Diagram.makeSvg, and download.",
   "minimal",
   []
 ]);

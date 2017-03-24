@@ -7,12 +7,14 @@ import * as go from "gojs";
 })
 
 export class AppComponent implements AfterViewInit {
-  name = 'Angular';
+  name = 'GoJS';
 
   @ViewChild('myDiagramDiv')
   element: ElementRef;
 
   ngAfterViewInit() {
+    //(go as any).licenseKey = "...";
+
     const $ = go.GraphObject.make;  // for conciseness in defining templates
 
     const myDiagram: go.Diagram = $(go.Diagram, this.element.nativeElement,
@@ -50,8 +52,6 @@ export class AppComponent implements AfterViewInit {
         { from: "Gamma", to: "Delta" },
         { from: "Delta", to: "Alpha" }
       ]);
-
-    this.name = "GoJS";
   }
 
 }

@@ -416,7 +416,96 @@ The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and b
   ]);
 </pre>
 <script>goCode("ribbondecorations", 500, 150)</script>
-</div>
+
+<h2 id="PositionAndLocation">Position and Location</h2>
+<p>
+Nodes are positioned in document coordinates.
+(For more information, read <a href="viewport.html">Coordinate Systems</a>.)
+The point at which a Node resides, in document coordinates, is normally the top-left corner of the Node's <a>GraphObject.actualBounds</a>.
+If you set the <a>GraphObject.position</a> of a Node, you will be modifying the <code>x</code> and <code>y</code> values of the node's <a>GraphObject.actualBounds</a>.
+</p>
+<p>
+However there are times when it is more natural to think that the "point" of a Node is not at the top-left corner but at some other spot within.
+This is especially true when you want any variably-sized text labels or occasional decorations to be ignored regarding the node's location.
+That is why Nodes also have a "location" which refers to a point inside the Node.
+If you set the <a>Part.location</a> of a Node, you will be lining up the location point of the node to be at that point in document coordinates.
+When you move a Node you are actually changing its <a>Part.location</a>.
+</p>
+<p>
+By default the location of a Node is the same as its position.
+However you can set the <a>Part.locationSpot</a> to cause the location point to be at some spot in the node's actualBounds.
+Furthermore you can set the <a>Part.locationObjectName</a> to cause the location point to be at some spot in some element within the node.
+The position will always be at the top-left corner of the whole node,
+but the location may be some point at some spot in some object within the node.
+</p>
+<pre data-language="javascript" id="positionlocation">
+  diagram.initialContentAlignment = go.Spot.Center;
+  diagram.grid.visible = true;
+
+  diagram.add(
+    $(go.Node, "Vertical",
+      { position: new go.Point(0, 0) },  // set the Node.position
+      $(go.TextBlock, "position", { editable: true }),
+      $(go.Shape, { name: "SHAPE", width: 30, height: 30, fill: "lightgreen" })
+    ));
+
+  diagram.add(
+    $(go.Node, "Vertical",
+      {
+        location: new go.Point(100, 0),  // set the Node.location
+        locationObjectName: "SHAPE"  // the location point is on the element named "SHAPE"
+      },
+      $(go.TextBlock, "location", { editable: true }),
+      $(go.Shape, { name: "SHAPE", width: 30, height: 30, fill: "lightgreen" })
+    ));
+</pre>
+<script>goCode("positionlocation", 500, 200)</script>
+<p>
+In this example both nodes have the same Y-coordinate value of zero.
+Note how in the above example the "position" Node has the top-left corner of the node at the grid point.
+Yet the "location" Node has the top-left corner of the green square at the grid point.
+If you edit the text of each node after double-clicking on the text,
+note how the green square moves relative to the diagram grid for the "position" node,
+but that it does not move for the "location" node.
+</p>
+<p>
+It is common to specify the <a>Part.locationSpot</a> to be <code>go.Spot.Center</code> so that the location point
+is at the center of some element in the node, rather than at the top-left corner of that element.
+</p>
+<pre data-language="javascript" id="positionlocation2">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.grid.visible = true;
+
+diagram.add(
+  $(go.Node, "Vertical",
+    { position: new go.Point(0, 0) },  // set the Node.position
+    $(go.TextBlock, "position", { editable: true }),
+    $(go.Panel, "Auto",
+      $(go.Shape, "Circle", { name: "SHAPE", width: 16, height: 16, fill: "lightgreen" }),
+      $(go.Shape, "Circle", { width: 6, height: 6, strokeWidth: 0 })
+    )
+  ));
+
+diagram.add(
+  $(go.Node, "Vertical",
+    {
+      location: new go.Point(100, 0),  // set the Node.location
+      locationObjectName: "SHAPE",  // the location point is at the center of "SHAPE"
+      locationSpot: go.Spot.Center
+    },
+    $(go.TextBlock, "location", { editable: true }),
+    $(go.Panel, "Auto",
+      $(go.Shape, "Circle", { name: "SHAPE", width: 16, height: 16, fill: "lightgreen" }),
+      $(go.Shape, "Circle", { width: 6, height: 6, strokeWidth: 0 })
+    )
+  ));
+</pre>
+<script>goCode("positionlocation2", 500, 200)</script>
+<p>
+If the position or location of a Node is not <a>Point.isReal</a>, it will not be seen, because GoJS will not know where to draw the node.
+In fact the default value for a node's position or location is <code>NaN, NaN</code> and it is the responsibility of either the <a>Diagram.layout</a>
+or data bindings to assign real point values for each node.
+</p>
 </div>
 </body>
 </html>

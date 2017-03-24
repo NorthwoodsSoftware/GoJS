@@ -39,7 +39,9 @@
     // replace the default Link template in the linkTemplateMap
     myDiagram.linkTemplate =
       $(go.Link,  // the whole link panel
+        // path animation works with these kinds of links too:
         //{ routing: go.Link.AvoidsNodes },
+        //{ curve: go.Link.Bezier },
         $(go.Shape,  // the link shape
           { stroke: "black" }),
         $(go.Shape,  // the arrowhead
@@ -141,7 +143,7 @@
 
   function updateTokens() {
     var oldskips = myDiagram.skipsUndoManager;
-    myDiagram.skipsUndoManager = true;
+    myDiagram.skipsUndoManager = true;  // don't record these changes in the UndoManager!
     var temp = new go.Point();
     myDiagram.parts.each(function(token) {
       var data = token.data;
@@ -156,13 +158,10 @@
       if (to === null) {  // nowhere to go?
         positionTokenAtNode(token, from);  // temporarily stay at the current node
         data.next = chooseDestination(token, from);  // and decide where to go next
-      } else {  // proceed toward the
+      } else {  // proceed toward the "to" port
         var link = from.findLinksTo(to).first();
         if (link !== null) {
-          var pt = link.path.geometry.getPointAlongPath(frac, temp);
-          pt.x += link.routeBounds.x;
-          pt.y += link.routeBounds.y;
-          token.location = pt;
+          token.location = link.path.getDocumentPoint(link.path.geometry.getPointAlongPath(frac, temp));
         } else {  // stay at the current node
           positionTokenAtNode(token, from);
         }
