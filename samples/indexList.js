@@ -466,6 +466,14 @@ arr.push([
 ]);
 
 arr.push([
+  "roundedGroups",
+  "Rounded Groups",
+  "Demonstrates subgraphs that have rounded headers and rounded footers.",
+  "roundedGroups",
+  ["groups", "geometries"]
+]);
+
+arr.push([
   "kanban",
   "Kanban Board",
   "A Kanban board editor, allowing the categorization of editable tasks.",
@@ -1194,9 +1202,17 @@ arr.push([
 arr.push([
   "../extensions/ScrollingTable",
   "Scrolling Table",
-  "Demonstrates the implementation of a custom Table Panel with a scrollbar implemented in GoJS, including two AutoRepeatButtons.",
+  "Demonstrates a custom Table Panel with a scrollbar implemented in GoJS, including two AutoRepeatButtons.",
   "ScrollingTable",
   ["tables", "itemarrays", "buttons", "extensions"]
+]);
+
+arr.push([
+  "twoHalves",
+  "Two Halves",
+  "Demonstrates a Node with a top half and a bottom half, with rounded corners.",
+  "twoHalves",
+  ["geometries"]
 ]);
 
 arr.push([
