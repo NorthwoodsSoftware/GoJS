@@ -296,6 +296,14 @@ arr.push([
 ]);
 
 arr.push([
+  "triStateCheckBoxTree",
+  "Tri-state CheckBox Tree",
+  "Demonstrates a traditional \"Tree View\" in a GoJS diagram, where each item has a checkbox with three states.",
+  "triStateCheckBoxTree",
+  ["treelayout", "buttons"]
+]);
+
+arr.push([
   "treeMapper",
   "Tree Mapper",
   "Displays two trees, allowing the user to dynamically draw or reconnect links mapping one tree node to another.",
