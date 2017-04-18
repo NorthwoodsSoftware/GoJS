@@ -118,6 +118,8 @@ GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
 
   this.showHorizontalMatches(part, this.isGuidelineEnabled, snap);
   this.showVerticalMatches(part, this.isGuidelineEnabled, snap);
+  
+  this.clearGuidelines();
 }
 
 /**
