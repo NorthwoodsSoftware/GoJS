@@ -32,8 +32,6 @@
 
     function MappingLink() {
       go.Link.call(this);
-      this.isTreeLink = false;
-      this.isLayoutPositioned = false;
     }
     go.Diagram.inherit(MappingLink, go.Link);
 
@@ -91,7 +89,9 @@
           new go.Binding("fromLinkable", "group", function(k) { return k === -1; }),
           new go.Binding("toLinkable", "group", function(k) { return k === -2; }),
           $("TreeExpanderButton",  // support expanding/collapsing subtrees
-            { width: 14, height: 14,
+            {
+              width: 14, height: 14,
+              portId: "",
               "ButtonIcon.stroke": "white",
               "ButtonIcon.strokeWidth": 2,
               "ButtonBorder.fill": "goldenrod",
@@ -119,19 +119,21 @@
 
       myDiagram.linkTemplate =  // with lines
         $(go.Link,
-          { selectable: false,
+          {
+            selectable: false,
             routing: go.Link.Orthogonal,
             fromEndSegmentLength: 4,
             toEndSegmentLength: 4,
-            fromSpot: new go.Spot(0.001, 1, 7, 0),
-            toSpot: go.Spot.Left },
+            fromSpot: go.Spot.Bottom,
+            toSpot: go.Spot.Left
+          },
           $(go.Shape,
             { stroke: "lightgray" }));
 
       // These are the blue links connecting a tree node on the left side with one on the right side.
       myDiagram.linkTemplateMap.add("Mapping",
         $(MappingLink,
-          { layerName: "Foreground" },
+          { isTreeLink: false, isLayoutPositioned: false, layerName: "Foreground" },
           { fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
           { relinkableFrom: true, relinkableTo: true },
           $(go.Shape, { stroke: "blue", strokeWidth: 2 })
@@ -141,6 +143,7 @@
         $(go.Group, "Auto",
           new go.Binding("position", "xy", go.Point.parse).makeTwoWay(go.Point.stringify),
           {
+            deletable: false,
             layout:
               $(go.TreeLayout,
                 {
@@ -174,14 +177,15 @@
         { from: 6, to: 1012, category: "Mapping" },
         { from: 4, to: 1006, category: "Mapping" },
         { from: 9, to: 1004, category: "Mapping" },
-        { from: 1, to: 1009, category: "Mapping" }
+        { from: 1, to: 1009, category: "Mapping" },
+        { from: 14, to: 1010, category: "Mapping" }
       ];
 
       // initialize tree on left side
       var root = { key: 0, group: -1 };
       nodeDataArray.push(root);
       for (var i = 0; i < 11; ) {
-        i = makeTree(3, i, 11, nodeDataArray, linkDataArray, root, -1, root.key);
+        i = makeTree(3, i, 17, nodeDataArray, linkDataArray, root, -1, root.key);
       }
 
       // initialize tree on right side

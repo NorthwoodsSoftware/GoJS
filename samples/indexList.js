@@ -1130,7 +1130,15 @@ arr.push([
   "Link Label Dragging",
   "A custom Tool that lets the user drag a label on a Link and that keeps its relative position to the link.",
   "LinkLabelDragging",
-  ["tools", "buttons", "extensions"]
+  ["tools", "extensions"]
+]);
+
+arr.push([
+  "../extensions/LinkLabelOnPathDragging",
+  "Link Label On Path Dragging",
+  "A custom Tool that lets the user drag a label on a Link and that keeps the label along the path of the link.",
+  "LinkLabelOnPathDragging",
+  ["tools", "extensions"]
 ]);
 
 arr.push([
@@ -1138,7 +1146,7 @@ arr.push([
   "Node Label Dragging",
   "A custom Tool that lets the user drag a label in a Spot Panel of a Node.",
   "NodeLabelDragging",
-  ["tools", "buttons", "extensions"]
+  ["tools", "extensions"]
 ]);
 
 arr.push([

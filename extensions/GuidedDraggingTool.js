@@ -93,11 +93,12 @@ GuidedDraggingTool.prototype.doDragOver = function(pt, obj) {
 
   // gets the selected part
   var partItr = (this.copiedParts || this.draggedParts).iterator;
-  partItr.next();
-  var part = partItr.key;
+  if (partItr.next()) {
+    var part = partItr.key;
 
-  this.showHorizontalMatches(part, this.isGuidelineEnabled, false);
-  this.showVerticalMatches(part, this.isGuidelineEnabled, false);
+    this.showHorizontalMatches(part, this.isGuidelineEnabled, false);
+    this.showVerticalMatches(part, this.isGuidelineEnabled, false);
+  }
 }
 
 /**
@@ -109,15 +110,16 @@ GuidedDraggingTool.prototype.doDragOver = function(pt, obj) {
 GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
   // gets the selected (perhaps copied) Part
   var partItr = (this.copiedParts || this.draggedParts).iterator;
-  partItr.next();
-  var part = partItr.key;
+  if (partItr.next()) {
+    var part = partItr.key;
 
-  // snaps only when the mouse is released without shift modifier
-  var e = this.diagram.lastInput;
-  var snap = this.isGuidelineSnapEnabled && !e.shift;
+    // snaps only when the mouse is released without shift modifier
+    var e = this.diagram.lastInput;
+    var snap = this.isGuidelineSnapEnabled && !e.shift;
 
-  this.showHorizontalMatches(part, this.isGuidelineEnabled, snap);
-  this.showVerticalMatches(part, this.isGuidelineEnabled, snap);
+    this.showHorizontalMatches(part, this.isGuidelineEnabled, snap);
+    this.showVerticalMatches(part, this.isGuidelineEnabled, snap);
+  }
 }
 
 /**

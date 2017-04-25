@@ -2,11 +2,12 @@
 * Copyright (C) 1998-2017 by Northwoods Software Corporation
 * All Rights Reserved.
 *
-* WALL RESHAPING TOOL
-* Used to reshape walls via their endpoints
+* FLOOR PLANNER: WALL RESHAPING TOOL
+* Used to reshape walls via their endpoints in a Floorplan
+* Depends on functionality in Floorplan.js
 */
 
-// constructor
+// Constructor
 function WallReshapingTool() {
     go.Tool.call(this);
     this.name = "WallReshaping";
@@ -25,43 +26,66 @@ function WallReshapingTool() {
     this._angle = 0;
     this._length;
     this._isBuilding = false; // only true when a wall is first being constructed, set in WallBuildingTool's doMouseUp function
+
+    this._returnPoint = null; // used if reshape is cancelled; return reshaping wall endpoint to its previous location
+    this._returnData = null; // used if reshape is cancelled; return all windows/doors of a reshaped wall to their old place
 } go.Diagram.inherit(WallReshapingTool, go.Tool);
 
+// Get the archetype for the handle (a Shape)
 Object.defineProperty(WallReshapingTool.prototype, "handleArchetype", {
     get: function () { return this._handleArchetype; }
 });
 
+// Get / set current handle being used to reshape the wall
 Object.defineProperty(WallReshapingTool.prototype, "handle", {
     get: function () { return this._handle; },
     set: function (val) { this._handle = val; }
 });
 
+// Get / set adorned shape (shape of the Wall Group being reshaped)
 Object.defineProperty(WallReshapingTool.prototype, "adornedShape", {
     get: function () { return this._adornedShape; },
     set: function (val) { this._adornedShape = val;}
 });
 
+// Get / set current angle
 Object.defineProperty(WallReshapingTool.prototype, "angle", {
     get: function () { return this._angle; },
     set: function (val) { this._angle = val; }
 });
 
+// Get / set length of the wall being reshaped (used only with SHIFT + drag)
 Object.defineProperty(WallReshapingTool.prototype, "length", {
     get: function () { return this._length; },
     set: function (val) { this._length = val; }
 });
 
+// Get / set the name of the object being reshaped
 Object.defineProperty(WallReshapingTool.prototype, "reshapeObjectName", {
     get: function () { return this._reshapeObjectName; },
     set: function (val) { this._reshapeObjectName = val; }
 });
 
+// Get / set flag telling tool whether it's reshaping a new wall (isBuilding = true) or reshaping an old wall (isBuilding = false)
 Object.defineProperty(WallReshapingTool.prototype, "isBuilding", {
     get: function () { return this._isBuilding; },
     set: function (val) { this._isBuilding = val; }
 });
 
-// places reshape handles on either end of a wall node
+// Get set loc data for wallParts to return to if reshape is cancelled
+Object.defineProperty(WallReshapingTool.prototype, "returnData", {
+    get: function () { return this._returnData; },
+    set: function (val) { this._returnData = val; }
+});
+
+// Get / set the point to return the reshaping wall endpoint to if reshape is cancelled
+Object.defineProperty(WallReshapingTool.prototype, "returnPoint", {
+    get: function () { return this._returnPoint; },
+    set: function (val) { this._returnPoint = val;}
+});
+
+
+// Places reshape handles on either end of a wall node
 WallReshapingTool.prototype.updateAdornments = function (part) {
     if (part === null || part instanceof go.Link) return;
     if (part.isSelected && !this.diagram.isReadOnly) {
@@ -106,7 +130,7 @@ WallReshapingTool.prototype.updateAdornments = function (part) {
     part.removeAdornment(this.name);
 }
 
-// if the user has clicked down at a visible handle on a wall node, then the tool may start
+// If the user has clicked down at a visible handle on a wall node, then the tool may start
 WallReshapingTool.prototype.canStart = function () {
     if (!this.isEnabled) return false;
     var diagram = this.diagram;
@@ -117,7 +141,7 @@ WallReshapingTool.prototype.canStart = function () {
     return (h !== null || this.isBuilding);
 }
 
-// start a new transaction for the wall reshaping
+// Start a new transaction for the wall reshaping
 WallReshapingTool.prototype.doActivate = function () {
     var diagram = this.diagram;
     if (diagram === null) return;
@@ -129,8 +153,22 @@ WallReshapingTool.prototype.doActivate = function () {
         this.handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
         if (this.handle === null) return;
         var shape = this.handle.part.adornedObject;
+        var wall = shape.part;
         if (!shape) return;
         this.adornedShape = shape;
+
+        // store pre-reshape location of wall's reshaping endpoint 
+        this.returnPoint = this.snapPointToGrid(diagram.firstInput.documentPoint);
+
+        // store pre-reshape locations of all wall's members (windows / doors)
+        var wallParts = wall.memberParts;
+        if (wallParts.count != 0) {
+            var locationsMap = new go.Map("string", go.Point);
+            wallParts.iterator.each(function (wallPart) {
+                locationsMap.add(wallPart.data.key, wallPart.location);
+            });
+            this.returnData = locationsMap;
+        }
     }
 
     diagram.isMouseCaptured = true;
@@ -138,7 +176,7 @@ WallReshapingTool.prototype.doActivate = function () {
     this.isActive = true;
 }
 
-// adjust the handle's coordinates, along with the wall's points
+// Adjust the handle's coordinates, along with the wall's points
 WallReshapingTool.prototype.doMouseMove = function () {
     var diagram = this.diagram;
     var tool = this;
@@ -148,13 +186,13 @@ WallReshapingTool.prototype.doMouseMove = function () {
         var mousePt = diagram.lastInput.documentPoint;
         tool.calcAngleAndLengthFromHandle(mousePt); // sets this.angle and this.length (useful for when SHIFT is held)
         var newpt = diagram.lastInput.documentPoint;
-        setSelectionInfo(this.adornedShape.part); // update selection info window
+        if (diagram.floorplanUI) diagram.floorplanUI.setSelectionInfo(this.adornedShape.part, diagram); // update selection info window
         this.reshape(newpt);
     }
-    updateWallAngles();
+    diagram.updateWallAngles();
 }
 
-// does one final reshape, commits the transaction, then stops the tool
+// Does one final reshape, commits the transaction, then stops the tool
 WallReshapingTool.prototype.doMouseUp = function () {
     var diagram = this.diagram;
     if (this.isActive && diagram !== null) {
@@ -165,9 +203,10 @@ WallReshapingTool.prototype.doMouseUp = function () {
     this.stopTool();
 }
 
-// end the wall reshaping transaction
+// End the wall reshaping transaction
 WallReshapingTool.prototype.doDeactivate = function () {
     var diagram = this.diagram;
+    var returnData = this.returnData;
     // if you reshape a wall down to < 1 px, remove it from the diagram
     var wall = this.handle.part.adornedPart;
     var sPt = wall.data.startpoint;
@@ -177,30 +216,44 @@ WallReshapingTool.prototype.doDeactivate = function () {
         diagram.remove(wall); // remove wall
         wall.memberParts.iterator.each(function (member) { diagram.remove(member); }) // remove wall's parts   
         var wallDimensionLinkPointNodes = [];
-        allPointNodes.iterator.each(function (node) { if (node.data.key.includes(wall.data.key)) wallDimensionLinkPointNodes.push(node); });
+        diagram.pointNodes.iterator.each(function (node) { if (node.data.key.includes(wall.data.key)) wallDimensionLinkPointNodes.push(node); });
         diagram.remove(wallDimensionLinkPointNodes[0]);
         diagram.remove(wallDimensionLinkPointNodes[1]);
     }
 
     // remove wall's dimension links if tool cancelled via esc key
-    if (diagram.lastInput.key === "Esc") {
-        var wallDimensionLinkPointNodes = [];
-        allPointNodes.iterator.each(function (node) { if (node.data.key.includes(wall.data.key)) wallDimensionLinkPointNodes.push(node); });
-        diagram.remove(wallDimensionLinkPointNodes[0]);
-        diagram.remove(wallDimensionLinkPointNodes[1]);
+    if (diagram.lastInput.key === "Esc" && !this.isBuilding) {
+        diagram.skipsUndoManager = true;
+        diagram.startTransaction("reset to old data");
+        if (this.handle.name === "sPt") wall.data.startpoint = this.returnPoint;
+        else wall.data.endpoint = this.returnPoint;
+
+        diagram.updateWall(wall);
+
+        if (this.returnData) {
+            this.returnData.iterator.each(function (kvp) {
+                var key = kvp.key;
+                var loc = kvp.value;
+                var wallPart = diagram.findPartForKey(key);
+                wallPart.location = loc;
+                wallPart.rotateObject.angle = wall.rotateObject.angle;
+            });
+        }
+        diagram.commitTransaction("reset to old data");
+        diagram.skipsUndoManager = false;
     }
 
     // remove guide line points
     var glPoints = this.diagram.findNodesByExample({ category: 'GLPointNode' });
     diagram.removeParts(glPoints, true);
 
+    diagram.updateWallDimensions();
     // commit transaction, deactivate tool
     diagram.commitTransaction(this.name);
     this.isActive = false;
-    updateWallDimensions();
 }
 
-// creates an adornment with 2 handles
+// Creates an adornment with 2 handles
 WallReshapingTool.prototype.makeAdornment = function (selelt) {
     var adornment = new go.Adornment;
     adornment.type = go.Panel.Spot;
@@ -225,13 +278,13 @@ WallReshapingTool.prototype.makeAdornment = function (selelt) {
     return adornment;
 }
 
-// creates a basic handle archetype
+// Creates a basic handle archetype
 WallReshapingTool.prototype.makeHandle = function () {
     var h = this.handleArchetype;
     return h.copy();
 }
 
-// calculate the angle and length made from the mousepoint and the non-moving handle
+// Calculate the angle and length made from the mousepoint and the non-moving handle
 // used to reshape wall when holding SHIFT
 WallReshapingTool.prototype.calcAngleAndLengthFromHandle = function (mousePt) {
     var tool = this;
@@ -244,7 +297,7 @@ WallReshapingTool.prototype.calcAngleAndLengthFromHandle = function (mousePt) {
     adornments.each(function (a) { if (a.category === tool.name) adornment = a; })
     adornment.elements.each(function (e) {
         if (e.name != undefined && e.name != h.name) otherH = e;
-    })
+    });
 
     // calc angle from otherH against the horizontal
     var otherHandlePt = otherH.getDocumentPoint(go.Spot.Center);
@@ -261,7 +314,7 @@ WallReshapingTool.prototype.calcAngleAndLengthFromHandle = function (mousePt) {
     tool.length = distanceBetween;
 }
 
-// takes a point -- returns a new point that is closest to the original point that conforms to the grid snap
+// Takes a point -- returns a new point that is closest to the original point that conforms to the grid snap
 WallReshapingTool.prototype.snapPointToGrid = function (point) {
     var diagram = this.diagram;
     var newx = diagram.model.modelData.gridSize * Math.round(point.x / diagram.model.modelData.gridSize);
@@ -270,14 +323,14 @@ WallReshapingTool.prototype.snapPointToGrid = function (point) {
     return newPt;
 }
 
-// reshapes the shape's geometry, updates model data
+// Reshapes the shape's geometry, updates model data
 WallReshapingTool.prototype.reshape = function (newPoint) {
     var diagram = this.diagram;
     var tool = this;
     var shape = this.adornedShape;
     var node = shape.part;
 
-    //if the user is holding shift, make the angle between startPoint / endPoint / the horizontal line a multiple of 45
+    // if user holds SHIFT, make angle between startPoint / endPoint and the horizontal line a multiple of 45
     if (this.diagram.lastInput.shift) {
 
         var sPt; // the stationary point -- the point at the handle that is not being adjusted
@@ -367,12 +420,12 @@ WallReshapingTool.prototype.reshape = function (newPoint) {
     }
     this.updateAdornments(shape.part);
     this.showMatches();
-    updateWallDimensions();
+    diagram.updateWallDimensions();
 }
 
-// maintain position of all wallParts as best as possible when a wall is being reshaped
+// Maintain position of all wallParts as best as possible when a wall is being reshaped
 // position is relative to the distance a wallPart's location is from the stationaryPoint of the wall
-// this is called during WallReshapingTool's reshape function
+// This is called during WallReshapingTool's reshape function
 function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool) {
     var wallParts = wall.memberParts;
     var arr = [];
@@ -422,7 +475,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     // reshape the wall
     if (movingPoint === wall.data.endpoint) diagram.model.setDataProperty(wall.data, "endpoint", newPoint);
     else diagram.model.setDataProperty(wall.data, "startpoint", newPoint);
-    updateWall(wall);
+    diagram.updateWall(wall);
     // calculate the new angle offset
     var newAngle = wall.rotateObject.angle;
     var angleOffset = newAngle - oldAngle;
@@ -438,7 +491,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     });
 }
 
-// show if the wall (at the adjustment handle being moved) lines up with other wall edges 
+// Show if the wall (at the adjustment handle being moved) lines up with other wall edges 
 WallReshapingTool.prototype.showMatches = function () {
     //if (!(document.getElementById('wallGuidelinesCheckbox').checked)) return;
     var diagram = this.diagram;
@@ -473,7 +526,7 @@ WallReshapingTool.prototype.showMatches = function () {
     })
 }
 
-// static function -- checks if there exists a horiontal or vertical line (decided by 'coord' parameter) between pt and compare pt
+// Static function -- checks if there exists a horiontal or vertical line (decided by 'coord' parameter) between pt and compare pt
 // if so, draws a link between the two, letting the user know the wall they're reshaping lines up with another's edge
 WallReshapingTool.prototype.checkPtLinedUp = function (pt, comparePtCoord, ptCoord, comparePt) {
     function makeGuideLinePoint() {

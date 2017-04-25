@@ -2,11 +2,12 @@
 * Copyright (C) 1998-2017 by Northwoods Software Corporation
 * All Rights Reserved.
 *
-* WALL BUILDING TOOL
-* Used to construct new walls with mouse clicking / mouse point
+* FLOOR PLANNER - WALL BUILDING TOOL
+* Used to construct new Walls in a Floorplan with mouse clicking / mouse point
+* Depends on functionality in Floorplan.js
 */
 
-// constructor
+// Constructor
 function WallBuildingTool() {
     go.Tool.call(this);
     this.name = "WallBuilding";
@@ -15,31 +16,32 @@ function WallBuildingTool() {
     this._wallReshapingTool = null;
 } go.Diagram.inherit(WallBuildingTool, go.Tool);
 
-// returns or modifies the current startPoint
+// Get / set the current startPoint
 Object.defineProperty(WallBuildingTool.prototype, "startPoint", {
     get: function () { return this._startPoint; },
     set: function (val) { this._startPoint = val; }
 });
 
-// returns or modifies the current endPoint
+// Get / set the current endPoint
 Object.defineProperty(WallBuildingTool.prototype, "endPoint", {
     get: function () { return this._endPoint; },
     set: function (val) { this._endPoint = val; }
 });
 
-// returns the diagram's wallReshapingTool
+// Get / set the diagram's wallReshapingTool
 Object.defineProperty(WallBuildingTool.prototype, "wallReshapingTool", {
     get: function () { return this._wallReshapingTool; },
     set: function (val) { this._wallReshapingTool = val; }
 });
 
+// Tool can start iff diagram exists, is editable, and tool is enabled
 WallBuildingTool.prototype.canStart = function () {
     var diagram = this.diagram;
     if (diagram !== null && !diagram.isReadOnly && this.isEnabled) return true;
     return false;
 }
 
-// start transaction, capture the mouse, use a crosshair cursor
+// Start transaction, capture the mouse, use a crosshair cursor
 WallBuildingTool.prototype.doActivate = function () {
     this.endPoint = null;
     this.startTransaction(this.name);
@@ -48,8 +50,8 @@ WallBuildingTool.prototype.doActivate = function () {
 
     // update wallWidth, based on the current value of the HTML input element
     var el = document.getElementById('wallWidthInput');
-    if (isNaN(el.value) || el.value === null || el.value === '' || el.value === undefined) el.value = convertPixelsToUnits(5);
-    diagram.model.setDataProperty(diagram.model.modelData, "wallWidth", convertUnitsToPixels(parseFloat(el.value)));
+    if (isNaN(el.value) || el.value === null || el.value === '' || el.value === undefined) el.value = diagram.convertPixelsToUnits(5);
+    diagram.model.setDataProperty(diagram.model.modelData, "wallWidth", diagram.convertUnitsToPixels(parseFloat(el.value)));
 
     // assign startpoint based on grid
     var point1 = this.diagram.lastInput.documentPoint;
@@ -65,19 +67,20 @@ WallBuildingTool.prototype.doActivate = function () {
     this.isActive = true;
 }
 
+// When user clicks, add wall model data to model and initialize a Wall Reshaping Tool to handle the shaping of its construction
 WallBuildingTool.prototype.doMouseDown = function () {
     var diagram = this.diagram;
     this.diagram.currentCursor = 'crosshair';
     var data = { key: "wall", category: "WallGroup", caption: "Wall", type: "Wall", startpoint: this.startPoint, endpoint: this.startPoint, strokeWidth: parseFloat(diagram.model.modelData.wallWidth), isGroup: true, notes: "" };
     this.diagram.model.addNodeData(data);
     var wall = diagram.findPartForKey(data.key);
-    updateWall(wall);
+    diagram.updateWall(wall);
     var part = diagram.findPartForData(data);
     // set the TransactionResult before raising event, in case it changes the result or cancels the tool
     this.transactionResult = this.name;
     diagram.raiseDiagramEvent('PartCreated', part);
 
-    // start the wallReshapingTool, tell it what wall it's reshaping (more accurately, the shape the will have the reshape handle)
+    // start the wallReshapingTool, tell it what wall it's reshaping (more accurately, the shape that will have the reshape handle)
     this.wallReshapingTool.isEnabled = true;
     diagram.select(part);
     this.wallReshapingTool.isBuilding = true;
@@ -85,39 +88,41 @@ WallBuildingTool.prototype.doMouseDown = function () {
     this.wallReshapingTool.doActivate();
 }
 
+// If user presses Esc key, cancel the wall building
 WallBuildingTool.prototype.doKeyDown = function () {
-    var e = this.diagram.lastInput;
+    var diagram = this.diagram;
+    var e = diagram.lastInput;
     if (e.key === "Esc") {
-        var wall = this.diagram.selection.first();
-        var searchPhrase = (wall.data.key === "wall") ? "wallP" : wall.data.key;
-        var dimensionLinks = this.diagram.findLinksByExample({ category: "dimensionLink" });
-        var garbageLinks = [];
-        dimensionLinks.iterator.each(function (link) { if (link.data.to.includes(searchPhrase)) garbageLinks.push(link); });
-        for (var i = 0; i < garbageLinks.length; i++) { this.diagram.remove(garbageLinks[i]); }
-        this.diagram.remove(wall);
+        var wall = diagram.selection.first();
+        diagram.remove(wall);
+        diagram.pointNodes.iterator.each(function (node) { diagram.remove(node); });
+        diagram.dimensionLinks.iterator.each(function (link) { diagram.remove(link); });
+        diagram.pointNodes.clear();
+        diagram.dimensionLinks.clear();
         this.doDeactivate();
     }
     go.Tool.prototype.doKeyDown.call(this);
 }
 
-// when the mouse moves, reshape the wall
+// When the mouse moves, reshape the wall
 WallBuildingTool.prototype.doMouseMove = function () {
     this.wallReshapingTool.doMouseMove();
 }
 
-// end transaction
+// End transaction
 WallBuildingTool.prototype.doDeactivate = function () {
     var diagram = this.diagram;
     this.diagram.currentCursor = "";
     this.diagram.isMouseCaptured = false;
 
     this.wallReshapingTool.isEnabled = false;
-    this.wallReshapingTool.isBuilding = false;
     this.wallReshapingTool.adornedShape = null;
     this.wallReshapingTool.doDeactivate();
+    this.wallReshapingTool.isBuilding = false;
+
+    diagram.updateWallDimensions();
 
     this.stopTransaction(this.name);
+    
     this.isActive = false; // Default functionality
 }
-
-// END OF WALLBUILDINGTOOL CLASS
