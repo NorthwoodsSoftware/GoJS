@@ -1240,6 +1240,14 @@ arr.push([
 ]);
 
 arr.push([
+  "../extensions/ParallelRoute",
+  "Parallel Route Links",
+  "Demonstrates custom Links that route parallel to other Links between the same two ports.",
+  "ParallelRoute",
+  ["links", "geometries", "extensions"]
+]);
+
+arr.push([
   "../extensions/Dimensioning",
   "Dimensioning",
   "Demonstrates custom Links that show the distance between two points.",
@@ -1296,7 +1304,7 @@ arr.push([
 ]);
 
 arr.push([
-  "../extensions/FloorPlanner",
+  "../projects/floorplanner/FloorPlanner",
   "Floor Planner",
   "An editor for users to create robust, detailed floor plans.",
   "FloorPlanner",
@@ -1419,15 +1427,15 @@ arr.push([
 arr.push([
   "virtualizedTreeLayout",
   "Virtualized TreeLayout",
-  "Shows a virtualized TreeLayout, with TreeModel.",
+  "Shows a virtualized TreeLayout with TreeModel.",
   "virtualizedTree",
   ["collections", "treelayout", "customlayout", "tooltips", "performance"]
 ]);
 
 arr.push([
   "virtualizedForceLayout",
-  "Virtualized ForceDirectedLayout",
-  "Shows a virtualized ForceDirectedLayout, with GraphLinksModel.",
+  "Virtualized ForceDirected Layout",
+  "Shows a virtualized ForceDirectedLayout with GraphLinksModel.",
   "virtualizedForceLayout",
   ["collections", "forcedirectedlayout", "customlayout", "tooltips", "performance"]
 ]);

@@ -55,10 +55,11 @@ PortShiftingTool.prototype.findPort = function() {
   var diagram = this.diagram;
   var e = diagram.firstInput;
   var elt = diagram.findObjectAt(e.documentPoint, null, null);
-
   if (elt === null || !(elt.part instanceof go.Node)) return null;
-  while (elt.panel !== null && elt.panel.type === go.Panel.Spot && elt.panel.findMainElement() !== elt) {
-    if (elt.portId !== null && elt.portId !== "") return elt;
+
+  while (elt !== null && elt.panel !== null) {
+    if (elt.panel.type === go.Panel.Spot && elt.panel.findMainElement() !== elt &&
+        elt.portId !== null && elt.portId !== "") return elt;
     elt = elt.panel;
   }
   return null;

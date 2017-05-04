@@ -29,12 +29,12 @@ Every Diagram starts off with several standard layers.
 These are their <a>Layer.name</a>s, in order from furthest behind to most in front:
 </p>
 <ul>
-  <li><b>"Grid"</b></li>
+  <li><b>"Grid"</b>, holding the <a>Diagram.grid</a> and any other static Parts that you wish to be behind everything</li>
   <li><b>"Background"</b></li>
   <li><b>""</b>, the default layer</li>
   <li><b>"Foreground"</b></li>
-  <li><b>"Adornment"</b></li>
-  <li><b>"Tool"</b></li>
+  <li><b>"Adornment"</b>, holding <a>Adornment</a>s for selection and various Tools</li>
+  <li><b>"Tool"</b>, holding Parts used in the execution of various Tools</li>
 </ul>
 <p>
 Each Part is placed in a Layer according to its <a>Part.layerName</a>.
@@ -75,26 +75,27 @@ layer when it is selected and back in its normal color layer when it is not sele
   diagram.addLayerBefore($(go.Layer, { name: "orange" }), forelayer);
 
   diagram.nodeTemplate =
-    $(go.Part,  // no links or grouping, so can use the simpler Part class
+    $(go.Part, "Spot", // no links or grouping, so can use the simpler Part class
       new go.Binding("layerName", "color"),
       new go.Binding("location", "loc"),
       $(go.Shape,
-        { width: 100, height: 100 },
+        { width: 80, height: 80 },
         new go.Binding("fill", "color")),
       $(go.TextBlock,
-        new go.Binding("text", "", function(x) { return x.layer.name; })
-            .ofObject()),
+        { stroke: "white", font: "bold 12px sans-serif" }),
       {
         selectionChanged: function(p) {
-          if (p.isSelected) p.layerName = "Foreground";
-          else p.layerName = p.data.color;
+          p.layerName = (p.isSelected ? "Foreground" : p.data.color);
+        },
+        layerChanged: function(p, oldLayer, newLayer) {
+          if (newLayer !== null) p.elt(1).text = newLayer.name;
         }
       }
     );
 
   var array = [];
   for (var i = 0; i &lt; 12; i++) {
-    var data = { loc: new go.Point(Math.random()*500, Math.random()*150) };
+    var data = { loc: new go.Point(Math.random()*520, Math.random()*200) };
     switch (Math.floor(Math.random()*3)) {
       case 0: data.color = "blue"; break;
       case 1: data.color = "green"; break;
@@ -114,13 +115,12 @@ layer when it is selected and back in its normal color layer when it is not sele
     diagram.commitTransaction('toggle ' + layername);
   };
 </pre>
-<script>goCode("layers", 610, 260)</script>
+<script>goCode("layers", 610, 290)</script>
 Layer visibility:<br />
 <input type="checkbox" checked="checked" onclick="toggleVisible('blue', event)" />blue
 <input type="checkbox" checked="checked" onclick="toggleVisible('green', event)" />green
 <input type="checkbox" checked="checked" onclick="toggleVisible('orange', event)" />orange
 <input type="checkbox" checked="checked" onclick="toggleVisible('Foreground', event)" />Foreground
-
 
 
 <h2 id="ZOrderExample">ZOrder Example</h2>
