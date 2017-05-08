@@ -60,7 +60,6 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
   // an internal helper function for actually performing a scrolling operation
   function incrTableIndex(obj, i) {
     var diagram = obj.diagram;
-    if (diagram !== null) diagram.startTransaction("scroll");
     var table = obj.panel.panel.panel.findObject(tablename);
     if (i === +Infinity || i === -Infinity) {  // page up or down
       var tabh = table.actualBounds.height;
@@ -74,12 +73,17 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
     var idx = table.topIndex + i;
     if (idx < 0) idx = 0;
     else if (idx >= table.rowCount - 1) idx = table.rowCount - 1;
-    table.topIndex = idx;
-    var up = table.panel.findObject("UP");
-    if (up) up.visible = (idx > 0);
-    var down = table.panel.findObject("DOWN");
-    if (down) down.visible = (idx < table.rowCount - 1);
-    if (diagram !== null) diagram.commitTransaction("scroll");
+    if (table.topIndex !== idx) {
+      if (diagram !== null) diagram.startTransaction("scroll");
+      table.topIndex = idx;
+      var node = table.part;  // may need to reroute links if the table contains any ports
+      if (node instanceof go.Node) node.invalidateConnectedLinks();
+      var up = table.panel.findObject("UP");
+      if (up) up.visible = (idx > 0);
+      var down = table.panel.findObject("DOWN");
+      if (down) down.visible = (idx < table.rowCount - 1);
+      if (diagram !== null) diagram.commitTransaction("scroll");
+    }
   }
 
   return $(go.Panel, "Table",

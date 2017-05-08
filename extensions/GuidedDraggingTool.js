@@ -93,33 +93,34 @@ GuidedDraggingTool.prototype.doDragOver = function(pt, obj) {
 
   // gets the selected part
   var partItr = (this.copiedParts || this.draggedParts).iterator;
-  partItr.next();
-  var part = partItr.key;
+  if (partItr.next()) {
+    var part = partItr.key;
 
-  this.showHorizontalMatches(part, this.isGuidelineEnabled, false);
-  this.showVerticalMatches(part, this.isGuidelineEnabled, false);
+    this.showHorizontalMatches(part, this.isGuidelineEnabled, false);
+    this.showVerticalMatches(part, this.isGuidelineEnabled, false);
+  }
 }
 
 /**
 * On a mouse-up, snaps the selected part to the nearest guideline.
-* If no guidelines are showing, the part remains at its position.
+* If not snapping, the part remains at its position.
 * This calls {@link #guidelineSnap}.
 * @this {GuidedDraggingTool}
 */
 GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
+  this.clearGuidelines();
   // gets the selected (perhaps copied) Part
   var partItr = (this.copiedParts || this.draggedParts).iterator;
-  partItr.next();
-  var part = partItr.key;
+  if (partItr.next()) {
+    var part = partItr.key;
 
-  // snaps only when the mouse is released without shift modifier
-  var e = this.diagram.lastInput;
-  var snap = this.isGuidelineSnapEnabled && !e.shift;
+    // snaps only when the mouse is released without shift modifier
+    var e = this.diagram.lastInput;
+    var snap = this.isGuidelineSnapEnabled && !e.shift;
 
-  this.showHorizontalMatches(part, this.isGuidelineEnabled, snap);
-  this.showVerticalMatches(part, this.isGuidelineEnabled, snap);
-  
-  this.clearGuidelines();
+    this.showHorizontalMatches(part, false, snap);  // false means don't show guidelines
+    this.showVerticalMatches(part, false, snap);
+  }
 }
 
 /**

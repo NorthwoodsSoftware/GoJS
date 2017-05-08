@@ -2296,6 +2296,7 @@ declare namespace go {
         lastPickIndex: number;  // undocumented
         protected computeCorner(): number;  // undocumented
         protected computeShortLength(from: boolean): number;  // undocumented
+        protected computeMidOrthoPosition(fromPosition: number, toPosition: number, vertical: boolean): number;  // undocumented
         findMidLabel(): GraphObject;  // undocumented
         protected arrangeBundledLinks(links: Array<Link>, reroute: boolean): void;  // undocumented
         protected setPointAt(i: number, x: number, y: number): void;  // undocumented

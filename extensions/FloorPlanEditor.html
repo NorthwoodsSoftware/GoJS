@@ -173,22 +173,18 @@
 	}
 </style>
 <script id="code">
-function init() {
 
-	function checkLocalStorage() {
-		try {
-			window.localStorage.setItem('item', 'item');
-			window.localStorage.removeItem('item');
-			return true;
-		} catch (e) {
-			return false;
-		}
-	}
+    /*function checkLocalStorage () {
+        try {
+            window.localStorage.setItem('item', 'item');
+            window.localStorage.removeItem('item');
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }*/
 
-	if (!checkLocalStorage()) {
-		var currentFile = document.getElementById("currentFile");
-		currentFile.textContent = "Sorry! No web storage support. If you're using Internet Explorer / Microsoft Edge, you must load the page from a server for local storage to work.";
-	}
+function init() {	    
 
 	// hides open HTML Element
 	var openDocument = document.getElementById("openDocument");
@@ -519,6 +515,12 @@ function init() {
 	// start off with an empty document
 	myDiagram.isModified = false;
 	newDocument();
+
+	if (!checkLocalStorage()) {
+	    var currentFile = document.getElementById("currentFile");
+	    currentFile.textContent = "Sorry! No web storage support. If you're using Internet Explorer / Microsoft Edge, you must load the page from a server for local storage to work.";
+	}
+
   } // end init
 
 
@@ -623,6 +625,16 @@ function init() {
 
 
   var UnsavedFileName = "(Unsaved File)";
+
+  function checkLocalStorage() {
+      try {
+          window.localStorage.setItem('item', 'item');
+          window.localStorage.removeItem('item');
+          return true;
+      } catch (e) {
+          return false;
+      }
+  }
 
   function getCurrentFileName() {
 	var currentFile = document.getElementById("currentFile");
