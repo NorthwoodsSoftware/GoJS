@@ -103,11 +103,12 @@ GuidedDraggingTool.prototype.doDragOver = function(pt, obj) {
 
 /**
 * On a mouse-up, snaps the selected part to the nearest guideline.
-* If no guidelines are showing, the part remains at its position.
+* If not snapping, the part remains at its position.
 * This calls {@link #guidelineSnap}.
 * @this {GuidedDraggingTool}
 */
 GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
+  this.clearGuidelines();
   // gets the selected (perhaps copied) Part
   var partItr = (this.copiedParts || this.draggedParts).iterator;
   if (partItr.next()) {
@@ -117,8 +118,8 @@ GuidedDraggingTool.prototype.doDropOnto = function(pt, obj) {
     var e = this.diagram.lastInput;
     var snap = this.isGuidelineSnapEnabled && !e.shift;
 
-    this.showHorizontalMatches(part, this.isGuidelineEnabled, snap);
-    this.showVerticalMatches(part, this.isGuidelineEnabled, snap);
+    this.showHorizontalMatches(part, false, snap);  // false means don't show guidelines
+    this.showVerticalMatches(part, false, snap);
   }
 }
 
