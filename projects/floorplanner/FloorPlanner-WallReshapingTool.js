@@ -216,7 +216,7 @@ WallReshapingTool.prototype.doDeactivate = function () {
         diagram.remove(wall); // remove wall
         wall.memberParts.iterator.each(function (member) { diagram.remove(member); }) // remove wall's parts   
         var wallDimensionLinkPointNodes = [];
-        diagram.pointNodes.iterator.each(function (node) { if (node.data.key.includes(wall.data.key)) wallDimensionLinkPointNodes.push(node); });
+        diagram.pointNodes.iterator.each(function (node) { if (node.data.key.indexOf(wall.data.key) !== -1) wallDimensionLinkPointNodes.push(node); });
         diagram.remove(wallDimensionLinkPointNodes[0]);
         diagram.remove(wallDimensionLinkPointNodes[1]);
     }

@@ -231,7 +231,7 @@ FloorplanUI.prototype.searchFurniture = function () {
 	if (str !== null && str !== undefined && str !== "") {
 		for (var i = 0; i < items.length; i += 0) {
 			var item = items[i];
-			if (!item.type.toLowerCase().includes(str.toLowerCase())) {
+			if (item.type.toLowerCase().indexOf(str.toLowerCase() === -1)) {
 				items.splice(i, 1);
 			}
 			else i++;

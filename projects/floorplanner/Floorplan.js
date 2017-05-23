@@ -760,7 +760,7 @@ Floorplan.prototype.updateWallAngles = function () {
             // collect all angleNodes with same walls in their construction as "node"
             var possibleAngleNodes = new go.Set(go.Node);
             var allWalls = node.data.key.slice(0, node.data.key.indexOf("angle"));
-            floorplan.angleNodes.iterator.each(function (other) { if (other.data.key.includes(allWalls)) possibleAngleNodes.add(other); });
+            floorplan.angleNodes.iterator.each(function (other) { if (other.data.key.indexOf(allWalls) !== -1) possibleAngleNodes.add(other); });
             possibleAngleNodes.iterator.each(function (pNode) {
                 if (pNode.data.loc !== node.data.loc) {
                     garbage.push(pNode);

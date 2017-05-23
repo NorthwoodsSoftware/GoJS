@@ -120,7 +120,7 @@
     'height: ' + (textheight) + 'px;' +
     'left: ' + ((left - (textwidth / 2) | 0) - paddingsize) + 'px;' +
     'top: ' + ((top - (textheight / 2) | 0) - paddingsize) + 'px;' +
-    'textAlign: ' + textBlock.textAlign + ';' +
+    'text-align: ' + textBlock.textAlign + ';' +
     'margin: 0;' +
     'padding: ' + paddingsize + 'px;' +
     'border: 0;' +
