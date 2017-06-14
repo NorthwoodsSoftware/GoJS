@@ -1150,6 +1150,14 @@ arr.push([
 ]);
 
 arr.push([
+  "../extensions/NonRealtimeDragging",
+  "Non Realtime Dragging",
+  "A custom DraggingTool that lets the user drag a translucent image of the Nodes and Links to be moved, leaving them in place until the mouse up.",
+  "NonRealtimeDragging",
+  ["tools", "extensions"]
+]);
+
+arr.push([
   "../extensions/GuidedDragging",
   "Guided Dragging",
   "A custom DraggingTool that makes guidelines visible as a Part is dragged around a Diagram and is nearly aligned with another Part.",

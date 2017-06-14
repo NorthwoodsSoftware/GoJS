@@ -103,32 +103,50 @@ function goIntro() {
   navbar.innerHTML = myNavbar;
   document.body.insertBefore(navbar, container);
 
-  // footer
-  var footer = document.createElement("div");
-  footer.className = "footer";
-  var msg = "Copyright &copy; 1998-2017 by Northwoods Software Corporation.";
-  if (go && go.version) {
-    msg = "GoJS&reg; version " + go.version + ". " + msg;
-  }
-  footer.innerHTML = msg;
-  content.appendChild(footer);
-
-
   // When the page loads, change the class of li's to highlight the current page
   var url = window.location.href;
   var lindex = url.lastIndexOf('/');
   url = url.slice(lindex+1).toLowerCase();
   var lis = document.getElementById("sections").getElementsByTagName("li");
   var l = lis.length;
+
+  var currentindex = -1;
   for (var i = 0; i < l; i++) {
     var lowerhref = lis[i].childNodes[0].href.toLowerCase();
     if (lowerhref.indexOf('intro') === -1) continue;
     if (lowerhref.indexOf('/' + url) !== -1) {
+      currentindex = i;
       lis[i].childNodes[0].className = "selected";
-      return;
+      break;
     }
   }
 
+  // prev & next page navigation
+  var pagenav = document.createElement("div");
+  var nav = "<div>";
+  if (currentindex > 0) {
+    var prevurl = lis[currentindex - 1].childNodes[0].href.toLowerCase();
+    nav += "<a href='" + prevurl + "'>&lt;Previous Intro Page</a>";
+  } else {
+    nav += "<a href='../learn/index.html'>&lt;Learn</a>";
+  }
+  if (currentindex < lis.length - 1) {
+    var nexturl = lis[currentindex + 1].childNodes[0].href.toLowerCase();
+    nav += "<a style='float:right' href='" + nexturl + "'>Next Intro Page&gt;</a>";
+  }
+  nav += "</div>";
+  pagenav.innerHTML = nav;
+  content.appendChild(pagenav);
+
+  // footer
+  var footer = document.createElement("div");
+  footer.className = "footer";
+  var msg = "Copyright &copy; 1998-2017 by Northwoods Software Corporation.";
+  if (go && go.version) {
+    msg += "GoJS&reg; version " + go.version + ". " + msg;
+  }
+  footer.innerHTML = msg;
+  content.appendChild(footer);
 }
 
 function _traverseDOM(node) {
