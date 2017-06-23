@@ -47,22 +47,27 @@ WallBuildingTool.prototype.doActivate = function () {
     this.startTransaction(this.name);
     this.isMouseCaptured = true;
     var diagram = this.diagram;
+    var tool = this;
 
-    // update wallWidth, based on the current value of the HTML input element
-    var el = document.getElementById('wallWidthInput');
-    if (isNaN(el.value) || el.value === null || el.value === '' || el.value === undefined) el.value = diagram.convertPixelsToUnits(5);
-    diagram.model.setDataProperty(diagram.model.modelData, "wallWidth", diagram.convertUnitsToPixels(parseFloat(el.value)));
+    // update wallThickness, based on the current value of the HTML input element 
+    // pre-condition: diagram.floorplanUI exists
+    if (diagram.floorplanUI) {
+        var el = document.getElementById(diagram.floorplanUI.state.wallThicknessInputId);
+        if (isNaN(el.value) || el.value === null || el.value === '' || el.value === undefined) el.value = diagram.convertPixelsToUnits(5);
+        diagram.model.setDataProperty(diagram.model.modelData, "wallThickness", diagram.convertUnitsToPixels(parseFloat(el.value)));
+    }
+    else diagram.model.setDataProperty(diagram.model.modelData, "wallThickness", diagram.convertUnitsToPixels(parseFloat(5)));
 
     // assign startpoint based on grid
-    var point1 = this.diagram.lastInput.documentPoint;
+    var point1 = tool.diagram.lastInput.documentPoint;
     var gs = diagram.model.modelData.gridSize;
-    if (!(this.diagram.toolManager.draggingTool.isGridSnapEnabled)) gs = 1;
+    if (!(tool.diagram.toolManager.draggingTool.isGridSnapEnabled)) gs = 1;
     var newx = gs * Math.round(point1.x / gs);
     var newy = gs * Math.round(point1.y / gs);
     var newPoint1 = new go.Point(newx, newy);
     this.startPoint = newPoint1;
 
-    this.wallReshapingTool = this.diagram.toolManager.mouseDownTools.elt(3);
+    this.wallReshapingTool = tool.diagram.toolManager.mouseDownTools.elt(3);
     // Default functionality:
     this.isActive = true;
 }
@@ -70,22 +75,23 @@ WallBuildingTool.prototype.doActivate = function () {
 // When user clicks, add wall model data to model and initialize a Wall Reshaping Tool to handle the shaping of its construction
 WallBuildingTool.prototype.doMouseDown = function () {
     var diagram = this.diagram;
-    this.diagram.currentCursor = 'crosshair';
-    var data = { key: "wall", category: "WallGroup", caption: "Wall", type: "Wall", startpoint: this.startPoint, endpoint: this.startPoint, strokeWidth: parseFloat(diagram.model.modelData.wallWidth), isGroup: true, notes: "" };
+    var tool = this;
+    tool.diagram.currentCursor = 'crosshair';
+    var data = { key: "wall", category: "WallGroup", caption: "Wall", type: "Wall", startpoint: tool.startPoint, endpoint: tool.startPoint, thickness: parseFloat(diagram.model.modelData.wallThickness), isGroup: true, notes: "" };
     this.diagram.model.addNodeData(data);
     var wall = diagram.findPartForKey(data.key);
     diagram.updateWall(wall);
     var part = diagram.findPartForData(data);
     // set the TransactionResult before raising event, in case it changes the result or cancels the tool
-    this.transactionResult = this.name;
+    tool.transactionResult = tool.name;
     diagram.raiseDiagramEvent('PartCreated', part);
 
     // start the wallReshapingTool, tell it what wall it's reshaping (more accurately, the shape that will have the reshape handle)
-    this.wallReshapingTool.isEnabled = true;
+    tool.wallReshapingTool.isEnabled = true;
     diagram.select(part);
-    this.wallReshapingTool.isBuilding = true;
-    this.wallReshapingTool.adornedShape = part.findObject("SHAPE");
-    this.wallReshapingTool.doActivate();
+    tool.wallReshapingTool.isBuilding = true;
+    tool.wallReshapingTool.adornedShape = part.findObject("SHAPE");
+    tool.wallReshapingTool.doActivate();
 }
 
 // If user presses Esc key, cancel the wall building

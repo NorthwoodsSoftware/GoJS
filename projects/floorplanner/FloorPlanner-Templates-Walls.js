@@ -3,7 +3,7 @@
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - WALLS
-* GraphObject templates for interactional Wall Groups, Wall Part Nodes (and their dependecies) used in the Floor Planner sample   
+* GraphObject templates for Wall Groups, Wall Part Nodes (and their dependecies) used in the Floor Planner sample   
 * Includes Wall Group, Palette Wall Node, Window Node, Door Node
 */
 
@@ -12,7 +12,12 @@
 * Snap Walls, Find Closest Loc on Wall, Add Wall Part, Wall Part Drag Over, Wall Part Drag Away
 */
 
-// Drag computation function to snap walls to the grid properly while dragging
+/*
+* Drag computation function to snap walls to the grid properly while dragging
+* @param {Node} part A reference to dragged Part
+* @param {Point} pt The Point describing the proposed location
+* @param {Point} gridPt Snapped location
+*/
 var snapWalls = function (part, pt, gridPt) {
     var floorplan = part.diagram;
     floorplan.updateWallDimensions();
@@ -33,7 +38,11 @@ var snapWalls = function (part, pt, gridPt) {
     return new go.Point((newSpt.x + newEpt.x) / 2, (newSpt.y + newEpt.y) / 2);
 }
 
-// Used in addWallPart; find closest loc (to mousept) on wall a wallPart can be dropped onto without extending beyond wall endpoints or intruding into another wallPart
+/*
+* Find closest loc (to mouse point) on wall a wallPart can be dropped onto without extending beyond wall endpoints or intruding into another wallPart
+* @param {Group} wall A reference to a Wall Group
+* @param {Node} part A reference to a Wall Part Node -- i.e. Door Node, Window Node
+*/
 function findClosestLocOnWall(wall, part) {
     var orderedConstrainingPts = []; // wall endpoints and wallPart endpoints
     var startpoint = wall.data.startpoint.copy();
@@ -63,7 +72,7 @@ function findClosestLocOnWall(wall, part) {
         var point1 = orderedConstrainingPts[i];
         var point2 = orderedConstrainingPts[i + 1];
         var distanceBetween = Math.sqrt(point1.distanceSquaredPoint(point2));
-        if (distanceBetween >= part.data.width) possibleStretches.push({ pt1: point1, pt2: point2 });
+        if (distanceBetween >= part.data.length) possibleStretches.push({ pt1: point1, pt2: point2 });
     }
 
     // go through all possible stretches along the wall the part *could* fit in; find the one closest to the part's current location
@@ -89,7 +98,7 @@ function findClosestLocOnWall(wall, part) {
 
     // using the closest free stretch along the wall, calculate endpoints that make the stretch's line segment, then project part.location onto the segment
     var closestStretchLength = Math.sqrt(closestStretch.pt1.distanceSquaredPoint(closestStretch.pt2));
-    var offset = part.data.width / 2;
+    var offset = part.data.length / 2;
     var point1 = new go.Point(closestStretch.pt1.x + ((offset / closestStretchLength) * (closestStretch.pt2.x - closestStretch.pt1.x)),
         closestStretch.pt1.y + ((offset / closestStretchLength) * (closestStretch.pt2.y - closestStretch.pt1.y)));
     var point2 = new go.Point(closestStretch.pt2.x + ((offset / closestStretchLength) * (closestStretch.pt1.x - closestStretch.pt2.x)),
@@ -110,8 +119,8 @@ var addWallPart = function (e, wall) {
             floorplan.model.setDataProperty(wallPart.data, "group", wall.data.key);
             wallPart.location = newLoc.projectOntoLineSegmentPoint(wall.data.startpoint, wall.data.endpoint);
             wallPart.angle = wall.rotateObject.angle;
-            if (wallPart.category === "WindowNode") floorplan.model.setDataProperty(wallPart.data, "height", wall.data.strokeWidth);
-            if (wallPart.category === "DoorNode") floorplan.model.setDataProperty(wallPart.data, "doorOpeningHeight", wall.data.strokeWidth);
+            if (wallPart.category === "WindowNode") floorplan.model.setDataProperty(wallPart.data, "height", wall.data.thickness);
+            if (wallPart.category === "DoorNode") floorplan.model.setDataProperty(wallPart.data, "doorOpeningHeight", wall.data.thickness);
         } else {
             floorplan.remove(wallPart);
             alert("There's not enough room on the wall!");
@@ -176,7 +185,7 @@ function makeWallGroup() {
             geometry: new go.Geometry(go.Geometry.Line),
             isGeometryPositioned: true
         },
-        new go.Binding("strokeWidth", "strokeWidth"),
+        new go.Binding("strokeWidth", "thickness"),
         new go.Binding("stroke", "isSelected", function (s, obj) {
             if (obj.part.containingGroup != null) {
                 var group = obj.part.containingGroup;
@@ -189,14 +198,17 @@ function makeWallGroup() {
 
 /*
 * Wall Part Node Dependencies:
-* Get Wall Part Endpoints, Get Wall Part Stretch,
-* Drag Wall Parts (Drag Comp. Function), Wall Part Resize Adornment, Door Selection Adornment (Door Nodes only)
+* Get Wall Part Endpoints, Get Wall Part Stretch, Drag Wall Parts (Drag Computation Function),
+* Wall Part Resize Adornment, Door Selection Adornment (Door Nodes only)
 */
 
-// Find and return an array of the endpoints of a given wallpart (window or door)
+/*
+* Find and return an array of the endpoints of a given wallpart (window or door)
+* @param {Node} wallPart A Wall Part Node -- i.e. Door Node, Window Node
+*/
 function getWallPartEndpoints(wallPart) {
     var loc = wallPart.location;
-    var partLength = wallPart.data.width;
+    var partLength = wallPart.data.length;
     if (wallPart.containingGroup !== null) var angle = wallPart.containingGroup.rotateObject.angle;
     else var angle = 180;
     var point1 = new go.Point((loc.x + (partLength / 2)), loc.y);
@@ -207,8 +219,10 @@ function getWallPartEndpoints(wallPart) {
     return arr;
 }
 
-// Returns a "stretch" (2 Points) that constrains a wallPart (door or window)
-// This stretch is comprised of either "part"'s containing wall endpoints or other wallPart endpoints
+/*
+* Returns a "stretch" (2 Points) that constrains a wallPart (door or window), comprised of "part"'s containing wall endpoints or other wallPart endpoints
+* @param {Node} part A Wall Part Node -- i.e. Door Node, Window Node, that is attached to a wall
+*/
 function getWallPartStretch(part) {
     var wall = part.containingGroup;
     var startpoint = wall.data.startpoint.copy();
@@ -254,7 +268,12 @@ function getWallPartStretch(part) {
     return stretch;
 }
 
-// Drag computation function for WindowNodes and DoorNodes; ensure wall parts stay in walls when dragged
+/*
+* Drag computation function for WindowNodes and DoorNodes; ensure wall parts stay in walls when dragged
+* @param {Node} part A reference to dragged Part
+* @param {Point} pt The Point describing the proposed location
+* @param {Point} gridPt Snapped location
+*/
 var dragWallParts = function (part, pt, gridPt) {
     if (part.containingGroup !== null && part.containingGroup.category === 'WallGroup') {
         var floorplan = part.diagram;
@@ -274,7 +293,7 @@ var dragWallParts = function (part, pt, gridPt) {
 
         // calc points along line created by the endpoints that are half the width of the moving window/door
         var totalLength = Math.sqrt(leftOrAbovePt.distanceSquaredPoint(rightOrBelowPt));
-        var distance = (part.data.width / 2);
+        var distance = (part.data.length / 2);
         var point1 = new go.Point(leftOrAbovePt.x + ((distance / totalLength) * (rightOrBelowPt.x - leftOrAbovePt.x)),
         leftOrAbovePt.y + ((distance / totalLength) * (rightOrBelowPt.y - leftOrAbovePt.y)));
         var point2 = new go.Point(rightOrBelowPt.x + ((distance / totalLength) * (leftOrAbovePt.x - rightOrBelowPt.x)),
@@ -283,17 +302,19 @@ var dragWallParts = function (part, pt, gridPt) {
         // calc distance from pt to line (part's wall) - use point to 2pt line segment distance formula
         var distFromWall = Math.abs(((wEnd.y - wStart.y) * pt.x) - ((wEnd.x - wStart.x) * pt.y) + (wEnd.x * wStart.y) - (wEnd.y * wStart.x)) /
             Math.sqrt(Math.pow((wEnd.y - wStart.y), 2) + Math.pow((wEnd.x - wStart.x), 2));
-        var tolerance = (20 * wall.data.strokeWidth < 100) ? (20 * wall.data.strokeWidth) : 100;
+        var tolerance = (20 * wall.data.thickness < 100) ? (20 * wall.data.thickness) : 100;
 
         // if distance from pt to line > some tolerance, detach the wallPart from the wall
         if (distFromWall > tolerance) {
             part.containingGroup = null;
+            delete part.data.group;
             part.angle = 0;
-            allPointNodes.iterator.each(function (node) { floorplan.remove(node) });
-            allDimensionLinks.iterator.each(function (link) { floorplan.remove(link) });
-            allPointNodes.clear();
-            allDimensionLinks.clear();
+            floorplan.pointNodes.iterator.each(function (node) { floorplan.remove(node) });
+            floorplan.dimensionLinks.iterator.each(function (link) { floorplan.remove(link) });
+            floorplan.pointNodes.clear();
+            floorplan.dimensionLinks.clear();
             floorplan.updateWallDimensions();
+            if (floorplan.floorplanUI) floorplan.floorplanUI.setSelectionInfo(part);
         }
 
         // project the proposed location onto the line segment created by the new points (ensures wall parts are constrained properly when dragged)
@@ -331,8 +352,8 @@ function makeDoorSelectionAdornment() {
             $("Button",
                 $(go.Picture, { source: "icons/flipDoorOpeningLeft.png", column: 0, desiredSize: new go.Size(12, 12) },
                     new go.Binding("source", "", function (obj) {
-                        if (obj.adornedPart === null) return "icons/flipDoorOpeningRight.png";
-                        else if (obj.adornedPart.data.swing === "left") return "icons/flipDoorOpeningRight.png";
+                        if (obj.adornedPart === null) return "floorplannerIcons/flipDoorOpeningRight.png";
+                        else if (obj.adornedPart.data.swing === "left") return "floorplannerIcons/flipDoorOpeningRight.png";
                         else return "icons/flipDoorOpeningLeft.png";
                     }).ofObject()
                 ),
@@ -353,7 +374,7 @@ function makeDoorSelectionAdornment() {
                 new go.Binding("visible", "", function (obj) { return (obj.adornedPart === null) ? false : (obj.adornedPart.containingGroup !== null); }).ofObject()
              ),
              $("Button",
-                $(go.Picture, { source: "icons/flipDoorSide.png", column: 0, desiredSize: new go.Size(12, 12) }),
+                $(go.Picture, { source: "floorplannerIcons/flipDoorSide.png", column: 0, desiredSize: new go.Size(12, 12) }),
                 {
                     click: function (e, obj) {
                         var floorplan = obj.part.diagram;
@@ -378,7 +399,7 @@ function makeDoorSelectionAdornment() {
 * Window Node, Door Node, Palette Wall Node
 */
 
-// Window Node TODO resizing is bugged, probably using wrong resizeObject
+// Window Node
 function makeWindowNode() {
     var $ = go.GraphObject.make;
     return $(go.Node, "Spot",
@@ -402,14 +423,14 @@ function makeWindowNode() {
         new go.Binding("angle", "angle").makeTwoWay(),
         $(go.Shape,
         { name: "SHAPE", fill: "white", strokeWidth: 0 },
-        new go.Binding("width", "width").makeTwoWay(),
+        new go.Binding("width", "length").makeTwoWay(),
         new go.Binding("height", "height").makeTwoWay(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
         new go.Binding("fill", "isSelected", function (s, obj) { return s ? "lightgray" : "white"; }).ofObject()
         ),
         $(go.Shape,
         { name: "LINESHAPE", fill: "darkgray", strokeWidth: 0, height: 10 },
-        new go.Binding("width", "width", function (width, obj) { return width - 10; }), // 5px padding each side
+        new go.Binding("width", "length", function (width, obj) { return width - 10; }), // 5px padding each side
         new go.Binding("height", "height", function (height, obj) { return (height / 5); }),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject()
         )
@@ -443,8 +464,8 @@ function makeDoorNode() {
         // this is the shape that reprents the door itself and its swing
         $(go.Shape,
         { name: "SHAPE", strokeWidth: 1 },
-        new go.Binding("width", "width"),
-        new go.Binding("height", "width").makeTwoWay(),
+        new go.Binding("width", "length"),
+        new go.Binding("height", "length").makeTwoWay(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
         new go.Binding("fill", "color"),
         new go.Binding("geometryString", "swing", function (swing) {
@@ -462,7 +483,7 @@ function makeDoorNode() {
         new go.Binding("height", "doorOpeningHeight").makeTwoWay(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
         new go.Binding("fill", "isSelected", function (s, obj) { return s ? "lightgray" : "white"; }).ofObject(),
-        new go.Binding("width", "width").makeTwoWay()
+        new go.Binding("width", "length").makeTwoWay()
         )
       );
 }

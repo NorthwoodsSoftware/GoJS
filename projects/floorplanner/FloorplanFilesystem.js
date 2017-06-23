@@ -22,6 +22,7 @@
 */
 function FloorplanFilesystem(floorplan, state) {
     this._floorplan = floorplan;
+    this._floorplan.floorplanFilesystem = this;
     this._UNSAVED_FILENAME = "(Unsaved File)";
     this._DEFAULT_MODELDATA = {
         "units": "centimeters",
@@ -62,7 +63,7 @@ Object.defineProperty(FloorplanFilesystem.prototype, "state", {
 
 /*
 * Helper functions
-* Check Local Storage, Update File List, Open Element
+* Check Local Storage, Update File List, Open Window
 */
 
 // Ensure local storage works in browser (not supported by MS IE/Edge)
@@ -128,14 +129,17 @@ FloorplanFilesystem.prototype.newFloorplan = function() {
     floorplan.model = model;
     floorplan.undoManager.isEnabled = true;
     floorplan.isModified = false;
-    if (floorplan.floorplanUI) floorplan.floorplanUI.updateUI();
+    if (floorplan.floorplanUI) {
+        floorplan.floorplanUI.updateUI();
+        floorplan.floorplanUI.updateStatistics();
+    }
 }
 
 // Save current floor plan to local storage (Ctrl + S or File -> Save)
 FloorplanFilesystem.prototype.saveFloorplan = function () {
     if (checkLocalStorage()) {
         var saveName = this.getCurrentFileName();
-        if (saveName === this.UNSAVED_FILENAME) {
+        if (saveName === this.UNSAVED_FILENAME || saveName == null || saveName == undefined) {
             this.saveFloorplanAs();
         } else {
             window.localStorage.setItem(saveName, this.floorplan.model.toJson());
@@ -188,7 +192,10 @@ FloorplanFilesystem.prototype.loadFloorplanFromModel = function (str) {
     floorplan.nodes.each(function (node) {
         if (node.category === "WallGroup") floorplan.updateWall(node);
     });
-    if (floorplan.floorplanUI) floorplan.floorplanUI.updateUI();
+    if (floorplan.floorplanUI) {
+        floorplan.floorplanUI.updateUI();
+        floorplan.floorplanUI.updateStatistics();
+    }
 
     floorplan.commitTransaction("generate walls");
     floorplan.undoManager.isEnabled = true;
@@ -231,16 +238,20 @@ FloorplanFilesystem.prototype.showRemoveWindow = function () {
 }
 
 // Add * to current file element if diagram has been modified
-FloorplanFilesystem.prototype.setCurrentFileName= function(name) {
+FloorplanFilesystem.prototype.setCurrentFileName = function (name) {
     var currentFile = document.getElementById(this.state.currentFileId);
-    if (this.floorplan.isModified) name += "*";
-    currentFile.textContent = name;
+    if (currentFile) {
+        if (this.floorplan.isModified) name += "*";
+        currentFile.textContent = name;
+    }
 }
 
 // Get current file name from the current file element
 FloorplanFilesystem.prototype.getCurrentFileName = function() {
     var currentFile = document.getElementById(this.state.currentFileId);
-    var name = currentFile.textContent;
-    if (name[name.length - 1] === "*") return name.substr(0, name.length - 1);
+    if (currentFile) {
+        var name = currentFile.textContent;
+        if (name[name.length - 1] === "*") return name.substr(0, name.length - 1);
+    }
     return name;
 }

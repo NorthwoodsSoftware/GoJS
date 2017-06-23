@@ -84,8 +84,10 @@ Object.defineProperty(WallReshapingTool.prototype, "returnPoint", {
     set: function (val) { this._returnPoint = val;}
 });
 
-
-// Places reshape handles on either end of a wall node
+/*
+* Places reshape handles on either end of a wall node
+* @param {part} The wall to adorn
+*/
 WallReshapingTool.prototype.updateAdornments = function (part) {
     if (part === null || part instanceof go.Link) return;
     if (part.isSelected && !this.diagram.isReadOnly) {
@@ -157,7 +159,7 @@ WallReshapingTool.prototype.doActivate = function () {
         if (!shape) return;
         this.adornedShape = shape;
 
-        // store pre-reshape location of wall's reshaping endpoint 
+        // store pre-reshape location of wall's reshaping endpoint
         this.returnPoint = this.snapPointToGrid(diagram.firstInput.documentPoint);
 
         // store pre-reshape locations of all wall's members (windows / doors)
@@ -207,14 +209,14 @@ WallReshapingTool.prototype.doMouseUp = function () {
 WallReshapingTool.prototype.doDeactivate = function () {
     var diagram = this.diagram;
     var returnData = this.returnData;
-    // if you reshape a wall down to < 1 px, remove it from the diagram
+    // if a wall reshaped to length < 1 px, remove it
     var wall = this.handle.part.adornedPart;
     var sPt = wall.data.startpoint;
     var ePt = wall.data.endpoint;
     var length = Math.sqrt(sPt.distanceSquared(ePt.x, ePt.y));
     if (length < 1) {
         diagram.remove(wall); // remove wall
-        wall.memberParts.iterator.each(function (member) { diagram.remove(member); }) // remove wall's parts   
+        wall.memberParts.iterator.each(function (member) { diagram.remove(member); }) // remove wall's parts
         var wallDimensionLinkPointNodes = [];
         diagram.pointNodes.iterator.each(function (node) { if (node.data.key.indexOf(wall.data.key) !== -1) wallDimensionLinkPointNodes.push(node); });
         diagram.remove(wallDimensionLinkPointNodes[0]);
@@ -253,7 +255,10 @@ WallReshapingTool.prototype.doDeactivate = function () {
     this.isActive = false;
 }
 
-// Creates an adornment with 2 handles
+/*
+* Creates an adornment with 2 handles
+* @param {Shape} The adorned wall's Shape element
+*/
 WallReshapingTool.prototype.makeAdornment = function (selelt) {
     var adornment = new go.Adornment;
     adornment.type = go.Panel.Spot;
@@ -284,8 +289,10 @@ WallReshapingTool.prototype.makeHandle = function () {
     return h.copy();
 }
 
-// Calculate the angle and length made from the mousepoint and the non-moving handle
-// used to reshape wall when holding SHIFT
+/*
+* Calculate the angle and length made from the mousepoint and the non-moving handle; used to reshape wall when holding SHIFT
+* @param {Point} mousePt The mouse cursors coordinate position
+*/
 WallReshapingTool.prototype.calcAngleAndLengthFromHandle = function (mousePt) {
     var tool = this;
     var diagram = this.diagram;
@@ -314,7 +321,10 @@ WallReshapingTool.prototype.calcAngleAndLengthFromHandle = function (mousePt) {
     tool.length = distanceBetween;
 }
 
-// Takes a point -- returns a new point that is closest to the original point that conforms to the grid snap
+/*
+* Takes a point -- returns a new point that is closest to the original point that conforms to the grid snap
+* @param {Point} point The point to snap to grid
+*/
 WallReshapingTool.prototype.snapPointToGrid = function (point) {
     var diagram = this.diagram;
     var newx = diagram.model.modelData.gridSize * Math.round(point.x / diagram.model.modelData.gridSize);
@@ -323,7 +333,10 @@ WallReshapingTool.prototype.snapPointToGrid = function (point) {
     return newPt;
 }
 
-// Reshapes the shape's geometry, updates model data
+/*
+* Reshapes the shape's geometry, updates model data
+* @param {Point} newPoint The point to move the reshaping wall's reshaping endpoint to
+*/
 WallReshapingTool.prototype.reshape = function (newPoint) {
     var diagram = this.diagram;
     var tool = this;
@@ -409,7 +422,7 @@ WallReshapingTool.prototype.reshape = function (newPoint) {
 
     var type = this.handle.name;
     if (type === undefined) return;
-    // set the appropriate point in the node's data to the newPoint value 
+    // set the appropriate point in the node's data to the newPoint value
     switch (type) {
         case 'sPt':
             reshapeWall(node, node.data.endpoint, node.data.startpoint, newPoint, diagram, tool);
@@ -423,9 +436,16 @@ WallReshapingTool.prototype.reshape = function (newPoint) {
     diagram.updateWallDimensions();
 }
 
-// Maintain position of all wallParts as best as possible when a wall is being reshaped
-// position is relative to the distance a wallPart's location is from the stationaryPoint of the wall
-// This is called during WallReshapingTool's reshape function
+/*Maintain position of all wallParts as best as possible when a wall is being reshaped
+* Position is relative to the distance a wallPart's location is from the stationaryPoint of the wall
+* This is called during WallReshapingTool's reshape function
+* @param {Group} wall The wall being reshaped
+* @param {Point} stationaryPoint The endpoint of the wall not being reshaped
+* @param {Point} movingPoint The endpoint of the wall being reshaped
+* @param {Point} newPoint The point that movingPoint is going to
+* @param {Diagram} diagram The diagram belonging WallReshapingTool belongs to
+* @param {WallReshapingTool} tool
+*/
 function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool) {
     var wallParts = wall.memberParts;
     var arr = [];
@@ -436,7 +456,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     var closestPart  = null; var closestDistance = Number.MAX_VALUE;
     for (var i = 0; i < arr.length; i++) {
         var part = arr[i];
-        var distanceToStationaryPt = Math.sqrt(part.location.distanceSquaredPoint(stationaryPoint));        
+        var distanceToStationaryPt = Math.sqrt(part.location.distanceSquaredPoint(stationaryPoint));
         distancesMap.add(part.data.key, distanceToStationaryPt);
         // distanceToMovingPt is determined by whichever endpoint of the wallpart is closest to movingPoint
         var endpoints = getWallPartEndpoints(part);
@@ -491,7 +511,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     });
 }
 
-// Show if the wall (at the adjustment handle being moved) lines up with other wall edges 
+// Show if the wall (at the adjustment handle being moved) lines up with other wall edges
 WallReshapingTool.prototype.showMatches = function () {
     //if (!(document.getElementById('wallGuidelinesCheckbox').checked)) return;
     var diagram = this.diagram;
@@ -526,16 +546,20 @@ WallReshapingTool.prototype.showMatches = function () {
     })
 }
 
-// Static function -- checks if there exists a horiontal or vertical line (decided by 'coord' parameter) between pt and compare pt
-// if so, draws a link between the two, letting the user know the wall they're reshaping lines up with another's edge
+/* Static function -- checks if there exists a horiontal or vertical line (decided by 'coord' parameter) between pt and compare pt
+* if so, draws a link between the two, letting the user know the wall they're reshaping lines up with another's edge
+* @param {Point} pt
+* @param {Number} comparePtCoord
+* @param {Number} ptCoord
+* @param {Point} comparePt
+*/
 WallReshapingTool.prototype.checkPtLinedUp = function (pt, comparePtCoord, ptCoord, comparePt) {
     function makeGuideLinePoint() {
         var $ = go.GraphObject.make;
         return $(go.Node, "Spot", { locationSpot: go.Spot.TopLeft, locationObjectName: "SHAPE", desiredSize: new go.Size(1, 1), },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, { stroke: null, strokeWidth: 1, name: "SHAPE", fill: "black", })
-      );
-    }
+      );}
 
     function makeGuideLineLink() {
         var $ = go.GraphObject.make;
@@ -544,8 +568,7 @@ WallReshapingTool.prototype.checkPtLinedUp = function (pt, comparePtCoord, ptCoo
         new go.Binding("strokeWidth", "width"),
         new go.Binding('stroke', 'stroke')
         )
-    )
-    }
+    );}
 
     var diagram = this.diagram;
     var errorMargin = Math.abs(comparePtCoord - ptCoord);

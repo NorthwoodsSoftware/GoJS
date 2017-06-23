@@ -46,7 +46,7 @@ Object.defineProperty(FigureParameter.prototype, "name", {
 });
 
 /**
-* Gets or sets the default value for the parameter. 
+* Gets or sets the default value for the parameter.
 * @name FigureParameter#defaultValue
 * @function
 * @return {number}
@@ -74,7 +74,7 @@ Object.defineProperty(FigureParameter.prototype, "minimum", {
 });
 
 /**
-* Gets or sets the maximum value allowed for the figure parameter. 
+* Gets or sets the maximum value allowed for the figure parameter.
 * @name FigureParameter#maximum
 * @function.
 * @return {number}
@@ -1165,7 +1165,7 @@ go.Shape.setFigureParameter("Ring", 0, new FigureParameter("Thickness", 8));
 go.Shape.defineFigureGenerator("Ring", function(shape, w, h) {
   var param1 = shape ? shape.parameter1 : NaN;
   if (isNaN(param1) || param1 < 0) param1 = 8;
-  
+
   var rad = w / 2;
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w, w / 2, true);  // clockwise
@@ -1253,6 +1253,16 @@ go.Shape.defineFigureGenerator("Pie", function(shape, w, h) {
                   .close()));
 });
 
+go.Shape.defineFigureGenerator("PiePiece", function(shape, w, h) {
+  var factor = KAPPA / Math.SQRT2 * .5;
+  var x1 = Math.SQRT2 / 2;
+  var y1 = 1 - Math.SQRT2 / 2;
+  return new go.Geometry()
+    .add(new go.PathFigure(w, h, true)
+      .add(new go.PathSegment(go.PathSegment.Bezier,  x1 * w, y1 * h, w, (1 - factor) * h, (x1 + factor) * w, (y1 + factor) * h))
+      .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
+});
+
 go.Shape.setFigureParameter("ThickCross", 0, new FigureParameter("Thickness", 30));
 go.Shape.defineFigureGenerator("ThickCross", function(shape, w, h) {
   var param1 = shape ? shape.parameter1 : NaN;
@@ -1328,7 +1338,7 @@ go.Shape.defineFigureGenerator("ThickX", function(shape, w, h) {
     var geo = new go.Geometry();
     var fig = new go.PathFigure(dx, 0, true);
     geo.add(fig);
-  
+
     fig.add(new go.PathSegment(go.PathSegment.Line, w2, .2 * h));
     fig.add(new go.PathSegment(go.PathSegment.Line, w-dx, 0));
     fig.add(new go.PathSegment(go.PathSegment.Line, w, dy));
@@ -1679,7 +1689,7 @@ go.Shape.defineFigureGenerator("Fragile", function(shape, w, h) {
 go.Shape.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 20));
 go.Shape.defineFigureGenerator("HourGlass", function(shape, w, h) {
   var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1) || param1 < 0) param1 = 30; // default value for param1 
+  if (isNaN(param1) || param1 < 0) param1 = 30; // default value for param1
   var line1 = ((w - param1) / 2) + param1; // 35 + 30 = 65
   var line2 = ((w - param1) / 2); // 100 - 30 = 70/2 = 35
   return new go.Geometry()
@@ -2039,7 +2049,7 @@ go.Shape.defineFigureGenerator("DoubleArrow", function(shape, w, h) {
   return geo;
 });
 
-// JC 
+// JC
 // added a new parameter to allow to adjust the connecter piece height
 // might need to do something about the parameter min and max and make it more accesible
 go.Shape.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .7, .5, 1));
@@ -2077,7 +2087,7 @@ go.Shape.defineFigureGenerator("DoubleEndArrow", function(shape, w, h) {
 go.Shape.setFigureParameter("DoubleEndArrow2", 0, new FigureParameter("ConnecterHeight", 40));
 go.Shape.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowPointerHeight", 70));
 go.Shape.defineFigureGenerator("DoubleEndArrow2", function(shape, w, h) {
-  // This is absolute 
+  // This is absolute
   var geo = new go.Geometry();
   var param1 = shape ? shape.parameter1 : NaN;
   if (isNaN(param1)) param1 = 70; // default value for param1
@@ -2098,7 +2108,7 @@ go.Shape.defineFigureGenerator("DoubleEndArrow2", function(shape, w, h) {
   if (param1 > h) {
     // in attempts to leave the shape with the same proportions
     var newParamValue = h / param1; // this will be the proportion we try to recreate
-    // h - newParamValue = 
+    // h - newParamValue =
     var newMiddle = h * newParamValue; // calculates how big the middle will be now
     // Using the same formula above, we recalculate with the value for the newMiddle instead of Param1
     line1 = ((h - newMiddle) / 2) + newMiddle;
@@ -2143,11 +2153,11 @@ go.Shape.defineFigureGenerator("DoubleEndArrow2", function(shape, w, h) {
   return geo;
 });
 
-// JC 
+// JC
 // this parameter makes it possible for the user to set a width for a long edge of the IBeamArrow
 // allows the user to adjust the vertical width of the long section, i might have to draw a diagram
 go.Shape.setFigureParameter("IBeamArrow", 0, new FigureParameter("ArrowLengthWidth", .7, .51, .97));
-// go.Shape.setFigureParameter("IBeamArrow", 1, new FigureParameter("ArrowBackSection"))    
+// go.Shape.setFigureParameter("IBeamArrow", 1, new FigureParameter("ArrowBackSection"))
 go.Shape.defineFigureGenerator("IBeamArrow", function(shape, w, h) {
   var geo = new go.Geometry();
   var param1 = shape ? shape.parameter1 : NaN;
@@ -2177,7 +2187,7 @@ go.Shape.defineFigureGenerator("IBeamArrow", function(shape, w, h) {
 // JC
 // recreating the same thing above only using absolute values to figure out the size of the long side
 go.Shape.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ArrowLengthWidth", 40));
-// go.Shape.setFigureParameter("IBeamArrow2", 1, new FigureParameter("ArrowBackSection"))    
+// go.Shape.setFigureParameter("IBeamArrow2", 1, new FigureParameter("ArrowBackSection"))
 go.Shape.defineFigureGenerator("IBeamArrow2", function(shape, w, h) {
   var geo = new go.Geometry();
   var param1 = shape ? shape.parameter1 : NaN;
@@ -2190,7 +2200,7 @@ go.Shape.defineFigureGenerator("IBeamArrow2", function(shape, w, h) {
   if (param1 >= h) {
     // in attempts to leave the shape with the same proportions
     var newParamValue = h / param1; // this will be the proportion we try to recreate
-    // h - newParamValue = 
+    // h - newParamValue =
     var newMiddle = h * newParamValue; // calculates how big the middle will be now
     // Using the same formula above, we recalculate with the value for the newMiddle instead of Param1
     line1 = ((h - newMiddle) / 2) + newMiddle;
@@ -2241,7 +2251,7 @@ go.Shape.defineFigureGenerator("Pointer", function(shape, w, h) {
   return geo;
 });
 
-// JC - FigureParameter the steepness of the rounded edge 
+// JC - FigureParameter the steepness of the rounded edge
 // go.Shape.setFigureParameter("RoundedPointer", 0 new FigureParameter("RoundedEdged", 0, 0, 0));// ???
 go.Shape.defineFigureGenerator("RoundedPointer", function(shape, w, h) {
   // var param1 = shape ? shape.parameter1 : NaN;
@@ -2260,7 +2270,7 @@ go.Shape.defineFigureGenerator("RoundedPointer", function(shape, w, h) {
   return geo;
 });
 
-// JC Adding soem parameters to this  
+// JC Adding soem parameters to this
 // add param to make long part adjustable
 go.Shape.setFigureParameter("SplitEndArrow", 0, new FigureParameter("LengthThickness", 0.7, 0.52, .9));
 go.Shape.defineFigureGenerator("SplitEndArrow", function(shape, w, h) {
@@ -2297,7 +2307,7 @@ go.Shape.defineFigureGenerator("SplitEndArrow2", function(shape, w, h) {
   if (param1 >= h) {
     // in attempts to leave the shape with the same proportions
     var newParamValue = h / param1; // this will be the proportion we try to recreate
-    // h - newParamValue = 
+    // h - newParamValue =
     var newMiddle = h * newParamValue; // calculates how big the middle will be now
     // Using the same formula above, we recalculate with the value for the newMiddle instead of Param1
     line1 = ((h - newMiddle) / 2) + newMiddle;
@@ -2426,7 +2436,7 @@ go.Shape.defineFigureGenerator("Cylinder1", function(shape, w, h) {
   var fig = new go.PathFigure(0, .1 * h, true);
   geo.add(fig);
 
-  // The base (top) 
+  // The base (top)
   fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 0, 0, (.1 - cpyOffset) * h,
     (.5 - cpxOffset) * w, 0));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 1.0 * w, .1 * h, (.5 + cpxOffset) * w, 0,
@@ -2704,7 +2714,7 @@ go.Shape.defineFigureGenerator("Actor", function(shape, w, h) {
 });
 
 // JC
-// adding parameter to make top corner size adjustable 
+// adding parameter to make top corner size adjustable
 // these are going to have to be adjusted
 go.Shape.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9)); // the cutout in the corner
 go.Shape.defineFigureGenerator("Card", function(shape, w, h) {
@@ -2755,7 +2765,7 @@ go.Shape.defineFigureGenerator("CreateRequest", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h).close());
   var fig2 = new go.PathFigure(0, param1 * h, false);
   geo.add(fig2);
-  // Inside lines 
+  // Inside lines
   fig2.add(new go.PathSegment(go.PathSegment.Line, w, param1 * h));
   fig2.add(new go.PathSegment(go.PathSegment.Move, 0, (1 - param1) * h));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w, (1 - param1) * h));
@@ -2838,7 +2848,7 @@ go.Shape.defineFigureGenerator("DiskStorage", function(shape, w, h) {
     w, (.1 - cpyOffset) * h));
   var fig2 = new go.PathFigure(w, .1 * h, false);
   geo.add(fig2);
-  // Rings 
+  // Rings
   fig2.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, .2 * h, w, (.1 + cpyOffset) * h,
     (.5 + cpxOffset) * w, .2 * h));
   fig2.add(new go.PathSegment(go.PathSegment.Bezier, 0, .1 * h, (.5 - cpxOffset) * w, .2 * h,
@@ -3213,7 +3223,7 @@ go.Shape.defineFigureGenerator("MultiDocument", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, 0).close());
   var fig2 = new go.PathFigure(.1 * w, .2 * h, false);
   geo.add(fig2);
-  // Inside lines 
+  // Inside lines
   fig2.add(new go.PathSegment(go.PathSegment.Line, .8 * w, .2 * h));
   fig2.add(new go.PathSegment(go.PathSegment.Line, .8 * w, .54 * h));
   fig2.add(new go.PathSegment(go.PathSegment.Move, .2 * w, .1 * h));
@@ -3517,7 +3527,7 @@ go.Shape.defineFigureGenerator("Clock", function(shape, w, h) {
   var fig3 = new go.PathFigure(.8 * w, .75 * h, false);
   geo.add(fig3);
   // Inside clock
-  // This first line solves a GDI+ graphical error with 
+  // This first line solves a GDI+ graphical error with
   // more complex gradient brushes
   fig3.add(new go.PathSegment(go.PathSegment.Line, .8 * w, .25 * h));
   fig3.add(new go.PathSegment(go.PathSegment.Line, .6 * w, .25 * h));
@@ -3841,7 +3851,7 @@ go.Shape.defineFigureGenerator("Wifi", function(shape, w, h) {
   var fig = new go.PathFigure(centerx * w + xOffset, (centery + radius) * h + yOffset, true);
   geo.add(fig);
 
-  // Left curves 
+  // Left curves
   fig.add(new go.PathSegment(go.PathSegment.Bezier, (centerx - radius) * w + xOffset,
       centery * h + yOffset, (centerx - cpOffset) * w + xOffset,
       (centery + radius) * h + yOffset,
@@ -5652,7 +5662,7 @@ go.Shape.defineFigureGenerator("SpeechBubble", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, (h * .60)));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, (h * .775)));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .55, (h * .60)));
-  fig.add(new go.PathSegment(go.PathSegment.Line, param1, (h * .60))); // ends at 25 
+  fig.add(new go.PathSegment(go.PathSegment.Line, param1, (h * .60))); // ends at 25
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, (h * .60) - param1, cpOffset, (h * .60), 0, (h * .60) - cpOffset));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, param1, 0, 0, cpOffset, cpOffset, 0).close());
@@ -5954,10 +5964,10 @@ go.Shape.defineFigureGenerator("CoffeeCup", function(shape, w, h) {
       var geo = new go.Geometry();
       var fig = new go.PathFigure(w * .2, h * 0, true);
       geo.add(fig);
-    
+
     fig.add(new go.PathSegment(go.PathSegment.Line, w * .8, h * 0));
         fig.add(new go.PathSegment(go.PathSegment.Line, w * .8, h * .05));
-    
+
       return geo;
   });
 */

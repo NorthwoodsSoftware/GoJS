@@ -60,7 +60,7 @@ function makeFurnitureRotateAdornmentTemplate() {
 
 // Return inverted color (in hex) of a given hex code color; used to determine furniture node stroke color
 function invertColor(hexnum) {
-    if (hexnum.indexOf('#') !== -1) hexnum = hexnum.substring(1);
+    if (hexnum.includes('#')) hexnum = hexnum.substring(1);
     if (hexnum.length != 6) {
         console.error("Hex color must be six hex numbers in length.");
         return false;

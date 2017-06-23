@@ -32,6 +32,264 @@ that you can see in the console log.  Always check the console log for any kinds
 are normally suppressed by the binding system.
 </p>
 
+<h2 id="RelationshipsOfPartsAndDataAndBinding">The Relationships of Parts and Data and Binding</h2>
+<p>
+  First, look at a diagram that includes comments about the GraphObjects used to build some example nodes and links:
+</p>
+<pre data-language="javascript" id="commented" style="display:none">
+    // Default node
+    diagram.nodeTemplate = 
+        $(go.Node, "Auto",
+            { scale : 1.6, isShadowed: true },
+            new go.Binding("location", "pos", go.Point.parse),
+            { locationSpot: go.Spot.Center, portId: "NODE" },
+            $(go.Shape, "RoundedRectangle",
+                { fill: "white", portId: "SHAPE" },
+                new go.Binding("fill", "color")),
+            $(go.TextBlock,
+                { margin: 4, portId: "TEXTBLOCK" },
+                new go.Binding("text", "txt"))
+    );
+
+    // Default Links
+    diagram.linkTemplate =
+        $(go.Link,
+            { isShadowed: true },
+            $(go.Shape,
+                { strokeWidth: 5, stroke: "orange" })
+    );
+
+    // Represents the nodeDataArray for the two nodes
+    diagram.nodeTemplateMap.add("dataNode",
+        $(go.Node, "Auto",
+        { 
+            locationSpot: go.Spot.Center,
+            scale: 1.2,
+            selectionAdorned: true,
+            fromSpot: go.Spot.AllSides,
+            toSpot: go.Spot.AllSides,
+            shadowColor: "#C5C1AA",
+        }, 
+            new go.Binding("location", "pos", go.Point.parse),
+            $(go.Shape, "Rectangle", // Rectangle shape to hold rest of elements
+                {  fill: "lightgray",    
+            }),
+            $(go.Panel, "Vertical",
+            { defaultStretch: go.GraphObject.Horizontal}, 
+                $(go.TextBlock, headerStyle(), // Header:
+                    { portId: "HEADER" },
+                    new go.Binding("text", "head")),
+                $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }), // Seperates with a horizontal line
+                $(go.TextBlock, textStyle(), // Location:
+                    { portId: "LOCATION"},
+                    new go.Binding("text", "loc")),
+                $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+                $(go.TextBlock, textStyle(), // Fill:
+                    { portId: "FILL"},
+                    new go.Binding("text", "color")),
+                $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }), 
+                $(go.TextBlock, textStyle(), // Text:
+                    { portId: "TEXT" },
+                    new go.Binding("text", "txt")),
+                $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+                $(go.TextBlock, textStyle(), // Text:
+                    { portId: "PARENT"},
+                    new go.Binding("text", "parent")),
+            ),    
+        )
+    );
+
+    diagram.linkTemplateMap.add("dataNode", // Links from dataNode to Nodes
+        $(go.Link,
+            { routing: go.Link.Orthogonal, corner: 5 },
+            $(go.Shape, { stroke: "gray", strokeWidth: 2}),
+            $(go.Shape, { toArrow: "Standard", stroke: "gray", fill: "gray" })
+    ));
+
+    diagram.nodeTemplateMap.add("title",
+       $(go.Node, "Auto",
+            new go.Binding("location", "pos", go.Point.parse),
+            $(go.TextBlock,
+                { font: "bold 25pt sans-serif", textAlign: "center"},
+                new go.Binding("text", "txt"))
+    ));
+
+    diagram.nodeTemplateMap.add("nodeDataArray",
+        $(go.Node, "Auto",
+        { 
+            locationSpot: go.Spot.Center,
+            scale: 1.2,
+            selectionAdorned: true,
+            fromSpot: go.Spot.AllSides,
+            toSpot: go.Spot.AllSides,
+            shadowColor: "#C5C1AA",
+        }, 
+            new go.Binding("location", "pos", go.Point.parse),
+            $(go.Shape, "Rectangle", // Rectangle shape to hold rest of elements
+                {  fill: "lightgray",    
+            }),
+            $(go.Panel, "Vertical",
+            { defaultStretch: go.GraphObject.Horizontal}, 
+                $(go.TextBlock, headerStyle(),
+                    { portId: "HEADER", text: "nodeDataArray"}),
+                $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }), // Seperates with a horizontal line
+                $(go.TextBlock, textStyle(),
+                    { portId: "dataNode1", desiredSize: new go.Size(NaN,16)}),
+                $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+                $(go.TextBlock, textStyle(),
+                    { portId: "dataNode2", desiredSize: new go.Size(NaN,16)}),
+            )
+        ));
+
+    // Comments
+    diagram.nodeTemplateMap.add("Comment", // Template for comment node
+        $(go.Node,
+            new go.Binding("location", "pos", go.Point.parse),
+            { locationSpot: go.Spot.Center},
+            $(go.TextBlock,
+                { stroke: "brown", textAlign: "center" },
+                new go.Binding("text", "txt"),
+                new go.Binding("font", "bold", function(b) { return b ? "bold 10pt sans-serif" : "10pt sans-serif"; }))
+    ));
+
+    diagram.nodeTemplateMap.add("LinkLabel", // Template for comments on links
+        $(go.Node,
+            new go.Binding("segmentIndex"),
+            new go.Binding("segmentOffset")
+    ));
+
+    diagram.linkTemplateMap.add("Comment", // Template for links from comments
+        $(go.Link,
+            { curve: go.Link.Bezier },
+            new go.Binding("curviness"),
+            $(go.Shape, { stroke: "brown" }),
+            $(go.Shape, { toArrow: "OpenTriangle", stroke: "brown" })
+    ));
+  
+    diagram.linkTemplateMap.add("Binding",
+        $(go.Link,
+            { curve: go.Link.Bezier },
+            new go.Binding("curviness"),
+            $(go.Shape, { stroke: "green" , strokeWidth: 2, strokeDashArray: [10, 10]}),
+            $(go.Shape, { toArrow: "OpenTriangle", stroke: "green", strokeWidth: 2})
+    ));
+  
+    diagram.linkTemplateMap.add("Data",
+        $(go.Link,
+            { curve: go.Link.Bezier },
+            new go.Binding("curviness"),
+            $(go.Shape, { stroke: "gray" , strokeWidth: 2}),
+            $(go.Shape, { toArrow: "Standard", fill: "gray", stroke: "gray", strokeWidth: 2}),
+            $(go.TextBlock, ".data", { font: "bold 12pt Courier", segmentOffset: new go.Point(0, -10) })
+    ));
+
+    diagram.initialContentAlignment = go.Spot.Center;
+    
+    var model = new go.GraphLinksModel();
+    model.linkFromPortIdProperty = "fPID";
+    model.linkToPortIdProperty = "tPID"
+    model.linkLabelKeysProperty = "labels";
+
+    model.nodeDataArray = [
+        { key: 1, txt: "Alpha", color: "lightblue",  pos: "50 20"}, 
+        { key: 2, txt: "Beta",  color: "lightgreen", pos: "50 270"},
+        { key: 3, category: "dataNode", pos: "300 66",  head: "key: 1", txt: "text: Alpha", color: "color: lightblue",  loc: "location: 50 0",   parent: "parent: null"},
+        { key: 4, category: "dataNode", pos: "300 316", head: "key: 2", txt: "text: Beta",  color: "color: lightgreen", loc: "location: 50 250", parent: "parent: 1"},
+        { key: 5, category: "nodeDataArray", pos: "500 125"},
+        { key: 6, category: "title", pos: "320 -100", txt: "TreeModel,\n data"},
+        { key: 7, category: "title", pos: "-50 -100", txt: "Diagram,\nNodes, Links"},
+        { key: -1, category: "Comment", pos: "310 190", txt: "These two\ndata Objects are\nare held in the\nnodeDataArray."},
+        { key: -2, category: "Comment", pos: "100 100", txt: "a Link", bold: true},
+        { key: -21, category: "LinkLabel"},
+        { key: -3, category: "Comment", pos: "0 130",  txt: "two Nodes", bold: true},
+        { key: -4, category: "Comment", pos: "190 180",  txt: "data binding", bold: true},
+        { key: -41, category: "LinkLabel", segmentOffset: new go.Point(45, 0)},
+        { key: -42, category: "LinkLabel", segmentOffset: new go.Point(20, 0)},
+        { key: -43, category: "LinkLabel", segmentOffset: new go.Point(-10, 0)},
+        { key: -44, category: "LinkLabel", segmentOffset: new go.Point(25, 0)},
+        { key: -45, category: "LinkLabel", segmentOffset: new go.Point(20, 0)},
+        { key: -46, category: "LinkLabel", segmentOffset: new go.Point(-10, 0)}
+    ];
+    model.linkDataArray = [
+        { from: 1, to: 2, labels: [-21] },
+        { from: 1, tPID: "HEADER", to: 3, category: "Data", curviness: 0},
+        { from: 2, tPID: "HEADER", to: 4, category: "Data", curviness: 0},
+        { from: -21, tPID: "HEADER", to: 4, category: "Data", curviness: -50},
+        { from: 5, fPID: "dataNode1", to: 3, tPID: "HEADER", category: "dataNode"},
+        { from: 5, fPID: "dataNode2", to: 4, tPID: "HEADER", category: "dataNode"},
+
+        { from: -1, to: 3, category: "Comment"},
+        { from: -1, to: 4, category: "Comment"},
+        { from: -2, to: -21, category: "Comment", curviness: 10},
+        { from: -3, to: 1, category: "Comment", curviness: 10},
+        { from: -3, to: 2, category: "Comment", curviness: -10},
+        { from: -4, to: -41, category: "Comment", curviness: 5},
+        { from: -4, to: -42, category: "Comment", curviness: 5},
+        { from: -4, to: -43, category: "Comment", curviness: 5},
+        { from: -4, to: -44, category: "Comment", curviness: 5},
+        { from: -4, to: -45, category: "Comment", curviness: 5},
+        { from: -4, to: -46, category: "Comment", curviness: 5},
+        { from: -4, to: -47, category: "Comment", curviness: 5},
+
+        { from: 3, fPID: "LOCATION", to: 1, tPID: "NODE", category: "Binding", curviness: 10, labels: [-41]},
+        { from: 3, fPID: "FILL", to: 1, tPID: "SHAPE" , category: "Binding", curviness: 30, labels: [-42]},
+        { from: 3, fPID: "TEXT", to: 1, tPID: "TEXTBLOCK", category: "Binding", curviness: 50, labels: [-43]},
+        { from: 4, fPID: "LOCATION", to: 2, tPID: "NODE", category: "Binding", curviness: 10, labels: [-44]},
+        { from: 4, fPID: "FILL", to: 2, tPID: "SHAPE" , category: "Binding", curviness: 30, labels: [-45]},
+        { from: 4, fPID: "TEXT", to: 2, tPID: "TEXTBLOCK", category: "Binding", curviness: 50, labels: [-46]}
+    ];
+
+    diagram.model = model;
+
+    // Formatting
+    function headerStyle() {
+        return {
+            margin: 3, 
+            font: "bold 12pt sans-serif",
+            minSize: new go.Size(16, 16), 
+            maxSize: new go.Size(120, NaN),
+            textAlign: "center"
+        };
+    }
+    function textStyle() {
+        return {
+            margin: 2, 
+            font: "10pt sans-serif",
+            minSize: new go.Size(16, 16), 
+            maxSize: new go.Size(120, NaN),
+            textAlign: "center",
+        };
+    }
+</pre>
+<script>goCode("commented", 650, 550)</script>
+<p>
+The two <a>Node</a>s and one <a>Link</a> belong to the <a>Diagram</a> and are on the left side, with shadows.
+The <a>TreeModel</a> and the two data objects in its <a>Model.nodeDataArray</a> are on the right side, in gray.
+</p>
+<p>
+Each <a>Node</a> and <a>Link</a> has a <a>Panel.data</a> property that references the data object in the model.
+Thus it is easy, given a Node, to refer to all of the data properties that you have put on the data in the model.
+These references are drawn as gray links.
+</p>
+<p>
+Each <a>Node</a> also has three <a>Binding</a>s, drawn with dashed green lines:
+</p>
+<ul>
+  <li>to the <a>Part.location</a> property from the <code>data.location</code> property</li>
+  <li>to the <a>Shape.fill</a> property from the <code>data.color</code> property</li>
+  <li>to the <a>TextBlock.text</a> property from the <code>data.text</code> property</li>
+</ul>
+<p>
+The use of templates and data binding greatly simplify the information that must be stored in model data,
+and allow great flexibility in representing nodes and links in various manners independent of the model data.
+But not all data properties need to be used in Bindings in the template.
+</p>
+<p>
+Note that <a>Binding</a>s are <em>not</em> references from the data to any <a>Part</a>.
+The whole point of separating models from diagrams is to avoid references from data to Diagrams or Nodes or Links or Tools.
+The only references from diagram to model are the <a>Diagram.model</a> property and each node or link's <a>Panel.data</a> property.
+</p>
+
 <h2 id="BindingStringAndNumberProperties">Binding string and number properties</h2>
 <p>
 It is easy to data bind <a>GraphObject</a> properties to data properties.

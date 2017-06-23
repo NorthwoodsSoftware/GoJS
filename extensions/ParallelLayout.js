@@ -20,9 +20,9 @@ function ParallelLayout() {
   go.TreeLayout.call(this);
   this.isRealtime = false;
   // these are desired for the Parallel Layout:
-  this.alignment = go.TreeLayout.AlignmentCenterSubtrees;
+  this.alignment = go.TreeLayout.AlignmentCenterChildren;
   this.compaction = go.TreeLayout.CompactionNone;
-  this.alternateAlignment = go.TreeLayout.AlignmentCenterSubtrees;
+  this.alternateAlignment = go.TreeLayout.AlignmentCenterChildren;
   this.alternateCompaction = go.TreeLayout.CompactionNone;
 }
 go.Diagram.inherit(ParallelLayout, go.TreeLayout);
@@ -32,6 +32,10 @@ ParallelLayout.prototype.makeNetwork = function(coll) {
   // look for and remember the one "Split" node and the one "Merge" node
   for (var it = net.vertexes.iterator; it.next(); ) {
     var v = it.value;
+    // handle asymmetric Groups, where the Placeholder is not centered
+    if (v.node instanceof go.Group && v.node.isSubGraphExpanded && v.node.placeholder !== null) {
+      v.focus = v.node.placeholder.getDocumentPoint(go.Spot.Center).subtract(v.node.position);
+    }
     if (v.node.category === "Split") {
       if (net.splitNode) throw new Error("Split node already exists in " + this + " -- existing: " + net.splitNode + " new: " + v.node);
       net.splitNode = v.node;

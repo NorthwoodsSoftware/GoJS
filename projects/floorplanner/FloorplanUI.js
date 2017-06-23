@@ -66,8 +66,8 @@
 	}
 	scaleDisplayId:
 	setBehaviorClass:
-	wallWidthInputId:
-	wallWidthBoxId:
+	wallThicknessInputId:
+	wallThicknessBoxId:
 	unitsBoxId:
 	unitsInputId:
 */
@@ -77,6 +77,7 @@ function FloorplanUI(floorplan, name, floorplanName, state) {
 	this._floorplanName = floorplanName;
 	this._state = state;
 	this._furnitureNodeData = null; // used for searchFurniture function. set only once
+	this.floorplan.floorplanUI = this;
 }
 
 // Get Floorplan associated with this UI
@@ -110,35 +111,6 @@ Object.defineProperty(FloorplanUI.prototype, "furnitureData", {
 * Search Furniture, Checkbox Changed, Change Units, Set Behavior, Update UI
 */
 
-/* 
-* Open a specifed window element (used with Open / Remove windows)
-* @param {String} id The ID of the window to open
-* @param {String} listid The ID of the listview element in the window
-*/
-FloorplanUI.prototype.openElement = function(id, listId) {
-	var panel = document.getElementById(id);
-	if (panel.style.visibility === "hidden") {
-		updateFileList(listId);
-		panel.style.visibility = "visible";
-	}
-}
-
-/*
-* Hide the window elements when the "X" button is pressed
-* @param {String} id The ID of the window to close
-*/
-FloorplanUI.prototype.closeElement = function(id) {
-	var windows = this.state.windows;
-	var menuButtons = this.state.menuButtons;
-	var panel = document.getElementById(id);
-	if (id === windows.selectionInfoWindow.id) document.getElementById(menuButtons.selectionInfoWindowButtonId).innerHTML = "Show Node Info Help <p class='shortcut'> (Ctrl + I)</p>";
-	if (id === windows.palettesWindow.id) document.getElementById(menuButtons.palettesWindowButtonId).innerHTML = "Show Palettes <p class='shortcut'> (Ctrl + P)</p>";
-	if (id === windows.overviewWindow.id) document.getElementById(menuButtons.overviewWindowButtonId).innerHTML = "Show Overview <p class='shortcut'> (Ctrl + E)</p>";
-	if (id === windows.optionsWindow.id) document.getElementById(menuButtons.optionsWindowButtonId).innerHTML = "Show Options <p class='shortcut'> (Ctrl + B)</p>";
-	if (id === windows.statisticsWindow.id) document.getElementById(menuButtons.statisticsWindowButtonId).innerHTML = "Show Statistics <p class='shortcut'> (Ctrl + G)</p>";
-	panel.style.visibility = "hidden";
-}
-
 /*
 * Hide or show specific help/windows (used mainly with hotkeys)
 * @param {String} id The ID of the window to show / hide
@@ -158,13 +130,10 @@ FloorplanUI.prototype.hideShow = function(id) {
 			break;
 		}
 	}
-	if (element.style.visibility === "visible") {
-		element.style.visibility = "hidden";
-		document.getElementById(id + 'Button').innerHTML = "Show " + str + "<p class='shortcut'> (Ctrl + " + char + " )</p>";
-	} else {
-		element.style.visibility = "visible";
-		document.getElementById(id + 'Button').innerHTML = "Hide " + str + "<p class='shortcut'> (Ctrl + " + char + " )</p>";
-	}
+	var button = document.getElementById(id + 'Button');
+	element.style.visibility = element.style.visibility === "visible" ? "hidden" : "visible";
+	var verb = element.style.visibility === "visible" ? "Hide " : "Show ";
+	if (button) button.innerHTML = verb + str + "<p class='shortcut'> (Ctrl + " + char + " )</p>";
 }
 
 /*
@@ -172,8 +141,8 @@ FloorplanUI.prototype.hideShow = function(id) {
 * @param {String} str The text to display in the Diagram Help div
 */
 FloorplanUI.prototype.setDiagramHelper = function(str) {
-	var windows = this.state.windows;
-	document.getElementById(windows.diagramHelpDiv.id).innerHTML = '<p>' + str + '</p>';
+	var helper = document.getElementById(this.state.windows.diagramHelpDiv.id);
+	if (helper) helper.innerHTML = '<p>' + str + '</p>';
 }
 
 /*
@@ -200,7 +169,7 @@ FloorplanUI.prototype.changeGridSize = function () {
 	floorplan.skipsUndoManager = true;
 	floorplan.startTransaction("change grid size");
 	var el = document.getElementById(this.state.windows.optionsWindow.gridSizeInputId); var input;
-	if (!isNaN(el.value) && el.value != null && el.value != '' && el.value != undefined) input = parseFloat(el.value);
+	if (!isNaN(el.value) && el.value != null && el.value != '' && el.value != undefined && el.value > 1) input = parseFloat(el.value);
 	else {
 		el.value = floorplan.convertPixelsToUnits(10); // if bad input given, revert to 20cm (10px) or unit equivalent
 		input = parseFloat(el.value);
@@ -231,7 +200,7 @@ FloorplanUI.prototype.searchFurniture = function () {
 	if (str !== null && str !== undefined && str !== "") {
 		for (var i = 0; i < items.length; i += 0) {
 			var item = items[i];
-			if (item.type.toLowerCase().indexOf(str.toLowerCase() === -1)) {
+			if (item.type.toLowerCase().indexOf(str.toLowerCase()) === -1) {
 				items.splice(i, 1);
 			}
 			else i++;
@@ -325,32 +294,32 @@ FloorplanUI.prototype.setBehavior = function (string) {
 		if (el.id === string + "Button") el.style.backgroundColor = '#4b545f';
 		else el.style.backgroundColor = '#bbbbbb';
 	}
-	var wallWidthBox = document.getElementById(this.state.wallWidthBoxId)
+	var wallThicknessBox = document.getElementById(this.state.wallThicknessBoxId)
 	if (string === 'wallBuilding') {
 		wallBuildingTool.isEnabled = true;
 		wallReshapingTool.isEnabled = false;
 
 		floorplan.skipsUndoManager = true;
-		floorplan.startTransaction("change wallWidth");
-		// create walls with wallWidth in input box
-		floorplan.model.setDataProperty(floorplan.model.modelData, 'wallWidth', parseFloat(document.getElementById('wallWidthInput').value));
-		var wallWidth = floorplan.model.modelData.wallWidth;
-		if (isNaN(wallWidth)) floorplan.model.setDataProperty(floorplan.model.modelData, 'wallWidth', 5);
+		floorplan.startTransaction("change wallThickness");
+		// create walls with wallThickness in input box
+		floorplan.model.setDataProperty(floorplan.model.modelData, 'wallThickness', parseFloat(document.getElementById(ui.state.wallThicknessInputId).value));
+		var wallThickness = floorplan.model.modelData.wallThickness;
+		if (isNaN(wallThickness)) floorplan.model.setDataProperty(floorplan.model.modelData, 'wallThickness', 5);
 		else {
-			var width = floorplan.convertUnitsToPixels(wallWidth);
-			floorplan.model.setDataProperty(floorplan.model.modelData, 'wallWidth', width);
+			var width = floorplan.convertUnitsToPixels(wallThickness);
+			floorplan.model.setDataProperty(floorplan.model.modelData, 'wallThickness', width);
 		}
-		floorplan.commitTransaction("change wallWidth");
+		floorplan.commitTransaction("change wallThickness");
 		floorplan.skipsUndoManager = false;
-		wallWidthBox.style.visibility = 'visible';
-		wallWidthBox.style.display = 'inline-block';
+		wallThicknessBox.style.visibility = 'visible';
+		wallThicknessBox.style.display = 'inline-block';
 		ui.setDiagramHelper("Click and drag on the diagram to draw a wall (hold SHIFT for 45 degree angles)");
 	}
 	if (string === 'dragging') {
 		wallBuildingTool.isEnabled = false;
 		wallReshapingTool.isEnabled = true;
-		wallWidthBox.style.visibility = 'hidden';
-		wallWidthBox.style.display = 'none';
+		wallThicknessBox.style.visibility = 'hidden';
+		wallThicknessBox.style.display = 'none';
 	}
 	// clear resize adornments on walls/windows, if there are any
 	floorplan.nodes.iterator.each(function (n) { n.clearAdornments(); })
@@ -368,7 +337,7 @@ FloorplanUI.prototype.updateUI = function () {
 	var modelData = floorplan.model.modelData;
 	var checkboxes = this.state.windows.optionsWindow.checkboxes;
 	if (floorplan.floorplanUI) floorplan.floorplanUI.changeUnits();
-	document.getElementById(this.state.wallWidthInputId).value = floorplan.convertPixelsToUnits(modelData.wallWidth);
+	document.getElementById(this.state.wallThicknessInputId).value = floorplan.convertPixelsToUnits(modelData.wallThickness);
 	// update options GUI based on floorplan.model.modelData.preferences
 	var preferences = modelData.preferences;
 	document.getElementById(checkboxes.showGridCheckboxId).checked = preferences.showGrid;
@@ -384,34 +353,36 @@ FloorplanUI.prototype.updateStatistics = function () {
 	var floorplan = this.floorplan;
 	var statsWindow = this.state.windows.statisticsWindow;
 	var element = document.getElementById(statsWindow.textDivId);
-	element.innerHTML = "<div class='row'><div class='col-2' style='height: 165px; overflow: auto;'> Item Types <table id='"+ statsWindow.numsTableId +"'></table></div><div class='col-2'> Totals <table id='totalsTable'></table></div></div>";
-	// fill Item Types table with node type/count of all nodes in diagram
-	var numsTable = document.getElementById(statsWindow.numsTableId);
+	if (element) {
+		element.innerHTML = "<div class='row'><div class='col-2' style='height: 165px; overflow: auto;'> Item Types <table id='" + statsWindow.numsTableId + "'></table></div><div class='col-2'> Totals <table id='totalsTable'></table></div></div>";
+		// fill Item Types table with node type/count of all nodes in diagram
+		var numsTable = document.getElementById(statsWindow.numsTableId);
 
-	// get all palette nodes associated with this Floorplan
-	var palettes = floorplan.palettes;
-	var allPaletteNodes = [];
-	for (var i = 0; i < palettes.length; i++) {
-		allPaletteNodes = allPaletteNodes.concat(palettes[i].model.nodeDataArray);
-	}
+		// get all palette nodes associated with this Floorplan
+		var palettes = floorplan.palettes;
+		var allPaletteNodes = [];
+		for (var i = 0; i < palettes.length; i++) {
+			allPaletteNodes = allPaletteNodes.concat(palettes[i].model.nodeDataArray);
+		}
 
-	for (var i = 0; i < allPaletteNodes.length; i++) {
-		var type = allPaletteNodes[i].type;
-		var num = floorplan.findNodesByExample({ type: type }).count;
-		if (num > 0) // only display data for nodes that exist on the diagram
-			numsTable.innerHTML += "<tr class='data'> <td style='float: left;'>" + type + "</td> <td style='float: right;'> " + num + "</td></tr>";
+		for (var i = 0; i < allPaletteNodes.length; i++) {
+			var type = allPaletteNodes[i].type;
+			var num = floorplan.findNodesByExample({ type: type }).count;
+			if (num > 0) // only display data for nodes that exist on the diagram
+				numsTable.innerHTML += "<tr class='data'> <td style='float: left;'>" + type + "</td> <td style='float: right;'> " + num + "</td></tr>";
+		}
+		// fill Totals table with lengths of all walls
+		totalsTable = document.getElementById('totalsTable');
+		var walls = floorplan.findNodesByExample({ category: "WallGroup" });
+		var totalLength = 0;
+		walls.iterator.each(function (wall) {
+			var wallLength = Math.sqrt(wall.data.startpoint.distanceSquaredPoint(wall.data.endpoint));
+			totalLength += wallLength;
+		});
+		totalLength = floorplan.convertPixelsToUnits(totalLength).toFixed(2);
+		var unitsAbbreviation = floorplan.model.modelData.unitsAbbreviation;
+		totalsTable.innerHTML += "<tr class='data'><td style='float: left;'>Wall Lengths</td><td style='float: right;'>" + totalLength + unitsAbbreviation + "</td></tr>";
 	}
-	// fill Totals table with lengths of all walls
-	totalsTable = document.getElementById('totalsTable');
-	var walls = floorplan.findNodesByExample({ category: "WallGroup" });
-	var totalLength = 0;
-	walls.iterator.each(function (wall) {
-		var wallLength = Math.sqrt(wall.data.startpoint.distanceSquaredPoint(wall.data.endpoint));
-		totalLength += wallLength;
-	});
-	totalLength = floorplan.convertPixelsToUnits(totalLength).toFixed(2);
-	var unitsAbbreviation = floorplan.model.modelData.unitsAbbreviation;
-	totalsTable.innerHTML += "<tr class='data'><td style='float: left;'>Wall Lengths</td><td style='float: right;'>" + totalLength + unitsAbbreviation + "</td></tr>";
 }
 
 /* Helper function for setSelectionInfo(); displays all nodes in a given set in a given 1 or 2 rows in a given HTML element
@@ -489,17 +460,23 @@ FloorplanUI.prototype.setSelectionInfo = function(node) {
 	// get node name
 	if (node.category === 'MultiPurposeNode') name = node.data.text;
 	else name = node.data.caption;
-	// get node height / width (dependent on node category)
+	// get node height / width / length (dependent on node category)
+	// Wall Groups
 	if (node.category === 'WallGroup') {
-		height = floorplan.convertPixelsToUnits(Math.sqrt(node.data.startpoint.distanceSquared(node.data.endpoint.x, node.data.endpoint.y))).toFixed(2); // wall length
-		width = floorplan.convertPixelsToUnits(node.data.strokeWidth).toFixed(2);
-	} else if (node.category === 'DoorNode') {
-		height = floorplan.convertPixelsToUnits(node.data.width).toFixed(2);
-		width = floorplan.convertPixelsToUnits(node.data.width).toFixed(2);
-	} else if (node.data.isGroup && node.category !== "WallGroup") {
+		length = floorplan.convertPixelsToUnits(Math.sqrt(node.data.startpoint.distanceSquared(node.data.endpoint.x, node.data.endpoint.y))).toFixed(2); // wall length
+		thickness = floorplan.convertPixelsToUnits(node.data.thickness).toFixed(2); // wall thickness
+	}
+	// Wall Parts (i.e. Door / Window Nodes)
+	else if (node.category === 'DoorNode' || node.category === "WindowNode") {
+		length = floorplan.convertPixelsToUnits(node.data.length).toFixed(2);
+	}
+	// Generic Groups
+	else if (node.data.isGroup && node.category !== "WallGroup") {
 		height = floorplan.convertPixelsToUnits(node.actualBounds.height).toFixed(2);
 		width = floorplan.convertPixelsToUnits(node.actualBounds.width).toFixed(2);
-	} else {
+	}
+	// Furniture Nodes
+	else {
 		height = floorplan.convertPixelsToUnits(node.data.height).toFixed(2);
 		width = floorplan.convertPixelsToUnits(node.data.width).toFixed(2);
 	}
@@ -514,27 +491,28 @@ FloorplanUI.prototype.setSelectionInfo = function(node) {
 	}
 	var unitsAbbreviation = floorplan.model.modelData.unitsAbbreviation;
 
-	//... then display that information in the selection info window
-	element.innerHTML = '<p id="name" >Name: ' + '<input id="nameInput" class="nameNotesInput" value="' + name + '"/>' + '</p>';
-	// display node notes in a textarea
-	element.innerHTML += "<p>Notes: <textarea id='"+ selectionInfoWindow.notesTextareaId +"' class='nameNotesInput' >" + notes + "</textarea></p>";
-	// display color as a color picker element (individual nodes only)
+	// display information in the selection info window
+	element.innerHTML = '<p id="name" >Name: ' + '<input id="nameInput" class="nameNotesInput" value="' + name + '"/>' + '</p>'; // name
+	element.innerHTML += "<p>Notes: <textarea id='"+ selectionInfoWindow.notesTextareaId +"' class='nameNotesInput' >" + notes + "</textarea></p>"; // notes
+	// display color as a color picker element (furniture nodes only)
 	if (!node.data.isGroup && node.data.category !== "DoorNode" && node.data.category !== "WindowNode") {
 		element.innerHTML += '<p>Color: <input type="color" id="'+ selectionInfoWindow.colorPickerId +'" value="' + node.data.color + '" name="selectionColor"></input></p>';
 	}
 
-	// display "Door Length" input (Door Nodes only)
-	if (node.category === "DoorNode") element.innerHTML += '<div class="row"><p id="'+ selectionInfoWindow.heightLabelId +'" class="data">Door Length: <br/><input id = "' + selectionInfoWindow.heightInputId + '" class = "dimensionsInput" name = "height" value = "' + height + '"/>'
-		+ '<input id="heightUnits" class="' + state.unitsBoxClass + '" value=' + unitsAbbreviation + ' disabled/></p>';
-	// display the editable properties height and width (non-Door nodes)
+	// display ONLY "Length" input (Door / Window Nodes only) (this is still technically the "width input" as far as IDs are concerned)
+	if (node.category === "DoorNode" || node.category === "WindowNode") element.innerHTML += '<div class="row"><p id="'+ selectionInfoWindow.widthLabelId +'" class="data">Length: <br/><input id = "' + selectionInfoWindow.widthInputId + '" class = "dimensionsInput" name = "width" value = "' + length + '"/>'
+		+ '<input id="widthUnits" class="' + state.unitsBoxClass + '" value=' + unitsAbbreviation + ' disabled/></p>';
+	// for walls "width" is displayed as "length", "height" is displayed as "Thickness"
+	else if (node.category === 'WallGroup') {
+		element.innerHTML += '<div class="row"><div class="col-2"><p id="' + selectionInfoWindow.heightLabelId + '" class="data">Thickness: <br/><input id ="' + selectionInfoWindow.heightInputId + '" class = "dimensionsInput" name = "height" value = "' + thickness
+		+ '"/><input id="heightUnits" class="' + state.unitsBoxClass + '" value=' + unitsAbbreviation + ' disabled/></p> ' + '</div><div class="col-2"><p class="data">Length: <br/><input id="' + selectionInfoWindow.widthInputId + '" class="dimensionsInput" value = "'
+		+ length + '"/><input id="widthUnits" class="' + state.unitsBoxClass + '" value="' + unitsAbbreviation + '" disabled/></p>' + '</p></div></div>';
+	}
+	// display editable properties height and width (non Door / Window nodes)
 	else element.innerHTML += '<div class="row"><div class="col-2"><p id="' + selectionInfoWindow.heightLabelId + '" class="data">Height: <br/><input id ="' + selectionInfoWindow.heightInputId + '" class = "dimensionsInput" name = "height" value = "' + height
 		+ '"/><input id="heightUnits" class="' + state.unitsBoxClass + '" value=' + unitsAbbreviation + ' disabled/></p> ' + '</div><div class="col-2"><p class="data">Width: <br/><input id="' + selectionInfoWindow.widthInputId + '" class="dimensionsInput" value = "'
 		+ width + '"/><input id="widthUnits" class="' + state.unitsBoxClass + '" value="' + unitsAbbreviation + '" disabled/></p>' + '</p></div></div>';
-
-	// for walls "height" is displayed as "length"
-	if (node.category === 'WallGroup') document.getElementById(selectionInfoWindow.heightLabelId).innerHTML = 'Length: <br/><input id="' + selectionInfoWindow.heightInputId +
-		'" class ="dimensionsInput" name ="height" value = "' + height + '"/><input id="heightUnits" class="' + state.unitsBoxClass + '" value=' + unitsAbbreviation + ' disabled/> ';
-
+	
 	// do not allow height or width adjustment for group info
 	if (node.data.isGroup && node.category !== "WallGroup") {
 		document.getElementById(selectionInfoWindow.heightInputId).disabled = true;
@@ -562,9 +540,9 @@ FloorplanUI.prototype.setSelectionInfo = function(node) {
 		if (nodeGroupCount != 0) ui.fillRowsWithNodes(nodeGroupParts, document.getElementById(selectionInfoWindow.nodeGroupInfoId), node.data.key);
 	}
 
-	// dynamically adjust the name of node based on user input
 	var nameInput = document.getElementById(selectionInfoWindow.nameInputId);
 	if (!floorplan.isReadOnly) {
+		// dynamically adjust name of selected node based on user input
 		nameInput.addEventListener('input', function (e) {
 			var value = nameInput.value;
 			floorplan.skipsUndoManager = true;
@@ -576,7 +554,7 @@ FloorplanUI.prototype.setSelectionInfo = function(node) {
 			floorplan.skipsUndoManager = false;
 		});
 
-		// dynamically adjust the notes of the node based on user input
+		// dynamically adjust notes of selected node based on user input
 		var notesTextarea = document.getElementById(selectionInfoWindow.notesTextareaId);
 		notesTextarea.addEventListener('input', function (e) {
 			var value = notesTextarea.value;
@@ -606,39 +584,76 @@ FloorplanUI.prototype.setColor = function () {
 
 // Triggered by "Apply Changes"; set model data for height of the currently selected node (also handles door length for doors, wall length for walls)
 FloorplanUI.prototype.setHeight = function () {
-	var floorplan = this.floorplan;
-	var node = floorplan.selection.first();
 	var heightInput = document.getElementById(this.state.windows.selectionInfoWindow.heightInputId);
-	var value = parseFloat(floorplan.convertUnitsToPixels(heightInput.value));
+	if (heightInput) {
+		var floorplan = this.floorplan;
+		var ui = this;
+		var node = floorplan.selection.first();
+		var value = parseFloat(floorplan.convertUnitsToPixels(heightInput.value));
+		if (isNaN(value)) {
+			alert("Please enter a valid number");
+			ui.setSelectionInfo(node, floorplan);
+			return;
+		}
+		floorplan.skipsUndoManager = true;
+		floorplan.startTransaction("resize node");
+		if (!floorplan.isReadOnly) {
+			// Case: Furniture Nodes and Window Nodes; basic height adjustment 
+			if (node.category !== 'WallGroup' && node.category !== 'DoorNode') {
+				floorplan.model.setDataProperty(node.data, "height", value);
+			}
+			// Case: Wall Groups; set wall's data.strokeWidth
+			else if (node.category === 'WallGroup') {
+				floorplan.model.setDataProperty(node.data, "thickness", value);
+				node.memberParts.iterator.each(function (part) {
+					if (part.category === 'DoorNode') floorplan.model.setDataProperty(part.data, "doorOpeningHeight", value);
+					if (part.category === 'WindowNode') floorplan.model.setDataProperty(part.data, "height", value);
+				});
+			}
+			// Note: Door Nodes are purposefully unaccounted for, as width (length) adjustment (in setWidth()) also adjusts node height
+		}
+		floorplan.commitTransaction("resize node");
+		floorplan.updateWallDimensions(floorplan);
+		floorplan.skipsUndoManager = false;
+	}
+}
+
+// Triggered by "Apply Changes"; set model data for width of the currently selected node
+FloorplanUI.prototype.setWidth = function() {
+	var floorplan = this.floorplan;
+	var ui = this;
+	var node = floorplan.selection.first();
+	var widthInput = document.getElementById(this.state.windows.selectionInfoWindow.widthInputId);
+	if (widthInput === null) return;
+	var value = parseFloat(floorplan.convertUnitsToPixels(widthInput.value));
 	if (isNaN(value)) {
-		alert("Please enter a number in the height input");
-		setSelectionInfo(node, floorplan);
+		alert("Please enter a valid number");
+		ui.setSelectionInfo(node, floorplan);
 		return;
 	}
 	floorplan.skipsUndoManager = true;
 	floorplan.startTransaction("resize node");
 	if (!floorplan.isReadOnly) {
-		// Case: Standard / Multi-Purpose Nodes; basic height adjustment
-		if (node.category !== 'WallGroup' && node.category !== "WindowNode" && node.category !== 'DoorNode') {
-			floorplan.model.setDataProperty(node.data, "height", value);
-		}
-		// Case: Door Nodes / Window Nodes; "Door Length" is node height and width
-		else if (node.category === 'DoorNode' || node.category === "WindowNode") {
+		// Case: Window / Door Nodes (part.width is part.data.length), keeps windows and doors within wall boundaries (and surrounding wall part boundaries)
+		if (node.category === 'WindowNode' || node.category === "DoorNode") {
 			var wall = floorplan.findPartForKey(node.data.group);
 			var loc = node.location.copy();
+			// constrain max width "value" by the free stretch on the wall "node" is in
 			if (wall !== null) {
-				var wallLength = Math.sqrt(wall.data.startpoint.distanceSquaredPoint(wall.data.endpoint));
-				if (wallLength < value) {
-					value = wallLength;
-					loc = new go.Point((wall.data.startpoint.x + wall.data.endpoint.x) / 2, (wall.data.startpoint.y + wall.data.endpoint.y) / 2);
+				var containingStretch = getWallPartStretch(node);
+				var stretchLength = Math.sqrt(containingStretch.point1.distanceSquaredPoint(containingStretch.point2));
+				if (stretchLength < value) {
+					value = stretchLength;
+					loc = new go.Point((containingStretch.point1.x + containingStretch.point2.x) / 2,
+						(containingStretch.point1.y + containingStretch.point2.y) / 2);
 				}
 			}
-			if (node.category === "DoorNode") floorplan.model.setDataProperty(node.data, "width", value); // for door nodes, width dictates height as well
+			floorplan.model.setDataProperty(node.data, "length", value);
 			node.location = loc;
 			floorplan.updateWallDimensions();
 		}
 		// Case: Wall Groups; wall length adjustment; do not allow walls to be shorter than the distance between their fathest apart wallParts
-		else {
+		else if (node.category === "WallGroup") {
 			var sPt = node.data.startpoint.copy();
 			var ePt = node.data.endpoint.copy();
 			var angle = sPt.directionPoint(ePt);
@@ -728,55 +743,8 @@ FloorplanUI.prototype.setHeight = function () {
 			floorplan.model.setDataProperty(node.data, "startpoint", newSpt);
 			floorplan.model.setDataProperty(node.data, "endpoint", newEpt);
 			floorplan.updateWall(node);
-		}
-	}
-	floorplan.commitTransaction("resize node");
-	floorplan.updateWallDimensions(floorplan);
-	floorplan.skipsUndoManager = false;
-}
-
-// Triggered by "Apply Changes"; set model data for width of the currently selected node
-FloorplanUI.prototype.setWidth = function() {
-	var floorplan = this.floorplan;
-	var node = floorplan.selection.first();
-	var widthInput = document.getElementById(this.state.windows.selectionInfoWindow.widthInputId);
-	if (widthInput === null) return;
-	var value = parseFloat(floorplan.convertUnitsToPixels(widthInput.value));
-	if (isNaN(value)) {
-		alert("Please enter a number in the width input");
-		setSelectionInfo(node, floorplan);
-		return;
-	}
-	floorplan.skipsUndoManager = true;
-	floorplan.startTransaction("resize node");
-	if (!floorplan.isReadOnly) {
-		// Case: Window nodes, keeps windows within wall boundaries
-		if (node.category === 'WindowNode') {
-			var wall = floorplan.findPartForKey(node.data.group);
-			var loc = node.location.copy();
-			// constrain max width "value" by the free stretch on the wall "node" is in
-			if (wall !== null) {
-				var containingStretch = getWallPartStretch(node);
-				var stretchLength = Math.sqrt(containingStretch.point1.distanceSquaredPoint(containingStretch.point2));
-				if (stretchLength < value) {
-					value = stretchLength;
-					loc = new go.Point((containingStretch.point1.x + containingStretch.point2.x) / 2,
-						(containingStretch.point1.y + containingStretch.point2.y) / 2);
-				}
-			}
-			floorplan.model.setDataProperty(node.data, "width", value);
-			node.location = loc;
-			floorplan.updateWallDimensions();
-		}
-			// Case: Wall Groups; set wall's data.strokeWidth
-		else if (node.category === 'WallGroup') {
-			floorplan.model.setDataProperty(node.data, "strokeWidth", value);
-			node.memberParts.iterator.each(function (part) {
-				if (part.category === 'DoorNode') floorplan.model.setDataProperty(part.data, "doorOpeningHeight", value);
-				if (part.category === 'WindowNode') floorplan.model.setDataProperty(part.data, "height", value);
-			});
-		}
-			// Case: Standard / Multi-Purpose Nodes; basic width ajustment
+		}		
+		// Case: Standard / Multi-Purpose Nodes; basic width ajustment
 		else floorplan.model.setDataProperty(node.data, "width", value);
 	}
 	floorplan.commitTransaction("resize node");
@@ -786,8 +754,9 @@ FloorplanUI.prototype.setWidth = function() {
 // Set height, width, and color of the selection based on user input in the Selection Info Window
 FloorplanUI.prototype.applySelectionChanges = function() {
 	var floorplan = this.floorplan;
+	var ui = this;
 	this.setHeight();
 	this.setWidth();
 	this.setColor();
-	floorplan.floorplanUI.setSelectionInfo(floorplan.selection.first(), floorplan);
+	ui.setSelectionInfo(floorplan.selection.first(), floorplan);
 }

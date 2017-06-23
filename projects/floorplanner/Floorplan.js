@@ -13,16 +13,16 @@
 */
 function Floorplan(div) {
 
-    /* 
+    /*
     * Floor Plan Setup:
     * Initialize Floor Plan, Floor Plan Listeners, Floor Plan Overview
     */
 
     go.Diagram.call(this, div);
-    // By default there is no filesystem / UI control for a floorplan, though they can be added 
+    // By default there is no filesystem / UI control for a floorplan, though they can be added
     this._floorplanFilesystem = null;
     this._floorplanUI = null;
-    
+
     // When a FloorplanPalette instance is made, it is automatically added to a Floorplan's "palettes" field
     this._palettes = [];
 
@@ -43,7 +43,7 @@ function Floorplan(div) {
             "units": "centimeters",
             "unitsAbbreviation": "cm",
             "gridSize": 10,
-            "wallWidth": 5,
+            "wallThickness": 5,
             "preferences": {
                 showWallGuidelines: true,
                 showWallLengths: true,
@@ -66,11 +66,11 @@ function Floorplan(div) {
             { gridCellSize: new go.Size(this.model.modelData.gridSize, this.model.modelData.gridSize), visible: true },
             $(go.Shape, "LineH", { stroke: "lightgray" }),
             $(go.Shape, "LineV", { stroke: "lightgray" }));
-    this.contextMenu = makeContextMenu(); 
+    this.contextMenu = makeContextMenu();
     this.commandHandler.canGroupSelection = true;
     this.commandHandler.canUngroupSelection = true;
     this.commandHandler.archetypeGroupData = { isGroup: true };
- 
+
     // When floorplan model is changed, update stats in Statistics Window TODO
     this.addModelChangedListener(function (e) {
         if (e.isTransactionFinished) {
@@ -80,24 +80,26 @@ function Floorplan(div) {
                 e.object.changes.each(function (change) {
                     if (change.diagram instanceof Floorplan) floorplan = change.diagram;
                 });
-            }            
+            }
             if (floorplan) {
                 if (floorplan.floorplanUI) floorplan.floorplanUI.updateStatistics();
             }
-        } 
+        }
     });
-    
+
     // When floorplan is modified, change document title to include a *
     this.addDiagramListener("Modified", function (e) {
         var floorplan = e.diagram;
         if (floorplan.floorplanFilesystem) {
             var currentFile = document.getElementById(floorplan.floorplanFilesystem.state.currentFileId);
-            var idx = currentFile.textContent.indexOf("*");
-            if (floorplan.isModified) {
-                if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
-            }
-            else {
-                if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+            if (currentFile) {
+                var idx = currentFile.textContent.indexOf("*");
+                if (floorplan.isModified) {
+                    if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
+                }
+                else {
+                    if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+                }
             }
         }
     });
@@ -107,7 +109,7 @@ function Floorplan(div) {
         var floorplan = e.diagram;
         if (floorplan.floorplanUI) {
             var scaleEl = document.getElementById(floorplan.floorplanUI.state.scaleDisplayId);
-            scaleEl.innerHTML = "Scale: " + (e.diagram.scale * 100).toFixed(2) + "%";
+            if (scaleEl) scaleEl.innerHTML = "Scale: " + (e.diagram.scale * 100).toFixed(2) + "%";
         }
     });
 
@@ -118,7 +120,7 @@ function Floorplan(div) {
         if (node.category === "PaletteWallNode") {
             var paletteWallNode = e.diagram.selection.first();
             var endpoints = getWallPartEndpoints(paletteWallNode);
-            var data = { key: "wall", category: "WallGroup", caption: "Wall", startpoint: endpoints[0], endpoint: endpoints[1], strokeWidth: parseFloat(e.diagram.model.modelData.wallWidth), isGroup: true, notes: "" };
+            var data = { key: "wall", category: "WallGroup", caption: "Wall", startpoint: endpoints[0], endpoint: endpoints[1], thickness: parseFloat(e.diagram.model.modelData.wallThickness), isGroup: true, notes: "" };
             e.diagram.model.addNodeData(data);
             var wall = e.diagram.findPartForKey(data.key);
             e.diagram.updateWall(wall);
@@ -157,7 +159,7 @@ function Floorplan(div) {
         floorplan.dimensionLinks.clear();
         floorplan.angleNodes.iterator.each(function (node) { e.diagram.remove(node); });
         floorplan.angleNodes.clear();
-        
+
         floorplan.commitTransaction("remove dimension links and angle nodes");
         floorplan.skipsUndoManager = false;
         floorplan.updateWallDimensions();
@@ -188,14 +190,14 @@ function Floorplan(div) {
         }
     });
 
-    /* 
+    /*
     * Node Templates
     * Add Default Node, Multi-Purpose Node, Window Node, Palette Wall Node, and Door Node to the Node Template Map
     * Template functions defined in FloorPlanner-Templates-* js files
     */
 
     this.nodeTemplateMap.add("", makeDefaultNode()); // Default Node (furniture)
-    this.nodeTemplateMap.add("MultiPurposeNode", makeMultiPurposeNode()); // Multi-Purpose Node 
+    this.nodeTemplateMap.add("MultiPurposeNode", makeMultiPurposeNode()); // Multi-Purpose Node
     this.nodeTemplateMap.add("WindowNode", makeWindowNode()); // Window Node
     this.nodeTemplateMap.add("PaletteWallNode", makePaletteWallNode()); // Palette Wall Node
     this.nodeTemplateMap.add("DoorNode", makeDoorNode()); // Door Node
@@ -220,6 +222,7 @@ function Floorplan(div) {
 
     var wallReshapingTool = new WallReshapingTool();
     this.toolManager.mouseDownTools.insertAt(3, wallReshapingTool);
+    wallBuildingTool.isEnabled = false;
 
     /*
     * Tool Overrides
@@ -242,9 +245,10 @@ function Floorplan(div) {
 
     // When resizing, constantly update the node info box with updated size info; constantly update Dimension Links
     this.toolManager.resizingTool.doMouseMove = function () {
+        var floorplan = this.diagram;
         var node = this.adornedObject;
         // if node is the only thing selected, display its info as its resized
-        if (this.diagram.selection.count === 1 && this.floorplanUI) this.floorplanUI.setSelectionInfo(node);
+        if (floorplan.selection.count === 1 && floorplan.floorplanUI) floorplan.floorplanUI.setSelectionInfo(node);
         this.diagram.updateWallDimensions();
         go.ResizingTool.prototype.doMouseMove.call(this);
     }
@@ -288,7 +292,7 @@ function Floorplan(div) {
             }
             // set the new max size of the wallPart according to the constrainingPt
             var maxLength = Math.sqrt(stationaryPt.distanceSquaredPoint(constrainingPt));
-            return new go.Size(maxLength, wall.data.strokeWidth);
+            return new go.Size(maxLength, wall.data.thickness);
         }
         return go.ResizingTool.prototype.computeMaxSize.call(tool);
     }
@@ -354,55 +358,57 @@ Floorplan.prototype.convertUnitsToPixels = function (num) {
     return num / 2;
 }
 
-/* 
+/*
 * Update the geometry, angle, and location of a given wall
 * @param {Wall} wall A reference to a valid Wall Group (defined in Templates-Walls)
 */
 Floorplan.prototype.updateWall = function (wall) {
-    var shape = wall.findObject("SHAPE");
-    var geo = new go.Geometry(go.Geometry.Line);
-    var sPt = wall.data.startpoint;
-    var ePt = wall.data.endpoint;
-    var mPt = new go.Point((sPt.x + ePt.x) / 2, (sPt.y + ePt.y) / 2);
-    // define a wall's geometry as a simple horizontal line, then rotate it
-    geo.startX = 0;
-    geo.startY = 0;
-    geo.endX = Math.sqrt(sPt.distanceSquaredPoint(ePt));
-    geo.endY = 0;
-    shape.geometry = geo;
-    wall.location = mPt; // a wall's location is the midpoint between it's startpoint and endpoint
-    var angle = sPt.directionPoint(ePt);
-    wall.rotateObject.angle = angle;
-    this.updateWallDimensions();
+    if (wall.data.startpoint && wall.data.endpoint) {
+        var shape = wall.findObject("SHAPE");
+        var geo = new go.Geometry(go.Geometry.Line);
+        var sPt = wall.data.startpoint;
+        var ePt = wall.data.endpoint;
+        var mPt = new go.Point((sPt.x + ePt.x) / 2, (sPt.y + ePt.y) / 2);
+        // define a wall's geometry as a simple horizontal line, then rotate it
+        geo.startX = 0;
+        geo.startY = 0;
+        geo.endX = Math.sqrt(sPt.distanceSquaredPoint(ePt));
+        geo.endY = 0;
+        shape.geometry = geo;
+        wall.location = mPt; // a wall's location is the midpoint between it's startpoint and endpoint
+        var angle = sPt.directionPoint(ePt);
+        wall.rotateObject.angle = angle;
+        this.updateWallDimensions();
+    }
 }
 
-/* 
+/*
 * Helper function for Build Dimension Link: get a to/from point for a Dimension Link
 * @param {Wall} wall The Wall Group being given a Dimension Link
 * @param {Number} angle The angle of "wall"
 * @param {Number} wallOffset The distance the Dimension Link will be from wall (in pixels)
 */
-function getAdjustedPoint(point, wall, angle, wallOffset) {
+Floorplan.prototype.getAdjustedPoint = function (point, wall, angle, wallOffset) {
     var oldPoint = point.copy();
-    point.offset(0, -(wall.data.strokeWidth * .5) - wallOffset);
+    point.offset(0, -(wall.data.thickness * .5) - wallOffset);
     point.offset(-oldPoint.x, -oldPoint.y).rotate(angle).offset(oldPoint.x, oldPoint.y);
     return point;
 }
 
-/* 
+/*
 * Helper function for Update Wall Dimensions; used to build Dimension Links
 * @param {Wall} wall The wall the Link runs along (either describing the wall itself or some wallPart on "wall")
-* @param {Number} index A number appended to PointNode keys; used for finding PointNodes of Dimension Links later 
+* @param {Number} index A number appended to PointNode keys; used for finding PointNodes of Dimension Links later
 * @param {Point} point1 The first point of the wallPart being described by the Link
 * @param {Point} point2 The second point of the wallPart being described by the Link
 * @param {Number} angle The angle of the wallPart
 * @param {Number} wallOffset How far from the wall (in px) the Link should be
 * @param {Boolean} soloWallFlag If this Link is the only Dimension Link for "wall" (no other wallParts on "wall" selected) this is true; else, false
-* @param {Floorplan} floorplan A reference to a valid Floorplan 
+* @param {Floorplan} floorplan A reference to a valid Floorplan
 */
-function buildDimensionLink(wall, index, point1, point2, angle, wallOffset, soloWallFlag, floorplan) {
-    point1 = getAdjustedPoint(point1, wall, angle, wallOffset);
-    point2 = getAdjustedPoint(point2, wall, angle, wallOffset);
+Floorplan.prototype.buildDimensionLink = function (wall, index, point1, point2, angle, wallOffset, soloWallFlag, floorplan) {
+    point1 = floorplan.getAdjustedPoint(point1, wall, angle, wallOffset);
+    point2 = floorplan.getAdjustedPoint(point2, wall, angle, wallOffset);
     var data1 = { key: wall.data.key + "PointNode" + index, category: "PointNode", loc: go.Point.stringify(point1) };
     var data2 = { key: wall.data.key + "PointNode" + (index + 1), category: "PointNode", loc: go.Point.stringify(point2) };
     var data3 = { key: wall.data.key + "DimensionLink", category: 'DimensionLink', from: data1.key, to: data2.key, stroke: 'gray', angle: angle, wall: wall.data.key, soloWallFlag: soloWallFlag };
@@ -424,8 +430,8 @@ function buildDimensionLink(wall, index, point1, point2, angle, wallOffset, solo
     link.toNode = pointNode2;
 }
 
-/* 
-* Update Dimension Links shown along a wall, based on which wallParts are selected
+/*
+* Update Dimension Links shown along walls, based on which walls and wallParts are selected
 */
 Floorplan.prototype.updateWallDimensions = function () {
     var floorplan = this;
@@ -441,7 +447,7 @@ Floorplan.prototype.updateWallDimensions = function () {
         floorplan.skipsUndoManager = false;
         return;
     }
-    // make visible all dimension links (zero-length dimension links are set to invisible at the end of the function) 
+    // make visible all dimension links (zero-length dimension links are set to invisible at the end of the function)
     floorplan.dimensionLinks.iterator.each(function (link) { link.visible = true; });
 
     var selection = floorplan.selection;
@@ -449,7 +455,7 @@ Floorplan.prototype.updateWallDimensions = function () {
     var walls = new go.Set(go.Group);
     selection.iterator.each(function (part) {
         if ((part.category === 'WindowNode' || part.category === 'DoorNode') && part.containingGroup !== null) walls.add(part.containingGroup);
-        if (part.category === 'WallGroup' && part.data !== null) {
+        if (part.category === 'WallGroup' && part.data && part.data.startpoint && part.data.endpoint) {
             var soloWallLink = null;
             floorplan.dimensionLinks.iterator.each(function (link) { if (link.data.soloWallFlag && link.data.wall === part.data.key) soloWallLink = link; });
             // if there's 1 Dimension Link for this wall (link has soloWallFlag), adjust to/from pointNodes of link, rather than deleting / redrawing
@@ -460,13 +466,12 @@ Floorplan.prototype.updateWallDimensions = function () {
                     if (node.data.key === part.data.key + "PointNode1") linkPoint1 = node;
                     if (node.data.key === part.data.key + "PointNode2") linkPoint2 = node;
                 });
-
                 var startpoint = part.data.startpoint; var endpoint = part.data.endpoint;
                 // adjust  left/top-most / right/bottom-most wall endpoints so link angle is correct (else text appears on wrong side of Link)
                 var firstWallPt = ((startpoint.x + startpoint.y) <= (endpoint.x + endpoint.y)) ? startpoint : endpoint;
                 var lastWallPt = ((startpoint.x + startpoint.y) > (endpoint.x + endpoint.y)) ? startpoint : endpoint;
-                var newLoc1 = getAdjustedPoint(firstWallPt.copy(), part, part.rotateObject.angle, 10);
-                var newLoc2 = getAdjustedPoint(lastWallPt.copy(), part, part.rotateObject.angle, 10);
+                var newLoc1 = floorplan.getAdjustedPoint(firstWallPt.copy(), part, part.rotateObject.angle, 10);
+                var newLoc2 = floorplan.getAdjustedPoint(lastWallPt.copy(), part, part.rotateObject.angle, 10);
                 linkPoint1.data.loc = go.Point.stringify(newLoc1);
                 linkPoint2.data.loc = go.Point.stringify(newLoc2);
                 soloWallLink.data.angle = part.rotateObject.angle;
@@ -480,7 +485,7 @@ Floorplan.prototype.updateWallDimensions = function () {
                 var endpoint = part.data.endpoint;
                 var firstWallPt = ((startpoint.x + startpoint.y) <= (endpoint.x + endpoint.y)) ? startpoint : endpoint;
                 var lastWallPt = ((startpoint.x + startpoint.y) > (endpoint.x + endpoint.y)) ? startpoint : endpoint;
-                buildDimensionLink(part, 1, firstWallPt.copy(), lastWallPt.copy(), part.rotateObject.angle, 10, true, floorplan);
+                floorplan.buildDimensionLink(part, 1, firstWallPt.copy(), lastWallPt.copy(), part.rotateObject.angle, 10, true, floorplan);
             }
         }
     });
@@ -519,15 +524,15 @@ Floorplan.prototype.updateWallDimensions = function () {
                 if (node.data.key === wall.data.key + "PointNode" + (k + 1)) linkPoint2 = node;
             });
             if (linkPoint1 !== null) {
-                var newLoc1 = getAdjustedPoint(wallPartEndpoints[j].copy(), wall, angle, 5);
-                var newLoc2 = getAdjustedPoint(wallPartEndpoints[j + 1].copy(), wall, angle, 5);
+                var newLoc1 = floorplan.getAdjustedPoint(wallPartEndpoints[j].copy(), wall, angle, 5);
+                var newLoc2 = floorplan.getAdjustedPoint(wallPartEndpoints[j + 1].copy(), wall, angle, 5);
                 linkPoint1.data.loc = go.Point.stringify(newLoc1);
                 linkPoint2.data.loc = go.Point.stringify(newLoc2);
                 linkPoint1.updateTargetBindings();
                 linkPoint2.updateTargetBindings();
             }
                 // only build new links if needed -- normally simply change pointNode locations
-            else buildDimensionLink(wall, k, wallPartEndpoints[j].copy(), wallPartEndpoints[j + 1].copy(), angle, 5, false, floorplan);
+            else floorplan.buildDimensionLink(wall, k, wallPartEndpoints[j].copy(), wallPartEndpoints[j + 1].copy(), angle, 5, false, floorplan);
             k += 2;
         }
         // total wall Dimension Link would be constructed of a kth and k+1st pointNode
@@ -543,19 +548,19 @@ Floorplan.prototype.updateWallDimensions = function () {
                 if (node.data.key === wall.data.key + "PointNode" + k) linkPoint1 = node;
                 if (node.data.key === wall.data.key + "PointNode" + (k + 1)) linkPoint2 = node;
             });
-            var newLoc1 = getAdjustedPoint(wallPartEndpoints[0].copy(), wall, angle, 25);
-            var newLoc2 = getAdjustedPoint(wallPartEndpoints[wallPartEndpoints.length - 1].copy(), wall, angle, 25);
+            var newLoc1 = floorplan.getAdjustedPoint(wallPartEndpoints[0].copy(), wall, angle, 25);
+            var newLoc2 = floorplan.getAdjustedPoint(wallPartEndpoints[wallPartEndpoints.length - 1].copy(), wall, angle, 25);
             linkPoint1.data.loc = go.Point.stringify(newLoc1);
             linkPoint2.data.loc = go.Point.stringify(newLoc2);
             linkPoint1.updateTargetBindings();
             linkPoint2.updateTargetBindings();
         }
             // only build total wall Dimension Link (far out from wall to accomodate wallPart Dimension Links) if one does not already exist
-        else buildDimensionLink(wall, k, wallPartEndpoints[0].copy(), wallPartEndpoints[wallPartEndpoints.length - 1].copy(), angle, 25, false, floorplan);
+        else floorplan.buildDimensionLink(wall, k, wallPartEndpoints[0].copy(), wallPartEndpoints[wallPartEndpoints.length - 1].copy(), angle, 25, false, floorplan);
     });
 
     // Cleanup: hide zero-length Dimension Links, DimensionLInks with null wall points
-    floorplan.dimensionLinks.iterator.each(function (link) {     
+    floorplan.dimensionLinks.iterator.each(function (link) {
         var canStay = false;
         floorplan.pointNodes.iterator.each(function (node) {
             if (node.data.key == link.data.to) canStay = true;
@@ -573,10 +578,10 @@ Floorplan.prototype.updateWallDimensions = function () {
 
 /*
 * Helper function for updateWallAngles(); returns the Point where two walls intersect; if they do not intersect, return null
-* @param {Wall} wall1 
+* @param {Wall} wall1
 * @param {Wall} wall2
 */
-var getWallsIntersection = function (wall1, wall2) {
+Floorplan.prototype.getWallsIntersection = function (wall1, wall2) {
     if (wall1 === null || wall2 === null) return null;
     // treat walls as lines; get lines in formula of ax + by = c
     var a1 = wall1.data.endpoint.y - wall1.data.startpoint.y;
@@ -621,7 +626,7 @@ var getWallsIntersection = function (wall1, wall2) {
     else return null;
 }
 
-/* 
+/*
 * Update Angle Nodes shown along a wall, based on which wall(s) is/are selected
 */
 Floorplan.prototype.updateWallAngles = function () {
@@ -640,11 +645,11 @@ Floorplan.prototype.updateWallAngles = function () {
             // go through all other walls; if the other wall intersects this wall, make angles
             possibleWalls.iterator.each(function (otherWall) {
                 if (otherWall.data === null || wall.data === null || seen.contains(otherWall.data.key)) return;
-                if ((otherWall.data.key !== wall.data.key) && (getWallsIntersection(wall, otherWall) !== null) && (!seen.contains(otherWall.data.key))) {
+                if ((otherWall.data.key !== wall.data.key) && (floorplan.getWallsIntersection(wall, otherWall) !== null) && (!seen.contains(otherWall.data.key))) {
 
                     seen.add(otherWall.data.key);
                     // "otherWall" intersects "wall"; make or update angle nodes
-                    var intersectionPoint = getWallsIntersection(wall, otherWall);
+                    var intersectionPoint = floorplan.getWallsIntersection(wall, otherWall);
                     var wallsInvolved = floorplan.findObjectsNear(intersectionPoint,
                         1,
                         function (x) { if (x.part !== null) return x.part; },
@@ -687,7 +692,7 @@ Floorplan.prototype.updateWallAngles = function () {
                         return d1 > d2;
                     }); // end endpoints sort
 
-                    // for each pair of endpoints, construct or modify an angleNode 
+                    // for each pair of endpoints, construct or modify an angleNode
                     for (var i = 0; i < endpoints.length; i++) {
                         var p1 = endpoints[i];
                         if (endpoints[i + 1] != null) var p2 = endpoints[i + 1];
@@ -725,7 +730,7 @@ Floorplan.prototype.updateWallAngles = function () {
                             angleNode.data.maxRadius = maxRadius;
                             angleNode.updateTargetBindings();
                         }
-                            // if this angleNode does not already exist, create it and add it to the diagram 
+                            // if this angleNode does not already exist, create it and add it to the diagram
                         else {
                             var data = { key: key, category: "AngleNode", loc: go.Point.stringify(intersectionPoint), stroke: "dodgerblue", angle: angle, sweep: sweep, maxRadius: maxRadius };
                             var newAngleNode = makeAngleNode();
@@ -753,7 +758,7 @@ Floorplan.prototype.updateWallAngles = function () {
             for (var i = 0; i < wallsInvolved.length - 1; i++) {
                 var wall1 = floorplan.findPartForKey(wallsInvolved[i]);
                 var wall2 = floorplan.findPartForKey(wallsInvolved[i + 1]);
-                var intersectionPoint = getWallsIntersection(wall1, wall2);
+                var intersectionPoint = floorplan.getWallsIntersection(wall1, wall2);
                 if (intersectionPoint === null) garbage.push(node);
             }
             // Case 2: if there are angleNode clusters with the same walls in their keys as "node" but different locations, destroy and rebuild

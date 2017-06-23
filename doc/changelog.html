@@ -68,6 +68,24 @@
     }
   </script>
 
+  <h4>Changes for 1.7.13</h4>
+  <ul>
+    <li>
+      Fixed a bug with pinch-zooming in some browsers.
+    </li>
+    <li>
+      Fixed a regression with <a>Diagram.makeSVG</a>. It would not include CORS-disabled images.
+    </li>
+    <li>
+      Fixed a bug with the TextEditingTool when using custom HTML text editors.
+      The code attempted to call <code>editor.focus()</code> and <code>editor.setSelectionRange()</code>
+      before the editor was added to the DOM. This problem does not affect <a>HTMLInfo</a>, only HTML Element text editors.
+    </li>
+    <li>
+      Improved dragging of nodes from a Diagram or Palette onto an empty Diagram.
+    </li>
+  </ul>
+
   <h4>Changes for 1.7.12</h4>
   <ul>
     <li>
@@ -610,7 +628,7 @@
             one can write the equivalent functionality with this <a>CommandHandler.canDeleteSelection</a> method override:
             <pre>"commandHandler.canDeleteSelection": function() {
     return !this.diagram.selection.any(function(p) { return p.data.key.indexOf("e") >= 0; })
-           && go.CommandHandler.prototype.canDeleteSelection.call(this);
+           &amp;&amp; go.CommandHandler.prototype.canDeleteSelection.call(this);
   },</pre>
             Overriding the method supports the updating/enablement of commands that call <a>CommandHandler.deleteSelection</a>.
             Furthermore not having a "cancel" property on the DiagramEvent avoids any potential problems that might occur if there
