@@ -8273,6 +8273,10 @@ declare namespace go {
 
         /**Allow only vertical (up-and-down) dragging.*/
         static Vertical: EnumValue;
+
+        makeAdornment(pathshape: GraphObject): Adornment;  // undocumented
+        makeHandle(pathshape: GraphObject, idx: number): GraphObject;  // undocumented
+        makeResegmentHandle(pathshape: GraphObject, idx: number): GraphObject;  // undocumented
     }
 
     /**
@@ -8389,6 +8393,8 @@ declare namespace go {
         * @param {Part} part
         */
         updateAdornments(part: Part): void;
+
+        makeAdornment(selelt: GraphObject, toend: boolean): Adornment;  // undocumented
     }
 
     /**
@@ -8502,6 +8508,7 @@ declare namespace go {
         */
         updateAdornments(part: Part): void;
 
+        makeAdornment(resizeObj: GraphObject): Adornment;  // undocumented
         updateResizeHandles(elt: GraphObject, angle: number): void;  // undocumented
     }
 
@@ -8582,6 +8589,8 @@ declare namespace go {
         * @param {Part} part
         */
         updateAdornments(part: Part): void;
+
+        makeAdornment(rotateObj: GraphObject): Adornment;  // undocumented
     }
 
     /**

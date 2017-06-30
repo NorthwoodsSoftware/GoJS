@@ -352,8 +352,8 @@ function makeDoorSelectionAdornment() {
             $("Button",
                 $(go.Picture, { source: "icons/flipDoorOpeningLeft.png", column: 0, desiredSize: new go.Size(12, 12) },
                     new go.Binding("source", "", function (obj) {
-                        if (obj.adornedPart === null) return "floorplannerIcons/flipDoorOpeningRight.png";
-                        else if (obj.adornedPart.data.swing === "left") return "floorplannerIcons/flipDoorOpeningRight.png";
+                        if (obj.adornedPart === null) return "icons/flipDoorOpeningRight.png";
+                        else if (obj.adornedPart.data.swing === "left") return "icons/flipDoorOpeningRight.png";
                         else return "icons/flipDoorOpeningLeft.png";
                     }).ofObject()
                 ),
@@ -374,7 +374,7 @@ function makeDoorSelectionAdornment() {
                 new go.Binding("visible", "", function (obj) { return (obj.adornedPart === null) ? false : (obj.adornedPart.containingGroup !== null); }).ofObject()
              ),
              $("Button",
-                $(go.Picture, { source: "floorplannerIcons/flipDoorSide.png", column: 0, desiredSize: new go.Size(12, 12) }),
+                $(go.Picture, { source: "icons/flipDoorSide.png", column: 0, desiredSize: new go.Size(12, 12) }),
                 {
                     click: function (e, obj) {
                         var floorplan = obj.part.diagram;
