@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snap Link Reshaping</title>
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; width:105px">
+      <div id="myPaletteDiv" style="border: solid 1px black; height: 620px"></div>
+    </span>
+
+    <span style="display: inline-block; vertical-align: top; width:80%">
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 620px"></div>
+    </span>
+  </div>
+  <p>
+    This sample is a simplified version of the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
+    Links are not draggable, there are no custom <a>Adornment</a>s, nodes are not rotatable, and links
+    do not have text labels.
+  </p>
+  <p>
+    Its purpose is to demonstrate the <a href="SnapLinkReshapingTool.ts">SnapLinkReshapingTool</a>,
+    an extension of <a>LinkReshapingTool</a> that snaps each dragged reshape handle of selected Links to
+    the nearest grid point.
+  </p>
+  <p>
+    Note how the "LinkReshaped" DiagramEvent listener changes the <a>Link.routing</a> of the reshaped Link,
+    so that it is no longer AvoidsNodes routing but simple Orthogonal routing.
+    This combined with <a>Link.adjusting</a> being End permits the middle points of the link route to be
+    retained even after the user moves or resizes nodes.
+    Furthermore there is a TwoWay <a>Binding</a> on <a>Link.routing</a>, so that the model remembers
+    whether the link route had ever been reshaped manually.
+  </p>
+  <button id="SaveButton">Save</button>
+  <button id="LoadButton">Load</button>
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "modelData": {"position":"0 0"},
+  "nodeDataArray": [ 
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-3, "loc":"184 176"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-2, "loc":"248 248"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-4, "loc":"424 192"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-5, "loc":"320 152"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-6, "loc":"424 320"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-7, "loc":"352 256"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-8, "loc":"176 296"},
+{"text":"DB", "figure":"Database", "fill":"lightgray", "key":-9, "loc":"288 344"},
+{"text":"Step", "key":-10, "loc":"96 240"},
+{"text":"Step", "key":-11, "loc":"536 280"}
+ ],
+  "linkDataArray": [
+{"from":-10, "to":-11, "fromPort":"R", "toPort":"L", "points":[121,240,131,240,132,240,132,240,216,240,216,176,264,176,264,104,392,104,392,240,480,240,480,280,501,280,511,280], "routing":"Orthogonal"}
+  ]}
+  </textarea>
+</div>
+</body>
+<script src="http://gojs.net/latest/samples/assets/require.js"></script>
+<script>
+	require(["SnapLinkReshapingScript"], function(app) {
+		app.init();
+		document.getElementById("SaveButton").onclick = app.save;
+		document.getElementById("LoadButton").onclick = app.load;
+	});
+</script>
+</html>

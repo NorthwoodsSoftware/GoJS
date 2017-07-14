@@ -63,7 +63,8 @@ head.appendChild(link);
 
 function goSamples() {
   // determine if it's an extension
-  var isExtension = (location.pathname.split('/').slice(-2)[0] === "extensions");
+  var isExtension = (location.pathname.split('/').slice(-2)[0].indexOf("extensions") >= 0);
+  var isTS = (location.pathname.split('/').slice(-2)[0].indexOf("TS") > 0);
 
   // save the body for goViewSource() before we modify it
   window.bodyHTML = document.body.innerHTML;
@@ -103,7 +104,11 @@ function goSamples() {
   hdr.appendChild(p);
   var p1 = document.createElement("p");
   var samplename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-  p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS/blob/master/" + (isExtension ? "extensions/" : "samples/") + samplename + "' target='_blank'>View this sample page's source on GitHub</a>";
+  p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS/blob/master/" +
+                 (isExtension ? "extensions" : "samples") + 
+                 (isTS ? "TS/" : "/") +
+                 samplename +
+                 "' target='_blank'>View this sample page's source on GitHub</a>";
   hdr.appendChild(p1);
 
   samplediv.appendChild(hdr);

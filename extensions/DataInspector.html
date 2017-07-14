@@ -95,7 +95,7 @@
 
     // Create the Diagram's Model:
     var nodeDataArray = [
-      { key: 1, text: "Alpha", color: "#B2DFDB" },
+      { key: 1, text: "Alpha", password: "1234", color: "#B2DFDB" },
       { key: 2, text: "Beta", color:  "#B2B2DB" },
       { key: 3, text: "Gamma", color: "#1DE9B6", group: 5 },
       { key: 4, text: "Delta", color: "#00BFA5", group: 5 },
@@ -103,20 +103,20 @@
     ];
     var linkDataArray = [
       { from: 1, to: 2, color: "#5E35B1" },
-      { from: 2, to: 2, color: "#5E35B1"},
+      { from: 2, to: 2, color: "#5E35B1" },
       { from: 3, to: 4, color: "#6200EA" },
       { from: 3, to: 1, color: "#6200EA" }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
     // some shared model data
-    myDiagram.model.modelData = { "test": true, "hello": "world" };
+    myDiagram.model.modelData = { test: true, hello: "world", version: 42 };
 
     // select a Node, so that the first Inspector shows something
     myDiagram.select(myDiagram.nodes.first());
 
 
-    // properties declare which properties to show and how.
+    // Declare which properties to show and how.
     // By default, all properties on the model data objects are shown unless the inspector option "includesOwnProperties" is set to false.
 
     // Show the primary selection's data, or blanks if no Part is selected:
@@ -125,7 +125,9 @@
         // uncomment this line to only inspect the named properties below instead of all properties on each object:
         // includesOwnProperties: false,
         properties: {
-          "text": {},
+          "text": { },
+          // an example of specifying the <input> type
+          "password": { show: Inspector.showIfPresent, type: 'password' },
           // key would be automatically added for nodes, but we want to declare it read-only also:
           "key": { readOnly: true, show: Inspector.showIfPresent },
           // color would be automatically added for nodes, but we want to declare it a color also:
@@ -133,15 +135,15 @@
           // Comments and LinkComments are not in any node or link data (yet), so we add them here:
           "Comments": { show: Inspector.showIfNode  },
           "flag": { show: Inspector.showIfNode, type: 'boolean', defaultValue: true  },
-          "LinkComments": { show: Inspector.showIfLink },
+          "LinkComments": { show: Inspector.showIfLink }
         }
       });
 
     // Always show the first Node:
     var inspector2 = new Inspector('myInspectorDiv2', myDiagram,
       {
-        // by default the inspector works on the Diagram selection
-        // this lets us inspect our own object using Inspector.inspectObject(object)
+        // By default the inspector works on the Diagram selection.
+        // This property lets us inspect a specific object by calling Inspector.inspectObject.
         inspectSelection: false,
         properties: {
           "text": { },

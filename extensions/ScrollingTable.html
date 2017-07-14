@@ -15,13 +15,20 @@
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
-        { initialContentAlignment: go.Spot.Center });
+        {
+          initialContentAlignment: go.Spot.Center,
+          "PartResized": function(e) {
+            var node = e.subject;
+            var scroller = node.findObject("SCROLLER");
+            if (scroller !== null) scroller._updateScrollBar(scroller.findObject("TABLE"));
+          }
+        });
 
     myDiagram.nodeTemplate =
       $(go.Node, "Vertical",
         {
-          selectionObjectName: "SCROLLING",
-          resizable: true, resizeObjectName: "SCROLLING",
+          selectionObjectName: "SCROLLER",
+          resizable: true, resizeObjectName: "SCROLLER",
           portSpreading: go.Node.SpreadingNone
         },
         new go.Binding("location").makeTwoWay(),
@@ -31,13 +38,15 @@
         $(go.Panel, "Auto",
           $(go.Shape, { fill: "white" }),
           $("ScrollingTable",
-            { stretch: go.GraphObject.Fill },
+            {
+              name: "SCROLLER",
+              desiredSize: new go.Size(NaN, 60),  // fixed width
+              stretch: go.GraphObject.Fill        // but stretches vertically
+            },
             new go.Binding("TABLE.itemArray", "items"),
             new go.Binding("TABLE.column", "left", function(left) { return left ? 2 : 0; }),
             new go.Binding("desiredSize", "size").makeTwoWay(),
             {
-              name: "SCROLLING",
-              desiredSize: new go.Size(NaN, 60),
               "TABLE.itemTemplate":
                 $(go.Panel, "TableRow",
                   {

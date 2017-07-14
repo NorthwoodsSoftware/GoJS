@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logic Circuit with shiftable ports</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <meta charset="UTF-8">
+</head>
+<body>
+  <div id="sample">
+    <div style="width:100%; white-space:nowrap;">
+      <span style="display: inline-block; vertical-align: top; width:100px">
+      <div id="palette" style="background-color: Snow; border: solid 1px black; height: 500px"></div>
+    </span>
+      <span style="display: inline-block; vertical-align: top; width:80%">
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
+    </span>
+    </div>
+    <div id="description">
+      <p>
+        This is exactly like the <a href="../samples/LogicCircuit.html">Logic Circuit sample</a> but also makes use of the
+        PortShiftingTool, which is defined in <a href="PortShiftingTool.ts">PortShiftingTool.ts</a>
+      </p>
+      <p>
+        When the user wants to shift the position of a port on a node, the user can hold down the Shift key during a mouse-down on
+        a port element. Dragging then will move the port within the node.
+      </p>
+      <p>
+        Note how the relative position of the port within the node is maintained as you resize the node.
+      </p>
+      <p>
+        If you want to persist the port's spot, you should add a TwoWay Binding of the <a>GraphObject.alignment</a> property
+        with a property that you define on the node data for each port.
+      </p>
+      <p>
+        This sample does not constrain the position of the port within the node, but you could adapt the PortShiftingTool.updateAlignment
+        method to do so. For example if you wanted, you could keep a port stuck along one edge of the node.
+      </p>
+    </div>
+    <div id="buttons">
+      <button id="saveModel">Save</button>
+      <button id="loadModel">Load</button>
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"category":"input", "key":"input1", "loc":"-150 -80" },
+{"category":"or", "key":"or1", "loc":"-70 0" },
+{"category":"not", "key":"not1", "loc":"10 0" },
+{"category":"xor", "key":"xor1", "loc":"100 0" },
+{"category":"or", "key":"or2", "loc":"200 0" },
+{"category":"output", "key":"output1", "loc":"200 -100" }
+ ],
+  "linkDataArray": [
+{"from":"input1", "fromPort":"out", "to":"or1", "toPort":"in1"},
+{"from":"or1", "fromPort":"out", "to":"not1", "toPort":"in"},
+{"from":"not1", "fromPort":"out", "to":"or1", "toPort":"in2"},
+{"from":"not1", "fromPort":"out", "to":"xor1", "toPort":"in1"},
+{"from":"xor1", "fromPort":"out", "to":"or2", "toPort":"in1"},
+{"from":"or2", "fromPort":"out", "to":"xor1", "toPort":"in2"},
+{"from":"xor1", "fromPort":"out", "to":"output1", "toPort":""}
+ ]}
+  </textarea>
+  </div>
+  <script src="http://gojs.net/latest/samples/assets/require.js"></script>
+  <script>
+    require(["PortShiftingScript"], function (app) {
+      app.init();
+      document.getElementById("saveModel").onclick = app.save;
+      document.getElementById("loadModel").onclick = app.load;
+    });
+  </script>
+</body>
+</html>

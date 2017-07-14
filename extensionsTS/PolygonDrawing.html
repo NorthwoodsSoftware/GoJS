@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polygon Drawing Tool</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 350px"></div>
+    <div id="buttons">
+      <button type="button" id="select">Select</button>
+      <button type="button" id="drawPolygon">Draw Polygon</button>
+      <button type="button" id="drawPolyline">Draw Polyline</button>
+      <button type="button" id="finishDrawing">Finish Drawing</button>
+      <button type="button" id="cancelDrawing">Cancel Drawing</button>
+      <button type="button" id="undo">Undo Last Point</button>
+      <br/>
+      <label><input type="checkbox" id = "allowResizing" checked="checked" />Allow Resizing</label>
+      <label><input type="checkbox" id = "allowReshaping" checked="checked" />Allow Reshaping</label>
+      <label><input type="checkbox" id = "allowRotating" checked="checked" />Allow Rotating</label>
+      <p>
+        This sample demonstrates the PolygonDrawingTool, a custom <a>Tool</a> added to the Diagram's mouseDownTools. It is
+        defined in its own file, as <a href="PolygonDrawingTool.ts">PolygonDrawingTool.ts</a>. It also demonstrates the GeometryReshapingTool,
+        another custom tool, defined in <a href="GeometryReshapingTool.ts">GeometryReshapingTool.ts</a>.
+      </p>
+      <p>
+        These extensions serve as examples of features that can be added to GoJS by writing new classes. With the PolygonDrawingTool,
+        a new mode is supported that allows the user to draw custom shapes. With the GeometryReshapingTool, users can change
+        the geometry (i.e. the "shape") of a <a>Shape</a>s in a selected <a>Node</a>.
+        <br/> Click a "Draw" button and then click in the diagram to place a new point in a polygon or polyline shape. Right-click,
+        double-click, or Enter to finish. Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point. Click the
+        "Select" button to switch back to the normal selection behavior, so that you can select, resize, and rotate the shapes.
+        The checkboxes control whether you can resize, reshape, and/or rotate selected shapes.
+      </p>
+    </div>
+    <div>
+      <button id="save">Save</button>
+      <button id="load">Load</button>
+    </div>
+    <textarea id="mySavedDiagram" style="width:100%;height:300px">
+      { "position": "0 0",
+        "model": { "class": "go.GraphLinksModel",
+        "nodeDataArray": [ {"loc":"183 148", "category": "PolygonDrawing", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
+        "linkDataArray": [  ]
+      } }
+    </textarea>
+  </div>
+
+  <script src="http://gojs.net/latest/samples/assets/require.js"></script>
+  <script>
+    require(["PolygonDrawingScript"], function (app) {
+      app.init();
+      document.getElementById("select").onclick = app.select;
+      document.getElementById("drawPolygon").onclick = app.drawPolygon;
+      document.getElementById("drawPolyline").onclick = app.drawPolyline;
+      document.getElementById("finishDrawing").onclick = app.finishDrawing;
+      document.getElementById("cancelDrawing").onclick = app.cancelDrawing;
+      document.getElementById("undo").onclick = app.undo;
+      document.getElementById("allowResizing").onclick = app.allowResizing;
+      document.getElementById("allowReshaping").onclick = app.allowReshaping;
+      document.getElementById("allowRotating").onclick = app.allowRotating;
+      document.getElementById("save").onclick = app.save;
+      document.getElementById("load").onclick = app.load;
+    });
+  </script>
+</body>
+
+</html>

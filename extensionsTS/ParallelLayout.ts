@@ -1,0 +1,109 @@
+"use strict";
+/*
+*  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
+*/
+
+import * as go from "../release/go";
+
+// A custom TreeLayout that requires a "Split" node and a "Merge" node, by category.
+// The "Split" node should be the root of a tree-like structure if one excludes links to the "Merge" node.
+// This will position the "Merge" node to line up with the "Split" node.
+
+/**
+* @constructor
+* @extends TreeLayout
+* @class
+* Assume there is a pair of nodes that "Split" and "Merge",
+* along with any number of nodes extending in a tree-structure from the "Split" node.
+* You can set all of the TreeLayout properties that you like,
+* except that for simplicity this code just works for angle === 0 or angle === 90.
+*/
+export class ParallelLayout extends go.TreeLayout {
+  public isRealtime = false;
+  // these are desired for the Parallel Layout:
+  public alignment = go.TreeLayout.AlignmentCenterChildren;
+  public compaction = go.TreeLayout.CompactionNone;
+  public alternateAlignment = go.TreeLayout.AlignmentCenterChildren;
+  public alternateCompaction = go.TreeLayout.CompactionNone;
+
+  public makeNetwork(coll: go.Iterable<go.Part>): go.LayoutNetwork {
+    var net = super.makeNetwork.call(this, coll);
+    // look for and remember the one "Split" node and the one "Merge" node
+    for (var it = net.vertexes.iterator; it.next();) {
+      var v = it.value;
+      // handle asymmetric Groups, where the Placeholder is not centered
+      if (v.node instanceof go.Group && v.node.isSubGraphExpanded && v.node.placeholder !== null) {
+        v.focus = v.node.placeholder.getDocumentPoint(go.Spot.Center).subtract(v.node.position);
+      }
+      if (v.node.category === "Split") {
+        if (net.splitNode) throw new Error("Split node already exists in " + this + " -- existing: " + net.splitNode + " new: " + v.node);
+        net.splitNode = v.node;
+      } else if (v.node.category === "Merge") {
+        if (net.mergeNode) throw new Error("Merge node already exists in " + this + " -- existing: " + net.mergeNode + " new: " + v.node);
+        net.mergeNode = v.node;
+      }
+    }
+    if (net.splitNode || net.mergeNode) {
+      if (!net.splitNode) throw new Error("Missing Split node in " + this);
+      if (!net.mergeNode) throw new Error("Missing Merge node in " + this);
+    }
+    // don't lay out the Merge node
+    if (net.mergeNode) net.deleteNode(net.mergeNode);
+    return net;
+  };
+
+  public commitNodes() {
+    super.commitNodes.call(this);
+    var mergeNode = (this.network as any).mergeNode;
+    var splitNode = (this.network as any).splitNode;
+    var splitVertex: any = this.network.findVertex(splitNode);
+    if (mergeNode && splitVertex) {
+      // line up the "Merge" node to the center of the "Split" node
+      if (this.angle === 0) {
+        mergeNode.position = new go.Point(splitVertex.x + splitVertex.subtreeSize.width + this.layerSpacing,
+          splitVertex.centerY - mergeNode.actualBounds.height / 2);
+      } else if (this.angle === 90) {
+        mergeNode.position = new go.Point(splitVertex.centerX - mergeNode.actualBounds.width / 2,
+          splitVertex.y + splitVertex.subtreeSize.height + this.layerSpacing);
+      }
+    }
+  };
+
+  public commitLinks() {
+    super.commitLinks.call(this);
+    var mergeNode = (this.network as any).mergeNode;
+    if (mergeNode) {
+      for (var it = mergeNode.findLinksInto(); it.next();) {
+        var link = it.value;
+        if (this.angle === 0) {
+          link.fromSpot = go.Spot.Right;
+          link.toSpot = go.Spot.Left;
+        } else if (this.angle === 90) {
+          link.fromSpot = go.Spot.Bottom;
+          link.toSpot = go.Spot.Top;
+        }
+        if (!link.isOrthogonal) continue;
+        // have all of the links coming into the "Merge" node have segments
+        // that share a common X (or if angle==90, Y) coordinate
+        link.updateRoute();
+        if (link.pointsCount >= 6) {
+          var pts = link.points.copy();
+          var p2 = pts.elt(pts.length - 4);
+          var p3 = pts.elt(pts.length - 3);
+          if (this.angle === 0) {
+            var x = mergeNode.position.x - this.layerSpacing / 2;
+            pts.setElt(pts.length - 4, new go.Point(x, p2.y));
+            pts.setElt(pts.length - 3, new go.Point(x, p3.y));
+          } else if (this.angle === 90) {
+            var y = mergeNode.position.y - this.layerSpacing / 2;
+            pts.setElt(pts.length - 4, new go.Point(p2.x, y));
+            pts.setElt(pts.length - 3, new go.Point(p3.x, y));
+          }
+          link.points = pts;
+        }
+      }
+    }
+  };
+
+}
+

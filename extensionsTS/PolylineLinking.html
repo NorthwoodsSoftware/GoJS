@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polyline Linking Tool</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
+    <div id="buttons">
+      <button id="SaveButton">Save</button>
+      <button id="LoadButton">Load</button>
+    </div>
+    <p>
+      This sample demonstrates the PolylineLinkingTool, which replaces the standard LinkingTool. The tool is defined in its own
+      file, as <a href="PolylineLinkingTool.ts">PolylineLinkingTool.ts</a>.
+    </p>
+    <p>
+      The user starts drawing a new link from a node in the normal manner, by dragging from a port, which for feedback purposes
+      has a "pointer" cursor. Normally the user would have to release the mouse near the target port/node. However with the
+      PolylineLinkingTool the user may click at various points to cause the new link to be routed along those points. Clicking
+      on the target port completes the new link. Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point.
+    </p>
+    <p>
+      Furthermore, because <a>Link.resegmentable</a> is true, the user can easily add or remove segments from the route of
+      a selected link. To insert a segment, the user can start dragging the small diamond resegmenting handle. To remove
+      a segment, the user needs to move a regular reshaping handle to cause the adjacent two segments to be in a straight
+      line.
+    </p>
+    <p>
+      The PolylineLinkingTool also works with orthogonally routed links. To demonstrate this, uncomment the two lines that initialize
+      <a>Link.routing</a> to be <a>Link.Orthogonal</a>.
+    </p>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+    { "key": 1, "text": "Node 1", "fill": "blueviolet", "loc": "100 100" },
+    { "key": 2, "text": "Node 2", "fill": "orange", "loc": "400 100" }
+  ],
+  "linkDataArray": [  ]
+}
+    </textarea>
+  </div>
+  <script src="http://gojs.net/latest/samples/assets/require.js"></script>
+  <script>
+    require(["PolylineLinkingScript"], function (app) {
+      app.init();
+      document.getElementById("SaveButton").onclick = app.save;
+      document.getElementById("LoadButton").onclick = app.load;
+    });
+  </script>
+</body>
+
+</html>

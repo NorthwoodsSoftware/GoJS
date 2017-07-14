@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tree Map</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="../assets/js/goSamples.js"></script>
+  <!-- this is only for the GoJS Samples framework -->
+</head>
+
+<body>
+  <div id="sample">
+  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>New Tree</b><br />
+      MinNodes: <input type="number" width="2" id="minNodes" value="300" /><br />
+      MaxNodes: <input type="number" width="2" id="maxNodes" value="500" /><br />
+      MinChildren: <input type="number" width="2" id="minChil" value="2" /><br />
+      MaxChildren: <input type="number" width="2" id="maxChil" value="5" /><br />
+      <button type="button" id="rebuildGraph">Generate Tree</button>
+    </span>
+  </div>
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <p>
+    This sample demonstrates a custom Layout, TreeMapLayout, which assumes that the diagram consists of nested Groups and simple Nodes.
+    Each node is positioned and sized to fill an area of the viewport proportionate to its "size", as determined by its Node.data.size property.
+    Each Group gets a size that is the sum of all of its member Nodes.
+  </p>
+  <p>
+    The layout is defined in its own file, as <a href="TreeMapLayout.js">TreeMapLayout.js</a>.
+  </p>
+  <p>
+    Clicking repeatedly at the same point will initially select the Node at that point, and then its containing Group, and so on up the chain of containers.
+  </p>
+  </div>
+  <script src="http://gojs.net/latest/samples/assets/require.js"></script>
+  <script>
+    require(["TreeMapScript"], function (app) {
+      app.init();
+      document.getElementById("rebuildGraph").onclick = app.rebuildGraph;
+    });
+  </script>
+</body>
+
+</html>

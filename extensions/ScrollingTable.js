@@ -78,55 +78,75 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
       table.topIndex = idx;
       var node = table.part;  // may need to reroute links if the table contains any ports
       if (node instanceof go.Node) node.invalidateConnectedLinks();
-      var up = table.panel.findObject("UP");
-      if (up) up.visible = (idx > 0);
-      var down = table.panel.findObject("DOWN");
-      if (down) down.visible = (idx < table.rowCount - 1);
+      updateScrollBar(table);
       if (diagram !== null) diagram.commitTransaction("scroll");
     }
   }
 
+  function updateScrollBar(table) {
+    var bar = table.panel.elt(1);  // the scrollbar is a sibling of the table
+    if (!bar) return;
+    var idx = table.topIndex;
+
+    var up = bar.findObject("UP");
+    if (up) up.opacity = (idx > 0) ? 1.0 : 0.3;
+
+    var down = bar.findObject("DOWN");
+    if (down) down.opacity = (idx < table.rowCount - 1) ? 1.0 : 0.3;
+
+    var tabh = bar.actualBounds.height;
+    var rowh = table.elt(idx).actualBounds.height;  //?? assume each row has same height?
+    if (rowh === 0 && idx < table.rowCount-2) rowh = table.elt(idx + 1).actualBounds.height;
+    var numVisibleRows = Math.max(1, Math.ceil(tabh / rowh) - 1);
+    var needed = idx > 0 || idx + numVisibleRows <= table.rowCount;
+    bar.opacity = needed ? 1.0 : 0.0;
+  }
+
   return $(go.Panel, "Table",
+      {
+        _updateScrollBar: updateScrollBar
+      },
+      // this actually holds the item elements
+      $(go.Panel, "Table",
+        {
+          name: tablename,
+          column: 0,
+          stretch: go.GraphObject.Fill,
+          background: "whitesmoke",
+          rowSizing: go.RowColumnDefinition.None,
+          defaultAlignment: go.Spot.Top
+        }),
 
-            // this actually holds the item elements
-            $(go.Panel, "Table",
-              {
-                name: tablename,
-                column: 0,
-                stretch: go.GraphObject.Fill,
-                background: "whitesmoke",
-                rowSizing: go.RowColumnDefinition.None,
-                defaultAlignment: go.Spot.Top
-              }),
-
-            // this is the scrollbar
-            $(go.RowColumnDefinition,
-              { column: 1, sizing: go.RowColumnDefinition.None }),
-            $(go.Panel, "Table",
-              { column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD" },
-              // the scroll up button
-              $("AutoRepeatButton",
-                {
-                  row: 0,
-                  alignment: go.Spot.Top,
-                  "ButtonBorder.figure": "Rectangle",
-                  "ButtonBorder.fill": "lightgray",
-                  click: function(e, obj) { incrTableIndex(obj, -1); }
-                },
-                $(go.Shape, "TriangleUp",
-                  { stroke: null, desiredSize: new go.Size(6, 6) })),
-              // (someday implement a thumb here and support dragging to scroll)
-              // the scroll down button
-              $("AutoRepeatButton",
-                {
-                  row: 3,
-                  alignment: go.Spot.Bottom,
-                  "ButtonBorder.figure": "Rectangle",
-                  "ButtonBorder.fill": "lightgray",
-                  click: function(e, obj) { incrTableIndex(obj, +1); }
-                },
-                $(go.Shape, "TriangleDown",
-                  { stroke: null, desiredSize: new go.Size(6, 6) }))
-            )
-         );
+      // this is the scrollbar
+      $(go.RowColumnDefinition,
+        { column: 1, sizing: go.RowColumnDefinition.None }),
+      $(go.Panel, "Table",
+        { column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD" },
+        // the scroll up button
+        $("AutoRepeatButton",
+          {
+            name: "UP",
+            row: 0,
+            alignment: go.Spot.Top,
+            "ButtonBorder.figure": "Rectangle",
+            "ButtonBorder.fill": "lightgray",
+            click: function(e, obj) { incrTableIndex(obj, -1); }
+          },
+          $(go.Shape, "TriangleUp",
+            { stroke: null, desiredSize: new go.Size(6, 6) })),
+        // (someday implement a thumb here and support dragging to scroll)
+        // the scroll down button
+        $("AutoRepeatButton",
+          {
+            name: "DOWN",
+            row: 2,
+            alignment: go.Spot.Bottom,
+            "ButtonBorder.figure": "Rectangle",
+            "ButtonBorder.fill": "lightgray",
+            click: function(e, obj) { incrTableIndex(obj, +1); }
+          },
+          $(go.Shape, "TriangleDown",
+            { stroke: null, desiredSize: new go.Size(6, 6) }))
+      )
+    );
 });

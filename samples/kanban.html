@@ -216,10 +216,7 @@
     myDiagram.groupTemplate =
       $(go.Group, "Vertical",
         {
-          copyable: false,
-          movable: false,
-          deletable: false,
-          selectionAdorned: false,
+          selectable: false,
           selectionObjectName: "SHAPE", // even though its not selectable, this is used in the layout
           layerName: "Background",  // all lanes are always behind all nodes and links
           layout: $(go.GridLayout,  // automatically lay out the lane's subgraph
@@ -237,6 +234,9 @@
                         return 0;
                       }
                     }),
+          click: function(e, grp) {  // allow simple click on group to clear selection
+            if (!e.shift && !e.control && !e.meta) e.diagram.clearSelection();
+          },
           computesBoundsAfterDrag: true,  // needed to prevent recomputing Group.placeholder bounds too soon
           handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
           mouseDragEnter: function(e, grp, prev) { highlightGroup(grp, true); },
@@ -348,7 +348,7 @@
       <li>the user cannot drop tasks into the diagram's background</li>
       <li>all tasks are ordered within a single column; the user can rearrange the order</li>
       <li>tasks can freely be moved into other lanes</li>
-      <li>lanes are not movable or deletable</li>
+      <li>lanes are not movable or copyable or deletable</li>
     </ul>
   </p>
   <button id="SaveButton" onclick="save()">Save</button>

@@ -82,6 +82,7 @@ Object.defineProperty(TableLayout.prototype, "defaultStretch", {
   set: function(val) { this._defaultStretch = val; }
 });
 
+
 /**
 * Gets the {@link RowColumnDefinition} for a particular row in this TableLayout.
 * If you ask for the definition of a row at or beyond the {@link #rowCount},
@@ -118,6 +119,35 @@ Object.defineProperty(TableLayout.prototype, "rowCount", {
 });
 
 /**
+* Returns the row at a given y-coordinate in document coordinates.
+* This information is only valid when this layout has been performed and {#Layout.isValidLayout}.
+* <p>
+* If the point is above row 0, this method returns -1.
+* If the point below the last row, this returns the last row + 1.
+* @this {TableLayout}
+* @param {number} y
+* @return {number} a zero-based integer
+* @see #findColumnForDocumentX
+*/
+TableLayout.prototype.findRowForDocumentY = function(y) {
+  y -= this.arrangementOrigin.y;
+  if (y < 0) return -1;
+  var total = 0.0;
+  var it = this._rowDefs;
+  var l = it.length;
+  for (var i = 0; i < l; i++) {
+    var def = it[i];
+    if (def === undefined) continue;
+    total += def.total;
+    if (y < total) {
+      return i;
+    }
+  }
+  return i;
+};
+
+
+/**
 * Gets the {@link RowColumnDefinition} for a particular column in this TableLayout.
 * If you ask for the definition of a column at or beyond the {@link #columnCount},
 * it will automatically create one and return it.
@@ -151,6 +181,35 @@ TableLayout.prototype.getColumnDefinition = function(idx) {
 Object.defineProperty(TableLayout.prototype, "columnCount", {
   get: function() { return this._colDefs.length; }
 });
+
+/**
+* Returns the cell at a given x-coordinate in document coordinates.
+* This information is only valid when this layout has been performed and {#Layout.isValidLayout}.
+* <p>
+* If the point is to left of the column 0, this method returns -1.
+* If the point to to the right of the last column, this returns the last column + 1.
+* @this {TableLayout}
+* @param {number} x
+* @return {number} a zero-based integer
+* @see #findRowForDocumentY
+*/
+TableLayout.prototype.findColumnForDocumentX = function(x) {
+  x -= this.arrangementOrigin.x;
+  if (x < 0) return -1;
+  var total = 0.0;
+  var it = this._colDefs;
+  var l = it.length;
+  for (var i = 0; i < l; i++) {
+    var def = it[i];
+    if (def === undefined) continue;
+    total += def.total;
+    if (x < total) {
+      return i;
+    }
+  }
+  return i;
+};
+
 
 /**
 * @ignore

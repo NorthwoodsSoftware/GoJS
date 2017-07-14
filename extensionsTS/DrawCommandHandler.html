@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drawing Commands</title>
+  <meta name="description" content="A demonstration of the DrawCommandHandler extension." />
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+<div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <p>
+    Align:
+    <button id="leftsides">Left Sides</button>
+    <button id="rightsides">Right Sides</button>
+    <button id="tops">Tops</button>
+    <button id="bottoms">Bottoms</button>
+    <button id="cenX">Center X</button>
+    <button id="cenY">Center Y</button>
+    <button id="row">Row</button>
+    <button id="column">Column</button>
+    </br>
+    Rotate:
+    <button id="45">45°</button>
+    <button id="-45">-45°</button>
+    <button id="90">90°</button>
+    <button id="-90">-90°</button>
+    <button id="180">180°</button>
+    </br>
+    Arrow Mode:
+    <input type="radio" name="arrow" id="move" checked="checked">Move</input>
+    <input type="radio" name="arrow" id="select">Select</input>
+    <input type="radio" name="arrow" id="scroll">Scroll</input>
+  </p>
+  <p>
+    This example demonstrates a custom <a>CommandHandler</a>. 
+    It allows the user to position selected Parts in a diagram relative to each other, 
+    overrides <a>CommandHandler.doKeyDown</a> to allow handling the arrow keys in additional manners,
+    and uses a "paste offset" so that pasting objects will cascade them rather than place them on top of one another.
+    It is defined in its own file, as <a href="DrawCommandHandler.js">DrawCommandHandler.js</a>.
+  </p>
+  <p>
+    The above buttons can be used to align Parts, rotate Parts, or change the behavior of the arrow keys.
+  </p>
+  <p>
+    Usage can also be seen in the <a href="BPMN.html">BPMN Editor</a> sample.
+  </p>
+  </div>
+  <script src="http://gojs.net/latest/samples/assets/require.js"></script>
+  <script>
+    require(["DrawCommandHandlerScript"], function (app) {
+      app.init();
+      document.getElementById("leftsides").onclick = app.lefts;
+      document.getElementById("rightsides").onclick = app.rights;
+      document.getElementById("tops").onclick = app.tops;
+      document.getElementById("bottoms").onclick = app.bottoms;
+      document.getElementById("cenX").onclick = app.cenX;
+      document.getElementById("cenY").onclick = app.cenY;
+      document.getElementById("row").onclick = app.row;
+      document.getElementById("column").onclick = app.column;
+      document.getElementById("45").onclick = app.rotate45;
+      document.getElementById("-45").onclick = app.rotateNeg45;
+      document.getElementById("90").onclick = app.rotate90;
+      document.getElementById("-90").onclick = app.rotateNeg90;
+      document.getElementById("180").onclick = app.rotate180;
+      document.getElementById("move").onclick = app.arrowMode;
+      document.getElementById("select").onclick = app.arrowMode;
+      document.getElementById("scroll").onclick = app.arrowMode;
+    });
+  </script>
+</body>
+
+</html>

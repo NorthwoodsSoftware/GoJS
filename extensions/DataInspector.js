@@ -22,7 +22,7 @@
   Options for properties:
     show: {boolean|function} a boolean value to show or hide the property from the inspector, or a predicate function to show conditionally.
     readOnly: {boolean|function} whether or not the property is read-only
-    type: {string} a string describing the data type. Supported values: "string|number|color|boolean" Not yet implemented: "point|rect|size"
+    type: {string} a string describing the data type. Supported values: "string|number|boolean|color|arrayofnumber|point|rect|size|spot|margin"
     defaultValue: {*} a default value for the property. Defaults to the empty string.
 
   Example usage of Inspector:
@@ -181,7 +181,7 @@ Inspector.prototype.canEditProperty = function(propertyName, propertyDesc, inspe
   // assume property values that are functions of Objects cannot be edited
   var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
   var valtype = typeof data[propertyName];
-  if (valtype === "function" || valtype === "object") return false;  //?? handle Objects such as Points
+  if (valtype === "function") return false;
   if (propertyDesc) {
     if (propertyDesc.readOnly === true) return false;
     // if "readOnly" is a predicate, make sure it passes or do not show this property
@@ -217,14 +217,21 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
   var self = this;
   function setprops() { self.updateAllProperties(); }
 
-  input.value = propertyValue;
+  input.value = this.convertToString(propertyValue);
   input.disabled = !this.canEditProperty(propertyName, decProp, this.inspectedObject);
-  if (decProp !== undefined && decProp.type === "color") {
-    input.setAttribute("type", "color");
-    if (input.type === "color") {
-      input.addEventListener("input", setprops);
-      input.addEventListener("change", setprops);
-      input.value = this.setColor(propertyValue);
+  if (decProp) {
+    var t = decProp.type;
+    if (t !== 'string' && t !== 'number' && t !== 'boolean' &&
+        t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
+        t !== 'rect' && t !== 'spot' && t !== 'margin') {
+      input.setAttribute("type", decProp.type);
+    }
+    if (decProp.type === "color") {
+      if (input.type === "color") {
+        input.addEventListener("input", setprops);
+        input.addEventListener("change", setprops);
+        input.value = this.convertToColor(propertyValue);
+      }
     }
   }
   if (this._diagram.model.isReadOnly) input.disabled = true;
@@ -246,11 +253,54 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
 * @param {string} propertyValue
 * @return {string}
 */
-Inspector.prototype.setColor = function(propertyValue) {
+Inspector.prototype.convertToColor = function(propertyValue) {
   var ctx = document.createElement("canvas").getContext("2d");
   ctx.fillStyle = propertyValue;
   return ctx.fillStyle;
-}
+};
+
+/**
+* @ignore
+* @param {string}
+* @return {Array.<number>}
+*/
+Inspector.prototype.convertToArrayOfNumber = function(propertyValue) {
+  if (propertyValue === "null") return null;
+  var split = propertyValue.split(' ');
+  var arr = [];
+  for (var i = 0; i < split.length; i++) {
+    var str = split[i];
+    if (!str) continue;
+    arr.push(parseFloat(str));
+  }
+  return arr;
+};
+
+/**
+* @ignore
+* @param {*}
+* @return {string}
+*/
+Inspector.prototype.convertToString = function(x) {
+  if (x === undefined) return "undefined";
+  if (x === null) return "null";
+  if (x instanceof go.Point) return go.Point.stringify(x);
+  if (x instanceof go.Size) return go.Size.stringify(x);
+  if (x instanceof go.Rect) return go.Rect.stringify(x);
+  if (x instanceof go.Spot) return go.Spot.stringify(x);
+  if (x instanceof go.Margin) return go.Margin.stringify(x);
+  if (x instanceof go.List) return this.convertToString(x.toArray());
+  if (Array.isArray(x)) {
+    var str = "";
+    for (var i = 0; i < x.length; i++) {
+      if (i > 0) str += " ";
+      var v = x[i];
+      str += this.convertToString(v);
+    }
+    return str;
+  }
+  return x.toString();
+};
 
 /**
 * @ignore
@@ -276,9 +326,9 @@ Inspector.prototype.updateAllHTML = function() {
       var input = inspectedProps[name];
       var propertyValue = data[name];
       if (input.type === "color") {
-        input.value = this.setColor(propertyValue);
+        input.value = this.convertToColor(propertyValue);
       } else {
-        input.value = propertyValue;
+        input.value = this.convertToString(propertyValue);
       }
     }
   }
@@ -310,16 +360,29 @@ Inspector.prototype.updateAllProperties = function() {
     if (decProp !== undefined && decProp.type !== undefined) {
       type = decProp.type;
     }
-    if (type === "" && typeof data[name] === "boolean") type = "boolean"; // infer boolean
+    if (type === "") {
+      var oldval = data[name];
+      if (typeof oldval === "boolean") type = "boolean"; // infer boolean
+      else if (typeof oldval === "number") type = "number";
+      else if (oldval instanceof go.Point) type = "point";
+      else if (oldval instanceof go.Size) type = "size";
+      else if (oldval instanceof go.Rect) type = "rect";
+      else if (oldval instanceof go.Spot) type = "spot";
+      else if (oldval instanceof go.Margin) type = "margin";
+    }
 
     // convert to specific type, if needed
     switch (type) {
       case "boolean":
         value = !(value == false || value === "false" || value === "0");
         break;
-      case "number":
-        value = parseFloat(value);
-        break;
+      case "number": value = parseFloat(value); break;
+      case "arrayofnumber": value = this.convertToArrayOfNumber(value); break;
+      case "point": value = go.Point.parse(value); break;
+      case "size": value = go.Size.parse(value); break;
+      case "rect": value = go.Rect.parse(value); break;
+      case "spot": value = go.Spot.parse(value); break;
+      case "margin": value = go.Margin.parse(value); break;
     }
 
     // in case parsed to be different, such as in the case of boolean values,

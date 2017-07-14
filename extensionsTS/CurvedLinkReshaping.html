@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>State Chart with Simple Curved Link Reshaping</title>
+  <!-- /* Copyright 1998-2017 by Northwoods Software Corporation. */ -->
+  <meta charset="UTF-8">
+  <script src="../assets/js/goSamples.js"></script>
+  <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
+    <p>
+      This sample is a modification of the <a href="../samples/stateChart.html">State Chart</a> sample that makes use of
+      the CurvedLinkReshapingTool that is defined in its own file, as <a href="CurvedLinkReshapingTool.ts">CurvedLinkReshapingTool.ts</a>.
+    </p>
+    <p>
+      Note that unlike the standard case of a Bezier-curved Link that is <a>Part.reshapable</a>, there is only one reshape
+      handle When the user drags that handle, the value of <a>Link.curviness</a> is modified, causing the link to be curved
+      differently. This sample also defines a TwoWay <a>Binding</a> on that property, thereby saving the curviness to the
+      model data. Unlike the regular State Chart sample, there is no Binding on <a>Link.points</a>, which is no longer needed
+      when the curviness is the only modified property.
+    </p>
+    <button id="SaveButton">Save</button>
+    <button id="LoadButton">Load</button> Diagram Model saved in JSON format:
+    <br />
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "nodeKeyProperty": "id",
+  "nodeDataArray": [
+    { "id": 0, "loc": "120 120", "text": "Initial" },
+    { "id": 1, "loc": "330 120", "text": "First down" },
+    { "id": 2, "loc": "226 376", "text": "First up" },
+    { "id": 3, "loc": "60 276", "text": "Second down" },
+    { "id": 4, "loc": "226 226", "text": "Wait" }
+  ],
+  "linkDataArray": [
+    { "from": 0, "to": 0, "text": "up or timer", "curviness": -20 },
+    { "from": 0, "to": 1, "text": "down", "curviness": 20 },
+    { "from": 1, "to": 0, "text": "up (moved)\nPOST", "curviness": 20 },
+    { "from": 1, "to": 1, "text": "down", "curviness": -20 },
+    { "from": 1, "to": 2, "text": "up (no move)" },
+    { "from": 1, "to": 4, "text": "timer" },
+    { "from": 2, "to": 0, "text": "timer\nPOST" },
+    { "from": 2, "to": 3, "text": "down" },
+    { "from": 3, "to": 0, "text": "up\nPOST\n(dblclick\nif no move)" },
+    { "from": 3, "to": 3, "text": "down or timer", "curviness": 20 },
+    { "from": 4, "to": 0, "text": "up\nPOST" },
+    { "from": 4, "to": 4, "text": "down" }
+  ]
+}
+    </textarea>
+  </div>
+  <script src="http://gojs.net/latest/samples/assets/require.js"></script>
+  <script>
+    require(["CurvedLinkReshapingScript"], function (app) {
+      app.init();
+      document.getElementById("SaveButton").onclick = app.save;
+      document.getElementById("LoadButton").onclick = app.load;
+    });
+  </script>
+</body>
+
+</html>
