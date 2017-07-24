@@ -39,28 +39,28 @@ import * as go from "../release/go";
 */
 
 export class DragCreatingTool extends go.Tool {
-	private b: go.Part = new go.Part();
-	private r: go.Shape = new go.Shape();
+	/** @type {Part} */
+	private _box: go.Part;
+
 	constructor() {
 		super();
-		this.b.layerName = "Tool";
-		this.b.selectable = false;
-		this.r.name = "SHAPE";
-		this.r.figure = "Rectangle";
-		this.r.fill = null;
-		this.r.stroke = "magenta";
-		this.r.position = new go.Point(0, 0);
-		this.b.add(this.r);
+		const b: go.Part = new go.Part();
+		const r: go.Shape = new go.Shape();
+		b.layerName = "Tool";
+		b.selectable = false;
+		r.name = "SHAPE";
+		r.figure = "Rectangle";
+		r.fill = null;
+		r.stroke = "magenta";
+		r.position = new go.Point(0, 0);
+		b.add(r);
+		this._box = b;
 	}
 
 	public name: string = "DragCreating";
 
 	/** @type {Object} */
 	private _archetypeNodeData: Object = null;
-
-
-	/** @type {Part} */
-	private _box: go.Part = this.b;
 
 	/** @type {number} */
 	private _delay: number = 175;

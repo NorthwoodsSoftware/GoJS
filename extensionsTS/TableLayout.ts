@@ -496,51 +496,81 @@ export class TableLayout extends go.Layout {
 			colleft = Math.max(colleft - amt, 0);
 		} // end no fixed size objects
 
-		// Go through each object that spans multiple rows or columns
-		var additionalSpan = new go.Size();
-		l = spanners.length;
-		for (var i = 0; i < l; i++) {
-			var child = spanners[i];
-			var rowHerald = this.getRowDefinition(child.row);
-			var colHerald = this.getColumnDefinition(child.column);
+  // Go through each object that spans multiple rows or columns
+  var additionalSpan = new go.Size();
+  l = spanners.length;
+  if (l !== 0) {
+    // record the actual sizes of every row/column before measuring spanners
+    // because they will change during the loop and we want to use their 'before' values
+    var actualSizeRows = [];
+    var actualSizeColumns = [];
+    for (var i = 0; i < lrow; i++) {
+      if (!rowcol[i]) continue;
+      lcol = rowcol[i].length; // column length in this row
+      var rowHerald = this.getRowDefinition(i);
+      actualSizeRows[i] = rowHerald.actual;
+      for (var j = 0; j < lcol; j++) {
+        //foreach column j in row i...
+        if (!rowcol[i][j]) continue;
+        var colHerald = this.getColumnDefinition(j);
+        actualSizeColumns[j] = colHerald.actual;
+      }
+    }
+  }
+  for (var i = 0; i < l; i++) {
+    var child = spanners[i];
+    var rowHerald = this.getRowDefinition(child.row);
+    var colHerald = this.getColumnDefinition(child.column);
 
-			// If there's a set column width/height we don't care about the given width/height
-			allowedSize.setTo(
-				Math.max(colHerald.minimum, Math.min(width, colHerald.maximum)),
-				Math.max(rowHerald.minimum, Math.min(height, rowHerald.maximum)));
+    // If there's a set column width/height we don't care about the given width/height
+    allowedSize.setTo(
+      Math.max(colHerald.minimum, Math.min(width, colHerald.maximum)),
+      Math.max(rowHerald.minimum, Math.min(height, rowHerald.maximum)));
 
-			// If it is a spanner and has a fill:
-			var stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
-			switch (stretch) {
-				case go.GraphObject.Fill:
-					if (colHerald.actual !== 0) allowedSize.width = Math.min(allowedSize.width, colHerald.actual);
-					if (rowHerald.actual !== 0) allowedSize.height = Math.min(allowedSize.height, rowHerald.actual);
-					break;
-				case go.GraphObject.Horizontal:
-					if (colHerald.actual !== 0) allowedSize.width = Math.min(allowedSize.width, colHerald.actual);
-					break;
-				case go.GraphObject.Vertical:
-					if (rowHerald.actual !== 0) allowedSize.height = Math.min(allowedSize.height, rowHerald.actual);
-					break;
-			}
-			// If there's a set column width/height we don't care about any of the above:
-			if (isFinite(colHerald.width)) allowedSize.width = colHerald.width;
-			if (isFinite(rowHerald.height)) allowedSize.height = rowHerald.height;
+    // If it is a spanner and has a fill:
+    var stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
+    switch (stretch) {
+      case go.GraphObject.Fill:
+        if (actualSizeColumns[colHerald.index] !== 0) allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+        if (actualSizeRows[rowHerald.index] !== 0) allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+        break;
+      case go.GraphObject.Horizontal:
+        if (actualSizeColumns[colHerald.index] !== 0) allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+        break;
+      case go.GraphObject.Vertical:
+        if (actualSizeRows[rowHerald.index] !== 0) allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+        break;
+    }
+    // If there's a set column width/height we don't care about any of the above:
+    if (isFinite(colHerald.width)) allowedSize.width = colHerald.width;
+    if (isFinite(rowHerald.height)) allowedSize.height = rowHerald.height;
 
-			// take into account rowSpan and columnSpan
-			additionalSpan.setTo(0, 0);
-			for (var n = 1; n < child.rowSpan; n++) {
-				if (child.row + n >= this.rowCount) break; // if the row exists at all
-				def = this.getRowDefinition(child.row + n);
-				additionalSpan.height += Math.max(def.minimum, isNaN(def.size) ? def.maximum : Math.min(def.size, def.maximum));
-			}
-			for (var n = 1; n < child.columnSpan; n++) {
-				if (child.column + n >= this.columnCount) break; // if the col exists at all
-				def = this.getColumnDefinition(child.column + n);
-				additionalSpan.width += Math.max(def.minimum, isNaN(def.size) ? def.maximum : Math.min(def.size, def.maximum));
-			}
-			allowedSize.width += additionalSpan.width;
-			allowedSize.height += additionalSpan.height;
+    // take into account rowSpan and columnSpan
+    additionalSpan.setTo(0, 0);
+    for (var n = 1; n < child.rowSpan; n++) {
+      if (child.row + n >= this.rowCount) break; // if the row exists at all
+      def = this.getRowDefinition(child.row + n);
+      amt = 0;
+      if (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical) {
+        amt = Math.max(def.minimum, (actualSizeRows[child.row + n] === 0) ? def.maximum : Math.min(actualSizeRows[child.row + n], def.maximum));
+      } else {
+        amt = Math.max(def.minimum, isNaN(def.size) ? def.maximum : Math.min(def.size, def.maximum));
+      }
+      additionalSpan.height += amt;
+    }
+    for (var n = 1; n < child.columnSpan; n++) {
+      if (child.column + n >= this.columnCount) break; // if the col exists at all
+      def = this.getColumnDefinition(child.column + n);
+      amt = 0;
+      if (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal) {
+        amt = Math.max(def.minimum, (actualSizeColumns[child.column + n] === 0) ? def.maximum : Math.min(actualSizeColumns[child.column + n], def.maximum));
+      } else {
+        amt = Math.max(def.minimum, isNaN(def.size) ? def.maximum : Math.min(def.size, def.maximum));
+      }
+      additionalSpan.width += amt;
+    }
+    allowedSize.width += additionalSpan.width;
+    allowedSize.height += additionalSpan.height;
 
 			var marg = child.margin as go.Margin;
 			var margw = marg.right + marg.left;

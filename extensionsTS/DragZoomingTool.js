@@ -61,22 +61,21 @@ var __extends = (this && this.__extends) || (function () {
         function DragZoomingTool() {
             var _this = _super.call(this) || this;
             _this.name = "DragZooming";
-            _this.b = new go.Part;
-            _this.r = new go.Shape;
-            /** @type {Part} */
-            _this._box = _this.b;
             /** @type {number} */
             _this._delay = 175;
             /** @type {Diagram} */
             _this._zoomedDiagram = null;
-            _this.b.layerName = "Tool";
-            _this.b.selectable = false;
-            _this.r.name = "SHAPE";
-            _this.r.figure = "Rectangle";
-            _this.r.fill = null;
-            _this.r.stroke = "magenta";
-            _this.r.position = new go.Point(0, 0);
-            _this.b.add(_this.r);
+            var b = new go.Part;
+            var r = new go.Shape;
+            b.layerName = "Tool";
+            b.selectable = false;
+            r.name = "SHAPE";
+            r.figure = "Rectangle";
+            r.fill = null;
+            r.stroke = "magenta";
+            r.position = new go.Point(0, 0);
+            b.add(r);
+            _this._box = b;
             return _this;
         }
         /**

@@ -40,10 +40,7 @@ var __extends = (this && this.__extends) || (function () {
         __extends(GeometryReshapingTool, _super);
         function GeometryReshapingTool() {
             var _this = _super.call(this) || this;
-            _this.h = new go.Shape();
             _this.name = "GeometryReshaping";
-            /** @type {GraphObject} */
-            _this._handleArchetype = _this.h;
             /** @type {string} */
             _this._reshapeObjectName = 'SHAPE'; //??? can't add Part.reshapeObjectName property
             // there's no Part.reshapeAdornmentTemplate either
@@ -54,11 +51,13 @@ var __extends = (this && this.__extends) || (function () {
             _this._adornedShape = null;
             /** @type {Geometry} */
             _this._originalGeometry = null; // in case the tool is cancelled and the UndoManager is not enabled
-            _this.h.figure = "Diamond";
-            _this.h.desiredSize = new go.Size(7, 7);
-            _this.h.fill = "lightblue";
-            _this.h.stroke = "dodgerblue";
-            _this.h.cursor = "move";
+            var h = new go.Shape();
+            h.figure = "Diamond";
+            h.desiredSize = new go.Size(7, 7);
+            h.fill = "lightblue";
+            h.stroke = "dodgerblue";
+            h.cursor = "move";
+            _this._handleArchetype = h;
             return _this;
         }
         Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {

@@ -20,21 +20,25 @@ import * as go from "../release/go";
 */
 
 export class GeometryReshapingTool extends go.Tool {
-	private h: go.Shape = new go.Shape();
+
+	/** @type {GraphObject} */
+	private _handleArchetype: go.GraphObject;
+
 	constructor()
 	{
 		super();
-		this.h.figure = "Diamond";
-		this.h.desiredSize = new go.Size(7, 7);
-		this.h.fill = "lightblue";
-		this.h.stroke = "dodgerblue";
-		this.h.cursor = "move";
+		const h: go.Shape = new go.Shape();
+		h.figure = "Diamond";
+		h.desiredSize = new go.Size(7, 7);
+		h.fill = "lightblue";
+		h.stroke = "dodgerblue";
+		h.cursor = "move";
+		this._handleArchetype = h;
 	}
 
 	public readonly name = "GeometryReshaping";
 
-	/** @type {GraphObject} */
-	private _handleArchetype: go.GraphObject = this.h;
+	
 
 	/** @type {string} */
 	private _reshapeObjectName = 'SHAPE';  //??? can't add Part.reshapeObjectName property

@@ -33,10 +33,7 @@ var __extends = (this && this.__extends) || (function () {
         __extends(ColumnResizingTool, _super);
         function ColumnResizingTool() {
             var _this = _super.call(this) || this;
-            _this.h = new go.Shape;
             _this.name = "ColumnResizing";
-            /** @type {GraphObject} */
-            _this._handleArchetype = _this.h;
             /** @type {string} */
             _this._tableName = "TABLE";
             // internal state
@@ -44,12 +41,14 @@ var __extends = (this && this.__extends) || (function () {
             _this._handle = null;
             /** @type {Panel} */
             _this._adornedTable = null;
-            _this.h.geometryString = "M0 0 V14 M2 0 V14";
-            _this.h.desiredSize = new go.Size(2, 14);
-            _this.h.cursor = "col-resize";
-            _this.h.geometryStretch = go.GraphObject.None;
-            _this.h.background = "rgba(255,255,255,0.5)";
-            _this.h.stroke = "rgba(30,144,255,0.5)";
+            var h = new go.Shape;
+            h.geometryString = "M0 0 V14 M2 0 V14";
+            h.desiredSize = new go.Size(2, 14);
+            h.cursor = "col-resize";
+            h.geometryStretch = go.GraphObject.None;
+            h.background = "rgba(255,255,255,0.5)";
+            h.stroke = "rgba(30,144,255,0.5)";
+            _this._handleArchetype = h;
             return _this;
         }
         Object.defineProperty(ColumnResizingTool.prototype, "handleArchetype", {

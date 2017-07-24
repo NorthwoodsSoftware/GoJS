@@ -13,20 +13,22 @@ import * as go from "../release/go";
 * @class
 */
 export class ColumnResizingTool extends go.Tool {
-	private h: go.Shape = new go.Shape;
+	/** @type {GraphObject} */
+	private _handleArchetype: go.Shape;
+
 	constructor() {
 		super();
-		this.h.geometryString = "M0 0 V14 M2 0 V14";
-		this.h.desiredSize = new go.Size(2, 14);
-		this.h.cursor = "col-resize";
-		this.h.geometryStretch = go.GraphObject.None;
-		this.h.background = "rgba(255,255,255,0.5)";
-		this.h.stroke = "rgba(30,144,255,0.5)";
+		const h: go.Shape = new go.Shape;
+		h.geometryString = "M0 0 V14 M2 0 V14";
+		h.desiredSize = new go.Size(2, 14);
+		h.cursor = "col-resize";
+		h.geometryStretch = go.GraphObject.None;
+		h.background = "rgba(255,255,255,0.5)";
+		h.stroke = "rgba(30,144,255,0.5)";
+		this._handleArchetype = h;
 	}
-	public readonly name: string = "ColumnResizing";
 
-	/** @type {GraphObject} */
-	private _handleArchetype: any = this.h;
+	public readonly name: string = "ColumnResizing";
 
 	/** @type {string} */
 	private _tableName: string = "TABLE";
