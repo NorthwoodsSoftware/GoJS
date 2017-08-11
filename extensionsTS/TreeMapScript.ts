@@ -9,7 +9,7 @@ import { TreeMapLayout } from "./TreeMapLayout";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;  // for conciseness in defining templates
 
@@ -25,7 +25,7 @@ export function init() {
 			});
 
 	// change selection behavior to cycle up the chain of containing Groups
-	myDiagram.toolManager.clickSelectingTool.standardMouseSelect = function () {
+	myDiagram.toolManager.clickSelectingTool.standardMouseSelect = () => {
 		var diagram = this.diagram;
 		if (diagram === null || !diagram.allowSelect) return;
 		var e = diagram.lastInput;

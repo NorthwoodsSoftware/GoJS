@@ -23,7 +23,7 @@ export function init() {
 					new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
 					new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
 					// temporarily put selected nodes in ForegFround layer
-					new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
+					new go.Binding("layerName", "isSelected", (s) => { return s ? "Foreground" : ""; }).ofObject(),
 					$(go.Shape, "Rectangle",
 						new go.Binding("fill", "color")),
 					$(go.TextBlock,
@@ -56,7 +56,7 @@ export function init() {
 						{ name: "SHAPE", fill: null, stroke: "cyan", strokeWidth: 2 })
 				),
 				archetypeNodeData: { color: "white" }, // initial properties shared by all nodes
-				insertPart: function (bounds: go.Rect) {  // override DragCreatingTool.insertPart
+				insertPart: (bounds: go.Rect) => {  // override DragCreatingTool.insertPart
 					// use a different color each time
 					this.archetypeNodeData.color = go.Brush.randomColor();
 					// call the base method to do normal behavior and return its result

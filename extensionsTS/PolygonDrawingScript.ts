@@ -87,7 +87,7 @@ export function undo() {
 }
 
 export function updateAllAdornments() {  // called after checkboxes change Diagram.allow...
-	myDiagram.selection.each(function (p) { p.updateAdornments(); });
+	myDiagram.selection.each((p) => { p.updateAdornments(); });
 }
 
 // save a model to and load a model from Json text, displayed below the Diagram

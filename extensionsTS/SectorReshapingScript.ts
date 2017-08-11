@@ -9,7 +9,7 @@ import { SectorReshapingTool } from "./SectorReshapingTool";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this 
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;
 
@@ -51,7 +51,7 @@ export function init() {
 			},
 			new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
 			// selecting a Node brings it forward in the z-order
-			new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
+			new go.Binding("layerName", "isSelected", (s) => { return s ? "Foreground" : ""; }).ofObject(),
 			$(go.Panel, "Spot",
 				{ name: "LAMP" },
 				$(go.Shape,  // arc

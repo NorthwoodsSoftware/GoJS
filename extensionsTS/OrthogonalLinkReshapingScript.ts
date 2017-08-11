@@ -9,7 +9,7 @@ import { OrthogonalLinkReshapingTool } from "./OrthogonalLinkReshapingTool";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;
 
@@ -52,7 +52,7 @@ export function init() {
 			{ from: "Alpha", to: "Beta" }
 		]);
 
-	myDiagram.addDiagramListener("InitialLayoutCompleted", function (e) {
+	myDiagram.addDiagramListener("InitialLayoutCompleted", (e) => {
 		// select the Link in order to show its two additional Adornments, for shifting the ends
 		myDiagram.links.first().isSelected = true;
 	});
@@ -63,7 +63,7 @@ export function updateRouting() {
 	var newRouting = (routing === "orthogonal") ? go.Link.Orthogonal : go.Link.AvoidsNodes;
 	myDiagram.startTransaction("update routing");
 	myDiagram.linkTemplate.routing = newRouting;
-	myDiagram.links.each(function (l) {
+	myDiagram.links.each((l) => {
 		l.routing = newRouting;
 	});
 	myDiagram.commitTransaction("update routing");

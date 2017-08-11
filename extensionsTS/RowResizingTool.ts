@@ -15,19 +15,22 @@ import * as go from "../release/go";
 
 export class RowResizingTool extends go.Tool {
 	public readonly name = "RowResizing";
-	private h: go.Shape = new go.Shape();
-	constructor() {
-		super();
-		this.h.geometryString = "M0 0 H14 M0 2 H14";
-		this.h.desiredSize = new go.Size(14, 2);
-		this.h.cursor = "row-resize";
-		this.h.geometryStretch = go.GraphObject.None;
-		this.h.background = "rgba(255,255,255,0.5)";
-		this.h.stroke = "rgba(30,144,255,0.5)";
-	}
 
 	/** @type {GraphObject} */
-	private _handleArchetype: go.GraphObject = this.h;
+	private _handleArchetype: go.GraphObject;
+
+	constructor() {
+		super();
+		const h: go.Shape = new go.Shape;
+		h.geometryString = "M0 0 H14 M0 2 H14";
+		h.desiredSize = new go.Size(14, 2);
+		h.cursor = "row-resize";
+		h.geometryStretch = go.GraphObject.None;
+		h.background = "rgba(255,255,255,0.5)";
+		h.stroke = "rgba(30,144,255,0.5)";
+
+		this._handleArchetype = h;
+	}
 
 	/** @type {string} */
 	private _tableName: string = "TABLE";
@@ -101,7 +104,7 @@ export class RowResizingTool extends go.Tool {
 					var pad = table.padding as go.Margin;
 					var numrows = table.rowCount;
 					// update the position/alignment of each handle
-					adornment.elements.each(function (h) {
+					adornment.elements.each((h) => {
 						if (!h.pickable) return;
 						var rowdef = table.getRowDefinition(h.row);
 						var hgt = rowdef.actual;

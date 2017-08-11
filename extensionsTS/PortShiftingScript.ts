@@ -12,7 +12,7 @@ var green: string = "forestgreen";  // 1 or true
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;  // for conciseness in defining templates
 

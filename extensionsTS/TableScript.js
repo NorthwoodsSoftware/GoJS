@@ -84,7 +84,7 @@ var __extends = (this && this.__extends) || (function () {
     }(go.ResizingTool));
     function init() {
         if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this  
+            window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
             $(go.Diagram, "myDiagramDiv", {

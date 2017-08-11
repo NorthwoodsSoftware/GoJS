@@ -16,8 +16,9 @@
     var TreeMapLayout_1 = require("./TreeMapLayout");
     var myDiagram = null;
     function init() {
+        var _this = this;
         if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this  
+            window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
@@ -30,7 +31,7 @@
             });
         // change selection behavior to cycle up the chain of containing Groups
         myDiagram.toolManager.clickSelectingTool.standardMouseSelect = function () {
-            var diagram = this.diagram;
+            var diagram = _this.diagram;
             if (diagram === null || !diagram.allowSelect)
                 return;
             var e = diagram.lastInput;
@@ -57,7 +58,7 @@
                     }
                 }
             }
-            go.ClickSelectingTool.prototype.standardMouseSelect.call(this);
+            go.ClickSelectingTool.prototype.standardMouseSelect.call(_this);
         };
         // Nodes and Groups are the absolute minimum template: no elements at all!
         myDiagram.nodeTemplate =

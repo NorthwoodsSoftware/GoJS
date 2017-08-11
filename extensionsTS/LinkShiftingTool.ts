@@ -23,36 +23,33 @@ export class LinkShiftingTool extends go.Tool {
 
 	/** @type {GraphObject} */
 	private _toHandleArchetype: go.GraphObject;
-	
+
 	constructor() {
 		super();
 		const h: go.Shape = new go.Shape();
 		const g: go.Shape = new go.Shape();
-			h.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
-			h.fill = null;
-			h.stroke = "dodgerblue";
-			h.background = "lightblue";
-			h.cursor = "pointer";
-			h.segmentIndex = 0;
-			h.segmentFraction = 1;
-			h.segmentOrientation = go.Link.OrientAlong;
-			g.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
-			g.fill = null;
-			g.stroke = "dodgerblue";
-			g.background = "lightblue";
-			g.cursor = "pointer";
-			g.segmentIndex = -1;
-			g.segmentFraction = 1;
-			g.segmentOrientation = go.Link.OrientAlong;
+		h.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
+		h.fill = null;
+		h.stroke = "dodgerblue";
+		h.background = "lightblue";
+		h.cursor = "pointer";
+		h.segmentIndex = 0;
+		h.segmentFraction = 1;
+		h.segmentOrientation = go.Link.OrientAlong;
+		g.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
+		g.fill = null;
+		g.stroke = "dodgerblue";
+		g.background = "lightblue";
+		g.cursor = "pointer";
+		g.segmentIndex = -1;
+		g.segmentFraction = 1;
+		g.segmentOrientation = go.Link.OrientAlong;
 
-			this._fromHandleArchetype = h;
-			this._toHandleArchetype = g;
+		this._fromHandleArchetype = h;
+		this._toHandleArchetype = g;
 	}
 
-
 	public readonly name: string = "LinkShifting";
-
-	
 
 	// transient state
 	/** @type {GraphObject} */
@@ -67,7 +64,7 @@ export class LinkShiftingTool extends go.Tool {
   */
 	public updateAdornments(part: go.Part) {
 		if (part === null || !(part instanceof go.Link)) return;  // this tool only applies to Links
-		var link: any = part;
+		var link: go.Link = part;
 		// show handles if link is selected, remove them if no longer selected
 		var category = "LinkShiftingFrom";
 		var adornment = null;
@@ -75,7 +72,7 @@ export class LinkShiftingTool extends go.Tool {
 			var selelt = link.selectionObject;
 			if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
 				selelt.actualBounds.isReal() && selelt.isVisibleObject()) {
-				var spot = link.computeSpot(true);
+				var spot = (<any>link).computeSpot(true);
 				if (spot.isSide() || spot.isSpot()) {
 					adornment = link.findAdornment(category);
 					if (adornment === null) {
@@ -94,7 +91,7 @@ export class LinkShiftingTool extends go.Tool {
 			var selelt = link.selectionObject;
 			if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
 				selelt.actualBounds.isReal() && selelt.isVisibleObject()) {
-				var spot = link.computeSpot(false);
+				var spot = (<any>link).computeSpot(false);
 				if (spot.isSide() || spot.isSpot()) {
 					adornment = link.findAdornment(category);
 					if (adornment === null) {
@@ -114,7 +111,7 @@ export class LinkShiftingTool extends go.Tool {
   * @param {boolean} toend
   * @return {Adornment}
   */
-	public makeAdornment(selelt: go.GraphObject, toend: boolean) {
+	public makeAdornment(selelt: go.GraphObject, toend: boolean): go.Adornment {
 		var adornment = new go.Adornment();
 		adornment.type = go.Panel.Link;
 		var h = (toend ? this._toHandleArchetype : this._fromHandleArchetype);
@@ -130,7 +127,7 @@ export class LinkShiftingTool extends go.Tool {
   * @this {LinkShiftingTool}
   * @return {boolean}
   */
-	public canStart() {
+	public canStart(): boolean {
 		if (!this.isEnabled) return false;
 		var diagram = this.diagram;
 		if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;

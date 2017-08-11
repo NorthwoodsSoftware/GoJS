@@ -98,7 +98,8 @@ FreehandDrawingTool.prototype.addPoint = function(p) {
     var fig = new go.PathFigure(q.x, q.y, true);  // possibly filled, depending on Shape.fill
     var geo = new go.Geometry().add(fig);  // the Shape.geometry consists of a single PathFigure
     this.temporaryShape.geometry = geo;
-    part.position = viewpt;  // position the Shape's Part
+    // position the Shape's Part, accounting for the strokeWidth
+    part.position = new go.Point(viewpt.x - shape.strokeWidth/2, viewpt.y - shape.strokeWidth/2);
     this.diagram.add(part);
   }
 

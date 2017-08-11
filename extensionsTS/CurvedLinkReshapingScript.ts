@@ -9,7 +9,7 @@ import { CurvedLinkReshapingTool } from "./CurvedLinkReshapingTool";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;  // for conciseness in defining templates
 
@@ -28,7 +28,7 @@ export function init() {
 			});
 
 	// when the document is modified, add a "*" to the title and enable the "Save" button
-	myDiagram.addDiagramListener("Modified", function (e) {
+	myDiagram.addDiagramListener("Modified", (e) => {
 		var button = (document.getElementById("SaveButton") as any);
 		if (button) button.disabled = !myDiagram.isModified;
 		var idx = document.title.indexOf("*");

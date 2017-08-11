@@ -52,7 +52,7 @@ var __extends = (this && this.__extends) || (function () {
             return _this;
         }
         Object.defineProperty(ColumnResizingTool.prototype, "handleArchetype", {
-            /*
+            /**
             * A small GraphObject used as a resize handle for each column.
             * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
             * @name ColumnResizingTool#handleArchetype
@@ -65,7 +65,7 @@ var __extends = (this && this.__extends) || (function () {
             configurable: true
         });
         Object.defineProperty(ColumnResizingTool.prototype, "tableName", {
-            /*
+            /**
             * The name of the Table Panel to be resized, by default the name "TABLE".
             * @name ColumnResizingTool#tableName
             * @function.
@@ -77,7 +77,7 @@ var __extends = (this && this.__extends) || (function () {
             configurable: true
         });
         Object.defineProperty(ColumnResizingTool.prototype, "handle", {
-            /*
+            /**
             * This read-only property returns the {@link GraphObject} that is the tool handle being dragged by the user.
             * This will be contained by an {@link Adornment} whose category is "ColumnResizing".
             * Its {@link Adornment#adornedObject} is the same as the {@link #adornedTable}.
@@ -90,7 +90,7 @@ var __extends = (this && this.__extends) || (function () {
             configurable: true
         });
         Object.defineProperty(ColumnResizingTool.prototype, "adornedTable", {
-            /*
+            /**
             * Gets the {@link Panel} of type {@link Panel#Table} whose columns may be resized.
             * This must be contained within the selected Part.
             * @name ColumnResizingTool#adornedTable
@@ -195,7 +195,7 @@ var __extends = (this && this.__extends) || (function () {
             return c;
         };
         ;
-        /*
+        /**
         * This predicate is true when there is a resize handle at the mouse down point.
         * @this {ColumnResizingTool}
         * @return {boolean}

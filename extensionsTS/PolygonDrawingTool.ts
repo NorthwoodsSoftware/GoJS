@@ -25,7 +25,8 @@ import * as go from "../release/go";
 
 
 export class PolygonDrawingTool extends go.Tool {
-	public name: string = "PolygonDrawing";
+	public readonly name: string = "PolygonDrawing";
+
 	private _isPolygon: boolean = true;
 	private _hasArcs: boolean = false;
 	private _archetypePartData: Object = {}; // the data to copy for a new polygon Part

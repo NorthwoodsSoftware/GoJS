@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Floor Plan Editor</title>
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<style type="text/css">
+#menuBar {
+  border: none;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+  font: 67.5% 'Lucida Sans Unicode', 'Bitstream Vera Sans', 'Trebuchet Unicode MS', 'Lucida Grande', Verdana, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  width: auto;
+}
+#menuBar ul {
+  background: #ededed;
+  height: 25px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#menuBar li {
+  float: left;
+  padding: 0px;
+}
+#menuBar li a {
+  background: #ededed;
+  display: block;
+  font-weight: normal;
+  line-height: 25px;
+  margin: 0px;
+  padding: 0px 5px;
+  text-align: center;
+  text-decoration: none;
+}
+#menuBar > ul > li > a {
+  color: black;
+}
+#menuBar ul ul a {
+  color: black;
+}
+#menuBar li > a:hover,
+#menuBar ul li:hover > a {
+  background: #007FFF;
+  color: white;
+  text-decoration: none;
+}
+#menuBar li ul {
+  background: #9CCB19;
+  display: none;
+  height: auto;
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  position: absolute;
+  width: 150px;
+  z-index: 200;
+}
+#menuBar li:hover ul {
+  display: block;
+}
+#menuBar li li {
+  background: #ededed;
+  display: block;
+  float: none;
+  margin: 0px;
+  padding: 0px;
+  width: 150px;
+}
+#menuBar li:hover li a {
+  background: none;
+}
+#menuBar li ul a {
+  display: block;
+  height: 25px;
+  font-size: 12px;
+  font-style: normal;
+  margin: 0px;
+  padding: 0px 10px 0px 15px;
+  text-align: left;
+}
+#menuBar li ul a:hover,
+#menuBar li ul li:hover > a {
+  background: #007FFF;
+  border: 0px;
+  color: white;
+  text-decoration: none;
+}
+/*sub-sublist*/
+#nav li:hover ul ul {
+	display: none;
+}
+#nav li li:hover ul {
+	background:#9CCB19;
+	margin-left: 150px;
+	margin-top: -25px;
+	display: block;
+}
+/*sub-sub-sublist*/
+#nav li li:hover ul ul {
+	display: none;
+}
+#nav li li li:hover ul {
+	background:#9CCB19;
+	margin-left: 150px;
+	margin-top: -25px;
+	display: block;
+	color: #0276FD;
+}
+	input {
+		text-align: center;
+		font-size: large;
+		float: left;
+	}
+	#myOverviewDiv {
+		background-color: lightgray;
+	}
+	#currentFile {
+		background: #1874CD;
+		width:100%;
+		text-align:center;
+		font-family:Arial;
+		font-weight:bold;
+		font-size:14px;
+		padding:3px 0px;
+		color: white;
+	}
+	.draggable {
+		display: inline-block;
+		vertical-align: top;
+		border: 1px solid gray;
+		background-color: #e2e2e2;
+
+		position: absolute;
+		top:40%;
+		left:50%;
+		width:300px;
+		height: 200px;
+		z-index: 500;
+	}
+	.handle {
+		background-color: #9CCB19;
+		text-align: center;
+		font: bold 12px sans-serif;
+	}
+	.elementText {
+		font-family:Arial;
+		font-size:medium;
+		margin-left: 10px;
+		margin-top: 20px;
+		margin-bottom:10px;
+	}
+	.mySavedFiles {
+		font-family:Arial;
+		font-size:medium;
+		width:250px;
+		margin-left: 25px;
+	}
+	.elementBtn {
+		margin-top:20px;
+		font-family:Arial;
+		font-size:medium;
+		margin-left:20px;
+	}
+</style>
+</head>
+<body>
+<div>
+	<div id="currentFile">(Unsaved File)</div>
+	<div id="menuBar">
+	<ul id="nav">
+		<li><a href="#">File</a>
+			<ul>
+          <li><a href="#" id="newDocument">New</a></li>
+          <li><a href="#" id="openDocuments">Open...</a></li>
+          <li><a href="#" id="saveDocument">Save</a></li>
+          <li><a href="#" id="saveDocumentAs">Save As...</a></li>
+          <li><a href="#" id="removeDocuments">Delete...</a></li>
+      </ul>
+		</li>
+		<li><a href="#">Edit</a>
+			<ul>
+				<li><a href="#" id="undo">Undo</a></li>
+        <li><a href="#" id="redo">Redo</a></li>
+        <li><a href="#" id="cutSelection">Cut</a></li>
+        <li><a href="#" id="copySelection">Copy</a></li>
+        <li><a href="#" id="pasteSelection">Paste</a></li>
+        <li><a href="#" id="deleteSelection">Delete</a></li>
+        <li><a href="#" id="selectAll">Select All</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Align</a>
+			<ul >
+				<li><a href="#" id="alignLeft">Left Sides</a></li>
+        <li><a href="#" id="alignRight">Right Sides</a></li>
+        <li><a href="#" id="alignTop">Tops</a></li>
+        <li><a href="#" id="alignBottom">Bottoms</a></li>
+        <li><a href="#" id="alignCenterX">Center X</a></li>
+        <li><a href="#" id="alignCenterY">Center Y</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Space</a>
+			<ul >
+				<li><a href="#" id="alignRows">In Row...</a></li>
+        <li><a href="#" id="alignColumns">In Column...</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Rotate</a>
+			<ul>
+				<li><a id="Rotate45" href="#">45°</a></li>
+				<li><a id="Rotate_45" href="#">-45°</a></li>
+				<li><a id="Rotate90" href="#">90°</a></li>
+				<li><a id="Rotate_90" href="#">-90°</a></li>
+				<li><a id="Rotate180" href="#">180°</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Options</a>
+			<ul>
+				<li><a href="#"><input id="grid" type="checkbox" name="options" value="grid">Grid</a></li>
+				<li><a href="#"><input id="guidelines" type="checkbox" name="options" value="0" checked="checked">Guidelines</a></li>
+				<li><a href="#"><input id="snap" type="checkbox" name="options" value="0">Snapping</a></li>
+				<li><a href="#">Arrow Keys >></a>
+					<form >
+						<ul>
+							<li><a href="#"><input type="radio" name="arrow" id="move" checked="checked">Move</a></li>
+							<li><a href="#"><input type="radio" name="arrow" id="select">Select</a></li>
+							<li><a href="#"><input type="radio" name="arrow" id="scroll">Scroll</a></li>
+						</ul>
+					</form>
+				</li>
+			</ul>
+		</li>
+		<li><a href="#" onclick="window.open('FloorPlanMonitor.html')">Monitor</a></li>
+	</ul>
+	</div><!--END menu bar -->
+
+	<div id="PaletteAndDiagram" style="position: relative; overflow: hidden; width: 100%;">
+		<div id="sideBar" style="float:left; width:23%; min-height: 500px; text-align:center">
+			<div class="handle">Palette:</div>
+			<div id="myPaletteDiv" style="border:solid 1px gray; width: 100%; min-height: 625px"></div>
+			<div class="handle">Overview:</div>
+			<div id="myOverviewDiv" style="border:solid 1px gray; width: 100%; height:225px;"></div>
+		</div>
+		<div id="myDiagramDiv" style="position: absolute; border: solid 1px gray; width:77%; height: 100%; min-height:500px; margin-left:23%; background-color:white"></div>
+	</div>
+
+	<div id="openDocument" class="draggable">
+	  <div id="openDraggableHandle" class="handle">Open File</div>
+	  <div id="openText" class="elementText">Choose file to open...</div>
+	  <select id="mySavedFiles" class="mySavedFiles" ></select>
+	  <br />
+	  <button id="openBtn" class="elementBtn" type="button"style="margin-left: 70px">Open</button>
+    <button id="cancelBtn" class="elementBtn" type="button">Cancel</button>
+	</div>
+
+	<div id="removeDocument" class="draggable">
+		<div id="removeDraggableHandle" class="handle">Delete File</div>
+		<div id="removeText" class="elementText">Choose file to remove...</div>
+		<select id="mySavedFiles2" class="mySavedFiles" ></select>
+		<br />
+		<button id="removeBtn" class="elementBtn" type="button" style="margin-left: 70px">Remove</button>
+    <button id="cancelBtn2" class="elementBtn" type="button">Cancel</button>
+	</div>
+  <p>
+	This sample demonstrates several custom <a>Tool</a>s, defined in their own files:
+	<a href="GuidedDraggingTool.js">GuidedDraggingTool.js</a>, <a href="ResizeMultipleTool.js">ResizeMultipleTool.js</a>, <a href="RotateMultipleTool.js">RotateMultipleTool.js</a>,
+	and a custom <a>CommandHandler</a>: <a href="DrawCommandHandler.js">DrawCommandHandler.js</a>.
+  </p>
+</div>
+<script src="http://gojs.net/latest/samples/assets/require.js"></script>
+<script>
+	require(["FloorPlanEditorScript"], function(app) {
+		app.init();
+		document.getElementById("newDocument").onclick = app.newDocument;
+		document.getElementById("openDocuments").onclick = app.openDocument;
+		document.getElementById("saveDocument").onclick = app.saveDocument;
+		document.getElementById("saveDocumentAs").onclick = app.saveDocumentAs;
+		document.getElementById("removeDocuments").onclick = app.removeDocument;
+
+		document.getElementById("undo").onclick = app.undo;
+		document.getElementById("redo").onclick = app.redo;
+		document.getElementById("cutSelection").onclick = app.cutSelection;
+		document.getElementById("copySelection").onclick = app.copySelection;
+		document.getElementById("pasteSelection").onclick = app.pasteSelection;
+		document.getElementById("deleteSelection").onclick = app.deleteSelection;
+		document.getElementById("selectAll").onclick = app.selectAll;
+
+		document.getElementById("alignLeft").onclick = app.alignLeft;
+		document.getElementById("alignRight").onclick = app.alignRight;
+		document.getElementById("alignTop").onclick = app.alignTop;
+		document.getElementById("alignBottom").onclick = app.alignBottom;
+		document.getElementById("alignCenterX").onclick = app.alignCenterX;
+		document.getElementById("alignCenterY").onclick = app.alignCenterY;
+
+		document.getElementById("alignRows").onclick = app.alignRows;
+		document.getElementById("alignColumns").onclick = app.alignColumns;
+
+		document.getElementById("Rotate45").onclick = app.rotate45;
+		document.getElementById("Rotate_45").onclick = app.rotate_45;
+		document.getElementById("Rotate90").onclick = app.rotate90;
+		document.getElementById("Rotate_90").onclick = app.rotate_90;
+		document.getElementById("Rotate180").onclick = app.rotate180;
+
+		document.getElementById("grid").onclick = app.updateGridOption;
+		document.getElementById("guidelines").onclick = app.updateGuidelinesOption;
+		document.getElementById("snap").onclick = app.updateSnapOption;
+
+		document.getElementById("move").onclick = app.arrowMode;
+		document.getElementById("select").onclick = app.arrowMode;
+		document.getElementById("scroll").onclick = app.arrowMode;
+
+		document.getElementById("openBtn").onclick = app.loadFile;
+		document.getElementById("cancelBtn").onclick = app.cancel1;
+		document.getElementById("removeBtn").onclick = app.removeFile;
+		document.getElementById("cancelBtn2").onclick = app.cancel2;		
+	});
+</script>
+</body>
+</html>

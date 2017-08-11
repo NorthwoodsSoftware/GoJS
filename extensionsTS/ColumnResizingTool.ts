@@ -39,7 +39,7 @@ export class ColumnResizingTool extends go.Tool {
 	/** @type {Panel} */
 	private _adornedTable: go.Panel = null;
 
-  /*
+  /**
   * A small GraphObject used as a resize handle for each column.
   * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
   * @name ColumnResizingTool#handleArchetype 
@@ -49,7 +49,7 @@ export class ColumnResizingTool extends go.Tool {
 	get handleArchetype(): go.Shape { return this._handleArchetype; }
 	set handleArchetype(val: go.Shape) { this._handleArchetype = val; }
 
-  /*
+  /**
   * The name of the Table Panel to be resized, by default the name "TABLE".
   * @name ColumnResizingTool#tableName
   * @function.
@@ -58,7 +58,7 @@ export class ColumnResizingTool extends go.Tool {
 	get tableName(): string { return this._tableName; }
 	set tableName(val: string) { this._tableName = val; }
 
-  /*
+  /**
   * This read-only property returns the {@link GraphObject} that is the tool handle being dragged by the user.
   * This will be contained by an {@link Adornment} whose category is "ColumnResizing".
   * Its {@link Adornment#adornedObject} is the same as the {@link #adornedTable}.
@@ -68,7 +68,7 @@ export class ColumnResizingTool extends go.Tool {
   */
 	get handle(): go.GraphObject { return this._handle; }
 
-  /*
+  /**
   * Gets the {@link Panel} of type {@link Panel#Table} whose columns may be resized.
   * This must be contained within the selected Part.
   * @name ColumnResizingTool#adornedTable
@@ -101,7 +101,7 @@ export class ColumnResizingTool extends go.Tool {
 					var pad = table.padding as go.Margin;
 					var numcols = table.columnCount;
 					// update the position/alignment of each handle
-					adornment.elements.each(function (h) {
+					adornment.elements.each((h: go.GraphObject) => {
 						if (!h.pickable) return;
 						var coldef = table.getColumnDefinition(h.column);
 						var wid = coldef.actual;
@@ -166,7 +166,7 @@ export class ColumnResizingTool extends go.Tool {
 	};
 
 
-  /*
+  /**
   * This predicate is true when there is a resize handle at the mouse down point.
   * @this {ColumnResizingTool}
   * @return {boolean}

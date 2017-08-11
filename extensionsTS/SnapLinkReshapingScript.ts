@@ -29,13 +29,13 @@ export function init() {
 				// when the user reshapes a Link, change its Link.routing from AvoidsNodes to Orthogonal,
 				// so that combined with Link.adjusting == End the link will retain its reshaped mid points
 				// even after nodes are moved
-				"LinkReshaped": function (e: go.DiagramEvent) { e.subject.routing = go.Link.Orthogonal; },
+				"LinkReshaped": (e: go.DiagramEvent) => { e.subject.routing = go.Link.Orthogonal; },
 				"animationManager.isEnabled": false,
 				"undoManager.isEnabled": true
 			});
 
 	// when the document is modified, add a "*" to the title and enable the "Save" button
-	myDiagram.addDiagramListener("Modified", function (e) {
+	myDiagram.addDiagramListener("Modified", (e) => {
 		var button = (document.getElementById("SaveButton") as any);
 		if (button) button.disabled = !myDiagram.isModified;
 		var idx = document.title.indexOf("*");
@@ -100,8 +100,8 @@ export function init() {
 			makePort("R", go.Spot.Right, true, true),
 			makePort("B", go.Spot.Bottom, true, false),
 			{ // handle mouse enter/leave events to show/hide the ports
-				mouseEnter: function (e: go.InputEvent, node: go.Node) { showSmallPorts(node, true); },
-				mouseLeave: function (e: go.InputEvent, node: go.Node) { showSmallPorts(node, false); }
+				mouseEnter: (e: go.InputEvent, node: go.Node) => { showSmallPorts(node, true); },
+				mouseLeave: (e: go.InputEvent, node: go.Node) => { showSmallPorts(node, false); }
 			}
 		);
 

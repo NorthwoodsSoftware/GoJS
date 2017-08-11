@@ -33,7 +33,7 @@ export class FishboneLayout extends go.TreeLayout {
     // make a copy of the collection of TreeVertexes
     // because we will be modifying the TreeNetwork.vertexes collection in the loop
     var verts = new go.List(go.TreeVertex).addAll(net.vertexes);
-    verts.each(function (v: any) {
+    verts.each(function (v: go.TreeVertex) {
       // ignore leaves of tree
       if (v.destinationEdges.count === 0) return;
       if (v.destinationEdges.count % 2 === 1) {
@@ -55,9 +55,9 @@ export class FishboneLayout extends go.TreeLayout {
     return net;
   };
 
-  public assignTreeVertexValues(v: any) {
+  public assignTreeVertexValues(v: go.TreeVertex) {
     super.assignTreeVertexValues.call(this, v);
-    v._direction = 0;  // add this property to each TreeVertex
+    (<any>v)["_direction"] = 0;  // add this property to each TreeVertex
     if (v.parent !== null) {
       // The parent node will be moved to where the last dummy will be;
       // reduce the space to account for the future hole.
@@ -79,8 +79,8 @@ export class FishboneLayout extends go.TreeLayout {
       link.fromSpot = go.Spot.None;
       link.toSpot = go.Spot.None;
 
-      var v: any = e.fromVertex;
-      var w: any = e.toVertex;
+      var v: go.TreeVertex = e.fromVertex as go.TreeVertex;
+      var w: go.TreeVertex = e.toVertex as go.TreeVertex;
 
       if (v.angle === 0) {
         link.fromSpot = go.Spot.MiddleLeft;
@@ -96,7 +96,7 @@ export class FishboneLayout extends go.TreeLayout {
     });
 
     // move the parent node to the location of the last dummy
-    this.network.vertexes.each(function (v: any) {
+    this.network.vertexes.each(function (v: go.TreeVertex) {
       var len = v.children.length;
       if (len === 0) return;  // ignore leaf nodes
       if (v.parent === null) return; // don't move root node
@@ -106,7 +106,7 @@ export class FishboneLayout extends go.TreeLayout {
     });
 
     var layout = this;
-    this.network.vertexes.each(function (v: any) {
+    this.network.vertexes.each(function (v: go.TreeVertex) {
       if (v.parent === null) {
         layout.shift(v);
       }
@@ -119,52 +119,52 @@ export class FishboneLayout extends go.TreeLayout {
   // don't use the standard routing done by TreeLayout
   public commitLinks() { };
 
-  public shift(v: any) {
+  public shift(v: go.TreeVertex) {
     var p = v.parent;
     if (p !== null && (v.angle === 90 || v.angle === 270)) {
       var g = p.parent;
       if (g !== null) {
         var shift = v.nodeSpacing;
-        if (g._direction > 0) {
+        if ((<any>g)["_direction"] > 0) {
           if (g.angle === 90) {
             if (p.angle === 0) {
-              v._direction = 1;
+              (<any>v)["_direction"] = 1;
               if (v.angle === 270) this.shiftAll(2, -shift, p, v);
             } else if (p.angle === 180) {
-              v._direction = -1;
+              (<any>v)["_direction"] = -1;
               if (v.angle === 90) this.shiftAll(-2, shift, p, v);
             }
           } else if (g.angle === 270) {
             if (p.angle === 0) {
-              v._direction = 1;
+              (<any>v)["_direction"] = 1;
               if (v.angle === 90) this.shiftAll(2, -shift, p, v);
             } else if (p.angle === 180) {
-              v._direction = -1;
+              (<any>v)["_direction"] = -1;
               if (v.angle === 270) this.shiftAll(-2, shift, p, v);
             }
           }
-        } else if (g._direction < 0) {
+        } else if ((<any>g)["_direction"] < 0) {
           if (g.angle === 90) {
             if (p.angle === 0) {
-              v._direction = 1;
+              (<any>v)["_direction"] = 1;
               if (v.angle === 90) this.shiftAll(2, -shift, p, v);
             } else if (p.angle === 180) {
-              v._direction = -1;
+              (<any>v)["_direction"] = -1;
               if (v.angle === 270) this.shiftAll(-2, shift, p, v);
             }
           } else if (g.angle === 270) {
             if (p.angle === 0) {
-              v._direction = 1;
+              (<any>v)["_direction"] = 1;
               if (v.angle === 270) this.shiftAll(2, -shift, p, v);
             } else if (p.angle === 180) {
-              v._direction = -1;
+              (<any>v)["_direction"] = -1;
               if (v.angle === 90) this.shiftAll(-2, shift, p, v);
             }
           }
         }
       } else {  // g === null: V is a child of the tree ROOT
         var dir = ((p.angle === 0) ? 1 : -1);
-        v._direction = dir;
+        (<any>v)["_direction"] = dir;
         this.shiftAll(dir, 0, p, v);
       }
     }
@@ -192,7 +192,7 @@ export class FishboneLayout extends go.TreeLayout {
 export class FishboneLink extends go.Link {
   //go.Link.call(this);
 
-  public computePoints() {
+  public computePoints(): boolean {
     var result = super.computePoints.call(this);
     if (result) {
       // insert middle point to maintain horizontal lines

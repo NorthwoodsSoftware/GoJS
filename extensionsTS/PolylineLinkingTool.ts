@@ -22,6 +22,7 @@ import * as go from "../release/go";
 */
 export class PolylineLinkingTool extends go.LinkingTool {
   public readonly name: string = "PolylineLinking";
+	
   public portGravity: number = 0;  // gotta click on a target port in order to complete the link
   private _firstMouseDown: boolean = null;
   private _horizontal: boolean = null;

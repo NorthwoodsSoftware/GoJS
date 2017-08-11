@@ -79,8 +79,203 @@ Both model changes and diagram changes are recorded in the <a>UndoManager</a>
 only if the model's <a>UndoManager.isEnabled</a> has been set to true.
 </p>
 <p>
-A typical case is where some command makes a change to the model.
-In this example the addChild function adds a link connecting the selected node to a new node.
+To better understand the relationships between objects and transactions in memory, look at this diagram:
+<p>
+<pre data-language="javascript" id="transactionsDiagram" style="display:none">
+  diagram.nodeTemplate = 
+    $(go.Node, "Auto",
+      { scale : 1.6, isShadowed: true },
+      new go.Binding("location", "pos", go.Point.parse),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color"),
+        new go.Binding("strokeWidth", "strokeW")),
+      $(go.TextBlock,
+        { margin: 4, portId: "TEXTBLOCK" },
+        new go.Binding("text", "txt"))
+    );
+
+  // Represents the nodeDataArray for the two nodes
+  diagram.nodeTemplateMap.add("dataNode",
+    $(go.Node, "Auto",
+      { 
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        isShadowed: true
+      }, 
+      new go.Binding("location", "pos", go.Point.parse),
+      new go.Binding("toSpot", "tSpot"),
+      new go.Binding("fromSpot", "fSpot"),
+      $(go.Shape, "Rectangle",
+        { fill: "white" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(), // Header:
+          {portId: "HEADER" },
+          new go.Binding("text", "head")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Location:
+          { portId: "ROW1" },
+          new go.Binding("text", "txt1")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Fill:
+          { portId: "ROW2" },
+          new go.Binding("text", "txt2"))
+      )
+    )
+  );
+
+  diagram.nodeTemplateMap.add("dataNodeChanged",
+    $(go.Node, "Auto",
+      { 
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        isShadowed: true
+      }, 
+      new go.Binding("location", "pos", go.Point.parse),
+      new go.Binding("toSpot", "tSpot"),
+      new go.Binding("fromSpot", "fSpot"),
+      $(go.Shape, "Rectangle",
+        { fill: "white" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(), // Header:
+          {portId: "HEADER" },
+          new go.Binding("text", "head")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Location:
+          { portId: "ROW1" },
+          new go.Binding("text", "txt1")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Fill:
+          { portId: "ROW2" },
+          new go.Binding("text", "txt2")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }), 
+        $(go.TextBlock, textStyle(), // Text:
+          { portId: "ROW3" },
+          new go.Binding("text", "txt3")),
+      )
+    )
+  );
+
+  diagram.linkTemplateMap.add("dataNode", // Links from dataNode to Nodes
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape, { stroke: "gray", strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", stroke: "gray", fill: "gray" })
+  ));
+
+  diagram.nodeTemplateMap.add("title",
+     $(go.Node, "Auto",
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.TextBlock,
+        { font: "bold 25pt sans-serif", textAlign: "center"},
+        new go.Binding("text", "txt"))
+  ));
+
+  diagram.nodeTemplateMap.add("nodeDataArray",
+    $(go.Node, "Auto",
+      { 
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        shadowColor: "#C5C1AA"
+      }, 
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal }, 
+        $(go.TextBlock, headerStyle(),
+          { portId: "HEADER", text: "nodeDataArray" }),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(),
+          { portId: "dataNode1", desiredSize: new go.Size(NaN,16) }),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(),
+          { portId: "dataNode2", desiredSize: new go.Size(NaN,16) })
+      )
+    ));
+  
+  diagram.linkTemplateMap.add("Data",
+    $(go.Link,
+      { corner: 10, routing: go.Link.Orthogonal },
+      new go.Binding("curviness"),
+      $(go.Shape, { stroke: "gray" , strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", fill: "gray", stroke: "gray", strokeWidth: 2 }),
+      $(go.TextBlock, { font: "bold 12pt Courier", segmentOffset: new go.Point(0, -10) },
+        new go.Binding("text", "label"),
+        new go.Binding("segmentOffset", "offset"))
+  ));
+
+  diagram.scale = 0.8;
+  diagram.initialContentAlignment = go.Spot.Center;
+  
+  var model = new go.GraphLinksModel();
+  model.linkFromPortIdProperty = "fPID";
+  model.linkToPortIdProperty = "tPID"
+
+  model.nodeDataArray = [
+    { key: 1, txt: "Diagram", color: "white",  pos: "15 305"}, 
+    { key: 2, txt: "Model",  color: "white", pos: "215 305"},
+    { key: 3, category: "dataNode", pos: "215 440",  head: "Node Data Array", txt1: "nodeDataArray[0]", txt2: "nodeDataArray[1]"},
+    { key: 4, pos: "215 187", color: "white", txt: "UndoManager"},
+    { key: 5, pos: "215, 50", category: "dataNode", head: "List of Transactions", txt1: "history[0]", txt2: "history[1]"},
+    { key: 6, pos: "630, 230", category: "dataNode", head: "List of ChangedEvents", txt1: "changes[0]", txt2: "changes[1]", fSpot: go.Spot.RightSide},
+    { key: 7, pos: "15, 561", txt: "Alpha", color: "palegreen"},
+    { key: 8, category: "dataNode", pos: "510 590",  head: "Node Data", txt1: "color: \"palegreen\"", txt2: "text: \"Alpha\""},
+    { key: 9, category: "dataNodeChanged", pos: "630 422", head: "ChangedEvent", txt1: "propertyName: \"color\"", txt2: "newValue: \"palegreen\"", txt3: "oldValue: \"red\""},
+    { key: 10, category: "dataNodeChanged", pos: "530, 60", head: "Transaction", txt1: "name: \"change color\"", txt2: "isComplete: true", txt3: "changes: . . ."},
+  ];
+  model.linkDataArray = [
+    { from: 1, to: 2, category: "Data", label: ".model", offset: new go.Point(12, 14)},
+    { from: 2, to: 4, category: "Data", label: ".undoManager", offset: new go.Point(-10, 60)},
+    { from: 1, to: 4, category: "Data", label: ".undoManager", offset: new go.Point(0, -63)},
+    { from: 2, tPID: "HEADER", to: 3, category: "Data", label: ".nodeDataArray", offset: new go.Point(0, -72)},
+    { from: 4, to: 5, category: "Data", label: ".history", offset: new go.Point(0, -45)},
+    { from: 5, fPID: "ROW1", tPID: "HEADER", to: 10, category: "Data", label: "history[0]", offset: new go.Point(35,  10)},
+    { from: 1, to: 7, category: "Data", curviness: -70},
+    { from: 7, tPID: "HEADER", to: 8, category: "Data", curviness: -70, label: ".data", offset: new go.Point(-70, -10)},
+    { from: 3, tPID: "HEADER", fPID: "ROW1", to: 8, category: "Data", label: "nodeDataArray[0]", offset: new go.Point(-15, -85)},
+    { from: 6, to: 9, fPID: "ROW2", category: "Data", label: "changes[1]", offset: new go.Point(0, 54)},
+    { from: 9, to: 8, category: "Data", label: ".object", offset: new go.Point(-10, -13)},
+    { from: 10, to: 6, fPID: "ROW3", category: "Data", label: ".changes", offset: new go.Point(-10, 13)},
+  ];
+
+  diagram.model = model;
+
+  // Formatting
+  function headerStyle() {
+    return {
+      margin: 3, 
+      font: "bold 12pt sans-serif",
+      minSize: new go.Size(140, 16), 
+      maxSize: new go.Size(120, NaN),
+      textAlign: "center"
+    };
+  }
+  function textStyle() {
+    return {
+      margin: 3, 
+      font: "italic 10pt sans-serif",
+      minSize: new go.Size(16, 16), 
+      maxSize: new go.Size(160, NaN),
+      textAlign: "left"
+    };
+  }
+</pre>
+<script>goCode("transactionsDiagram", 650, 550)</script>
+<p>
+A typical case for using transactions is when some command makes a change to the model.
+In the following example the addChild function adds a link connecting the selected node to a new node.
 When no Node is selected, nothing happens.
 </p>
 <pre data-language="javascript" id="transaction">

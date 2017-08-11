@@ -34,7 +34,7 @@ export class DimensioningLink extends go.Link {
 	/** @type {number} */
 	private _gap: number = 10;
 
-  /*
+  /**
   * The general angle at which the measurement should be made.
   * The default value is 0, meaning to go measure only along the X axis,
   * with the dimension line and label above the two nodes (at lower Y coordinates).
@@ -53,7 +53,7 @@ export class DimensioningLink extends go.Link {
 		}
 	}
 
-  /*
+  /** 
   * The distance at which the dimension line should be from the points being measured.
   * The default value is 30.
   * Larger values mean further away from the nodes.
@@ -65,7 +65,7 @@ export class DimensioningLink extends go.Link {
 	get extension(): number { return this._extension; }
 	set extension(val: number) { this._extension = val; }
 
-  /*
+  /**
   * The distance that the dimension line should be "indented" from the ends of the
   * extension lines that are orthogonal to the dimension line.
   * The default value is 10.
@@ -82,7 +82,7 @@ export class DimensioningLink extends go.Link {
 		}
 	}
 
-  /*
+  /**
   * The distance that the extension lines should come short of the measured points.
   * The default value is 10.
   * @name DimensioningLink#gap

@@ -27,42 +27,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(ExtendedBrush, _super);
         function ExtendedBrush(type) {
             var _this = _super.call(this) || this;
-            _this._parseLinearGradientCSS = function (cssstring, w, h) {
-                var css = (cssstring.toString()).match(/\((.*)\)/g);
-                if (css === null)
-                    throw new Error("Invalid CSS Linear Gradient: " + cssstring);
-                var cssString = css[0];
-                //removes outer parentheses
-                cssString = cssString.substring(1, css.length - 1);
-                //splits string into components at commas not within parentheses
-                //css = css.split(/,+(?![^\(]*\))/g);
-                css = cssString.split(/,(?![^\(]*\))/g);
-                css[0] = css[0].trim();
-                var isValidColor = go.Brush.isValidColor(css[0].split(/\s(?![^\(]*\))/g)[0]);
-                if (isValidColor) {
-                    // if the first param isn't a color, it's a CSS <angle>
-                    // or a malformed attempt at a color, such as "blavk"
-                    // if input's good it works for now, TODO improve later.
-                    css.splice(0, 0, "180deg");
-                }
-                //standardizes any angle measurement or direction to degrees
-                css[0] = this._linearGradientAngleToDegrees(css[0], w, h);
-                var angle = parseFloat(css[0]) + 180; //adjusts for css having 180 as the default start point
-                //converts color/percent strings to array objects
-                var colors = this._createColorStopArray(css);
-                /* by now we have the list of color stops, and the computed angle. The color stops need to be bound in a map that the Brush class will like,
-                and the angle needs to be computed with the dimensions of the thing that the brush is coloring, in order to supply the brush with it's start
-                and end spots. once that stuff is computed, stick them on the Brush 'b', below, and return it.
-                */
-                var b = new go.Brush(go.Brush.Linear);
-                var spots = this._calculateLinearGradientSpots(angle, w, h);
-                b.start = spots[0];
-                b.end = spots[1];
-                for (var i = 0; i < colors.length; i++) {
-                    b.addColorStop(colors[i].position, colors[i].color);
-                }
-                return b;
-            };
             _this._sharedTempCtx = null;
             _this._MIN_Lab_A = -93;
             _this._MAX_Lab_A = 92;
@@ -80,17 +44,6 @@ var __extends = (this && this.__extends) || (function () {
             ];
             _this._Lab_EPSILON = 216 / 24389;
             _this._Lab_KAPPA = 24389 / 27;
-            _this._LabtoXYZ = function (Lab) {
-                var working_arr = [];
-                working_arr[1] = (Lab[0] + 16) / 116;
-                working_arr[0] = (Lab[1] / 500) + working_arr[1];
-                working_arr[2] = (-Lab[2] / 200) + working_arr[1];
-                var XYZ = [];
-                XYZ[1] = this._Lab_XYZ_HelperFunction(working_arr[1]);
-                XYZ[0] = this._Lab_XYZ_HelperFunction(working_arr[0]);
-                XYZ[2] = this._Lab_XYZ_HelperFunction(working_arr[2]);
-                return XYZ;
-            };
             if (arguments.length === 0)
                 go.Brush.call(_this);
             else
@@ -195,6 +148,42 @@ var __extends = (this && this.__extends) || (function () {
                 return px / l;
             angle *= Math.PI / 180;
             return px / (Math.abs(w * Math.sin(angle)) + Math.abs(l * Math.cos(angle)));
+        };
+        ExtendedBrush.prototype._parseLinearGradientCSS = function (cssstring, w, h) {
+            var css = (cssstring.toString()).match(/\((.*)\)/g);
+            if (css === null)
+                throw new Error("Invalid CSS Linear Gradient: " + cssstring);
+            var cssString = css[0];
+            //removes outer parentheses
+            cssString = cssString.substring(1, css.length - 1);
+            //splits string into components at commas not within parentheses
+            //css = css.split(/,+(?![^\(]*\))/g);
+            css = cssString.split(/,(?![^\(]*\))/g);
+            css[0] = css[0].trim();
+            var isValidColor = go.Brush.isValidColor(css[0].split(/\s(?![^\(]*\))/g)[0]);
+            if (isValidColor) {
+                // if the first param isn't a color, it's a CSS <angle>
+                // or a malformed attempt at a color, such as "blavk"
+                // if input's good it works for now, TODO improve later.
+                css.splice(0, 0, "180deg");
+            }
+            //standardizes any angle measurement or direction to degrees
+            css[0] = this._linearGradientAngleToDegrees(css[0], w, h).toString();
+            var angle = parseFloat(css[0]) + 180; //adjusts for css having 180 as the default start point
+            //converts color/percent strings to array objects
+            var colors = this._createColorStopArray(css);
+            /* by now we have the list of color stops, and the computed angle. The color stops need to be bound in a map that the Brush class will like,
+            and the angle needs to be computed with the dimensions of the thing that the brush is coloring, in order to supply the brush with it's start
+            and end spots. once that stuff is computed, stick them on the Brush 'b', below, and return it.
+            */
+            var b = new go.Brush(go.Brush.Linear);
+            var spots = this._calculateLinearGradientSpots(angle, w, h);
+            b.start = spots[0];
+            b.end = spots[1];
+            for (var i = 0; i < colors.length; i++) {
+                b.addColorStop(colors[i].position, colors[i].color);
+            }
+            return b;
         };
         //parses array of gradient parameters to color stop array. used by both gradient parsers
         ExtendedBrush.prototype._createColorStopArray = function (css) {
@@ -800,6 +789,18 @@ var __extends = (this && this.__extends) || (function () {
             if (inputCbd > this._Lab_EPSILON)
                 return inputCbd;
             return (116 * inputLab - 16) / this._Lab_KAPPA;
+        };
+        ;
+        ExtendedBrush.prototype._LabtoXYZ = function (Lab) {
+            var working_arr = [];
+            working_arr[1] = (Lab[0] + 16) / 116;
+            working_arr[0] = (Lab[1] / 500) + working_arr[1];
+            working_arr[2] = (-Lab[2] / 200) + working_arr[1];
+            var XYZ = [];
+            XYZ[1] = this._Lab_XYZ_HelperFunction(working_arr[1]).toString();
+            XYZ[0] = this._Lab_XYZ_HelperFunction(working_arr[0]).toString();
+            XYZ[2] = this._Lab_XYZ_HelperFunction(working_arr[2]).toString();
+            return XYZ;
         };
         ;
         return ExtendedBrush;

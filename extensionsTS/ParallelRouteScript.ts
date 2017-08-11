@@ -9,7 +9,7 @@ import { ParallelRouteLink } from "./ParallelRouteLink";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;
 
@@ -43,9 +43,9 @@ export function init() {
 				reshapable: true //, resegmentable: true
 			},
 			$(go.Shape, { strokeWidth: 2 },
-				new go.Binding("stroke", "fromNode", function (node) { return node.port.fill; }).ofObject()),
+				new go.Binding("stroke", "fromNode", (node) => { return node.port.fill; }).ofObject()),
 			$(go.Shape, { toArrow: "OpenTriangle", strokeWidth: 1.5 },
-				new go.Binding("stroke", "fromNode", function (node) { return node.port.fill; }).ofObject())
+				new go.Binding("stroke", "fromNode", (node) => { return node.port.fill; }).ofObject())
 		);
 
 	myDiagram.model = new go.GraphLinksModel(

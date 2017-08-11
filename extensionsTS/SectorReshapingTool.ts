@@ -66,7 +66,7 @@ export class SectorReshapingTool extends go.Tool {
 						$(go.Placeholder),
 						$(go.Shape, "Diamond",
 							{ name: "RADIUS", fill: "lime", width: 10, height: 10, cursor: "move" },
-							new go.Binding("alignment", "", function (data) {
+							new go.Binding("alignment", "", (data) => {
 								var angle = SectorReshapingTool.prototype.getAngle(data);
 								var sweep = SectorReshapingTool.prototype.getSweep(data);
 								var p = new go.Point(0.5, 0).rotate(angle + sweep / 2);
@@ -74,14 +74,14 @@ export class SectorReshapingTool extends go.Tool {
 							})),
 						$(go.Shape, "Circle",
 							{ name: "ANGLE", fill: "lime", width: 8, height: 8, cursor: "move" },
-							new go.Binding("alignment", "", function (data) {
+							new go.Binding("alignment", "", (data) => {
 								var angle = SectorReshapingTool.prototype.getAngle(data);
 								var p = new go.Point(0.5, 0).rotate(angle);
 								return new go.Spot(0.5 + p.x, 0.5 + p.y);
 							})),
 						$(go.Shape, "Circle",
 							{ name: "SWEEP", fill: "lime", width: 8, height: 8, cursor: "move" },
-							new go.Binding("alignment", "", function (data) {
+							new go.Binding("alignment", "", (data) => {
 								var angle = SectorReshapingTool.prototype.getAngle(data);
 								var sweep = SectorReshapingTool.prototype.getSweep(data);
 								var p = new go.Point(0.5, 0).rotate(angle + sweep);

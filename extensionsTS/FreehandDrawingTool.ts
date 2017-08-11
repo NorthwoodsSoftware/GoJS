@@ -23,7 +23,7 @@ import * as go from "../release/go";
 * The node data added to the model can be customized by setting {@link #archetypePartData}.
 */
 export class FreehandDrawingTool extends go.Tool {
-  public name: string = "FreehandDrawing";
+  public readonly name: string = "FreehandDrawing";
   private _archetypePartData: {} = {}; // the data to copy for a new polyline Part
   private _isBackgroundOnly: boolean = true; // affects canStart()
 
@@ -97,7 +97,8 @@ export class FreehandDrawingTool extends go.Tool {
       var fig = new go.PathFigure(q.x, q.y, true);  // possibly filled, depending on Shape.fill
       var geo = new go.Geometry().add(fig);  // the Shape.geometry consists of a single PathFigure
       this.temporaryShape.geometry = geo;
-      part.position = viewpt;  // position the Shape's Part
+      // position the Shape's Part, accounting for the strokeWidth
+      part.position = new go.Point(viewpt.x - shape.strokeWidth/2, viewpt.y - shape.strokeWidth/2);
       this.diagram.add(part);
     }
 

@@ -17,7 +17,7 @@
     var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this 
+            window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {

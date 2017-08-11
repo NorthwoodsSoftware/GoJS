@@ -9,7 +9,7 @@ import { NonRealtimeDraggingTool } from "./NonRealtimeDraggingTool";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;
 
@@ -50,7 +50,7 @@ export function init() {
 		{ key: 3, text: "Gamma", color: "lightgreen", group: 5 },
 		{ key: 4, text: "Delta", color: "pink", group: 5 },
 		{ key: 5, text: "Epsilon", color: "green", isGroup: true }
-	], 
+	],
 	[
 		{ from: 1, to: 2, color: "blue" },
 		{ from: 2, to: 2 },

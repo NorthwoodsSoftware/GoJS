@@ -37,9 +37,7 @@ export class GeometryReshapingTool extends go.Tool {
 	}
 
 	public readonly name = "GeometryReshaping";
-
 	
-
 	/** @type {string} */
 	private _reshapeObjectName = 'SHAPE';  //??? can't add Part.reshapeObjectName property
 	// there's no Part.reshapeAdornmentTemplate either

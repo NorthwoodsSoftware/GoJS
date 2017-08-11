@@ -17,7 +17,7 @@
     var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this  
+            window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
@@ -105,7 +105,8 @@
                 // Comments and LinkComments are not in any node or link data (yet), so we add them here:
                 "Comments": { show: DataInspector_1.Inspector.prototype.showIfNode(myDiagram.selection.first()) },
                 "flag": { show: DataInspector_1.Inspector.prototype.showIfNode(myDiagram.selection.first()), type: 'boolean', defaultValue: true },
-                "LinkComments": { show: DataInspector_1.Inspector.prototype.showIfLink(myDiagram.selection.first()) }
+                "LinkComments": { show: DataInspector_1.Inspector.prototype.showIfLink(myDiagram.selection.first()) },
+                "isGroup": { readOnly: true, show: DataInspector_1.Inspector.prototype.showIfNode(myDiagram.selection.first()) }
             }
         });
         //inspector1.inspectObject(myDiagram.nodes.first().data);

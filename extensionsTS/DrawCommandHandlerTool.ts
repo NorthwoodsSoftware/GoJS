@@ -56,11 +56,11 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		var diagram = this.diagram;
 		diagram.startTransaction("aligning left");
 		var minPosition = Infinity;
-		diagram.selection.each(function (current) {
+		diagram.selection.each( (current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			minPosition = Math.min(current.position.x, minPosition);
 		});
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			current.move(new go.Point(minPosition, current.position.y));
 		});
@@ -75,12 +75,12 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		var diagram = this.diagram;
 		diagram.startTransaction("aligning right");
 		var maxPosition = -Infinity;
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			var rightSideLoc = current.actualBounds.x + current.actualBounds.width;
 			maxPosition = Math.max(rightSideLoc, maxPosition);
 		});
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			current.move(new go.Point(maxPosition - current.actualBounds.width, current.position.y));
 		});
@@ -95,11 +95,11 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		var diagram = this.diagram;
 		diagram.startTransaction("alignTop");
 		var minPosition = Infinity;
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			minPosition = Math.min(current.position.y, minPosition);
 		});
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			current.move(new go.Point(current.position.x, minPosition));
 		});
@@ -114,12 +114,12 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		var diagram = this.diagram;
 		diagram.startTransaction("aligning bottom");
 		var maxPosition = -Infinity;
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			var bottomSideLoc = current.actualBounds.y + current.actualBounds.height;
 			maxPosition = Math.max(bottomSideLoc, maxPosition);
 		});
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			current.move(new go.Point(current.actualBounds.x, maxPosition - current.actualBounds.height));
 		});
@@ -136,7 +136,7 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		if (!firstSelection) return;
 		diagram.startTransaction("aligning Center X");
 		var centerX = firstSelection.actualBounds.x + firstSelection.actualBounds.width / 2;
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			current.move(new go.Point(centerX - current.actualBounds.width / 2, current.actualBounds.y));
 		});
@@ -154,7 +154,7 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		if (!firstSelection) return;
 		diagram.startTransaction("aligning Center Y");
 		var centerY = firstSelection.actualBounds.y + firstSelection.actualBounds.height / 2;
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			current.move(new go.Point(current.actualBounds.x, centerY - current.actualBounds.height / 2));
 		});
@@ -174,7 +174,7 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		if (distance === undefined) distance = 0; // for aligning edge to edge
 		distance = parseFloat(distance.toString());
 		var selectedParts = new Array();
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			selectedParts.push(current);
 		});
@@ -200,7 +200,7 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		var diagram = this.diagram;
 		diagram.startTransaction("align Row");
 		var selectedParts = new Array();
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link) return; // skips over go.Link
 			selectedParts.push(current);
 		});
@@ -243,7 +243,7 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 		var diagram = this.diagram;
 		diagram.startTransaction("rotate " + angle.toString());
 		var diagram = this.diagram;
-		diagram.selection.each(function (current) {
+		diagram.selection.each((current) => {
 			if (current instanceof go.Link || current instanceof go.Group) return; // skips over Links and Groups
 			current.angle += angle;
 		});
@@ -288,8 +288,8 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
   */
 	public _getAllParts(): Array<any> {
 		var allParts = new Array();
-		this.diagram.nodes.each(function (node) { allParts.push(node); });
-		this.diagram.parts.each(function (part) { allParts.push(part); });
+		this.diagram.nodes.each((node) => { allParts.push(node); });
+		this.diagram.parts.each((part) => { allParts.push(part); });
 		// note that this ignores Links
 		return allParts;
 	};
@@ -314,7 +314,7 @@ export class DrawCommandHandlerTool extends go.CommandHandler {
 			vdistance = cellsize.height;
 		}
 		diagram.startTransaction("arrowKeyMove");
-		diagram.selection.each(function (part) {
+		diagram.selection.each((part) => {
 			if (e.key === "Up") {
 				part.move(new go.Point(part.actualBounds.x, part.actualBounds.y - vdistance));
 			} else if (e.key === "Down") {

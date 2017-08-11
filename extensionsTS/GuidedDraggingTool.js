@@ -31,26 +31,10 @@ var __extends = (this && this.__extends) || (function () {
     * when the selected part is nearly aligned with another part.
     */
     var $ = go.GraphObject.make;
-    var partProperties = { layerName: "Tool", isInDocumentBounds: false };
-    var shapeProperties = { stroke: "gray", isGeometryPositioned: true };
     var GuidedDraggingTool = (function (_super) {
         __extends(GuidedDraggingTool, _super);
         function GuidedDraggingTool() {
-            // temporary parts for horizonal guidelines
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            /** @ignore */
-            _this.guidelineHtop = $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 100 0" }));
-            /** @ignore */
-            _this.guidelineHbottom = $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 100 0" }));
-            /** @ignore */
-            _this.guidelineHcenter = $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 100 0" }));
-            // temporary parts for vertical guidelines
-            /** @ignore */
-            _this.guidelineVleft = $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 0 100" }));
-            /** @ignore */
-            _this.guidelineVright = $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 0 100" }));
-            /** @ignore */
-            _this.guidelineVcenter = $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 0 100" }));
+            var _this = _super.call(this) || this;
             // properties that the programmer can modify
             /** @type {number} */
             _this._guidelineSnapDistance = 6;
@@ -68,6 +52,22 @@ var __extends = (this && this.__extends) || (function () {
             _this._searchDistance = 1000;
             /** @type {boolean} */
             _this._isGuidelineSnapEnabled = true;
+            var partProperties = { layerName: "Tool", isInDocumentBounds: false };
+            var shapeProperties = { stroke: "gray", isGeometryPositioned: true };
+            // temporary parts for horizonal guidelines
+            _this.guidelineHtop =
+                $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 100 0" }));
+            _this.guidelineHbottom =
+                $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 100 0" }));
+            _this.guidelineHcenter =
+                $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 100 0" }));
+            // temporary parts for vertical guidelines
+            _this.guidelineVleft =
+                $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 0 100" }));
+            _this.guidelineVright =
+                $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 0 100" }));
+            _this.guidelineVcenter =
+                $(go.Part, partProperties, $(go.Shape, shapeProperties, { geometryString: "M0 0 0 100" }));
             return _this;
         }
         /**

@@ -68,7 +68,7 @@ go.GraphObject.defineBuilder("Button", function (args) {
 	// This way the object could be a TextBlock or a Shape or a Picture or arbitrarily complex Panel.
 
 	// mouse-over behavior
-	button.mouseEnter = function (e: go.InputEvent, button: go.Panel, prev: go.Panel) {
+	button.mouseEnter = (e: go.InputEvent, button: go.Panel, prev: go.Panel) => {
 		var shape = button.findObject("ButtonBorder");  // the border Shape
 		if (shape instanceof go.Shape) {
 			var brush = (<any>button)["_buttonFillOver"];
@@ -80,7 +80,7 @@ go.GraphObject.defineBuilder("Button", function (args) {
 		}
 	};
 
-	button.mouseLeave = function (e: go.InputEvent, button: go.Panel, prev: go.Panel) {
+	button.mouseLeave = (e: go.InputEvent, button: go.Panel, prev: go.Panel) => {
 		var shape = button.findObject("ButtonBorder");  // the border Shape
 		if (shape instanceof go.Shape) {
 			shape.fill = (<any>button)["_buttonFillNormal"];
@@ -98,7 +98,7 @@ go.GraphObject.defineBuilder("Button", function (args) {
 // Typical usage within a Node template:
 //    $("TreeExpanderButton")
 
-go.GraphObject.defineBuilder("TreeExpanderButton", function (args) {
+go.GraphObject.defineBuilder("TreeExpanderButton", (args) => {
 	var button = /** @type {Panel} */ (
 		go.GraphObject.make("Button",
 			{ // set these values for the isTreeExpanded binding conversion
@@ -127,7 +127,7 @@ go.GraphObject.defineBuilder("TreeExpanderButton", function (args) {
 	);
 
 	// tree expand/collapse behavior
-	button.click = function (e: go.InputEvent, button: go.Node) {
+	button.click = (e: go.InputEvent, button: go.Node) => {
 		var node = button.part;
 		if (node instanceof go.Adornment) node = node.adornedPart;
 		if (!(node instanceof go.Node)) return;
@@ -157,7 +157,7 @@ go.GraphObject.defineBuilder("TreeExpanderButton", function (args) {
 // Typical usage within a Group template:
 //    $("SubGraphExpanderButton")
 
-go.GraphObject.defineBuilder("SubGraphExpanderButton", function (args) {
+go.GraphObject.defineBuilder("SubGraphExpanderButton", (args) => {
 	var button = /** @type {Panel} */ (
 		go.GraphObject.make("Button",
 			{ // set these values for the isSubGraphExpanded binding conversion
@@ -180,7 +180,7 @@ go.GraphObject.defineBuilder("SubGraphExpanderButton", function (args) {
 	);
 
 	// subgraph expand/collapse behavior
-	button.click = function (e: go.InputEvent, button: go.Panel): go.Panel {
+	button.click = (e: go.InputEvent, button: go.Panel): go.Panel => {
 		var group = button.part;
 		if (group instanceof go.Adornment) group = group.adornedPart;
 		if (!(group instanceof go.Group)) return;
@@ -215,7 +215,7 @@ go.GraphObject.defineBuilder("SubGraphExpanderButton", function (args) {
 //   new go.Binding("visible", "", function(data) { return ...OK to perform Command...; })
 // )
 
-go.GraphObject.defineBuilder("ContextMenuButton", function (args): go.Panel {
+go.GraphObject.defineBuilder("ContextMenuButton", (args): go.Panel => {
 	var button = /** @type {Panel} */ (go.GraphObject.make("Button"));
 	button.stretch = go.GraphObject.Horizontal;
 	var border = button.findObject("ButtonBorder");
@@ -245,7 +245,7 @@ go.GraphObject.defineBuilder("ContextMenuButton", function (args): go.Panel {
 //     . . .
 //   )
 
-go.GraphObject.defineBuilder("PanelExpanderButton", function (args) {
+go.GraphObject.defineBuilder("PanelExpanderButton", (args) => {
 	var eltname: string = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
 
 	var button: go.Panel = /** @type {Panel} */ (
@@ -267,7 +267,7 @@ go.GraphObject.defineBuilder("PanelExpanderButton", function (args) {
 		border.fill = "transparent";
 	}
 
-	button.click = function (e: go.InputEvent, button: go.Node) {
+	button.click = (e: go.InputEvent, button: go.Node): go.Panel => {
 		var diagram = button.diagram;
 		if (diagram === null) return;
 		if (diagram.isReadOnly) return;
@@ -297,7 +297,7 @@ go.GraphObject.defineBuilder("PanelExpanderButton", function (args) {
 // or:
 // $("CheckBoxButton", "", { "_doClick": function(e, obj) { alert("clicked!"); } })
 
-go.GraphObject.defineBuilder("CheckBoxButton", function (args): go.Panel {
+go.GraphObject.defineBuilder("CheckBoxButton", (args): go.Panel => {
 	// process the one required string argument for this kind of button
 	var propname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args));
 
@@ -323,7 +323,7 @@ go.GraphObject.defineBuilder("CheckBoxButton", function (args): go.Panel {
 		)
 	);
 
-	button.click = function (e: go.InputEvent, button: go.Node) {
+	button.click = (e: go.InputEvent, button: go.Node) => {
 		var diagram = e.diagram;
 		if (diagram === null || diagram.isReadOnly) return;
 		if (propname !== "" && diagram.model.isReadOnly) return;
@@ -349,7 +349,7 @@ go.GraphObject.defineBuilder("CheckBoxButton", function (args): go.Panel {
 // $("CheckBox", "someProperty", $(go.TextBlock, "A choice"),
 //   { "_doClick": function(e, obj) { ... perform extra side-effects ... } })
 
-go.GraphObject.defineBuilder("CheckBox", function (args): go.Panel {
+go.GraphObject.defineBuilder("CheckBox", (args): go.Panel => {
 	// process the one required string argument for this kind of button
 	var propname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args));
 

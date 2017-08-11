@@ -34,7 +34,7 @@ export class TreeMapLayout extends go.Layout {
 		// collect all top-level nodes, and sum their totals
 		var tops = new go.Set();
 		var total = 0;
-		diagram.nodes.each(function (n) {
+		diagram.nodes.each((n) => {
 			if (n.isTopLevel) {
 				tops.add(n);
 				total += n.data.total;
@@ -45,7 +45,7 @@ export class TreeMapLayout extends go.Layout {
 		var gx = x;
 		var gy = y;
 		var lay = this;
-		tops.each(function (n: go.Node) {
+		tops.each((n: go.Node) => {
 			var tot = n.data.total;
 			if (horiz) {
 				var pw = w * tot / total;
@@ -68,7 +68,7 @@ export class TreeMapLayout extends go.Layout {
 			var gx = x;
 			var gy = y;
 			var lay = this;
-			g.memberParts.each(function (p) {
+			g.memberParts.each((p) => {
 				if (p instanceof go.Link) return;
 				var tot = p.data.total;
 				if (horiz) {
@@ -85,9 +85,9 @@ export class TreeMapLayout extends go.Layout {
 	};
 
 	public computeTotals(diagram: go.Diagram) {
-		if (!diagram.nodes.all(function (g: go.Group) { return !(g instanceof go.Group) || g.data.total >= 0; })) {
+		if (!diagram.nodes.all((g: go.Group) => { return !(g instanceof go.Group) || g.data.total >= 0; })) {
 			var groups = new go.Set();
-			diagram.nodes.each(function (n: go.Panel) {
+			diagram.nodes.each((n: go.Panel) => {
 				if (n instanceof go.Group) {  // collect all groups
 					groups.add(n);
 				} else {  // regular nodes just have their total == size
@@ -97,12 +97,12 @@ export class TreeMapLayout extends go.Layout {
 			// keep looking for groups whose total can be computed, until all groups have been processed
 			while (groups.count > 0) {
 				var grps = new go.Set();
-				groups.each(function (g: go.Group) {
+				groups.each((g: go.Group) => {
 					// for a group all of whose member nodes have an initialized data.total,
-					if (g.memberParts.all(function (m) { return !(m instanceof go.Group) || m.data.total >= 0; })) {
+					if (g.memberParts.all((m) => { return !(m instanceof go.Group) || m.data.total >= 0; })) {
 						// compute the group's total as the sum of the sizes of all of the member nodes
 						g.data.total = 0;
-						g.memberParts.each(function (m) { if (m instanceof go.Node) g.data.total += m.data.total; });
+						g.memberParts.each((m) => { if (m instanceof go.Node) g.data.total += m.data.total; });
 					} else {  // remember for the next iteration
 						grps.add(g);
 					}

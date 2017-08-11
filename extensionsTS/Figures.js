@@ -34,17 +34,13 @@
             this._minimum = this.min;
             /** @type {number} */
             this._maximum = this.max;
-            this._FigureParameters = {};
             this.nameIn = name;
             this.def = def;
             if (min === undefined /*notpresent*/)
                 min = 0.0;
-            else
-                this.min = min;
             if (max === undefined /*notpresent*/)
                 max = Infinity;
-            else
-                this.max = max;
+            go.Shape["_FigureParameters"] = {};
         }
         Object.defineProperty(FigureParameter.prototype, "name", {
             // Public properties
@@ -118,7 +114,7 @@
         * @return {FigureParameter}
         */
         FigureParameter.prototype.getFigureParameter = function (figurename, index) {
-            var arr = this._FigureParameters[figurename];
+            var arr = go.Shape["_FigureParameters"][figurename];
             if (!arr)
                 return null;
             return (arr[index]);
@@ -135,10 +131,10 @@
                 throw new Error("Third argument to Shape.setFigureParameter is not FigureParameter: " + figparam);
             if (figparam.defaultValue < figparam.minimum || figparam.defaultValue > figparam.maximum)
                 throw new Error("defaultValue must be between minimum and maximum, not: " + figparam.defaultValue);
-            var arr = this._FigureParameters[figurename];
+            var arr = go.Shape["_FigureParameters"][figurename];
             if (!arr) {
                 arr = [];
-                this._FigureParameters[figurename] = arr;
+                go.Shape["_FigureParameters"][figurename] = arr;
             }
             arr[index] = figparam;
         };
@@ -175,9 +171,9 @@
     }
     ;
     /**
-      * @ignore
-      * @param {Point} temp
-      */
+        * @ignore
+        * @param {Point} temp
+        */
     function freePoint(temp) {
         _CachedPoints.push(temp);
     }
@@ -292,7 +288,7 @@
         geo.defaultStretch = go.GraphObject.Uniform;
         return geo;
     });
-    this.setFigureParameter("RoundedRectangle", 0, new FigureParameter("CornerRounding", 5, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("RoundedRectangle", 0, new FigureParameter("CornerRounding", 5));
     go.Shape.defineFigureGenerator("RoundedRectangle", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -496,7 +492,7 @@
             .setSpots(0.5, 0, 1, 0.5);
     });
     go.Shape.defineFigureGenerator("RightTriangle", "TriangleDownLeft");
-    this.setFigureParameter("Parallelogram1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+    FigureParameter.prototype.setFigureParameter("Parallelogram1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
     go.Shape.defineFigureGenerator("Parallelogram1", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         // Topleft corner's x distance from leftmost point
@@ -535,7 +531,7 @@
             return geo;
         }
     });
-    this.setFigureParameter("Parallelogram2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
+    FigureParameter.prototype.setFigureParameter("Parallelogram2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
     go.Shape.defineFigureGenerator("Parallelogram2", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         // Topleft corner's x distance from leftmost point
@@ -575,7 +571,7 @@
         }
     });
     go.Shape.defineFigureGenerator("Parallelogram", "Parallelogram1");
-    this.setFigureParameter("Trapezoid1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+    FigureParameter.prototype.setFigureParameter("Trapezoid1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
     go.Shape.defineFigureGenerator("Trapezoid1", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         // Distance from topleft of bounding rectangle,
@@ -615,7 +611,7 @@
             return geo;
         }
     });
-    this.setFigureParameter("Trapezoid2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
+    FigureParameter.prototype.setFigureParameter("Trapezoid2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
     go.Shape.defineFigureGenerator("Trapezoid2", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         // Distance from topleft of bounding rectangle,
@@ -655,7 +651,7 @@
             return geo;
         }
     });
-    this.setFigureParameter("ManualOperation", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+    FigureParameter.prototype.setFigureParameter("ManualOperation", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
     go.Shape.defineFigureGenerator("ManualOperation", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         // Distance from topleft of bounding rectangle,
@@ -1056,8 +1052,8 @@
         geo.spot2 = new go.Spot(.777, .777);
         return geo;
     });
-    this.setFigureParameter("FramedRectangle", 0, new FigureParameter("ThicknessX", 8, 0, Infinity));
-    this.setFigureParameter("FramedRectangle", 1, new FigureParameter("ThicknessY", 8, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("FramedRectangle", 0, new FigureParameter("ThicknessX", 8));
+    FigureParameter.prototype.setFigureParameter("FramedRectangle", 1, new FigureParameter("ThicknessY", 8));
     go.Shape.defineFigureGenerator("FramedRectangle", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         var param2 = shape ? shape.parameter2 : NaN;
@@ -1082,7 +1078,7 @@
         geo.setSpots(0, 0, 1, 1, param1, param2, -param1, -param2);
         return geo;
     });
-    this.setFigureParameter("Ring", 0, new FigureParameter("Thickness", 8, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("Ring", 0, new FigureParameter("Thickness", 8));
     go.Shape.defineFigureGenerator("Ring", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -1134,8 +1130,8 @@
             .add(new go.PathSegment(go.PathSegment.Line, 0, part * h).close()))
             .setSpots(part / 2, part / 2, 1 - part / 2, 1 - part / 2);
     });
-    this.setFigureParameter("Pie", 0, new FigureParameter("Start", 0, -360, 360));
-    this.setFigureParameter("Pie", 1, new FigureParameter("Sweep", 315, -360, 360));
+    FigureParameter.prototype.setFigureParameter("Pie", 0, new FigureParameter("Start", 0, -360, 360));
+    FigureParameter.prototype.setFigureParameter("Pie", 1, new FigureParameter("Sweep", 315, -360, 360));
     go.Shape.defineFigureGenerator("Pie", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         var param2 = shape ? shape.parameter2 : NaN;
@@ -1164,7 +1160,7 @@
             .add(new go.PathSegment(go.PathSegment.Bezier, x1 * w, y1 * h, w, (1 - factor) * h, (x1 + factor) * w, (y1 + factor) * h))
             .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
     });
-    this.setFigureParameter("ThickCross", 0, new FigureParameter("Thickness", 30, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("ThickCross", 0, new FigureParameter("Thickness", 30));
     go.Shape.defineFigureGenerator("ThickCross", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -1186,7 +1182,7 @@
             .add(new go.PathSegment(go.PathSegment.Line, 0, my - t))
             .add(new go.PathSegment(go.PathSegment.Line, mx - t, my - t).close()));
     });
-    this.setFigureParameter("ThinCross", 0, new FigureParameter("Thickness", 10, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("ThinCross", 0, new FigureParameter("Thickness", 10));
     go.Shape.defineFigureGenerator("ThinCross", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -1208,7 +1204,7 @@
             .add(new go.PathSegment(go.PathSegment.Line, 0, my - t))
             .add(new go.PathSegment(go.PathSegment.Line, mx - t, my - t).close()));
     });
-    this.setFigureParameter("ThickX", 0, new FigureParameter("Thickness", 30, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("ThickX", 0, new FigureParameter("Thickness", 30));
     go.Shape.defineFigureGenerator("ThickX", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -1244,7 +1240,7 @@
             return geo;
         }
     });
-    this.setFigureParameter("ThinX", 0, new FigureParameter("Thickness", 10, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("ThinX", 0, new FigureParameter("Thickness", 10));
     go.Shape.defineFigureGenerator("ThinX", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -1266,7 +1262,7 @@
         return geo;
     });
     // adjust the width of the vertical beam
-    this.setFigureParameter("SquareIBeam", 0, new FigureParameter("BeamWidth", 0.2, 0.1, 0.9));
+    FigureParameter.prototype.setFigureParameter("SquareIBeam", 0, new FigureParameter("BeamWidth", 0.2, 0.1, 0.9));
     go.Shape.defineFigureGenerator("SquareIBeam", function (shape, w, h) {
         var geo = new go.Geometry();
         var param1 = shape ? shape.parameter1 : NaN;
@@ -1290,7 +1286,7 @@
         return geo;
     });
     // parameter allows it easy to adjust the roundness of the curves that cut inward
-    this.setFigureParameter("RoundedIBeam", 0, new FigureParameter("SideCurved", .5, .05, .65));
+    FigureParameter.prototype.setFigureParameter("RoundedIBeam", 0, new FigureParameter("SideCurved", .5, .05, .65));
     go.Shape.defineFigureGenerator("RoundedIBeam", function (shape, w, h) {
         var geo = new go.Geometry();
         var fig = new go.PathFigure(0, 0, true);
@@ -1507,7 +1503,7 @@
             .add(new go.PathSegment(go.PathSegment.Line, .45 * w, .5 * h))
             .add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .25 * w, .5 * h, 0, .25 * h).close()));
     });
-    this.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 20, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 20));
     go.Shape.defineFigureGenerator("HourGlass", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1) || param1 < 0)
@@ -1768,7 +1764,7 @@
         freePoint(temp);
         return geo;
     });
-    this.setFigureParameter("Arrow2", 0, new FigureParameter("LongHeight", 30, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("Arrow2", 0, new FigureParameter("LongHeight", 30));
     go.Shape.defineFigureGenerator("Arrow2", function (shape, w, h) {
         var geo = new go.Geometry();
         var param1 = shape ? shape.parameter1 : NaN;
@@ -1822,7 +1818,7 @@
     // JC
     // added a new parameter to allow to adjust the connecter piece height
     // might need to do something about the parameter min and max and make it more accesible
-    this.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .7, .5, 1));
+    FigureParameter.prototype.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .7, .5, 1));
     go.Shape.defineFigureGenerator("DoubleEndArrow", function (shape, w, h) {
         var geo = new go.Geometry();
         var param1 = shape ? shape.parameter1 : NaN;
@@ -1853,8 +1849,8 @@
     // set it to an exact value that willl NOT scale
     // also allowing the user to edit the height of those two arrows
     // JC Allowing to modify adjustment too
-    this.setFigureParameter("DoubleEndArrow2", 0, new FigureParameter("ConnecterHeight", 40, 0, Infinity));
-    this.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowPointerHeight", 70, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("DoubleEndArrow2", 0, new FigureParameter("ConnecterHeight", 40));
+    FigureParameter.prototype.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowPointerHeight", 70));
     go.Shape.defineFigureGenerator("DoubleEndArrow2", function (shape, w, h) {
         // This is absolute
         var geo = new go.Geometry();
@@ -1927,7 +1923,7 @@
     // JC
     // this parameter makes it possible for the user to set a width for a long edge of the IBeamArrow
     // allows the user to adjust the vertical width of the long section, i might have to draw a diagram
-    this.setFigureParameter("IBeamArrow", 0, new FigureParameter("ArrowLengthWidth", .7, .51, .97));
+    FigureParameter.prototype.setFigureParameter("IBeamArrow", 0, new FigureParameter("ArrowLengthWidth", .7, .51, .97));
     // this.setFigureParameter("IBeamArrow", 1, new FigureParameter("ArrowBackSection"))
     go.Shape.defineFigureGenerator("IBeamArrow", function (shape, w, h) {
         var geo = new go.Geometry();
@@ -1956,7 +1952,7 @@
     });
     // JC
     // recreating the same thing above only using absolute values to figure out the size of the long side
-    this.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ArrowLengthWidth", 40, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ArrowLengthWidth", 40));
     // this.setFigureParameter("IBeamArrow2", 1, new FigureParameter("ArrowBackSection"))
     go.Shape.defineFigureGenerator("IBeamArrow2", function (shape, w, h) {
         var geo = new go.Geometry();
@@ -2002,7 +1998,7 @@
     // JC
     // this.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", 0.25, 0.1, 0.65));
     // back point that cuts into the pointer
-    this.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", .2, 0, .2));
+    FigureParameter.prototype.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", .2, 0, .2));
     go.Shape.defineFigureGenerator("Pointer", function (shape, w, h) {
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1))
@@ -2039,7 +2035,7 @@
     });
     // JC Adding soem parameters to this
     // add param to make long part adjustable
-    this.setFigureParameter("SplitEndArrow", 0, new FigureParameter("LengthThickness", 0.7, 0.52, .9));
+    FigureParameter.prototype.setFigureParameter("SplitEndArrow", 0, new FigureParameter("LengthThickness", 0.7, 0.52, .9));
     go.Shape.defineFigureGenerator("SplitEndArrow", function (shape, w, h) {
         var geo = new go.Geometry();
         var fig = new go.PathFigure(w, .5 * h, true);
@@ -2062,7 +2058,7 @@
     });
     // JC
     // the same thing as splitendarrow except with the ability to edit the line was absolute value
-    this.setFigureParameter("SplitEndArrow2", 0, new FigureParameter("LengthThickness", 50, 0, Infinity));
+    FigureParameter.prototype.setFigureParameter("SplitEndArrow2", 0, new FigureParameter("LengthThickness", 50, 0, Infinity));
     go.Shape.defineFigureGenerator("SplitEndArrow2", function (shape, w, h) {
         var geo = new go.Geometry();
         var fig = new go.PathFigure(w, .5 * h, true);
@@ -2101,7 +2097,7 @@
     // Adding perameter to allow user to edit the pointyness of this arrow
     // parameter would allow you to edit the pointness of the arrow if nesscary
     // this is kinda tedious not sure if any user would be interested in it
-    this.setFigureParameter("SquareArrow", 0, new FigureParameter("ArrowPoint", .7, .2, .9));
+    FigureParameter.prototype.setFigureParameter("SquareArrow", 0, new FigureParameter("ArrowPoint", .7, .2, .9));
     go.Shape.defineFigureGenerator("SquareArrow", function (shape, w, h) {
         var geo = new go.Geometry();
         var fig = new go.PathFigure(w, .5 * h, true);
@@ -2416,7 +2412,7 @@
     // JC
     // adding parameter to make top corner size adjustable
     // these are going to have to be adjusted
-    this.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9)); // the cutout in the corner
+    FigureParameter.prototype.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9)); // the cutout in the corner
     go.Shape.defineFigureGenerator("Card", function (shape, w, h) {
         var geo = new go.Geometry();
         var param1 = shape ? shape.parameter1 : NaN;

@@ -8,7 +8,7 @@ import * as go from "../release/go";
 var myDiagram: go.Diagram = null;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;
 
@@ -20,8 +20,8 @@ export function init() {
 		$(go.Node, "Auto",
 			$(go.Shape, "Ellipse", { fill: "lightskyblue" }),
 			$("HyperlinkText",
-				function (node: go.Node) { return "https://gojs.net/" + node.data.version; },
-				function (node: go.Node) { return "Visit GoJS " + node.data.version; },
+				(node: go.Node) => { return "https://gojs.net/" + node.data.version; },
+				(node: go.Node) => { return "Visit GoJS " + node.data.version; },
 				{ margin: 10 }
 			)
 		);

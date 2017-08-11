@@ -211,7 +211,7 @@ export class TableLayout extends go.Layout {
 		this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
 		// put all eligible Parts that are not Links into an Array
 		var parts = new go.List(go.Part) as go.List<go.Part>;
-		this.collectParts(coll).each(function (p) {
+		this.collectParts(coll).each((p) => {
 			if (!(p instanceof go.Link)) {
 				p.ensureBounds();
 				parts.add(p);

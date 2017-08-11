@@ -37,11 +37,11 @@ import * as go from "../release/go";
 
 // The result is either a TextBlock or a Panel.
 
-go.GraphObject.defineBuilder("HyperlinkText", function (args) {
+go.GraphObject.defineBuilder("HyperlinkText", (args) => {
   // the URL is required as the first argument, either a string or a side-effect-free function returning a string
-  var url = go.GraphObject.takeBuilderArgument(args, undefined, function (x) { return typeof x === "string" || typeof x === "function"; });
+  var url = go.GraphObject.takeBuilderArgument(args, undefined, (x) => { return typeof x === "string" || typeof x === "function"; });
   // the text for the HyperlinkText is the optional second argument, either a string or a side-effect-free function returning a string
-  var text = go.GraphObject.takeBuilderArgument(args, null, function (x) { return typeof x === "string" || typeof x === "function"; });
+  var text = go.GraphObject.takeBuilderArgument(args, null, (x) => { return typeof x === "string" || typeof x === "function"; });
 
   // see if the visual tree is supplied in the arguments to the "HyperlinkText"
   var anyGraphObjects = false;
@@ -52,7 +52,7 @@ go.GraphObject.defineBuilder("HyperlinkText", function (args) {
 
   // define the click behavior
   var click =
-    function (e: go.InputEvent, obj: go.TextBlock) {
+    (e: go.InputEvent, obj: go.TextBlock) => {
       var url = (<any>obj)["_url"];
       if (typeof url === "function") url = url(obj.findTemplateBinder());
       window.open(url, "_blank");
@@ -63,7 +63,7 @@ go.GraphObject.defineBuilder("HyperlinkText", function (args) {
     go.GraphObject.make(go.Adornment, "Auto",
       go.GraphObject.make(go.Shape, { fill: "#EFEFCC" }),
       go.GraphObject.make(go.TextBlock, { margin: 4 },
-        new go.Binding("text", "", function (obj) {
+        new go.Binding("text", "", (obj) => {
           // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
           obj = obj.part.adornedObject;
           var url = obj._url;
@@ -79,8 +79,8 @@ go.GraphObject.defineBuilder("HyperlinkText", function (args) {
       {
         "_url": url,
         cursor: "pointer",
-        mouseEnter: function (e: go.InputEvent, obj: go.TextBlock) { obj.isUnderline = true; },
-        mouseLeave: function (e: go.InputEvent, obj: go.TextBlock) { obj.isUnderline = false; },
+        mouseEnter: (e: go.InputEvent, obj: go.TextBlock) => { obj.isUnderline = true; },
+        mouseLeave: (e: go.InputEvent, obj: go.TextBlock) => { obj.isUnderline = false; },
         click: click,  // defined above
         toolTip: tooltip // shared by all HyperlinkText textblocks
       }
@@ -99,11 +99,11 @@ go.GraphObject.defineBuilder("HyperlinkText", function (args) {
       {
         "_url": url,
         cursor: "pointer",
-        mouseEnter: function (e: go.InputEvent, panel: go.Panel) {
+        mouseEnter: (e: go.InputEvent, panel: go.Panel) => {
           var tb = findTextBlock(panel);
           if (tb !== null) tb.isUnderline = true;
         },
-        mouseLeave: function (e: go.InputEvent, panel: go.Panel) {
+        mouseLeave: (e: go.InputEvent, panel: go.Panel) => {
           var tb = findTextBlock(panel);
           if (tb !== null) tb.isUnderline = false;
         },

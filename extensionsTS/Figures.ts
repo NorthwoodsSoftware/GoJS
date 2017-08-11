@@ -23,13 +23,12 @@ export class FigureParameter {
 	def: number;
 	min: number;
 	max: number;
-	constructor(name: string, def: number, min: number, max: number) {
+	constructor(name: string, def: number, min?: number, max?: number) {
 		this.nameIn = name;
 		this.def = def;
 		if (min === undefined/*notpresent*/) min = 0.0;
-		else this.min = min;
 		if (max === undefined/*notpresent*/) max = Infinity;
-		else this.max = max;
+		(<any>go.Shape)["_FigureParameters"] = {};
 	}
 
 	/** @type {string} */
@@ -41,7 +40,6 @@ export class FigureParameter {
 	/** @type {number} */
 	private _maximum = this.max;
 
-	private _FigureParameters = {};
 
 	// Public properties
 
@@ -99,8 +97,8 @@ export class FigureParameter {
 	* @param {number} index, currently must be either 0 or 1
 	* @return {FigureParameter}
 	*/
-	public getFigureParameter(figurename: string, index: number) {
-		var arr = (<any>this._FigureParameters)[figurename];
+	public getFigureParameter(figurename: string, index: number): FigureParameter {
+		var arr = (<any>go.Shape)["_FigureParameters"][figurename];
 		if (!arr) return null;
 		return /** @type {FigureParmeter} */ (arr[index]);
 	};
@@ -111,18 +109,17 @@ export class FigureParameter {
 	* @param {number} index, currently must be either 0 or 1
 	* @param {FigureParameter} figparam
 	*/
-	public setFigureParameter(figurename: string, index: number, figparam: Object) {
+	public setFigureParameter(figurename: string, index: number, figparam: FigureParameter) {
 		if (!(figparam instanceof FigureParameter)) throw new Error("Third argument to Shape.setFigureParameter is not FigureParameter: " + figparam);
 		if (figparam.defaultValue < figparam.minimum || figparam.defaultValue > figparam.maximum) throw new Error("defaultValue must be between minimum and maximum, not: " + figparam.defaultValue);
-		var arr = (<any>this._FigureParameters)[figurename];
+		var arr = (<any>go.Shape)["_FigureParameters"][figurename];
 		if (!arr) {
 			arr = [];
-			(<any>this._FigureParameters)[figurename] = arr;
+			(<any>go.Shape)["_FigureParameters"][figurename] = arr;
 		}
 		arr[index] = figparam;
 	};
 }
-
 /** @ignore */
 var _CachedPoints: Array<go.Point> = [];
 
@@ -144,16 +141,16 @@ function tempPointAt(x: number, y: number): go.Point {
 * @ignore
 * @return {Point}
 */
-function tempPoint() {
+function tempPoint(): go.Point {
 	var temp = _CachedPoints.pop();
 	if (temp === undefined) return new go.Point();
 	return temp;
 };
 
 /**
-  * @ignore
-  * @param {Point} temp
-  */
+	* @ignore
+	* @param {Point} temp
+	*/
 function freePoint(temp: go.Point) {
 	_CachedPoints.push(temp);
 };
@@ -265,7 +262,7 @@ var KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
 
 // PREDEFINED figures, built into the v2.0 library:
 
-go.Shape.defineFigureGenerator("Rectangle", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("Rectangle", (shape, w, h) => {  // predefined in 2.0
 	var geo = new go.Geometry(go.Geometry.Rectangle);
 	geo.startX = 0;
 	geo.startY = 0;
@@ -274,7 +271,7 @@ go.Shape.defineFigureGenerator("Rectangle", function (shape, w, h) {  // predefi
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Square", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("Square", (shape, w, h) => {  // predefined in 2.0
 	var geo = new go.Geometry(go.Geometry.Rectangle);
 	geo.startX = 0;
 	geo.startY = 0;
@@ -284,8 +281,8 @@ go.Shape.defineFigureGenerator("Square", function (shape, w, h) {  // predefined
 	return geo;
 });
 
-this.setFigureParameter("RoundedRectangle", 0, new FigureParameter("CornerRounding", 5, 0, Infinity));
-go.Shape.defineFigureGenerator("RoundedRectangle", function (shape, w, h) {  // predefined in 2.0
+FigureParameter.prototype.setFigureParameter("RoundedRectangle", 0, new FigureParameter("CornerRounding", 5));
+go.Shape.defineFigureGenerator("RoundedRectangle", (shape, w, h) => {  // predefined in 2.0
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 5;  // default corner
 	param1 = Math.min(param1, w / 3);
@@ -311,7 +308,7 @@ go.Shape.defineFigureGenerator("RoundedRectangle", function (shape, w, h) {  // 
 
 go.Shape.defineFigureGenerator("Border", "RoundedRectangle");  // predefined in 2.0
 
-go.Shape.defineFigureGenerator("Ellipse", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("Ellipse", (shape, w, h) => {  // predefined in 2.0
 	var geo = new go.Geometry(go.Geometry.Ellipse);
 	geo.startX = 0;
 	geo.startY = 0;
@@ -322,7 +319,7 @@ go.Shape.defineFigureGenerator("Ellipse", function (shape, w, h) {  // predefine
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Circle", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("Circle", (shape, w, h) => {  // predefined in 2.0
 	var geo = new go.Geometry(go.Geometry.Ellipse);
 	geo.startX = 0;
 	geo.startY = 0;
@@ -334,7 +331,7 @@ go.Shape.defineFigureGenerator("Circle", function (shape, w, h) {  // predefined
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("TriangleRight", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("TriangleRight", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0.5 * h))
@@ -342,7 +339,7 @@ go.Shape.defineFigureGenerator("TriangleRight", function (shape, w, h) {  // pre
 		.setSpots(0, 0.25, 0.5, 0.75);
 });
 
-go.Shape.defineFigureGenerator("TriangleDown", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("TriangleDown", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -350,7 +347,7 @@ go.Shape.defineFigureGenerator("TriangleDown", function (shape, w, h) {  // pred
 		.setSpots(0.25, 0, 0.75, 0.5);
 });
 
-go.Shape.defineFigureGenerator("TriangleLeft", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("TriangleLeft", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(w, h)
 			.add(new go.PathSegment(go.PathSegment.Line, 0, 0.5 * h))
@@ -358,7 +355,7 @@ go.Shape.defineFigureGenerator("TriangleLeft", function (shape, w, h) {  // pred
 		.setSpots(0.5, 0.25, 1, 0.75);
 });
 
-go.Shape.defineFigureGenerator("TriangleUp", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("TriangleUp", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(w, h)
 			.add(new go.PathSegment(go.PathSegment.Line, 0, h))
@@ -368,7 +365,7 @@ go.Shape.defineFigureGenerator("TriangleUp", function (shape, w, h) {  // predef
 
 go.Shape.defineFigureGenerator("Triangle", "TriangleUp");  // predefined in 2.0
 
-go.Shape.defineFigureGenerator("Diamond", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("Diamond", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(0.5 * w, 0)
 			.add(new go.PathSegment(go.PathSegment.Line, 0, 0.5 * h))
@@ -377,7 +374,7 @@ go.Shape.defineFigureGenerator("Diamond", function (shape, w, h) {  // predefine
 		.setSpots(0.25, 0.25, 0.75, 0.75);
 });
 
-go.Shape.defineFigureGenerator("LineH", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("LineH", (shape, w, h) => {  // predefined in 2.0
 	var geo = new go.Geometry(go.Geometry.Line);
 	geo.startX = 0;
 	geo.startY = h / 2;
@@ -386,7 +383,7 @@ go.Shape.defineFigureGenerator("LineH", function (shape, w, h) {  // predefined 
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("LineV", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("LineV", (shape, w, h) => {  // predefined in 2.0
 	var geo = new go.Geometry(go.Geometry.Line);
 	geo.startX = w / 2;
 	geo.startY = 0;
@@ -399,7 +396,7 @@ go.Shape.defineFigureGenerator("BarH", "Rectangle");  // predefined in 2.0
 go.Shape.defineFigureGenerator("BarV", "Rectangle");  // predefined in 2.0
 go.Shape.defineFigureGenerator("MinusLine", "LineH");  // predefined in 2.0
 
-go.Shape.defineFigureGenerator("PlusLine", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("PlusLine", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(0, h / 2, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, h / 2))
@@ -407,7 +404,7 @@ go.Shape.defineFigureGenerator("PlusLine", function (shape, w, h) {  // predefin
 			.add(new go.PathSegment(go.PathSegment.Line, w / 2, h)));
 });
 
-go.Shape.defineFigureGenerator("XLine", function (shape, w, h) {  // predefined in 2.0
+go.Shape.defineFigureGenerator("XLine", (shape, w, h) => {  // predefined in 2.0
 	return new go.Geometry()
 		.add(new go.PathFigure(0, h, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -418,7 +415,7 @@ go.Shape.defineFigureGenerator("XLine", function (shape, w, h) {  // predefined 
 
 // OPTIONAL figures, not predefined in the v2.0 library:
 
-go.Shape.defineFigureGenerator("AsteriskLine", function (shape, w, h) {
+go.Shape.defineFigureGenerator("AsteriskLine", (shape, w, h) => {
 	var offset = .2 / Math.SQRT2;
 	return new go.Geometry()
 		.add(new go.PathFigure(offset * w, (1 - offset) * h, false)
@@ -431,7 +428,7 @@ go.Shape.defineFigureGenerator("AsteriskLine", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, w / 2, h)));
 });
 
-go.Shape.defineFigureGenerator("CircleLine", function (shape, w, h) {
+go.Shape.defineFigureGenerator("CircleLine", (shape, w, h) => {
 	var rad = w / 2;
 	var geo = new go.Geometry()
 		.add(new go.PathFigure(w, w / 2, false)  // clockwise
@@ -442,7 +439,7 @@ go.Shape.defineFigureGenerator("CircleLine", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Line1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Line1", (shape, w, h) => {
 	var geo = new go.Geometry(go.Geometry.Line);
 	geo.startX = 0;
 	geo.startY = 0;
@@ -451,7 +448,7 @@ go.Shape.defineFigureGenerator("Line1", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Line2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Line2", (shape, w, h) => {
 	var geo = new go.Geometry(go.Geometry.Line);
 	geo.startX = w;
 	geo.startY = 0;
@@ -460,31 +457,31 @@ go.Shape.defineFigureGenerator("Line2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Curve1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Curve1", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Bezier, w, h, KAPPA * w, 0, w, (1 - KAPPA) * h)));
 });
 
-go.Shape.defineFigureGenerator("Curve2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Curve2", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Bezier, w, h, 0, KAPPA * h, (1 - KAPPA) * w, h)));
 });
 
-go.Shape.defineFigureGenerator("Curve3", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Curve3", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(w, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Bezier, 0, h, w, KAPPA * h, KAPPA * w, h)));
 });
 
-go.Shape.defineFigureGenerator("Curve4", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Curve4", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(w, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Bezier, 0, h, (1 - KAPPA) * w, 0, 0, (1 - KAPPA) * h)));
 });
 
-go.Shape.defineFigureGenerator("TriangleDownLeft", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TriangleDownLeft", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, w, h))
@@ -492,7 +489,7 @@ go.Shape.defineFigureGenerator("TriangleDownLeft", function (shape, w, h) {
 		.setSpots(0, 0.5, 0.5, 1);
 });
 
-go.Shape.defineFigureGenerator("TriangleDownRight", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TriangleDownRight", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(w, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, w, h))
@@ -500,7 +497,7 @@ go.Shape.defineFigureGenerator("TriangleDownRight", function (shape, w, h) {
 		.setSpots(0.5, 0.5, 1, 1);
 });
 
-go.Shape.defineFigureGenerator("TriangleUpLeft", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TriangleUpLeft", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -508,7 +505,7 @@ go.Shape.defineFigureGenerator("TriangleUpLeft", function (shape, w, h) {
 		.setSpots(0, 0, 0.5, 0.5);
 });
 
-go.Shape.defineFigureGenerator("TriangleUpRight", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TriangleUpRight", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -518,8 +515,8 @@ go.Shape.defineFigureGenerator("TriangleUpRight", function (shape, w, h) {
 
 go.Shape.defineFigureGenerator("RightTriangle", "TriangleDownLeft");
 
-this.setFigureParameter("Parallelogram1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
-go.Shape.defineFigureGenerator("Parallelogram1", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Parallelogram1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+go.Shape.defineFigureGenerator("Parallelogram1", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Topleft corner's x distance from leftmost point
 	if (isNaN(param1)) param1 = 10; // default value
@@ -554,8 +551,8 @@ go.Shape.defineFigureGenerator("Parallelogram1", function (shape, w, h) {
 	}
 });
 
-this.setFigureParameter("Parallelogram2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
-go.Shape.defineFigureGenerator("Parallelogram2", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Parallelogram2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
+go.Shape.defineFigureGenerator("Parallelogram2", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Topleft corner's x distance from leftmost point
 	if (isNaN(param1)) param1 = 0.1; // default value
@@ -592,8 +589,8 @@ go.Shape.defineFigureGenerator("Parallelogram2", function (shape, w, h) {
 
 go.Shape.defineFigureGenerator("Parallelogram", "Parallelogram1");
 
-this.setFigureParameter("Trapezoid1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
-go.Shape.defineFigureGenerator("Trapezoid1", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Trapezoid1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+go.Shape.defineFigureGenerator("Trapezoid1", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Distance from topleft of bounding rectangle,
 	// in % of the total width, of the topleft corner
@@ -629,8 +626,8 @@ go.Shape.defineFigureGenerator("Trapezoid1", function (shape, w, h) {
 	}
 });
 
-this.setFigureParameter("Trapezoid2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
-go.Shape.defineFigureGenerator("Trapezoid2", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Trapezoid2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
+go.Shape.defineFigureGenerator("Trapezoid2", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Distance from topleft of bounding rectangle,
 	// in % of the total width, of the topleft corner
@@ -666,8 +663,8 @@ go.Shape.defineFigureGenerator("Trapezoid2", function (shape, w, h) {
 	}
 });
 
-this.setFigureParameter("ManualOperation", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
-go.Shape.defineFigureGenerator("ManualOperation", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("ManualOperation", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+go.Shape.defineFigureGenerator("ManualOperation", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Distance from topleft of bounding rectangle,
 	// in % of the total width, of the topleft corner
@@ -705,7 +702,6 @@ go.Shape.defineFigureGenerator("ManualOperation", function (shape, w, h) {
 
 go.Shape.defineFigureGenerator("Trapezoid", "Trapezoid1");
 
-
 // The following functions are used by a group of regular figures that are defined below:
 
 /** @ignore */
@@ -715,7 +711,7 @@ var _CachedArrays: Array<any> = [];
   * @ignore
   * @return {Array}
   */
-function tempArray() {
+function tempArray(): Array<any> {
 	var temp = _CachedArrays.pop();
 	if (temp === undefined) return [];
 	return temp;
@@ -814,7 +810,7 @@ function createStar(points: number): Array<any> {
 };
 
 
-go.Shape.defineFigureGenerator("Pentagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Pentagon", (shape, w, h) => {
 	var points = createPolygon(5);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -830,7 +826,7 @@ go.Shape.defineFigureGenerator("Pentagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Hexagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Hexagon", (shape, w, h) => {
 	var points = createPolygon(6);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -846,7 +842,7 @@ go.Shape.defineFigureGenerator("Hexagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Heptagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Heptagon", (shape, w, h) => {
 	var points = createPolygon(7);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -862,7 +858,7 @@ go.Shape.defineFigureGenerator("Heptagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Octagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Octagon", (shape, w, h) => {
 	var points = createPolygon(8);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -878,7 +874,7 @@ go.Shape.defineFigureGenerator("Octagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Nonagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Nonagon", (shape, w, h) => {
 	var points = createPolygon(9);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -894,7 +890,7 @@ go.Shape.defineFigureGenerator("Nonagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Decagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Decagon", (shape, w, h) => {
 	var points = createPolygon(10);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -910,7 +906,7 @@ go.Shape.defineFigureGenerator("Decagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Dodecagon", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Dodecagon", (shape, w, h) => {
 	var points = createPolygon(12);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(points[0].x * w, points[0].y * h, true);
@@ -926,7 +922,7 @@ go.Shape.defineFigureGenerator("Dodecagon", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("FivePointedStar", function (shape, w, h) {
+go.Shape.defineFigureGenerator("FivePointedStar", (shape, w, h) => {
 	var starPoints = createStar(5);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(starPoints[0].x * w, starPoints[0].y * h, true);
@@ -942,7 +938,7 @@ go.Shape.defineFigureGenerator("FivePointedStar", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("SixPointedStar", function (shape, w, h) {
+go.Shape.defineFigureGenerator("SixPointedStar", (shape, w, h) => {
 	var starPoints = createStar(6);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(starPoints[0].x * w, starPoints[0].y * h, true);
@@ -958,7 +954,7 @@ go.Shape.defineFigureGenerator("SixPointedStar", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("SevenPointedStar", function (shape, w, h) {
+go.Shape.defineFigureGenerator("SevenPointedStar", (shape, w, h) => {
 	var starPoints = createStar(7);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(starPoints[0].x * w, starPoints[0].y * h, true);
@@ -974,7 +970,7 @@ go.Shape.defineFigureGenerator("SevenPointedStar", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("EightPointedStar", function (shape, w, h) {
+go.Shape.defineFigureGenerator("EightPointedStar", (shape, w, h) => {
 	var starPoints = createStar(8);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(starPoints[0].x * w, starPoints[0].y * h, true);
@@ -990,7 +986,7 @@ go.Shape.defineFigureGenerator("EightPointedStar", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("NinePointedStar", function (shape, w, h) {
+go.Shape.defineFigureGenerator("NinePointedStar", (shape, w, h) => {
 	var starPoints = createStar(9);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(starPoints[0].x * w, starPoints[0].y * h, true);
@@ -1006,7 +1002,7 @@ go.Shape.defineFigureGenerator("NinePointedStar", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("TenPointedStar", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TenPointedStar", (shape, w, h) => {
 	var starPoints = createStar(10);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(starPoints[0].x * w, starPoints[0].y * h, true);
@@ -1022,7 +1018,7 @@ go.Shape.defineFigureGenerator("TenPointedStar", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("FivePointedBurst", function (shape, w, h) {
+go.Shape.defineFigureGenerator("FivePointedBurst", (shape, w, h) => {
 	var burstPoints = createBurst(5);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(burstPoints[0].x * w, burstPoints[0].y * h, true);
@@ -1041,7 +1037,7 @@ go.Shape.defineFigureGenerator("FivePointedBurst", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("SixPointedBurst", function (shape, w, h) {
+go.Shape.defineFigureGenerator("SixPointedBurst", (shape, w, h) => {
 	var burstPoints = createBurst(6);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(burstPoints[0].x * w, burstPoints[0].y * h, true);
@@ -1060,7 +1056,7 @@ go.Shape.defineFigureGenerator("SixPointedBurst", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("SevenPointedBurst", function (shape, w, h) {
+go.Shape.defineFigureGenerator("SevenPointedBurst", (shape, w, h) => {
 	var burstPoints = createBurst(7);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(burstPoints[0].x * w, burstPoints[0].y * h, true);
@@ -1079,7 +1075,7 @@ go.Shape.defineFigureGenerator("SevenPointedBurst", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("EightPointedBurst", function (shape, w, h) {
+go.Shape.defineFigureGenerator("EightPointedBurst", (shape, w, h) => {
 	var burstPoints = createBurst(8);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(burstPoints[0].x * w, burstPoints[0].y * h, true);
@@ -1098,7 +1094,7 @@ go.Shape.defineFigureGenerator("EightPointedBurst", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("NinePointedBurst", function (shape, w, h) {
+go.Shape.defineFigureGenerator("NinePointedBurst", (shape, w, h) => {
 	var burstPoints = createBurst(9);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(burstPoints[0].x * w, burstPoints[0].y * h, true);
@@ -1117,7 +1113,7 @@ go.Shape.defineFigureGenerator("NinePointedBurst", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("TenPointedBurst", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TenPointedBurst", (shape, w, h) => {
 	var burstPoints = createBurst(10);
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(burstPoints[0].x * w, burstPoints[0].y * h, true);
@@ -1138,9 +1134,9 @@ go.Shape.defineFigureGenerator("TenPointedBurst", function (shape, w, h) {
 
 
 
-this.setFigureParameter("FramedRectangle", 0, new FigureParameter("ThicknessX", 8, 0, Infinity));
-this.setFigureParameter("FramedRectangle", 1, new FigureParameter("ThicknessY", 8, 0, Infinity));
-go.Shape.defineFigureGenerator("FramedRectangle", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("FramedRectangle", 0, new FigureParameter("ThicknessX", 8));
+FigureParameter.prototype.setFigureParameter("FramedRectangle", 1, new FigureParameter("ThicknessY", 8));
+go.Shape.defineFigureGenerator("FramedRectangle", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
 	if (isNaN(param1)) param1 = 8; // default values PARAMETER 1 is for WIDTH
@@ -1164,8 +1160,8 @@ go.Shape.defineFigureGenerator("FramedRectangle", function (shape, w, h) {
 	return geo;
 });
 
-this.setFigureParameter("Ring", 0, new FigureParameter("Thickness", 8, 0, Infinity));
-go.Shape.defineFigureGenerator("Ring", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Ring", 0, new FigureParameter("Thickness", 8));
+go.Shape.defineFigureGenerator("Ring", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 8;
 
@@ -1186,7 +1182,7 @@ go.Shape.defineFigureGenerator("Ring", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cloud", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cloud", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(.08034461 * w, .1944299 * h, true)
 			.add(new go.PathSegment(go.PathSegment.Bezier,
@@ -1220,7 +1216,7 @@ go.Shape.defineFigureGenerator("Cloud", function (shape, w, h) {
 		.setSpots(.1, .1, .9, .9);
 });
 
-go.Shape.defineFigureGenerator("StopSign", function (shape, w, h) {
+go.Shape.defineFigureGenerator("StopSign", (shape, w, h) => {
 	var part = 1 / (Math.SQRT2 + 2);
 	return new go.Geometry()
 		.add(new go.PathFigure(part * w, 0, true)
@@ -1234,9 +1230,9 @@ go.Shape.defineFigureGenerator("StopSign", function (shape, w, h) {
 		.setSpots(part / 2, part / 2, 1 - part / 2, 1 - part / 2);
 });
 
-this.setFigureParameter("Pie", 0, new FigureParameter("Start", 0, -360, 360));
-this.setFigureParameter("Pie", 1, new FigureParameter("Sweep", 315, -360, 360));
-go.Shape.defineFigureGenerator("Pie", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Pie", 0, new FigureParameter("Start", 0, -360, 360));
+FigureParameter.prototype.setFigureParameter("Pie", 1, new FigureParameter("Sweep", 315, -360, 360));
+go.Shape.defineFigureGenerator("Pie", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
 	if (isNaN(param1)) param1 = 0; // default values PARAMETER 1 is for Start Angle
@@ -1256,7 +1252,7 @@ go.Shape.defineFigureGenerator("Pie", function (shape, w, h) {
 				.close()));
 });
 
-go.Shape.defineFigureGenerator("PiePiece", function (shape, w, h) {
+go.Shape.defineFigureGenerator("PiePiece", (shape, w, h) => {
 	var factor = KAPPA / Math.SQRT2 * .5;
 	var x1 = Math.SQRT2 / 2;
 	var y1 = 1 - Math.SQRT2 / 2;
@@ -1266,8 +1262,8 @@ go.Shape.defineFigureGenerator("PiePiece", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
 });
 
-this.setFigureParameter("ThickCross", 0, new FigureParameter("Thickness", 30, 0, Infinity));
-go.Shape.defineFigureGenerator("ThickCross", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("ThickCross", 0, new FigureParameter("Thickness", 30));
+go.Shape.defineFigureGenerator("ThickCross", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 30;
 
@@ -1293,8 +1289,8 @@ go.Shape.defineFigureGenerator("ThickCross", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, mx - t, my - t).close()));
 });
 
-this.setFigureParameter("ThinCross", 0, new FigureParameter("Thickness", 10, 0, Infinity));
-go.Shape.defineFigureGenerator("ThinCross", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("ThinCross", 0, new FigureParameter("Thickness", 10));
+go.Shape.defineFigureGenerator("ThinCross", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 10;
 
@@ -1321,8 +1317,8 @@ go.Shape.defineFigureGenerator("ThinCross", function (shape, w, h) {
 });
 
 
-this.setFigureParameter("ThickX", 0, new FigureParameter("Thickness", 30, 0, Infinity));
-go.Shape.defineFigureGenerator("ThickX", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("ThickX", 0, new FigureParameter("Thickness", 30));
+go.Shape.defineFigureGenerator("ThickX", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 30;
 	if (w === 0 || h === 0) {
@@ -1357,8 +1353,8 @@ go.Shape.defineFigureGenerator("ThickX", function (shape, w, h) {
 	}
 });
 
-this.setFigureParameter("ThinX", 0, new FigureParameter("Thickness", 10, 0, Infinity));
-go.Shape.defineFigureGenerator("ThinX", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("ThinX", 0, new FigureParameter("Thickness", 10));
+go.Shape.defineFigureGenerator("ThinX", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 10;
 	var geo = new go.Geometry();
@@ -1380,8 +1376,8 @@ go.Shape.defineFigureGenerator("ThinX", function (shape, w, h) {
 });
 
 // adjust the width of the vertical beam
-this.setFigureParameter("SquareIBeam", 0, new FigureParameter("BeamWidth", 0.2, 0.1, 0.9));
-go.Shape.defineFigureGenerator("SquareIBeam", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("SquareIBeam", 0, new FigureParameter("BeamWidth", 0.2, 0.1, 0.9));
+go.Shape.defineFigureGenerator("SquareIBeam", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Width of the ibeam in % of the total width
@@ -1405,8 +1401,8 @@ go.Shape.defineFigureGenerator("SquareIBeam", function (shape, w, h) {
 });
 
 // parameter allows it easy to adjust the roundness of the curves that cut inward
-this.setFigureParameter("RoundedIBeam", 0, new FigureParameter("SideCurved", .5, .05, .65));
-go.Shape.defineFigureGenerator("RoundedIBeam", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("RoundedIBeam", 0, new FigureParameter("SideCurved", .5, .05, .65));
+go.Shape.defineFigureGenerator("RoundedIBeam", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -1427,7 +1423,7 @@ go.Shape.defineFigureGenerator("RoundedIBeam", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("HalfEllipse", function (shape, w, h) {
+go.Shape.defineFigureGenerator("HalfEllipse", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Bezier, w, .5 * h, KAPPA * w, 0, w, (.5 - KAPPA / 2) * h))
@@ -1435,7 +1431,7 @@ go.Shape.defineFigureGenerator("HalfEllipse", function (shape, w, h) {
 		.setSpots(0, 0.156, 0.844, 0.844);
 });
 
-go.Shape.defineFigureGenerator("Crescent", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Crescent", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Bezier,
@@ -1445,7 +1441,7 @@ go.Shape.defineFigureGenerator("Crescent", function (shape, w, h) {
 		.setSpots(.311, 0.266, 0.744, 0.744);
 });
 
-go.Shape.defineFigureGenerator("Heart", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Heart", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(.5 * w, h, true)
 			.add(new go.PathSegment(go.PathSegment.Bezier, 0, .3 * h, .1 * w, .8 * h, 0, .5 * h))
@@ -1455,7 +1451,7 @@ go.Shape.defineFigureGenerator("Heart", function (shape, w, h) {
 		.setSpots(.14, .29, .86, .78);
 });
 
-go.Shape.defineFigureGenerator("Spade", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Spade", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(.5 * w, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, .51 * w, .01 * h))
@@ -1469,7 +1465,7 @@ go.Shape.defineFigureGenerator("Spade", function (shape, w, h) {
 		.setSpots(.14, .26, .86, .78);
 });
 
-go.Shape.defineFigureGenerator("Club", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Club", (shape, w, h) => {
 	var geo = new go.Geometry()
 	var fig = new go.PathFigure(.4 * w, .6 * h, true);
 	geo.add(fig);
@@ -1530,7 +1526,7 @@ go.Shape.defineFigureGenerator("Club", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("YinYang", function (shape, w, h) {
+go.Shape.defineFigureGenerator("YinYang", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 0.5, 0, true);
 	geo.add(fig);
@@ -1559,7 +1555,7 @@ go.Shape.defineFigureGenerator("YinYang", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Peace", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Peace", (shape, w, h) => {
 	var a = 1.0 - 0.1464466094067262;  // at 45 degrees
 	var w2 = 0.5 * w;
 	var h2 = 0.5 * h;
@@ -1573,7 +1569,7 @@ go.Shape.defineFigureGenerator("Peace", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, a * w, a * h)));
 });
 
-go.Shape.defineFigureGenerator("NotAllowed", function (shape, w, h) {
+go.Shape.defineFigureGenerator("NotAllowed", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .5;
 	var radius = .5;
@@ -1664,7 +1660,7 @@ go.Shape.defineFigureGenerator("NotAllowed", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Fragile", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Fragile", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, .25 * w, 0))
@@ -1689,8 +1685,8 @@ go.Shape.defineFigureGenerator("Fragile", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .25 * w, .5 * h, 0, .25 * h).close()));
 });
 
-this.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 20, 0, Infinity));
-go.Shape.defineFigureGenerator("HourGlass", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 20));
+go.Shape.defineFigureGenerator("HourGlass", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < 0) param1 = 30; // default value for param1
 	var line1 = ((w - param1) / 2) + param1; // 35 + 30 = 65
@@ -1704,7 +1700,7 @@ go.Shape.defineFigureGenerator("HourGlass", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0).close()));
 });
 
-go.Shape.defineFigureGenerator("Lightning", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Lightning", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0.65 * h)
 			.add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, 0))
@@ -1714,7 +1710,7 @@ go.Shape.defineFigureGenerator("Lightning", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, 0.65 * w, 0.50 * h).close()));
 });
 
-go.Shape.defineFigureGenerator("GenderMale", function (shape, w, h) {
+go.Shape.defineFigureGenerator("GenderMale", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .4;
 	var radius = .4;
@@ -1785,7 +1781,7 @@ go.Shape.defineFigureGenerator("GenderMale", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("GenderFemale", function (shape, w, h) {
+go.Shape.defineFigureGenerator("GenderFemale", (shape, w, h) => {
 	var geo = new go.Geometry();
 	// Outer Circle
 	var r = .375; // radius
@@ -1838,7 +1834,7 @@ go.Shape.defineFigureGenerator("GenderFemale", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("LogicImplies", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicImplies", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .2;  // Distance the arrow folds from the right
 	return new go.Geometry()
@@ -1850,7 +1846,7 @@ go.Shape.defineFigureGenerator("LogicImplies", function (shape, w, h) {
 		.setSpots(0, 0, 0.8, 0.5);
 });
 
-go.Shape.defineFigureGenerator("LogicIff", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicIff", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .2; // Distance the arrow folds from the right
 	return new go.Geometry()
@@ -1865,14 +1861,14 @@ go.Shape.defineFigureGenerator("LogicIff", function (shape, w, h) {
 		.setSpots(0.2, 0, 0.8, 0.5);
 });
 
-go.Shape.defineFigureGenerator("LogicNot", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicNot", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
 			.add(new go.PathSegment(go.PathSegment.Line, w, h)));
 });
 
-go.Shape.defineFigureGenerator("LogicAnd", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicAnd", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, h, false)
 			.add(new go.PathSegment(go.PathSegment.Line, .5 * w, 0))
@@ -1880,7 +1876,7 @@ go.Shape.defineFigureGenerator("LogicAnd", function (shape, w, h) {
 		.setSpots(0.25, 0.5, 0.75, 1);
 });
 
-go.Shape.defineFigureGenerator("LogicOr", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicOr", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, .5 * w, h))
@@ -1888,7 +1884,7 @@ go.Shape.defineFigureGenerator("LogicOr", function (shape, w, h) {
 		.setSpots(0.219, 0, 0.78, 0.409);
 });
 
-go.Shape.defineFigureGenerator("LogicXor", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicXor", (shape, w, h) => {
 	var geo = new go.Geometry()
 		.add(new go.PathFigure(.5 * w, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, .5 * w, h))
@@ -1899,7 +1895,7 @@ go.Shape.defineFigureGenerator("LogicXor", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("LogicTruth", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicTruth", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -1907,7 +1903,7 @@ go.Shape.defineFigureGenerator("LogicTruth", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, .5 * w, h)));
 });
 
-go.Shape.defineFigureGenerator("LogicFalsity", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicFalsity", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, h, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, h))
@@ -1915,7 +1911,7 @@ go.Shape.defineFigureGenerator("LogicFalsity", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, .5 * w, 0)));
 });
 
-go.Shape.defineFigureGenerator("LogicThereExists", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicThereExists", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -1926,7 +1922,7 @@ go.Shape.defineFigureGenerator("LogicThereExists", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, 0, h)));
 });
 
-go.Shape.defineFigureGenerator("LogicForAll", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicForAll", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, .5 * w, h))
@@ -1936,7 +1932,7 @@ go.Shape.defineFigureGenerator("LogicForAll", function (shape, w, h) {
 		.setSpots(0.25, 0, 0.75, 0.5);
 });
 
-go.Shape.defineFigureGenerator("LogicIsDefinedAs", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicIsDefinedAs", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, false)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -1947,7 +1943,7 @@ go.Shape.defineFigureGenerator("LogicIsDefinedAs", function (shape, w, h) {
 		.setSpots(0.01, 0.01, 0.99, 0.49);
 });
 
-go.Shape.defineFigureGenerator("LogicIntersect", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicIntersect", (shape, w, h) => {
 	var radius = 0.5;
 	return new go.Geometry()
 		.add(new go.PathFigure(0, h, false)
@@ -1957,7 +1953,7 @@ go.Shape.defineFigureGenerator("LogicIntersect", function (shape, w, h) {
 		.setSpots(0, 0.5, 1, 1);
 });
 
-go.Shape.defineFigureGenerator("LogicUnion", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LogicUnion", (shape, w, h) => {
 	var radius = 0.5;
 	return new go.Geometry()
 		.add(new go.PathFigure(w, 0, false)
@@ -1967,7 +1963,7 @@ go.Shape.defineFigureGenerator("LogicUnion", function (shape, w, h) {
 		.setSpots(0, 0, 1, 0.5);
 });
 
-go.Shape.defineFigureGenerator("Arrow", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Arrow", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
@@ -1996,8 +1992,8 @@ go.Shape.defineFigureGenerator("Arrow", function (shape, w, h) {
 	return geo;
 });
 
-this.setFigureParameter("Arrow2", 0, new FigureParameter("LongHeight", 30, 0, Infinity));
-go.Shape.defineFigureGenerator("Arrow2", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Arrow2", 0, new FigureParameter("LongHeight", 30));
+go.Shape.defineFigureGenerator("Arrow2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
@@ -2025,7 +2021,7 @@ go.Shape.defineFigureGenerator("Arrow2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Chevron", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Chevron", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -2038,7 +2034,7 @@ go.Shape.defineFigureGenerator("Chevron", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("DoubleArrow", function (shape, w, h) {
+go.Shape.defineFigureGenerator("DoubleArrow", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -2055,8 +2051,8 @@ go.Shape.defineFigureGenerator("DoubleArrow", function (shape, w, h) {
 // JC
 // added a new parameter to allow to adjust the connecter piece height
 // might need to do something about the parameter min and max and make it more accesible
-this.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .7, .5, 1));
-go.Shape.defineFigureGenerator("DoubleEndArrow", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .7, .5, 1));
+go.Shape.defineFigureGenerator("DoubleEndArrow", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .7; // default value for param1
@@ -2087,9 +2083,9 @@ go.Shape.defineFigureGenerator("DoubleEndArrow", function (shape, w, h) {
 // set it to an exact value that willl NOT scale
 // also allowing the user to edit the height of those two arrows
 // JC Allowing to modify adjustment too
-this.setFigureParameter("DoubleEndArrow2", 0, new FigureParameter("ConnecterHeight", 40, 0, Infinity));
-this.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowPointerHeight", 70, 0, Infinity));
-go.Shape.defineFigureGenerator("DoubleEndArrow2", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("DoubleEndArrow2", 0, new FigureParameter("ConnecterHeight", 40));
+FigureParameter.prototype.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowPointerHeight", 70));
+go.Shape.defineFigureGenerator("DoubleEndArrow2", (shape, w, h) => {
 	// This is absolute
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
@@ -2159,9 +2155,9 @@ go.Shape.defineFigureGenerator("DoubleEndArrow2", function (shape, w, h) {
 // JC
 // this parameter makes it possible for the user to set a width for a long edge of the IBeamArrow
 // allows the user to adjust the vertical width of the long section, i might have to draw a diagram
-this.setFigureParameter("IBeamArrow", 0, new FigureParameter("ArrowLengthWidth", .7, .51, .97));
+FigureParameter.prototype.setFigureParameter("IBeamArrow", 0, new FigureParameter("ArrowLengthWidth", .7, .51, .97));
 // this.setFigureParameter("IBeamArrow", 1, new FigureParameter("ArrowBackSection"))
-go.Shape.defineFigureGenerator("IBeamArrow", function (shape, w, h) {
+go.Shape.defineFigureGenerator("IBeamArrow", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .7; // default value is 0 for parameter
@@ -2189,9 +2185,9 @@ go.Shape.defineFigureGenerator("IBeamArrow", function (shape, w, h) {
 
 // JC
 // recreating the same thing above only using absolute values to figure out the size of the long side
-this.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ArrowLengthWidth", 40, 0, Infinity));
+FigureParameter.prototype.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ArrowLengthWidth", 40));
 // this.setFigureParameter("IBeamArrow2", 1, new FigureParameter("ArrowBackSection"))
-go.Shape.defineFigureGenerator("IBeamArrow2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("IBeamArrow2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = 40; // default value is 0 for parameter
@@ -2234,8 +2230,8 @@ go.Shape.defineFigureGenerator("IBeamArrow2", function (shape, w, h) {
 // JC
 // this.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", 0.25, 0.1, 0.65));
 // back point that cuts into the pointer
-this.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", .2, 0, .2));
-go.Shape.defineFigureGenerator("Pointer", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", .2, 0, .2));
+go.Shape.defineFigureGenerator("Pointer", (shape, w, h) => {
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .1; // BackPoint Default Value
 	// var param1 shape ? shape.parameter1 : NaN;
@@ -2256,7 +2252,7 @@ go.Shape.defineFigureGenerator("Pointer", function (shape, w, h) {
 
 // JC - FigureParameter the steepness of the rounded edge
 // this.setFigureParameter("RoundedPointer", 0 new FigureParameter("RoundedEdged", 0, 0, 0));// ???
-go.Shape.defineFigureGenerator("RoundedPointer", function (shape, w, h) {
+go.Shape.defineFigureGenerator("RoundedPointer", (shape, w, h) => {
 	// var param1 = shape ? shape.parameter1 : NaN;
 	// if (isNaN(param1)) param1 = 5; // default value, this represents the roundness of the back arrow and how "steep" it is
 	var geo = new go.Geometry();
@@ -2275,8 +2271,8 @@ go.Shape.defineFigureGenerator("RoundedPointer", function (shape, w, h) {
 
 // JC Adding soem parameters to this
 // add param to make long part adjustable
-this.setFigureParameter("SplitEndArrow", 0, new FigureParameter("LengthThickness", 0.7, 0.52, .9));
-go.Shape.defineFigureGenerator("SplitEndArrow", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("SplitEndArrow", 0, new FigureParameter("LengthThickness", 0.7, 0.52, .9));
+go.Shape.defineFigureGenerator("SplitEndArrow", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, .5 * h, true);
 	geo.add(fig);
@@ -2299,8 +2295,8 @@ go.Shape.defineFigureGenerator("SplitEndArrow", function (shape, w, h) {
 
 // JC
 // the same thing as splitendarrow except with the ability to edit the line was absolute value
-this.setFigureParameter("SplitEndArrow2", 0, new FigureParameter("LengthThickness", 50, 0, Infinity));
-go.Shape.defineFigureGenerator("SplitEndArrow2", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("SplitEndArrow2", 0, new FigureParameter("LengthThickness", 50, 0, Infinity));
+go.Shape.defineFigureGenerator("SplitEndArrow2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, .5 * h, true);
 	geo.add(fig);
@@ -2337,8 +2333,8 @@ go.Shape.defineFigureGenerator("SplitEndArrow2", function (shape, w, h) {
 // Adding perameter to allow user to edit the pointyness of this arrow
 // parameter would allow you to edit the pointness of the arrow if nesscary
 // this is kinda tedious not sure if any user would be interested in it
-this.setFigureParameter("SquareArrow", 0, new FigureParameter("ArrowPoint", .7, .2, .9));
-go.Shape.defineFigureGenerator("SquareArrow", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("SquareArrow", 0, new FigureParameter("ArrowPoint", .7, .2, .9));
+go.Shape.defineFigureGenerator("SquareArrow", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, .5 * h, true);
 	geo.add(fig);
@@ -2354,7 +2350,7 @@ go.Shape.defineFigureGenerator("SquareArrow", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cone1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cone1", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .5;
 	var cpyOffset = KAPPA * .1;
@@ -2372,7 +2368,7 @@ go.Shape.defineFigureGenerator("Cone1", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cone2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cone2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .9 * h, true);
 	geo.add(fig);
@@ -2390,7 +2386,7 @@ go.Shape.defineFigureGenerator("Cone2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cube1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cube1", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, h, true);
 	geo.add(fig);
@@ -2411,7 +2407,7 @@ go.Shape.defineFigureGenerator("Cube1", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cube2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cube2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .3 * h, true);
 	geo.add(fig);
@@ -2432,7 +2428,7 @@ go.Shape.defineFigureGenerator("Cube2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cylinder1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cylinder1", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .5;
 	var cpyOffset = KAPPA * .1;
@@ -2462,7 +2458,7 @@ go.Shape.defineFigureGenerator("Cylinder1", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cylinder2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cylinder2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .5;
 	var cpyOffset = KAPPA * .1
@@ -2492,7 +2488,7 @@ go.Shape.defineFigureGenerator("Cylinder2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cylinder3", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cylinder3", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .1;
 	var cpyOffset = KAPPA * .5;
@@ -2522,7 +2518,7 @@ go.Shape.defineFigureGenerator("Cylinder3", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Cylinder4", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Cylinder4", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .1;
 	var cpyOffset = KAPPA * .5;
@@ -2552,7 +2548,7 @@ go.Shape.defineFigureGenerator("Cylinder4", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Prism1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Prism1", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.25 * w, .25 * h, true);
 	geo.add(fig);
@@ -2570,7 +2566,7 @@ go.Shape.defineFigureGenerator("Prism1", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Prism2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Prism2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .25 * h, true);
 	geo.add(fig);
@@ -2591,7 +2587,7 @@ go.Shape.defineFigureGenerator("Prism2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Pyramid1", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Pyramid1", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, 0, true);
 	geo.add(fig);
@@ -2608,7 +2604,7 @@ go.Shape.defineFigureGenerator("Pyramid1", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Pyramid2", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Pyramid2", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, 0, true);
 	geo.add(fig);
@@ -2628,7 +2624,7 @@ go.Shape.defineFigureGenerator("Pyramid2", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Actor", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Actor", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radiusw = .2;
 	var radiush = .1;
@@ -2719,8 +2715,8 @@ go.Shape.defineFigureGenerator("Actor", function (shape, w, h) {
 // JC
 // adding parameter to make top corner size adjustable
 // these are going to have to be adjusted
-this.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9)); // the cutout in the corner
-go.Shape.defineFigureGenerator("Card", function (shape, w, h) {
+FigureParameter.prototype.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9)); // the cutout in the corner
+go.Shape.defineFigureGenerator("Card", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .2; // Distance between left and inner rect
@@ -2737,7 +2733,7 @@ go.Shape.defineFigureGenerator("Card", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Collate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Collate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, .5 * h, true);
 	geo.add(fig);
@@ -2755,7 +2751,7 @@ go.Shape.defineFigureGenerator("Collate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("CreateRequest", function (shape, w, h) {
+go.Shape.defineFigureGenerator("CreateRequest", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .1;
@@ -2777,7 +2773,7 @@ go.Shape.defineFigureGenerator("CreateRequest", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Database", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Database", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .5;
 	var cpyOffset = KAPPA * .1;
@@ -2817,7 +2813,7 @@ go.Shape.defineFigureGenerator("Database", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("DataStorage", function (shape, w, h) {
+go.Shape.defineFigureGenerator("DataStorage", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -2831,7 +2827,7 @@ go.Shape.defineFigureGenerator("DataStorage", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("DiskStorage", function (shape, w, h) {
+go.Shape.defineFigureGenerator("DiskStorage", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .5;
 	var cpyOffset = KAPPA * .1;
@@ -2866,7 +2862,7 @@ go.Shape.defineFigureGenerator("DiskStorage", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Display", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Display", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.25 * w, 0, true);
 	geo.add(fig);
@@ -2880,7 +2876,7 @@ go.Shape.defineFigureGenerator("Display", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("DividedEvent", function (shape, w, h) {
+go.Shape.defineFigureGenerator("DividedEvent", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .2;
@@ -2909,7 +2905,7 @@ go.Shape.defineFigureGenerator("DividedEvent", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("DividedProcess", function (shape, w, h) {
+go.Shape.defineFigureGenerator("DividedProcess", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < .1) param1 = .1; // Minimum
@@ -2927,7 +2923,7 @@ go.Shape.defineFigureGenerator("DividedProcess", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Document", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Document", (shape, w, h) => {
 	var geo = new go.Geometry();
 	h = h / .8;
 	var fig = new go.PathFigure(0, .7 * h, true);
@@ -2942,7 +2938,7 @@ go.Shape.defineFigureGenerator("Document", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("ExternalOrganization", function (shape, w, h) {
+go.Shape.defineFigureGenerator("ExternalOrganization", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1) || param1 < .2) param1 = .2; // Minimum
@@ -2971,7 +2967,7 @@ go.Shape.defineFigureGenerator("ExternalOrganization", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("ExternalProcess", function (shape, w, h) {
+go.Shape.defineFigureGenerator("ExternalProcess", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, 0, true);
 	geo.add(fig);
@@ -3000,7 +2996,7 @@ go.Shape.defineFigureGenerator("ExternalProcess", function (shape, w, h) {
 
 // JC - work on this parameter
 // this.setFigureParameter("File", 0, new FigureParameter(""))     // ???
-go.Shape.defineFigureGenerator("File", function (shape, w, h) {
+go.Shape.defineFigureGenerator("File", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true); // starting point
 	geo.add(fig);
@@ -3019,7 +3015,7 @@ go.Shape.defineFigureGenerator("File", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Interrupt", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Interrupt", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, .5 * h, true);
 	geo.add(fig);
@@ -3038,7 +3034,7 @@ go.Shape.defineFigureGenerator("Interrupt", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("InternalStorage", function (shape, w, h) {
+go.Shape.defineFigureGenerator("InternalStorage", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
@@ -3062,7 +3058,7 @@ go.Shape.defineFigureGenerator("InternalStorage", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Junction", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Junction", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var dist = (1 / Math.SQRT2);
 	var small = ((1 - 1 / Math.SQRT2) / 2);
@@ -3089,7 +3085,7 @@ go.Shape.defineFigureGenerator("Junction", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("LinedDocument", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LinedDocument", (shape, w, h) => {
 	var geo = new go.Geometry();
 	h = h / .8;
 	var fig = new go.PathFigure(0, .7 * h, true);
@@ -3107,7 +3103,7 @@ go.Shape.defineFigureGenerator("LinedDocument", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("LoopLimit", function (shape, w, h) {
+go.Shape.defineFigureGenerator("LoopLimit", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h, true);
 	geo.add(fig);
@@ -3122,7 +3118,7 @@ go.Shape.defineFigureGenerator("LoopLimit", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("MagneticTape", function (shape, w, h) {
+go.Shape.defineFigureGenerator("MagneticTape", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .5;
 	var radius = .5;
@@ -3145,7 +3141,7 @@ go.Shape.defineFigureGenerator("MagneticTape", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("ManualInput", function (shape, w, h) {
+go.Shape.defineFigureGenerator("ManualInput", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, 0, true);
 	geo.add(fig);
@@ -3158,7 +3154,7 @@ go.Shape.defineFigureGenerator("ManualInput", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("MessageFromUser", function (shape, w, h) {
+go.Shape.defineFigureGenerator("MessageFromUser", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .7; // How far from the right the point is
@@ -3174,7 +3170,7 @@ go.Shape.defineFigureGenerator("MessageFromUser", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("MicroformProcessing", function (shape, w, h) {
+go.Shape.defineFigureGenerator("MicroformProcessing", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .25; // How far from the top/bottom the points are
@@ -3191,7 +3187,7 @@ go.Shape.defineFigureGenerator("MicroformProcessing", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("MicroformRecording", function (shape, w, h) {
+go.Shape.defineFigureGenerator("MicroformRecording", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -3206,7 +3202,7 @@ go.Shape.defineFigureGenerator("MicroformRecording", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("MultiDocument", function (shape, w, h) {
+go.Shape.defineFigureGenerator("MultiDocument", (shape, w, h) => {
 	var geo = new go.Geometry();
 	h = h / .8;
 	var fig = new go.PathFigure(w, 0, true);
@@ -3237,7 +3233,7 @@ go.Shape.defineFigureGenerator("MultiDocument", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("MultiProcess", function (shape, w, h) {
+go.Shape.defineFigureGenerator("MultiProcess", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.1 * w, .1 * h, true);
 	geo.add(fig);
@@ -3265,7 +3261,7 @@ go.Shape.defineFigureGenerator("MultiProcess", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("OfflineStorage", function (shape, w, h) {
+go.Shape.defineFigureGenerator("OfflineStorage", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .1; // Distance between 2 top lines
@@ -3283,7 +3279,7 @@ go.Shape.defineFigureGenerator("OfflineStorage", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("OffPageConnector", function (shape, w, h) {
+go.Shape.defineFigureGenerator("OffPageConnector", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -3297,7 +3293,7 @@ go.Shape.defineFigureGenerator("OffPageConnector", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Or", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Or", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .5;
 	var radius = .5;
@@ -3322,7 +3318,7 @@ go.Shape.defineFigureGenerator("Or", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("PaperTape", function (shape, w, h) {
+go.Shape.defineFigureGenerator("PaperTape", (shape, w, h) => {
 	var geo = new go.Geometry();
 	h = h / .8;
 	var fig = new go.PathFigure(0, .7 * h, true);
@@ -3339,7 +3335,7 @@ go.Shape.defineFigureGenerator("PaperTape", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("PrimitiveFromCall", function (shape, w, h) {
+go.Shape.defineFigureGenerator("PrimitiveFromCall", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
@@ -3357,7 +3353,7 @@ go.Shape.defineFigureGenerator("PrimitiveFromCall", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("PrimitiveToCall", function (shape, w, h) {
+go.Shape.defineFigureGenerator("PrimitiveToCall", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	var param2 = shape ? shape.parameter2 : NaN;
@@ -3375,7 +3371,7 @@ go.Shape.defineFigureGenerator("PrimitiveToCall", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Procedure", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Procedure", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	// Distance of left  and right lines from edge
@@ -3396,7 +3392,7 @@ go.Shape.defineFigureGenerator("Procedure", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Process", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Process", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .1; // Distance of left  line from left edge
@@ -3414,7 +3410,7 @@ go.Shape.defineFigureGenerator("Process", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Sort", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Sort", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, 0, true);
 	geo.add(fig);
@@ -3430,7 +3426,7 @@ go.Shape.defineFigureGenerator("Sort", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Start", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Start", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = 0.25;
@@ -3450,7 +3446,7 @@ go.Shape.defineFigureGenerator("Start", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Terminator", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Terminator", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.25 * w, 0, true);
 	geo.add(fig);
@@ -3462,7 +3458,7 @@ go.Shape.defineFigureGenerator("Terminator", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("TransmittalTape", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TransmittalTape", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = shape ? shape.parameter1 : NaN;
 	if (isNaN(param1)) param1 = .1; // Bottom line's distance from the point on the triangle
@@ -3478,7 +3474,7 @@ go.Shape.defineFigureGenerator("TransmittalTape", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("AndGate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("AndGate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .5;
 	var fig = new go.PathFigure(0, 0, true);
@@ -3496,7 +3492,7 @@ go.Shape.defineFigureGenerator("AndGate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Buffer", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Buffer", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -3508,7 +3504,7 @@ go.Shape.defineFigureGenerator("Buffer", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Clock", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Clock", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .5;
 	var radius = .5;
@@ -3542,7 +3538,7 @@ go.Shape.defineFigureGenerator("Clock", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Ground", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Ground", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.5 * w, 0, false);
 	geo.add(fig);
@@ -3557,7 +3553,7 @@ go.Shape.defineFigureGenerator("Ground", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Inverter", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Inverter", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .1;
 	var radius = .1;
@@ -3584,7 +3580,7 @@ go.Shape.defineFigureGenerator("Inverter", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("NandGate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("NandGate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpxOffset = KAPPA * .5;
 	var cpyOffset = KAPPA * .4;
@@ -3619,7 +3615,7 @@ go.Shape.defineFigureGenerator("NandGate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("NorGate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("NorGate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * radius;
@@ -3655,7 +3651,7 @@ go.Shape.defineFigureGenerator("NorGate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("OrGate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("OrGate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * radius;
@@ -3674,7 +3670,7 @@ go.Shape.defineFigureGenerator("OrGate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("XnorGate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("XnorGate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * radius;
@@ -3712,7 +3708,7 @@ go.Shape.defineFigureGenerator("XnorGate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("XorGate", function (shape, w, h) {
+go.Shape.defineFigureGenerator("XorGate", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * radius;
@@ -3734,7 +3730,7 @@ go.Shape.defineFigureGenerator("XorGate", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Capacitor", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Capacitor", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -3746,7 +3742,7 @@ go.Shape.defineFigureGenerator("Capacitor", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Resistor", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Resistor", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .5 * h, false);
 	geo.add(fig);
@@ -3761,7 +3757,7 @@ go.Shape.defineFigureGenerator("Resistor", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Inductor", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Inductor", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .1;
 	var radius = .1;
@@ -3790,7 +3786,7 @@ go.Shape.defineFigureGenerator("Inductor", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("ACvoltageSource", function (shape, w, h) {
+go.Shape.defineFigureGenerator("ACvoltageSource", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .5;
 	var radius = .5;
@@ -3813,7 +3809,7 @@ go.Shape.defineFigureGenerator("ACvoltageSource", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("DCvoltageSource", function (shape, w, h) {
+go.Shape.defineFigureGenerator("DCvoltageSource", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .75 * h, false);
 	geo.add(fig);
@@ -3824,7 +3820,7 @@ go.Shape.defineFigureGenerator("DCvoltageSource", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Diode", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Diode", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, 0, false);
 	geo.add(fig);
@@ -3839,7 +3835,7 @@ go.Shape.defineFigureGenerator("Diode", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Wifi", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Wifi", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var origw = w;
 	var origh = h;
@@ -3984,7 +3980,7 @@ go.Shape.defineFigureGenerator("Wifi", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Email", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Email", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4004,7 +4000,7 @@ go.Shape.defineFigureGenerator("Email", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Ethernet", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Ethernet", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.35 * w, 0, true);
 	geo.add(fig);
@@ -4039,7 +4035,7 @@ go.Shape.defineFigureGenerator("Ethernet", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Power", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Power", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var cpOffset = KAPPA * .4;
 	var radius = .4;
@@ -4109,7 +4105,7 @@ go.Shape.defineFigureGenerator("Power", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Fallout", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Fallout", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h / 2, true);
 	geo.add(fig);
@@ -4131,7 +4127,7 @@ go.Shape.defineFigureGenerator("Fallout", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("IrritationHazard", function (shape, w, h) {
+go.Shape.defineFigureGenerator("IrritationHazard", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.2 * w, 0, true);
 	geo.add(fig);
@@ -4152,7 +4148,7 @@ go.Shape.defineFigureGenerator("IrritationHazard", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("ElectricalHazard", function (shape, w, h) {
+go.Shape.defineFigureGenerator("ElectricalHazard", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.37 * w, 0, true);
 	geo.add(fig);
@@ -4171,7 +4167,7 @@ go.Shape.defineFigureGenerator("ElectricalHazard", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("FireHazard", function (shape, w, h) {
+go.Shape.defineFigureGenerator("FireHazard", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.1 * w, h, true);
 	geo.add(fig);
@@ -4193,7 +4189,7 @@ go.Shape.defineFigureGenerator("FireHazard", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnActivityLoop", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnActivityLoop", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var r = .5;
 	var cx = 0; // offset from Center x
@@ -4223,7 +4219,7 @@ go.Shape.defineFigureGenerator("BpmnActivityLoop", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnActivityParallel", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnActivityParallel", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -4236,7 +4232,7 @@ go.Shape.defineFigureGenerator("BpmnActivityParallel", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnActivitySequential", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnActivitySequential", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -4249,7 +4245,7 @@ go.Shape.defineFigureGenerator("BpmnActivitySequential", function (shape, w, h) 
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnActivityAdHoc", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnActivityAdHoc", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -4265,7 +4261,7 @@ go.Shape.defineFigureGenerator("BpmnActivityAdHoc", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnActivityCompensation", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnActivityCompensation", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .5 * h, true);
 	geo.add(fig);
@@ -4279,7 +4275,7 @@ go.Shape.defineFigureGenerator("BpmnActivityCompensation", function (shape, w, h
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnTaskMessage", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnTaskMessage", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, .2 * h, true);
 	geo.add(fig);
@@ -4296,7 +4292,7 @@ go.Shape.defineFigureGenerator("BpmnTaskMessage", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnTaskScript", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnTaskScript", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.7 * w, h, true);
 	geo.add(fig);
@@ -4318,7 +4314,7 @@ go.Shape.defineFigureGenerator("BpmnTaskScript", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnTaskUser", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnTaskUser", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -4372,7 +4368,7 @@ go.Shape.defineFigureGenerator("BpmnTaskUser", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnEventConditional", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnEventConditional", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(.1 * w, 0, true);
 	geo.add(fig);
@@ -4394,7 +4390,7 @@ go.Shape.defineFigureGenerator("BpmnEventConditional", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnEventError", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnEventError", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h, true);
 	geo.add(fig);
@@ -4407,7 +4403,7 @@ go.Shape.defineFigureGenerator("BpmnEventError", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnEventEscalation", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnEventEscalation", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -4422,7 +4418,7 @@ go.Shape.defineFigureGenerator("BpmnEventEscalation", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Caution", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Caution", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.05 * w, h, true);
 	geo.add(fig);
@@ -4443,7 +4439,7 @@ go.Shape.defineFigureGenerator("Caution", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Recycle", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Recycle", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.45 * w, 0.95 * h, false);
 	geo.add(fig);
@@ -4496,7 +4492,7 @@ go.Shape.defineFigureGenerator("Recycle", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("BpmnEventTimer", function (shape, w, h) {
+go.Shape.defineFigureGenerator("BpmnEventTimer", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * .5;
@@ -4529,7 +4525,7 @@ go.Shape.defineFigureGenerator("BpmnEventTimer", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Package", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Package", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.15 * h, true);
 	geo.add(fig);
@@ -4549,7 +4545,7 @@ go.Shape.defineFigureGenerator("Package", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Class", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Class", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4570,7 +4566,7 @@ go.Shape.defineFigureGenerator("Class", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Component", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Component", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, h, true);
 	geo.add(fig);
@@ -4597,7 +4593,7 @@ go.Shape.defineFigureGenerator("Component", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Boat Shipment", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Boat Shipment", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.15 * w, 0.6 * h, true);
 	geo.add(fig);
@@ -4617,7 +4613,7 @@ go.Shape.defineFigureGenerator("Boat Shipment", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Customer/Supplier", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Customer/Supplier", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, h, true);
 	geo.add(fig);
@@ -4633,7 +4629,7 @@ go.Shape.defineFigureGenerator("Customer/Supplier", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Workcell", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Workcell", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h, true);
 	geo.add(fig);
@@ -4649,7 +4645,7 @@ go.Shape.defineFigureGenerator("Workcell", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Supermarket", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Supermarket", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -4666,7 +4662,7 @@ go.Shape.defineFigureGenerator("Supermarket", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("TruckShipment", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TruckShipment", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4716,7 +4712,7 @@ go.Shape.defineFigureGenerator("TruckShipment", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("KanbanPost", function (shape, w, h) {
+go.Shape.defineFigureGenerator("KanbanPost", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.2 * w, 0, false);
 	geo.add(fig);
@@ -4732,7 +4728,7 @@ go.Shape.defineFigureGenerator("KanbanPost", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Forklift", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Forklift", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4787,7 +4783,7 @@ go.Shape.defineFigureGenerator("Forklift", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("RailShipment", function (shape, w, h) {
+go.Shape.defineFigureGenerator("RailShipment", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.1 * w, 0.4 * h, true);
 	geo.add(fig);
@@ -4871,7 +4867,7 @@ go.Shape.defineFigureGenerator("RailShipment", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Warehouse", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Warehouse", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4907,7 +4903,7 @@ go.Shape.defineFigureGenerator("Warehouse", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("ControlCenter", function (shape, w, h) {
+go.Shape.defineFigureGenerator("ControlCenter", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h, true);
 	geo.add(fig);
@@ -4925,7 +4921,7 @@ go.Shape.defineFigureGenerator("ControlCenter", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Bluetooth", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Bluetooth", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.75 * h, false);
 	geo.add(fig);
@@ -4939,7 +4935,7 @@ go.Shape.defineFigureGenerator("Bluetooth", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Bookmark", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Bookmark", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4956,7 +4952,7 @@ go.Shape.defineFigureGenerator("Bookmark", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Bookmark", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Bookmark", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true);
 	geo.add(fig);
@@ -4973,7 +4969,7 @@ go.Shape.defineFigureGenerator("Bookmark", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Globe", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Globe", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.5 * w, 0, false);
 	geo.add(fig);
@@ -4995,7 +4991,7 @@ go.Shape.defineFigureGenerator("Globe", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Wave", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Wave", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.25 * h, false);
 	geo.add(fig);
@@ -5012,7 +5008,7 @@ go.Shape.defineFigureGenerator("Wave", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Operator", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Operator", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .3;
 	var cpOffset = KAPPA * .3;
@@ -5035,7 +5031,7 @@ go.Shape.defineFigureGenerator("Operator", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("TripleFanBlades", function (shape, w, h) {
+go.Shape.defineFigureGenerator("TripleFanBlades", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.5 * w, 0, true);
 	geo.add(fig);
@@ -5054,7 +5050,7 @@ go.Shape.defineFigureGenerator("TripleFanBlades", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("CentrifugalPump", function (shape, w, h) {
+go.Shape.defineFigureGenerator("CentrifugalPump", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w, 0, true);
 	geo.add(fig);
@@ -5068,7 +5064,7 @@ go.Shape.defineFigureGenerator("CentrifugalPump", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Battery", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Battery", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h, true);
 	geo.add(fig);
@@ -5088,7 +5084,7 @@ go.Shape.defineFigureGenerator("Battery", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Delete", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Delete", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * .5;
@@ -5111,7 +5107,7 @@ go.Shape.defineFigureGenerator("Delete", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Flag", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Flag", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.1 * h, true);
 	geo.add(fig);
@@ -5126,7 +5122,7 @@ go.Shape.defineFigureGenerator("Flag", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Help", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Help", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var radius = .5;
 	var cpOffset = KAPPA * .5;
@@ -5164,7 +5160,7 @@ go.Shape.defineFigureGenerator("Help", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Location", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Location", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0.5 * w, h, true)
 			.add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, 0.5 * h))
@@ -5174,7 +5170,7 @@ go.Shape.defineFigureGenerator("Location", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Arc, 270, 360, 0.5 * w, 0.3 * h, 0.1 * w, 0.1 * h).close()));
 });
 
-go.Shape.defineFigureGenerator("Lock", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Lock", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.5 * h, true);
 	geo.add(fig);
@@ -5193,7 +5189,7 @@ go.Shape.defineFigureGenerator("Lock", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Unlocked", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Unlocked", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.5 * h, true);
 	geo.add(fig);
@@ -5211,7 +5207,7 @@ go.Shape.defineFigureGenerator("Unlocked", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Gear", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Gear", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0.9375 * w, 0.56246875 * h, true)
 			.add(new go.PathSegment(go.PathSegment.Line, 0.9375 * w, 0.4375 * h))
@@ -5251,7 +5247,7 @@ go.Shape.defineFigureGenerator("Gear", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Arc, 90, 360, 0.5 * w, 0.5 * h, 0.1 * w, 0.1 * h).close()));
 });
 
-go.Shape.defineFigureGenerator("Hand", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Hand", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.5 * h, false);
 	geo.add(fig);
@@ -5278,7 +5274,7 @@ go.Shape.defineFigureGenerator("Hand", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Map", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Map", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0.2 * h, true);
 	geo.add(fig);
@@ -5301,7 +5297,7 @@ go.Shape.defineFigureGenerator("Map", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Eject", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Eject", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h, true);
 	geo.add(fig);
@@ -5317,7 +5313,7 @@ go.Shape.defineFigureGenerator("Eject", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Pencil", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Pencil", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, 0.2 * w, 0.1 * h))
@@ -5328,7 +5324,7 @@ go.Shape.defineFigureGenerator("Pencil", function (shape, w, h) {
 
 // JC
 // Building that kinda looks like a bank
-go.Shape.defineFigureGenerator("Building", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Building", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 1, h * 1, false);
 	geo.add(fig);
@@ -5374,7 +5370,7 @@ go.Shape.defineFigureGenerator("Building", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Staircase", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Staircase", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h * 1, true);
 	geo.add(fig);
@@ -5402,7 +5398,7 @@ go.Shape.defineFigureGenerator("Staircase", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("5Bars", function (shape, w, h) {
+go.Shape.defineFigureGenerator("5Bars", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, h * 1, true); // bottom left
 	geo.add(fig);
@@ -5439,7 +5435,7 @@ go.Shape.defineFigureGenerator("5Bars", function (shape, w, h) {
 });
 
 // desktop
-go.Shape.defineFigureGenerator("PC", function (shape, w, h) {
+go.Shape.defineFigureGenerator("PC", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, true); // top right
 	geo.add(fig);
@@ -5477,7 +5473,7 @@ go.Shape.defineFigureGenerator("PC", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Plane", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Plane", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0.55 * w, h, true);
 	geo.add(fig);
@@ -5498,7 +5494,7 @@ go.Shape.defineFigureGenerator("Plane", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Key", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Key", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 1, h * .5, false);
 	geo.add(fig);
@@ -5545,7 +5541,7 @@ go.Shape.defineFigureGenerator("Key", function (shape, w, h) {
 });
 
 // movie like logo
-go.Shape.defineFigureGenerator("FilmTape", function (shape, w, h) {
+go.Shape.defineFigureGenerator("FilmTape", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(0, 0, false);
 	geo.add(fig);
@@ -5614,7 +5610,7 @@ go.Shape.defineFigureGenerator("FilmTape", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("FloppyDisk", function (shape, w, h) {
+go.Shape.defineFigureGenerator("FloppyDisk", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var roundValue = 8;
 	var cpOffset = roundValue * KAPPA;
@@ -5651,7 +5647,7 @@ go.Shape.defineFigureGenerator("FloppyDisk", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("SpeechBubble", function (shape, w, h) {
+go.Shape.defineFigureGenerator("SpeechBubble", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = 25;
 	var cpOffset = param1 * KAPPA;
@@ -5679,7 +5675,7 @@ go.Shape.defineFigureGenerator("SpeechBubble", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Repeat", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Repeat", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 0, h * .45, true);
 	geo.add(fig);
@@ -5706,7 +5702,7 @@ go.Shape.defineFigureGenerator("Repeat", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Windows", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Windows", (shape, w, h) => {
 	return new go.Geometry()
 		.add(new go.PathFigure(0, 0, true)
 			.add(new go.PathSegment(go.PathSegment.Line, w, 0))
@@ -5726,7 +5722,7 @@ go.Shape.defineFigureGenerator("Windows", function (shape, w, h) {
 			.add(new go.PathSegment(go.PathSegment.Line, 0.5 * w, 0.6 * h).close()));
 });
 
-go.Shape.defineFigureGenerator("Terminal", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Terminal", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 0, h * .10, false);
 	geo.add(fig);
@@ -5752,7 +5748,7 @@ go.Shape.defineFigureGenerator("Terminal", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Beaker", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Beaker", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var param1 = 15;
 	var cpOffset = param1 * KAPPA;
@@ -5794,7 +5790,7 @@ var cpOffset = param1 * KAPPA;
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Download", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Download", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 0, h * 1, true);
 	geo.add(fig);
@@ -5833,7 +5829,7 @@ go.Shape.defineFigureGenerator("Download", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Bin", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Bin", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 0, h * 1, true);
 	geo.add(fig);
@@ -5862,7 +5858,7 @@ go.Shape.defineFigureGenerator("Bin", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Upload", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Upload", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * 0, h * 1, true);
 	geo.add(fig);
@@ -5901,7 +5897,7 @@ go.Shape.defineFigureGenerator("Upload", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("EmptyDrink", function (shape, w, h) {
+go.Shape.defineFigureGenerator("EmptyDrink", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * .15, h * 0, false);
 	geo.add(fig);
@@ -5912,7 +5908,7 @@ go.Shape.defineFigureGenerator("EmptyDrink", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("Drink", function (shape, w, h) {
+go.Shape.defineFigureGenerator("Drink", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * .15, h * 0, false);
 	geo.add(fig);
@@ -5931,7 +5927,7 @@ go.Shape.defineFigureGenerator("Drink", function (shape, w, h) {
 	return geo;
 });
 
-go.Shape.defineFigureGenerator("4Arrows", function (shape, w, h) {
+go.Shape.defineFigureGenerator("4Arrows", (shape, w, h) => {
 	var geo = new go.Geometry();
 	var fig = new go.PathFigure(w * .5, h * 0, true);
 	geo.add(fig);

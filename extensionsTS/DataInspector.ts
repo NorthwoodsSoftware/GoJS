@@ -85,11 +85,11 @@ export class Inspector {
 			if ((<any>options)["propertyModified"] !== undefined) this.propertyModified = (<any>options)["propertyModified"];
 		}
 		var self = this;
-		this.diagram.addModelChangedListener(function (e) {
+		this.diagram.addModelChangedListener( (e) => {
 			if (e.isTransactionFinished) self.inspectObject();
 		});
 		if (this.inspectsSelection) {
-			this.diagram.addDiagramListener("ChangedSelection", function (e) { self.inspectObject(); });
+			this.diagram.addDiagramListener("ChangedSelection", (e) => { self.inspectObject(); });
 		}
 	}
 

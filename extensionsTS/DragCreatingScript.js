@@ -16,6 +16,7 @@
     var DragCreatingTool_1 = require("./DragCreatingTool");
     var myDiagram = null;
     function init() {
+        var _this = this;
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  
         var $ = go.GraphObject.make; // for conciseness in defining templates
@@ -41,9 +42,9 @@
             archetypeNodeData: { color: "white" },
             insertPart: function (bounds) {
                 // use a different color each time
-                this.archetypeNodeData.color = go.Brush.randomColor();
+                _this.archetypeNodeData.color = go.Brush.randomColor();
                 // call the base method to do normal behavior and return its result
-                return DragCreatingTool_1.DragCreatingTool.prototype.insertPart.call(this, bounds);
+                return DragCreatingTool_1.DragCreatingTool.prototype.insertPart.call(_this, bounds);
             }
         }));
     }

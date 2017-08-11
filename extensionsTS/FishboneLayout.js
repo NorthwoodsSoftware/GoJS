@@ -91,7 +91,7 @@ var __extends = (this && this.__extends) || (function () {
         ;
         FishboneLayout.prototype.assignTreeVertexValues = function (v) {
             _super.prototype.assignTreeVertexValues.call(this, v);
-            v._direction = 0; // add this property to each TreeVertex
+            v["_direction"] = 0; // add this property to each TreeVertex
             if (v.parent !== null) {
                 // The parent node will be moved to where the last dummy will be;
                 // reduce the space to account for the future hole.
@@ -159,53 +159,53 @@ var __extends = (this && this.__extends) || (function () {
                 var g = p.parent;
                 if (g !== null) {
                     var shift = v.nodeSpacing;
-                    if (g._direction > 0) {
+                    if (g["_direction"] > 0) {
                         if (g.angle === 90) {
                             if (p.angle === 0) {
-                                v._direction = 1;
+                                v["_direction"] = 1;
                                 if (v.angle === 270)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v._direction = -1;
+                                v["_direction"] = -1;
                                 if (v.angle === 90)
                                     this.shiftAll(-2, shift, p, v);
                             }
                         }
                         else if (g.angle === 270) {
                             if (p.angle === 0) {
-                                v._direction = 1;
+                                v["_direction"] = 1;
                                 if (v.angle === 90)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v._direction = -1;
+                                v["_direction"] = -1;
                                 if (v.angle === 270)
                                     this.shiftAll(-2, shift, p, v);
                             }
                         }
                     }
-                    else if (g._direction < 0) {
+                    else if (g["_direction"] < 0) {
                         if (g.angle === 90) {
                             if (p.angle === 0) {
-                                v._direction = 1;
+                                v["_direction"] = 1;
                                 if (v.angle === 90)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v._direction = -1;
+                                v["_direction"] = -1;
                                 if (v.angle === 270)
                                     this.shiftAll(-2, shift, p, v);
                             }
                         }
                         else if (g.angle === 270) {
                             if (p.angle === 0) {
-                                v._direction = 1;
+                                v["_direction"] = 1;
                                 if (v.angle === 270)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v._direction = -1;
+                                v["_direction"] = -1;
                                 if (v.angle === 90)
                                     this.shiftAll(-2, shift, p, v);
                             }
@@ -214,7 +214,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 else {
                     var dir = ((p.angle === 0) ? 1 : -1);
-                    v._direction = dir;
+                    v["_direction"] = dir;
                     this.shiftAll(dir, 0, p, v);
                 }
             }

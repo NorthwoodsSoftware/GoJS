@@ -26,56 +26,56 @@ import * as go from "../release/go"
   var cxMenuButtons = [
     {
       text: 'Copy',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.copySelection(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canCopySelection(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.copySelection(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canCopySelection(); }
     }, {
       text: 'Cut',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.cutSelection(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canCutSelection(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.cutSelection(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canCutSelection(); }
     }, {
       text: 'Delete',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.deleteSelection(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canDeleteSelection(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.deleteSelection(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canDeleteSelection(); }
     }, {
       text: 'Paste',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canPasteSelection(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canPasteSelection(); }
     }, {
       text: 'Select All',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.selectAll(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canSelectAll(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.selectAll(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canSelectAll(); }
     }, {
       text: 'Undo',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.undo(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canUndo(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.undo(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canUndo(); }
     }, {
       text: 'Redo',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.redo(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canRedo(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.redo(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canRedo(); }
     }, {
       text: 'Scroll To Part',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.scrollToPart(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canScrollToPart(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.scrollToPart(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canScrollToPart(); }
     }, {
       text: 'Zoom To Fit',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.zoomToFit(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canZoomToFit(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.zoomToFit(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canZoomToFit(); }
     }, {
       text: 'Reset Zoom',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.resetZoom(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canResetZoom(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.resetZoom(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canResetZoom(); }
     }, {
       text: 'Group Selection',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.groupSelection(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canGroupSelection(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.groupSelection(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canGroupSelection(); }
     }, {
       text: 'Ungroup Selection',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.ungroupSelection(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canUngroupSelection(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.ungroupSelection(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canUngroupSelection(); }
     }, {
       text: 'Edit Text',
-      command: function(diagram: go.Diagram) { diagram.commandHandler.editTextBlock(); },
-      isVisible: function(diagram: go.Diagram) { return diagram.commandHandler.canEditTextBlock(); }
+      command: (diagram: go.Diagram) => { diagram.commandHandler.editTextBlock(); },
+      isVisible: (diagram: go.Diagram) => { return diagram.commandHandler.canEditTextBlock(); }
     }
   ];
 
@@ -90,11 +90,11 @@ import * as go from "../release/go"
   function showContextMenu(obj: go.GraphObject, diagram: go.Diagram, tool: go.Tool) {
     if (firstTime) {
       // We don't want the div acting as a context menu to have a (browser) context menu!
-      cmLight.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, false);
-      cmLight.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
-      contextMenuDIV.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, false);
+      cmLight.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; }, false);
+      cmLight.addEventListener('selectstart', (e) => { e.preventDefault(); return false; }, false);
+      contextMenuDIV.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; }, false);
       // Stop the context menu tool if you click on the dark part:
-      contextMenuDIV.addEventListener('click', function(e) { diagram.currentTool.stopTool(); return false; }, false);
+      contextMenuDIV.addEventListener('click', (e) => { diagram.currentTool.stopTool(); return false; }, false);
       firstTime = false;
     }
 
@@ -116,7 +116,7 @@ import * as go from "../release/go"
       var ahref = document.createElement('a');
       ahref.href = '#';
       (<any>ahref)["_command"] = button.command;
-      ahref.addEventListener('click', function(e) {
+      ahref.addEventListener('click', (e) => {
         (this as any)._command(diagram);
         tool.stopTool();
         e.preventDefault();

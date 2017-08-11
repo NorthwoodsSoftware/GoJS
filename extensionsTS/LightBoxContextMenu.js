@@ -91,6 +91,7 @@
         });
         var firstTime = true;
         function showContextMenu(obj, diagram, tool) {
+            var _this = this;
             if (firstTime) {
                 // We don't want the div acting as a context menu to have a (browser) context menu!
                 cmLight.addEventListener('contextmenu', function (e) { e.preventDefault(); return false; }, false);
@@ -118,7 +119,7 @@
                 ahref.href = '#';
                 ahref["_command"] = button.command;
                 ahref.addEventListener('click', function (e) {
-                    this._command(diagram);
+                    _this._command(diagram);
                     tool.stopTool();
                     e.preventDefault();
                     return false;

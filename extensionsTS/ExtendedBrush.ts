@@ -5,6 +5,7 @@
 
 import * as go from "../release/go";
 
+
 export class ExtendedBrush extends go.Brush {
 	private _UNITS: Array<string>;
 	constructor(type: string) {
@@ -105,7 +106,7 @@ export class ExtendedBrush extends go.Brush {
 		return px / (Math.abs(w * Math.sin(angle)) + Math.abs(l * Math.cos(angle)));
 	}
 
-	private _parseLinearGradientCSS = function (cssstring: string, w: number, h: number) {
+	private _parseLinearGradientCSS(cssstring: string, w: number, h: number) {
 		var css = (cssstring.toString()).match(/\((.*)\)/g);
 		if (css === null) throw new Error("Invalid CSS Linear Gradient: " + cssstring);
 		var cssString = css[0];
@@ -128,7 +129,7 @@ export class ExtendedBrush extends go.Brush {
 		}
 
 		//standardizes any angle measurement or direction to degrees
-		css[0] = this._linearGradientAngleToDegrees(css[0], w, h);
+		css[0] = this._linearGradientAngleToDegrees(css[0], w, h).toString();
 		var angle = parseFloat(css[0]) + 180; //adjusts for css having 180 as the default start point
 		//converts color/percent strings to array objects
 		var colors = this._createColorStopArray(css);
@@ -230,7 +231,7 @@ export class ExtendedBrush extends go.Brush {
 		return ([new go.Spot(0, 0, x, y), new go.Spot(0, 0, w - x, h - y)]);
 	};
 
-	private _applyLinearGradientSpots(angle: number, w: number, h: number, brush: go.Brush) {
+	private _applyLinearGradientSpots(angle: number, w: number, h: number, brush: go.Brush): go.Brush {
 		var spots = this._calculateLinearGradientSpots(angle, w, h);
 		brush.start = spots[0];
 		brush.end = spots[1];
@@ -426,7 +427,7 @@ export class ExtendedBrush extends go.Brush {
 		}
 	}
 
-	private _parseLengthToPX(str: string, dimension?: go.Rect) {
+	private _parseLengthToPX(str: string, dimension?: go.Rect): number {
 		var len = parseFloat(str.match(/\d+/g)[0]);
 		var unit = str.match(/\D+/g)[0];
 		return this._lengthToPX(len, unit)
@@ -620,7 +621,7 @@ export class ExtendedBrush extends go.Brush {
 		/*
 		This helper function will throw an error if the number passed into it is not real, and if it's not at least 1
 		*/
-		var checkForNumberError = function (number: number) {
+		var checkForNumberError = (number: number) => {
 			if (typeof number !== "number" || isNaN(number) || number === Infinity || number < 1) throw new Error('Please provide a number greater than or equal to one, not: ' + number);
 		}
 
@@ -791,15 +792,15 @@ export class ExtendedBrush extends go.Brush {
 		return (116 * inputLab - 16) / this._Lab_KAPPA;
 	};
 
-	private _LabtoXYZ = function (Lab: Array<number>): Array<string> {
+	private _LabtoXYZ(Lab: Array<number>): Array<string> {
 		var working_arr = [];
 		working_arr[1] = (Lab[0] + 16) / 116;
 		working_arr[0] = (Lab[1] / 500) + working_arr[1];
 		working_arr[2] = (-Lab[2] / 200) + working_arr[1];
 		var XYZ = [];
-		XYZ[1] = this._Lab_XYZ_HelperFunction(working_arr[1]);
-		XYZ[0] = this._Lab_XYZ_HelperFunction(working_arr[0]);
-		XYZ[2] = this._Lab_XYZ_HelperFunction(working_arr[2]);
+		XYZ[1] = this._Lab_XYZ_HelperFunction(working_arr[1]).toString();
+		XYZ[0] = this._Lab_XYZ_HelperFunction(working_arr[0]).toString();
+		XYZ[2] = this._Lab_XYZ_HelperFunction(working_arr[2]).toString();
 		return XYZ;
 	};
 

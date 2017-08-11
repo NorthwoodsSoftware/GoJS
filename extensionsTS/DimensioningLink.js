@@ -54,7 +54,7 @@ var __extends = (this && this.__extends) || (function () {
             return _this;
         }
         Object.defineProperty(DimensioningLink.prototype, "direction", {
-            /*
+            /**
             * The general angle at which the measurement should be made.
             * The default value is 0, meaning to go measure only along the X axis,
             * with the dimension line and label above the two nodes (at lower Y coordinates).
@@ -77,7 +77,7 @@ var __extends = (this && this.__extends) || (function () {
             configurable: true
         });
         Object.defineProperty(DimensioningLink.prototype, "extension", {
-            /*
+            /**
             * The distance at which the dimension line should be from the points being measured.
             * The default value is 30.
             * Larger values mean further away from the nodes.
@@ -92,7 +92,7 @@ var __extends = (this && this.__extends) || (function () {
             configurable: true
         });
         Object.defineProperty(DimensioningLink.prototype, "inset", {
-            /*
+            /**
             * The distance that the dimension line should be "indented" from the ends of the
             * extension lines that are orthogonal to the dimension line.
             * The default value is 10.
@@ -113,7 +113,7 @@ var __extends = (this && this.__extends) || (function () {
             configurable: true
         });
         Object.defineProperty(DimensioningLink.prototype, "gap", {
-            /*
+            /**
             * The distance that the extension lines should come short of the measured points.
             * The default value is 10.
             * @name DimensioningLink#gap

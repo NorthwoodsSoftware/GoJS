@@ -20,7 +20,7 @@ class LaneResizingTool extends go.ResizingTool {
 		var horiz = (lane.category === "Column Header");  // or "Row Header"
 		var margin = diagram.nodeTemplate.margin as go.Margin;
 		var bounds = new go.Rect();
-		diagram.findTopLevelGroups().each(function (g) {
+		diagram.findTopLevelGroups().each((g) => {
 			if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
 				var b = diagram.computePartsBounds(g.memberParts);
 				if (b.isEmpty()) return;  // nothing in there?  ignore it
@@ -63,7 +63,7 @@ class LaneResizingTool extends go.ResizingTool {
 
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
 	var $ = go.GraphObject.make;
 
@@ -75,13 +75,13 @@ export function init() {
 					$(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
 					$(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
 				),
-				"SelectionMoved": function (e: go.ChangedEvent) { e.diagram.layoutDiagram(true); },
+				"SelectionMoved": (e: go.ChangedEvent) => { e.diagram.layoutDiagram(true); },
 				"resizingTool": new LaneResizingTool(),
 				allowDrop: true,
 				// feedback that dropping in the background is not allowed
-				mouseDragOver: function (e: go.ChangedEvent) { e.diagram.currentCursor = "not-allowed"; },
+				mouseDragOver: (e: go.ChangedEvent) => { e.diagram.currentCursor = "not-allowed"; },
 				// when dropped in the background, not on a Node or a Group, cancel the drop
-				mouseDrop: function (e: go.ChangedEvent) { e.diagram.currentTool.doCancel(); },
+				mouseDrop: (e: go.ChangedEvent) => { e.diagram.currentTool.doCancel(); },
 				"animationManager.isInitial": false,
 				"undoManager.isEnabled": true
 			});
@@ -211,15 +211,15 @@ export function init() {
 				computesBoundsAfterDrag: true,
 				computesBoundsIncludingLocation: true,
 				handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-				mouseDragEnter: function (e: go.InputEvent, group: go.Group, prev: go.Group) { group.isHighlighted = true; },
-				mouseDragLeave: function (e: go.InputEvent, group: go.Group, next: go.Group) { group.isHighlighted = false; },
-				mouseDrop: function (e: go.DiagramEvent, group: go.Group) {
+				mouseDragEnter: (e: go.InputEvent, group: go.Group, prev: go.Group) => { group.isHighlighted = true; },
+				mouseDragLeave: (e: go.InputEvent, group: go.Group, next: go.Group) => { group.isHighlighted = false; },
+				mouseDrop: (e: go.DiagramEvent, group: go.Group) => {
 					// if any dropped part wasn't already a member of this group, we'll want to let the group's row
 					// column allow themselves to be resized automatically, in case the row height or column width
 					// had been set manually by the LaneResizingTool
-					var anynew = e.diagram.selection.any(function (p) { return p.containingGroup !== group; });
+					var anynew = e.diagram.selection.any((p) => { return p.containingGroup !== group; });
 					// Don't allow headers/siders to be dropped
-					var anyHeadersSiders = e.diagram.selection.any(function (p) {
+					var anyHeadersSiders = e.diagram.selection.any((p) => {
 						return p.category === "Column Header" || p.category === "Row Sider";
 					});
 					if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true)) {
@@ -242,11 +242,11 @@ export function init() {
 					stretch: go.GraphObject.Fill
 				},
 				new go.Binding("fill", "color"),
-				new go.Binding("stroke", "isHighlighted", function (h) { return h ? "red" : "transparent"; }).ofObject()),
+				new go.Binding("stroke", "isHighlighted", (h) => { return h ? "red" : "transparent"; }).ofObject()),
 			$(go.Placeholder,
 				{ // leave a margin around the member nodes of the group which is the same as the member node margin
-					alignment: (function (m: go.Margin) { return new go.Spot(0, 0, m.top, m.left); })(myDiagram.nodeTemplate.margin as go.Margin),
-					padding: (function (m: go.Margin) { return new go.Margin(0, m.right, m.bottom, 0); })(myDiagram.nodeTemplate.margin as go.Margin)
+					alignment: ((m: go.Margin) => { return new go.Spot(0, 0, m.top, m.left); })(myDiagram.nodeTemplate.margin as go.Margin),
+					padding: ((m: go.Margin) => { return new go.Margin(0, m.right, m.bottom, 0); })(myDiagram.nodeTemplate.margin as go.Margin)
 				})
 		);
 
