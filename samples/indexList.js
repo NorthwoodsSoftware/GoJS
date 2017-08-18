@@ -1369,6 +1369,14 @@ arr.push([
 ]);
 
 arr.push([
+  "vue",
+  "Minimal Vue.js",
+  "Minimal, using Vue.js.",
+  "vue",
+  ["frameworks"]
+]);
+
+arr.push([
   "spacingZoom",
   "Spacing Zoom",
   "When zooming, change the spacing of the Nodes, not the Diagram.scale.",

@@ -66,6 +66,236 @@ The magenta box shows the main diagram's viewport within the whole document.
 As you scroll or pan the main diagram, the viewport moves.
 As you zoom out, the viewport gets larger.
 </p>
+<p>
+To better understand the difference between document and viewport coordinates, look at this diagram:
+</p>
+<pre data-language="javascript" id="diffCoordSystems" style="display:none">
+  diagram.nodeTemplate = 
+  $(go.Node, "Auto",
+    { scale : 1.3},
+    new go.Binding("location", "loc", gridPointParse),
+    new go.Binding("scale", "scale"),
+    { locationSpot: go.Spot.Center, portId: "NODE" },
+    $(go.Shape, "RoundedRectangle",
+      { fill: "white", portId: "SHAPE" },
+      new go.Binding("fill", "color"),
+      new go.Binding("strokeWidth", "strokeW")),
+    $(go.TextBlock,
+      { margin: 4, portId: "TEXTBLOCK" },
+      new go.Binding("text", "text"),
+      new go.Binding("stroke", "textColor"))
+  );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape, { stroke: "darkgray", strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", stroke: "darkgray", fill: "darkgray" })
+  );
+
+  // colors
+  var docGridStroke = "rgba(70, 130, 180, 0.5)";
+  var viewGridStroke = "rgba(255, 128, 128, 1)";
+  var commentStroke = "brown";
+  
+  var cellSide = 20; // side length of one grid cell
+  var cellSize = new go.Size(cellSide * 5, cellSide * 5);
+  var pointSize = 7;
+
+  function gridSizeParse(size) {
+    if (!(size instanceof go.Size)) {
+      size = go.Size.parse(size);
+    }
+    size.setTo(size.width * cellSide, size.height * cellSide);
+    return size;
+  }
+  function gridPointParse(point) {
+    if (!(point instanceof go.Point)) {
+      point = go.Point.parse(point);
+    }
+    point.setTo(point.x * cellSide, point.y * cellSide);
+    return point;
+  }
+
+  function LabelledPoint(x, y, label) {
+    return {
+      x: x,
+      y: y,
+      label: label
+    }
+  }
+
+  diagram.nodeTemplateMap.add("Description", // Template for comment node
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", gridPointParse),
+      new go.Binding("scale", "scale"),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color"),
+        new go.Binding("strokeWidth", "strokeW")),
+      $(go.Panel, "Vertical",
+       $(go.TextBlock,
+         {font: "bold 11pt sans-serif", margin: new go.Margin(3, 0, 0, 0)},
+         new go.Binding("text", "header"),
+         new go.Binding("stroke", "textColor")),
+        $(go.TextBlock,
+          { margin: 3, portId: "TEXTBLOCK" },
+          new go.Binding("text", "text"),
+          new go.Binding("stroke", "textColor"))
+      )
+  ));
+
+  diagram.nodeTemplateMap.add("DeltaDescription", // Template for comment node
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", gridPointParse),
+      new go.Binding("scale", "scale"),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color"),
+        new go.Binding("strokeWidth", "strokeW")),
+      $(go.Panel, "Vertical",
+       $(go.TextBlock,
+         {font: "bold 11pt sans-serif", margin: new go.Margin(3, 0, 0, 0)},
+         new go.Binding("text", "header"),
+         new go.Binding("stroke", "textColor")),
+        $(go.TextBlock,
+          { margin: 3, portId: "TEXTBLOCK", alignment: go.Spot.Left },
+          new go.Binding("text", "text"),
+          new go.Binding("stroke", "textColor")),
+        $(go.TextBlock,
+          { margin: 3, portId: "TEXTBLOCK", font: "italic 10pt sans-serif" },
+          new go.Binding("text", "desc"),
+          new go.Binding("stroke", "textColor"))
+      )
+  ));
+
+  diagram.nodeTemplateMap.add("Point", // template for denoting points on the grid
+    $(go.Node, "Vertical",
+      new go.Binding("location", "point", function gridPointLocation(point) {
+          label = point.label;
+          // measure the longest line's width
+          textLines = label.split("\n");
+          width = 0
+          textLines.forEach(function(text) {
+            var textBlock = $(go.TextBlock, { text: text, font: "bold 10pt sans-serif"});
+            if (textBlock.naturalBounds.right > width) {
+              width = textBlock.naturalBounds.right;
+            } 
+          });
+
+          // text block with entire string to measure height
+          var textBlock = $(go.TextBlock, { text: label, font: "bold 10pt sans-serif" });
+          point = new go.Point(point.x, point.y);
+
+          // convert from grid coordinates to diagram coordinates
+          gridPointParse(point);
+
+          // offset
+          point.setTo(point.x - width / 2, point.y - pointSize / 2 - textBlock.naturalBounds.bottom); // align to center of circle to intersection instead of top left corner
+          return point;
+        }),
+
+      $(go.TextBlock,
+        {position: new go.Point(0, -pointSize - 7), textAlign: "center", font : "bold 10pt sans-serif"},
+        new go.Binding("text", "point", function getLabel(point) {
+          return point.label;
+        }), new go.Binding("margin", "margin")),
+      $(go.Shape,
+        "Circle",
+        {width: pointSize, height: pointSize, alignment: go.Spot.Center})
+  ));
+
+  diagram.linkTemplateMap.add("Comment", // Template for links from comments
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      new go.Binding("curviness"),
+      new go.Binding("fromSpot", "fromSpot"),
+      new go.Binding("toSpot", "toSpot"),
+      $(go.Shape, { stroke: commentStroke },
+        new go.Binding("stroke", "stroke")),
+      $(go.Shape, { toArrow: "OpenTriangle", stroke: commentStroke },
+        new go.Binding("stroke", "stroke"))
+  ));
+
+  diagram.groupTemplateMap.add("Grid",
+    $(go.Group, "Position",
+      $(go.Shape, "Rectangle", { fill: "transparent", strokeWidth: 2},
+        new go.Binding("fill", "fill"),
+        new go.Binding("stroke", "border"),
+        new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify)),
+      $(go.Panel, "Grid",
+        { name: "DOCGRID", desiredSize: cellSize, gridCellSize: new go.Size(cellSide, cellSide) },
+        new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify),
+        new go.Binding("gridCellSize", "cell", go.Size.parse).makeTwoWay(go.Size.stringify),
+        $(go.Shape, "LineV",
+          new go.Binding("stroke")),
+        $(go.Shape, "LineH",
+          new go.Binding("stroke"))
+      ),
+      new go.Binding("location", "loc", gridPointParse)
+  ));
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  var model = new go.GraphLinksModel();
+  model.linkFromPortIdProperty = "fPID";
+  model.linkToPortIdProperty = "tPID"
+
+  model.nodeDataArray = [
+    { key: "docGrid", isGroup: true, category: "Grid", stroke: docGridStroke, fill: "transparent", size: "24 20", border: docGridStroke },
+    { key: "viewGrid", isGroup: true, group: "docGrid", category: "Grid", fill: "rgb(248,248,248)",stroke: viewGridStroke, size: "13.7 9.95", loc: "5.8 5.2", cell: "25 25", border: viewGridStroke},
+    { key: "alpha", group: "docGrid", text: "Alpha", loc: "1.95 6.95"},
+    { key: "beta", group: "docGrid", text: "Beta", loc: "12.4 1.25"},
+    { key: "gamma", group: "docGrid", text: "Gamma", loc: "10 7.95"},
+    { key: "delta", group: "docGrid", text: "Delta", loc: "14.5 11.95"},
+    { key: "epsilon", group: "docGrid", text: "Epsilon", loc: "7.9 17.95"},
+    { key: "zeta", group: "docGrid", text: "Zeta", loc: "12.35 18.7"},
+    { key: "eta", group: "docGrid", text: "Eta", loc: "22.5 11.95"},
+    { key: "point1", group: "docGrid", category: "Point", point: LabelledPoint(5.8, 5.2, "(300, 250) Document Coordinates\n(0, 0) Viewport Coordinates")},
+    { key: "point2", group: "docGrid", category: "Point", point: LabelledPoint(19.3, 14.9, "(850, 650) Document Coordinates\n(550, 400) Viewport Coordinates"), margin: new go.Margin(0, 0, 4, 0)},
+    { key: "point1", group: "docGrid", category: "Point", point: LabelledPoint(0, 0, "(0, 0) Document Coordinates")},
+    { key: "point1", group: "docGrid", category: "Point", point: LabelledPoint(24, 20, "(1200, 1000) Document Coordinates")},
+    { key: "viewportDesc", category: "Description", header: "Viewport", text: "position: (300, 250)\nviewportBounds: (550, 400)\nscale: 1.25", textColor: "brown", loc: "0 17"},
+    { key: "documentDesc", category: "Description", header: "Document", text: "documentBounds: (1200, 1000)\npadding: (5, 5, 5, 5)", textColor: "rgb(50, 120, 160)", loc: "22 -3"},
+    { key: "deltaDesc", category: "DeltaDescription", header: "Delta", text: "location: (650, 550)", desc: "Location is in document\ncoordinates, and does not\nchange with viewport\nmovement or scaling.", textColor: "black", loc: "26 6"}
+  ];
+  model.linkDataArray = [
+    { to: "viewGrid", from: "viewportDesc", category: "Comment", stroke: "brown"},
+    { to: "docGrid", from: "documentDesc", category: "Comment", stroke: "rgb(50, 120, 160)"},
+    { to: "delta", from: "deltaDesc", category: "Comment", stroke: "black", curviness: -10},
+    { to: "gamma", from: "alpha"},
+    { to: "gamma", from: "beta"},
+    { to: "delta", from: "gamma"},
+    { to: "epsilon", from: "delta"},
+    { to: "zeta", from: "delta"},
+    { to: "eta", from: "delta"}
+  ];
+
+  diagram.model = model;
+
+
+  // Formatting
+  function headerStyle() {
+    return {
+      margin: 3, 
+      font: "bold 12pt sans-serif",
+      minSize: new go.Size(140, 16), 
+      maxSize: new go.Size(120, NaN),
+      textAlign: "center"
+    };
+  }
+  function textStyle() {
+    return {
+      margin: 3, 
+      font: "italic 10pt sans-serif",
+      minSize: new go.Size(16, 16), 
+      maxSize: new go.Size(160, NaN),
+      textAlign: "left"
+    };
+  }
+</pre>
+<script>goCode("diffCoordSystems", 750, 650)</script>
 
 <h2 id="CoordinateSystemsExample">Coordinate systems example</h2>
 <p>
