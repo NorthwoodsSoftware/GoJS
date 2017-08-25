@@ -267,17 +267,36 @@ TableLayout.prototype.doLayout = function(coll) {
   var parts = new go.List(go.Part);
   this.collectParts(coll).each(function(p) {
     if (!(p instanceof go.Link)) {
-      p.ensureBounds();
       parts.add(p);
     }
   });
 
   this.diagram.startTransaction("TableLayout");
   var union = new go.Size();
+  // this calls .beforeMeasure(parts, rowcol)
   var rowcol = this.measureTable(Infinity, Infinity, parts, union, 0, 0);
   this.arrangeTable(parts, union, rowcol);
+  this.afterArrange(parts, rowcol);
   this.diagram.commitTransaction("TableLayout");
 };
+
+/**
+* @ignore
+* @override
+* @this {TableLayout}
+* @param {List} parts
+* @param {Array.<Array.<Array>>} rowcol  [row][col][cell]
+*/
+TableLayout.prototype.beforeMeasure = function(parts, rowcol) { };
+
+/**
+* @ignore
+* @override
+* @this {TableLayout}
+* @param {List} parts
+* @param {Array.<Array.<Array>>} rowcol  [row][col][cell]
+*/
+TableLayout.prototype.afterArrange = function(parts, rowcol) { };
 
 /**
 * @ignore
@@ -298,6 +317,8 @@ TableLayout.prototype.measureTable = function(width, height, children, union, mi
     }
     rowcol[child.row][child.column].push(child); // push child into right cell
   }
+
+  this.beforeMeasure(children, rowcol);
 
   // Reset the row/col definitions because the ones from last measure are irrelevant
   var resetCols = [];  // keep track of which columns we've already reset

@@ -340,7 +340,7 @@ WALLPARTS_NODE_DATA_ARRAY = [
 					color: "#000000",
 					shape: "Rectangle",
 					height: 10,
-					width: 60,
+					length: 60,
 					notes: "",
 				},
 				{

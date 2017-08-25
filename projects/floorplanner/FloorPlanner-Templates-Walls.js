@@ -495,7 +495,7 @@ function makePaletteWallNode() {
         { selectionAdorned: false, locationSpot: go.Spot.Center },
         $(go.Shape,
         { name: "SHAPE", fill: "black", strokeWidth: 0, height: 10, figure: "Rectangle" },
-        new go.Binding("width", "width").makeTwoWay(),
+        new go.Binding("width", "length").makeTwoWay(),
         new go.Binding("height", "height").makeTwoWay(),
         new go.Binding("fill", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject())

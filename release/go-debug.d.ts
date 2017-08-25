@@ -1218,6 +1218,7 @@ declare namespace go {
         simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
         simulatedMouseUp(e: Event, other: Diagram, modelpt: Point, curdiag?: Diagram): boolean;  // undocumented
         computePixelRatio(): number;  // undocumented
+        commit(func: (d: Diagram) => void, tname?: string);  // undocumented
     }
 
     /**
@@ -3160,6 +3161,8 @@ declare namespace go {
 
         /**This is the default value for the Part.layoutConditions property: the Layout responsible for the Part is invalidated when the Part is added or removed from the Diagram or Group or when it changes visibility or size or when a Group's layout has been performed.*/
         static LayoutStandard: number;
+
+        key: string | number | undefined;  // undocumented read-only property
     }
 
     /**
@@ -5862,6 +5865,9 @@ declare namespace go {
         *   otherwise update only those bindings using this source property name.
         */
         updateTargetBindings(data: Object, srcpropname?: string): void;
+
+        commit(func: (m: Model) => void, tname?: string);  // undocumented
+        set(data: Object, propname: string, val: any): void;  // undocumented synonym for setDataProperty
     }
 
     /**
