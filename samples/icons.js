@@ -1,4 +1,4 @@
-// a selection of free icons from http://icomoon.io/
+// a selection of free icons from https://icomoon.io/
 // the following paths are all pure SVG path strings that GoJS parses as Geometry strings.
 
 var icons = {

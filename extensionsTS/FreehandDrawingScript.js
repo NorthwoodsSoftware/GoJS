@@ -18,7 +18,7 @@
     var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this  
+            window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
             $(go.Diagram, "myDiagramDiv");
@@ -36,8 +36,8 @@
             { stroke: "green", strokeWidth: 3, category: "FreehandDrawing" };
         // allow the tool to start on top of an existing Part
         tool.isBackgroundOnly = false;
-        // install as last mouse-move-tool
-        myDiagram.toolManager.mouseMoveTools.add(tool);
+        // install as first mouse-move-tool
+        myDiagram.toolManager.mouseMoveTools.insertAt(0, tool);
         load(); // load a simple diagram from the textarea
     }
     exports.init = init;
