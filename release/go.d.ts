@@ -1218,7 +1218,7 @@ declare namespace go {
         simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
         simulatedMouseUp(e: Event, other: Diagram, modelpt: Point, curdiag?: Diagram): boolean;  // undocumented
         computePixelRatio(): number;  // undocumented
-        commit(func: (d: Diagram) => void, tname?: string);  // undocumented
+        commit(func: (d: Diagram) => void, tname?: string): void;  // undocumented
     }
 
     /**
@@ -2135,7 +2135,7 @@ declare namespace go {
         * If the value is Spot.isDefault, this will return the fromPort's GraphObject.fromSpot
         * or the toPort's GraphObject.toSpot.
         */
-        protected computeSpot(from: boolean): Spot;
+        protected computeSpot(from: boolean, port?: GraphObject): Spot;
 
         /**
         * Returns the thickness of this link.
