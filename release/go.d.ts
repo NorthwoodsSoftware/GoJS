@@ -5866,7 +5866,7 @@ declare namespace go {
         */
         updateTargetBindings(data: Object, srcpropname?: string): void;
 
-        commit(func: (m: Model) => void, tname?: string);  // undocumented
+        commit(func: (m: Model) => void, tname?: string): void;  // undocumented
         set(data: Object, propname: string, val: any): void;  // undocumented synonym for setDataProperty
     }
 

@@ -85,10 +85,10 @@
 
       // recursively walk the visual tree, collecting objects as we go
       function traverseVisualTree(obj, parent) {
-        obj.key = visualNodeDataArray.length;
+        obj.vtkey = visualNodeDataArray.length;
         visualNodeDataArray.push(obj);
         if (parent) {
-          obj.parentKey = parent.key;
+          obj.parentKey = parent.vtkey;
         }
         if (obj instanceof go.Diagram) {
           var lit = obj.layers;
@@ -107,6 +107,7 @@
       myVisualTree.model =
         go.GraphObject.make(go.GraphLinksModel,
           {
+            nodeKeyProperty: "vtkey",
             nodeGroupKeyProperty: "parentKey",
             // always return true so that all node data is represented by groups
             nodeIsGroupProperty: function(data) { return true; },
