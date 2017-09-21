@@ -162,6 +162,13 @@ function _traverseDOM(node) {
       alert("Unknown API reference: " + node.innerHTML);
     }
   }
+  if (node.nodeType === 1 &&
+      (node.nodeName === "H2" || node.nodeName === "H3" || node.nodeName === "H4") &&
+      node.id) {
+    node.addEventListener("click", function(e) {
+      window.location.hash = "#" + node.id;
+    });
+  }
   for (var i = 0; i < node.childNodes.length; i++) {
     _traverseDOM(node.childNodes[i]);
   }
