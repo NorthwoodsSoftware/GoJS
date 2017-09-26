@@ -67,7 +67,7 @@ export class DragZoomingTool extends go.Tool {
 	private _delay: number = 175;
 
 	/** @type {Diagram} */
-	private _zoomedDiagram: go.Diagram = null;
+	private _zoomedDiagram: go.Diagram | null = null;
 
   /**
   * This tool can run when there has been a mouse-drag, far enough away not to be a click,
@@ -78,7 +78,7 @@ export class DragZoomingTool extends go.Tool {
   * @this {DragZoomingTool}
   * @return {boolean}
   */
-	public canStart() {
+  public canStart(): boolean {
 		if (!this.isEnabled) return false;
 		var diagram = this.diagram;
 		if (diagram === null) return false;

@@ -35,7 +35,7 @@ var __extends = (this && this.__extends) || (function () {
     * You can set all of the TreeLayout properties that you like,
     * except that for simplicity this code just works for angle === 0 or angle === 90.
     */
-    var ParallelLayout = (function (_super) {
+    var ParallelLayout = /** @class */ (function (_super) {
         __extends(ParallelLayout, _super);
         function ParallelLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

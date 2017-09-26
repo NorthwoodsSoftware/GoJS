@@ -6,18 +6,18 @@
 import * as go from "../release/go";
 import { DebugInspector } from "./DebugInspector";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
-	myDiagram =
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+  myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
 			{
-				"animationManager.isEnabled": false,
-				// position the graph in the middle of the diagram
-				initialContentAlignment: go.Spot.Center,
+        initialContentAlignment: go.Spot.Center,
+			  "animationManager.isEnabled": false,
 				// allow double-click in background to create a new node
 				"clickCreatingTool.archetypeNodeData": { text: "Node", color: "white" },
 				// allow Ctrl-G to call groupSelection()

@@ -57,10 +57,10 @@ export class DragCreatingTool extends go.Tool {
 		this._box = b;
 	}
 
-	public name: string = "DragCreating";
+	readonly name: string = "DragCreating";
 
 	/** @type {Object} */
-	private _archetypeNodeData: Object = null;
+	private _archetypeNodeData: Object | null = null;
 
 	/** @type {number} */
 	private _delay: number = 175;
@@ -74,7 +74,7 @@ export class DragCreatingTool extends go.Tool {
   * @this {DragCreatingTool}
   * @return {boolean}
   */
-	public canStart() {
+  public canStart(): boolean {
 		if (!this.isEnabled) return false;
 
 		// gotta have some node data that can be copied
@@ -256,8 +256,8 @@ export class DragCreatingTool extends go.Tool {
   * @function.
   * @return {Object}
   */
-	get archetypeNodeData(): Object { return this._archetypeNodeData; }
-	set archetypeNodeData(val: Object) { this._archetypeNodeData = val; }
+	get archetypeNodeData(): Object | null { return this._archetypeNodeData; }
+	set archetypeNodeData(val: Object | null) { this._archetypeNodeData = val; }
 
 }
 

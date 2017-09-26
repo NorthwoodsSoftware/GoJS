@@ -14,7 +14,7 @@
     */
     var go = require("../release/go");
     var OrthogonalLinkReshapingTool_1 = require("./OrthogonalLinkReshapingTool");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this

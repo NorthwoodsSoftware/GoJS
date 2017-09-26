@@ -6,18 +6,16 @@
 import * as go from "../release/go";
 import { SerpentineLayout } from "./SerpentineLayout";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
-	myDiagram =
+  let myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
 			{
-				initialContentAlignment: go.Spot.Center,
-				isTreePathToChildren: false,  // links go from child to parent
+        initialContentAlignment: go.Spot.Center,
+			  isTreePathToChildren: false,  // links go from child to parent
 				layout: $(SerpentineLayout)  // defined in SerpentineLayout.js
 			});
 

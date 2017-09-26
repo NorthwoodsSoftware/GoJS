@@ -5,22 +5,23 @@
 
 import * as go from "../release/go";
 import { PortShiftingTool } from "./PortShiftingTool";
+import "./Figures";
 
 var red: string = "orangered";  // 0 or false
 var green: string = "forestgreen";  // 1 or true
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
 			{
-				initialContentAlignment: go.Spot.Center,
-				allowDrop: true,  // Nodes from the Palette can be dropped into the Diagram
+        initialContentAlignment: go.Spot.Center,
+			  allowDrop: true,  // Nodes from the Palette can be dropped into the Diagram
 				"draggingTool.isGridSnapEnabled": true,  // dragged nodes will snap to a grid of 10x10 cells
 				"undoManager.isEnabled": true
 			});

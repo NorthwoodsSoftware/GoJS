@@ -23,7 +23,7 @@ var __extends = (this && this.__extends) || (function () {
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var ExtendedBrush = (function (_super) {
+    var ExtendedBrush = /** @class */ (function (_super) {
         __extends(ExtendedBrush, _super);
         function ExtendedBrush(type) {
             var _this = _super.call(this) || this;

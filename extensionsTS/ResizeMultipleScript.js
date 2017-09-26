@@ -14,12 +14,11 @@
     */
     var go = require("../release/go");
     var ResizeMultipleTool_1 = require("./ResizeMultipleTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center,
             resizingTool: new ResizeMultipleTool_1.ResizeMultipleTool(),

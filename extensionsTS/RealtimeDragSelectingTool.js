@@ -28,7 +28,7 @@ var __extends = (this && this.__extends) || (function () {
     * The RealtimeDragSelectingTool selects and deselects Parts within the {@link DragSelectingTool#box}
     * during a drag, not just at the end of the drag.
     */
-    var RealtimeDragSelectingTool = (function (_super) {
+    var RealtimeDragSelectingTool = /** @class */ (function (_super) {
         __extends(RealtimeDragSelectingTool, _super);
         function RealtimeDragSelectingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

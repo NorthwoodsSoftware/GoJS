@@ -6,6 +6,8 @@
 import * as go from "../release/go";
 import { ExtendedBrush } from "./ExtendedBrush";
 
+declare var jQuery: any;
+
 /*
   DebugInspector code
   Two classes: DebugInspector and View
@@ -101,7 +103,7 @@ export class DebugInspector {
 
 		if (this.whenSelected) {
 			var pred = this.inspectPredicate;
-			diagram.addDiagramListener('ChangedSelection', function (e) {
+			diagram.addDiagramListener('ChangedSelection', (e) => {
 				var inspectedObjects: Array<go.GraphObject> = [];
 				var selection = diagram.selection.first();
 				if (selection === null) {
@@ -123,7 +125,7 @@ export class DebugInspector {
 					chooser.appendChild(option);
 				}
 
-				chooser.onchange = function () {
+				chooser.onchange = () => {
 					var index = (this as any).selectedIndex;
 					if (self.propertyNames !== null) {
 						self.change(selection);
@@ -151,7 +153,7 @@ export class DebugInspector {
 			// must use focusout instead of blur - blur does not bubble,
 			// so clicking on an <input> inside the div and then clicking away
 			// will not fire an event with blur, and it will focusout
-			div.addEventListener('focusout', function (e) {
+			div.addEventListener('focusout', (e) => {
 				self.setAllProperties();
 			});
 		}
@@ -164,7 +166,7 @@ export class DebugInspector {
 		if (pred === null || pred(selection)) {
 			graphObjects.push(selection);
 		}
-		var recurseDownPanels = function (element: go.GraphObject) {
+		var recurseDownPanels = (element: go.GraphObject) => {
 			if (element instanceof go.Panel) {
 				var elements = element.elements;
 				while (elements.next()) {
@@ -227,12 +229,12 @@ export class DebugInspector {
 				var group = view.dom;
 				var label = group.label || group.children[0];
 				// optionally, sanitize property name into something human readable
-				var camelCaseConverter = function (str: string) {
+				var camelCaseConverter = (str: string) => {
 					var words = str.match(/[A-Za-z0-9][a-z]*/g);
-					words = words.filter(function (str: string) { // the checkbox is clear enough the property is a bool
+					words = words.filter((str: string) => { // the checkbox is clear enough the property is a bool
 						return str !== "is";
 					});
-					return words.map(function (str) {
+					return words.map((str) => {
 						if (str.length === 0) return str;
 						else if (str.length === 1) return str.toUpperCase();
 						else return str.substring(0, 1).toUpperCase() + str.substring(1);
@@ -274,14 +276,14 @@ export class DebugInspector {
 
 		var self = this;
 		if (this.acceptButton) {
-			this.buildButton("Accept", function () {
+			this.buildButton("Accept", () => {
 				self.setAllProperties();
 				self.rebuildViews();
 			});
 		}
 
 		if (this.resetButton) {
-			this.buildButton("Reset", function () {
+			this.buildButton("Reset", () => {
 				self.rebuildViews();
 			});
 		}
@@ -455,7 +457,7 @@ export class View {
 	private inialized:boolean = false;
 	private visible: boolean = true;
 	private dom: any = null;
-	private originalValue: number = null;
+	private originalValue: number = 0.0;
 	private inferredType: any;
 	private nullCheckBox: any;
 	private inputs: any;
@@ -529,7 +531,7 @@ export class View {
 		var inputs = [];
 		var row: Array<Node> = [];
 
-		var populateRow = function () {
+		var populateRow = () => {
 			var rowDiv = document.createElement("div");
 			for (var i = 0; i < row.length; i++) {
 				rowDiv.appendChild(row[i]);
@@ -608,7 +610,7 @@ export class View {
 				select.div = div;
 				div.dropdown = select;
 				var view = this;
-				select.onchange = function () {
+				select.onchange = () => {
 					var selected = select[select.selectedIndex].text;
 					if (selected === "Custom Spot") return;
 					var spot = go.Spot.parse(selected);
@@ -719,7 +721,7 @@ export class View {
 				var brushTextField = dom.children[1];
 				if (val === "(null)") val = "black"; //
 				// val is either a String or a Brush. If it's a Brush, make it a String
-				var selected: any = $(brushTextField);
+				var selected: any = jQuery(brushTextField);
 				if (typeof val === "string" || val.type === go.Brush.Solid) {
 					var colorString = val;
 					if (val instanceof go.Brush) colorString = val.color;
@@ -790,7 +792,7 @@ export class View {
 				var select = this.dom.children[this.dom.selectIndex];
 				if (select.selectedIndex !== 0) {
 					var spot = go.Spot.parse(select[select.selectedIndex].text);
-					var equals = function (a: number, b: number) { return a === b || (isNaN(a) && isNaN(b)); }
+					var equals = (a: number, b: number) => { return a === b || (isNaN(a) && isNaN(b)); }
 					// prefedined spots have NaN in their fields. You can't pass NaN into the normal spot constructor.
 					// instead of constructing a Spot, try to see if it equals the selected item and returned the prefedined spot
 					if (equals(obj[0], spot.x) && equals(obj[1], spot.y) && equals(obj[2], spot.offsetX) && equals(obj[3], spot.offsetY))
@@ -851,10 +853,9 @@ export class View {
 	*/
 	public defaultSetter(diagram: go.Diagram, view: View, propname: string, value: string) {
 		var mytype = view.getType();
-		var myvalue: number;
-		if (mytype === "number") myvalue = parseFloat(value);
+		if (mytype === "number") value = parseFloat(value) as any;
 
-		this.object[propname] = myvalue;
+		this.object[propname] = value;
 	}
 
 	/**

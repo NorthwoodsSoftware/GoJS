@@ -13,13 +13,13 @@
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", { initialContentAlignment: go.Spot.Center });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center
+        });
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", $(go.Shape, "Ellipse", { fill: "lightskyblue" }), $("HyperlinkText", function (node) { return "https://gojs.net/" + node.data.version; }, function (node) { return "Visit GoJS " + node.data.version; }, { margin: 10 }));
         myDiagram.model = new go.GraphLinksModel([

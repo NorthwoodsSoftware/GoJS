@@ -58,7 +58,7 @@
       </div>
     
     */
-    var Inspector = (function () {
+    var Inspector = /** @class */ (function () {
         function Inspector(divid, diagram, options) {
             this._inspectedProperties = {};
             // Either a GoJS Part or a simple data object, such as Model.modelData
@@ -198,6 +198,8 @@
         * @return {boolean} whether a particular property should be shown in this Inspector
         */
         Inspector.prototype.canEditProperty = function (propertyName, propertyDesc, inspectedObject) {
+            if (this._diagram.isReadOnly || this._diagram.isModelReadOnly)
+                return false;
             // assume property values that are functions of Objects cannot be edited
             var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
             var valtype = typeof data[propertyName];
@@ -252,8 +254,6 @@
                     }
                 }
             }
-            if (this._diagram.model.isReadOnly)
-                input.disabled = true;
             if (input.type !== "color")
                 input.addEventListener("blur", setprops);
             td2.appendChild(input);

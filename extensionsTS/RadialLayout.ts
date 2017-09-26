@@ -17,7 +17,7 @@ export class RadialLayout extends go.Layout {
   /**
   * Copies properties to a cloned Layout.
   */
-	protected cloneProtected(copy: RadialLayout) {
+	public cloneProtected(copy: this) {
 		super.cloneProtected(copy);
 		// don't copy .root
 		copy._layerThickness = this._layerThickness;

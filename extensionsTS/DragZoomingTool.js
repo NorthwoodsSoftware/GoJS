@@ -56,7 +56,7 @@ var __extends = (this && this.__extends) || (function () {
     * but it does temporarily add the {@link #box} part to the diagram.
     * This tool does not modify the model or conduct any transaction.
     */
-    var DragZoomingTool = (function (_super) {
+    var DragZoomingTool = /** @class */ (function (_super) {
         __extends(DragZoomingTool, _super);
         function DragZoomingTool() {
             var _this = _super.call(this) || this;

@@ -36,7 +36,7 @@ var __extends = (this && this.__extends) || (function () {
     * this will not show any GeometryReshaping {@link Adornment}.
     * At the current time this tool does not support adding or removing {@link PathSegment}s to the Geometry.
     */
-    var GeometryReshapingTool = (function (_super) {
+    var GeometryReshapingTool = /** @class */ (function (_super) {
         __extends(GeometryReshapingTool, _super);
         function GeometryReshapingTool() {
             var _this = _super.call(this) || this;

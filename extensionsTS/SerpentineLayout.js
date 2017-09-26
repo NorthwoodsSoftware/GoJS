@@ -35,7 +35,7 @@ var __extends = (this && this.__extends) || (function () {
     * <p/>
     * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
     */
-    var SerpentineLayout = (function (_super) {
+    var SerpentineLayout = /** @class */ (function (_super) {
         __extends(SerpentineLayout, _super);
         function SerpentineLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

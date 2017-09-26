@@ -43,7 +43,7 @@ export class PolygonDrawingTool extends go.Tool {
   * Modal uses of this tool will not call this canStart predicate.
   * @this {PolygonDrawingTool}
   */
-	public canStart() {
+  public canStart(): boolean {
 		if (!this.isEnabled) return false;
 		var diagram = this.diagram;
 		if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;

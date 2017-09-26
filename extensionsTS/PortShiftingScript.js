@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./PortShiftingTool"], factory);
+        define(["require", "exports", "../release/go", "./PortShiftingTool", "./Figures"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -14,9 +14,10 @@
     */
     var go = require("../release/go");
     var PortShiftingTool_1 = require("./PortShiftingTool");
+    require("./Figures");
     var red = "orangered"; // 0 or false
     var green = "forestgreen"; // 1 or true
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this

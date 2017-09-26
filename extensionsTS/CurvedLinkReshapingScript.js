@@ -14,7 +14,7 @@
     */
     var go = require("../release/go");
     var CurvedLinkReshapingTool_1 = require("./CurvedLinkReshapingTool");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
@@ -22,7 +22,6 @@
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // must name or refer to the DIV HTML element
             {
-                // start everything in the middle of the viewport
                 initialContentAlignment: go.Spot.Center,
                 // have mouse wheel events zoom in and out instead of scroll up and down
                 "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,

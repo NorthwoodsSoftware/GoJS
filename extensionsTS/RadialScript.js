@@ -14,7 +14,7 @@
     */
     var go = require("../release/go");
     var RadialLayout_1 = require("./RadialLayout");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
@@ -22,8 +22,8 @@
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
             {
-                initialAutoScale: go.Diagram.Uniform,
                 initialContentAlignment: go.Spot.Center,
+                initialAutoScale: go.Diagram.Uniform,
                 padding: 10,
                 isReadOnly: true,
                 layout: $(RadialLayout_1.RadialLayout, {

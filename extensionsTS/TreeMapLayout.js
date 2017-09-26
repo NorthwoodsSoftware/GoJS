@@ -23,7 +23,7 @@ var __extends = (this && this.__extends) || (function () {
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var TreeMapLayout = (function (_super) {
+    var TreeMapLayout = /** @class */ (function (_super) {
         __extends(TreeMapLayout, _super);
         function TreeMapLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

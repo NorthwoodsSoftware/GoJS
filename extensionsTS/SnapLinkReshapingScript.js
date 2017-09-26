@@ -14,8 +14,8 @@
     */
     var go = require("../release/go");
     var SnapLinkReshapingTool_1 = require("./SnapLinkReshapingTool");
-    var myDiagram = null;
-    var myPalette = null;
+    var myDiagram;
+    var myPalette;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
@@ -23,6 +23,7 @@
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // must name or refer to the DIV HTML element
             {
+                initialContentAlignment: go.Spot.Center,
                 // supply a simple narrow grid that manually reshaped link routes will follow
                 grid: $(go.Panel, "Grid", { gridCellSize: new go.Size(8, 8) }, $(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5 }), $(go.Shape, "LineV", { stroke: "lightgray", strokeWidth: 0.5 })),
                 allowDrop: true,

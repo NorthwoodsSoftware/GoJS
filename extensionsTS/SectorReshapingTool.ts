@@ -24,7 +24,7 @@ export class SectorReshapingTool extends go.Tool {
 		super();
 	}
 	public readonly name: string = "SectorReshaping";
-	private _handle: go.GraphObject = null;
+	private _handle: go.GraphObject | null = null;
 	private _originalRadius: number = 0;
 	private _originalAngle: number = 0;
 	private _originalSweep: number = 0;
@@ -40,7 +40,7 @@ export class SectorReshapingTool extends go.Tool {
 	* @override
 	* @this {SectorReshapingTool}
 	*/
-	public canStart() {
+  public canStart(): boolean {
 		if (!this.isEnabled) return false;
 		var diagram = this.diagram;
 		if (diagram === null || diagram.isReadOnly) return false;
@@ -60,7 +60,7 @@ export class SectorReshapingTool extends go.Tool {
 		if (part.isSelected && data !== null && this.diagram !== null && !this.diagram.isReadOnly) {
 			var ad = part.findAdornment(this.name);
 			if (ad === null) {
-				var $ = go.GraphObject.make;
+				const $ = go.GraphObject.make;
 				ad =
 					$(go.Adornment, "Spot",
 						$(go.Placeholder),
@@ -157,8 +157,8 @@ export class SectorReshapingTool extends go.Tool {
 	*/
 	public doMouseMove() {
 		var diagram = this.diagram;
-		if (this.isActive && diagram !== null) {
-			var h = this._handle;
+    var h = this._handle;
+		if (this.isActive && diagram !== null && h !== null) {
 			var center = (h.part as go.Adornment).adornedObject.getDocumentPoint(go.Spot.Center);
 			var node = (h.part as go.Adornment).adornedPart;
 			var mouse = diagram.lastInput.documentPoint;

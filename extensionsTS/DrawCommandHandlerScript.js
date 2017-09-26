@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./DrawcommandHandlerTool"], factory);
+        define(["require", "exports", "../release/go", "./DrawcommandHandler"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -13,8 +13,8 @@
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var DrawcommandHandlerTool_1 = require("./DrawcommandHandlerTool");
-    var myDiagram = null;
+    var DrawcommandHandler_1 = require("./DrawcommandHandler");
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
@@ -22,7 +22,7 @@
         myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center,
-            commandHandler: new DrawcommandHandlerTool_1.DrawCommandHandlerTool(),
+            commandHandler: new DrawcommandHandler_1.DrawCommandHandler(),
             "undoManager.isEnabled": true // enable undo & redo
         });
         // define a simple Node template

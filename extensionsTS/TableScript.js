@@ -24,10 +24,8 @@ var __extends = (this && this.__extends) || (function () {
     */
     var go = require("../release/go");
     var TableLayout_1 = require("./TableLayout");
-    var myDiagram = null;
-    var myPalette = null;
     // define a custom ResizingTool to limit how far one can shrink a row or column
-    var LaneResizingTool = (function (_super) {
+    var LaneResizingTool = /** @class */ (function (_super) {
         __extends(LaneResizingTool, _super);
         function LaneResizingTool() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -86,22 +84,21 @@ var __extends = (this && this.__extends) || (function () {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                initialContentAlignment: go.Spot.Center,
-                layout: $(TableLayout_1.TableLayout, $(go.RowColumnDefinition, { row: 1, height: 22 }), // fixed size column headers
-                $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
-                ),
-                "SelectionMoved": function (e) { e.diagram.layoutDiagram(true); },
-                "resizingTool": new LaneResizingTool(),
-                allowDrop: true,
-                // feedback that dropping in the background is not allowed
-                mouseDragOver: function (e) { e.diagram.currentCursor = "not-allowed"; },
-                // when dropped in the background, not on a Node or a Group, cancel the drop
-                mouseDrop: function (e) { e.diagram.currentTool.doCancel(); },
-                "animationManager.isInitial": false,
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            layout: $(TableLayout_1.TableLayout, $(go.RowColumnDefinition, { row: 1, height: 22 }), // fixed size column headers
+            $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
+            ),
+            "SelectionMoved": function (e) { e.diagram.layoutDiagram(true); },
+            "resizingTool": new LaneResizingTool(),
+            allowDrop: true,
+            // feedback that dropping in the background is not allowed
+            mouseDragOver: function (e) { e.diagram.currentCursor = "not-allowed"; },
+            // when dropped in the background, not on a Node or a Group, cancel the drop
+            mouseDrop: function (e) { e.diagram.currentTool.doCancel(); },
+            "animationManager.isInitial": false,
+            "undoManager.isEnabled": true
+        });
         var margins = myDiagram.nodeTemplate.margin;
         var layouts = myDiagram.layout;
         myDiagram.nodeTemplateMap.add("Header", // an overall table header, at the top
@@ -160,10 +157,10 @@ var __extends = (this && this.__extends) || (function () {
             font: "bold 10pt sans-serif", isMultiline: false,
             wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
         }, new go.Binding("text")))));
-        myDiagram.nodeTemplate =
+        myDiagram.nodeTemplate = // for regular nodes within cells (groups); you'll want to extend this
             $(go.Node, "Auto", { width: 100, height: 50, margin: 4 }, // assume uniform Margin, all around
             new go.Binding("row"), new go.Binding("column", "col"), $(go.Shape, { fill: "white" }, new go.Binding("fill", "color")), $(go.TextBlock, new go.Binding("text", "key")));
-        myDiagram.groupTemplate =
+        myDiagram.groupTemplate = // for cells
             $(go.Group, "Auto", {
                 layerName: "Background",
                 stretch: go.GraphObject.Fill,
@@ -226,15 +223,14 @@ var __extends = (this && this.__extends) || (function () {
             { key: "Eta", color: "coral", size: "50 50", group: "ManApp" },
             { key: "Theta", color: "tomato", size: "100 50", group: "AdmApp" }
         ]);
-        myPalette =
-            $(go.Palette, "myPaletteDiv", {
-                nodeTemplateMap: myDiagram.nodeTemplateMap,
-                "model.nodeDataArray": [
-                    { key: "Alpha", color: "orange" },
-                    { key: "Beta", color: "tomato" },
-                    { key: "Gamma", color: "goldenrod" }
-                ]
-            });
+        var myPalette = $(go.Palette, "myPaletteDiv", {
+            nodeTemplateMap: myDiagram.nodeTemplateMap,
+            "model.nodeDataArray": [
+                { key: "Alpha", color: "orange" },
+                { key: "Beta", color: "tomato" },
+                { key: "Gamma", color: "goldenrod" }
+            ]
+        });
     }
     exports.init = init;
 });

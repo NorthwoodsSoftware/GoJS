@@ -15,15 +15,17 @@
     var go = require("../release/go");
     var PolygonDrawingTool_1 = require("./PolygonDrawingTool");
     var GeometryReshapingTool_1 = require("./GeometryReshapingTool");
-    exports.myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  
         var $ = go.GraphObject.make;
-        exports.myDiagram =
-            $(go.Diagram, "myDiagramDiv");
-        exports.myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_1.GeometryReshapingTool());
-        exports.myDiagram.nodeTemplateMap.add("PolygonDrawing", $(go.Node, { locationSpot: go.Spot.Center }, // to support rotation about the center
+        myDiagram =
+            $(go.Diagram, "myDiagramDiv", {
+                initialContentAlignment: go.Spot.Center
+            });
+        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_1.GeometryReshapingTool());
+        myDiagram.nodeTemplateMap.add("PolygonDrawing", $(go.Node, { locationSpot: go.Spot.Center }, // to support rotation about the center
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), {
             selectionAdorned: true, selectionObjectName: "SHAPE",
             selectionAdornmentTemplate: // custom selection adornment: a blue rectangle
@@ -37,13 +39,13 @@
             { fill: "yellow", stroke: "blue", strokeWidth: 3, category: "PolygonDrawing" };
         tool.isPolygon = true; // for a polyline drawing tool set this property to false
         // install as first mouse-down-tool
-        exports.myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
+        myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
         load(); // load a simple diagram from the textarea
     }
     exports.init = init;
     function mode(draw, polygon) {
         // assume PolygonDrawingTool is the first tool in the mouse-down-tools list
-        var tool = exports.myDiagram.toolManager.mouseDownTools.elt(0);
+        var tool = myDiagram.toolManager.mouseDownTools.elt(0);
         tool.isEnabled = draw;
         tool.isPolygon = polygon;
         tool.archetypePartData.fill = (polygon ? "yellow" : null);
@@ -52,9 +54,9 @@
     exports.mode = mode;
     // this command ends the PolygonDrawingTool
     function finish(commit) {
-        var tool = exports.myDiagram.currentTool;
+        var tool = myDiagram.currentTool;
         if (commit && tool instanceof PolygonDrawingTool_1.PolygonDrawingTool) {
-            var lastInput = exports.myDiagram.lastInput;
+            var lastInput = myDiagram.lastInput;
             if (lastInput.event instanceof MouseEvent)
                 tool.removeLastPoint(); // remove point from last mouse-down
             tool.finishShape();
@@ -66,9 +68,9 @@
     exports.finish = finish;
     // this command removes the last clicked point from the temporary Shape
     function undo() {
-        var tool = exports.myDiagram.currentTool;
+        var tool = myDiagram.currentTool;
         if (tool instanceof PolygonDrawingTool_1.PolygonDrawingTool) {
-            var lastInput = exports.myDiagram.lastInput;
+            var lastInput = myDiagram.lastInput;
             if (lastInput.event instanceof MouseEvent)
                 tool.removeLastPoint(); // remove point from last mouse-down
             tool.undo();
@@ -76,12 +78,12 @@
     }
     exports.undo = undo;
     function updateAllAdornments() {
-        exports.myDiagram.selection.each(function (p) { p.updateAdornments(); });
+        myDiagram.selection.each(function (p) { p.updateAdornments(); });
     }
     exports.updateAllAdornments = updateAllAdornments;
     // save a model to and load a model from Json text, displayed below the Diagram
     function save() {
-        var str = '{ "position": "' + go.Point.stringify(exports.myDiagram.position) + '",\n  "model": ' + exports.myDiagram.model.toJson() + ' }';
+        var str = '{ "position": "' + go.Point.stringify(myDiagram.position) + '",\n  "model": ' + myDiagram.model.toJson() + ' }';
         document.getElementById("mySavedDiagram").value = str;
     }
     exports.save = save;
@@ -89,9 +91,9 @@
         var str = document.getElementById("mySavedDiagram").value;
         try {
             var json = JSON.parse(str);
-            exports.myDiagram.initialPosition = go.Point.parse(json.position || "0 0");
-            exports.myDiagram.model = go.Model.fromJson(json.model);
-            exports.myDiagram.model.undoManager.isEnabled = true;
+            myDiagram.initialPosition = go.Point.parse(json.position || "0 0");
+            myDiagram.model = go.Model.fromJson(json.model);
+            myDiagram.model.undoManager.isEnabled = true;
         }
         catch (ex) {
             alert(ex);
@@ -119,17 +121,17 @@
     }
     exports.cancelDrawing = cancelDrawing;
     function allowResizing() {
-        exports.myDiagram.allowResize = !exports.myDiagram.allowResize;
+        myDiagram.allowResize = !myDiagram.allowResize;
         updateAllAdornments();
     }
     exports.allowResizing = allowResizing;
     function allowReshaping() {
-        exports.myDiagram.allowReshape = !exports.myDiagram.allowReshape;
+        myDiagram.allowReshape = !myDiagram.allowReshape;
         updateAllAdornments();
     }
     exports.allowReshaping = allowReshaping;
     function allowRotating() {
-        exports.myDiagram.allowRotate = !exports.myDiagram.allowRotate;
+        myDiagram.allowRotate = !myDiagram.allowRotate;
         updateAllAdornments();
     }
     exports.allowRotating = allowRotating;

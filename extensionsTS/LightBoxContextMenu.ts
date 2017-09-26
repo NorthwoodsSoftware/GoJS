@@ -79,7 +79,7 @@ import * as go from "../release/go"
     }
   ];
 
-  var $ = go.GraphObject.make;
+  const $ = go.GraphObject.make;
   var myContextMenu = $(go.HTMLInfo, {
     show: showContextMenu,
     hide: hideContextMenu

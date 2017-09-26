@@ -13,7 +13,7 @@ import * as go from "../release/go";
 // This defines a custom "Button" that automatically repeats its click
 // action when the user holds down the mouse.
 go.GraphObject.defineBuilder("AutoRepeatButton", function (args) {
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 	// some internal helper functions for auto-repeating
 	function delayClicking(e: go.InputEvent, obj: any) {
 		endClicking(e, obj);
@@ -56,7 +56,7 @@ go.GraphObject.defineBuilder("AutoRepeatButton", function (args) {
 // Note that if you have more than one of these in a Part,
 // you'll want to make sure each one has a unique name.
 go.GraphObject.defineBuilder("ScrollingTable", function (args) {
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 	var tablename = go.GraphObject.takeBuilderArgument(args, "TABLE");
 
 	// an internal helper function for actually performing a scrolling operation

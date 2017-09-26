@@ -6,18 +6,18 @@
 import * as go from "../release/go";
 import { OrthogonalLinkReshapingTool } from "./OrthogonalLinkReshapingTool";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				initialContentAlignment: go.Spot.Center,
-				"undoManager.isEnabled": true,
+        initialContentAlignment: go.Spot.Center,
+			  "undoManager.isEnabled": true,
 				"linkReshapingTool": new OrthogonalLinkReshapingTool()
 			});
 

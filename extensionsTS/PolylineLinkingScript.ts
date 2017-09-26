@@ -6,16 +6,18 @@
 import * as go from "../release/go";
 import { PolylineLinkingTool } from "./PolylineLinkingTool";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
 	myDiagram =
-		$(go.Diagram, "myDiagramDiv",
-			{ initialContentAlignment: go.Spot.Center });
+    $(go.Diagram, "myDiagramDiv",
+      {
+        initialContentAlignment: go.Spot.Center
+      });
 
 	// install custom linking tool, defined in PolylineLinkingTool.js
 	var tool = new PolylineLinkingTool();

@@ -6,13 +6,13 @@
 import * as go from "../release/go";
 import { DragZoomingTool } from "./DragZoomingTool";
 
-var myDiagram: go.Diagram = null
-var myLoading: go.Node = null
+var myDiagram: go.Diagram;
+var myLoading: go.Node;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",

@@ -24,31 +24,31 @@ var __extends = (this && this.__extends) || (function () {
     */
     var go = require("../release/go");
     /**
-    * @constructor
-    * @extends CommandHandler
-    * @class
-    * This CommandHandler class uses localStorage as the repository for the clipboard,
-    * rather than an in-memory global variable.
-    * It requires that the {@link Diagram#model} be serializable and deserializable using {@link Model#toJson} and {@link Model.fromJson}.
-    * <p>
-    * The {@link #copyToClipboard} and {@link #pasteFromClipboard} functions fall back to using the standard definitions
-    * if there are any errors calling <code>Storage.getItem</code> or <code>Storage.setItem</code>.
-    * <p>
-    * Typical usage:
-    * <pre>
-    *   $(go.Diagram, "myDiagramDiv",
-    *     {
-    *       commandHandler: $(LocalStorageCommandHandler),
-    *       . . .
-    *     }
-    *   )
-    * </pre>
-    * or:
-    * <pre>
-    *    myDiagram.commandHandler = new LocalStorageCommandHandler();
-    * </pre>
-    */
-    var LocalStorageCommandHandler = (function (_super) {
+        * @constructor
+        * @extends CommandHandler
+        * @class
+        * This CommandHandler class uses localStorage as the repository for the clipboard,
+        * rather than an in-memory global variable.
+        * It requires that the {@link Diagram#model} be serializable and deserializable using {@link Model#toJson} and {@link Model.fromJson}.
+        * <p>
+        * The {@link #copyToClipboard} and {@link #pasteFromClipboard} functions fall back to using the standard definitions
+        * if there are any errors calling <code>Storage.getItem</code> or <code>Storage.setItem</code>.
+        * <p>
+        * Typical usage:
+        * <pre>
+        *   $(go.Diagram, "myDiagramDiv",
+        *     {
+        *       commandHandler: $(LocalStorageCommandHandler),
+        *       . . .
+        *     }
+        *   )
+        * </pre>
+        * or:
+        * <pre>
+        *    myDiagram.commandHandler = new LocalStorageCommandHandler();
+        * </pre>
+        */
+    var LocalStorageCommandHandler = /** @class */ (function (_super) {
         __extends(LocalStorageCommandHandler, _super);
         function LocalStorageCommandHandler() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -57,10 +57,10 @@ var __extends = (this && this.__extends) || (function () {
             return _this;
         }
         /**
-          * @override
-          * @this {LocalStorageCommandHandler}
-          * @param {Iterable.<Part>} coll a collection of {@link Part}s.
-          */
+              * @override
+              * @this {LocalStorageCommandHandler}
+              * @param {Iterable.<Part>} coll a collection of {@link Part}s.
+              */
         LocalStorageCommandHandler.prototype.copyToClipboard = function (coll) {
             try {
                 if (coll === null) {
@@ -85,12 +85,11 @@ var __extends = (this && this.__extends) || (function () {
                 go.CommandHandler.prototype.copyToClipboard.call(this, coll);
             }
         };
-        ;
         /**
-        * @override
-        * @this {LocalStorageCommandHandler}
-        * @return {Set.<Part>} a collection of newly pasted {@link Part}s
-        */
+            * @override
+            * @this {LocalStorageCommandHandler}
+            * @return {Set.<Part>} a collection of newly pasted {@link Part}s
+            */
         LocalStorageCommandHandler.prototype.pasteFromClipboard = function () {
             var coll = new go.Set(go.Part);
             try {
@@ -104,7 +103,9 @@ var __extends = (this && this.__extends) || (function () {
                     // recover the model from the clipboard rendering
                     clipdiag.model = go.Model.fromJson(clipstr);
                     // copy all the CLIPDIAG Parts into this Diagram
-                    var copymap = this.diagram.copyParts(clipdiag.parts.concat(clipdiag.nodes).concat(clipdiag.links), this.diagram, false);
+                    var allparts = new go.Set(go.Part);
+                    allparts.addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
+                    var copymap = this.diagram.copyParts(allparts, this.diagram, false);
                     // return a Set of the copied Parts
                     return new go.Set(go.Part).addAll(copymap.iteratorValues);
                 }
@@ -114,12 +115,11 @@ var __extends = (this && this.__extends) || (function () {
                 return go.CommandHandler.prototype.pasteFromClipboard.call(this);
             }
         };
-        ;
         /**
-        * @override
-        * @this {LocalStorageCommandHandler}
-        * @return {boolean}
-        */
+            * @override
+            * @this {LocalStorageCommandHandler}
+            * @return {boolean}
+            */
         LocalStorageCommandHandler.prototype.canPasteSelection = function () {
             var diagram = this.diagram;
             if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly)
@@ -140,7 +140,6 @@ var __extends = (this && this.__extends) || (function () {
                 return go.CommandHandler.prototype.canPasteSelection();
             }
         };
-        ;
         return LocalStorageCommandHandler;
     }(go.CommandHandler));
     exports.LocalStorageCommandHandler = LocalStorageCommandHandler;

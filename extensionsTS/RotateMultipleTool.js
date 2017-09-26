@@ -33,7 +33,7 @@ var __extends = (this && this.__extends) || (function () {
     * <p>
     * Caution: this only works for Groups that do *not* have a Placeholder.
     */
-    var RotateMultipleTool = (function (_super) {
+    var RotateMultipleTool = /** @class */ (function (_super) {
         __extends(RotateMultipleTool, _super);
         function RotateMultipleTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -183,7 +183,7 @@ var __extends = (this && this.__extends) || (function () {
         return RotateMultipleTool;
     }(go.RotatingTool));
     exports.RotateMultipleTool = RotateMultipleTool;
-    var PartInfo = (function () {
+    var PartInfo = /** @class */ (function () {
         function PartInfo(placementAngle, distance, rotationAngle) {
             this.placementAngle = placementAngle * (Math.PI / 180); // in radians
             this.distance = distance;

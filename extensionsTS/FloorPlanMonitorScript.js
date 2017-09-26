@@ -13,8 +13,7 @@
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var myDiagram = null;
-    var myOverview = null;
+    var myDiagram;
     function init() {
         // displays cached floor plan files in the listbox
         var listbox = document.getElementById("file list");
@@ -30,6 +29,7 @@
         var $ = go.GraphObject.make; // for more concise visual tree definitions
         myDiagram =
             $(go.Diagram, "myDiagramDiv", {
+                initialContentAlignment: go.Spot.Center,
                 isReadOnly: true // allow selection but not moving or copying or deleting
             });
         // converts data about the item into a string
@@ -73,8 +73,7 @@
         myDiagram.groupTemplate =
             $(go.Group, go.Panel.Auto, { toolTip: tooltiptemplate }, $(go.Shape, "Rectangle", // the Group is not seen but can be selected due to the transparent fill
             { fill: "transparent", stroke: "lightgray", strokeWidth: 1 }), $(go.Placeholder));
-        myOverview =
-            $(go.Overview, "myOverviewDiv", { observed: myDiagram, maxScale: 0.5 });
+        var myOverview = $(go.Overview, "myOverviewDiv", { observed: myDiagram, maxScale: 0.5 });
         // change color of viewport border in Overview
         myOverview.box.elt(0).stroke = "dodgerblue";
         // linear brushes for the gradient of the alert adornment
@@ -90,16 +89,16 @@
                 obj.part.removeAdornment(id.toString());
             }
             else {
-                var $ = go.GraphObject.make;
-                var ad = $(go.Adornment, "Auto", {
+                var $_1 = go.GraphObject.make;
+                var ad = $_1(go.Adornment, "Auto", {
                     locationSpot: go.Spot.Center,
                     mouseOver: function (e, obj) { displayAlertInfo(e, info); },
                     mouseLeave: function (e, obj1, obj2) { hideAlertInfo(); }
-                }, $(go.Shape, {
+                }, $_1(go.Shape, {
                     geometryString: "F1 M0,0 L30,0 30,60 15,95 0,60z",
                     fill: (red ? redAlertBrush : greenAlertBrush),
                     stroke: "black", strokeWidth: 1
-                }), $(go.TextBlock, text, {
+                }), $_1(go.TextBlock, text, {
                     font: "small-caps bold 20px sans-serif",
                     stroke: "white",
                     textAlign: "center",

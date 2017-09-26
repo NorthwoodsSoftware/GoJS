@@ -5,16 +5,16 @@
 
 import * as go from "../release/go";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
-	myDiagram =
-		$(go.Diagram, "myDiagramDiv",
-			{ initialContentAlignment: go.Spot.Center });
+	let myDiagram =
+    $(go.Diagram, "myDiagramDiv",
+      {
+        initialContentAlignment: go.Spot.Center
+      });
 
 	myDiagram.nodeTemplate =
 		$(go.Node, "Auto",

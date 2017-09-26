@@ -54,7 +54,7 @@ var __extends = (this && this.__extends) || (function () {
     * but it does temporarily add the {@link #box} Part to the diagram.
     * This tool does conduct a transaction when inserting the new node.
     */
-    var DragCreatingTool = (function (_super) {
+    var DragCreatingTool = /** @class */ (function (_super) {
         __extends(DragCreatingTool, _super);
         function DragCreatingTool() {
             var _this = _super.call(this) || this;

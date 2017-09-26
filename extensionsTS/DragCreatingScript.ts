@@ -6,17 +6,18 @@
 import * as go from "../release/go";
 import { DragCreatingTool } from "./DragCreatingTool";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				// Define the template for Nodes, just some text inside a colored rectangle
+        initialContentAlignment: go.Spot.Center,
+			  // Define the template for Nodes, just some text inside a colored rectangle
 				nodeTemplate:
 				$(go.Node, "Auto",
 					{ minSize: new go.Size(60, 20), resizable: true },
@@ -56,7 +57,7 @@ export function init() {
 						{ name: "SHAPE", fill: null, stroke: "cyan", strokeWidth: 2 })
 				),
 				archetypeNodeData: { color: "white" }, // initial properties shared by all nodes
-				insertPart: (bounds: go.Rect) => {  // override DragCreatingTool.insertPart
+				insertPart: function (bounds: go.Rect) {  // override DragCreatingTool.insertPart
 					// use a different color each time
 					this.archetypeNodeData.color = go.Brush.randomColor();
 					// call the base method to do normal behavior and return its result

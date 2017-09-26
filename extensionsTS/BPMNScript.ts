@@ -5,9 +5,10 @@
 
 import * as go from "../release/go";
 import "./Figures";
-//import * as jQuery from "jquery";
 import { PoolLink, BPMNLinkingTool } from "./BPMNClasses";
-import { DrawCommandHandlerTool } from "./DrawCommandHandlerTool";
+import { DrawCommandHandler } from "./DrawCommandHandler";
+
+declare var jQuery: any;
 
 // This file holds all of the JavaScript code specific to the BPMN.html page.
 
@@ -17,7 +18,7 @@ var myDiagram: go.Diagram;
 // This is called after the page is loaded.
 export function init() {
 
-	var $ = go.GraphObject.make;  // for more concise visual tree definitions
+	const $ = go.GraphObject.make;  // for more concise visual tree definitions
 
 	function checkLocalStorage() {
 		try {
@@ -30,7 +31,7 @@ export function init() {
 	}
 
 	if (!checkLocalStorage()) {
-		var currentFile = document.getElementById("currentFile");
+		var currentFile = document.getElementById("currentFile") as HTMLDivElement;
 		currentFile.textContent = "Sorry! No web storage support. If you're using Internet Explorer / Microsoft Edge, you must load the page from a server for local storage to work.";
 	}
 
@@ -44,10 +45,10 @@ export function init() {
 	});
 
 	// hides open HTML Element
-	var openDocument = document.getElementById("openDocument");
+  var openDocument = document.getElementById("openDocument") as HTMLDivElement;
 	openDocument.style.visibility = "hidden";
 	// hides remove HTML Element
-	var removeDocument = document.getElementById("removeDocument");
+  var removeDocument = document.getElementById("removeDocument") as HTMLDivElement;
 	removeDocument.style.visibility = "hidden";
 
 	// constants for design choices
@@ -1169,13 +1170,14 @@ export function init() {
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
+        initialContentAlignment: go.Spot.Center,
 				nodeTemplateMap: nodeTemplateMap,
 				linkTemplateMap: linkTemplateMap,
 				groupTemplateMap: groupTemplateMap,
 
 				allowDrop: true,  // accept drops from palette
 
-				commandHandler: new DrawCommandHandlerTool(),  // defined in DrawCommandHandler.js
+				commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
 				// default to having arrow keys move selected nodes
 				"commandHandler.arrowKeyBehavior": "move",
 
@@ -1215,12 +1217,12 @@ export function init() {
 
 	// change the title to indicate that the diagram has been modified
 	myDiagram.addDiagramListener("Modified", function (e) {
-		var currentFile = document.getElementById("currentFile");
-		var idx = currentFile.textContent.indexOf("*");
+		var currentFile = document.getElementById("currentFile") as HTMLDivElement;
+		var idx = currentFile.textContent!.indexOf("*");
 		if (myDiagram.isModified) {
 			if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
 		} else {
-			if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+			if (idx >= 0) currentFile.textContent = currentFile.textContent!.substr(0, idx);
 		}
 	});
 
@@ -1501,12 +1503,12 @@ class LaneResizingTool extends go.ResizingTool {
 	};
 
 	/** @override */
-	public canStart() {
+	public canStart(): boolean {
 		if (!go.ResizingTool.prototype.canStart.call(this)) return false;
 
 		// if this is a resize handle for a "Lane", we can start.
 		var diagram = this.diagram;
-		if (diagram === null) return;
+		if (diagram === null) return false;
 		var handl = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
 		if (handl === null || handl.part === null || (<go.Adornment>handl.part).adornedObject === null || (<go.Adornment>handl.part).adornedObject.part === null) return false;
 		return ((<go.Adornment>handl.part).adornedObject.part.category === "Lane");
@@ -1652,14 +1654,14 @@ export function askSpace(): number {
 var UnsavedFileName = "(Unsaved File)";
 
 export function getCurrentFileName() {
-	var currentFile = document.getElementById("currentFile");
+  var currentFile = document.getElementById("currentFile") as HTMLDivElement;
 	var name = currentFile.textContent;
 	if (name[name.length - 1] === "*") return name.substr(0, name.length - 1);
 	return name;
 }
 
 export function setCurrentFileName(name: string) {
-	var currentFile = document.getElementById("currentFile");
+  var currentFile = document.getElementById("currentFile") as HTMLDivElement;
 	if (myDiagram.isModified) {
 		name += "*";
 	}
@@ -1848,14 +1850,14 @@ export function copySelection() { myDiagram.commandHandler.copySelection(); }
 export function pasteSelection() { myDiagram.commandHandler.pasteSelection(); }
 export function deleteSelection() { myDiagram.commandHandler.deleteSelection(); }
 export function selectAll() { myDiagram.commandHandler.selectAll(); }
-export function alignLeft() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignLeft(); }
-export function alignRight() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignRight(); }
-export function alignTop() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignTop(); }
-export function alignBottom() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignBottom(); }
-export function alignCemterX() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignCenterX(); }
-export function alignCenterY() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignCenterY(); }
-export function alignRows() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignRow(askSpace()); }
-export function alignColumns() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignColumn(askSpace()); }
+export function alignLeft() { (myDiagram.commandHandler as DrawCommandHandler).alignLeft(); }
+export function alignRight() { (myDiagram.commandHandler as DrawCommandHandler).alignRight(); }
+export function alignTop() { (myDiagram.commandHandler as DrawCommandHandler).alignTop(); }
+export function alignBottom() { (myDiagram.commandHandler as DrawCommandHandler).alignBottom(); }
+export function alignCemterX() { (myDiagram.commandHandler as DrawCommandHandler).alignCenterX(); }
+export function alignCenterY() { (myDiagram.commandHandler as DrawCommandHandler).alignCenterY(); }
+export function alignRows() { (myDiagram.commandHandler as DrawCommandHandler).alignRow(askSpace()); }
+export function alignColumns() { (myDiagram.commandHandler as DrawCommandHandler).alignColumn(askSpace()); }
 export function basicOrderProcess() { loadJSON("BPMNdata/BasicOrderProcess.json"); }
 export function BPMNdata51() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json"); }
 export function BPMNdata52() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.2.json"); }

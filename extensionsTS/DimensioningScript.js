@@ -14,16 +14,14 @@
     */
     var go = require("../release/go");
     var DimensioningLink_1 = require("./DimensioningLink");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                initialContentAlignment: go.Spot.Center,
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            "undoManager.isEnabled": true
+        });
         // A simple resizable node
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", { locationSpot: go.Spot.Center }, new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), { resizable: true }, $(go.Shape, { strokeWidth: 0, fill: "lightgray" }, new go.Binding("fill", "color")), $(go.TextBlock, { margin: 10 }, new go.Binding("text", "key")));

@@ -59,7 +59,7 @@ export class Inspector {
 	private _inspectedProperties = {};
 
 	// Either a GoJS Part or a simple data object, such as Model.modelData
-	private inspectedObject: Object = null;
+	private inspectedObject: Object | null = null;
 
 	// Inspector options defaults:
 	private includesOwnProperties: boolean = true;
@@ -73,7 +73,7 @@ export class Inspector {
 		this.divid = divid;
 		this.diagram = diagram;
 		this.options = options;
-		var mainDiv = document.getElementById(divid);
+		var mainDiv = document.getElementById(divid) as HTMLDivElement;
 		mainDiv.className = "inspector";
 		mainDiv.innerHTML = "";
 		this._div = mainDiv;
@@ -190,6 +190,7 @@ export class Inspector {
 	* @return {boolean} whether a particular property should be shown in this Inspector
 	*/
 	public canEditProperty(propertyName: string, propertyDesc: any, inspectedObject: Object): boolean {
+    if (this._diagram.isReadOnly || this._diagram.isModelReadOnly) return false;
 		// assume property values that are functions of Objects cannot be edited
 		var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
 		var valtype = typeof data[propertyName];
@@ -246,7 +247,6 @@ export class Inspector {
 				}
 			}
 		}
-		if (this._diagram.model.isReadOnly) input.disabled = true;
 
 		if (input.type !== "color") input.addEventListener("blur", setprops);
 

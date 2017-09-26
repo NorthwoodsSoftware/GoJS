@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * @extends Tool
     * @class
     */
-    var LinkShiftingTool = (function (_super) {
+    var LinkShiftingTool = /** @class */ (function (_super) {
         __extends(LinkShiftingTool, _super);
         function LinkShiftingTool() {
             var _this = _super.call(this) || this;

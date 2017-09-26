@@ -3,7 +3,7 @@
 *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
 */
 import * as go from "../release/go";
-import { DrawCommandHandlerTool } from "./DrawCommandHandlerTool";
+import { DrawCommandHandler } from "./DrawCommandHandler";
 import { RotateMultipleTool } from "./RotateMultipleTool";
 import { ResizeMultipleTool } from "./ResizeMultipleTool";
 import { GuidedDraggingTool } from "./GuidedDraggingTool";
@@ -19,9 +19,7 @@ import { GuidedDraggingTool } from "./GuidedDraggingTool";
         }
     }*/
 
-var myDiagram: go.Diagram = null;
-var myPalette: go.Diagram = null;
-var myOverview: go.Overview = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 
@@ -32,15 +30,16 @@ export function init() {
 	var removeDocument = document.getElementById("removeDocument");
 	removeDocument.style.visibility = "hidden";
 
-	var $ = go.GraphObject.make;  // for more concise visual tree definitions
+	const $ = go.GraphObject.make;  // for more concise visual tree definitions
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				allowDrop: true,  // accept drops from palette
+        initialContentAlignment: go.Spot.Center,
+			  allowDrop: true,  // accept drops from palette
 				allowLink: false,  // no user-drawn links
 
-				commandHandler: new DrawCommandHandlerTool(),  // defined in DrawCommandHandler.js
+				commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
 				// default to having arrow keys move selected nodes
 				"commandHandler.arrowKeyBehavior": "move",
 				// allow Ctrl-G to call groupSelection()
@@ -136,19 +135,19 @@ export function init() {
 				{ click: function (e: go.InputEvent, obj: go.GraphObject) { myDiagram.commandHandler.copySelection(); } }),
 			$("ContextMenuButton",
 				$(go.TextBlock, "Rotate +45", { margin: 3 }),
-				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(45); } }),
+				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandler).rotate(45); } }),
 			$("ContextMenuButton",
 				$(go.TextBlock, "Rotate -45", { margin: 3 }),
-				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(-45); } }),
+				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandler).rotate(-45); } }),
 			$("ContextMenuButton",
 				$(go.TextBlock, "Rotate +90", { margin: 3 }),
-				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(90); } }),
+				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandler).rotate(90); } }),
 			$("ContextMenuButton",
 				$(go.TextBlock, "Rotate -90", { margin: 3 }),
-				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(-90); } }),
+				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandler).rotate(-90); } }),
 			$("ContextMenuButton",
 				$(go.TextBlock, "Rotate 180", { margin: 3 }),
-				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(180); } })
+				{ click: function (e: go.InputEvent, obj: go.GraphObject) { (myDiagram.commandHandler as DrawCommandHandler).rotate(180); } })
 		);
 
 
@@ -217,7 +216,7 @@ export function init() {
 	var green = $(go.Brush, "Linear", { 0: "#9CCB19", 1: "#698B22" });
 
 	// default structures and furniture
-	myPalette =
+	let myPalette =
 		$(go.Palette, "myPaletteDiv",
 			{
 				nodeTemplate: myDiagram.nodeTemplate,  // shared with the main Diagram
@@ -343,7 +342,7 @@ export function init() {
 
 	// the Overview
 
-	myOverview =
+	let myOverview =
 		$(go.Overview, "myOverviewDiv",
 			{ observed: myDiagram, maxScale: 0.5 });
 
@@ -371,7 +370,7 @@ export function enable(name: string, ok: boolean) {
 
 // enable or disable all context-sensitive command buttons
 export function enableAll() {
-	var cmdhnd = myDiagram.commandHandler as DrawCommandHandlerTool;
+	var cmdhnd = myDiagram.commandHandler as DrawCommandHandler;
 	enable("Rename", myDiagram.selection.count > 0);
 	enable("Undo", cmdhnd.canUndo());
 	enable("Redo", cmdhnd.canRedo());
@@ -454,11 +453,11 @@ export function arrowMode() {
 	var select = document.getElementById("select") as any;
 	var scroll = document.getElementById("scroll") as any;
 	if (move.checked === true) {
-		(myDiagram.commandHandler as DrawCommandHandlerTool).arrowKeyBehavior = "move";
+		(myDiagram.commandHandler as DrawCommandHandler).arrowKeyBehavior = "move";
 	} else if (select.checked === true) {
-		(myDiagram.commandHandler as DrawCommandHandlerTool).arrowKeyBehavior = "select";
+		(myDiagram.commandHandler as DrawCommandHandler).arrowKeyBehavior = "select";
 	} else if (scroll.checked === true) {
-		(myDiagram.commandHandler as DrawCommandHandlerTool).arrowKeyBehavior = "scroll";
+		(myDiagram.commandHandler as DrawCommandHandler).arrowKeyBehavior = "scroll";
 	}
 }
 
@@ -653,18 +652,18 @@ export function copySelection() { myDiagram.commandHandler.copySelection(); }
 export function pasteSelection() { myDiagram.commandHandler.pasteSelection(); }
 export function deleteSelection() { myDiagram.commandHandler.deleteSelection(); }
 export function selectAll() { myDiagram.commandHandler.selectAll(); }
-export function alignLeft() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignLeft(); }
-export function alignRight() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignRight(); }
-export function alignTop() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignTop(); }
-export function alignBottom() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignBottom(); }
-export function alignCemterX() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignCenterX(); }
-export function alignCenterY() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignCenterY(); }
-export function rotate45() { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(45); }
-export function rotate_45() { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(-45); }
-export function rotate90() { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(90); }
-export function rotate_90() { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(-90); }
-export function rotate180() { (myDiagram.commandHandler as DrawCommandHandlerTool).rotate(180); }
+export function alignLeft() { (myDiagram.commandHandler as DrawCommandHandler).alignLeft(); }
+export function alignRight() { (myDiagram.commandHandler as DrawCommandHandler).alignRight(); }
+export function alignTop() { (myDiagram.commandHandler as DrawCommandHandler).alignTop(); }
+export function alignBottom() { (myDiagram.commandHandler as DrawCommandHandler).alignBottom(); }
+export function alignCemterX() { (myDiagram.commandHandler as DrawCommandHandler).alignCenterX(); }
+export function alignCenterY() { (myDiagram.commandHandler as DrawCommandHandler).alignCenterY(); }
+export function rotate45() { (myDiagram.commandHandler as DrawCommandHandler).rotate(45); }
+export function rotate_45() { (myDiagram.commandHandler as DrawCommandHandler).rotate(-45); }
+export function rotate90() { (myDiagram.commandHandler as DrawCommandHandler).rotate(90); }
+export function rotate_90() { (myDiagram.commandHandler as DrawCommandHandler).rotate(-90); }
+export function rotate180() { (myDiagram.commandHandler as DrawCommandHandler).rotate(180); }
 export function cancel1() { closeElement('openDocument'); }
 export function cancel2() { closeElement('removeDocument'); }
-export function alignRows() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignRow(askSpace()); }
-export function alignColumns() { (myDiagram.commandHandler as DrawCommandHandlerTool).alignColumn(askSpace()); }
+export function alignRows() { (myDiagram.commandHandler as DrawCommandHandler).alignRow(askSpace()); }
+export function alignColumns() { (myDiagram.commandHandler as DrawCommandHandler).alignColumn(askSpace()); }

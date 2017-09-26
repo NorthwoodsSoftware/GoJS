@@ -33,7 +33,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
 		if (this.isActive && this._imagePart === null) {
 			var bounds = this.diagram.computePartsBounds(map.toKeySet());
 			var offset = this.diagram.lastInput.documentPoint.copy().subtract(bounds.position);
-			var $ = go.GraphObject.make;
+			const $ = go.GraphObject.make;
 			this._imagePart =
 				$(go.Part,
 					{ layerName: "Tool", opacity: 0.5, locationSpot: new go.Spot(0, 0, offset.x, offset.y) },

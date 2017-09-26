@@ -30,7 +30,7 @@ var __extends = (this && this.__extends) || (function () {
     * @class
     * This tool only works when the Link has a label marked by the "_isLinkLabel" property.
     */
-    var LinkLabelOnPathDraggingTool = (function (_super) {
+    var LinkLabelOnPathDraggingTool = /** @class */ (function (_super) {
         __extends(LinkLabelOnPathDraggingTool, _super);
         function LinkLabelOnPathDraggingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

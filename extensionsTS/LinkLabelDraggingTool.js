@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * that is positioned at the Link.midPoint plus some offset.
     * It does not work for labels that have a particular segmentIndex.
     */
-    var LinkLabelDraggingTool = (function (_super) {
+    var LinkLabelDraggingTool = /** @class */ (function (_super) {
         __extends(LinkLabelDraggingTool, _super);
         function LinkLabelDraggingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

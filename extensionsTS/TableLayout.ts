@@ -39,7 +39,7 @@ export class TableLayout extends go.Layout {
 	private _rowDefs: any = [];
 	/** @type {Array} */
 	private _colDefs: any = [];
-	protected cloneProtected(copy: TableLayout) {
+	public cloneProtected(copy: this) {
 		super.cloneProtected.call(this, copy);
 		copy._defaultAlignment = this._defaultAlignment;
 		copy._defaultStretch = this._defaultStretch;
@@ -213,17 +213,36 @@ export class TableLayout extends go.Layout {
 		var parts = new go.List(go.Part) as go.List<go.Part>;
 		this.collectParts(coll).each((p) => {
 			if (!(p instanceof go.Link)) {
-				p.ensureBounds();
 				parts.add(p);
 			}
 		});
 
 		this.diagram.startTransaction("TableLayout");
 		var union = new go.Size();
+    // this calls .beforeMeasure(parts, rowcol)
 		var rowcol = this.measureTable(Infinity, Infinity, parts, union, 0, 0);
 		this.arrangeTable(parts, union, rowcol);
+    this.afterArrange(parts, rowcol);
 		this.diagram.commitTransaction("TableLayout");
 	};
+
+  /**
+  * @ignore
+  * @override
+  * @this {TableLayout}
+  * @param {List} parts
+  * @param {Array.<Array.<Array>>} rowcol  [row][col][cell]
+  */
+  protected beforeMeasure(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>) { };
+
+  /**
+  * @ignore
+  * @override
+  * @this {TableLayout}
+  * @param {List} parts
+  * @param {Array.<Array.<Array>>} rowcol  [row][col][cell]
+  */
+  protected afterArrange(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>) { };
 
   /**
   * @ignore
@@ -244,6 +263,8 @@ export class TableLayout extends go.Layout {
 			}
 			rowcol[child.row][child.column].push(child); // push child into right cell
 		}
+
+    this.beforeMeasure(children, rowcol);
 
 		// Reset the row/col definitions because the ones from last measure are irrelevant
 		var resetCols = [];  // keep track of which columns we've already reset

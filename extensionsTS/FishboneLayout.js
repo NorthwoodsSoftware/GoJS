@@ -35,7 +35,7 @@ var __extends = (this && this.__extends) || (function () {
     * This layout assumes Links are automatically routed in the way needed by fishbone diagrams,
     * by using the FishboneLink class instead of go.Link.
     */
-    var FishboneLayout = (function (_super) {
+    var FishboneLayout = /** @class */ (function (_super) {
         __extends(FishboneLayout, _super);
         function FishboneLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -229,7 +229,7 @@ var __extends = (this && this.__extends) || (function () {
     }(go.TreeLayout));
     exports.FishboneLayout = FishboneLayout;
     // FishboneLink has custom routing
-    var FishboneLink = (function (_super) {
+    var FishboneLink = /** @class */ (function (_super) {
         __extends(FishboneLink, _super);
         function FishboneLink() {
             return _super !== null && _super.apply(this, arguments) || this;

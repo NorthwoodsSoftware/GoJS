@@ -6,18 +6,16 @@
 import * as go from "../release/go";
 import { LinkLabelOnPathDraggingTool } from "./LinkLabelOnPathDraggingTool";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
-	myDiagram =
+  let myDiagram =
 		$(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element
 			{
-				initialContentAlignment: go.Spot.Center,
-				layout: $(go.ForceDirectedLayout,
+        initialContentAlignment: go.Spot.Center,
+			  layout: $(go.ForceDirectedLayout,
 					{ defaultSpringLength: 50, defaultElectricalCharge: 50 }),
 				"undoManager.isEnabled": true
 			});

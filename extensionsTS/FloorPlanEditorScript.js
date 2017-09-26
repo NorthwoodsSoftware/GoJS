@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./DrawCommandHandlerTool", "./RotateMultipleTool", "./ResizeMultipleTool", "./GuidedDraggingTool"], factory);
+        define(["require", "exports", "../release/go", "./DrawCommandHandler", "./RotateMultipleTool", "./ResizeMultipleTool", "./GuidedDraggingTool"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -13,7 +13,7 @@
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var DrawCommandHandlerTool_1 = require("./DrawCommandHandlerTool");
+    var DrawCommandHandler_1 = require("./DrawCommandHandler");
     var RotateMultipleTool_1 = require("./RotateMultipleTool");
     var ResizeMultipleTool_1 = require("./ResizeMultipleTool");
     var GuidedDraggingTool_1 = require("./GuidedDraggingTool");
@@ -26,9 +26,7 @@
                 return false;
             }
         }*/
-    var myDiagram = null;
-    var myPalette = null;
-    var myOverview = null;
+    var myDiagram;
     function init() {
         // hides open HTML Element
         var openDocument = document.getElementById("openDocument");
@@ -39,9 +37,10 @@
         var $ = go.GraphObject.make; // for more concise visual tree definitions
         myDiagram =
             $(go.Diagram, "myDiagramDiv", {
+                initialContentAlignment: go.Spot.Center,
                 allowDrop: true,
                 allowLink: false,
-                commandHandler: new DrawCommandHandlerTool_1.DrawCommandHandlerTool(),
+                commandHandler: new DrawCommandHandler_1.DrawCommandHandler(),
                 // default to having arrow keys move selected nodes
                 "commandHandler.arrowKeyBehavior": "move",
                 // allow Ctrl-G to call groupSelection()
@@ -160,129 +159,127 @@
         var metal = $(go.Brush, "Linear", { 0: "#A8A8A8", 1: "#474747" });
         var green = $(go.Brush, "Linear", { 0: "#9CCB19", 1: "#698B22" });
         // default structures and furniture
-        myPalette =
-            $(go.Palette, "myPaletteDiv", {
-                nodeTemplate: myDiagram.nodeTemplate,
-                "contextMenuTool.isEnabled": false,
-                allowZoom: false,
-                layout: $(go.GridLayout, { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5) }),
-                // initialize the Palette with a few furniture and structure nodes
-                model: $(go.GraphLinksModel, {
-                    nodeDataArray: [
-                        {
-                            key: 1,
-                            geo: "F1 M0 0 L5,0 5,40 0,40 0,0z x M0,0 a40,40 0 0,0 -40,40 ",
-                            item: "left door",
-                            color: wall
-                        },
-                        {
-                            key: 2,
-                            geo: "F1 M0 0 L5,0 5,40 0,40 0,0z x M5,0 a40,40 0 0,1 40,40 ",
-                            item: "right door",
-                            color: wall
-                        },
-                        {
-                            key: 3, angle: 90,
-                            geo: "F1 M0,0 L0,100 12,100 12,0 0,0z",
-                            item: "wall",
-                            color: wall
-                        },
-                        {
-                            key: 4, angle: 90,
-                            geo: "F1 M0,0 L0,50 10,50 10,0 0,0 x M5,0 L5,50z",
-                            item: "window",
-                            color: "whitesmoke"
-                        },
-                        {
-                            key: 5,
-                            geo: "F1 M0,0 L50,0 50,12 12,12 12,50 0,50 0,0 z",
-                            item: "corner",
-                            color: wall
-                        },
-                        {
-                            key: 6,
-                            geo: "F1 M0 0 L40 0 40 40 0 40 0 0 x M0 10 L40 10 x M 8 10 8 40 x M 32 10 32 40 z",
-                            item: "arm chair",
-                            color: blue
-                        },
-                        {
-                            key: 7,
-                            geo: "F1 M0 0 L80,0 80,40 0,40 0 0 x M0,10 L80,10 x M 7,10 7,40 x M 73,10 73,40 z",
-                            item: "couch",
-                            color: blue
-                        },
-                        {
-                            key: 8,
-                            geo: "F1 M0 0 L30 0 30 30 0 30 z",
-                            item: "Side Table",
-                            color: wood
-                        },
-                        {
-                            key: 9,
-                            geo: "F1 M0 0 L80,0 80,90 0,90 0,0 x M0,7 L80,7 x M 0,30 80,30 z",
-                            item: "queen bed",
-                            color: green
-                        },
-                        {
-                            key: 10,
-                            geo: "F1 M5 5 L30,5 35,30 0,30 5,5 x F M0 0 L 35,0 35,5 0,5 0,0 z",
-                            item: "chair",
-                            color: wood
-                        },
-                        {
-                            key: 11,
-                            geo: "F1 M0 0 L50,0 50,90 0,90 0,0 x M0,7 L50,7 x M 0,30 50,30 z",
-                            item: "twin bed",
-                            color: green
-                        },
-                        {
-                            key: 12,
-                            geo: "F1 M0 0 L0 60 80 60 80 0z",
-                            item: "kitchen table",
-                            color: wood
-                        },
-                        {
-                            key: 13,
-                            geo: "F1 M 0,0 a35,35 0 1,0 1,-1 z",
-                            item: "round table",
-                            color: wood
-                        },
-                        {
-                            key: 14,
-                            geo: "F1 M 0,0 L35,0 35,30 0,30 0,0 x M 5,5 L 30, 5 30,25 5,25 5,5 x M 17,2 L 17,10 19,10 19,2 17,2 z",
-                            item: "kitchen sink",
-                            color: metal
-                        },
-                        {
-                            key: 15,
-                            geo: "F1 M0,0 L55,0, 55,50, 0,50 0,0 x M 40,7 a 7,7 0 1 0 0.00001 0z x M 40,10 a 4,4 0 1 0 0.00001 0z x M 38,27 a 7,7 0 1 0 0.00001 0z x M 38,30 a 4,4 0 1 0 0.00001 0z x M 16,27 a 7,7 0 1 0 0.00001 0z xM 16,30 a 4,4 0 1 0 0.00001 0z x M 14,7 a 7,7 0 1 0 0.00001 0z x M 14,10 a 4,4 0 1 0 0.00001 0z",
-                            item: "stove",
-                            color: metal
-                        },
-                        {
-                            key: 16,
-                            geo: "F1 M0,0 L55,0, 55,50, 0,50 0,0 x F1 M0,51 L55,51 55,60 0,60 0,51 x F1 M5,60 L10,60 10,63 5,63z",
-                            item: "refrigerator",
-                            color: metal
-                        },
-                        {
-                            key: 17,
-                            geo: "F1 M0,0 100,0 100,40 0,40z",
-                            item: "bookcase",
-                            color: wood
-                        },
-                        {
-                            key: 18,
-                            geo: "F1 M0,0 70,0 70,50 0,50 0,0 x F1 M15,58 55,58 55,62 15,62 x F1 M17,58 16,50 54,50 53,58z",
-                            item: "desk",
-                            color: wood
-                        },
-                    ] // end nodeDataArray
-                }) // end model
-            }); // end Palette
+        var myPalette = $(go.Palette, "myPaletteDiv", {
+            nodeTemplate: myDiagram.nodeTemplate,
+            "contextMenuTool.isEnabled": false,
+            allowZoom: false,
+            layout: $(go.GridLayout, { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5) }),
+            // initialize the Palette with a few furniture and structure nodes
+            model: $(go.GraphLinksModel, {
+                nodeDataArray: [
+                    {
+                        key: 1,
+                        geo: "F1 M0 0 L5,0 5,40 0,40 0,0z x M0,0 a40,40 0 0,0 -40,40 ",
+                        item: "left door",
+                        color: wall
+                    },
+                    {
+                        key: 2,
+                        geo: "F1 M0 0 L5,0 5,40 0,40 0,0z x M5,0 a40,40 0 0,1 40,40 ",
+                        item: "right door",
+                        color: wall
+                    },
+                    {
+                        key: 3, angle: 90,
+                        geo: "F1 M0,0 L0,100 12,100 12,0 0,0z",
+                        item: "wall",
+                        color: wall
+                    },
+                    {
+                        key: 4, angle: 90,
+                        geo: "F1 M0,0 L0,50 10,50 10,0 0,0 x M5,0 L5,50z",
+                        item: "window",
+                        color: "whitesmoke"
+                    },
+                    {
+                        key: 5,
+                        geo: "F1 M0,0 L50,0 50,12 12,12 12,50 0,50 0,0 z",
+                        item: "corner",
+                        color: wall
+                    },
+                    {
+                        key: 6,
+                        geo: "F1 M0 0 L40 0 40 40 0 40 0 0 x M0 10 L40 10 x M 8 10 8 40 x M 32 10 32 40 z",
+                        item: "arm chair",
+                        color: blue
+                    },
+                    {
+                        key: 7,
+                        geo: "F1 M0 0 L80,0 80,40 0,40 0 0 x M0,10 L80,10 x M 7,10 7,40 x M 73,10 73,40 z",
+                        item: "couch",
+                        color: blue
+                    },
+                    {
+                        key: 8,
+                        geo: "F1 M0 0 L30 0 30 30 0 30 z",
+                        item: "Side Table",
+                        color: wood
+                    },
+                    {
+                        key: 9,
+                        geo: "F1 M0 0 L80,0 80,90 0,90 0,0 x M0,7 L80,7 x M 0,30 80,30 z",
+                        item: "queen bed",
+                        color: green
+                    },
+                    {
+                        key: 10,
+                        geo: "F1 M5 5 L30,5 35,30 0,30 5,5 x F M0 0 L 35,0 35,5 0,5 0,0 z",
+                        item: "chair",
+                        color: wood
+                    },
+                    {
+                        key: 11,
+                        geo: "F1 M0 0 L50,0 50,90 0,90 0,0 x M0,7 L50,7 x M 0,30 50,30 z",
+                        item: "twin bed",
+                        color: green
+                    },
+                    {
+                        key: 12,
+                        geo: "F1 M0 0 L0 60 80 60 80 0z",
+                        item: "kitchen table",
+                        color: wood
+                    },
+                    {
+                        key: 13,
+                        geo: "F1 M 0,0 a35,35 0 1,0 1,-1 z",
+                        item: "round table",
+                        color: wood
+                    },
+                    {
+                        key: 14,
+                        geo: "F1 M 0,0 L35,0 35,30 0,30 0,0 x M 5,5 L 30, 5 30,25 5,25 5,5 x M 17,2 L 17,10 19,10 19,2 17,2 z",
+                        item: "kitchen sink",
+                        color: metal
+                    },
+                    {
+                        key: 15,
+                        geo: "F1 M0,0 L55,0, 55,50, 0,50 0,0 x M 40,7 a 7,7 0 1 0 0.00001 0z x M 40,10 a 4,4 0 1 0 0.00001 0z x M 38,27 a 7,7 0 1 0 0.00001 0z x M 38,30 a 4,4 0 1 0 0.00001 0z x M 16,27 a 7,7 0 1 0 0.00001 0z xM 16,30 a 4,4 0 1 0 0.00001 0z x M 14,7 a 7,7 0 1 0 0.00001 0z x M 14,10 a 4,4 0 1 0 0.00001 0z",
+                        item: "stove",
+                        color: metal
+                    },
+                    {
+                        key: 16,
+                        geo: "F1 M0,0 L55,0, 55,50, 0,50 0,0 x F1 M0,51 L55,51 55,60 0,60 0,51 x F1 M5,60 L10,60 10,63 5,63z",
+                        item: "refrigerator",
+                        color: metal
+                    },
+                    {
+                        key: 17,
+                        geo: "F1 M0,0 100,0 100,40 0,40z",
+                        item: "bookcase",
+                        color: wood
+                    },
+                    {
+                        key: 18,
+                        geo: "F1 M0,0 70,0 70,50 0,50 0,0 x F1 M15,58 55,58 55,62 15,62 x F1 M17,58 16,50 54,50 53,58z",
+                        item: "desk",
+                        color: wood
+                    },
+                ] // end nodeDataArray
+            }) // end model
+        }); // end Palette
         // the Overview
-        myOverview =
-            $(go.Overview, "myOverviewDiv", { observed: myDiagram, maxScale: 0.5 });
+        var myOverview = $(go.Overview, "myOverviewDiv", { observed: myDiagram, maxScale: 0.5 });
         // change color of viewport border in Overview
         myOverview.box.elt(0).stroke = "dodgerblue";
         // start off with an empty document

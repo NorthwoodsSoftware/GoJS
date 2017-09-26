@@ -14,18 +14,16 @@
     */
     var go = require("../release/go");
     var SerpentineLayout_1 = require("./SerpentineLayout");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
-            {
-                initialContentAlignment: go.Spot.Center,
-                isTreePathToChildren: false,
-                layout: $(SerpentineLayout_1.SerpentineLayout) // defined in SerpentineLayout.js
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        {
+            initialContentAlignment: go.Spot.Center,
+            isTreePathToChildren: false,
+            layout: $(SerpentineLayout_1.SerpentineLayout) // defined in SerpentineLayout.js
+        });
         myDiagram.nodeTemplate =
             $(go.Node, go.Panel.Auto, $(go.Shape, { figure: "RoundedRectangle", fill: "white" }, new go.Binding("fill", "color")), $(go.TextBlock, { margin: 4 }, new go.Binding("text", "key")));
         myDiagram.linkTemplate =

@@ -13,21 +13,19 @@
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                initialContentAlignment: go.Spot.Center,
-                "PartResized": function (e) {
-                    var node = e.subject;
-                    var scroller = node.findObject("SCROLLER");
-                    if (scroller !== null)
-                        scroller._updateScrollBar(scroller.findObject("TABLE"));
-                }
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            "PartResized": function (e) {
+                var node = e.subject;
+                var scroller = node.findObject("SCROLLER");
+                if (scroller !== null)
+                    scroller._updateScrollBar(scroller.findObject("TABLE"));
+            }
+        });
         myDiagram.nodeTemplate =
             $(go.Node, "Vertical", {
                 selectionObjectName: "SCROLLER",

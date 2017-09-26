@@ -15,13 +15,15 @@
     var go = require("../release/go");
     var FreehandDrawingTool_1 = require("./FreehandDrawingTool");
     var GeometryReshapingTool_1 = require("./GeometryReshapingTool");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
-            $(go.Diagram, "myDiagramDiv");
+            $(go.Diagram, "myDiagramDiv", {
+                initialContentAlignment: go.Spot.Center
+            });
         myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_1.GeometryReshapingTool());
         myDiagram.nodeTemplateMap.add("FreehandDrawing", $(go.Part, { locationSpot: go.Spot.Center, isLayoutPositioned: false }, new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), {
             selectionAdorned: true, selectionObjectName: "SHAPE",

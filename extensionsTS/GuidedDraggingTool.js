@@ -31,7 +31,7 @@ var __extends = (this && this.__extends) || (function () {
     * when the selected part is nearly aligned with another part.
     */
     var $ = go.GraphObject.make;
-    var GuidedDraggingTool = (function (_super) {
+    var GuidedDraggingTool = /** @class */ (function (_super) {
         __extends(GuidedDraggingTool, _super);
         function GuidedDraggingTool() {
             var _this = _super.call(this) || this;

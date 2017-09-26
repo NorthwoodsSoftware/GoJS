@@ -24,7 +24,7 @@
     * @class
     * @param {Diagram=} dia the Diagram on which the Robot simulates input events
     */
-    var Robot = (function () {
+    var Robot = /** @class */ (function () {
         function Robot(dia) {
             if (dia === undefined)
                 dia = null;

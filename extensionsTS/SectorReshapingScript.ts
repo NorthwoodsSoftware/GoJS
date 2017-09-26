@@ -6,18 +6,16 @@
 import * as go from "../release/go";
 import { SectorReshapingTool } from "./SectorReshapingTool";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
-	myDiagram =
+	let myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				initialContentAlignment: go.Spot.Center,
-				"animationManager.isEnabled": false,
+        initialContentAlignment: go.Spot.Center,
+			  "animationManager.isEnabled": false,
 				"undoManager.isEnabled": true
 			});
 

@@ -33,7 +33,7 @@ var __extends = (this && this.__extends) || (function () {
     * It works by modifying that label's GraphObject.alignment property to have an
     * offset from the center of the panel.
     */
-    var NodeLabelDraggingTool = (function (_super) {
+    var NodeLabelDraggingTool = /** @class */ (function (_super) {
         __extends(NodeLabelDraggingTool, _super);
         function NodeLabelDraggingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

@@ -31,7 +31,7 @@ var __extends = (this && this.__extends) || (function () {
     * This custom Link class customizes its route to go parallel to other links connecting the same ports,
     * if the link is not orthogonal and is not Bezier curved.
     */
-    var ParallelRouteLink = (function (_super) {
+    var ParallelRouteLink = /** @class */ (function (_super) {
         __extends(ParallelRouteLink, _super);
         function ParallelRouteLink() {
             return _super !== null && _super.apply(this, arguments) || this;

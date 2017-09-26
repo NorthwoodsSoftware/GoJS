@@ -44,11 +44,11 @@ export class GeometryReshapingTool extends go.Tool {
 
 	// internal state
 	/** @type {GraphObject} */
-	private _handle: go.GraphObject = null;
+	private _handle: go.GraphObject | null = null;
 	/** @type {Shape} */
-	private _adornedShape: go.Shape = null;
+  private _adornedShape: go.Shape | null = null;
 	/** @type {Geometry} */
-	private _originalGeometry: go.Geometry = null;  // in case the tool is cancelled and the UndoManager is not enabled
+  private _originalGeometry: go.Geometry | null = null;  // in case the tool is cancelled and the UndoManager is not enabled
 
   /**
   * A small GraphObject used as a reshape handle for each segment.
@@ -77,7 +77,7 @@ export class GeometryReshapingTool extends go.Tool {
   * @function.
   * @return {GraphObject}
   */
-	get handle(): go.GraphObject { return this._handle }
+	get handle(): go.GraphObject | null { return this._handle }
 
   /**
   * Gets the {@link Shape} that is being reshaped.
@@ -86,7 +86,7 @@ export class GeometryReshapingTool extends go.Tool {
   * @function.
   * @return {Shape}
   */
-	get adornedShape(): go.Shape { return this._adornedShape }
+  get adornedShape(): go.Shape | null { return this._adornedShape }
 
   /**
   * This read-only property remembers the original value for {@link Shape#geometry},
@@ -95,7 +95,7 @@ export class GeometryReshapingTool extends go.Tool {
   * @function.
   * @return {Geometry}
   */
-	get originalGeometry(): go.Geometry { return this._originalGeometry }
+  get originalGeometry(): go.Geometry | null { return this._originalGeometry }
 
 
   /**
@@ -228,7 +228,7 @@ export class GeometryReshapingTool extends go.Tool {
   /**
   * @this {GeometryReshapingTool}
   */
-	public canStart() {
+  public canStart(): boolean {
 		if (!this.isEnabled) return false;
 
 		var diagram = this.diagram;

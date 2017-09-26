@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.
     * Thus the default layer for BalloonLinks is "Background".
     */
-    var BalloonLink = (function (_super) {
+    var BalloonLink = /** @class */ (function (_super) {
         __extends(BalloonLink, _super);
         function BalloonLink() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

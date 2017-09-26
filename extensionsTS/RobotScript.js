@@ -15,8 +15,8 @@
     var go = require("../release/go");
     var Robot_1 = require("./Robot");
     var robot; // this global variable will hold an instance of the Robot class for myDiagram
-    var myDiagram = null;
-    var myPalette = null;
+    var myDiagram;
+    var myPalette;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  
@@ -40,6 +40,7 @@
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // must name or refer to the DIV HTML element
             {
+                initialContentAlignment: go.Spot.Center,
                 allowDrop: true,
                 nodeTemplate: $(go.Node, "Auto", {
                     click: nodeClicked,

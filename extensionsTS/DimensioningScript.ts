@@ -6,18 +6,16 @@
 import * as go from "../release/go";
 import { DimensioningLink } from "./DimensioningLink";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
-	myDiagram =
+	let myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				initialContentAlignment: go.Spot.Center,
-				"undoManager.isEnabled": true
+        initialContentAlignment: go.Spot.Center,
+			  "undoManager.isEnabled": true
 			});
 
 	// A simple resizable node

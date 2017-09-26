@@ -31,7 +31,7 @@ var __extends = (this && this.__extends) || (function () {
     * This layout assumes the graph is a chain of Nodes,
     * {@link #spacing} controls the spacing between nodes.
     */
-    var SpiralLayout = (function (_super) {
+    var SpiralLayout = /** @class */ (function (_super) {
         __extends(SpiralLayout, _super);
         function SpiralLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

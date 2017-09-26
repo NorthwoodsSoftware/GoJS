@@ -14,9 +14,8 @@
     */
     var go = require("../release/go");
     var TreeMapLayout_1 = require("./TreeMapLayout");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
-        var _this = this;
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
@@ -31,7 +30,7 @@
             });
         // change selection behavior to cycle up the chain of containing Groups
         myDiagram.toolManager.clickSelectingTool.standardMouseSelect = function () {
-            var diagram = _this.diagram;
+            var diagram = this.diagram;
             if (diagram === null || !diagram.allowSelect)
                 return;
             var e = diagram.lastInput;
@@ -58,7 +57,7 @@
                     }
                 }
             }
-            go.ClickSelectingTool.prototype.standardMouseSelect.call(_this);
+            go.ClickSelectingTool.prototype.standardMouseSelect.call(this);
         };
         // Nodes and Groups are the absolute minimum template: no elements at all!
         myDiagram.nodeTemplate =
@@ -105,7 +104,7 @@
         myDiagram.model = model;
     }
     exports.rebuildGraph = rebuildGraph;
-    var nodes = (function () {
+    var nodes = /** @class */ (function () {
         function nodes(key, isGroup, parent, text, fill, size, total) {
             this.key = key;
             this.isGroup = isGroup;

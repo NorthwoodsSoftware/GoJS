@@ -37,7 +37,7 @@ var __extends = (this && this.__extends) || (function () {
     * You can customize the {@link LinkingTool#archetypeLinkData} to specify property values
     * that can be data-bound by your link template for the Links that are actually created.
     */
-    var PolylineLinkingTool = (function (_super) {
+    var PolylineLinkingTool = /** @class */ (function (_super) {
         __extends(PolylineLinkingTool, _super);
         function PolylineLinkingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

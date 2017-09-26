@@ -14,19 +14,17 @@
     */
     var go = require("../release/go");
     var LocalStorageCommandHandler_1 = require("./LocalStorageCommandHandler");
-    var myDiagram = null;
-    var myDiagram2 = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center,
             commandHandler: new LocalStorageCommandHandler_1.LocalStorageCommandHandler(),
             "undoManager.isEnabled": true // enable undo & redo
         });
-        myDiagram2 = $(go.Diagram, "myDiagramDiv2", // create a Diagram for the DIV HTML element
+        var myDiagram2 = $(go.Diagram, "myDiagramDiv2", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center,
             commandHandler: new LocalStorageCommandHandler_1.LocalStorageCommandHandler(),

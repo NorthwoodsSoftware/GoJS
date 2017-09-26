@@ -14,17 +14,16 @@
     */
     var go = require("../release/go");
     var NonRealtimeDraggingTool_1 = require("./NonRealtimeDraggingTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                draggingTool: new NonRealtimeDraggingTool_1.NonRealtimeDraggingTool(),
-                initialContentAlignment: go.Spot.Center,
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            // install the replacement DraggingTool:
+            draggingTool: new NonRealtimeDraggingTool_1.NonRealtimeDraggingTool(),
+            "undoManager.isEnabled": true
+        });
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", { locationSpot: go.Spot.Center }, $(go.Shape, "Circle", {
                 fill: "white",

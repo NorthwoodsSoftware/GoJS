@@ -3,13 +3,12 @@
 *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
 */
 import * as go from "../release/go";
-import { DrawCommandHandlerTool } from "./DrawCommandHandlerTool";
+import { DrawCommandHandler } from "./DrawCommandHandler";
 import { RotateMultipleTool } from "./RotateMultipleTool";
 import { ResizeMultipleTool } from "./ResizeMultipleTool";
 import { GuidedDraggingTool } from "./GuidedDraggingTool";
 
-var myDiagram: go.Diagram = null;
-var myOverview: go.Overview = null;
+var myDiagram: go.Diagram;
 
 export function init() {
     // displays cached floor plan files in the listbox
@@ -23,12 +22,13 @@ export function init() {
       listbox.add(option, null)
     }
 
-    var $ = go.GraphObject.make;  // for more concise visual tree definitions
+    const $ = go.GraphObject.make;  // for more concise visual tree definitions
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          isReadOnly: true  // allow selection but not moving or copying or deleting
+          initialContentAlignment: go.Spot.Center,
+			    isReadOnly: true  // allow selection but not moving or copying or deleting
         });
 
     // converts data about the item into a string
@@ -90,7 +90,7 @@ export function init() {
         $(go.Placeholder)
       );
 
-    myOverview =
+    let myOverview =
       $(go.Overview, "myOverviewDiv",
         { observed: myDiagram, maxScale: 0.5 });
     // change color of viewport border in Overview
@@ -110,7 +110,7 @@ export function init() {
       if (!text) {
         obj.part.removeAdornment(id.toString());
       } else {
-        var $ = go.GraphObject.make;
+        const $ = go.GraphObject.make;
         var ad =
           $(go.Adornment, "Auto",
             {

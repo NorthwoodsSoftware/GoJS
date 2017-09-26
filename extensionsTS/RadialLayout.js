@@ -27,7 +27,7 @@ var __extends = (this && this.__extends) || (function () {
     * Given a root Node this arranges connected nodes in concentric rings,
     * layered by the minimum link distance from the root.
     */
-    var RadialLayout = (function (_super) {
+    var RadialLayout = /** @class */ (function (_super) {
         __extends(RadialLayout, _super);
         function RadialLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -287,7 +287,7 @@ var __extends = (this && this.__extends) || (function () {
     * @extends LayoutVertex
     * @class
     */
-    var RadialVertex = (function (_super) {
+    var RadialVertex = /** @class */ (function (_super) {
         __extends(RadialVertex, _super);
         function RadialVertex() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

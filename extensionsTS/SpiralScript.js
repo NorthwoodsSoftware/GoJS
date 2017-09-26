@@ -14,19 +14,17 @@
     */
     var go = require("../release/go");
     var SpiralLayout_1 = require("./SpiralLayout");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
-            {
-                initialContentAlignment: go.Spot.Center,
-                initialAutoScale: go.Diagram.Uniform,
-                isTreePathToChildren: false,
-                layout: $(SpiralLayout_1.SpiralLayout) // defined in SpiralLayout.js
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        {
+            initialContentAlignment: go.Spot.Center,
+            initialAutoScale: go.Diagram.Uniform,
+            isTreePathToChildren: false,
+            layout: $(SpiralLayout_1.SpiralLayout) // defined in SpiralLayout.js
+        });
         myDiagram.nodeTemplate =
             $(go.Node, go.Panel.Auto, { locationSpot: go.Spot.Center }, $(go.Shape, { figure: "Circle", fill: "white" }, new go.Binding("fill", "color")), $(go.TextBlock, { margin: 4 }, new go.Binding("text", "key")));
         myDiagram.linkTemplate =

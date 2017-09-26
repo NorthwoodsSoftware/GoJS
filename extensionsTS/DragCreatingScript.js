@@ -14,14 +14,14 @@
     */
     var go = require("../release/go");
     var DragCreatingTool_1 = require("./DragCreatingTool");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
-        var _this = this;
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
             $(go.Diagram, "myDiagramDiv", {
+                initialContentAlignment: go.Spot.Center,
                 // Define the template for Nodes, just some text inside a colored rectangle
                 nodeTemplate: $(go.Node, "Auto", { minSize: new go.Size(60, 20), resizable: true }, new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify), 
                 // temporarily put selected nodes in ForegFround layer
@@ -42,9 +42,9 @@
             archetypeNodeData: { color: "white" },
             insertPart: function (bounds) {
                 // use a different color each time
-                _this.archetypeNodeData.color = go.Brush.randomColor();
+                this.archetypeNodeData.color = go.Brush.randomColor();
                 // call the base method to do normal behavior and return its result
-                return DragCreatingTool_1.DragCreatingTool.prototype.insertPart.call(_this, bounds);
+                return DragCreatingTool_1.DragCreatingTool.prototype.insertPart.call(this, bounds);
             }
         }));
     }

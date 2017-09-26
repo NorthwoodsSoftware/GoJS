@@ -6,19 +6,18 @@
 import * as go from "../release/go";
 import { LinkLabelDraggingTool } from "./LinkLabelDraggingTool";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
 			{
-				// start everything in the middle of the viewport
-				initialContentAlignment: go.Spot.Center,
-				// have mouse wheel events zoom in and out instead of scroll up and down
+        initialContentAlignment: go.Spot.Center,
+			  // have mouse wheel events zoom in and out instead of scroll up and down
 				"toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
 				// support double-click in background creating a new node
 				"clickCreatingTool.archetypeNodeData": { text: "new node" },

@@ -14,13 +14,15 @@
     */
     var go = require("../release/go");
     var PolylineLinkingTool_1 = require("./PolylineLinkingTool");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
-            $(go.Diagram, "myDiagramDiv", { initialContentAlignment: go.Spot.Center });
+            $(go.Diagram, "myDiagramDiv", {
+                initialContentAlignment: go.Spot.Center
+            });
         // install custom linking tool, defined in PolylineLinkingTool.js
         var tool = new PolylineLinkingTool_1.PolylineLinkingTool();
         //tool.temporaryLink.routing = go.Link.Orthogonal;  // optional, but need to keep link template in sync, below

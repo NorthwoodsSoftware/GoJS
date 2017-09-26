@@ -14,8 +14,8 @@
     */
     var go = require("../release/go");
     var DragZoomingTool_1 = require("./DragZoomingTool");
-    var myDiagram = null;
-    var myLoading = null;
+    var myDiagram;
+    var myLoading;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  

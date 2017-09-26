@@ -12,7 +12,7 @@ import * as go from "../release/go";
 * This draggingTool class makes guidelines visible as the parts are dragged around a diagram
 * when the selected part is nearly aligned with another part.
 */
-var $ = go.GraphObject.make;
+const $ = go.GraphObject.make;
 
 export class GuidedDraggingTool extends go.DraggingTool {
 
@@ -156,7 +156,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
   * @param {boolean} guideline if true, show guideline
   * @param {boolean} snap if true, snap the part to where the guideline would be
   */
-	public showHorizontalMatches(part: go.Node, guideline: boolean, snap: boolean) {
+	public showHorizontalMatches(part: go.Part, guideline: boolean, snap: boolean) {
 		var partBounds = part.actualBounds;
 		var p0 = partBounds.y;
 		var p1 = partBounds.y + partBounds.height / 2;

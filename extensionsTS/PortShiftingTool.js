@@ -33,7 +33,7 @@ var __extends = (this && this.__extends) || (function () {
     * and the user holds down the Shift key.
     * It works by modifying that port's GraphObject.alignment property.
     */
-    var PortShiftingTool = (function (_super) {
+    var PortShiftingTool = /** @class */ (function (_super) {
         __extends(PortShiftingTool, _super);
         function PortShiftingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

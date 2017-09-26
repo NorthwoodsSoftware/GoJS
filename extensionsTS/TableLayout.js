@@ -47,7 +47,7 @@ var __extends = (this && this.__extends) || (function () {
     * nor background (RowColumnDefinition.background and coversSeparators properties).
     * There is no support for RowColumnDefinition.sizing, either.
     */
-    var TableLayout = (function (_super) {
+    var TableLayout = /** @class */ (function (_super) {
         __extends(TableLayout, _super);
         function TableLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -249,16 +249,35 @@ var __extends = (this && this.__extends) || (function () {
             var parts = new go.List(go.Part);
             this.collectParts(coll).each(function (p) {
                 if (!(p instanceof go.Link)) {
-                    p.ensureBounds();
                     parts.add(p);
                 }
             });
             this.diagram.startTransaction("TableLayout");
             var union = new go.Size();
+            // this calls .beforeMeasure(parts, rowcol)
             var rowcol = this.measureTable(Infinity, Infinity, parts, union, 0, 0);
             this.arrangeTable(parts, union, rowcol);
+            this.afterArrange(parts, rowcol);
             this.diagram.commitTransaction("TableLayout");
         };
+        ;
+        /**
+        * @ignore
+        * @override
+        * @this {TableLayout}
+        * @param {List} parts
+        * @param {Array.<Array.<Array>>} rowcol  [row][col][cell]
+        */
+        TableLayout.prototype.beforeMeasure = function (parts, rowcol) { };
+        ;
+        /**
+        * @ignore
+        * @override
+        * @this {TableLayout}
+        * @param {List} parts
+        * @param {Array.<Array.<Array>>} rowcol  [row][col][cell]
+        */
+        TableLayout.prototype.afterArrange = function (parts, rowcol) { };
         ;
         /**
         * @ignore
@@ -279,6 +298,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 rowcol[child.row][child.column].push(child); // push child into right cell
             }
+            this.beforeMeasure(children, rowcol);
             // Reset the row/col definitions because the ones from last measure are irrelevant
             var resetCols = []; // keep track of which columns we've already reset
             // Objects that span multiple columns and
@@ -465,7 +485,7 @@ var __extends = (this && this.__extends) || (function () {
                         if (desiredColTotal === 0)
                             w = colHerald.actual + colleft;
                         else
-                            w = ((nosizeCols[child.column] / desiredColTotal) * originalcolleft);
+                            w = /*colHerald.actual +*/ ((nosizeCols[child.column] / desiredColTotal) * originalcolleft);
                     }
                     else {
                         // Only use colHerald.actual if it was nonzero before this loop
@@ -486,7 +506,7 @@ var __extends = (this && this.__extends) || (function () {
                         if (desiredRowTotal === 0)
                             h = rowHerald.actual + rowleft;
                         else
-                            h = ((nosizeRows[child.row] / desiredRowTotal) * originalrowleft);
+                            h = /*rowHerald.actual +*/ ((nosizeRows[child.row] / desiredRowTotal) * originalrowleft);
                     }
                     else {
                         // Only use rowHerald.actual if it was nonzero before this loop

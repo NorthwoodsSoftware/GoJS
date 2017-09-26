@@ -29,7 +29,7 @@ var __extends = (this && this.__extends) || (function () {
     * @extends Tool
     * @class
     */
-    var ColumnResizingTool = (function (_super) {
+    var ColumnResizingTool = /** @class */ (function (_super) {
         __extends(ColumnResizingTool, _super);
         function ColumnResizingTool() {
             var _this = _super.call(this) || this;

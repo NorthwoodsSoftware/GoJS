@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
     * This tool uses a temporary {@link Shape}, {@link #temporaryShape}, held by a {@link Part} in the "Tool" layer,
     * to show interactively what the user is drawing.
     */
-    var PolygonDrawingTool = (function (_super) {
+    var PolygonDrawingTool = /** @class */ (function (_super) {
         __extends(PolygonDrawingTool, _super);
         function PolygonDrawingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

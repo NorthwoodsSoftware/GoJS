@@ -7,16 +7,18 @@ import * as go from "../release/go";
 import { FishboneLayout } from "./FishboneLayout";
 import { FishboneLink } from "./FishboneLayout";
 
-var myDiagram: go.Diagram = null
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  F
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // refers to its DIV HTML element by id
-			{ isReadOnly: true });  // do not allow the user to modify the diagram
+      {
+        initialContentAlignment: go.Spot.Center,
+			  isReadOnly: true });  // do not allow the user to modify the diagram
 
 	// define the normal node template, just some text
 	myDiagram.nodeTemplate =

@@ -14,18 +14,16 @@
     */
     var go = require("../release/go");
     var LinkLabelOnPathDraggingTool_1 = require("./LinkLabelOnPathDraggingTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element
-            {
-                initialContentAlignment: go.Spot.Center,
-                layout: $(go.ForceDirectedLayout, { defaultSpringLength: 50, defaultElectricalCharge: 50 }),
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element
+        {
+            initialContentAlignment: go.Spot.Center,
+            layout: $(go.ForceDirectedLayout, { defaultSpringLength: 50, defaultElectricalCharge: 50 }),
+            "undoManager.isEnabled": true
+        });
         // install the LinkLabelDraggingTool as a "mouse move" tool
         myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool_1.LinkLabelOnPathDraggingTool());
         myDiagram.nodeTemplate =

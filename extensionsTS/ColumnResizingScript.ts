@@ -7,18 +7,16 @@ import * as go from "../release/go";
 import { ColumnResizingTool } from "./ColumnResizingTool";
 import { RowResizingTool } from "./RowResizingTool";
 
-var myDiagram: go.Diagram = null
-
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
+	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-	myDiagram =
+	let myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				initialContentAlignment: go.Spot.Center,
-				validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
+        initialContentAlignment: go.Spot.Center,
+			  validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
 				"undoManager.isEnabled": true
 			});
 

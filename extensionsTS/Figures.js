@@ -24,7 +24,7 @@
     * @class
     * This FigureParamter class describes various properties each parameter uses in figures.
     */
-    var FigureParameter = (function () {
+    var FigureParameter = /** @class */ (function () {
         function FigureParameter(name, def, min, max) {
             /** @type {string} */
             this._name = this.nameIn;
@@ -117,7 +117,7 @@
             var arr = go.Shape["_FigureParameters"][figurename];
             if (!arr)
                 return null;
-            return (arr[index]);
+            return /** @type {FigureParmeter} */ (arr[index]);
         };
         ;
         /**

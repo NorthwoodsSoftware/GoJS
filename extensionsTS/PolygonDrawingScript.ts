@@ -7,15 +7,18 @@ import * as go from "../release/go";
 import { PolygonDrawingTool } from "./PolygonDrawingTool";
 import { GeometryReshapingTool } from "./GeometryReshapingTool";
 
-export var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
 	myDiagram =
-		$(go.Diagram, "myDiagramDiv");
+    $(go.Diagram, "myDiagramDiv",
+      {
+        initialContentAlignment: go.Spot.Center
+      });
 
 	myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
 

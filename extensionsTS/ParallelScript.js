@@ -14,16 +14,15 @@
     */
     var go = require("../release/go");
     var ParallelLayout_1 = require("./ParallelLayout");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
-            {
-                layout: $(ParallelLayout_1.ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
+        {
+            initialContentAlignment: go.Spot.Center,
+            layout: $(ParallelLayout_1.ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
+        });
         // define the Node templates
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", { locationSpot: go.Spot.Center }, $(go.Shape, "Rectangle", { fill: "wheat", stroke: null, strokeWidth: 0 }), $(go.TextBlock, { margin: 3 }, new go.Binding("text")));

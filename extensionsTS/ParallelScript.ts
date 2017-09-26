@@ -6,17 +6,16 @@
 import * as go from "../release/go";
 import { ParallelLayout } from "./ParallelLayout";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-	myDiagram =
+	let myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
 			{
-				layout: $(ParallelLayout,
+        initialContentAlignment: go.Spot.Center,
+			  layout: $(ParallelLayout,
 					{ layerSpacing: 20, nodeSpacing: 10 })
 			});
 

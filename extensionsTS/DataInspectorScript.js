@@ -14,24 +14,21 @@
     */
     var go = require("../release/go");
     var DataInspector_1 = require("./DataInspector");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
-            {
-                "animationManager.isEnabled": false,
-                // position the graph in the middle of the diagram
-                initialContentAlignment: go.Spot.Center,
-                // allow double-click in background to create a new node
-                "clickCreatingTool.archetypeNodeData": { text: "Node", color: "white" },
-                // allow Ctrl-G to call groupSelection()
-                "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
-                // enable undo & redo
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        {
+            initialContentAlignment: go.Spot.Center,
+            "animationManager.isEnabled": false,
+            // allow double-click in background to create a new node
+            "clickCreatingTool.archetypeNodeData": { text: "Node", color: "white" },
+            // allow Ctrl-G to call groupSelection()
+            "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
+            // enable undo & redo
+            "undoManager.isEnabled": true
+        });
         // These nodes have text surrounded by a rounded rectangle
         // whose fill color is bound to the node data.
         // The user can drag a node by dragging its TextBlock label.

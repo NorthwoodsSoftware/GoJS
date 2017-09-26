@@ -14,17 +14,15 @@
     */
     var go = require("../release/go");
     var SectorReshapingTool_1 = require("./SectorReshapingTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                initialContentAlignment: go.Spot.Center,
-                "animationManager.isEnabled": false,
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            "animationManager.isEnabled": false,
+            "undoManager.isEnabled": true
+        });
         // install the SectorReshapingTool as a mouse-down tool
         myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool_1.SectorReshapingTool());
         function makeSector(data) {

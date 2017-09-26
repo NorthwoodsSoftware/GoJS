@@ -36,7 +36,7 @@ var __extends = (this && this.__extends) || (function () {
     * @extends Link
     * @class
     */
-    var DimensioningLink = (function (_super) {
+    var DimensioningLink = /** @class */ (function (_super) {
         __extends(DimensioningLink, _super);
         function DimensioningLink() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

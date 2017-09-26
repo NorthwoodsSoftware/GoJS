@@ -30,7 +30,7 @@ var __extends = (this && this.__extends) || (function () {
     * @class
     * This SnapLinkReshapingTool class supports snapping reshaping handles to go to the nearest grid point.
     */
-    var SnapLinkReshapingTool = (function (_super) {
+    var SnapLinkReshapingTool = /** @class */ (function (_super) {
         __extends(SnapLinkReshapingTool, _super);
         function SnapLinkReshapingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

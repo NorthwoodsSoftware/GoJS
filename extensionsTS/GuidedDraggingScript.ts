@@ -6,16 +6,14 @@
 import * as go from "../release/go";
 import { GuidedDraggingTool } from "./GuidedDraggingTool";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-	myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+	let myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
 		{
-			initialContentAlignment: go.Spot.Center,  // center the content
+      initialContentAlignment: go.Spot.Center,
 			draggingTool: new GuidedDraggingTool(),  // defined in GuidedDraggingTool.js
 			"draggingTool.horizontalGuidelineColor": "blue",
 			"draggingTool.verticalGuidelineColor": "blue",

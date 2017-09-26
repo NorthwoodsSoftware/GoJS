@@ -15,14 +15,17 @@
     var go = require("../release/go");
     var FishboneLayout_1 = require("./FishboneLayout");
     var FishboneLayout_2 = require("./FishboneLayout");
-    var myDiagram = null;
+    var myDiagram;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this  F
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
             $(go.Diagram, "myDiagramDiv", // refers to its DIV HTML element by id
-            { isReadOnly: true }); // do not allow the user to modify the diagram
+            {
+                initialContentAlignment: go.Spot.Center,
+                isReadOnly: true
+            }); // do not allow the user to modify the diagram
         // define the normal node template, just some text
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", $(go.TextBlock, new go.Binding("text"), new go.Binding("font", "", convertFont)));

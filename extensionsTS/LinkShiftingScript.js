@@ -14,16 +14,14 @@
     */
     var go = require("../release/go");
     var LinkShiftingTool_1 = require("./LinkShiftingTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                initialContentAlignment: go.Spot.Center,
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            "undoManager.isEnabled": true
+        });
         myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool_1.LinkShiftingTool));
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", {

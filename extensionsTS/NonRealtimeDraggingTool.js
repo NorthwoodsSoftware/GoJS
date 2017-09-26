@@ -30,7 +30,7 @@ var __extends = (this && this.__extends) || (function () {
     * @extends DraggingTool
     * @class
     */
-    var NonRealtimeDraggingTool = (function (_super) {
+    var NonRealtimeDraggingTool = /** @class */ (function (_super) {
         __extends(NonRealtimeDraggingTool, _super);
         function NonRealtimeDraggingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

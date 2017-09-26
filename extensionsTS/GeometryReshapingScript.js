@@ -14,12 +14,11 @@
     */
     var go = require("../release/go");
     var GeometryReshapingTool_1 = require("./GeometryReshapingTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center,
             "undoManager.isEnabled": true // enable undo & redo

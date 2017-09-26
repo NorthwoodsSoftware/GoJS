@@ -178,6 +178,7 @@ Inspector.prototype.canShowProperty = function(propertyName, propertyDesc, inspe
 * @return {boolean} whether a particular property should be shown in this Inspector
 */
 Inspector.prototype.canEditProperty = function(propertyName, propertyDesc, inspectedObject) {
+  if (this._diagram.isReadOnly || this._diagram.isModelReadOnly) return false;
   // assume property values that are functions of Objects cannot be edited
   var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
   var valtype = typeof data[propertyName];
@@ -234,7 +235,6 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
       }
     }
   }
-  if (this._diagram.model.isReadOnly) input.disabled = true;
 
   if (input.type !== "color") input.addEventListener("blur", setprops);
 

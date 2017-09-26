@@ -35,9 +35,9 @@ export class ColumnResizingTool extends go.Tool {
 
 	// internal state
 	/** @type {GraphObject} */
-	private _handle: go.GraphObject = null;
+	private _handle: go.GraphObject | null = null;
 	/** @type {Panel} */
-	private _adornedTable: go.Panel = null;
+	private _adornedTable: go.Panel | null = null;
 
   /**
   * A small GraphObject used as a resize handle for each column.
@@ -171,7 +171,7 @@ export class ColumnResizingTool extends go.Tool {
   * @this {ColumnResizingTool}
   * @return {boolean}
   */
-	public canStart() {
+	public canStart(): boolean {
 		if (!this.isEnabled) return false;
 
 		var diagram = this.diagram;

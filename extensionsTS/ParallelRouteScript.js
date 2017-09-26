@@ -14,16 +14,14 @@
     */
     var go = require("../release/go");
     var ParallelRouteLink_1 = require("./ParallelRouteLink");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv", {
-                initialContentAlignment: go.Spot.Center,
-                "undoManager.isEnabled": true
-            });
+        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+            initialContentAlignment: go.Spot.Center,
+            "undoManager.isEnabled": true
+        });
         myDiagram.nodeTemplate =
             $(go.Node, "Auto", new go.Binding("location", "loc", go.Point.parse), $(go.Shape, {
                 portId: "",

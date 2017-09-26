@@ -29,7 +29,7 @@ var __extends = (this && this.__extends) || (function () {
     * @class
     * A custom tool for resizing multiple objects at once.
     */
-    var ResizeMultipleTool = (function (_super) {
+    var ResizeMultipleTool = /** @class */ (function (_super) {
         __extends(ResizeMultipleTool, _super);
         function ResizeMultipleTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

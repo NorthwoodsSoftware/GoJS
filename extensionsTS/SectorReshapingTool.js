@@ -35,7 +35,7 @@ var __extends = (this && this.__extends) || (function () {
     * @extends Tool
     * @class
     */
-    var SectorReshapingTool = (function (_super) {
+    var SectorReshapingTool = /** @class */ (function (_super) {
         __extends(SectorReshapingTool, _super);
         function SectorReshapingTool() {
             var _this = _super.call(this) || this;
@@ -164,8 +164,8 @@ var __extends = (this && this.__extends) || (function () {
         */
         SectorReshapingTool.prototype.doMouseMove = function () {
             var diagram = this.diagram;
-            if (this.isActive && diagram !== null) {
-                var h = this._handle;
+            var h = this._handle;
+            if (this.isActive && diagram !== null && h !== null) {
                 var center = h.part.adornedObject.getDocumentPoint(go.Spot.Center);
                 var node = h.part.adornedPart;
                 var mouse = diagram.lastInput.documentPoint;

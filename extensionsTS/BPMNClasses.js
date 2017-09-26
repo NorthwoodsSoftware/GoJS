@@ -25,7 +25,7 @@ var __extends = (this && this.__extends) || (function () {
     var go = require("../release/go");
     // Contains PoolLink and BPMNLinkingTool classes for the BPMN sample
     // PoolLink, a special Link class for message flows from edges of pools
-    var PoolLink = (function (_super) {
+    var PoolLink = /** @class */ (function (_super) {
         __extends(PoolLink, _super);
         function PoolLink() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -86,7 +86,7 @@ var __extends = (this && this.__extends) || (function () {
     }(go.Link));
     exports.PoolLink = PoolLink;
     // BPMNLinkingTool, a custom linking tool to switch the class of the link created.
-    var BPMNLinkingTool = (function (_super) {
+    var BPMNLinkingTool = /** @class */ (function (_super) {
         __extends(BPMNLinkingTool, _super);
         function BPMNLinkingTool() {
             var _this = _super.call(this) || this;

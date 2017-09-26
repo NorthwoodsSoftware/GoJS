@@ -14,12 +14,11 @@
     */
     var go = require("../release/go");
     var RotateMultipleTool_1 = require("./RotateMultipleTool");
-    var myDiagram = null;
     function init() {
         if (typeof window["goSamples"] === 'function')
             window["goSamples"](); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+        var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center,
             rotatingTool: new RotateMultipleTool_1.RotateMultipleTool(),

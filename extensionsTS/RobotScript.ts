@@ -7,13 +7,13 @@ import * as go from "../release/go";
 import { Robot } from "./Robot";
 
 var robot: Robot;  // this global variable will hold an instance of the Robot class for myDiagram
-var myDiagram: go.Diagram = null;
-var myPalette: go.Diagram = null;
+let myDiagram: go.Diagram;
+let myPalette: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this  
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	function showProperties(e: go.InputEvent, obj: go.GraphObject) {  // executed by ContextMenuButton
 		var node = (obj.part as go.Adornment).adornedPart;
@@ -36,7 +36,8 @@ export function init() {
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
 			{
-				allowDrop: true,  // must be true to accept drops from the Palette
+        initialContentAlignment: go.Spot.Center,
+			  allowDrop: true,  // must be true to accept drops from the Palette
 				nodeTemplate:
 				$(go.Node, "Auto",
 					{

@@ -6,15 +6,14 @@
 import * as go from "../release/go";
 import "./TextEditor";
 
-var myDiagram: go.Diagram = null;
-
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-	myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+	let myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
 		{
+      initialContentAlignment: go.Spot.Center,
 			"undoManager.isEnabled": true  // enable undo & redo
 		});
 

@@ -662,13 +662,13 @@ export class ExtendedBrush extends go.Brush {
 		}
 	}
 
-	private _sharedTempCtx: CanvasRenderingContext2D = null;
+	private _sharedTempCtx: CanvasRenderingContext2D | null = null;
 
 	public CSSStringToRGB(CSSColorString: string): any[] {
 		if (!go.Brush.isValidColor(CSSColorString))
 			throw new Error("Invalid CSS Color String: " + CSSColorString);
 		var canvas = this._sharedTempCtx;
-		if (canvas === null) canvas = this._sharedTempCtx = document.createElement('canvas').getContext('2d');
+    if (canvas === null) canvas = this._sharedTempCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 		canvas.clearRect(0, 0, 1, 1);
 		canvas.fillStyle = CSSColorString;
 		canvas.fillRect(0, 0, 1, 1);

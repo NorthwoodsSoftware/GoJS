@@ -39,7 +39,7 @@ var __extends = (this && this.__extends) || (function () {
     * The Shape used during the drawing operation can be customized by setting {@link #temporaryShape}.
     * The node data added to the model can be customized by setting {@link #archetypePartData}.
     */
-    var FreehandDrawingTool = (function (_super) {
+    var FreehandDrawingTool = /** @class */ (function (_super) {
         __extends(FreehandDrawingTool, _super);
         function FreehandDrawingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

@@ -6,18 +6,18 @@
 import * as go from "../release/go";
 import { TreeMapLayout } from "./TreeMapLayout";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
 			{
-				initialContentAlignment: go.Spot.Center,
-				initialAutoScale: go.Diagram.Uniform,
+        initialContentAlignment: go.Spot.Center,
+			  initialAutoScale: go.Diagram.Uniform,
 				"animationManager.isEnabled": false,
 				layout: $(TreeMapLayout,
 					{ isTopLevelHorizontal: false }),
@@ -25,7 +25,7 @@ export function init() {
 			});
 
 	// change selection behavior to cycle up the chain of containing Groups
-	myDiagram.toolManager.clickSelectingTool.standardMouseSelect = () => {
+	myDiagram.toolManager.clickSelectingTool.standardMouseSelect = function() {
 		var diagram = this.diagram;
 		if (diagram === null || !diagram.allowSelect) return;
 		var e = diagram.lastInput;

@@ -6,18 +6,18 @@
 import * as go from "../release/go";
 import { RadialLayout } from "./RadialLayout";
 
-var myDiagram: go.Diagram = null;
+var myDiagram: go.Diagram;
 
 export function init() {
   if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-  var $ = go.GraphObject.make;  // for conciseness in defining templates
+  const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   myDiagram =
     $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
       {
-        initialAutoScale: go.Diagram.Uniform,
         initialContentAlignment: go.Spot.Center,
+			  initialAutoScale: go.Diagram.Uniform,
         padding: 10,
         isReadOnly: true,
         layout: $(RadialLayout, {
@@ -43,7 +43,7 @@ export function init() {
               diagram.remove(circle);
             });
             // add circles centered at the root
-            var $ = go.GraphObject.make;  // for conciseness in defining templates
+            const $ = go.GraphObject.make;  // for conciseness in defining templates
             for (var lay = 1; lay <= this.maxLayers; lay++) {
               var radius = lay * this.layerThickness;
               var circle =

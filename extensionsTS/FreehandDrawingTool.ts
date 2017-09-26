@@ -37,7 +37,7 @@ export class FreehandDrawingTool extends go.Tool {
   * OPTIONAL: if the user is starting in the diagram's background, not over an existing Part.
   * @this {FreehandDrawingTool}
   */
-  public canStart() {
+  public canStart(): boolean {
     if (!this.isEnabled) return false;
     var diagram = this.diagram;
     if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;

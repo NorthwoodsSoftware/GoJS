@@ -14,7 +14,7 @@ export class TreeMapLayout extends go.Layout {
   * @this {TreeMapLayout}
   * @param {Layout} copy
   * @override */
-	protected cloneProtected(copy: TreeMapLayout) {
+	public cloneProtected(copy: this) {
 		super.cloneProtected(copy);
 		copy._isTopLevelHorizontal = this._isTopLevelHorizontal;
 	}

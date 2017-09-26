@@ -6,18 +6,19 @@
 import * as go from "../release/go";
 import { SnapLinkReshapingTool } from "./SnapLinkReshapingTool"
 
-var myDiagram: go.Diagram = null;
-var myPalette: go.Diagram = null;
+var myDiagram: go.Diagram;
+var myPalette: go.Diagram;
 
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 	
-	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	const $ = go.GraphObject.make;  // for conciseness in defining templates
 
 	myDiagram =
 		$(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
 			{
-				// supply a simple narrow grid that manually reshaped link routes will follow
+        initialContentAlignment: go.Spot.Center,
+			  // supply a simple narrow grid that manually reshaped link routes will follow
 				grid: $(go.Panel, "Grid",
 					{ gridCellSize: new go.Size(8, 8) },
 					$(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5 }),

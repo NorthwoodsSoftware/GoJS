@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * This CurvedLinkReshapingTool class allows for a Link's path to be modified by the user
     * via the dragging of a single tool handle at the middle of the link.
     */
-    var CurvedLinkReshapingTool = (function (_super) {
+    var CurvedLinkReshapingTool = /** @class */ (function (_super) {
         __extends(CurvedLinkReshapingTool, _super);
         function CurvedLinkReshapingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

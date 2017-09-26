@@ -6,10 +6,6 @@
 import * as go from "../release/go";
 import { TableLayout } from "./TableLayout";
 
-var myDiagram: go.Diagram = null;
-var myPalette: go.Palette = null;
-
-
 // define a custom ResizingTool to limit how far one can shrink a row or column
 class LaneResizingTool extends go.ResizingTool {
 
@@ -65,13 +61,13 @@ class LaneResizingTool extends go.ResizingTool {
 export function init() {
 	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
 
-	var $ = go.GraphObject.make;
+	const $ = go.GraphObject.make;
 
-	myDiagram =
+	let myDiagram =
 		$(go.Diagram, "myDiagramDiv",
 			{
-				initialContentAlignment: go.Spot.Center,
-				layout: $(TableLayout,
+        initialContentAlignment: go.Spot.Center,
+			  layout: $(TableLayout,
 					$(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
 					$(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
 				),
@@ -275,7 +271,7 @@ export function init() {
 		{ key: "Theta", color: "tomato", size: "100 50", group: "AdmApp" }
 	]);
 
-	myPalette =
+	let myPalette =
 		$(go.Palette, "myPaletteDiv",
 			{
 				nodeTemplateMap: myDiagram.nodeTemplateMap,
