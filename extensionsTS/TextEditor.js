@@ -57,7 +57,7 @@
         // handle focus:
         textarea.addEventListener('focus', function (e) {
             var tool = TextEditor.tool;
-            if (tool.currentTextEditor === null)
+            if (!tool || tool.currentTextEditor === null)
                 return;
             if (tool.state === go.TextEditingTool.StateActive) {
                 tool.state = go.TextEditingTool.StateEditing;
@@ -72,7 +72,7 @@
         // we do not want focus taken off the element just because a user clicked elsewhere.
         textarea.addEventListener('blur', function (e) {
             var tool = TextEditor.tool;
-            if (tool.currentTextEditor === null)
+            if (!tool || tool.currentTextEditor === null)
                 return;
             textarea.focus();
             if (tool.selectsTextOnActivate) {
@@ -127,7 +127,7 @@
                     'border: 0;' +
                     'outline: none;' +
                     'white-space: pre-wrap;' +
-                    'overflow: hidden;'; // for proper IE wrap 
+                    'overflow: hidden;'; // for proper IE wrap
             textarea.textScale = textscale; // attach a value to the textarea, for convenience
             // Show:
             diagram.div.appendChild(textarea);

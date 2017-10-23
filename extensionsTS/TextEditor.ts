@@ -45,7 +45,7 @@ import * as go from "../release/go";
   // handle focus:
   textarea.addEventListener('focus', (e) => {
     var tool = (<any>TextEditor).tool;
-    if (tool.currentTextEditor === null) return;
+    if (!tool || tool.currentTextEditor === null) return;
 
     if (tool.state === (<any>go.TextEditingTool).StateActive) {
       tool.state = (<any>go.TextEditingTool).StateEditing;
@@ -62,7 +62,7 @@ import * as go from "../release/go";
   // we do not want focus taken off the element just because a user clicked elsewhere.
   textarea.addEventListener('blur', (e) => {
     var tool = (<any>TextEditor).tool;
-    if (tool.currentTextEditor === null) return;
+    if (!tool || tool.currentTextEditor === null) return;
 
     textarea.focus();
 
@@ -126,7 +126,7 @@ import * as go from "../release/go";
     'border: 0;' +
     'outline: none;' +
     'white-space: pre-wrap;' +
-    'overflow: hidden;'; // for proper IE wrap 
+    'overflow: hidden;'; // for proper IE wrap
 
     (<any>textarea).textScale = textscale; // attach a value to the textarea, for convenience
 
