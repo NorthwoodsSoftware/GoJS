@@ -8616,8 +8616,14 @@ declare namespace go {
         /**Gets or sets the HTMLInfo or HTML Element that edits the text.*/
         defaultTextEditor: HTMLInfo | Element;  // Element is deprecated
 
+        /** Gets or sets whether to select (highlight) the editable text when the TextEditingTool is activated. The default is true.*/
+        selectsTextOnActivate: boolean;
+
         /**Gets or sets how user gestures can start in-place editing of text.*/
         starting: EnumValue;
+
+        /** Gets or sets the state of the TextEditingTool.*/
+        state: EnumValue;
 
         /**Gets or sets the TextBlock that is being edited.*/
         textBlock: TextBlock;
@@ -8674,6 +8680,9 @@ declare namespace go {
         * @param {string} newstr the proposed new string value.
         */
         isValidText(textblock: TextBlock, oldstr: string, newstr: string): boolean;
+
+        /**This method returns a temporary TextBlock used for measuring text during editing.*/
+        measureTemporaryTextBlock(text: string): TextBlock;
 
         /**The user has typed ENTER.*/
         static Enter: EnumValue;
