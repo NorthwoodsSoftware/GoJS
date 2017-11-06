@@ -59,7 +59,7 @@
   // we do not want focus taken off the element just because a user clicked elsewhere.
   textarea.addEventListener('blur', function(e) {
     var tool = TextEditor.tool;
-    if (!tool || tool.currentTextEditor === null) return;
+    if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingTool.StateNone) return;
 
     textarea.focus();
 

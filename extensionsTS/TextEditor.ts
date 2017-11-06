@@ -62,7 +62,7 @@ import * as go from "../release/go";
   // we do not want focus taken off the element just because a user clicked elsewhere.
   textarea.addEventListener('blur', (e) => {
     var tool = (<any>TextEditor).tool;
-    if (!tool || tool.currentTextEditor === null) return;
+    if (!tool || tool.currentTextEditor === null || tool.state === (<any>go.TextEditingTool).StateNone) return;
 
     textarea.focus();
 

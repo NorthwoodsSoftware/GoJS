@@ -248,10 +248,14 @@
                 }
                 if (decProp.type === "color") {
                     if (input.type === "color") {
+                        input.value = this.convertToColor(propertyValue);
                         input.addEventListener("input", setprops);
                         input.addEventListener("change", setprops);
-                        input.value = this.convertToColor(propertyValue);
                     }
+                }
+                if (decProp.type === "checkbox") {
+                    input.checked = !!propertyValue;
+                    input.addEventListener("change", setprops);
                 }
             }
             if (input.type !== "color")
@@ -344,6 +348,9 @@
                     if (input.type === "color") {
                         input.value = "#000000";
                     }
+                    else if (input.type === "checkbox") {
+                        input.checked = false;
+                    }
                     else {
                         input.value = "";
                     }
@@ -355,6 +362,9 @@
                     var propertyValue = data[name];
                     if (input.type === "color") {
                         input.value = this.convertToColor(propertyValue);
+                    }
+                    else if (input.type === "checkbox") {
+                        input.checked = !!propertyValue;
                     }
                     else {
                         input.value = this.convertToString(propertyValue);
@@ -376,7 +386,8 @@
                 return; // must not try to update data when there's no data!
             diagram.startTransaction("set all properties");
             for (var name in inspectedProps) {
-                var value = inspectedProps[name].value;
+                var input = inspectedProps[name];
+                var value = input.value;
                 // don't update "readOnly" data properties
                 var decProp = this.declaredProperties[name];
                 if (!this.canEditProperty(name, decProp, this.inspectedObject))
@@ -430,10 +441,13 @@
                     case "margin":
                         value = go.Margin.parse(value);
                         break;
+                    case "checkbox":
+                        value = input.checked;
+                        break;
                 }
                 // in case parsed to be different, such as in the case of boolean values,
                 // the value shown should match the actual value
-                inspectedProps[name].value = value;
+                input.value = value;
                 // modify the data object in an undo-able fashion
                 diagram.model.setDataProperty(data, name, value);
                 // notify any listener

@@ -68,6 +68,121 @@
     }
   </script>
 
+  <h4>Changes for 1.8 since 1.7.*</h4>
+  <ul>
+    <li>
+      <b>Licensing</b>
+      <p>
+        Improvements for unlimited-domains OEM customers.
+      </p>
+    </li>
+    <li>
+      <b>Samples and documentation:</b>
+      <ul>
+        <li>
+          Typescript definition file (<code>go.d.ts</code>) fixes.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Diagram and Model:</b>
+      <ul>
+        <li>
+          Added <a>Diagram.commit</a> and <a>Model.commit</a>, which call a given function wrapped in a transaction.
+          This is offered as a concise alternative to calling <code>startTransaction</code> and <code>commitTransaction</code>.
+        </li>
+        <li>
+          Added <a>Model.set</a> as a synonym for <a>Model.setDataProperty</a>.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Parts:</b>
+      <ul>
+        <li>
+          Added <a>Part.key</a> and <a>Link.key</a>, as shortcuts for retrieving the Part's key in the Model data, if it exists.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Tools:</b>
+      <ul>
+        <li>
+          Fixed duplicate calls to focus within the <a>TextEditingTool</a>.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b style="color:red;">Deprecated features:</b>
+      <p>
+        These features will remain in the library until version 2.0, but they will no longer be documented and their use is discouraged.
+      </p>
+      <ul>
+        <li>
+          <b>Most Predefined Shape figures</b>
+          <p>
+            In order to shrink the size of the GoJS library we will be not be defining most predefined figures in the library.
+            Instead, you can find all of their definitions in the <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file.
+            You can simply load only those figures that you want to use by copying their definitions into your code.
+          <p>
+            Until version 2.0 all of the predefined figures remain defined in the GoJS library,
+            so you do not yet have to load any figures from the extensions file.
+            However, a number of very common figures will remain predefined even in version 2.0.
+            The figures that will remain in 2.0 are: "Rectangle", "Square", "RoundedRectangle", "Border", "Ellipse", "Circle",
+            "TriangleRight", "TriangleDown", "TriangleLeft", "TriangleUp", "Triangle", "Diamond", "LineH", "LineV",
+            "BarH", "BarV", "MinusLine", "PlusLine", "XLine".
+          <p>
+            Note also that the definitions that are in the <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file
+            are <em>not</em> entirely the same as their current definitions in the library.
+            A number of figures have been improved and some figure parameters have changed meaning.
+        </li>
+        <li>
+          <b>DiagramEvent.cancel</b>
+          <p>
+            The only use for this property was with the "SelectionDeleting" <a>DiagramEvent</a> in order to prevent the user from deleting the selection.
+            Where one might have written this Diagram listener:
+            <pre>"SelectionDeleting": function(e) {
+    if (e.diagram.selection.any(function(p) { return p.data.key.indexOf("e") >= 0; })) {
+        e.cancel = true;
+    }
+  },</pre>
+            one can write the equivalent functionality with this <a>CommandHandler.canDeleteSelection</a> method override:
+            <pre>"commandHandler.canDeleteSelection": function() {
+    return !this.diagram.selection.any(function(p) { return p.data.key.indexOf("e") >= 0; })
+           &amp;&amp; go.CommandHandler.prototype.canDeleteSelection.call(this);
+  },</pre>
+            Overriding the method supports the updating/enablement of commands that call <a>CommandHandler.deleteSelection</a>.
+            Furthermore not having a "cancel" property on the DiagramEvent avoids any potential problems that might occur if there
+            are multiple listeners for the "SelectionDeleting" event.
+            The "SelectionDeleting" <a>DiagramEvent</a> remains useful, but not for controlling whether or not the deletion should happen.
+        </li>
+        <li>
+          <b>GraphObject.fromEndSegmentDirection</b> and <b>GraphObject.toEndSegmentDirection</b>
+          <p>
+            These properties have not been useful.  One can override <a>Link.getLinkDirection</a> to achieve the same effects.
+        </li>
+        <li>
+          <b>TextEditingTool.doFocus</b> and <b>TextEditingTool.doBlur</b>
+          <p>
+            These undocumented properties were used to modify the default functionality of the TextEditingTool.
+            That is now done by setting <a>TextBlock.defaultTextEditor</a> to an instance of <a>HTMLInfo</a> (new in 1.7).
+          <p>
+            For examples, see <a href="../samples/customTextEditingTool.html">Custom TextEditingTool sample</a> and
+            <a href="../extensions/TextEditor.html">Text Editor default implementation extension</a>.
+        </li>
+        <li>
+          <b>TextBlock.textEditor</b>, <b>TextEditingTool.defaultTextEditor</b>, and <b>TextEditingTool.currentTextEditor</b>
+          <p>
+            These properties are now primarily used with <a>HTMLInfo</a> values.
+            HTML Elements will still work until version 2.0.
+          </p>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <hr class="changelog" />
+
   <h4>Changes for 1.7.29</h4>
   <ul>
     <li>
@@ -101,7 +216,7 @@
       Improved AvoidsNodes link routing to be more likely to find a shorter route by looking beyond the area of the two connected nodes.
     </li>
     <li>
-      Improved link routing during DraggingTool moves to keep link routes while snapping is enabled.
+      Improved link routing during <a>DraggingTool</a> moves to keep link routes while snapping is enabled.
     </li>
   </ul>
 

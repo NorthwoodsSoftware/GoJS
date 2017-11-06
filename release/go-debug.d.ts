@@ -1,4 +1,4 @@
-// Type definitions for GoJS v1.7
+// Type definitions for GoJS v1.8
 // Project: https://gojs.net
 // Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
 // Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -778,6 +778,20 @@ declare namespace go {
         clearSelection(): void;
 
         /**
+        * Starts a new transaction, calls the provided function, and commits the transaction.
+        * Code is called within a try-finally loop.
+        * If the function does not return normally, this rolls back the transaction rather than committing it.
+        * Example usage:
+        * <pre>
+        * diagram.commit(d => d.model.addNodeData({ counter: myCounter++ }), "Added Node");
+        * </pre>
+        * @param {function(Diagram)} func
+        * @param {(string|null)=} tname a descriptive name for the transaction, or null to temporarily set {@link #skipsUndoManager} to true;
+        *        if no string transaction name is given, an empty string is used as the transaction name
+        */
+        commit(func: (d: Diagram) => void, tname?: string|null): void;
+
+        /**
         * Commit the changes of the current transaction.
         * This just calls UndoManager.commitTransaction.
         * @param {string=} tname a descriptive name for the transaction.
@@ -1218,7 +1232,6 @@ declare namespace go {
         simulatedMouseMove(e: Event, modelpt: Point, overdiag?: Diagram): boolean;  // undocumented
         simulatedMouseUp(e: Event, other: Diagram, modelpt: Point, curdiag?: Diagram): boolean;  // undocumented
         computePixelRatio(): number;  // undocumented
-        commit(func: (d: Diagram) => void, tname?: string): void;  // undocumented
     }
 
     /**
@@ -2885,6 +2898,9 @@ declare namespace go {
         /**Gets whether this part is not member of any Group node nor is it a label node for a Link.*/
         isTopLevel: boolean;
 
+        /**This read-only property returns the key of the model data of this Part.*/
+        key: Key | undefined;  // read-only property
+
         /**This read-only property returns the Layer that this Part is in.*/
         layer: Layer;
 
@@ -3161,8 +3177,6 @@ declare namespace go {
 
         /**This is the default value for the Part.layoutConditions property: the Layout responsible for the Part is invalidated when the Part is added or removed from the Diagram or Group or when it changes visibility or size or when a Group's layout has been performed.*/
         static LayoutStandard: number;
-
-        key: string | number | undefined;  // undocumented read-only property
     }
 
     /**
@@ -5607,6 +5621,20 @@ declare namespace go {
         protected cloneProtected(copy: Model): void;
 
         /**
+        * Starts a new transaction, calls the provided function, and commits the transaction.
+        * Code is called within a try-finally loop.
+        * If the function does not return normally, this rolls back the transaction rather than committing it.
+        * Example usage:
+        * <pre>
+        * model.commit(m => m.addNodeData({ counter: myCounter++ }), "Added Node");
+        * </pre>
+        * @param {function(Model)} func
+        * @param {(string|null)=} tname a descriptive name for the transaction, or null to temporarily set {@link #skipsUndoManager} to true;
+        *        if no string transaction name is given, an empty string is used as the transaction name
+        */
+        commit(func: (m: Model) => void, tname?: string|null): void;
+
+        /**
         * Commit the changes of the current transaction.
         * This just calls UndoManager.commitTransaction.
         * @param {string=} tname a descriptive name for the transaction.
@@ -5785,6 +5813,14 @@ declare namespace go {
         setCategoryForNodeData(nodedata: Object, cat: string): void;
 
         /**
+        * A synonym for setDataProperty.
+        * @param {Object} data a JavaScript object representing a Node, Link, Group, simple Part, or item in a Panel.itemArray.
+        * @param {string} propname a string that is not null or the empty string.
+        * @param {*} val the new value for the property.
+        */
+        set(data: Object, propname: string, val: any): void;
+
+        /**
         * Change the value of some property of a node data, a link data, or an item data, given a string naming the property
         * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
         * This gets the old value of the property; if the value is the same as the new value, no side-effects occur.
@@ -5865,9 +5901,6 @@ declare namespace go {
         *   otherwise update only those bindings using this source property name.
         */
         updateTargetBindings(data: Object, srcpropname?: string): void;
-
-        commit(func: (m: Model) => void, tname?: string): void;  // undocumented
-        set(data: Object, propname: string, val: any): void;  // undocumented synonym for setDataProperty
     }
 
     /**

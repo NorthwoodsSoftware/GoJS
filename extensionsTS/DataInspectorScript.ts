@@ -129,7 +129,7 @@ export function init() {
 				"color": { show: Inspector.prototype.showIfPresent(myDiagram.selection.first(), "key"), type: 'color' },
 				// Comments and LinkComments are not in any node or link data (yet), so we add them here:
 				"Comments": { show: Inspector.prototype.showIfNode(myDiagram.selection.first()) },
-				"flag": { show: Inspector.prototype.showIfNode(myDiagram.selection.first()), type: 'boolean', defaultValue: true },
+				"flag": { show: Inspector.prototype.showIfNode(myDiagram.selection.first()), type: 'boolean' },
 				"LinkComments": { show: Inspector.prototype.showIfLink(myDiagram.selection.first()) },
         "isGroup": { readOnly: true, show: Inspector.prototype.showIfNode(myDiagram.selection.first()) }
 			}

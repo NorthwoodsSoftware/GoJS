@@ -229,10 +229,13 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
     }
     if (decProp.type === "color") {
       if (input.type === "color") {
+        input.value = this.convertToColor(propertyValue);
         input.addEventListener("input", setprops);
         input.addEventListener("change", setprops);
-        input.value = this.convertToColor(propertyValue);
       }
+    } if (decProp.type === "checkbox") {
+      input.checked = !!propertyValue;
+      input.addEventListener("change", setprops);
     }
   }
 
@@ -316,6 +319,8 @@ Inspector.prototype.updateAllHTML = function() {
       var input = inspectedProps[name];
       if (input.type === "color") {
         input.value = "#000000";
+      } else if (input.type === "checkbox") {
+        input.checked = false;
       } else {
         input.value = "";
       }
@@ -327,6 +332,8 @@ Inspector.prototype.updateAllHTML = function() {
       var propertyValue = data[name];
       if (input.type === "color") {
         input.value = this.convertToColor(propertyValue);
+      } else if (input.type === "checkbox") {
+        input.checked = !!propertyValue;
       } else {
         input.value = this.convertToString(propertyValue);
       }
@@ -348,7 +355,8 @@ Inspector.prototype.updateAllProperties = function() {
 
   diagram.startTransaction("set all properties");
   for (var name in inspectedProps) {
-    var value = inspectedProps[name].value;
+    var input = inspectedProps[name];
+    var value = input.value;
 
     // don't update "readOnly" data properties
     var decProp = this.declaredProperties[name];
@@ -373,9 +381,7 @@ Inspector.prototype.updateAllProperties = function() {
 
     // convert to specific type, if needed
     switch (type) {
-      case "boolean":
-        value = !(value == false || value === "false" || value === "0");
-        break;
+      case "boolean": value = !(value == false || value === "false" || value === "0"); break;
       case "number": value = parseFloat(value); break;
       case "arrayofnumber": value = this.convertToArrayOfNumber(value); break;
       case "point": value = go.Point.parse(value); break;
@@ -383,11 +389,12 @@ Inspector.prototype.updateAllProperties = function() {
       case "rect": value = go.Rect.parse(value); break;
       case "spot": value = go.Spot.parse(value); break;
       case "margin": value = go.Margin.parse(value); break;
+      case "checkbox": value = input.checked; break;
     }
 
     // in case parsed to be different, such as in the case of boolean values,
     // the value shown should match the actual value
-    inspectedProps[name].value = value;
+    input.value = value;
 
     // modify the data object in an undo-able fashion
     diagram.model.setDataProperty(data, name, value);

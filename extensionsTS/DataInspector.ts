@@ -56,14 +56,14 @@ export class Inspector {
 	options: Object;
 	private _div: HTMLElement;
 	private _diagram: go.Diagram;
-	private _inspectedProperties = {};
+	private _inspectedProperties: { [index: string]: any } = {};
 
 	// Either a GoJS Part or a simple data object, such as Model.modelData
 	private inspectedObject: Object | null = null;
 
 	// Inspector options defaults:
 	private includesOwnProperties: boolean = true;
-	private declaredProperties = {};
+  private declaredProperties: { [index: string]: any } = {};
 	private inspectsSelection = true;
 	private propertyModified: any = null;
 
@@ -141,7 +141,7 @@ export class Inspector {
 
 		// Go through all the properties passed in to the inspector and show them, if appropriate:
 		for (var k in declaredProperties) {
-			var val = (<any>declaredProperties)[k];
+			var val = declaredProperties[k];
 			if (!this.canShowProperty(k, val, inspectedObject)) continue;
 			var defaultValue = "";
 			if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
@@ -152,8 +152,8 @@ export class Inspector {
 		if (this.includesOwnProperties) {
 			for (var k in data) {
 				if (k === "__gohashid") continue; // skip internal GoJS hash property
-				if ((<any>this._inspectedProperties)[k]) continue; // already exists
-				if ((<any>declaredProperties)[k] && !this.canShowProperty(k, (<any>declaredProperties)[k], inspectedObject)) continue;
+				if (this._inspectedProperties[k]) continue; // already exists
+				if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
 				tbody.appendChild(this.buildPropertyRow(k, data[k]));
 			}
 		}
@@ -224,7 +224,7 @@ export class Inspector {
 
 		var td2 = document.createElement("td");
 		var input = document.createElement("input");
-		var decProp = (<any>this.declaredProperties)[propertyName];
+		var decProp = this.declaredProperties[propertyName];
 		input.tabIndex = this.tabIndex++;
 
 		var self = this;
@@ -241,10 +241,13 @@ export class Inspector {
 			}
 			if (decProp.type === "color") {
 				if (input.type === "color") {
+          input.value = this.convertToColor(propertyValue);
 					input.addEventListener("input", setprops);
 					input.addEventListener("change", setprops);
-					input.value = this.convertToColor(propertyValue);
 				}
+      } if (decProp.type === "checkbox") {
+        input.checked = !!propertyValue;
+        input.addEventListener("change", setprops);
 			}
 		}
 
@@ -253,7 +256,7 @@ export class Inspector {
 		td2.appendChild(input);
 		tr.appendChild(td2);
 
-		(<any>this._inspectedProperties)[propertyName] = input;
+		this._inspectedProperties[propertyName] = input;
 		return tr;
 	};
 
@@ -325,9 +328,11 @@ export class Inspector {
 		var data = isPart ? (<any>this.inspectedObject).data : this.inspectedObject;
 		if (!data) {  // clear out all of the fields
 			for (var name in inspectedProps) {
-				var input = (<any>inspectedProps)[name];
+				var input = inspectedProps[name];
 				if (input.type === "color") {
 					input.value = "#000000";
+        } else if (input.type === "checkbox") {
+          input.checked = false;
 				} else {
 					input.value = "";
 				}
@@ -335,10 +340,12 @@ export class Inspector {
 			}
 		} else {
 			for (var name in inspectedProps) {
-				var input = (<any>inspectedProps)[name];
+				var input = inspectedProps[name];
 				var propertyValue = data[name];
 				if (input.type === "color") {
 					input.value = this.convertToColor(propertyValue);
+        } else if (input.type === "checkbox") {
+          input.checked = !!propertyValue;
 				} else {
 					input.value = this.convertToString(propertyValue);
 				}
@@ -359,10 +366,11 @@ export class Inspector {
 
 		diagram.startTransaction("set all properties");
 		for (var name in inspectedProps) {
-			var value = (<any>inspectedProps)[name].value;
+      var input = inspectedProps[name];
+			var value = input.value;
 
 			// don't update "readOnly" data properties
-			var decProp = (<any>this.declaredProperties)[name];
+			var decProp = this.declaredProperties[name];
 			if (!this.canEditProperty(name, decProp, this.inspectedObject)) continue;
 
 			// If it's a boolean, or if its previous value was boolean,
@@ -384,9 +392,7 @@ export class Inspector {
 
 			// convert to specific type, if needed
 			switch (type) {
-				case "boolean":
-					value = !(value == false || value === "false" || value === "0");
-					break;
+				case "boolean": value = !(value == false || value === "false" || value === "0"); break;
 				case "number": value = parseFloat(value); break;
 				case "arrayofnumber": value = this.convertToArrayOfNumber(value); break;
 				case "point": value = go.Point.parse(value); break;
@@ -394,11 +400,12 @@ export class Inspector {
 				case "rect": value = go.Rect.parse(value); break;
 				case "spot": value = go.Spot.parse(value); break;
 				case "margin": value = go.Margin.parse(value); break;
+        case "checkbox": value = input.checked; break;
 			}
 
 			// in case parsed to be different, such as in the case of boolean values,
 			// the value shown should match the actual value
-			(<any>inspectedProps)[name].value = value;
+			input.value = value;
 
 			// modify the data object in an undo-able fashion
 			diagram.model.setDataProperty(data, name, value);
