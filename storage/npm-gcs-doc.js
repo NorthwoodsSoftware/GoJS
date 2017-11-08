@@ -6,16 +6,14 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
 const TYPEDOC_CMD = path.join('..', 'buildTS', 'typedoc', 'bin', 'typedoc');
-const dts = require('dts-bundle');
-/*
-console.log("Generating API Documentation:");
 
+console.log("Generating API Documentation:");
 // Part 1: Clean existing documentation
 console.log("Removing existing docs...");
-rimraf.sync('./gcs-doc');
+rimraf.sync('./api');
 
 
-// Part 2: Build the custom theme
+/*// Part 2: Build the custom theme
 console.log("Building custom theme...");
 try {
   if (!fs.existsSync('../buildTS/typedoc-default-themes/node_modules')) {
@@ -23,7 +21,39 @@ try {
   } else {
     child_process.execSync("npm run prepublish", { cwd: "../buildTS/typedoc-default-themes", stdio: [0,1,2] });
   }
-} catch (e) {}
+} catch (e) {}*/
+
+// Part 2: Move bootstrap and api.js to /out/
+console.log("Moving assets to out folder...");
+try {
+  if (!fs.existsSync('./assets/css/bootstrap.min.css')) {
+    mkdirp('./assets/css', function(err) {
+      if (err) {
+        console.error(err);
+      } else {
+        fs.writeFileSync('./assets/css/bootstrap.min.css', fs.readFileSync('../assets/css/bootstrap.min.css'));
+      }
+    });
+  }
+  if (!fs.existsSync('./assets/js/bootstrap.min.js')) {
+    mkdirp('./api/assets/js', function(err) {
+      if (err) {
+        console.error(err);
+      } else {
+        fs.writeFileSync('./assets/js/bootstrap.min.js', fs.readFileSync('../assets/js/bootstrap.min.js'));
+      }
+    });
+  }
+  if (!fs.existsSync('./assets/js/api.js')) {
+    mkdirp('./assets/js', function(err) {
+      if (err) {
+        console.error(err);
+      } else {
+        fs.writeFileSync('./assets/js/api.js', fs.readFileSync('../assets/js/api.js'));
+      }
+    });
+  }
+} catch (e) { console.log(e); }
 
 // Part 3: Run typedoc
 console.log("Executing typedoc command...");
@@ -36,7 +66,7 @@ try {
         ' --tsconfig tsconfig.typedoc.json',
     { stdio: [0,1,2] }
   );
-} catch (e) {}*/
+} catch (e) {}
 
 // Part 4: Build webpack bundle
 console.log("Building gcs.js");

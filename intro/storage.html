@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS Storage -- Northwoods Software</title>
+  <!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>Storage</h1>
+
+<p>
+    Storing GoJS model data in cloud storage is an excellent way to be able to save and load diagrams without worrying about local system concerns.
+    Interfacing with popular cloud storage services to achieve this goal is made easy with the GoCloudStorage library.
+</p>
+<p>
+    The GoCloudStorage class system lets developers easily store their GoJS diagram model data to popular cloud storage services. The GoCloudStorage
+    class itself is an abstract class, never to be instantiated. Instead, its subclasses are used, each interfacing with a different cloud storage service.  Currently, the
+    GoCloudStorage system supports Dropbox, Google Drive, Microsoft OneDrive, and Local Storage. Class names are:
+    <ul>
+        <li><a href="../storage/api/symbols/GoDropBox.html">GoDropBox</a></li>
+        <li><a href="../storage/api/symbols/GoGoogleDrive.html">GoGoogleDrive</a></li>
+        <li><a href="../storage/api/symbols/GoOneDrive.html">GoOneDrive</a></li>
+        <li><a href="../storage/api/symbols/GoLocalStorage.html">GoLocalStorage</a></li>
+    </ul>
+</p>
+
+<h3 id="GoCloudStorageSubclassConstruction">GoCloudStorage Subclass Construction</h3>
+
+<p>
+    This section provides a description of how to create an instance of a specific GoCloudStorage subclass, GoGoogleDrive. Due to the variable nature of
+    cloud storage service APIs, GoCloudStorage subclass constructors may vary. It is recommended you read the full <a href="../storage/api/index.html">documentation</a>
+    for any GoCloudStorage subclass you wish to use.
+</p>
+<p>
+    Before doing anything else, make sure you have a <code>script</code> tag with a valid path to your <code>gcs.js</code> library. By default, all GoCloudStorage
+    subclasses are defined in the namespace <code>gcs</code>.
+</p>
+<p>
+    Here is a valid constructor call for GoGoogleDrive.
+</p>
+<pre data-language="javascript" id="simple">
+  var ggd = new gcs.GoGoogleDrive(
+    diagrams,
+    "16225356139-n64vtg7konuetna3of3mfcaj2iffhgmg.apps.googleusercontent.com",
+    "AIzaSydBje3lBL67MMVKw467_pvuRg7_XMVGf18",
+    defaultModel,
+    "../storage/goCloudStorageIcons/");
+</pre>
+<p>
+    What are all these parameters? We'll step through them, one by one.
+</p>
+
+<h4>Managed Diagrams </h4>
+<p>
+    We see the first parameter passed to the GoGoogleDrive constructor is something called <code>diagrams</code>. This is the parameter known to all GoCloudStorage subclasses
+    as <code><a href="../storage/api/symbols/GoCloudStorage.html#managedDiagrams">managedDiagrams</a></code>. It can be either an Array of
+    GoJS Diagrams or a single GoJS Diagram this instance of GoCloudStorage (in this case, an instance of GoGoogleDrive) will manage data storage for.
+    This parameter is required.
+</p>
+
+<h4>Client ID</h4>
+<p>
+    The second parameter passed to the GoGoogleDrive constructor is a long string. This is the <code>
+    <a href="../storage/api/symbols/GoCloudStorage.html#clientId">clientId</a></code> parameter, required by all GoCloudStorage subclasses (except GoLocalStorage). This
+    long string ID tells the cloud storage provider (in this case, Google) and the user what application is asking to manipulate Google Drive file data.
+    This is usually given by the cloud storage provider's developer console or similar. You will need to create an application with the storage provider to obtain this ID.
+    Read more below at <a href="#ObtainingClientIDs">Obtaining Client IDs</a>.
+</p>
+
+<h4>Google Picker API Key</h4>
+<p>
+    This is a special, GoGoogleDrive-specific parameter. It is included here to demonstrate that some GoCloudStorage subclasses will require parameters that others will not.
+    Again, it is recommended you read the full <a href="../storage/api/index.html">documentation</a> for any GoCloudStorage subclass you wish to use.
+</p>
+<p>
+    GoGoogleDrive requires this key to allow for the familiar, Google Drive file picker interface during graphical file manipulation. Read more about this special parameter
+    in the full <code><a href="../storage/api/symbols/GoGoogleDrive.html#pickerApiKey">GoGoogleDrive.pickerApiKey</a></code> documentation.
+</p>
+
+<h4>Default Model </h4>
+<p>
+    This is an optional parameter for all GoCloudStorage subclasses. It is the default model data assigned to newly created diagrams with calls to
+    <code><a href="../storage/api/symbols/GoCloudStorage.html#create">create</a></code>. Generally, this value is obtained like so:
+    <pre data-language="javascript">
+        var defaultModel = diagram.model.toJson();
+    </pre>
+    If no value is supplied during construction, this defaults to a new <a href="../api/symbols/GraphLinksModel.html">GraphLinksModel</a>.
+</p>
+
+<h4>Icons Relative Directory</h4>
+<p>
+    If you plan to use a GoCloudStorage subclass instance's commands that call their custom <code><a href="../storage/api/symbols/GoCloudStorage.html#ui">ui</a></code>,
+    you will need to specify the directory in which the icons for storage services reside, relative to the directory your application page is. This is provided
+    by the optional <code><a href="../storage/api/symbols/GoCloudStorage.html#iconsRelativeDirectory">iconsRelativeDirectory</a></code> parameter. The default value is
+    "../goCloudStorageIcons/".
+</p>
+<p>
+    Exactly what the UI looks like varies between GoCloudStorage subclasses, although it is certain all contain references to storage service icons. Without providing this
+    parameter, it's likely the space where these images go will appear blank.
+    Please refer to the full <a href="../storage/api/index.html">documentation</a> for details on class-specific UIs.
+</p>
+
+<h3 id="ObtainingClientIDs">Obtaining Client IDs</h3>
+<p>
+    All GoCloudStorage subclasses (except GoLocalStorage) require a client ID as a parameter during construction. This lets the storage service provider and the user
+    know the identity of the application trying to manipulate their remote filesystems. Obtaining a client ID for the storage service you wish to use, therefore,
+    is a requirement to using the corresponding GoCloudStorage subclass.
+</p>
+<p>
+    The process for this varies from service to service, though the general steps are the same. This example uses the specific steps for obtaining a Google Drive client ID,
+    but the general steps should be analogous with other storage services.
+</p>
+<ol>
+    <li>Register an account</li>
+    <p>
+        If you do not already have an account with the storage service provider, you will need to make one. In our specific case, if you did not have a Google Account,
+        you would need to sign up for one now.
+    </p>
+    <li>Create a web application</li>
+    <p>
+        This step varies most from service to service. You must create and register an application with the storage service of your choice. For Google Drive, this can be done
+        by following the instructions <a href-"https://console.developers.google.com/flows/enableapi?apiid=drive">here</a>.
+    </p>
+    <li>Locate your new application's Client ID</li>
+    <p>
+        Your newly registered application now has a Client ID -- a long string like the one we saw in <a href="#GoCloudStorageSubclassConstruction">GoCloudStorage
+        Subclass Construction</a>. You will use this string as the <code><a href="../storage/api/symbols/GoCloudStorage.html#clientId">clientId</a></code> parameter for your
+        instance of GoCloudStorage; in our specific case, an instance of GoGoogleDrive.
+    </p>
+</ol>
+<p>
+    There are storage-specific pages that can help walk you through the specific process of creating / registering an application with their service. Here are their links:
+    <ul>
+        <li><a href="https://developers.google.com/drive/v3/web/quickstart/js">GoGoogleDrive</a></li>
+        <li><a href="https://docs.microsoft.com/en-us/onedrive/developer/rest-api/getting-started/app-registration">Microsoft OneDrive (Graph)</a></li>
+        <li><a href="https://www.dropbox.com/developers">Dropbox</a></li>
+    </ul>
+</p>
+
+<h3 id="SavingLoadingData">Saving / Loading Data </h3>
+<p>
+    Now that you have a working instance of a GoCloudStorage subclass, it's time to start saving and loading some GoJS Diagram model data. We will continue with our
+    GoGoogleDrive example from <a href="#GoCloudStorageSubclassConstruction">GoCloudStorage Subclass Construction</a>.
+</p>
+<p>
+    Let's say we have just opened our page. It has two GoJS Diagrams on it, both of which are managed by our instance of GoGoogleDrive. We can save their model data to
+    Google Drive in a variety of ways.
+</p>
+
+<h4>Save vs. Save With UI</h4>
+<p>
+    All GoCloudStorage subclasses have the functions <code>save()</code> and <code>saveWithUI()</code>. What's the difference?
+</p>
+<p>
+    <code>saveWithUI()</code> guarantees that, when called, it will show the <a href="../storage/api/symbols/GoCloudStorage.html#ui">ui</a> element of the invoking instance of
+    GoCloudStorage, allowing the user to graphically specify a file name and/or location. <code>save()</code>, on the other hand, is a little more nuanced.
+    There are three cases. Let's return to our GoGoogleDrive example and explore them.
+</p>
+<ol>
+    <li>Saving With a Specified Path</li>
+    <p>
+        A call to <code>save()</code> with a valid string path parameter will save to that specific path in Google Drive, without showing any UI.
+        <pre data-language="javascript">
+            ggd.save("1SLvlfIC14Lbrrr806gg79XZ3588ZIdCbA1fotXL7lv4");
+        </pre>
+    </p>
+    <p>
+            <strong>Note</strong>: What constitutes a valid path parameter varies from service to service. See GoCloudStorage
+            <a href="../storage/api/symbols/GoCloudStorage.html#getFile"> documentation</a> for more details.
+    </p>
+    <li>Saving With a Valid Current Diagram File</li>
+    <p>
+        If no path is supplied, but <code>ggd</code> has a valid <code><a href="../storage/api/symbols/GoCloudStorage.html#currentDiagramFile">currentDiagramFile</a></code>
+        (a representation of the file from Google Drive <code>ggd</code> has currently open, and whose contents are loaded in <code>ggd</code>'s <code>managedDiagrams</code>),
+        then the diagram file content at the path in Google Drive corresponding to <code>ggd.currentDiagramFile.path</code> is updated with the contents of
+        <code>ggd.managedDiagrams</code>.
+    </p>
+    <li>Saving With Neither</li>
+    <p>
+        Finally, if no path is supplied and <code>ggd.currentDiagramFile</code> is not valid, <code>ggd.saveWithUI()</code> is called.
+    </p>
+</ol>
+<h4>Loading</h4>
+<p>
+    Loading file data is more straightforward. A call to <code>ggd.load(&#60;some valid path string&#62;)</code> will load the file contents from the given path in Google Drive
+    to the <code>ggd.managedDiagrams</code>. A call to <code>ggd.loadWithUI</code> will display the <a href="../storage/api/symbols/GoCloudStorage.html#ui">ui</a> and let
+    the user graphically choose which file to load.
+    <p>
+        <strong>Note</strong>: The file being loaded must have been saved to storage from a page with GoJS Diagrams whose DIV IDs correspond with the DIV IDs of
+        <code><a href="../storage/api/symbols/GoCloudStorage.html#managedDiagrams">managedDiagrams</a></code>. Otherwise, it will not be clear to the GoCloudStorage subclass
+        where to load model data to, and an error will occur.
+    </p>
+</p>
+
+<h3 id="CreatingRemovingData">Creating / Removing Data </h3>
+<p>
+    Creating and removing files with GoCloudStorage subclass instances is a bit more straightforward than saving and loading, but there is still some nuance. Let's take a look.
+</p>
+<h4>Creating Files</h4>
+<p>
+    Continuing with our GoGoogleDrive example, what would you do if you wished to create a new file in storage to save <code>ggd.managedDiagrams</code> to? You would
+    call the <code>create</code> function.
+</p>
+<p>
+    This function does a few things. First, it sets each of <code>ggd.managedDiagrams</code> to <code>ggd.defaultModel</code> (which was assigned at construction, back in
+    <a href="#GoCloudStorageSubclassConstruction">GoCloudStorage Subclass Construction</a>). Then, if the
+    <code><a href="../storage/api/symbols/GoCloudStorage.html#isAutoSaving">isAutoSaving</a></code> property of <code>ggd</code> is true, you will be prompted to
+    save your newly refreshed <code>managedDiagrams</code> to Google Drive via an automatic call to <code>saveWithUI()</code>.
+</p>
+<p>
+    Optionally, the <code>create</code> function can accept a path parameter, just as the <code>save()</code> and <code>load()</code> functions described back in
+    <a href="#savingLoadingData">Saving / Loading Data</a>. If this parameter is supplied, once each of <code>ggd.managedDiagrams</code> is reset to <code>defaultModel</code>,
+    their model data is saved to the given path in Google Drive.
+</p>
+
+<h4>Removing Files</h4>
+<p>
+    To remove a file from Google Drive, simply call <code>ggd.remove(&#60;some valid path string&#62;)</code>. The file at the given path in Google Drive will be removed,
+    without showing any UI.
+</p>
+<p>
+    To remove a file from Google Drive with the <a href="../storage/api/symbols/GoCloudStorage.html#ui">ui</a> element, call <code>ggd.removeWithUI()</code>.
+</p>
+
+<h3 id="GoCloudStorageManager">Go Cloud Storage Manager </h3>
+<p>
+    What if you wanted to be able to save / load the diagrams on your page to / from many different cloud storage services? Say, Google Drive and Microsoft OneDrive?
+    Or Microsoft OneDrive, Dropbox, and Google Drive? Or any combination of the currently supported GoCloudStorage subclasses? That's what the
+    <a href="../storage/api/symbols/GoCloudStorageManager.html">Go Cloud Storage Manager</a> is for.
+</p>
+
+<h4>Constructing the GoCloudStorageManager</h4>
+<p>
+    Observe a standard GoCloudStorageManager construction process:
+    <pre data-language="javascript">
+        gls = new gcs.GoLocalStorage(myDiagram, defaultModel);
+        god = new gcs.GoOneDrive(myDiagram, 'f9b171a6-a12e-48c1-b86c-814ed40fcdd1', defaultModel);
+        ggd = new gcs.GoGoogleDrive(myDiagram, '16225373139-n24vtg7konuetna3ofbmfcaj2infhgmg.apps.googleusercontent.com', 'AIzaSyDBj43lBLpYMMVKw4aN_pvuRg7_XMVGf18', defaultModel);
+        gdb = new gcs.GoDropBox(myDiagram, '3sm2ko6q7u1gbix', defaultModel);
+        storages = [gls, god, ggd, gdb];
+
+        storageManager = new gcs.GoCloudStorageManager(storages, "../storage/goCloudStorageIcons/");
+    </pre>
+    Despite all that code, there are only two parameters GoCloudStorageManager takes. Let's look at them.
+</p>
+<p>
+    The first parameter, <code>storages</code>, is a either an Array or <a href="../api/Set.html">Set</a> of GoCloudStorage subclasses. 
+    This tells the GoCloudStorageManager instance, <code>storageManager</code>, what storage services are being managed and how those services are managing their diagrams. 
+</p>
+<p>
+    The second parameter is a string, and corresponds to the
+    <code><a href="../storage/api/symbols/GoCloudStorageManager.html#iconsRelativeDirectory">iconsRelativeDirectory</a></code> property of GoCloudStorageManager. This
+    is analogous to the <code>iconsRelativeDirectory</code> discussed in <a href="#GoCloudStorageSubclassConstruction">GoCloudStorage Subclass Construction</a>. The only
+    difference is the GoCloudStorageManager applies this property to each of the GoCloudStorage subclasses' <code>iconsRelativeDirectory</code> properties. This parameter
+    is optional, but not supplying it may mean there are blank spaces in the <a href="../storage/api/symbols/GoCloudStorageManager.html#ui">ui</a> where the storage service
+    icons are supposed to be.
+</p>
+
+<h4>Using the GoCloudStorageManager</h4>
+<p>
+    The first step in using the GoCloudStorageManager is to set the GoCloudStorage subclass you want to use in the moment. This is done through a UI, which is brought up with a
+    call to <code>storageManager.selectStorageService()</code>. <code>storageManager.currentStorageService</code> is set to the GoCloudStorage subclass managing the storage
+    service selected in the resultant UI.
+</p>
+<p>
+    Now that the GoCloudStorageManager is configured with the GoCloudStorage subclass you want to be using at the moment, managing files in storage is extremely easy. Use
+    of the GoCloudStorageManager assumes a desire for mainly graphical manipulation of data, so calls to <code>save()</code>, <code>load()</code>, <code>create()</code>, and
+    <code>remove()</code> do not take any parameters and all launch the proper <a href="../storage/api/symbols/GoCloudStorage.html#ui">ui</a> for
+    <code>storageManager.currentStorageService</code>.
+</p>
+
+<p>
+    You may want to update your page display based on the saving / loading / removal / creation of data using GoCloudStorageManager. All GoCloudStorageManager core methods
+    (<code>save()</code>, <code>load()</code>, <code>create()</code>, and <code>remove()</code>) return Promises that resolve with a special object, a
+    <a href="../storage/api/symbols/DiagramFile.html">DiagramFile</a>, representing the recently saved / loaded / created / removed file.  With this data, you may update your
+    page display or perform any other action upon Promise resolution. Such as:
+    <pre data-language="javascript">
+        storageManager.load().then(function(fileData){
+            console.log(fileData); // the fileData DiagramFile object
+        });
+    </pre>
+    <strong>Note</strong>: There are three guaranteed fields in any DiagramFile object: the name, id, and path of the represented file.
+</p>
+
+</div>
+</div>
+</body>
+</html>

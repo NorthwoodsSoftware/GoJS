@@ -1234,7 +1234,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var go = __webpack_require__(2);
 var es6_promise_1 = __webpack_require__(0);
 var GoCloudStorage = (function () {
-    function GoCloudStorage(managedDiagrams, defaultModel, clientId) {
+    function GoCloudStorage(managedDiagrams, defaultModel, clientId, iconsRelativeDirectory) {
         if (managedDiagrams instanceof go.Diagram)
             managedDiagrams = [managedDiagrams];
         this._managedDiagrams = managedDiagrams;
@@ -1246,6 +1246,7 @@ var GoCloudStorage = (function () {
             this._clientId = clientId;
         else
             clientId = null;
+        this._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : "../goCloudStorageIcons/";
         var menu = document.createElement('div');
         menu.className = 'goCustomFilepicker';
         menu.style.visibility = 'hidden';
@@ -1280,6 +1281,12 @@ var GoCloudStorage = (function () {
     Object.defineProperty(GoCloudStorage.prototype, "defaultModel", {
         get: function () { return this._defaultModel; },
         set: function (value) { this._defaultModel = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "iconsRelativeDirectory", {
+        get: function () { return this._iconsRelativeDirectory; },
+        set: function (value) { this._iconsRelativeDirectory = value; },
         enumerable: true,
         configurable: true
     });
@@ -1494,7 +1501,7 @@ var gcs = __webpack_require__(1);
 var es6_promise_1 = __webpack_require__(0);
 var GoLocalStorage = (function (_super) {
     __extends(GoLocalStorage, _super);
-    function GoLocalStorage(managedDiagrams, defaultModel) {
+    function GoLocalStorage(managedDiagrams, defaultModel, iconsRelativeDirectory) {
         var _this = _super.call(this, managedDiagrams, defaultModel) || this;
         _this._localStorage = window.localStorage;
         _this.ui.id = "goLocalStorageCustomFilepicker";
@@ -1527,7 +1534,7 @@ var GoLocalStorage = (function (_super) {
         if (!numAdditionalFiles)
             numAdditionalFiles = 0;
         var maxFilesToShow = GoLocalStorage._MIN_FILES_IN_UI + numAdditionalFiles;
-        ui.innerHTML = "<img class='icons' src='../goCloudStorageIcons/localStorage.png'></img>";
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "localStorage.png'></img>";
         var title = action + " Diagram File";
         ui.innerHTML += "<strong>" + title + "</strong><hr></hr>";
         document.getElementsByTagName('body')[0].appendChild(ui);
@@ -1697,14 +1704,17 @@ var GoLocalStorage = (function (_super) {
                 storage.localStorage.setItem(saveName, item);
                 resolve(saveName);
             }
-            else
-                throw Error('Cannot save file to local storage with path ' + path);
+            else {
+                resolve(storage.saveWithUI());
+            }
         });
     };
     GoLocalStorage.prototype.loadWithUI = function () {
         var storage = this;
         return new es6_promise_1.Promise(function (resolve, reject) {
             resolve(storage.showUI('Load'));
+        }).catch(function (e) {
+            throw Error(e);
         });
     };
     GoLocalStorage.prototype.load = function (path) {
@@ -1725,6 +1735,8 @@ var GoLocalStorage = (function (_super) {
             }
             else
                 throw Error('Cannot load file from local storage with path ' + path);
+        }).catch(function (e) {
+            throw Error(e);
         });
     };
     GoLocalStorage.prototype.removeWithUI = function () {
@@ -1999,7 +2011,7 @@ var gcs = __webpack_require__(1);
 var es6_promise_1 = __webpack_require__(0);
 var GoDropBox = (function (_super) {
     __extends(GoDropBox, _super);
-    function GoDropBox(managedDiagrams, clientId, defaultModel) {
+    function GoDropBox(managedDiagrams, clientId, defaultModel, iconsRelativeDirectory) {
         var _this = _super.call(this, managedDiagrams, defaultModel, clientId) || this;
         if (window['Dropbox']) {
             var Dropbox = window['Dropbox'];
@@ -2076,7 +2088,7 @@ var GoDropBox = (function (_super) {
         }
         storage.dropbox.usersGetCurrentAccount(null).then(function (userData) {
             if (userData) {
-                ui.innerHTML = "<img class='icons' src='../goCloudStorageIcons/dropBox.png'></img>";
+                ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "dropBox.png'></img>";
                 var title = action + " Diagram File";
                 ui.innerHTML += "<strong>" + title + "</strong><hr></hr>";
                 document.getElementsByTagName('body')[0].appendChild(ui);
@@ -2363,6 +2375,9 @@ var GoDropBox = (function (_super) {
                     }
                 });
             }
+            else {
+                resolve(storage.saveWithUI());
+            }
         });
     };
     GoDropBox.prototype.loadWithUI = function () {
@@ -2460,7 +2475,7 @@ var gcs = __webpack_require__(1);
 var es6_promise_1 = __webpack_require__(0);
 var GoGoogleDrive = (function (_super) {
     __extends(GoGoogleDrive, _super);
-    function GoGoogleDrive(managedDiagrams, clientId, pickerApiKey, defaultModel) {
+    function GoGoogleDrive(managedDiagrams, clientId, pickerApiKey, defaultModel, iconsRelativeDirectory) {
         var _this = _super.call(this, managedDiagrams, defaultModel, clientId) || this;
         _this._scope = 'https://www.googleapis.com/auth/drive';
         _this._pickerApiKey = pickerApiKey;
@@ -2596,7 +2611,7 @@ var GoGoogleDrive = (function (_super) {
         var ui = storage.ui;
         ui.innerHTML = '';
         ui.style.visibility = 'visible';
-        ui.innerHTML = "<img class='icons' src='../goCloudStorageIcons/googleDrive.jpg'></img><strong>Save Diagram As</strong><hr></hr>";
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "googleDrive.jpg'></img><strong>Save Diagram As</strong><hr></hr>";
         var userInputDiv = document.createElement('div');
         userInputDiv.id = 'userInputDiv';
         userInputDiv.innerHTML += '<input id="userInput" placeholder="Enter filename"></input>';
@@ -2713,8 +2728,9 @@ var GoGoogleDrive = (function (_super) {
                     }
                 });
             }
-            else if (!path)
+            else {
                 resolve(storage.saveWithUI());
+            }
         });
     };
     GoGoogleDrive.prototype.loadWithUI = function () {
@@ -2819,7 +2835,7 @@ var gcs = __webpack_require__(1);
 var es6_promise_1 = __webpack_require__(0);
 var GoOneDrive = (function (_super) {
     __extends(GoOneDrive, _super);
-    function GoOneDrive(managedDiagrams, clientId, defaultModel) {
+    function GoOneDrive(managedDiagrams, clientId, defaultModel, iconsRelativeDirectory) {
         var _this = _super.call(this, managedDiagrams, defaultModel, clientId) || this;
         _this._oauthToken = null;
         _this.ui.id = "goOneDriveSavePrompt";
@@ -2949,7 +2965,7 @@ var GoOneDrive = (function (_super) {
         var ui = storage.ui;
         ui.innerHTML = '';
         ui.style.visibility = 'visible';
-        ui.innerHTML = "<img class='icons' src='../goCloudStorageIcons/oneDrive.png'></img><strong>Save Diagram As</strong><hr></hr>";
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "oneDrive.png'></img><strong>Save Diagram As</strong><hr></hr>";
         var userInputDiv = document.createElement('div');
         userInputDiv.id = 'userInputDiv';
         userInputDiv.innerHTML += '<input id="userInput" placeholder="Enter filename"></input>';
@@ -3067,6 +3083,9 @@ var GoOneDrive = (function (_super) {
                     }
                 };
                 xhr_2.send(bodyContent);
+            }
+            else {
+                resolve(storage.saveWithUI());
             }
         });
     };
@@ -3192,18 +3211,50 @@ var go = __webpack_require__(2);
 var gcs = __webpack_require__(1);
 var es6_promise_1 = __webpack_require__(0);
 var GoCloudStorageManager = (function () {
-    function GoCloudStorageManager(storages) {
+    function GoCloudStorageManager(storages, iconsRelativeDirectory) {
+        if (storages instanceof Array) {
+            var storagesSet = new go.Set();
+            for (var i = 0; i < storages.length; i++) {
+                if (!(storages[i] instanceof gcs.GoCloudStorage)) {
+                    throw Error("Cannot create GoCloudStorageManager; provided 'storages' parameter elements are not all of type GoCloudStorage");
+                }
+                else {
+                    storagesSet.add(storages[i]);
+                }
+            }
+            storages = storagesSet;
+        }
         if (!(storages instanceof go.Set) || !storages)
             throw Error("Cannot create GoCloudStorageManager with provided 'storages' parameter");
-        this._storages = storages;
-        this._currentStorage = storages.first();
+        var storageManager = this;
+        storageManager._storages = storages;
+        storageManager._currentStorage = storages.first();
         var menu = document.createElement('div');
         menu.id = 'goCloudStorageManagerMenu';
-        this._menu = menu;
-        this._deferredPromise = { promise: gcs.GoCloudStorage.prototype.makeDeferredPromise() };
+        storageManager._menu = menu;
+        storageManager._deferredPromise = { promise: gcs.GoCloudStorage.prototype.makeDeferredPromise() };
+        storageManager._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : "../goCloudStorageIcons/";
+        if (iconsRelativeDirectory) {
+            storageManager._storages.iterator.each(function (storage) {
+                storage.iconsRelativeDirectory = iconsRelativeDirectory;
+            });
+        }
+        if (window.location.href.indexOf("account_id=dbid") !== -1) {
+            storages.iterator.each(function (storage) {
+                if (storage.constructor["name"] === "GoDropBox") {
+                    storageManager._currentStorage = storage;
+                }
+            });
+        }
     }
     Object.defineProperty(GoCloudStorageManager.prototype, "storages", {
         get: function () { return this._storages; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorageManager.prototype, "iconsRelativeDirectory", {
+        get: function () { return this._iconsRelativeDirectory; },
+        set: function (value) { this._iconsRelativeDirectory = value; },
         enumerable: true,
         configurable: true
     });
@@ -3236,10 +3287,14 @@ var GoCloudStorageManager = (function () {
             resolve(storageManager.handleAction("Remove"));
         });
     };
-    GoCloudStorageManager.prototype.save = function () {
+    GoCloudStorageManager.prototype.save = function (isSaveAs) {
+        if (isSaveAs === void 0) { isSaveAs = true; }
         var storageManager = this;
         return new es6_promise_1.Promise(function (resolve, reject) {
-            resolve(storageManager.handleAction("Save"));
+            if (isSaveAs)
+                resolve(storageManager.handleAction("SaveAs"));
+            else
+                resolve(storageManager.handleAction("Save"));
         });
     };
     GoCloudStorageManager.prototype.showMessage = function (msg, seconds) {
@@ -3267,7 +3322,7 @@ var GoCloudStorageManager = (function () {
             optionsDiv.id = 'storageOptions';
             var it = storages.iterator;
             it.each(function (storage) {
-                var src = '../goCloudStorageIcons/';
+                var src = storageManager.iconsRelativeDirectory;
                 var type = storage.constructor['name'];
                 switch (type) {
                     case 'GoGoogleDrive':
@@ -3305,6 +3360,9 @@ var GoCloudStorageManager = (function () {
                     if (storage.constructor['name'] == selectedStorage)
                         storageManager.currentStorage = storage;
                 });
+                if (storageManager.currentStorageNeedsAuth()) {
+                    storageManager.currentStorage.authorize();
+                }
                 resolve(storageManager.currentStorage);
                 storageManager.hideMenu();
             };
@@ -3342,8 +3400,12 @@ var GoCloudStorageManager = (function () {
                         resolve(storage.loadWithUI());
                         break;
                     }
-                    case "Save": {
+                    case "SaveAs": {
                         resolve(storage.saveWithUI());
+                        break;
+                    }
+                    case "Save": {
+                        resolve(storage.save());
                         break;
                     }
                     case "Remove": {

@@ -40,7 +40,8 @@ var tags = [
   "charts",
   "html",
   "inspector",
-  "frameworks"
+  "frameworks",
+  "storage"
 ];
 
 /**
@@ -1276,9 +1277,49 @@ arr.push([
   "Local Storage Commands",
   "Demonstrates custom CommandHandler which uses localStorage as the repository for the clipboard, rather than an in-memory global variable, allowing for copying between tabs and windows.",
   "minimal",
-  ["extensions"]
+  ["extensions", "storage"]
 ]);
 
+arr.push([
+  "../storage/samples/GoCloudStorageManager",
+  "Cloud Storage Manager",
+  "Demonstrates dynamically choosing the user's cloud storage service (using the user's credentials) or localStorage.",
+  "GoCloudStorageManager",
+  ["extensions", "storage"]
+]);
+/*
+arr.push([
+  "../storage/samples/GoDropBox",
+  "DropBox Storage",
+  "Demonstrates saving models in the user's DropBox storage.",
+  "GoDropBox",
+  ["extensions", "storage"]
+]);
+
+arr.push([
+  "../storage/samples/GoGoogleDrive",
+  "Google Drive Storage",
+  "Demonstrates saving models in the user's Google Drive storage.",
+  "GoGoogleDrive",
+  ["extensions", "storage"]
+]);
+
+arr.push([
+  "../storage/samples/GoOneDrive",
+  "Microsoft One Drive Storage",
+  "Demonstrates saving models in the user's OneDrive storage.",
+  "GoOneDrive",
+  ["extensions", "storage"]
+]);
+
+arr.push([
+  "../storage/samples/GoLocalStorage",
+  "Local Web Storage",
+  "Demonstrates saving models in the browser's limited localStorage.",
+  "GoLocalStorage",
+  ["extensions", "storage"]
+]);
+*/
 arr.push([
   "../extensions/Robot",
   "Simulating Input",
