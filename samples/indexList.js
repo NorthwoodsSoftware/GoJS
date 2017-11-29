@@ -898,8 +898,6 @@ arr.push([
   ["tables", "itemarrays", "buttons", "geometries"]
 ]);
 
-
-
 arr.push([
   "records",
   "Record Mapper",
@@ -1431,6 +1429,14 @@ arr.push([
   "Shows different options for ToolManager's gestureBehavior.",
   "minimal",
   []
+]);
+
+arr.push([
+  "zoomPinch",
+  "Pinch Zooming",
+  "Demonstrates customization of pinch-zooming to scale a node.",
+  "minimal",
+  ["tools"]
 ]);
 
 arr.push([

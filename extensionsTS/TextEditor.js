@@ -139,8 +139,8 @@
             }
         };
         TextEditor.hide = function (diagram, tool) {
-            diagram.div.removeChild(textarea);
             TextEditor.tool = null; // forget reference to TextEditingTool
+            diagram.div.removeChild(textarea);
         };
         window.TextEditor = TextEditor;
     })(window);

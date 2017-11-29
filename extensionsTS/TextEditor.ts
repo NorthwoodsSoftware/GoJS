@@ -142,8 +142,8 @@ import * as go from "../release/go";
   };
 
   TextEditor.hide = (diagram: go.Diagram, tool: go.Tool) => {
-    diagram.div.removeChild(textarea);
     (<any>TextEditor).tool = null;  // forget reference to TextEditingTool
+    diagram.div.removeChild(textarea);
   }
 
   window.TextEditor = TextEditor;

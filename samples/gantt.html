@@ -65,18 +65,7 @@
                          })
         ));
 
-      // create the template for the nodes displaying dates
-      // no shape, only a TextBlock
-      myDiagram.nodeTemplateMap.add("date",
-        $(go.Part,
-          { selectable: false },
-          new go.Binding("location", "loc",
-                         function (l) { return new go.Point(scaleWidth(l.x), l.y); }),
-          $(go.TextBlock,
-            new go.Binding("text", "key"))
-        ));
-
-      //create the link template
+      // create the link template
       myDiagram.linkTemplate =
         $(go.Link,
           {
@@ -101,11 +90,7 @@
         { key: "f", color: "turquoise", width: 130, loc: new go.Point(scaleWidth(310), 140) },
         { key: "g", color: "coral", width: 155, loc: new go.Point(scaleWidth(420), 160) },
         { key: "begin", category: "start", loc: new go.Point(-15,20) },
-        { key: "end", category: "end", loc: new go.Point(scaleWidth(575), 180) },
-        { key: "23Jul", category: "date", loc: new go.Point(scaleWidth(0), 0) },
-        { key: "30Jul", category: "date", loc: new go.Point(scaleWidth(150), 0) },
-        { key: "6Aug", category: "date", loc: new go.Point(scaleWidth(300), 0) },
-        { key: "13Aug", category: "date", loc: new go.Point(scaleWidth(450), 0) }
+        { key: "end", category: "end", loc: new go.Point(scaleWidth(575), 180) }
       ],
       [ // link data
         { from: "begin", to: "a" },
@@ -119,6 +104,33 @@
         { from: "f", to: "end" },
         { from: "g", to: "end" }
       ]);
+
+      // add a Graduated panel to show the dates, globally scoped
+      dateScale =
+        $(go.Part, "Graduated",
+          {
+            graduatedTickUnit: 1, graduatedMin: 0, graduatedMax: 3,
+            pickable: false, location: new go.Point(0, 0)
+          },
+          $(go.Shape,
+            { name: "line", strokeWidth: 0, geometryString: "M0 0 H" + scaleWidth(450) }
+          ),
+          $(go.TextBlock,
+            {
+              name: "labels",
+              font: "10pt sans-serif",
+              alignmentFocus: new go.Spot(0, 0, -3, -3),
+              graduatedFunction: function (v) {
+                var d = new Date(2017, 6, 23);
+                d.setDate(d.getDate() + v * 7);
+                // format date output to string
+                var options = { month: "short", day: "2-digit" };
+                return d.toLocaleDateString("en-US", options);
+              }
+            }
+          )
+        );
+      myDiagram.add(dateScale);
     }
 
     // scale the number according to the current widthFactor
@@ -127,13 +139,20 @@
     }
 
     // change the grid's cell size and the widthFactor,
-    // then update Bindings to scale the widths and positions of nodes
+    // then update Bindings to scale the widths and positions of nodes,
+    // as well as the width of the date scale
     function rescale() {
       var val = parseFloat(document.getElementById("widthSlider").value);
       myDiagram.startTransaction("rescale");
       myDiagram.grid.gridCellSize = new go.Size(val, 150);
       myDiagram._widthFactor = val / 30;
       myDiagram.updateAllTargetBindings();
+      // update width of date scale and maybe change interval of labels if too small
+      var width = scaleWidth(450);
+      dateScale.findObject("line").geometryString = "M0 0 H" + width;
+      if (width >= 140) dateScale.findObject("labels").interval = 1;
+      if (width < 140) dateScale.findObject("labels").interval = 2;
+      if (width < 70) dateScale.findObject("labels").interval = 4;
       myDiagram.commitTransaction("rescale");
     }
   </script>
