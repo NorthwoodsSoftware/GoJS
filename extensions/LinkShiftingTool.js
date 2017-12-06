@@ -220,64 +220,11 @@ LinkShiftingTool.prototype.doReshape = function(pt) {
   }
   var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
                           port.getDocumentPoint(go.Spot.BottomRight));
-  // determine new connection point based on closest point to bounds of port property
-  var x = portb.width > 0 ? (pt.x - portb.x) / portb.width : 0;
-  var y = portb.height > 0 ? (pt.y - portb.y) / portb.height : 0;
-
-  var sx = undefined;
-  var sy = undefined;
-
-  if (x <= 0) {
-    sx = 0;
-    if (y <= 0) {
-      sy = 0;
-    } else if (y >= 1) {
-      sy = 1;
-    } else {
-      sy = y;
-    }
-  } else if (x >= 1) {
-    sx = 1;
-    if (y <= 0) {
-      sy = 0;
-    } else if (y >= 1) {
-      sy = 1;
-    } else {
-      sy = y;
-    }
+  var lp = link.getLinkPointFromPoint(port.part, port, port.getDocumentPoint(go.Spot.Center), pt, fromend);
+  var spot = new go.Spot((lp.x - portb.x) / (portb.width || 1), (lp.y - portb.y) / (portb.height || 1));
+  if (fromend) {
+    link.fromSpot = spot;
   } else {
-    if (y <= 0) {
-      sx = x;
-      sy = 0;
-    } else if (y >= 1) {
-      sx = x;
-      sy = 1;
-    } else {  // in the middle
-      if (x > y) {
-        if (x > 1 - y) {
-          sx = 1;  // right side
-          sy = y;
-        } else {
-          sx = x;
-          sy = 0;  // top side
-        }
-      } else {  // y <= x
-        if (x > 1 - y) {
-          sx = x;
-          sy = 1;  // bottom side
-        } else {
-          sx = 0;  // left side
-          sy = y;
-        }
-      }
-    }
-  }
-
-  if (sx !== undefined && sy !== undefined) {
-    if (fromend) {
-      link.fromSpot = new go.Spot(sx, sy);
-    } else {
-      link.toSpot = new go.Spot(sx, sy);
-    }
+    link.toSpot = spot;
   }
 };

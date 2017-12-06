@@ -39,7 +39,7 @@ FishboneLayout.prototype.makeNetwork = function(coll) {
     if (v.destinationEdges.count === 0) return;
     if (v.destinationEdges.count % 2 === 1) {
       // if there's an odd number of real children, add two dummies
-      var dummy = new go.TreeVertex();
+      var dummy = net.createVertex();
       dummy.bounds = new go.Rect();
       dummy.focus = new go.Point();
       net.addVertex(dummy);
@@ -47,7 +47,7 @@ FishboneLayout.prototype.makeNetwork = function(coll) {
     }
     // make sure there's an odd number of children, including at least one dummy;
     // commitNodes will move the parent node to where this dummy child node is placed
-    var dummy2 = new go.TreeVertex();
+    var dummy2 = net.createVertex();
     dummy2.bounds = v.bounds;
     dummy2.focus = v.focus;
     net.addVertex(dummy2);

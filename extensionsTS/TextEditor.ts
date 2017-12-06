@@ -17,11 +17,11 @@ import * as go from "../release/go";
   textarea.addEventListener('input', (e) => {
     var tool = (<any>TextEditor).tool;
     if (tool.textBlock === null) return;
-    var tempText = tool.measureTemporaryTextBlock(this.value);
-    var scale = (<any>this).textScale;
-    this.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
-    this.style.height = 10 + tempText.measuredBounds.height * scale + "px";
-    this.rows = tempText.lineCount;
+    var tempText = tool.measureTemporaryTextBlock(textarea.value);
+    var scale = (<any>textarea).textScale;
+    textarea.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
+    textarea.style.height = 10 + tempText.measuredBounds.height * scale + "px";
+    textarea.rows = tempText.lineCount;
   }, false);
 
   textarea.addEventListener('keydown', (e) => {
@@ -78,6 +78,7 @@ import * as go from "../release/go";
 
   // used to be in doActivate
   TextEditor.show = (textBlock: go.GraphObject, diagram: go.Diagram, tool: go.Tool) => {
+    if (!diagram || !diagram.div) return;
     if (!(textBlock instanceof go.TextBlock)) return;
 
     (<any>TextEditor).tool = tool;  // remember the TextEditingTool for use by listeners
@@ -143,7 +144,7 @@ import * as go from "../release/go";
 
   TextEditor.hide = (diagram: go.Diagram, tool: go.Tool) => {
     (<any>TextEditor).tool = null;  // forget reference to TextEditingTool
-    diagram.div.removeChild(textarea);
+    if (diagram.div) diagram.div.removeChild(textarea);
   }
 
   window.TextEditor = TextEditor;

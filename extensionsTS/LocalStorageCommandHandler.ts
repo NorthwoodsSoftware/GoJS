@@ -99,7 +99,7 @@ export class LocalStorageCommandHandler extends go.CommandHandler {
 		*/
 	public canPasteSelection(): boolean {
 		const diagram = this.diagram;
-		if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;
+		if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
 		if (!diagram.allowInsert || !diagram.allowClipboard) return false;
 		try {
 			const clipstr = window.localStorage.getItem(this.StorageKey);

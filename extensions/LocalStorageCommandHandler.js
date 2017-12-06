@@ -81,7 +81,8 @@ LocalStorageCommandHandler.prototype.pasteFromClipboard = function() {
       // recover the model from the clipboard rendering
       clipdiag.model = go.Model.fromJson(clipstr);
       // copy all the CLIPDIAG Parts into this Diagram
-      var copymap = this.diagram.copyParts(clipdiag.parts.concat(clipdiag.nodes).concat(clipdiag.links), this.diagram, false);
+      const all = new go.List().addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
+      var copymap = this.diagram.copyParts(all, this.diagram, false);
       // return a Set of the copied Parts
       return new go.Set(go.Part).addAll(copymap.iteratorValues);
     }

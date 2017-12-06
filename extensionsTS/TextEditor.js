@@ -8,7 +8,6 @@
     }
 })(function (require, exports) {
     "use strict";
-    var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
     /*
     *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
@@ -26,11 +25,11 @@
             var tool = TextEditor.tool;
             if (tool.textBlock === null)
                 return;
-            var tempText = tool.measureTemporaryTextBlock(_this.value);
-            var scale = _this.textScale;
-            _this.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
-            _this.style.height = 10 + tempText.measuredBounds.height * scale + "px";
-            _this.rows = tempText.lineCount;
+            var tempText = tool.measureTemporaryTextBlock(textarea.value);
+            var scale = textarea.textScale;
+            textarea.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
+            textarea.style.height = 10 + tempText.measuredBounds.height * scale + "px";
+            textarea.rows = tempText.lineCount;
         }, false);
         textarea.addEventListener('keydown', function (e) {
             var tool = TextEditor.tool;
@@ -84,6 +83,8 @@
         TextEditor.mainElement = textarea; // to reference it more easily
         // used to be in doActivate
         TextEditor.show = function (textBlock, diagram, tool) {
+            if (!diagram || !diagram.div)
+                return;
             if (!(textBlock instanceof go.TextBlock))
                 return;
             TextEditor.tool = tool; // remember the TextEditingTool for use by listeners
@@ -140,7 +141,8 @@
         };
         TextEditor.hide = function (diagram, tool) {
             TextEditor.tool = null; // forget reference to TextEditingTool
-            diagram.div.removeChild(textarea);
+            if (diagram.div)
+                diagram.div.removeChild(textarea);
         };
         window.TextEditor = TextEditor;
     })(window);

@@ -20,7 +20,7 @@
           allowDrop: true,  // must be true to accept drops from the Palette
           "LinkDrawn": showLinkLabel,  // this DiagramEvent listener is defined below
           "LinkRelinked": showLinkLabel,
-          "animationManager.duration": 800, // slightly longer than default (600ms) animation
+          scrollsPageOnFocus: false,
           "undoManager.isEnabled": true  // enable undo & redo
         });
 
@@ -209,7 +209,7 @@
     myPalette =
       $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
         {
-          "animationManager.duration": 800, // slightly longer than default (600ms) animation
+          scrollsPageOnFocus: false,
           nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
           model: new go.GraphLinksModel([  // specify the contents of the Palette
             { category: "Start", text: "Start" },
@@ -219,21 +219,6 @@
             { category: "Comment", text: "Comment" }
           ])
         });
-
-    // The following code overrides GoJS focus to stop the browser from scrolling
-    // the page when either the Diagram or Palette are clicked or dragged onto.
-
-    function customFocus() {
-      var x = window.scrollX || window.pageXOffset;
-      var y = window.scrollY || window.pageYOffset;
-      go.Diagram.prototype.doFocus.call(this);
-      window.scrollTo(x, y);
-    }
-
-    myDiagram.doFocus = customFocus;
-    myPalette.doFocus = customFocus;
-
-
   } // end init
 
   // Make all ports on a node visible when the mouse is over the node

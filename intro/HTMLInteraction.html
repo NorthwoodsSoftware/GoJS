@@ -51,17 +51,9 @@ So you should locally assign the <code>$</code> variable or use a different vari
 <h3 id="HTMLFocusOnDiagrams">HTML Focus on Diagrams</h3>
 
 <p>
-When browser elements are focused, they are scrolled into view as much as possible, which may be unwelcome in some web apps. You can disable this effect by overriding <code>Diagram.doFocus</code>.
-
-<pre data-language="javascript">// Save and restore the window scroll values
-// so that the browser does not modify the window scroll when a Diagram is focused
-myDiagram.doFocus = function() {
-  var x = window.scrollX || window.pageXOffset;
-  var y = window.scrollY || window.pageYOffset;
-  go.Diagram.prototype.doFocus.call(this);
-  window.scrollTo(x, y);
-}
-</pre>
+When a browser element gets focus, some browsers scroll that element into view as much as possible.
+This behavior may be unwelcome in some web apps.
+You can disable that effect by setting <a>Diagram.scrollsPageOnFocus</a> to false.
 
 <p>
 You can remove the outline while the Diagram is in focus. This is a CSS effect, not a GoJS effect, and can be removed by removing the CSS outline from all canvas elements inside the Diagram div:

@@ -5,7 +5,7 @@ const stream = require('stream');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
-const TYPEDOC_CMD = path.join('..', 'buildTS', 'typedoc', 'bin', 'typedoc');
+const TYPEDOC_CMD = path.join('..', '..', 'main', 'buildTS', 'typedoc', 'bin', 'typedoc');
 
 console.log("Generating API Documentation:");
 // Part 1: Clean existing documentation
@@ -13,15 +13,15 @@ console.log("Removing existing docs...");
 rimraf.sync('./api');
 
 
-/*// Part 2: Build the custom theme
+// Part 2: Build the custom theme
 console.log("Building custom theme...");
 try {
-  if (!fs.existsSync('../buildTS/typedoc-default-themes/node_modules')) {
-    child_process.execSync("npm install", { cwd: "../buildTS/typedoc-default-themes", stdio: [0,1,2] });
+  if (!fs.existsSync('../../main/buildTS/typedoc-default-themes/node_modules')) {
+    child_process.execSync("npm install", { cwd: "../../main/buildTS/typedoc-default-themes", stdio: [0,1,2] });
   } else {
-    child_process.execSync("npm run prepublish", { cwd: "../buildTS/typedoc-default-themes", stdio: [0,1,2] });
+    child_process.execSync("npm run prepublish", { cwd: "../../main/buildTS/typedoc-default-themes", stdio: [0,1,2] });
   }
-} catch (e) {}*/
+} catch (e) {}
 
 // Part 2: Move bootstrap and api.js to /out/
 console.log("Moving assets to out folder...");
@@ -58,8 +58,8 @@ try {
 // Part 3: Run typedoc
 console.log("Executing typedoc command...");
 try {
-  if (!fs.existsSync('../buildTS/typedoc/dist')) {
-    child_process.execSync("npm install", { cwd: "../buildTS/typedoc", stdio: [0,1,2] });
+  if (!fs.existsSync('../../main/buildTS/typedoc/dist')) {
+    child_process.execSync("npm install", { cwd: "../../main/buildTS/typedoc", stdio: [0,1,2] });
   }
   child_process.execSync('node ' +
     TYPEDOC_CMD + ' --options typedoc.json' +

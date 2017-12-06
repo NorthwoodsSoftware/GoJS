@@ -539,6 +539,9 @@ declare namespace go {
         /**Gets or sets the Margin (or number for a uniform Margin) that describes a scrollable area that surrounds the document bounds, allowing the user to scroll into empty space.*/
         scrollMargin: MarginLike;
 
+        /**Gets or sets whether the page may be scrolled when the diagram receives focus.*/
+        scrollsPageOnFocus: boolean;
+
         /**Gets or sets the function used to determine the position that this Diagram can be scrolled or moved to.*/
         positionComputation: (d: Diagram, p: Point) => Point;
 
@@ -1222,6 +1225,7 @@ declare namespace go {
         /**This value for Diagram.scrollMode states that the viewport does not constrain scrolling to the Diagram document bounds.*/
         static InfiniteScroll: EnumValue;
 
+        delaysLayout: boolean;  // undocumented
         getRenderingHint(name: string): any;  // undocumented
         setRenderingHint(name: string, val: any): void;  // undocumented
         getInputOption(name: string): any;  // undocumented

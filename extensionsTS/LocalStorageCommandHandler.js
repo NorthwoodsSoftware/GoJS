@@ -122,7 +122,7 @@ var __extends = (this && this.__extends) || (function () {
             */
         LocalStorageCommandHandler.prototype.canPasteSelection = function () {
             var diagram = this.diagram;
-            if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly)
+            if (diagram.isReadOnly || diagram.isModelReadOnly)
                 return false;
             if (!diagram.allowInsert || !diagram.allowClipboard)
                 return false;

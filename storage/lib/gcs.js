@@ -1414,7 +1414,8 @@ var GoCloudStorage = (function () {
         var models = JSON.parse(fileContents);
         for (var divId in models) {
             var model = models[divId];
-            var diagram = go.Diagram.fromDiv(divId);
+            var div = (document.getElementById(divId));
+            var diagram = go.Diagram.fromDiv(div);
             if (diagram) {
                 diagram.model = go.Model.fromJson(JSON.stringify(model));
             }
@@ -2037,7 +2038,12 @@ var GoDropBox = (function (_super) {
         if (refreshToken === void 0) { refreshToken = false; }
         var storage = this;
         return new es6_promise_1.Promise(function (resolve, reject) {
-            if (!storage.dropbox.getAccessToken()) {
+            if (refreshToken) {
+                var authUrl = storage.dropbox.getAuthenticationUrl(window.location.href);
+                window.location.href = authUrl;
+                resolve(false);
+            }
+            else if (!storage.dropbox.getAccessToken()) {
                 if (window.location.hash.indexOf("access_token") !== -1 && window.location.hash.indexOf('id=dbid') !== -1) {
                     var accessToken = window.location.hash.substring(window.location.hash.indexOf('=') + 1, window.location.hash.indexOf('&'));
                     storage.dropbox.setAccessToken(accessToken);
@@ -2049,13 +2055,7 @@ var GoDropBox = (function (_super) {
                     resolve(false);
                 }
             }
-            else if (refreshToken) {
-                var authUrl = storage.dropbox.getAuthenticationUrl(window.location.href);
-                window.location.href = authUrl;
-                resolve(false);
-            }
-            else
-                resolve(true);
+            resolve(true);
         });
     };
     GoDropBox.prototype.getUserInfo = function () {

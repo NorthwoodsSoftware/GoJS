@@ -22,8 +22,9 @@
   Options for properties:
     show: {boolean|function} a boolean value to show or hide the property from the inspector, or a predicate function to show conditionally.
     readOnly: {boolean|function} whether or not the property is read-only
-    type: {string} a string describing the data type. Supported values: "string|number|boolean|color|arrayofnumber|point|rect|size|spot|margin"
+    type: {string} a string describing the data type. Supported values: "string|number|boolean|color|arrayofnumber|point|rect|size|spot|margin|select"
     defaultValue: {*} a default value for the property. Defaults to the empty string.
+    choices: {Array|function} when type == "select", the Array of choices to use or a function that returns the Array of choices.
 
   Example usage of Inspector:
 
@@ -31,9 +32,11 @@
     {
       includesOwnProperties: false,
       properties: {
-        "key": { readOnly: true, show: Inspector.showIfPresent },
+        "key": { show: Inspector.showIfPresent, readOnly: true },
         "comments": { show: Inspector.showIfNode  },
         "LinkComments": { show: Inspector.showIfLink },
+        "chosen": { show: Inspector.showIfNode, type: "checkbox" },
+        "state": { show: Inspector.showIfNode, type: "select", choices: ["Stopped", "Parked", "Moving"] }
       }
     });
 
@@ -113,9 +116,9 @@ Inspector.prototype.inspectObject = function(object) {
   }
 
   this.inspectedObject = inspectedObject;
+  if (inspectedObject === null) return;
   var mainDiv = this._div;
   mainDiv.innerHTML = "";
-  if (inspectedObject === null) return;
 
   // use either the Part.data or the object itself (for model.modelData)
   var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
@@ -211,37 +214,45 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
   tr.appendChild(td1);
 
   var td2 = document.createElement("td");
-  var input = document.createElement("input");
   var decProp = this.declaredProperties[propertyName];
-  input.tabIndex = this.tabIndex++;
-
+  var input = null;
   var self = this;
-  function setprops() { self.updateAllProperties(); }
+  function updateall() { self.updateAllProperties(); }
 
-  input.value = this.convertToString(propertyValue);
-  input.disabled = !this.canEditProperty(propertyName, decProp, this.inspectedObject);
-  if (decProp) {
-    var t = decProp.type;
-    if (t !== 'string' && t !== 'number' && t !== 'boolean' &&
-        t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
-        t !== 'rect' && t !== 'spot' && t !== 'margin') {
-      input.setAttribute("type", decProp.type);
-    }
-    if (decProp.type === "color") {
-      if (input.type === "color") {
-        input.value = this.convertToColor(propertyValue);
-        input.addEventListener("input", setprops);
-        input.addEventListener("change", setprops);
+  if (decProp && decProp.type === "select") {
+    input = document.createElement("select");
+    this.updateSelect(decProp, input, propertyName, propertyValue);
+    input.addEventListener("change", updateall);
+  } else {
+    input = document.createElement("input");
+
+    input.value = this.convertToString(propertyValue);
+    if (decProp) {
+      var t = decProp.type;
+      if (t !== 'string' && t !== 'number' && t !== 'boolean' &&
+          t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
+          t !== 'rect' && t !== 'spot' && t !== 'margin') {
+        input.setAttribute("type", decProp.type);
       }
-    } if (decProp.type === "checkbox") {
-      input.checked = !!propertyValue;
-      input.addEventListener("change", setprops);
+      if (decProp.type === "color") {
+        if (input.type === "color") {
+          input.value = this.convertToColor(propertyValue);
+          input.addEventListener("input", updateall);
+          input.addEventListener("change", updateall);
+        }
+      } if (decProp.type === "checkbox") {
+        input.checked = !!propertyValue;
+        input.addEventListener("change", updateall);
+      }
     }
+    if (input.type !== "color") input.addEventListener("blur", updateall);
   }
 
-  if (input.type !== "color") input.addEventListener("blur", setprops);
-
-  td2.appendChild(input);
+  if (input) {
+    input.tabIndex = this.tabIndex++;
+    input.disabled = !this.canEditProperty(propertyName, decProp, this.inspectedObject);
+    td2.appendChild(input);
+  }
   tr.appendChild(td2);
 
   this._inspectedProperties[propertyName] = input;
@@ -317,7 +328,9 @@ Inspector.prototype.updateAllHTML = function() {
   if (!data) {  // clear out all of the fields
     for (var name in inspectedProps) {
       var input = inspectedProps[name];
-      if (input.type === "color") {
+      if (input instanceof HTMLSelectElement) {
+        input.innerHTML = "";
+      } else if (input.type === "color") {
         input.value = "#000000";
       } else if (input.type === "checkbox") {
         input.checked = false;
@@ -330,7 +343,10 @@ Inspector.prototype.updateAllHTML = function() {
     for (var name in inspectedProps) {
       var input = inspectedProps[name];
       var propertyValue = data[name];
-      if (input.type === "color") {
+      if (input instanceof HTMLSelectElement) {
+        var decProp = this.declaredProperties[name];
+        this.updateSelect(decProp, input, name, propertyValue);
+      } else if (input.type === "color") {
         input.value = this.convertToColor(propertyValue);
       } else if (input.type === "checkbox") {
         input.checked = !!propertyValue;
@@ -339,6 +355,25 @@ Inspector.prototype.updateAllHTML = function() {
       }
     }
   }
+}
+
+/**
+* @ignore
+* Update an HTMLSelectElement with an appropriate list of choices, given the propertyName
+*/
+Inspector.prototype.updateSelect = function(decProp, select, propertyName, propertyValue) {
+  select.innerHTML = "";  // clear out anything that was there
+  var choices = decProp.choices;
+  if (typeof choices === "function") choices = choices(this.inspectedObject, propertyName);
+  if (!Array.isArray(choices)) choices = [];
+  decProp.choicesArray = choices;  // remember list of actual choice values (not strings)
+  for (var i = 0; i < choices.length; i++) {
+    var choice = choices[i];
+    var opt = document.createElement("option");
+    opt.text = this.convertToString(choice);
+    select.add(opt, null);
+  }
+  select.value = this.convertToString(propertyValue);
 }
 
 /**
@@ -390,6 +425,7 @@ Inspector.prototype.updateAllProperties = function() {
       case "spot": value = go.Spot.parse(value); break;
       case "margin": value = go.Margin.parse(value); break;
       case "checkbox": value = input.checked; break;
+      case "select": value = decProp.choicesArray[input.selectedIndex]; break;
     }
 
     // in case parsed to be different, such as in the case of boolean values,
@@ -400,7 +436,7 @@ Inspector.prototype.updateAllProperties = function() {
     diagram.model.setDataProperty(data, name, value);
 
     // notify any listener
-    if (this.propertyModified !== null) this.propertyModified(name, value);
+    if (this.propertyModified !== null) this.propertyModified(name, value, this);
   }
   diagram.commitTransaction("set all properties");
 };

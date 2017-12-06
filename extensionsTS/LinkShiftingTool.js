@@ -40,10 +40,7 @@ var __extends = (this && this.__extends) || (function () {
             // transient state
             /** @type {GraphObject} */
             _this._handle = null;
-            /** @type {List} */
-            _this._originalPoints = null;
             var h = new go.Shape();
-            var g = new go.Shape();
             h.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
             h.fill = null;
             h.stroke = "dodgerblue";
@@ -52,6 +49,7 @@ var __extends = (this && this.__extends) || (function () {
             h.segmentIndex = 0;
             h.segmentFraction = 1;
             h.segmentOrientation = go.Link.OrientAlong;
+            var g = new go.Shape();
             g.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
             g.fill = null;
             g.stroke = "dodgerblue";
@@ -139,7 +137,7 @@ var __extends = (this && this.__extends) || (function () {
             if (!this.isEnabled)
                 return false;
             var diagram = this.diagram;
-            if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly)
+            if (diagram.isReadOnly || diagram.isModelReadOnly)
                 return false;
             if (!diagram.lastInput.left)
                 return false;
@@ -153,14 +151,14 @@ var __extends = (this && this.__extends) || (function () {
         */
         LinkShiftingTool.prototype.doActivate = function () {
             var diagram = this.diagram;
-            if (diagram === null)
-                return;
             var h = this.findToolHandleAt(diagram.firstInput.documentPoint, "LinkShiftingFrom");
             if (h === null)
                 h = this.findToolHandleAt(diagram.firstInput.documentPoint, "LinkShiftingTo");
             if (h === null)
                 return;
             var ad = h.part;
+            if (ad === null || ad.adornedObject === null)
+                return;
             var link = ad.adornedObject.part;
             if (!(link instanceof go.Link))
                 return;
@@ -178,8 +176,6 @@ var __extends = (this && this.__extends) || (function () {
         LinkShiftingTool.prototype.doDeactivate = function () {
             this.isActive = false;
             var diagram = this.diagram;
-            if (diagram === null)
-                return;
             diagram.isMouseCaptured = false;
             diagram.currentCursor = '';
             this.stopTransaction();
@@ -199,9 +195,14 @@ var __extends = (this && this.__extends) || (function () {
         * @this {LinkShiftingTool}
         */
         LinkShiftingTool.prototype.doCancel = function () {
-            var ad = this._handle.part;
-            var link = ad.adornedObject.part;
-            link.points = this._originalPoints;
+            if (this._handle !== null) {
+                var ad = this._handle.part;
+                if (ad.adornedObject === null)
+                    return;
+                var link = ad.adornedObject.part;
+                if (this._originalPoints !== null)
+                    link.points = this._originalPoints;
+            }
             this.stopTool();
         };
         ;
@@ -230,7 +231,11 @@ var __extends = (this && this.__extends) || (function () {
         * @param {Point} pt
         */
         LinkShiftingTool.prototype.doReshape = function (pt) {
+            if (this._handle === null)
+                return;
             var ad = this._handle.part;
+            if (ad.adornedObject === null)
+                return;
             var link = ad.adornedObject.part;
             var fromend = ad.category === "LinkShiftingFrom";
             var port = null;
@@ -240,75 +245,16 @@ var __extends = (this && this.__extends) || (function () {
             else {
                 port = link.toPort;
             }
+            if (port === null)
+                return;
             var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft), port.getDocumentPoint(go.Spot.BottomRight));
-            // determine new connection point based on closest point to bounds of port property
-            var x = portb.width > 0 ? (pt.x - portb.x) / portb.width : 0;
-            var y = portb.height > 0 ? (pt.y - portb.y) / portb.height : 0;
-            var sx = undefined;
-            var sy = undefined;
-            if (x <= 0) {
-                sx = 0;
-                if (y <= 0) {
-                    sy = 0;
-                }
-                else if (y >= 1) {
-                    sy = 1;
-                }
-                else {
-                    sy = y;
-                }
-            }
-            else if (x >= 1) {
-                sx = 1;
-                if (y <= 0) {
-                    sy = 0;
-                }
-                else if (y >= 1) {
-                    sy = 1;
-                }
-                else {
-                    sy = y;
-                }
+            var lp = link.getLinkPointFromPoint(port.part, port, port.getDocumentPoint(go.Spot.Center), pt, fromend);
+            var spot = new go.Spot((lp.x - portb.x) / (portb.width || 1), (lp.y - portb.y) / (portb.height || 1));
+            if (fromend) {
+                link.fromSpot = spot;
             }
             else {
-                if (y <= 0) {
-                    sx = x;
-                    sy = 0;
-                }
-                else if (y >= 1) {
-                    sx = x;
-                    sy = 1;
-                }
-                else {
-                    if (x > y) {
-                        if (x > 1 - y) {
-                            sx = 1; // right side
-                            sy = y;
-                        }
-                        else {
-                            sx = x;
-                            sy = 0; // top side
-                        }
-                    }
-                    else {
-                        if (x > 1 - y) {
-                            sx = x;
-                            sy = 1; // bottom side
-                        }
-                        else {
-                            sx = 0; // left side
-                            sy = y;
-                        }
-                    }
-                }
-            }
-            if (sx !== undefined && sy !== undefined) {
-                if (fromend) {
-                    link.fromSpot = new go.Spot(sx, sy);
-                }
-                else {
-                    link.toSpot = new go.Spot(sx, sy);
-                }
+                link.toSpot = spot;
             }
         };
         ;

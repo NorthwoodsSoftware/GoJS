@@ -1000,7 +1000,7 @@ var __extends = (this && this.__extends) || (function () {
         // change color of viewport border in Overview
         myOverview.box.elt(0).stroke = "dodgerblue";
         // start with a simple preset model:
-        loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json");
+        loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.1.json");
     } // end init
     exports.init = init;
     //------------------------------------------  pools / lanes   ----------------------------------------------
@@ -1475,13 +1475,13 @@ var __extends = (this && this.__extends) || (function () {
     exports.alignRows = alignRows;
     function alignColumns() { myDiagram.commandHandler.alignColumn(askSpace()); }
     exports.alignColumns = alignColumns;
-    function basicOrderProcess() { loadJSON("BPMNdata/BasicOrderProcess.json"); }
+    function basicOrderProcess() { loadJSON("../extensions/BPMNdata/BasicOrderProcess.json"); }
     exports.basicOrderProcess = basicOrderProcess;
-    function BPMNdata51() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json"); }
+    function BPMNdata51() { loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.1.json"); }
     exports.BPMNdata51 = BPMNdata51;
-    function BPMNdata52() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.2.json"); }
+    function BPMNdata52() { loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.2.json"); }
     exports.BPMNdata52 = BPMNdata52;
-    function BPMNdata53() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.3.json"); }
+    function BPMNdata53() { loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.3.json"); }
     exports.BPMNdata53 = BPMNdata53;
     function cancel1() { closeElement('openDocument'); }
     exports.cancel1 = cancel1;

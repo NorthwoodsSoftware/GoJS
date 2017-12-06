@@ -27,7 +27,6 @@ export class LinkShiftingTool extends go.Tool {
 	constructor() {
 		super();
 		const h: go.Shape = new go.Shape();
-		const g: go.Shape = new go.Shape();
 		h.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
 		h.fill = null;
 		h.stroke = "dodgerblue";
@@ -36,6 +35,7 @@ export class LinkShiftingTool extends go.Tool {
 		h.segmentIndex = 0;
 		h.segmentFraction = 1;
 		h.segmentOrientation = go.Link.OrientAlong;
+		const g: go.Shape = new go.Shape();
 		g.geometryString = "F1 M0 0 L8 0 M8 4 L0 4";
 		g.fill = null;
 		g.stroke = "dodgerblue";
@@ -53,16 +53,16 @@ export class LinkShiftingTool extends go.Tool {
 
 	// transient state
 	/** @type {GraphObject} */
-	private _handle: go.GraphObject = null;
+	private _handle: go.GraphObject | null = null;
 	/** @type {List} */
-	private _originalPoints: go.List<go.Point> = null;
+	private _originalPoints: go.List<go.Point> | null;
 
 
   /**
   * @this {LinkShiftingTool}
   * @param {Part} part
   */
-	public updateAdornments(part: go.Part) {
+	public updateAdornments(part: go.Part): void {
 		if (part === null || !(part instanceof go.Link)) return;  // this tool only applies to Links
 		var link: go.Link = part;
 		// show handles if link is selected, remove them if no longer selected
@@ -130,7 +130,7 @@ export class LinkShiftingTool extends go.Tool {
 	public canStart(): boolean {
 		if (!this.isEnabled) return false;
 		var diagram = this.diagram;
-		if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;
+		if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
 		if (!diagram.lastInput.left) return false;
 		var h = this.findToolHandleAt(diagram.firstInput.documentPoint, "LinkShiftingFrom");
 		if (h === null) h = this.findToolHandleAt(diagram.firstInput.documentPoint, "LinkShiftingTo");
@@ -140,13 +140,13 @@ export class LinkShiftingTool extends go.Tool {
   /**
   * @this {LinkShiftingTool}
   */
-	public doActivate() {
+	public doActivate(): void {
 		var diagram = this.diagram;
-		if (diagram === null) return;
 		var h = this.findToolHandleAt(diagram.firstInput.documentPoint, "LinkShiftingFrom");
 		if (h === null) h = this.findToolHandleAt(diagram.firstInput.documentPoint, "LinkShiftingTo");
 		if (h === null) return;
 		var ad = h.part as go.Adornment;
+    if (ad === null || ad.adornedObject === null) return;
 		var link = ad.adornedObject.part;
 		if (!(link instanceof go.Link)) return;
 
@@ -161,11 +161,9 @@ export class LinkShiftingTool extends go.Tool {
   /**
   * @this {LinkShiftingTool}
   */
-	public doDeactivate() {
+	public doDeactivate(): void {
 		this.isActive = false;
 		var diagram = this.diagram;
-		if (diagram === null) return;
-
 		diagram.isMouseCaptured = false;
 		diagram.currentCursor = '';
 		this.stopTransaction();
@@ -175,7 +173,7 @@ export class LinkShiftingTool extends go.Tool {
   * Clean up tool state.
   * @this {LinkShiftingTool}
   */
-	public doStop() {
+	public doStop(): void {
 		this._handle = null;
 		this._originalPoints = null;
 	};
@@ -184,17 +182,20 @@ export class LinkShiftingTool extends go.Tool {
   * Clean up tool state.
   * @this {LinkShiftingTool}
   */
-	public doCancel() {
-		var ad = this._handle.part as go.Adornment;
-		var link = ad.adornedObject.part as go.Link;
-		link.points = this._originalPoints;
+	public doCancel(): void {
+    if (this._handle !== null) {
+		  var ad = this._handle.part as go.Adornment;
+      if (ad.adornedObject === null) return;
+		  var link = ad.adornedObject.part as go.Link;
+		  if (this._originalPoints !== null) link.points = this._originalPoints;
+    }
 		this.stopTool();
 	};
 
   /**
   * @this {LinkShiftingTool}
   */
-	public doMouseMove() {
+	public doMouseMove(): void {
 		if (this.isActive) {
 			this.doReshape(this.diagram.lastInput.documentPoint);
 		}
@@ -203,7 +204,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
   * @this {LinkShiftingTool}
   */
-	public doMouseUp() {
+	public doMouseUp(): void {
 		if (this.isActive) {
 			this.doReshape(this.diagram.lastInput.documentPoint);
 			this.transactionResult = this.name;
@@ -215,8 +216,10 @@ export class LinkShiftingTool extends go.Tool {
   * @this {LinkShiftingTool}
   * @param {Point} pt
   */
-	public doReshape(pt: go.Point) {
+	public doReshape(pt: go.Point): void {
+    if (this._handle === null) return;
 		var ad = this._handle.part as go.Adornment;
+    if (ad.adornedObject === null) return;
 		var link = ad.adornedObject.part as go.Link;
 		var fromend = ad.category === "LinkShiftingFrom";
 		var port = null;
@@ -225,68 +228,16 @@ export class LinkShiftingTool extends go.Tool {
 		} else {
 			port = link.toPort;
 		}
-		var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-			port.getDocumentPoint(go.Spot.BottomRight));
-		// determine new connection point based on closest point to bounds of port property
-		var x = portb.width > 0 ? (pt.x - portb.x) / portb.width : 0;
-		var y = portb.height > 0 ? (pt.y - portb.y) / portb.height : 0;
-
-		var sx = undefined;
-		var sy = undefined;
-
-		if (x <= 0) {
-			sx = 0;
-			if (y <= 0) {
-				sy = 0;
-			} else if (y >= 1) {
-				sy = 1;
-			} else {
-				sy = y;
-			}
-		} else if (x >= 1) {
-			sx = 1;
-			if (y <= 0) {
-				sy = 0;
-			} else if (y >= 1) {
-				sy = 1;
-			} else {
-				sy = y;
-			}
-		} else {
-			if (y <= 0) {
-				sx = x;
-				sy = 0;
-			} else if (y >= 1) {
-				sx = x;
-				sy = 1;
-			} else {  // in the middle
-				if (x > y) {
-					if (x > 1 - y) {
-						sx = 1;  // right side
-						sy = y;
-					} else {
-						sx = x;
-						sy = 0;  // top side
-					}
-				} else {  // y <= x
-					if (x > 1 - y) {
-						sx = x;
-						sy = 1;  // bottom side
-					} else {
-						sx = 0;  // left side
-						sy = y;
-					}
-				}
-			}
-		}
-
-		if (sx !== undefined && sy !== undefined) {
-			if (fromend) {
-				link.fromSpot = new go.Spot(sx, sy);
-			} else {
-				link.toSpot = new go.Spot(sx, sy);
-			}
-		}
+    if (port === null) return;
+    var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
+                            port.getDocumentPoint(go.Spot.BottomRight));
+    var lp = link.getLinkPointFromPoint(port.part as go.Node, port, port.getDocumentPoint(go.Spot.Center), pt, fromend);
+    var spot = new go.Spot((lp.x - portb.x) / (portb.width || 1), (lp.y - portb.y) / (portb.height || 1));
+    if (fromend) {
+      link.fromSpot = spot;
+    } else {
+      link.toSpot = spot;
+    }
 	};
 
 }

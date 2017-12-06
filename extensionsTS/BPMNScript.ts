@@ -1420,7 +1420,7 @@ export function init() {
 	myOverview.box.elt(0).stroke = "dodgerblue";
 
 	// start with a simple preset model:
-	loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json")
+  loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.1.json")
 
 } // end init
 
@@ -1858,9 +1858,9 @@ export function alignCemterX() { (myDiagram.commandHandler as DrawCommandHandler
 export function alignCenterY() { (myDiagram.commandHandler as DrawCommandHandler).alignCenterY(); }
 export function alignRows() { (myDiagram.commandHandler as DrawCommandHandler).alignRow(askSpace()); }
 export function alignColumns() { (myDiagram.commandHandler as DrawCommandHandler).alignColumn(askSpace()); }
-export function basicOrderProcess() { loadJSON("BPMNdata/BasicOrderProcess.json"); }
-export function BPMNdata51() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.1.json"); }
-export function BPMNdata52() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.2.json"); }
-export function BPMNdata53() { loadJSON("BPMNdata/OMG BPMN by Example Figure 5.3.json"); }
+export function basicOrderProcess() { loadJSON("../extensions/BPMNdata/BasicOrderProcess.json"); }
+export function BPMNdata51() { loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.1.json"); }
+export function BPMNdata52() { loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.2.json"); }
+export function BPMNdata53() { loadJSON("../extensions/BPMNdata/OMG BPMN by Example Figure 5.3.json"); }
 export function cancel1() { closeElement('openDocument'); }
 export function cancel2() { closeElement('removeDocument'); }

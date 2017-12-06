@@ -20,6 +20,7 @@
         var $ = go.GraphObject.make; // for conciseness in defining templates
         var myDiagram = $(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
+            // position the graph in the middle of the diagram
             initialContentAlignment: go.Spot.Center,
             "animationManager.isEnabled": false,
             // allow double-click in background to create a new node
@@ -27,7 +28,13 @@
             // allow Ctrl-G to call groupSelection()
             "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
             // enable undo & redo
-            "undoManager.isEnabled": true
+            "undoManager.isEnabled": true,
+            // automatically show the state of the diagram's model on the page
+            "ModelChanged": function (e) {
+                if (e.isTransactionFinished) {
+                    document.getElementById("savedModel").textContent = myDiagram.model.toJson();
+                }
+            }
         });
         // These nodes have text surrounded by a rounded rectangle
         // whose fill color is bound to the node data.
@@ -55,10 +62,8 @@
         // Groups consist of a title in the color given by the group node data
         // above a translucent gray rectangle surrounding the member parts
         myDiagram.groupTemplate =
-            $(go.Group, "Vertical", {
-                selectionObjectName: "PANEL",
-                ungroupable: true
-            }, // enable Ctrl-Shift-G to ungroup a selected Group
+            $(go.Group, "Vertical", { selectionObjectName: "PANEL",
+                ungroupable: true }, // enable Ctrl-Shift-G to ungroup a selected Group
             $(go.TextBlock, {
                 font: "bold 19px sans-serif",
                 isMultiline: false,
@@ -68,10 +73,10 @@
             ));
         // Create the Diagram's Model:
         var nodeDataArray = [
-            { key: 1, text: "Alpha", password: "1234", color: "#B2DFDB" },
-            { key: 2, text: "Beta", color: "#B2B2DB" },
-            { key: 3, text: "Gamma", color: "#1DE9B6", group: 5 },
-            { key: 4, text: "Delta", color: "#00BFA5", group: 5 },
+            { key: 1, text: "Alpha", color: "#B2DFDB", state: "one" },
+            { key: 2, text: "Beta", color: "#B2B2DB", state: "two", password: "1234" },
+            { key: 3, text: "Gamma", color: "#1DE9B6", state: 2, group: 5, flag: false, choices: [1, 2, 3, 4, 5] },
+            { key: 4, text: "Delta", color: "#00BFA5", state: "three", group: 5, flag: true },
             { key: 5, text: "Epsilon", color: "#00BFA5", isGroup: true }
         ];
         var linkDataArray = [
@@ -93,31 +98,40 @@
             // includesOwnProperties: false,
             properties: {
                 "text": {},
-                // an example of specifying the <input> type
-                "password": { show: DataInspector_1.Inspector.prototype.showIfPresent(myDiagram.selection.first(), "password"), type: 'password' },
                 // key would be automatically added for nodes, but we want to declare it read-only also:
-                "key": { readOnly: true, show: DataInspector_1.Inspector.prototype.showIfPresent(myDiagram.selection.first(), "key") },
+                "key": { readOnly: true, show: DataInspector_1.Inspector.showIfPresent },
                 // color would be automatically added for nodes, but we want to declare it a color also:
-                "color": { show: DataInspector_1.Inspector.prototype.showIfPresent(myDiagram.selection.first(), "key"), type: 'color' },
+                "color": { show: DataInspector_1.Inspector.showIfPresent, type: 'color' },
                 // Comments and LinkComments are not in any node or link data (yet), so we add them here:
-                "Comments": { show: DataInspector_1.Inspector.prototype.showIfNode(myDiagram.selection.first()) },
-                "flag": { show: DataInspector_1.Inspector.prototype.showIfNode(myDiagram.selection.first()), type: 'boolean' },
-                "LinkComments": { show: DataInspector_1.Inspector.prototype.showIfLink(myDiagram.selection.first()) },
-                "isGroup": { readOnly: true, show: DataInspector_1.Inspector.prototype.showIfNode(myDiagram.selection.first()) }
+                "Comments": { show: DataInspector_1.Inspector.showIfNode },
+                "LinkComments": { show: DataInspector_1.Inspector.showIfLink },
+                "isGroup": { readOnly: true, show: DataInspector_1.Inspector.showIfPresent },
+                "flag": { show: DataInspector_1.Inspector.showIfNode, type: 'checkbox' },
+                "state": {
+                    show: DataInspector_1.Inspector.showIfNode,
+                    type: "select",
+                    choices: function (node, propName) {
+                        if (Array.isArray(node.data.choices))
+                            return node.data.choices;
+                        return ["one", "two", "three", "four", "five"];
+                    }
+                },
+                "choices": { show: false },
+                // an example of specifying the <input> type
+                "password": { show: DataInspector_1.Inspector.showIfPresent, type: 'password' }
             }
         });
-        //inspector1.inspectObject(myDiagram.nodes.first().data);
         // Always show the first Node:
         var inspector2 = new DataInspector_1.Inspector('myInspectorDiv2', myDiagram, {
             // By default the inspector works on the Diagram selection.
-            // This property lets us inspect a specific object by calling Inspector.prototype.inspectObject(object)
+            // This property lets us inspect a specific object by calling Inspector.inspectObject(object)
             inspectSelection: false,
             properties: {
                 "text": {},
                 // This property we want to declare as a color, to show a color-picker:
                 "color": { type: 'color' },
                 // key would be automatically added for node data, but we want to declare it read-only also:
-                "key": { readOnly: true, show: DataInspector_1.Inspector.prototype.showIfPresent(myDiagram.selection.first(), "key") }
+                "key": { readOnly: true, show: DataInspector_1.Inspector.showIfPresent(myDiagram.selection.first(), "key") }
             }
         });
         // If not inspecting a selection, you can programatically decide what to inspect (a Part, or a JavaScript object)

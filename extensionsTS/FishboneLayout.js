@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -19,9 +22,6 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     // FishboneLayout is a custom Layout derived from TreeLayout for creating "fishbone" diagrams.
     // A fishbone diagram also requires a Link class that implements custom routing, FishboneLink,
@@ -42,18 +42,6 @@ var __extends = (this && this.__extends) || (function () {
             _this.alignment = go.TreeLayout.AlignmentBusBranching;
             _this.setsPortSpot = false;
             _this.setsChildPortSpot = false;
-            _this.shiftAll = function (direction, absolute, root, v) {
-                // assert(root.angle === 0 || root.angle === 180);
-                var locx = v.centerX;
-                locx += direction * Math.abs(root.centerY - v.centerY) / 2;
-                locx += absolute;
-                v.centerX = locx;
-                for (var i = 0; i < v.children.length; i++) {
-                    var c = v.children[i];
-                    this.shiftAll(direction, absolute, root, c);
-                }
-                ;
-            };
             return _this;
             // end FishboneLayout
         }
@@ -72,7 +60,7 @@ var __extends = (this && this.__extends) || (function () {
                     return;
                 if (v.destinationEdges.count % 2 === 1) {
                     // if there's an odd number of real children, add two dummies
-                    var dummy = new go.TreeVertex();
+                    var dummy = net.createVertex();
                     dummy.bounds = new go.Rect();
                     dummy.focus = new go.Point();
                     net.addVertex(dummy);
@@ -80,7 +68,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 // make sure there's an odd number of children, including at least one dummy;
                 // commitNodes will move the parent node to where this dummy child node is placed
-                var dummy2 = new go.TreeVertex();
+                var dummy2 = net.createVertex();
                 dummy2.bounds = v.bounds;
                 dummy2.focus = v.focus;
                 net.addVertex(dummy2);
@@ -105,6 +93,8 @@ var __extends = (this && this.__extends) || (function () {
         };
         ;
         FishboneLayout.prototype.commitNodes = function () {
+            if (this.network === null)
+                return;
             // vertex Angle is set by BusBranching "inheritance";
             // assign spots assuming overall Angle === 0 or 180
             // and links are always connecting horizontal with vertical
@@ -225,6 +215,19 @@ var __extends = (this && this.__extends) || (function () {
             ;
         };
         ;
+        FishboneLayout.prototype.shiftAll = function (direction, absolute, root, v) {
+            // assert(root.angle === 0 || root.angle === 180);
+            var locx = v.centerX;
+            locx += direction * Math.abs(root.centerY - v.centerY) / 2;
+            locx += absolute;
+            v.centerX = locx;
+            for (var i = 0; i < v.children.length; i++) {
+                var c = v.children[i];
+                this.shiftAll(direction, absolute, root, c);
+            }
+            ;
+        };
+        ;
         return FishboneLayout;
     }(go.TreeLayout));
     exports.FishboneLayout = FishboneLayout;
@@ -243,9 +246,9 @@ var __extends = (this && this.__extends) || (function () {
                     var p1;
                     // deal with root node being on the "wrong" side
                     var fromnode = this.fromNode;
-                    if (fromnode.findLinksInto().count === 0) {
+                    var fromport = this.fromPort;
+                    if (fromnode !== null && fromport !== null && fromnode.findLinksInto().count === 0) {
                         // pretend the link is coming from the opposite direction than the declared FromSpot
-                        var fromport = this.fromPort;
                         var fromctr = fromport.getDocumentPoint(go.Spot.Center);
                         var fromfar = fromctr.copy();
                         fromfar.x += (this.fromSpot.equals(go.Spot.MiddleLeft) ? 99999 : -99999);
@@ -263,32 +266,36 @@ var __extends = (this && this.__extends) || (function () {
                     }
                     var tonode = this.toNode;
                     var toport = this.toPort;
-                    var toctr = toport.getDocumentPoint(go.Spot.Center);
-                    var far = toctr.copy();
-                    far.x += (this.fromSpot.equals(go.Spot.MiddleLeft)) ? -99999 / 2 : 99999 / 2;
-                    far.y += (toctr.y < p1.y) ? 99999 : -99999;
-                    var p2 = this.getLinkPointFromPoint(tonode, toport, toctr, far, false);
-                    this.setPoint(2, p2);
-                    var dx = Math.abs(p2.y - p1.y) / 2;
-                    if (this.fromSpot.equals(go.Spot.MiddleLeft))
-                        dx = -dx;
-                    this.insertPoint(2, new go.Point(p2.x + dx, p1.y));
+                    if (tonode !== null && toport !== null) {
+                        var toctr = toport.getDocumentPoint(go.Spot.Center);
+                        var far = toctr.copy();
+                        far.x += (this.fromSpot.equals(go.Spot.MiddleLeft)) ? -99999 / 2 : 99999 / 2;
+                        far.y += (toctr.y < p1.y) ? 99999 : -99999;
+                        var p2 = this.getLinkPointFromPoint(tonode, toport, toctr, far, false);
+                        this.setPoint(2, p2);
+                        var dx = Math.abs(p2.y - p1.y) / 2;
+                        if (this.fromSpot.equals(go.Spot.MiddleLeft))
+                            dx = -dx;
+                        this.insertPoint(2, new go.Point(p2.x + dx, p1.y));
+                    }
                 }
                 else if (this.toSpot.equals(go.Spot.MiddleRight) || this.toSpot.equals(go.Spot.MiddleLeft)) {
                     var p1 = this.getPoint(1); // points 1 & 2 should be OK already
                     var fromnode = this.fromNode;
                     var fromport = this.fromPort;
-                    var parentlink = fromnode.findLinksInto().first();
-                    var fromctr = fromport.getDocumentPoint(go.Spot.Center);
-                    var far = fromctr.copy();
-                    far.x += (parentlink !== null && parentlink.fromSpot.equals(go.Spot.MiddleLeft)) ? -99999 / 2 : 99999 / 2;
-                    far.y += (fromctr.y < p1.y) ? 99999 : -99999;
-                    var p0 = this.getLinkPointFromPoint(fromnode, fromport, fromctr, far, true);
-                    this.setPoint(0, p0);
-                    var dx = Math.abs(p1.y - p0.y) / 2;
-                    if (parentlink !== null && parentlink.fromSpot.equals(go.Spot.MiddleLeft))
-                        dx = -dx;
-                    this.insertPoint(1, new go.Point(p0.x + dx, p1.y));
+                    if (fromnode !== null && fromport !== null) {
+                        var parentlink = fromnode.findLinksInto().first();
+                        var fromctr = fromport.getDocumentPoint(go.Spot.Center);
+                        var far = fromctr.copy();
+                        far.x += (parentlink !== null && parentlink.fromSpot.equals(go.Spot.MiddleLeft)) ? -99999 / 2 : 99999 / 2;
+                        far.y += (fromctr.y < p1.y) ? 99999 : -99999;
+                        var p0 = this.getLinkPointFromPoint(fromnode, fromport, fromctr, far, true);
+                        this.setPoint(0, p0);
+                        var dx = Math.abs(p1.y - p0.y) / 2;
+                        if (parentlink !== null && parentlink.fromSpot.equals(go.Spot.MiddleLeft))
+                            dx = -dx;
+                        this.insertPoint(1, new go.Point(p0.x + dx, p1.y));
+                    }
                 }
             }
             return result;
