@@ -17,7 +17,7 @@ import * as go from "../release/go";
 * It works by modifying that port's GraphObject.alignment property.
 */
 export class PortShiftingTool extends go.Tool {
-  public readonly name: string = "NodeLabelDragging";
+  public readonly name: string = "PortShifting";
 
   /** @type {GraphObject} */
   public port: go.GraphObject = null;

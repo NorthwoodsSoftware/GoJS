@@ -16,7 +16,7 @@
 */
 function PortShiftingTool() {
   go.Tool.call(this);
-  this.name = "NodeLabelDragging";
+  this.name = "PortShifting";
 
   /** @type {GraphObject} */
   this.port = null;

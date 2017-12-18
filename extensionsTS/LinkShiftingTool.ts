@@ -19,10 +19,10 @@ import * as go from "../release/go";
 export class LinkShiftingTool extends go.Tool {
 	// these are archetypes for the two shift handles, one at each end of the Link:
 	/** @type {GraphObject} */
-	private _fromHandleArchetype: go.GraphObject;
+  private _fromHandleArchetype: go.GraphObject | null;
 
 	/** @type {GraphObject} */
-	private _toHandleArchetype: go.GraphObject;
+  private _toHandleArchetype: go.GraphObject | null;
 
 	constructor() {
 		super();
@@ -57,6 +57,23 @@ export class LinkShiftingTool extends go.Tool {
 	/** @type {List} */
 	private _originalPoints: go.List<go.Point> | null;
 
+  /*
+  * A small GraphObject used as a shifting handle.
+  * @name LinkShiftingTool#fromHandleArchetype 
+  * @function.
+  * @return {GraphObject}
+  */
+  get fromHandleArchetype(): go.GraphObject | null { return this._fromHandleArchetype; }
+  set fromHandleArchetype(value: go.GraphObject | null) { this._fromHandleArchetype = value; }
+
+  /*
+  * A small GraphObject used as a shifting handle.
+  * @name LinkShiftingTool#toHandleArchetype 
+  * @function.
+  * @return {GraphObject}
+  */
+  get toHandleArchetype(): go.GraphObject | null { return this._toHandleArchetype; }
+  set toHandleArchetype(value: go.GraphObject | null) { this._toHandleArchetype = value; }
 
   /**
   * @this {LinkShiftingTool}
@@ -114,7 +131,7 @@ export class LinkShiftingTool extends go.Tool {
 	public makeAdornment(selelt: go.GraphObject, toend: boolean): go.Adornment {
 		var adornment = new go.Adornment();
 		adornment.type = go.Panel.Link;
-		var h = (toend ? this._toHandleArchetype : this._fromHandleArchetype);
+		var h = (toend ? this.toHandleArchetype : this.fromHandleArchetype);
 		if (h !== null) {
 			// add a single handle for shifting at one end
 			adornment.add(h.copy());

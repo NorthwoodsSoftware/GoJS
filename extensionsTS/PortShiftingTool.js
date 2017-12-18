@@ -37,7 +37,7 @@ var __extends = (this && this.__extends) || (function () {
         __extends(PortShiftingTool, _super);
         function PortShiftingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "NodeLabelDragging";
+            _this.name = "PortShifting";
             /** @type {GraphObject} */
             _this.port = null;
             /** @type {Spot} */

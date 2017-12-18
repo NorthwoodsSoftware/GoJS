@@ -62,6 +62,30 @@ var __extends = (this && this.__extends) || (function () {
             _this._toHandleArchetype = g;
             return _this;
         }
+        Object.defineProperty(LinkShiftingTool.prototype, "fromHandleArchetype", {
+            /*
+            * A small GraphObject used as a shifting handle.
+            * @name LinkShiftingTool#fromHandleArchetype
+            * @function.
+            * @return {GraphObject}
+            */
+            get: function () { return this._fromHandleArchetype; },
+            set: function (value) { this._fromHandleArchetype = value; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LinkShiftingTool.prototype, "toHandleArchetype", {
+            /*
+            * A small GraphObject used as a shifting handle.
+            * @name LinkShiftingTool#toHandleArchetype
+            * @function.
+            * @return {GraphObject}
+            */
+            get: function () { return this._toHandleArchetype; },
+            set: function (value) { this._toHandleArchetype = value; },
+            enumerable: true,
+            configurable: true
+        });
         /**
         * @this {LinkShiftingTool}
         * @param {Part} part
@@ -120,7 +144,7 @@ var __extends = (this && this.__extends) || (function () {
         LinkShiftingTool.prototype.makeAdornment = function (selelt, toend) {
             var adornment = new go.Adornment();
             adornment.type = go.Panel.Link;
-            var h = (toend ? this._toHandleArchetype : this._fromHandleArchetype);
+            var h = (toend ? this.toHandleArchetype : this.fromHandleArchetype);
             if (h !== null) {
                 // add a single handle for shifting at one end
                 adornment.add(h.copy());
