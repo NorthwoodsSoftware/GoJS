@@ -71,14 +71,28 @@
 
   <p>
     We maintain a
-    <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub Repository</a>, which you can star to follow version updates. We also notify of changes on
+    <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub Repository</a>,
+    which you can star to follow version updates. We also notify of changes on
     <a href="https://twitter.com/NorthwoodsGo">Twitter</a>.
   </p>
 
   <hr>
 
   <h4>
-    Changes for 1.8.5</h4>
+    Changes for 1.8.6
+  </h4>
+  <ul>
+    <li>
+      Added <a>ForceDirectedLayout.moveLimit</a> property.
+    </li>
+    <li>
+      Event bubbling fixes for Pointer Events in IE and Edge.
+    </li>
+  </ul>
+
+  <h4>
+    Changes for 1.8.5
+  </h4>
   <ul>
     <li>
       IE: Fixed a regression from 1.8.3 with PointerEvents: Mouse-based events now correctly report their button
@@ -344,7 +358,7 @@
       Fixed a regression introduced in 1.7.18 with pinch-zooming on Microsoft touch devices in IE.
     </li>
     <li>
-        Fixed a visibility bug when a non-visible <a>Part</a> switches layers.
+      Fixed a visibility bug when a non-visible <a>Part</a> switches layers.
     </li>
     <li>
       Events on the Diagram now attempt to find the Event target Diagram differently. This may help in libraries that use a shadow DOM or DOM scoping.
@@ -923,33 +937,33 @@
     </li>
     <li>
       <b>Models:</b>
-        <ul>
-          <li>
-            Added <a>Binding.ofModel</a> method, to support data binding of <a>GraphObject</a> properties to data
-            properties that are on the <a>Model.modelData</a> shared JavaScript Object.
-          </li>
-          <li>
-            Enhanced <a>Diagram.updateAllRelationshipsFromData</a> to also add and remove <a>Node</a>s and <a>Link</a>s
-            for any additional and missing data in the model.  Remember that it is more efficient to call
-            methods on the model to modify it and also notify all diagrams about the change
-            than it is to call <a>Diagram.updateAllRelationshipsFromData</a>.  Calling methods such as
-            <a>Model.addNodeData</a> and <a>Model.setDataProperty</a> also have the benefit of supporting undo/redo --
-            the "update..." methods do not.
-          </li>
-          <li>
-            It is now possible for a TwoWay <a>Binding</a> in an item template to replace an item in the <a>Panel.itemArray</a>.
-            For an example, please see the updated documentation for the <a>Binding</a> class.
-          </li>
-          <li>
-            A third argument, the <a>Model</a>, is now passed to back-converter (source-to-target) functions in TwoWay <a>Binding</a>s.
-            This permits access to the model from the data object without having to explicitly add a reference to the model in each data object.
-            Such an argument is not needed for the regular source-to-target converters because one can always walk up the visual tree
-            of <a>GraphObject</a>s via <a>GraphObject.part</a>, <a>GraphObject.panel</a>, or <a>GraphObject.diagram</a>.
-          </li>
-          <li>
-            Fixed a call to <a>Model.removeNodeData</a> not potentially invalidating a <a>Layout</a>.
-          </li>
-        </ul>
+      <ul>
+        <li>
+          Added <a>Binding.ofModel</a> method, to support data binding of <a>GraphObject</a> properties to data
+          properties that are on the <a>Model.modelData</a> shared JavaScript Object.
+        </li>
+        <li>
+          Enhanced <a>Diagram.updateAllRelationshipsFromData</a> to also add and remove <a>Node</a>s and <a>Link</a>s
+          for any additional and missing data in the model.  Remember that it is more efficient to call
+          methods on the model to modify it and also notify all diagrams about the change
+          than it is to call <a>Diagram.updateAllRelationshipsFromData</a>.  Calling methods such as
+          <a>Model.addNodeData</a> and <a>Model.setDataProperty</a> also have the benefit of supporting undo/redo --
+          the "update..." methods do not.
+        </li>
+        <li>
+          It is now possible for a TwoWay <a>Binding</a> in an item template to replace an item in the <a>Panel.itemArray</a>.
+          For an example, please see the updated documentation for the <a>Binding</a> class.
+        </li>
+        <li>
+          A third argument, the <a>Model</a>, is now passed to back-converter (source-to-target) functions in TwoWay <a>Binding</a>s.
+          This permits access to the model from the data object without having to explicitly add a reference to the model in each data object.
+          Such an argument is not needed for the regular source-to-target converters because one can always walk up the visual tree
+          of <a>GraphObject</a>s via <a>GraphObject.part</a>, <a>GraphObject.panel</a>, or <a>GraphObject.diagram</a>.
+        </li>
+        <li>
+          Fixed a call to <a>Model.removeNodeData</a> not potentially invalidating a <a>Layout</a>.
+        </li>
+      </ul>
     </li>
     <li>
       <b>Layouts:</b>
@@ -971,10 +985,12 @@
 
           For examples, see:
           <ul>
-            <li>Text Editors: <a href="../samples/customTextEditingTool.html">Custom Text Editors sample</a> and
-            <a href="../extensions/TextEditor.html">Re-implementation of the default Text Editor</a>
-            <li>Context Menus: <a href="../samples/customContextMenu.html">Custom Context Menu</a> and
-            <a href="../samples/htmlLightBoxContextMenu.html">HTML Lightbox Context Menu</a> (a re-implementation of the default touch context menu)
+            <li>
+              Text Editors: <a href="../samples/customTextEditingTool.html">Custom Text Editors sample</a> and
+              <a href="../extensions/TextEditor.html">Re-implementation of the default Text Editor</a>
+            <li>
+              Context Menus: <a href="../samples/customContextMenu.html">Custom Context Menu</a> and
+              <a href="../samples/htmlLightBoxContextMenu.html">HTML Lightbox Context Menu</a> (a re-implementation of the default touch context menu)
             <li>Tooltips: <a href="../samples/dataVisualization.html">Data Visualization Tooltip</a>
           </ul>
         </li>
@@ -1075,7 +1091,8 @@
           <p>
             These undocumented properties were used to modify the default functionality of the TextEditingTool.
             That is now done by setting <a>TextBlock.defaultTextEditor</a> to an instance of <a>HTMLInfo</a> (new in 1.7).
-          <p>For examples, see <a href="../samples/customTextEditingTool.html">Custom TextEditingTool sample</a> and
+          <p>
+            For examples, see <a href="../samples/customTextEditingTool.html">Custom TextEditingTool sample</a> and
             <a href="../extensions/TextEditor.html">Text Editor default implementation extension</a>.
         </li>
         <li>
@@ -1285,9 +1302,9 @@
     <li>Fixed an issue with setting location not always updating the diagram.</li>
     <li>Improved event handling on devices that use Pointer events (e.g., Microsoft Surface)</li>
     <li>
-        Added the <a href="../extensions/OrthogonalLinkReshaping.html" target="_blank">OrthogonalLinkReshapingTool</a> extension.
-        See <a href="../extensions/OrthogonalLinkReshapingTool.js" target="_blank">OrthogonalLinkReshapingTool.js</a> for the extension's code.
-        This extension can be used to allow for dragging of an entire orthogonal link segment, allowing for quick reshaping without needing to drag points.
+      Added the <a href="../extensions/OrthogonalLinkReshaping.html" target="_blank">OrthogonalLinkReshapingTool</a> extension.
+      See <a href="../extensions/OrthogonalLinkReshapingTool.js" target="_blank">OrthogonalLinkReshapingTool.js</a> for the extension's code.
+      This extension can be used to allow for dragging of an entire orthogonal link segment, allowing for quick reshaping without needing to drag points.
     </li>
     <li>Improved orientation of Link Adornments along segments where both endpoints have the same location.</li>
   </ul>
@@ -1372,10 +1389,14 @@
       <li>Z-ordering within <a>Layer</a>s by setting or binding the new <a>Part.zOrder</a> property.</li>
       <li>Animations for tree and <a>Group</a> collapse, and animation of <a>Diagram.position</a> with <a>CommandHandler.scrollToPart</a>.</li>
       <li><a>Link</a>s can now have automatically determined keys if you set the <a>GraphLinksModel.linkKeyProperty</a>.</li>
-      <li>You can now send and receive incremental changes to a database instead of sending the whole model,
-          with <a>Model.toIncrementalJson</a> and <a>Model.applyIncrementalJson</a>.</li>
-      <li>Tooltips are now shown on touch devices when the user clicks on an object with a <a>GraphObject.toolTip</a>
-          or in the diagram background when <a>Diagram.toolTip</a> is an <a>Adornment</a>.</li>
+      <li>
+        You can now send and receive incremental changes to a database instead of sending the whole model,
+        with <a>Model.toIncrementalJson</a> and <a>Model.applyIncrementalJson</a>.
+      </li>
+      <li>
+        Tooltips are now shown on touch devices when the user clicks on an object with a <a>GraphObject.toolTip</a>
+        or in the diagram background when <a>Diagram.toolTip</a> is an <a>Adornment</a>.
+      </li>
     </ul>
   </div>
 
@@ -1542,8 +1563,10 @@
           <ul>
             <li><a>Link.invalidateRoute</a>, to cause link routes to be recomputed via a call to <a>Link.updateRoute</a></li>
             <li><a>Link.updateRoute</a>, to call <a>Link.computePoints</a> if the link route is invalid</li>
-            <li><a>Part.ensureBounds</a>, to measure and arrange the part's visual tree and
-                make sure that the width and height are real numbers</li>
+            <li>
+              <a>Part.ensureBounds</a>, to measure and arrange the part's visual tree and
+              make sure that the width and height are real numbers
+            </li>
           </ul>
           Search the samples for example uses of these methods.
         </li>
@@ -2672,8 +2695,10 @@
   <ul>
     <li>Animations no longer continuously update the <a>Diagram.documentBounds</a>.</li>
     <li>Fixed window resizing accidentally invalidating (viewport-sized) layouts on fixed-size diagrams.</li>
-    <li><a>Diagram.makeSvg</a> now includes a clipping region to fix IE's SVG behavior,
-        which does not clip to its SVG viewport by default.</li>
+    <li>
+      <a>Diagram.makeSvg</a> now includes a clipping region to fix IE's SVG behavior,
+      which does not clip to its SVG viewport by default.
+    </li>
     <li>
       New option for <a>Diagram.makeImage</a> and <a>Diagram.makeSvg</a>: document, which accepts an optional
       HTML Document in lieu of window.document.

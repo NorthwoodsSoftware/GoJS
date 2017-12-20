@@ -6352,6 +6352,9 @@ declare namespace go {
         /**Gets or sets a threshold for the distance beyond which the electrical charge forces may be ignored.*/
         infinityDistance: number;
 
+        /**Gets or sets how far a vertex may be moved in an iteration.*/
+        moveLimit: number;
+
         /**Gets or sets the maximum number of iterations to perform when doing the force-directed auto layout.*/
         maxIterations: number;
 
