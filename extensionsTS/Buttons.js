@@ -184,6 +184,35 @@
         };
         return button;
     });
+    // This is just an "Auto" Adornment that can hold some contents within a light yellow box.
+    // Typical usage:
+    //   toolTip:
+    //     $("ToolTip",
+    //       $(go.TextBlock, . . .)
+    //     )
+    go.GraphObject.defineBuilder('ToolTip', function (args) {
+        var ad = new go.Adornment(go.Panel.Auto);
+        var border = new go.Shape();
+        border.name = 'Border';
+        border.fill = '#FFFFE0';
+        border.stroke = '#CCCCCC';
+        ad.add(border);
+        return ad;
+    });
+    // This is just a "Vertical" Adornment that can hold some "ContextMenuButton"s.
+    // Typical usage:
+    //   contextMenu:
+    //     $("ContextMenu",
+    //       $("ContextMenuButton",
+    //         $(go.TextBlock, . . .),
+    //         { click: . . .}
+    //       ),
+    //       $("ContextMenuButton", . . .)
+    //     )
+    go.GraphObject.defineBuilder('ContextMenu', function (args) {
+        var ad = new go.Adornment(go.Panel.Vertical);
+        return ad;
+    });
     // This just holds the "ButtonBorder" Shape that acts as the border
     // around the button contents, which must be supplied by the caller.
     // The button contents are usually a TextBlock or Panel consisting of a Shape and a TextBlock.

@@ -238,6 +238,7 @@ var myMenu = '\
       <li><a href="connectionPoints.html">Link Points</a></li>\
       <li><a href="ports.html">Ports</a></li>\
       <li><a href="nodes.html">Nodes</a></li>\
+      <li><a href="debugging.html">Debugging</a></li>\
       <li><a href="layouts.html">Layouts</a></li>\
       <li><a href="trees.html">Trees</a></li>\
       <li><a href="subtrees.html">SubTrees</a></li>\

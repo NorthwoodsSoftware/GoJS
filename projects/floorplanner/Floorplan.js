@@ -12,7 +12,7 @@
 * @param {HTMLDivElement|string} div A reference to a div or its ID as a string
 */
 function Floorplan(div) {
-
+    
     /*
     * Floor Plan Setup:
     * Initialize Floor Plan, Floor Plan Listeners, Floor Plan Overview
@@ -23,7 +23,7 @@ function Floorplan(div) {
     this._floorplanFilesystem = null;
     this._floorplanUI = null;
 
-    // When a FloorplanPalette instance is made, it is automatically added to a Floorplan's "palettes" field
+    // When a FloorplanPalette instance is made, it is automatically added to a Floorplan's "palettes" property
     this._palettes = [];
 
     // Point Nodes, Dimension Links, Angle Nodes on the Floorplan (never in model data)
@@ -33,7 +33,6 @@ function Floorplan(div) {
 
     var $ = go.GraphObject.make;
 
-    this.initialContentAlignment = go.Spot.Center;
     this.allowDrop = true;
     this.allowLink = false;
     this.undoManager.isEnabled = true;
@@ -54,24 +53,17 @@ function Floorplan(div) {
             }
         }
     });
-    this.resizingTool = new go.ResizingTool();
-    this.resizingTool.isGridSnapEnabled = true;
-    this.draggingTool = new go.DraggingTool();
-    this.draggingTool.isGridSnapEnabled = true;
-    this.draggingTool.gridSnapCellSpot = go.Spot.TopLeft;
-    this.draggingTool.gridCellSize = this.model.modelData.gridSize;
-    this.rotatingTool = new go.RotatingTool();
-    this.rotatingTool.snapAngleEpsilon = 10;
+
     this.grid = $(go.Panel, "Grid",
-            { gridCellSize: new go.Size(this.model.modelData.gridSize, this.model.modelData.gridSize), visible: true },
-            $(go.Shape, "LineH", { stroke: "lightgray" }),
-            $(go.Shape, "LineV", { stroke: "lightgray" }));
+        { gridCellSize: new go.Size(this.model.modelData.gridSize, this.model.modelData.gridSize), visible: true },
+        $(go.Shape, "LineH", { stroke: "lightgray" }),
+        $(go.Shape, "LineV", { stroke: "lightgray" }));
     this.contextMenu = makeContextMenu();
     this.commandHandler.canGroupSelection = true;
     this.commandHandler.canUngroupSelection = true;
     this.commandHandler.archetypeGroupData = { isGroup: true };
 
-    // When floorplan model is changed, update stats in Statistics Window TODO
+    // When floorplan model is changed, update stats in Statistics Window 
     this.addModelChangedListener(function (e) {
         if (e.isTransactionFinished) {
             // find floorplan changed
@@ -115,24 +107,29 @@ function Floorplan(div) {
 
     // If a node has been dropped onto the Floorplan from a Palette...
     this.addDiagramListener("ExternalObjectsDropped", function (e) {
-        var node = e.diagram.selection.first();
-        // Event 1: handle a drag / drop of a wall node from the Palette (as opposed to wall construction via WallBuildingTool)
-        if (node.category === "PaletteWallNode") {
-            var paletteWallNode = e.diagram.selection.first();
-            var endpoints = getWallPartEndpoints(paletteWallNode);
-            var data = { key: "wall", category: "WallGroup", caption: "Wall", startpoint: endpoints[0], endpoint: endpoints[1], thickness: parseFloat(e.diagram.model.modelData.wallThickness), isGroup: true, notes: "" };
-            e.diagram.model.addNodeData(data);
-            var wall = e.diagram.findPartForKey(data.key);
-            e.diagram.updateWall(wall);
-            e.diagram.remove(paletteWallNode);
-        }
-        if (e.diagram.floorplanUI) {
-            var floorplanUI = e.diagram.floorplanUI;
-            // Event 2: Update the text of the Diagram Helper
-            if (node.category === "WindowNode" || node.category === "DoorNode") floorplanUI.setDiagramHelper("Drag part so the cursor is over a wall to add this part to a wall");
-            else floorplanUI.setDiagramHelper("Drag, resize, or rotate your selection (hold SHIFT for no grid-snapping)");
-            // Event 3: If the select tool is not active, make it active
-            if (e.diagram.toolManager.mouseDownTools.elt(0).isEnabled) floorplanUI.setBehavior('dragging', e.diagram);
+        var garbage = [];
+        e.diagram.selection.iterator.each(function(node){
+            // Event 1: handle a drag / drop of a wall node from the Palette (as opposed to wall construction via WallBuildingTool)
+            if (node.category === "PaletteWallNode") {
+                var paletteWallNode = node;
+                var endpoints = getWallPartEndpoints(paletteWallNode);
+                var data = { key: "wall", category: "WallGroup", caption: "Wall", startpoint: endpoints[0], endpoint: endpoints[1], thickness: parseFloat(e.diagram.model.modelData.wallThickness), isGroup: true, notes: "" };
+                e.diagram.model.addNodeData(data);
+                var wall = e.diagram.findPartForKey(data.key);
+                e.diagram.updateWall(wall);
+                garbage.push(paletteWallNode);
+            }
+            if (e.diagram.floorplanUI) {
+                var floorplanUI = e.diagram.floorplanUI;
+                // Event 2: Update the text of the Diagram Helper
+                if (node.category === "WindowNode" || node.category === "DoorNode") floorplanUI.setDiagramHelper("Drag part so the cursor is over a wall to add this part to a wall");
+                else floorplanUI.setDiagramHelper("Drag, resize, or rotate your selection (hold SHIFT for no grid-snapping)");
+                // Event 3: If the select tool is not active, make it active
+                if (e.diagram.toolManager.mouseDownTools.elt(0).isEnabled) floorplanUI.setBehavior('dragging', e.diagram);
+            }
+        });
+        for (var i in garbage) {
+            e.diagram.remove(garbage[i]);
         }
     });
 
@@ -299,7 +296,7 @@ function Floorplan(div) {
 
     this.toolManager.draggingTool.isGridSnapEnabled = true;
 } go.Diagram.inherit(Floorplan, go.Diagram);
-
+    
 // Get/set the Floorplan Filesystem instance associated with this Floorplan
 Object.defineProperty(Floorplan.prototype, "floorplanFilesystem", {
     get: function () { return this._floorplanFilesystem; },
@@ -472,6 +469,7 @@ Floorplan.prototype.updateWallDimensions = function () {
                 var lastWallPt = ((startpoint.x + startpoint.y) > (endpoint.x + endpoint.y)) ? startpoint : endpoint;
                 var newLoc1 = floorplan.getAdjustedPoint(firstWallPt.copy(), part, part.rotateObject.angle, 10);
                 var newLoc2 = floorplan.getAdjustedPoint(lastWallPt.copy(), part, part.rotateObject.angle, 10);
+                // cannot use model.setDataProperty, since pointNodes and dimensionLinks are not stored in the model
                 linkPoint1.data.loc = go.Point.stringify(newLoc1);
                 linkPoint2.data.loc = go.Point.stringify(newLoc2);
                 soloWallLink.data.angle = part.rotateObject.angle;
@@ -479,7 +477,7 @@ Floorplan.prototype.updateWallDimensions = function () {
                 linkPoint2.updateTargetBindings();
                 soloWallLink.updateTargetBindings();
             }
-                // else build a Dimension Link for this wall; this is removed / replaced if Dimension Links for wallParts this wall are built
+            // else build a Dimension Link for this wall; this is removed / replaced if Dimension Links for wallParts this wall are built
             else {
                 var startpoint = part.data.startpoint;
                 var endpoint = part.data.endpoint;
@@ -531,11 +529,11 @@ Floorplan.prototype.updateWallDimensions = function () {
                 linkPoint1.updateTargetBindings();
                 linkPoint2.updateTargetBindings();
             }
-                // only build new links if needed -- normally simply change pointNode locations
+            // only build new links if needed -- normally simply change pointNode locations
             else floorplan.buildDimensionLink(wall, k, wallPartEndpoints[j].copy(), wallPartEndpoints[j + 1].copy(), angle, 5, false, floorplan);
             k += 2;
         }
-        // total wall Dimension Link would be constructed of a kth and k+1st pointNode
+        // total wall Dimension Link constructed of a kth and k+1st pointNode
         var totalWallDimensionLink = null;
         floorplan.dimensionLinks.iterator.each(function (link) {
             if ((link.fromNode.data.key === wall.data.key + "PointNode" + k) &&
@@ -559,7 +557,7 @@ Floorplan.prototype.updateWallDimensions = function () {
         else floorplan.buildDimensionLink(wall, k, wallPartEndpoints[0].copy(), wallPartEndpoints[wallPartEndpoints.length - 1].copy(), angle, 25, false, floorplan);
     });
 
-    // Cleanup: hide zero-length Dimension Links, DimensionLInks with null wall points
+    // Cleanup: hide zero-length Dimension Links, DimensionLinks with null wall points
     floorplan.dimensionLinks.iterator.each(function (link) {
         var canStay = false;
         floorplan.pointNodes.iterator.each(function (node) {

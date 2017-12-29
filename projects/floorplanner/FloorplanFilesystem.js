@@ -181,7 +181,7 @@ FloorplanFilesystem.prototype.loadFloorplan = function () {
         floorplan.isModified = false;
         this.setCurrentFileName(fileName);
     }
-    if (floorplan.floorplanUI) floorplan.floorplanUI.closeElement(this.state.openWindowId);
+    if (floorplan.floorplanUI) floorplan.floorplanUI.hideShow(this.state.openWindowId);
 }
 
 FloorplanFilesystem.prototype.loadFloorplanFromModel = function (str) {
@@ -214,7 +214,7 @@ FloorplanFilesystem.prototype.removeFloorplan = function () {
         // removes file from local storage
         window.localStorage.removeItem(fileName);
     }
-    if (floorplan.floorplanUI) floorplan.floorplanUI.closeElement(this.state.removeWindowId);
+    if (floorplan.floorplanUI) floorplan.floorplanUI.hideShow(this.state.removeWindowId);
 }
 
 // Check to see if all changes have been saved -> show the "Open" window

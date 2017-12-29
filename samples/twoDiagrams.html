@@ -68,7 +68,7 @@
 
     // ****** Second Diagram ******
 
-    myDiagram2 = $(go.Diagram, "myDiagram2",
+    myDiagram2 = $(go.Diagram, "myDiagramDiv2",
                   {
                     initialContentAlignment: go.Spot.Center,
                     allowDragOut: true,
@@ -202,47 +202,51 @@
 </script>
 </head>
 <body onload="init()">
-<div id="sample">
-  <p>In this sample dragging from one Diagram to the other effectively "moves" the selection.
-  It does this by having an "ExternalObjectsDropped" Diagram listener on each Diagram,
-  which deletes the selection in the original Diagram when it is dropped on an external one.</p>
-  <p>The two Diagrams do not share a Model, but the two Models do share the same UndoManager:</p>
-  <pre>myDiagram.model.undoManager = myDiagram2.model.undoManager;</pre>
-  <p>Hence an undo or redo in one Diagram affects the other Diagram. This allows Node "moves" to be undone across Diagrams.</p>
-  <p>(This is different from the <a href="updateDemo.html">Update Demo</a>, which is an example of two Diagrams sharing/showing the same Model.)</p>
-  <div id="Column1" style="float:left; margin-right:20px">
-    <div id="myDiagramDiv" style="border: solid 1px black; width:350px; height:300px"></div>
+  <div id="sample">
     <p>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1allowDragOut" />allowDragOut</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1allowDrop" />allowDrop</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1isReadOnly" />isReadOnly</label>
+      In this sample dragging from one Diagram to the other effectively "moves" the selection.
+      It does this by having an "ExternalObjectsDropped" Diagram listener on each Diagram,
+      which deletes the selection in the original Diagram when it is dropped on an external one.
     </p>
-    <p>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1allowCopy" />allowCopy</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1allowDelete" />allowDelete</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1allowInsert" />allowInsert</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD1allowMove" />allowMove</label>
-    </p>
+    <p>The two Diagrams do not share a Model, but the two Models do share the same UndoManager:</p>
+    <pre>myDiagram.model.undoManager = myDiagram2.model.undoManager;</pre>
+    <p>Hence an undo or redo in one Diagram affects the other Diagram. This allows Node "moves" to be undone across Diagrams.</p>
+    <p>(This is different from the <a href="updateDemo.html">Update Demo</a>, which is an example of two Diagrams sharing/showing the same Model.)</p>
+    <div style="width: 100%; display: flex; flex-wrap: wrap">
+      <div>
+        <div id="myDiagramDiv" style="border: solid 1px black; width:350px; height:300px; margin: 0 2px 0 0"></div>
+        <p>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1allowDragOut" />allowDragOut</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1allowDrop" />allowDrop</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1isReadOnly" />isReadOnly</label>
+        </p>
+        <p>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1allowCopy" />allowCopy</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1allowDelete" />allowDelete</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1allowInsert" />allowInsert</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD1allowMove" />allowMove</label>
+        </p>
+      </div>
+      <div>
+        <div id="myDiagramDiv2" style="border: solid 1px black; width:350px; height:300px"></div>
+        <p>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2allowDragOut" />allowDragOut</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2allowDrop" />allowDrop</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2isReadOnly" />isReadOnly</label>
+        </p>
+        <p>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2allowCopy" />allowCopy</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2allowDelete" />allowDelete</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2allowInsert" />allowInsert</label>
+          <label><input type="checkbox" onclick="allChecks()" id="MD2allowMove" />allowMove</label>
+        </p>
+      </div>
+    </div>
+    <div>
+      Using the Robot extension class:<br />
+      <button onclick="dragBetaAcross()">Drag Beta across</button><br />
+      <button onclick="copyBetaBack()">Copy Beta back</button>
+    </div>
   </div>
-  <div id="Column2" style="float:left; margin-right:20px">
-    <div id="myDiagram2" style="border: solid 1px black; width:350px; height:300px"></div>
-    <p>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2allowDragOut" />allowDragOut</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2allowDrop" />allowDrop</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2isReadOnly" />isReadOnly</label>
-    </p>
-    <p>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2allowCopy" />allowCopy</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2allowDelete" />allowDelete</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2allowInsert" />allowInsert</label>
-      <label><input type="checkbox" onclick="allChecks()" id="MD2allowMove" />allowMove</label>
-    </p>
-  </div>
-  <div>
-  Using the Robot extension class:<br />
-  <button onclick="dragBetaAcross()">Drag Beta across</button><br />
-  <button onclick="copyBetaBack()">Copy Beta back</button>
-  </div>
-</div>
 </body>
 </html>

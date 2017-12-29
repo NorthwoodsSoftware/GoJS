@@ -178,12 +178,8 @@ function makeWallGroup() {
         },
         $(go.Shape,
         {
-            strokeWidth: 1,
             name: "SHAPE",
             fill: "black",
-            stroke: "red",
-            geometry: new go.Geometry(go.Geometry.Line),
-            isGeometryPositioned: true
         },
         new go.Binding("strokeWidth", "thickness"),
         new go.Binding("stroke", "isSelected", function (s, obj) {
@@ -333,7 +329,7 @@ var dragWallParts = function (part, pt, gridPt) {
 function makeWallPartResizeAdornment() {
     var $ = go.GraphObject.make;
     return $(go.Adornment, "Spot",
-    { name: "WallPartResizeAdornment", locationSpot: go.Spot.Center },
+    { name: "WallPartResizeAdornment" },
     $(go.Placeholder),
     $(go.Shape, { alignment: go.Spot.Left, cursor: "w-resize", figure: "Diamond", desiredSize: new go.Size(7, 7), fill: "#ffffff", stroke: "#808080" }),
     $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", figure: "Diamond", desiredSize: new go.Size(7, 7), fill: "#ffffff", stroke: "#808080" })
@@ -408,7 +404,6 @@ function makeWindowNode() {
             selectionObjectName: "SHAPE",
             selectionAdorned: false,
             locationSpot: go.Spot.Center,
-            name: "NODE",
             toolTip: makeNodeToolTip(),
             minSize: new go.Size(5, 5),
             resizable: true,
@@ -420,11 +415,11 @@ function makeWindowNode() {
             layerName: 'Foreground' // make sure windows are always in front of walls
         },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        new go.Binding("angle", "angle").makeTwoWay(),
+        new go.Binding("angle").makeTwoWay(),
         $(go.Shape,
         { name: "SHAPE", fill: "white", strokeWidth: 0 },
         new go.Binding("width", "length").makeTwoWay(),
-        new go.Binding("height", "height").makeTwoWay(),
+        new go.Binding("height").makeTwoWay(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
         new go.Binding("fill", "isSelected", function (s, obj) { return s ? "lightgray" : "white"; }).ofObject()
         ),
@@ -448,7 +443,6 @@ function makeDoorNode() {
             locationSpot: go.Spot.BottomCenter,
             resizable: true,
             resizeObjectName: "OPENING_SHAPE",
-            rotatable: false,
             toolTip: makeNodeToolTip(),
             minSize: new go.Size(10, 10),
             doubleClick: function (e) { if (e.diagram.floorplanUI) e.diagram.floorplanUI.hideShow("selectionInfoWindow"); },
@@ -458,12 +452,12 @@ function makeDoorNode() {
         },
         // remember location of the Node
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        new go.Binding("angle", "angle").makeTwoWay(),
+        new go.Binding("angle").makeTwoWay(),
         // the door's locationSpot is affected by it's openingHeight, which is affected by the thickness of its containing wall
         new go.Binding("locationSpot", "doorOpeningHeight", function (doh, obj) { return new go.Spot(0.5, 1, 0, -(doh / 2)); }),
         // this is the shape that reprents the door itself and its swing
         $(go.Shape,
-        { name: "SHAPE", strokeWidth: 1 },
+        { name: "SHAPE" },
         new go.Binding("width", "length"),
         new go.Binding("height", "length").makeTwoWay(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
@@ -492,11 +486,11 @@ function makeDoorNode() {
 function makePaletteWallNode() {
     var $ = go.GraphObject.make;
     return $(go.Node, "Spot",
-        { selectionAdorned: false, locationSpot: go.Spot.Center },
+        { selectionAdorned: false },
         $(go.Shape,
         { name: "SHAPE", fill: "black", strokeWidth: 0, height: 10, figure: "Rectangle" },
         new go.Binding("width", "length").makeTwoWay(),
-        new go.Binding("height", "height").makeTwoWay(),
+        new go.Binding("height").makeTwoWay(),
         new go.Binding("fill", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject(),
         new go.Binding("stroke", "isSelected", function (s, obj) { return s ? "dodgerblue" : "black"; }).ofObject())
     );

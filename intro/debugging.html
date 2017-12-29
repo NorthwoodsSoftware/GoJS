@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoJS Debugging Suggestions-- Northwoods Software</title>
+<!-- Copyright 1998-2017 by Northwoods Software Corporation. -->
+<script src="../release/go.js"></script>
+<script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+  <div id="content">
+
+    <h1>Debugging Suggestions</h1>
+
+    <p>
+      Developing a diagramming app involves a lot more than just writing some JavaScrfipt code that uses the <b>GoJS</b> library.
+    </p>
+    <ul>
+      <li>You will need to be familiar with HTML DOM and CSS.</li>
+      <li>You will need to test your app on many different devices using many different browsers.</li>
+      <li>You will need to be familiar with your JavaScript framework (if any).</li>
+      <li>You will need to know how to use each browser's development facilities, especially the console window and debugger.</li>
+    </ul>
+
+    <h3>Use the <code>go-debug.js</code> library</h3>
+    <p>
+      While developing your app make sure you use the debug library, <code>go-debug.js</code>, rather than the <code>go.js</code> library.
+      The debug library does more error checking of property values and method arguments, and it detects more unusual situations.
+      Most warning and errors will be written to the console window. Always check it for messages. We have tried to make them informative.
+    </p>
+
+    <h3>Use the documented API</h3>
+    <p>
+      Try to limit your code to only use documented classes, properties, and methods, as listed in the
+      <a href="../api/index.html" target="api">API</a> reference or in the TypeScript definition file,
+      <a href="../release/go.d.ts" target="_blank">go.d.ts</a>.
+    </p>
+    <p>
+      Please do not refer to some minified property name, which will only be one or two letters long.
+      In another version of the library the minified names will be different, so such code would no longer work.
+      Basically: never use one or two letter property names
+      except for "x" and "y" on <a>Point</a>, <a>Rect</a>, <a>Spot</a>, and <a>LayoutVertex</a> instances
+      and the <a>InputEvent.up</a> property.
+    </p>
+    <p>
+      Do not modify the prototypes of any of the <b>GoJS</b> classes.
+      If you modify the built-in classes, we cannot support you.
+      The way to modify the behavior of the <b>GoJS</b> classes is via the techniques discussed at
+      <a href="extensions.html">Extensions</a>.
+      However most of the <b>GoJS</b> classes cannot be subclassed and most of the documented methods cannot be overridden.
+      Generally the <a>Tool</a> and <a>Layout</a> classes and the <a>CommandHandler</a> and <a>Link</a> classes may be subclassed;
+      look at the API documentation to see if a method may be overridden.
+    </p>
+
+    <h2>Using the Console window</h2>
+    <p>
+      First you will need to get a reference to your <a>Diagram</a> object in the Console window or the Debugger window.
+    </p>
+    <p>
+      One way to do that is by remembering it in your code.
+      You can set a property on the <code>window</code> object to refer to the Diagram that you create.
+      Many of the samples do this just by leaving out the <code>var</code> declaration:
+      <pre>    myDiagram = $(go.Diagram, "myDiagramDiv", . . .);</pre>
+    </p>
+    <p>
+      Alternatively, in the console, if you know the name of the HTML DIV element,
+      you can call the static function <a>Diagram.fromDiv</a> to get the <a>Diagram</a> object:
+      <pre>> myDiagram = go.Diagram.fromDiv("myDiagramDiv");</pre>
+      If that DIV element is not named, perhaps you have some other way of getting a reference to the DIV element.
+      That may depend on the framework that you are using.
+      You can still call <a>Diagram.fromDiv</a> on that element to get the corresponding Diagram object.
+    </p>
+    <p>
+      Then in the console you can use the <code>myDiagram</code> reference to the <a>Diagram</a> object.  Some examples:
+    </p>
+    <p>
+      <pre>> myDiagram.nodes.count</pre>
+      returns the number of <a>Node</a>s in the Diagram.
+    </p>
+    <p>
+      <pre>> myDiagram.model.nodeDataArray[0]</pre>
+      returns the first node data object in the diagram's model's <a>Model.nodeDataArray</a>.
+    </p>
+    <p>
+      <pre>> myDiagram.layoutDiagram(true)</pre>
+      forces all layouts to happen, rearranging the nodes and routing the links.
+    </p>
+    <p>
+      The code that you execute in the console can be more complicated too.
+      For example, you can find, select, and scroll to a particular node:
+      <pre>> myNode = myDiagram.findNodeForKey("Omega");
+> myNode.isSelected = true
+> myDiagram.commandHandler.scrollToPart(myNode)</pre>
+      If you don't know the key for the node that you want to see in the viewport,
+      perhaps you know how to find the node data object in the model.
+      The <a>Diagram.findNodesByExample</a> method might also be useful.
+    </p>
+
+    <h3>Examining a selected Node</h3>
+    <p>
+      <pre>> myDiagram.selection.first()</pre>
+      returns the first selected <a>Part</a>, which might be either a <a>Node</a>, a <a>Link</a>,
+      or null if nothing is selected.
+    </p>
+    <p>
+      If you remember the selected Node or Link, you can then examine it further more easily.  For example:
+      <pre>> myNode = myDiagram.selection.first()
+> myNode.data.key</pre>
+      remembers the first selected Node and returns the key of the node data.
+      You might want to look at all of the properties of the <pre>myNode.data</pre> object.
+    </p>
+    <p>
+      You could also look at other properties of the Node and call its methods.  For example:
+      <pre>> myNode.location</pre>
+      returns a <a>Point</a> whose properties the debugger may show.  Or call:
+      <pre>> myNode.location.toString()</pre>
+      to see a human-readable textual rendering of that Point object.
+    </p>
+    <p>
+      As another example, you can print out all of the nodes the selected node is connected to:
+      <pre>myNode.findNodesOutOf().each(function(n) { console.log(n.data.key); })</pre>
+      You can find more examples of iterating at <a href="collections.html#MoreIterationExamples">Collections</a>
+    </p>
+    <p>
+      You can also look at the structure of the visual tree of a node.  With this recursive function:
+      <pre>> function walk(x, level, index) {
+>   console.log(level + "," + index + ": " + x.toString());
+>   if (!(x instanceof go.Panel)) return;
+>   for (var i = 0; i < x.elements.count; i++) walk(x.elt(i), level+1, i);
+> }</pre>
+      you could call
+      <pre>> walk(myNode, 0, 0)</pre>
+      and in the Org Chart sample get results such as:
+      <pre>
+0,0: Node#653(Kensaku Tamaki)
+1,0: Shape(Rectangle)#656
+1,1: Panel(Panel.Table)#657
+2,0: TextBlock("Kensaku Tamaki")
+2,1: Picture(https://www.nwoods.com/go/Flags/japan-flag.Png)#664
+2,2: TextBlock("Title: Vice Chairman"...)</pre>
+      So you can see how the Node is a panel composed of Shape surrounding a nested Table Panel,
+      which in turn is composed of two TextBlocks and a Picture.
+    </p>
+
+    <h2>Debugging Node Panel designs</h2>
+    <p>
+      When building your own node template, there may be times when the objects in the node are not sized and positioned the way that you would like.
+      It is important that you understand how objects may be assembled within panels.  You will want to re-read:
+    </p>
+    <ul>
+      <li><a href="https://gojs.net/latest/intro/buildingObjects.html">Building with GraphObjects</a></li>
+      <li><a href="https://gojs.net/latest/intro/textBlocks.html">TextBlocks</a></li>
+      <li><a href="https://gojs.net/latest/intro/shapes.html">Shapes</a></li>
+      <li><a href="https://gojs.net/latest/intro/pictures.html">Pictures</a></li>
+      <li><a href="https://gojs.net/latest/intro/panels.html">Panels</a></li>
+      <li><a href="https://gojs.net/latest/intro/tablePanels.html">Table Panels</a></li>
+      <li><a href="https://gojs.net/latest/intro/sizing.html">Sizing of GraphObjects</a></li>
+    </ul>
+
+    <p>
+      Say that you want a node consisting of two TextBlocks, one above the other.  You might start off with:
+    </p>
+    <pre data-language="javascript" id="first">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Vertical",
+      { margin: 3 },
+      $(go.TextBlock,
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
+  </pre>
+    <script>goCode("first", 500, 140)</script>
+
+    <p>
+      But wait -- you want the node to be a fixed size.  So you set the node's width and height:
+    </p>
+    <pre data-language="javascript" id="second">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Vertical",
+      { margin: 3 },
+      $(go.TextBlock,
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
+  </pre>
+    <script>goCode("second", 500, 140)</script>
+
+    <p>
+      That looks better, but you are suprised that both TextBlocks are near the center.  Why is that?
+      For debugging purposes let's change the <a>GraphObject.background</a> colors of each TextBlock and the nested Panel.
+    </p>
+    <pre data-language="javascript" id="third">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Vertical",             { background: "red" },
+      { margin: 3 },
+      $(go.TextBlock,                   { background: "lime" },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,                   { background: "cyan" },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
+  </pre>
+    <script>goCode("third", 500, 140)</script>
+    <p>
+      It is now clear that the TextBlocks are no bigger than they need to be to hold the text,
+      and that the Panel is also no bigger than need be to hold the two TextBlocks.
+    </p>
+
+    <p>
+      So you think that you just need to <a>GraphObject.stretch</a> the panel.
+    </p>
+    <pre data-language="javascript" id="fourth">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Vertical",             { background: "red" },
+      { margin: 3, stretch: go.GraphObject.Fill },
+      $(go.TextBlock,                   { background: "lime" },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,                   { background: "cyan" },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
+  </pre>
+    <script>goCode("fourth", 500, 140)</script>
+    <p>
+      Now the Panel with the red background indeed fills up the whole outer Auto Panel,
+      inside its main Shape acting as a border.
+      But the lime green and cyan blue TextBlocks are still only their natural heights.
+    </p>
+
+    <p>
+      If you want the text to be spaced evenly vertically,
+      you might think you only need to stretch those two TextBlocks.
+    </p>
+    <pre data-language="javascript" id="fifth">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Vertical",             { background: "red" },
+      { margin: 3, stretch: go.GraphObject.Fill },
+      $(go.TextBlock,                   { background: "lime" },
+        { stretch: go.GraphObject.Fill },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,                   { background: "cyan" },
+        { stretch: go.GraphObject.Fill },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
+  </pre>
+    <script>goCode("fifth", 500, 140)</script>
+    <p>
+      Now the TextBlocks are stretching horizontally but not vertically!
+      The reason is that a Vertical Panel never stretches its elements vertically.
+      It always stacks its elements on top of each other with their natural heights.
+      When a Vertical Panel is taller than the stack of its elements, there is extra space at the bottom.
+    </p>
+
+    <p>
+      Instead of a Vertical Panel we should use a Table Panel.
+      This requires assigning the <a>GraphObject.row</a> on each element (i.e. each TextBlock).
+    </p>
+    <pre data-language="javascript" id="sixth">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Table",             { background: "red" },
+      { margin: 3, stretch: go.GraphObject.Fill },
+      $(go.TextBlock,                { background: "lime" },
+        { row: 0 },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,                { background: "cyan" },
+        { row: 1 },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
+  </pre>
+    <script>goCode("sixth", 500, 140)</script>
+    <p>
+      Because by default elements are centered within the cells of a Table Panel, no stretching of the TextBlocks is needed.
+      (You could change that by setting <a>Panel.defaultAlignment</a> or <a>Panel.defaultStretch</a>.)
+    </p>
+
+    <p>
+      Are we all done?  Maybe.  What happens when the text changes size?
+      One way to test that is to create a bunch of nodes using different model data, using short and long strings.
+    </p>
+    <p>
+      But to demonstrate one more debugging technique, we'll make the Node <a>Part.resizable</a>.
+      You can interactively resize the node (the whole node because we haven't set <a>Part.resizeObjectName</a>)
+      so you can see how the nested Panel and the TextBlocks handle constrained sizing.
+    </p>
+    <pre data-language="javascript" id="seventh">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",                 { resizable: true },
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Table",             { background: "red" },
+      { margin: 3, stretch: go.GraphObject.Fill },
+      $(go.TextBlock,                { background: "lime" },
+        { row: 0 },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,                { background: "cyan" },
+        { row: 1 },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top String", t2: "Bottom String"}];
+diagram.findNodeForData(diagram.model.nodeDataArray[0]).isSelected = true;
+  </pre>
+    <script>goCode("seventh", 500, 140)</script>
+    <p>
+      Note how when the node becomes narrow, it clips the text rather than make the text wrap.
+      Let's say that you would rather that the text wrap.
+    </p>
+
+    <p>
+      This can be implemented by stretching the TextBlocks horizontally, which will define their widths, forcing the text to wrap.
+      But text normally is drawn at the left side of the bounds of the TextBlock when the text direction is left-to-right.
+      If you want each TextBlock to be centered within its bounds, you'll need to set <a>TextBlock.textAlign</a> to "center".
+    </p>
+    <pre data-language="javascript" id="eighth">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",                 { resizable: true },
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Table",             { background: "red" },
+      { margin: 3, stretch: go.GraphObject.Fill,
+        defaultStretch: go.GraphObject.Horizontal },
+      $(go.TextBlock,                { background: "lime" },
+        { row: 0, textAlign: "center" },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,                { background: "cyan" },
+        { row: 1, textAlign: "center" },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top String", t2: "Bottom String"}];
+diagram.findNodeForData(diagram.model.nodeDataArray[0]).isSelected = true;
+  </pre>
+    <script>goCode("eighth", 500, 140)</script>
+    <p>
+      The TextBlocks can be seen to stretch across the width of the available area.
+      Note how the text wraps as the node becomes narrow, causing the TextBlocks to become more narrow.
+      Of course when there's not enough room to render all of the text, the TextBlocks will be clipped.
+    </p>
+
+    <p>
+      Now we just need to get rid of the colored backgrounds and resizable-ness used for debugging
+      and assign the desired colors and fonts.
+    </p>
+    <pre data-language="javascript" id="ninth">
+diagram.initialContentAlignment = go.Spot.Center;
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { width: 80, height: 100 },
+    $(go.Shape, { fill: "white" }),
+    $(go.Panel, "Table",
+      { margin: 3, stretch: go.GraphObject.Fill,
+        defaultStretch: go.GraphObject.Horizontal, background: "purple" },
+      $(go.TextBlock,
+        { row: 0, textAlign: "center", stroke: "white", font: "bold 11pt sans-serif" },
+        new go.Binding("text", "t1")),
+      $(go.TextBlock,
+        { row: 1, textAlign: "center", stroke: "white", font: "bold 11pt sans-serif" },
+        new go.Binding("text", "t2"))
+    )
+  );
+diagram.model.nodeDataArray = [{ t1: "Top String", t2: "Bottom String"}];
+  </pre>
+    <script>goCode("ninth", 500, 140)</script>
+
+  </div>
+</div>
+</body>
+</html>

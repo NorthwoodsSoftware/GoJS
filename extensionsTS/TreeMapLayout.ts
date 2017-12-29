@@ -25,6 +25,7 @@ export class TreeMapLayout extends go.Layout {
 		this.computeTotals(diagram);  // make sure data.total has been computed for every node
 		// figure out how large an area to cover;
 		// perhaps this should be a property that could be set, rather than depending on the current viewport
+    this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
 		var x = this.arrangementOrigin.x;
 		var y = this.arrangementOrigin.y;
 		var w = diagram.viewportBounds.width;

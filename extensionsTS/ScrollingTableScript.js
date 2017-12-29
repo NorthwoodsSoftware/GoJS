@@ -34,7 +34,9 @@
             }, new go.Binding("location").makeTwoWay(), $(go.TextBlock, { font: "bold 14px sans-serif" }, new go.Binding("text", "key")), $(go.Panel, "Auto", $(go.Shape, { fill: "white" }), $("ScrollingTable", {
                 name: "SCROLLER",
                 desiredSize: new go.Size(NaN, 60),
-                stretch: go.GraphObject.Fill // but stretches vertically
+                stretch: go.GraphObject.Fill,
+                defaultColumnSeparatorStroke: "gray",
+                defaultColumnSeparatorStrokeWidth: 0.5
             }, new go.Binding("TABLE.itemArray", "items"), new go.Binding("TABLE.column", "left", function (left) { return left ? 2 : 0; }), new go.Binding("desiredSize", "size").makeTwoWay(), {
                 "TABLE.itemTemplate": $(go.Panel, "TableRow", {
                     defaultStretch: go.GraphObject.Horizontal,

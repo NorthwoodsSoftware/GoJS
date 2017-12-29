@@ -101,6 +101,7 @@ var __extends = (this && this.__extends) || (function () {
             if (diagram !== null)
                 diagram.startTransaction("Serpentine Layout");
             // start on the left, at Layout.arrangementOrigin
+            this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
             var x = this.arrangementOrigin.x;
             var rowh = 0;
             var y = this.arrangementOrigin.y;

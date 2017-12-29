@@ -288,9 +288,9 @@ function makeAngleNode() {
         { locationSpot: go.Spot.Center, locationObjectName: "SHAPE", selectionAdorned: false },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             $(go.Shape, "Circle", // placed where walls intersect, is invisible
-            { name: "SHAPE", fill: "red", height: 0, width: 0 }),
+            { name: "SHAPE", height: 0, width: 0 }),
             $(go.Shape, // arc
-            { stroke: "green", strokeWidth: 1.5, fill: null }, 
+            { strokeWidth: 1.5, fill: null }, 
             new go.Binding("geometry", "", makeArc).ofObject(),
             new go.Binding("stroke", "sweep", function (sweep) {
                 return (sweep % 45 < 1 || sweep % 45 > 44) ? "dodgerblue" : "lightblue";
@@ -307,17 +307,16 @@ function makeAngleNode() {
             }),
                 // rectangle containing angle text
                 $(go.Shape,
-                { stroke: "black", fill: "white" },
+                { fill: "white" },
                 new go.Binding("stroke", "sweep", function (sweep) {
                     return (sweep % 45 < 1 || sweep % 45 > 44) ? "dodgerblue" : "lightblue";
                 })),
                 // angle text
                 $(go.TextBlock,
-                { font: "7pt sans-serif", margin: new go.Margin(2, 2, 2, 2) },
+                { font: "7pt sans-serif", margin: 2 },
                 new go.Binding("text", "sweep", function (sweep) {
                     return sweep.toFixed(2) + String.fromCharCode(176);
-                }),
-                new go.Binding("stroke", "color"))
+                }))
             )
         );
 }
@@ -326,7 +325,6 @@ function makeAngleNode() {
 function makeDimensionLink() {
     var $ = go.GraphObject.make
     return $(go.Link,
-        { locationSpot: go.Spot.TopLeft },
         // link itself
         $(go.Shape,
         { stroke: "gray", strokeWidth: 2, name: 'SHAPE' }),
