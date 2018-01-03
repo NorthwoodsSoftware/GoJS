@@ -1,6 +1,6 @@
 'use strict';
 /*
-*  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // This file holds definitions of all standard shape figures -- string values for Shape.figure.

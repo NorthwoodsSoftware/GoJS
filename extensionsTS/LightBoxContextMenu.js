@@ -11,6 +11,9 @@
     // This file exposes one instance of HTMLInfo, window.myHTMLLightBox
     // see also LightBoxContextMenu.css and /samples/htmlLightBoxContextMenu.html
     "use strict";
+    /*
+    *  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+    */
     Object.defineProperty(exports, "__esModule", { value: true });
     var go = require("../release/go");
     (function (window) {

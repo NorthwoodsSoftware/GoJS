@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     /*
-    *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
     */
     // A custom Tool for drawing polygons or polylines
     var go = require("../release/go");

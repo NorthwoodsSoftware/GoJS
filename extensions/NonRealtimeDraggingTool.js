@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom DraggingTool for dragging an image instead of actually moving any selected nodes,

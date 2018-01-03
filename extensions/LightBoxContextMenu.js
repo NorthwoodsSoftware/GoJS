@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*/
 // HTML + JavaScript context menu, made with HTMLInfo
 // This file exposes one instance of HTMLInfo, window.myHTMLLightBox
 // see also LightBoxContextMenu.css and /samples/htmlLightBoxContextMenu.html

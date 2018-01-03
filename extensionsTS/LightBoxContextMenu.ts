@@ -2,6 +2,9 @@
 // This file exposes one instance of HTMLInfo, window.myHTMLLightBox
 // see also LightBoxContextMenu.css and /samples/htmlLightBoxContextMenu.html
 "use strict";
+/*
+*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*/
 
 import * as go from "../release/go"
 

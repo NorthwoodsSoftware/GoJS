@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved. */
 
 // When adding samples or extensions, modify this file, samples/all.html, and samples/indexList.js
 // along with adding a 400x400 screenshot in assets/images/screenshots.
@@ -114,7 +114,7 @@ function goSamples() {
   samplediv.appendChild(hdr);
   var footer = document.createElement("div");
   footer.className = "footer";
-  var msg = "Copyright &copy; 1998-2017 by Northwoods Software Corporation.";
+  var msg = "Copyright &copy; 1998-2018 by Northwoods Software Corporation.";
   if (go && go.version) {
     msg = "GoJS&reg; version " + go.version + ". " + msg;
   }

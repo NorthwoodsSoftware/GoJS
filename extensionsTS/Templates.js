@@ -10,7 +10,7 @@
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     /*
-    *  Copyright (C) 1998-2017 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
     // These are the definitions for all of the predefined templates and tool archetypes.
