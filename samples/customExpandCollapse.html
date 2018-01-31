@@ -26,6 +26,7 @@ function init() {
 	myDiagram.nodeTemplate =
 		$(go.Node, go.Panel.Vertical,
       { portId: "", fromLinkable: true, toLinkable: true },
+      new go.Binding("visible"),
 			$(go.Panel, go.Panel.Auto,
 				$(go.Shape,
           { fill: "white", minSize: new go.Size(30, 30), strokeWidth: 0 },
@@ -67,14 +68,14 @@ function init() {
 	function collapseFrom(node, start) {
 	  if (node.data.isCollapsed) return;
 	  node.diagram.model.setDataProperty(node.data, "isCollapsed", true);
-	  if (node !== start) node.visible = false;
+	  if (node !== start) node.diagram.model.setDataProperty(node.data, "visible", false);
 	  node.findNodesOutOf().each(collapseFrom);
 	}
 
 	function expandFrom(node, start) {
 	  if (!node.data.isCollapsed) return;
 	  node.diagram.model.setDataProperty(node.data, "isCollapsed", false);
-	  if (node !== start) node.visible = true;
+	  if (node !== start) node.diagram.model.setDataProperty(node.data, "visible", true);
 	  node.findNodesOutOf().each(expandFrom);
 	}
 
