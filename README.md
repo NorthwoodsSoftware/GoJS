@@ -8,7 +8,7 @@ GoJS, a JavaScript Library for HTML Diagrams
 [![GitHub release](https://img.shields.io/github/release/NorthwoodsSoftware/GoJS.svg)]()
 [![](https://img.shields.io/github/issues-raw/NorthwoodsSoftware/GoJS.svg)]()
 [![GitHub last commit](https://img.shields.io/github/last-commit/NorthwoodsSoftware/GoJS.svg)]()
-[![Twitter Follow](https://img.shields.io/twitter/follow/NorthwoodsGo.svg?style=social&label=Follow)]()
+[![Twitter Follow](https://img.shields.io/twitter/follow/NorthwoodsGo.svg?style=social&label=Follow)](https://twitter.com/NorthwoodsGo)
 
 [See GoJS Samples](https://gojs.net/latest/samples).
 
