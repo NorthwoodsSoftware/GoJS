@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutorial for interactivity with GoJS." />
+  <title>GoJS in 12 Minutes Video Code</title>
+  <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" >
+  <!-- custom CSS after bootstrap -->
+  <link href="../assets/css/main.css" rel="stylesheet" type="text/css"/>
+  <link href="../assets/css/highlight.css" rel="stylesheet" type="text/css" media="all" />
+  <script src="../assets/js/highlight.js"></script>
+
+  <script src="../release/go.js"></script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-1506307-5', 'auto');
+    ga('send', 'pageview');
+  </script>
+</head>
+
+<body>
+    <!-- non-fixed navbar -->
+    <nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <div class="navheader-container">
+            <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+              <a id="toplogo" class="navbar-brand" href="../index.html">GoJS</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../learn/index.html">Learn</a></li>
+            <li><a href="../samples/index.html">Samples</a></li>
+            <li><a href="../intro/index.html">Intro</a></li>
+            <li><a href="../api/index.html" target="api">API</a></li>
+            <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+            <li><a href="../doc/download.html">Download</a></li>
+            <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+            <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+            <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+            <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div id="bannertop" class="jumbotron banner">
+      <div class="container-fluid plr15">
+        <h1><span>GoJS in 12 Minutes Video Code</span></h1>
+      </div>
+    </div>
+
+    <div class="container-fluid learn-container">
+
+
+    <pre><code>
+       var $ = go.GraphObject.make;
+       myDiagram = $(go.Diagram, "myDiagramDiv");
+       var nodeDataArray = [
+           { key: "Alpha", color: "lime" },
+           { key: "Beta", color: "cyan" },
+           { key: "Zeta", isGroup: true },
+           { key: "Delta", color: "pink", group: "Zeta" },
+           { key: "Gamma", color: "maroon", group: "Zeta" }
+       ];
+       var linkDataArray = [
+           { to: "Beta", from: "Alpha", color: "red" },
+           { to: "Zeta", from: "Alpha" }
+       ];
+       myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+       myDiagram.nodeTemplate =
+       $(go.Node, "Auto",
+           $(go.Shape, "RoundedRectangle", { fill: "white", },
+               new go.Binding("fill", "color")
+           ),
+           $(go.TextBlock, "text", { margin: 10 },
+               new go.Binding("text", "key")
+           )
+       );
+
+       myDiagram.linkTemplate =
+       $(go.Link,
+           $(go.Shape, { strokeWidth: 3 },
+               new go.Binding("stroke", "color")),
+           $(go.Shape,
+           { toArrow: "Standard", stroke: null },
+               new go.Binding("fill", "color"))
+       );
+    </code></pre>
+
+    <!-- LIVE -->
+    <div id="myDiagramDiv" class="diagramStyling" style="width:700px; height:150px"></div>
+    <script>
+    function setupDiagram(divname) {
+      var $ = go.GraphObject.make;
+       myDiagram = $(go.Diagram, "myDiagramDiv");
+       var nodeDataArray = [
+           { key: "Alpha", color: "lime" },
+           { key: "Beta", color: "cyan" },
+           { key: "Zeta", isGroup: true },
+           { key: "Delta", color: "pink", group: "Zeta" },
+           { key: "Gamma", color: "maroon", group: "Zeta" }
+       ];
+       var linkDataArray = [
+           { to: "Beta", from: "Alpha", color: "red" },
+           { to: "Zeta", from: "Alpha" }
+       ];
+       myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+       myDiagram.nodeTemplate =
+       $(go.Node, "Auto",
+           $(go.Shape, "RoundedRectangle", { fill: "white", },
+               new go.Binding("fill", "color")
+           ),
+           $(go.TextBlock, "text", { margin: 10 },
+               new go.Binding("text", "key")
+           )
+       );
+
+       myDiagram.linkTemplate =
+       $(go.Link,
+           $(go.Shape, { strokeWidth: 3 },
+               new go.Binding("stroke", "color")),
+           $(go.Shape,
+           { toArrow: "Standard", stroke: null },
+               new go.Binding("fill", "color"))
+       );
+      return myDiagram;
+    }
+    setupDiagram("myDiagramDiv")
+    </script>
+
+    <p class="footer">
+      GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2018 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
+    </p>
+
+  </div> <!-- end main -->
+  <div class="banner" id="bannerbottom">
+    <!-- text in banner-->
+  </div>
+  <script src="../assets/js/jquery.min.js"></script>
+  <script async src="../assets/js/bootstrap.min.js"></script>
+</body>
+</html>

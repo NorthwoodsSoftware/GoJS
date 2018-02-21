@@ -1173,8 +1173,9 @@ declare namespace go {
 
         /**
         * Update all of the data-bound properties of Nodes and Links in this diagram.
+        * @param {string=} srcprop An optional source data property name
         */
-        updateAllTargetBindings(): void;
+        updateAllTargetBindings(srcprop?: string): void;
 
         /**
         * Update all of the references to nodes in case they had been modified in the model without
