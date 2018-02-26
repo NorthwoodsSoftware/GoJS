@@ -59,12 +59,14 @@
 
     var portMenu =  // context menu for each port
       $(go.Adornment, "Vertical",
+        makeButton("Swap order",
+                   function(e, obj) { swapOrder(obj.part.adornedObject); }),
         makeButton("Remove port",
                    // in the click event handler, the obj.part is the Adornment;
                    // its adornedObject is the port
                    function (e, obj) { removePort(obj.part.adornedObject); }),
         makeButton("Change color",
-                   function (e, obj) { changeColor(obj.part.adornedObject); }),
+                   function(e, obj) { changeColor(obj.part.adornedObject); }),
         makeButton("Remove side ports",
                    function (e, obj) { removeAll(obj.part.adornedObject); })
       );
@@ -339,6 +341,27 @@
       }
     });
     myDiagram.commitTransaction("addPort");
+  }
+
+  // Exchange the position/order of the given port with the next one.
+  // If it's the last one, swap with the previous one.
+  function swapOrder(port) {
+    var arr = port.panel.itemArray;
+    if (arr.length >= 2) {  // only if there are at least two ports!
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].portId === port.portId) {
+          myDiagram.startTransaction("swap ports");
+          if (i >= arr.length - 1) i--;  // now can swap I and I+1, even if it's the last port
+          var newarr = arr.slice(0);  // copy Array
+          newarr[i] = arr[i + 1];  // swap items
+          newarr[i + 1] = arr[i];
+          // remember the new Array in the model
+          myDiagram.model.setDataProperty(port.part.data, port._side + "Array", newarr);
+          myDiagram.commitTransaction("swap ports");
+          break;
+        }
+      }
+    }
   }
 
   // Remove the clicked port from the node.
