@@ -23,8 +23,6 @@ import * as go from "../release/go"
 
   var customEditor = new go.HTMLInfo();
 
-	var myDiagram: go.Diagram;
-
   customEditor.show = (textBlock, diagram, tool) => {
     if (!(textBlock instanceof go.TextBlock)) return;
     var startingValue = textBlock.text;
@@ -87,7 +85,7 @@ import * as go from "../release/go"
     }, false);
 
     var loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
-    var pos = myDiagram.transformDocToView(loc);
+    var pos = diagram.transformDocToView(loc);
     customText.style.left = pos.x + "px";
     customText.style.top  = pos.y + "px";
     customText.style.position = 'absolute';

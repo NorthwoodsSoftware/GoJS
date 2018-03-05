@@ -29,7 +29,6 @@
                 '  <label for="Three">Three</label> <input type="radio" name="group1" id="Three" value="Three"> <br/>' +
                 '  <label for="Four">Four</label> <input type="radio" name="group1" id="Four" value="Four">';
         var customEditor = new go.HTMLInfo();
-        var myDiagram;
         customEditor.show = function (textBlock, diagram, tool) {
             if (!(textBlock instanceof go.TextBlock))
                 return;
@@ -91,7 +90,7 @@
                 }
             }, false);
             var loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
-            var pos = myDiagram.transformDocToView(loc);
+            var pos = diagram.transformDocToView(loc);
             customText.style.left = pos.x + "px";
             customText.style.top = pos.y + "px";
             customText.style.position = 'absolute';

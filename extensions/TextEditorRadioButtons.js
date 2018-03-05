@@ -84,7 +84,7 @@
     }, false);
 
     var loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
-    var pos = myDiagram.transformDocToView(loc);
+    var pos = diagram.transformDocToView(loc);
     customText.style.left = pos.x + "px";
     customText.style.top  = pos.y + "px";
     customText.style.position = 'absolute';
