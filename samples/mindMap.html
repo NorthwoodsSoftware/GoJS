@@ -16,6 +16,7 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
+          padding: 20,
           // when the user drags a node, also move/copy/delete the whole subtree starting with that node
           "commandHandler.copiesTree": true,
           "commandHandler.deletesTree": true,
@@ -219,6 +220,10 @@
     diagram.model.addNodeData(newdata);
     layoutTree(oldnode);
     diagram.commitTransaction("Add Node");
+
+    // if the new node is off-screen, scroll the diagram to show the new node
+    var newnode = diagram.findNodeForData(newdata);
+    if (newnode !== null) diagram.scrollToRect(newnode.actualBounds);
   }
 
   function layoutTree(node) {
