@@ -313,7 +313,7 @@ var __extends = (this && this.__extends) || (function () {
             if (!this.isActive)
                 return;
             var e = this.diagram.lastInput;
-            if (e.key === 'Del' || e.key === '\t') {
+            if (e.key === 'Del' || e.key === '\t') { // remove width setting
                 var coldef = this.adornedTable.getColumnDefinition(this.handle.column);
                 coldef.width = NaN;
                 this.transactionResult = this.name; // success

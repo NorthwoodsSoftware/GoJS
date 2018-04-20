@@ -116,10 +116,10 @@ var __extends = (this && this.__extends) || (function () {
             if (!diagram.nodes.all(function (g) { return !(g instanceof go.Group) || g.data.total >= 0; })) {
                 var groups = new go.Set();
                 diagram.nodes.each(function (n) {
-                    if (n instanceof go.Group) {
+                    if (n instanceof go.Group) { // collect all groups
                         groups.add(n);
                     }
-                    else {
+                    else { // regular nodes just have their total == size
                         n.data.total = n.data.size;
                     }
                 });
@@ -134,7 +134,7 @@ var __extends = (this && this.__extends) || (function () {
                             g.memberParts.each(function (m) { if (m instanceof go.Node)
                                 g.data.total += m.data.total; });
                         }
-                        else {
+                        else { // remember for the next iteration
                             grps.add(g);
                         }
                     });

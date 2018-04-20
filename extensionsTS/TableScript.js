@@ -185,7 +185,7 @@ var __extends = (this && this.__extends) || (function () {
                             e.diagram.layout.getColumnDefinition(group.column).width = NaN;
                         }
                     }
-                    else {
+                    else { // failure upon trying to add parts to this group
                         e.diagram.currentTool.doCancel();
                     }
                 }

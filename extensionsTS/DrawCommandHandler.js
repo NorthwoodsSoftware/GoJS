@@ -431,10 +431,10 @@ var __extends = (this && this.__extends) || (function () {
                 var nextPoint = nextPart.actualBounds.center;
                 var angle = originalPoint.directionPoint(nextPoint);
                 var anglediff = this._angleCloseness(angle, dir);
-                if (anglediff <= 45) {
+                if (anglediff <= 45) { // if this part's center is within the desired direction's sector,
                     var distance = originalPoint.distanceSquaredPoint(nextPoint);
                     distance *= 1 + Math.sin(anglediff * Math.PI / 180); // the more different from the intended angle, the further it is
-                    if (distance < closestDistance) {
+                    if (distance < closestDistance) { // and if it's closer than any other part,
                         closestDistance = distance; // remember it as a better choice
                         closest = nextPart;
                     }

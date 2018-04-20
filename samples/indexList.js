@@ -1506,7 +1506,7 @@ arr.push([
 arr.push([
   "flowBuilder",
   "Flow Builder",
-  "Demonstrates a flow builder where nodes/links can be created or dropped onto a recylcing node.",
+  "Demonstrates a flow builder where nodes/links can be created or dropped onto a recycling node.",
   "flowBuilder",
   ["layereddigraphlayout", "contextmenus", "tools", "buttons"]
 ]);

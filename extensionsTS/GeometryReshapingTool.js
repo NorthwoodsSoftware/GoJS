@@ -384,7 +384,7 @@ var __extends = (this && this.__extends) || (function () {
             var offset = geo.normalize(); // avoid any negative coordinates in the geometry
             shape.geometry = geo; // modify the Shape
             var part = shape.part; // move the Part holding the Shape
-            if (!part.locationSpot.equals(go.Spot.Center)) {
+            if (!part.locationSpot.equals(go.Spot.Center)) { // but only if the locationSpot isn't Center
                 part.move(part.position.copy().subtract(offset));
             }
             this.updateAdornments(part); // update any Adornments of the Part

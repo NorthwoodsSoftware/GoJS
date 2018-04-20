@@ -70,7 +70,7 @@ var __extends = (this && this.__extends) || (function () {
                 b.color = str;
                 return b;
             }
-            else {
+            else { //only works with image urls right now
                 //TODO deal with Canvas elements
                 var b = new go.Brush(go.Brush.Pattern);
                 var image = document.createElement("img");
@@ -345,14 +345,14 @@ var __extends = (this && this.__extends) || (function () {
             var radii = [w / 2, h / 2]; //stores two radii
             var center = new go.Spot(0.5, 0.5, 0, 0); //stores the center of the gradient
             //goes through all cases to set radii and center
-            if (!isValidColor) {
+            if (!isValidColor) { //parses only if there were intial parameters specified
                 //could be only a partial shape/position specification
                 var shapeArr = css[0]; //first specified parameter of gradient
                 var shape = shapeArr.split("at");
                 if (shape.length === 1) {
                     center = new go.Spot(0.5, 0.5, 0, 0); //no center was specified, so it must be "at center";
                 }
-                else if (shape.length === 2) {
+                else if (shape.length === 2) { //assigns something to center. one must have been specified if length===2
                     center = this._parseCenter(shape[1], w, h);
                 }
                 else {
@@ -390,7 +390,7 @@ var __extends = (this && this.__extends) || (function () {
                 if (digits === null) {
                     arr = this._englishPositionToCoordinate(str);
                 }
-                else if (digits.length === 1) {
+                else if (digits.length === 1) { //know one of the params are numbers
                     //if the first param is a string, second is a number
                     var num;
                     var pos;
@@ -398,7 +398,7 @@ var __extends = (this && this.__extends) || (function () {
                         pos = parts[0];
                         num = parts[1];
                     }
-                    else {
+                    else { //if second param is string and first is number
                         pos = parts[1];
                         num = parts[0];
                     }
@@ -408,7 +408,7 @@ var __extends = (this && this.__extends) || (function () {
                     //overwrites height to the user specified value
                     arr[1] = num;
                 }
-                else if (digits.length === 2) {
+                else if (digits.length === 2) { //both the params are numbers
                     arr[0] = this._parseLengthToPercent(parts[0], w);
                     arr[1] = this._parseLengthToPercent(parts[1], h);
                 }
@@ -443,10 +443,10 @@ var __extends = (this && this.__extends) || (function () {
             return new go.Spot(arr[0], arr[1], 0, 0);
         };
         ExtendedBrush.prototype._parseLengthToPercent = function (str, dimension) {
-            if (str.indexOf("%") < 0) {
+            if (str.indexOf("%") < 0) { //if specified by a length unit
                 return this._parseLengthToPX(str) / (dimension);
             }
-            else {
+            else { //if specified by percentage
                 return parseFloat(str) / 100;
             }
         };
@@ -507,7 +507,7 @@ var __extends = (this && this.__extends) || (function () {
                     else
                         throw new Error("Invalid CSS shape description");
                 }
-                else if (digits.length === 2) {
+                else if (digits.length === 2) { //must both be ellipse radii
                     return [this._parseLengthToPX(split[0]),
                         this._parseLengthToPX(split[1])];
                 }
@@ -560,7 +560,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 return [r, r];
             }
-            else {
+            else { //must be an ellipse
                 switch (extent) {
                     case ("closest-corner"):
                         return [(w - a) * Math.sqrt(2), (h - b) * Math.sqrt(2)];

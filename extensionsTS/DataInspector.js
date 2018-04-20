@@ -355,7 +355,7 @@
             var diagram = this._diagram;
             var isPart = this.inspectedObject instanceof go.Part;
             var data = isPart ? this.inspectedObject.data : this.inspectedObject;
-            if (!data) {
+            if (!data) { // clear out all of the fields
                 for (var name in inspectedProps) {
                     var input = inspectedProps[name];
                     if (input instanceof HTMLSelectElement) {

@@ -35,7 +35,7 @@
         var buttonFillDisabled = "darkgray";
         // offset identical to that needed to match the original RoundedRectangle figure, to keep the same size
         var offset = 2.761423749153968;
-        var button = (go.GraphObject.make(go.Panel, "Auto", {
+        var button = /** @type {Panel} */ (go.GraphObject.make(go.Panel, "Auto", {
             isActionable: true,
             enabledChanged: function (button, enabled) {
                 var shape = button.findObject("ButtonBorder");
@@ -86,7 +86,7 @@
     // Typical usage within a Node template:
     //    $("TreeExpanderButton")
     go.GraphObject.defineBuilder("TreeExpanderButton", function (args) {
-        var button = (go.GraphObject.make("Button", {
+        var button = /** @type {Panel} */ (go.GraphObject.make("Button", {
             "_treeExpandedFigure": "MinusLine",
             "_treeCollapsedFigure": "PlusLine"
         }, go.GraphObject.make(go.Shape, // the icon
@@ -140,7 +140,7 @@
     // Typical usage within a Group template:
     //    $("SubGraphExpanderButton")
     go.GraphObject.defineBuilder("SubGraphExpanderButton", function (args) {
-        var button = (go.GraphObject.make("Button", {
+        var button = /** @type {Panel} */ (go.GraphObject.make("Button", {
             "_subGraphExpandedFigure": "MinusLine",
             "_subGraphCollapsedFigure": "PlusLine"
         }, go.GraphObject.make(go.Shape, // the icon
@@ -223,7 +223,7 @@
     //   new go.Binding("visible", "", function(data) { return ...OK to perform Command...; })
     // )
     go.GraphObject.defineBuilder("ContextMenuButton", function (args) {
-        var button = (go.GraphObject.make("Button"));
+        var button = /** @type {Panel} */ (go.GraphObject.make("Button"));
         button.stretch = go.GraphObject.Horizontal;
         var border = button.findObject("ButtonBorder");
         if (border instanceof go.Shape) {
@@ -290,8 +290,8 @@
     // $("CheckBoxButton", "", { "_doClick": function(e, obj) { alert("clicked!"); } })
     go.GraphObject.defineBuilder("CheckBoxButton", function (args) {
         // process the one required string argument for this kind of button
-        var propname = (go.GraphObject.takeBuilderArgument(args));
-        var button = (go.GraphObject.make("Button", {
+        var propname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args));
+        var button = /** @type {Panel} */ (go.GraphObject.make("Button", {
             "ButtonBorder.fill": "white",
             "ButtonBorder.stroke": "gray",
             width: 14,
@@ -332,13 +332,13 @@
     //   { "_doClick": function(e, obj) { ... perform extra side-effects ... } })
     go.GraphObject.defineBuilder("CheckBox", function (args) {
         // process the one required string argument for this kind of button
-        var propname = (go.GraphObject.takeBuilderArgument(args));
-        var button = (go.GraphObject.make("CheckBoxButton", propname, // bound to this data property
+        var propname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args));
+        var button = /** @type {Panel} */ (go.GraphObject.make("CheckBoxButton", propname, // bound to this data property
         {
             name: "Button",
             margin: new go.Margin(0, 1, 0, 0)
         }));
-        var box = (go.GraphObject.make(go.Panel, "Horizontal", button, {
+        var box = /** @type {Panel} */ (go.GraphObject.make(go.Panel, "Horizontal", button, {
             isActionable: true,
             margin: 1,
             // transfer CheckBoxButton properties over to this new CheckBox panel

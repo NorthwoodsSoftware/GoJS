@@ -313,7 +313,7 @@ var __extends = (this && this.__extends) || (function () {
             if (!this.isActive)
                 return;
             var e = this.diagram.lastInput;
-            if (e.key === 'Del' || e.key === '\t') {
+            if (e.key === 'Del' || e.key === '\t') { // remove height setting
                 var rowdef = this.adornedTable.getRowDefinition(this.handle.row);
                 rowdef.height = NaN;
                 this.transactionResult = this.name; // success

@@ -88,7 +88,7 @@ var __extends = (this && this.__extends) || (function () {
             // calculate the width at which we should start a new row
             var wrap = this.wrap;
             if (diagram !== null && isNaN(wrap)) {
-                if (this.group === null) {
+                if (this.group === null) { // for a top-level layout, use the Diagram.viewportBounds
                     var pad = diagram.padding;
                     wrap = Math.max(spacing.width * 2, diagram.viewportBounds.width - 24 - pad.left - pad.right);
                 }

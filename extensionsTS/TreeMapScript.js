@@ -48,7 +48,7 @@
                             node = node.containingGroup;
                         }
                     }
-                    if (firstselected !== null) {
+                    if (firstselected !== null) { // deselect this and select its containing Group
                         firstselected.isSelected = false;
                         var group = firstselected.containingGroup;
                         if (group !== null)
@@ -161,7 +161,7 @@
                     available.remove(child);
                     // have the child node data refer to the parent node data by its key
                     child.parent = parent.key;
-                    if (!parent.isGroup) {
+                    if (!parent.isGroup) { // make sure PARENT is a group
                         parent.isGroup = true;
                     }
                     var par = parent;

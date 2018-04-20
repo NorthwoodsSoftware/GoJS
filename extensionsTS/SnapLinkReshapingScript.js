@@ -91,7 +91,7 @@
             });
         function showSmallPorts(node, show) {
             node.ports.each(function (port) {
-                if (port.portId !== "") {
+                if (port.portId !== "") { // don't change the default port, which is the big shape
                     port.fill = show ? "rgba(0,0,0,.3)" : null;
                 }
             });

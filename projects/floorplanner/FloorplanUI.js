@@ -46,6 +46,7 @@
 		optionsWindow: {
 			id:
 			gridSizeInputId:
+			unitsConversionFactorInputId: 
 			unitsFormId:
 			unitsFormName:
 			checkboxes: {
@@ -107,7 +108,7 @@ Object.defineProperty(FloorplanUI.prototype, "furnitureData", {
 
 /*
 * UI manipulation:
-* Open Element, Close Element, Hide/Show Element, Adjust Scale, ChangeGridSize, 
+* Hide/Show Element, Adjust Scale, ChangeGridSize, Change Units Conversion Factor
 * Search Furniture, Checkbox Changed, Change Units, Set Behavior, Update UI
 */
 
@@ -179,6 +180,15 @@ FloorplanUI.prototype.changeGridSize = function () {
 	floorplan.toolManager.draggingTool.gridCellSize = new go.Size(input, input);
 	floorplan.model.setDataProperty(floorplan.model.modelData, "gridSize", input);
 	floorplan.commitTransaction("change grid size");
+	floorplan.skipsUndoManager = false;
+}
+
+FloorplanUI.prototype.changeUnitsConversionFactor = function () {
+	var floorplan = this.floorplan;
+	var val = document.getElementById(this.state.windows.optionsWindow.unitsConversionFactorInputId).value;
+	if (isNaN(val) || !val || val == undefined) return;
+	floorplan.skipsUndoManager = true;
+	floorplan.model.set(floorplan.model.modelData, "unitsConversionFactor", val);
 	floorplan.skipsUndoManager = false;
 }
 

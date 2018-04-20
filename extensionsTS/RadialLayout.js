@@ -102,6 +102,8 @@ var __extends = (this && this.__extends) || (function () {
             if (this.network === null) {
                 this.network = this.makeNetwork(coll);
             }
+            if (this.network.vertexes.count === 0)
+                return;
             if (this.root === null) {
                 // If no root supplied, choose one without any incoming edges
                 var it = this.network.vertexes.iterator;

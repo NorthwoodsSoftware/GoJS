@@ -22,6 +22,7 @@ var snapWalls = function (part, pt, gridPt) {
     var floorplan = part.diagram;
     floorplan.updateWallDimensions();
     floorplan.updateWallAngles();
+    floorplan.updateWall(part);
     var grid = part.diagram.grid;
     var sPt = part.data.startpoint.copy();
     var ePt = part.data.endpoint.copy();

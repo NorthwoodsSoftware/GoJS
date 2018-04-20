@@ -254,10 +254,10 @@ var __extends = (this && this.__extends) || (function () {
             }
             // a new temporary end point, the previous one is now "accepted"
             this.addPoint(this.diagram.lastInput.documentPoint);
-            if (!this.diagram.lastInput.left) {
+            if (!this.diagram.lastInput.left) { // e.g. right mouse down
                 this.finishShape();
             }
-            else if (this.diagram.lastInput.clickCount > 1) {
+            else if (this.diagram.lastInput.clickCount > 1) { // e.g. double-click
                 this.removeLastPoint();
                 this.finishShape();
             }
@@ -294,10 +294,10 @@ var __extends = (this && this.__extends) || (function () {
             if (!this.isActive)
                 return;
             var e = this.diagram.lastInput;
-            if (e.key === '\r') {
+            if (e.key === '\r') { // accept
                 this.finishShape(); // all done!
             }
-            else if (e.key === 'Z') {
+            else if (e.key === 'Z') { // undo
                 this.undo();
             }
             else {

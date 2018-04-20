@@ -74,20 +74,23 @@ function initSearch () {
   var preventPress = false;
   var search;
   var index;
+  var fuse;
   function createIndex() {
     // get search data JSON
     $.getJSON(base + 'search.json')
       .done(function (json) {
         search = json;
-        // build the lunr index
-        index = new lunr.Index();
-        index.pipeline.add(lunr.trimmer);
-        index.field('name', { boost: 10 });
-        index.field('parent');
-        index.ref('id');
-        json.forEach(function (row) {
-          index.add(row);
-        });
+        // build the fuse.js search
+        var options = {
+          shouldSort: true,
+          threshold: 0.1,
+          location: 0,
+          distance: 100,
+          maxPatternLength: 50,
+          minMatchCharLength: 1,
+          keys: ['name', 'member'] // search the full name and the member name
+        };
+        fuse = new Fuse(search, options);
         setLoadingState(SearchLoadingState.Ready);
       })
       .fail(function () {
@@ -108,13 +111,12 @@ function initSearch () {
     if (loadingState != SearchLoadingState.Ready)
       return;
     $results.empty();
-    var res = index.search(query);
+    var res = fuse.search(query);
     for (var i = 0, c = 0; i < res.length && c <= 10; i++) {
-      var row = search[res[i].ref];
-      var name = row.name;
-      if (row.parent)
-        name = '<span class="parent">' + row.parent + '.</span>' + name;
-      $results.append('<li><a href="' + base + row.url + '">' + name + '</li>');
+      var match = res[i];
+      var name = match.name;
+      if (match.parent && match.member) name = `<span class="parent">${match.parent}.</span>${match.member}`;
+      $results.append(`<li><a href="${base}${match.url}">${name}</li>`);
       c++;
     }
   }

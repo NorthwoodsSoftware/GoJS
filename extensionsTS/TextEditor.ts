@@ -20,7 +20,6 @@ import * as go from "../release/go";
     var tempText = tool.measureTemporaryTextBlock(textarea.value);
     var scale = (<any>textarea).textScale;
     textarea.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
-    textarea.style.height = 10 + tempText.measuredBounds.height * scale + "px";
     textarea.rows = tempText.lineCount;
   }, false);
 
@@ -110,24 +109,22 @@ import * as go from "../release/go";
     diagram.div.style['font'] = textBlock.font;
 
     var paddingsize = 1;
-
-    textarea.style.cssText =
-    'position: absolute;' +
-    'z-index: 100;' +
-    'font: inherit;' +
-    'fontSize: ' + (textscale * 100) + '%;' +
-    'lineHeight: normal;' +
-    'width: ' + (textwidth) + 'px;' +
-    'height: ' + (textheight) + 'px;' +
-    'left: ' + ((left - (textwidth / 2) | 0) - paddingsize) + 'px;' +
-    'top: ' + ((top - (textheight / 2) | 0) - paddingsize) + 'px;' +
-    'text-align: ' + textBlock.textAlign + ';' +
-    'margin: 0;' +
-    'padding: ' + paddingsize + 'px;' +
-    'border: 0;' +
-    'outline: none;' +
-    'white-space: pre-wrap;' +
-    'overflow: hidden;'; // for proper IE wrap
+    textarea.style['position'] = 'absolute';
+    textarea.style['zIndex'] = '100';
+    textarea.style['font'] = 'inherit';
+    textarea.style['fontSize'] = (textscale * 100) + '%';
+    textarea.style['lineHeight'] = 'normal';
+    textarea.style['width'] = (textwidth) + 'px';
+    textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
+    textarea.style['top'] = ((top - (textheight / 2) | 0) - paddingsize) + 'px';
+    textarea.style['textAlign'] = textBlock.textAlign;
+    textarea.style['margin'] = '0';
+    textarea.style['padding'] = paddingsize + 'px';
+    textarea.style['border'] = '0';
+    textarea.style['outline'] = 'none';
+    textarea.style['whiteSpace'] = 'pre-wrap';
+    textarea.style['overflow'] = ' hidden'; // for proper IE wrap
+    textarea.rows = textBlock.lineCount;
 
     (<any>textarea).textScale = textscale; // attach a value to the textarea, for convenience
 

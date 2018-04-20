@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -116,24 +119,24 @@ var __extends = (this && this.__extends) || (function () {
             var e = diagram.lastInput;
             diagram.raiseDiagramEvent("ChangingSelection");
             var found = diagram.findObjectsIn(r, null, function (p) { return (p instanceof go.Part) && p.canSelect(); }, this.isPartialInclusion, new go.Set(go.Part));
-            if (e.control || e.meta) {
-                if (e.shift) {
+            if (e.control || e.meta) { // toggle or deselect
+                if (e.shift) { // deselect only
                     temp.each(function (p) { if (!found.contains(p))
                         p.isSelected = orig.contains(p); });
                     found.each(function (p) { p.isSelected = false; temp.add(p); });
                 }
-                else {
+                else { // toggle selectedness of parts based on _originalSelection
                     temp.each(function (p) { if (!found.contains(p))
                         p.isSelected = orig.contains(p); });
                     found.each(function (p) { p.isSelected = !orig.contains(p); temp.add(p); });
                 }
             }
-            else if (e.shift) {
+            else if (e.shift) { // extend selection only
                 temp.each(function (p) { if (!found.contains(p))
                     p.isSelected = orig.contains(p); });
                 found.each(function (p) { p.isSelected = true; temp.add(p); });
             }
-            else {
+            else { // select found parts, and unselect all other previously selected parts
                 temp.each(function (p) { if (!found.contains(p))
                     p.isSelected = false; });
                 orig.each(function (p) { if (!found.contains(p))

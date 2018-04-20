@@ -64,7 +64,7 @@
         function incrTableIndex(obj, i) {
             var diagram = obj.diagram;
             var table = obj.panel.panel.panel.findObject(tablename);
-            if (i === +Infinity || i === -Infinity) {
+            if (i === +Infinity || i === -Infinity) { // page up or down
                 var tabh = table.actualBounds.height;
                 var rowh = table.elt(table.topIndex).actualBounds.height; // assume each row has same height?
                 if (i === +Infinity) {

@@ -150,12 +150,12 @@ var __extends = (this && this.__extends) || (function () {
             var diagram = this.diagram;
             var angle;
             var e = diagram.lastInput;
-            if (e.control || e.meta) {
+            if (e.control || e.meta) { // relative to the center of the Node whose handle we are rotating
                 var part = this.adornedObject.part;
                 var rotationPoint = part.getDocumentPoint(part.locationSpot);
                 angle = rotationPoint.directionPoint(newPoint);
             }
-            else {
+            else { // relative to the center of the whole selection
                 angle = this.centerPoint.directionPoint(newPoint) - this.initialAngle;
             }
             if (angle >= 360)

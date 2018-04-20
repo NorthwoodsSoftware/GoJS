@@ -218,7 +218,8 @@ var __extends = (this && this.__extends) || (function () {
             return EventSymbolDarkFill;
         }
         //------------------------------------------  Activity Node Boundary Events   ----------------------------------------------
-        var boundaryEventMenu = $(go.Adornment, "Vertical", $("ContextMenuButton", $(go.TextBlock, "Remove event"), 
+        var boundaryEventMenu = // context menu for each boundaryEvent on Activity node
+         $(go.Adornment, "Vertical", $("ContextMenuButton", $(go.TextBlock, "Remove event"), 
         // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
         { click: function (e, obj) { removeActivityNodeBoundaryEvent(obj.part.adornedObject); } }));
         // removing a boundary event doesn't not reposition other BE circles on the node
@@ -572,7 +573,8 @@ var __extends = (this && this.__extends) || (function () {
                 l.visible = (l.fromNode.isVisible() && l.toNode.isVisible());
             });
         }
-        var laneEventMenu = $(go.Adornment, "Vertical", $("ContextMenuButton", $(go.TextBlock, "Add Lane"), 
+        var laneEventMenu = // context menu for each lane
+         $(go.Adornment, "Vertical", $("ContextMenuButton", $(go.TextBlock, "Add Lane"), 
         // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
         { click: function (e, obj) { addLaneEvent(obj.part.adornedObject); } }));
         // Add a lane to pool (lane parameter is lane above new lane)
@@ -1069,11 +1071,11 @@ var __extends = (this && this.__extends) || (function () {
             var lane = this.adornedObject.part;
             // assert(lane instanceof go.Group && lane.category !== "Pool");
             var msz = computeMinLaneSize(lane); // get the absolute minimum size
-            if (this.isLengthening()) {
+            if (this.isLengthening()) { // compute the minimum length of all lanes
                 var sz = computeMinPoolSize(lane.containingGroup);
                 msz.width = Math.max(msz.width, sz.width);
             }
-            else {
+            else { // find the minimum size of this single lane
                 var sz = computeLaneSize(lane);
                 msz.width = Math.max(msz.width, sz.width);
                 msz.height = Math.max(msz.height, sz.height);
@@ -1097,17 +1099,17 @@ var __extends = (this && this.__extends) || (function () {
         /** @override */
         LaneResizingTool.prototype.resize = function (newr) {
             var lane = this.adornedObject.part;
-            if (this.isLengthening()) {
+            if (this.isLengthening()) { // changing the length of all of the lanes
                 lane.containingGroup.memberParts.each(function (lane) {
                     if (!(lane instanceof go.Group))
                         return;
                     var shape = lane.resizeObject;
-                    if (shape !== null) {
+                    if (shape !== null) { // set its desiredSize length, but leave each breadth alone
                         shape.width = newr.width;
                     }
                 });
             }
-            else {
+            else { // changing the breadth of a single lane
                 _super.prototype.resize.call(this, newr);
             }
             relayoutDiagram(); // now that the lane has changed size, layout the pool again
@@ -1157,7 +1159,7 @@ var __extends = (this && this.__extends) || (function () {
                         return;
                     if (lane.category !== "Pool") {
                         var shape = lane.resizeObject;
-                        if (shape !== null) {
+                        if (shape !== null) { // change the desiredSize to be big enough in both directions
                             var sz = computeLaneSize(lane);
                             shape.width = (isNaN(shape.width) ? minsize.width : Math.max(shape.width, minsize.width));
                             shape.height = (!isNaN(shape.height)) ? Math.max(shape.height, sz.height) : sz.height;

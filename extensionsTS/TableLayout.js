@@ -344,7 +344,7 @@ var __extends = (this && this.__extends) || (function () {
                     if (!rowcol[i][j])
                         continue;
                     var colHerald = this.getColumnDefinition(j);
-                    if (resetCols[j] === undefined) {
+                    if (resetCols[j] === undefined) { // make sure we only reset these once
                         colHerald.actual = 0;
                         resetCols[j] = true;
                     }
@@ -524,10 +524,10 @@ var __extends = (this && this.__extends) || (function () {
                 // This used to set allowedSize height/width to Infinity,
                 // but we can only set it to the current row/column space, plus rowleft/colleft values, at most.
                 switch (stretch) {
-                    case go.GraphObject.Horizontal:// H stretch means it can be as large as its wants vertically
+                    case go.GraphObject.Horizontal: // H stretch means it can be as large as its wants vertically
                         allowedSize.height = Math.max(allowedSize.height, rowHerald.actual + rowleft);
                         break;
-                    case go.GraphObject.Vertical:// vice versa
+                    case go.GraphObject.Vertical: // vice versa
                         allowedSize.width = Math.max(allowedSize.width, colHerald.actual + colleft);
                         break;
                 }
@@ -649,7 +649,7 @@ var __extends = (this && this.__extends) || (function () {
                 // def is the last row definition
                 if (totalRow < mheight) {
                     var roomLeft = mheight - totalRow;
-                    while (roomLeft > 0) {
+                    while (roomLeft > 0) { // Add the extra to the first row that allows us to
                         var act = def.actual || 0;
                         if (isNaN(def.height) && def.maximum > act) {
                             def.actual = Math.min(def.maximum, act + roomLeft);
@@ -671,7 +671,7 @@ var __extends = (this && this.__extends) || (function () {
                 // def is the last col definition
                 if (totalCol < mwidth) {
                     var roomLeft = mwidth - totalCol;
-                    while (roomLeft > 0) {
+                    while (roomLeft > 0) { // Add the extra to the first row that allows us to
                         var act = def.actual || 0;
                         if (isNaN(def.width) && def.maximum > act) {
                             def.actual = Math.min(def.maximum, act + roomLeft);
@@ -828,11 +828,11 @@ var __extends = (this && this.__extends) || (function () {
                         var margw = marg.left + marg.right;
                         var margh = marg.top + marg.bottom;
                         var stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
-                        if ((stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal))
+                        if ( /* isNaN(child.resizeObject.desiredSize.width) && */(stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal))
                             width = Math.max(colwidth - margw, 0);
                         else
                             width = child.actualBounds.width;
-                        if ((stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical))
+                        if ( /* isNaN(child.resizeObject.desiredSize.height) && */(stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical))
                             height = Math.max(rowheight - margh, 0);
                         else
                             height = child.actualBounds.height;

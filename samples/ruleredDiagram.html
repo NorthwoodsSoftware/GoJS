@@ -151,13 +151,13 @@
       // Update properties of horizontal scale to reflect viewport
       gradScaleHoriz.location = new go.Point(vb.x, vb.y);
       gradScaleHoriz.graduatedMin = vb.x;
-      gradScaleHoriz.graduatedMax = vb.x + vb.width;
-      gradScaleHoriz.elt(0).width = vb.width;
+      gradScaleHoriz.graduatedMax = vb.right;
+      gradScaleHoriz.scale = 1 / myDiagram.scale;
       // Update properties of vertical scale to reflect viewport
       gradScaleVert.location = new go.Point(vb.x, vb.y);
       gradScaleVert.graduatedMin = vb.y;
-      gradScaleVert.graduatedMax = vb.y + vb.height;
-      gradScaleVert.elt(0).height = vb.height;
+      gradScaleVert.graduatedMax = vb.bottom;
+      gradScaleVert.scale = 1 / myDiagram.scale;
       myDiagram.commitTransaction("update scales");
     }
 
@@ -167,9 +167,10 @@
       myDiagram.startTransaction("update indicators");
       // Keep the indicators in line with the mouse as viewport changes or mouse moves
       gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
+      gradIndicatorHoriz.scale = 1 / myDiagram.scale;
       gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
+      gradIndicatorVert.scale = 1 / myDiagram.scale;
       myDiagram.commitTransaction("update indicators");
-      
     }
   }
 

@@ -43,7 +43,7 @@ var __extends = (this && this.__extends) || (function () {
                     return new go.Point(r.right, y);
                 return new go.Point(op.x, y);
             }
-            else {
+            else { // otherwise get the standard link point by calling the base class method
                 return go.Link.prototype.getLinkPoint.call(this, node, port, spot, from, ortho, othernode, otherport);
             }
         };

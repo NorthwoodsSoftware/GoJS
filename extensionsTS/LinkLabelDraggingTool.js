@@ -172,14 +172,14 @@ var __extends = (this && this.__extends) || (function () {
                 var p = new go.Point(last.x - this._offset.x - mid.x, last.y - this._offset.y - mid.y);
                 lab.segmentOffset = p.rotate(-link.midAngle);
             }
-            else {
+            else { // handle the label point being on a partiular segment with a given fraction
                 var frac = lab.segmentFraction;
                 var a, b;
-                if (idx >= 0) {
+                if (idx >= 0) { // indexing forwards
                     a = link.getPoint(idx);
                     b = (idx < numpts - 1) ? link.getPoint(idx + 1) : a;
                 }
-                else {
+                else { // or backwards if segmentIndex is negative
                     var i = numpts + idx;
                     a = link.getPoint(i);
                     b = (i > 0) ? link.getPoint(i - 1) : a;

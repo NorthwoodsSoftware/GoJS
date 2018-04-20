@@ -519,7 +519,7 @@
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
                     .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
             }
-            else {
+            else { // param1 < 0
                 geo.add(new go.PathFigure(0, 0)
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
                     .add(new go.PathSegment(go.PathSegment.Line, w, h))
@@ -558,7 +558,7 @@
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
                     .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
             }
-            else {
+            else { // param1 < 0
                 geo.add(new go.PathFigure(0, 0)
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
                     .add(new go.PathSegment(go.PathSegment.Line, w, h))
@@ -599,7 +599,7 @@
                     .add(new go.PathSegment(go.PathSegment.Line, w, h))
                     .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
             }
-            else {
+            else { // param1 < 0
                 geo.add(new go.PathFigure(0, 0)
                     .add(new go.PathSegment(go.PathSegment.Line, w, 0))
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
@@ -639,7 +639,7 @@
                     .add(new go.PathSegment(go.PathSegment.Line, w, h))
                     .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
             }
-            else {
+            else { // param1 < 0
                 geo.add(new go.PathFigure(0, 0)
                     .add(new go.PathSegment(go.PathSegment.Line, w, 0))
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
@@ -679,7 +679,7 @@
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
                     .add(new go.PathSegment(go.PathSegment.Line, indent, h).close()));
             }
-            else {
+            else { // param1 < 0
                 geo.add(new go.PathFigure(indent, 0)
                     .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
                     .add(new go.PathSegment(go.PathSegment.Line, w, h))
@@ -1089,7 +1089,7 @@
         geo.add(fig);
         fig.add(new go.PathSegment(go.PathSegment.Arc, 0, 360, rad, rad, rad, rad).close());
         var rad2 = Math.max(rad - param1, 0);
-        if (rad2 > 0) {
+        if (rad2 > 0) { // counter-clockwise
             fig.add(new go.PathSegment(go.PathSegment.Move, w / 2 + rad2, w / 2));
             fig.add(new go.PathSegment(go.PathSegment.Arc, 0, -360, rad, rad, rad2, rad2).close());
         }
@@ -1493,12 +1493,15 @@
             .add(new go.PathSegment(go.PathSegment.Line, .3 * w, .15 * h))
             .add(new go.PathSegment(go.PathSegment.Line, .4 * w, 0))
             .add(new go.PathSegment(go.PathSegment.Line, w, 0))
+            // Left Side
             .add(new go.PathSegment(go.PathSegment.Bezier, .55 * w, .5 * h, w, .25 * h, .75 * w, .5 * h))
             .add(new go.PathSegment(go.PathSegment.Line, .55 * w, .9 * h))
+            // The base
             .add(new go.PathSegment(go.PathSegment.Line, .7 * w, .9 * h))
             .add(new go.PathSegment(go.PathSegment.Line, .7 * w, h))
             .add(new go.PathSegment(go.PathSegment.Line, .3 * w, h))
             .add(new go.PathSegment(go.PathSegment.Line, .3 * w, .9 * h))
+            // Right side
             .add(new go.PathSegment(go.PathSegment.Line, .45 * w, .9 * h))
             .add(new go.PathSegment(go.PathSegment.Line, .45 * w, .5 * h))
             .add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .25 * w, .5 * h, 0, .25 * h).close()));

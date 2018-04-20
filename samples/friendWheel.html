@@ -41,6 +41,24 @@
       node.angle = a;
     });
   };
+
+  // override commitLinks in order to make sure all of the Bezier links are "inside" the ellipse;
+  // this helps avoid links crossing over any other nodes
+  WheelLayout.prototype.commitLinks = function() {
+    go.CircularLayout.prototype.commitLinks.call(this);
+    if (this.network.vertexes.count > 4) {
+      this.network.vertexes.each(function(v) {
+        v.destinationEdges.each(function(de) {
+          var dv = de.toVertex;
+          var da = dv.actualAngle;
+          var sa = v.actualAngle;
+          if (da - sa > 180) da -= 360;
+          else if (sa - da > 180) sa -= 360;
+          de.link.curviness = (sa > da) ? 15 : -15;
+        })
+      })
+    }
+  }
   // end WheelLayout class
 
 
@@ -136,6 +154,7 @@
           new go.Binding("strokeWidth", "isHighlighted",
                          function(h) { return h ? 2 : 1; })
                         .ofObject())
+        // no arrowhead -- assume directionality of relationship need not be shown
       );
 
     generateGraph();

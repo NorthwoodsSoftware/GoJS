@@ -143,7 +143,7 @@ var __extends = (this && this.__extends) || (function () {
                 // a new temporary end point, the previous one is now "accepted"
                 this.addPoint(this.diagram.lastInput.documentPoint);
             }
-            else {
+            else { // e.g. right mouse down
                 this.doCancel();
             }
         };
@@ -254,7 +254,7 @@ var __extends = (this && this.__extends) || (function () {
             if (!this.isActive)
                 return;
             var e = this.diagram.lastInput;
-            if (e.key === 'Z' && this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) {
+            if (e.key === 'Z' && this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) { // undo
                 // remove a point, and then treat the last one as a temporary one
                 this.removeLastPoint();
                 this.moveLastPoint(e.documentPoint);

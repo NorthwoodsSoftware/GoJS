@@ -202,7 +202,7 @@ var __extends = (this && this.__extends) || (function () {
                         }
                     }
                 }
-                else {
+                else { // g === null: V is a child of the tree ROOT
                     var dir = ((p.angle === 0) ? 1 : -1);
                     v["_direction"] = dir;
                     this.shiftAll(dir, 0, p, v);
