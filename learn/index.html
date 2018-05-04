@@ -69,25 +69,25 @@
 
     <div class="container-fluid learn-container">
 
-    <h2>GoJS Tutorials</h2>
-    <p>For video tutorials, click <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">here</a>.</p>
-    <p>For a GraphObject manipulation tutorial, click <a href="graphObject.html">here</a>.</p>
-    <p>For the text tutorial, read on.</p>
+      <h2>GoJS Tutorials</h2>
+      <p>
+        For video tutorials, click <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">here</a>.
+        For the textual tutorials, read on.
+      </p>
 
-    <h2>Text Tutorial</h2>
-    <p>
-      <b>GoJS</b> is a JavaScript library for implementing interactive diagrams.
-      This page will show you the essentials of using <b>GoJS</b>.
-      If you would rather watch videos instead, see our <a href="https://www.nwoods.com/videos.html">YouTube videos</a>.
-    </p>
+      <p>
+        <b>GoJS</b> is a JavaScript library for implementing interactive diagrams.
+        This page will show you the essentials of using <b>GoJS</b>.
+        If you would rather watch videos instead, see our <a href="https://www.nwoods.com/videos.html">YouTube videos</a>.
+      </p>
 
-    <p>
-      Because <b>GoJS</b> is a JavaScript library that depends on HTML5 features,
-      you will need to make sure that your page declares that it is an HTML5 document.
-      And of course you need to load the library:
-    </p>
+      <p>
+        Because <b>GoJS</b> is a JavaScript library that depends on HTML5 features,
+        you will need to make sure that your page declares that it is an HTML5 document.
+        And of course you need to load the library:
+      </p>
 
-    <pre><code>
+      <pre><code>
 &lt;!DOCTYPE html&gt;  &lt;!-- HTML5 document type --&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -96,85 +96,85 @@
   . . .
     </code></pre>
 
-    <p>
-      You can download <b>GoJS</b> (and all the samples) <a target="_blank" href="../doc/download.html">here</a>.
-      Alternatively you can link straight to the <b>GoJS</b> library provided by <a target="_blank" href="https://cdnjs.com/libraries/gojs">CDNJS</a>:
+      <p>
+        You can download <b>GoJS</b> (and all the samples) <a target="_blank" href="../doc/download.html">here</a>.
+        Alternatively you can link straight to the <b>GoJS</b> library provided by <a target="_blank" href="https://cdnjs.com/libraries/gojs">CDNJS</a>:
 
-    <pre><code id="cdnscript"></code></pre>
+        <pre><code id="cdnscript"></code></pre>
 
-    <script>
-      var vers = go.version || "9.8.7";
-      var hyphen = vers.indexOf("-");
-      if (hyphen > 0) vers = vers.substring(0, hyphen);
-      var code = document.getElementById("cdnscript");
-      code.textContent = '<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/'+ vers + '/go-debug.js"\>\<\/script>';
-    </script>
+        <script>
+          var vers = go.version || "9.8.7";
+          var hyphen = vers.indexOf("-");
+          if (hyphen > 0) vers = vers.substring(0, hyphen);
+          var code = document.getElementById("cdnscript");
+          code.textContent = '<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/' + vers + '/go-debug.js"\>\<\/script>';
+        </script>
 
-    <p>
-      Each <b>GoJS</b> diagram is contained in an HTML <code>&lt;div&gt;</code> element in your
-      HTML page that you give an explicit size:
-    </p>
+      <p>
+        Each <b>GoJS</b> diagram is contained in an HTML <code>&lt;div&gt;</code> element in your
+        HTML page that you give an explicit size:
+      </p>
 
-    <pre><code>
+      <pre><code>
 &lt;!-- The DIV for a Diagram needs an explicit size or else we will not see anything.
      In this case we also add a background color so we can see that area. --&gt;
 &lt;div id="myDiagramDiv"
      style="width:400px; height:150px; background-color: #DAE4E4;"&gt;&lt;/div&gt;
     </code></pre>
 
-    <p>
-      In JavaScript code you pass the <code>&lt;div&gt;</code>'s <code>id</code> when making a Diagram:
-    </p>
+      <p>
+        In JavaScript code you pass the <code>&lt;div&gt;</code>'s <code>id</code> when making a Diagram:
+      </p>
 
-    <pre><code>
+      <pre><code>
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv");
     </code></pre>
 
-    <p>
-      Together, this creates an empty diagram:
-    </p>
+      <p>
+        Together, this creates an empty diagram:
+      </p>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv" class="diagramStyling" style="width:400px; height:150px"></div>
-    <script>
-    var $ = go.GraphObject.make;
-    var myDiagram = $(go.Diagram, "myDiagramDiv");
-    </script>
+      <!-- LIVE -->
+      <div id="myDiagramDiv" class="diagramStyling" style="width:400px; height:150px"></div>
+      <script>
+        var $ = go.GraphObject.make;
+        var myDiagram = $(go.Diagram, "myDiagramDiv");
+      </script>
 
-    <p>
-      Notice that <code>go</code> is the "namespace" in which all <b>GoJS</b> types reside.
-      All code uses of <b>GoJS</b> classes such as Diagram or Node or Panel or Shape or TextBlock
-      will be prefixed with "<code>go.</code>".
-    </p>
-    <p>
-      This article will show you by example how to use <code>go.GraphObject.make</code> to build <b>GoJS</b> objects.
-      For more detail, read <a href="../intro/buildingObjects.html">Building Objects in GoJS</a>.
-      Using <code>$</code> as an abbreviation for <code>go.GraphObject.make</code>
-      is so handy that we will assume its use from now on.
-      If you use <code>$</code> for something else in your code,
-      you can always pick a different short variable name,
-      such as <code>$$</code> or <code>MAKE</code> or <code>GO</code>.
-    </p>
+      <p>
+        Notice that <code>go</code> is the "namespace" in which all <b>GoJS</b> types reside.
+        All code uses of <b>GoJS</b> classes such as Diagram or Node or Panel or Shape or TextBlock
+        will be prefixed with "<code>go.</code>".
+      </p>
+      <p>
+        This article will show you by example how to use <code>go.GraphObject.make</code> to build <b>GoJS</b> objects.
+        For more detail, read <a href="../intro/buildingObjects.html">Building Objects in GoJS</a>.
+        Using <code>$</code> as an abbreviation for <code>go.GraphObject.make</code>
+        is so handy that we will assume its use from now on.
+        If you use <code>$</code> for something else in your code,
+        you can always pick a different short variable name,
+        such as <code>$$</code> or <code>MAKE</code> or <code>GO</code>.
+      </p>
 
-    <h2>Diagrams and Models</h2>
+      <h2>Diagrams and Models</h2>
 
-    <p>
-      The Nodes and Links of a Diagram are visualizations of data that is managed by a Model.
-      <b>GoJS</b> has a model-view architecture,
-      where Models hold the data (arrays of JavaScript objects) that describe nodes and links,
-      and Diagrams act as views to visualize this data using actual Node and Link objects.
-      Models, not Diagrams, are what you load and then save after editing.
-      You add whatever properties you need for your app on the data objects in the model;
-      you do not add properties to or modify the prototype of the Diagram and GraphObject classes.
-    </p>
+      <p>
+        The Nodes and Links of a Diagram are visualizations of data that is managed by a Model.
+        <b>GoJS</b> has a model-view architecture,
+        where Models hold the data (arrays of JavaScript objects) that describe nodes and links,
+        and Diagrams act as views to visualize this data using actual Node and Link objects.
+        Models, not Diagrams, are what you load and then save after editing.
+        You add whatever properties you need for your app on the data objects in the model;
+        you do not add properties to or modify the prototype of the Diagram and GraphObject classes.
+      </p>
 
-    <p>
-      Here's an example of a Model and Diagram, followed by the actual diagram it generates:
-    </p>
+      <p>
+        Here's an example of a Model and Diagram, followed by the actual diagram it generates:
+      </p>
 
-    <pre><code>
+      <pre><code>
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -192,78 +192,82 @@ myModel.nodeDataArray = [
 myDiagram.model = myModel;
     </code></pre>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv2" class="diagramStyling" style="width:400px; height:150px"></div>
-    <script>
-    var $ = go.GraphObject.make;
-    var myDiagram =
-      $(go.Diagram, "myDiagramDiv2",
-        {
+      <!-- LIVE -->
+      <div id="myDiagramDiv2" class="diagramStyling" style="width:400px; height:150px"></div>
+      <script>
+        var $ = go.GraphObject.make;
+        var myDiagram =
+          $(go.Diagram, "myDiagramDiv2",
+            {
               "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
-        });
+            });
 
-    var myModel = $(go.Model);
-    // in the model data, each node is represented by a JavaScript object:
-    myModel.nodeDataArray = [
-      { key: "Alpha" },
-      { key: "Beta" },
-      { key: "Gamma" }
-    ];
-    myDiagram.model = myModel;
-    </script>
+        var myModel = $(go.Model);
+        // in the model data, each node is represented by a JavaScript object:
+        myModel.nodeDataArray = [
+          { key: "Alpha" },
+          { key: "Beta" },
+          { key: "Gamma" }
+        ];
+        myDiagram.model = myModel;
+      </script>
 
-    <p>
-      The diagram displays the three nodes that are in the model. Some interaction is already possible:
-    </p>
-    <ul>
-      <li>Click and drag the background in the above diagram to pan the view.</li>
-      <li>Click a node to select it, or press down on and drag a node to move it around.</li>
-      <li>To create a selection box, click and hold on the background, then start dragging.</li>
-      <li>Use CTRL-C and CTRL-V, or control-drag-and-drop, to make a copy of the selection.</li>
-      <li>Press the Delete key to delete selected nodes.
-          (Read about more <a href="../intro/commands.html">Keyboard Commands</a>.)</li>
-      <li>Since the undo manager was enabled, CTRL-Z and CTRL-Y will undo and redo moves and copies and deletions.</li>
-    </ul>
+      <p>
+        The diagram displays the three nodes that are in the model. Some interaction is already possible:
+      </p>
+      <ul>
+        <li>Click and drag the background in the above diagram to pan the view.</li>
+        <li>Click a node to select it, or press down on and drag a node to move it around.</li>
+        <li>To create a selection box, click and hold on the background, then start dragging.</li>
+        <li>Use CTRL-C and CTRL-V, or control-drag-and-drop, to make a copy of the selection.</li>
+        <li>
+          Press the Delete key to delete selected nodes.
+          (Read about more <a href="../intro/commands.html">Keyboard Commands</a>.)
+        </li>
+        <li>Since the undo manager was enabled, CTRL-Z and CTRL-Y will undo and redo moves and copies and deletions.</li>
+      </ul>
 
-    <h2>Styling Nodes</h2>
+      <h2>Styling Nodes</h2>
 
-    <p>
-      Nodes are styled by creating templates consisting of GraphObjects and setting properties on those objects.
-      To create a <a href="../intro/nodes.html">Node</a>, we have several building block classes at our disposal:
-    </p>
-    <ul>
-      <li><a href="../intro/shapes.html">Shape</a>, to display pre-defined or custom geometry with colors</li>
-      <li><a href="../intro/textblocks.html">TextBlock</a>, to display (potentially editable) text in various fonts</li>
-      <li><a href="../intro/pictures.html">Picture</a>, to display images</li>
-      <li><a href="../intro/panels.html">Panel</a>, containers to hold a collection of other objects that
-      can be positioned and sized in different manners according to the type of the Panel (like tables,
-      vertical stacks, and stretching containers)</li>
-    </ul>
+      <p>
+        Nodes are styled by creating templates consisting of GraphObjects and setting properties on those objects.
+        To create a <a href="../intro/nodes.html">Node</a>, we have several building block classes at our disposal:
+      </p>
+      <ul>
+        <li><a href="../intro/shapes.html">Shape</a>, to display pre-defined or custom geometry with colors</li>
+        <li><a href="../intro/textblocks.html">TextBlock</a>, to display (potentially editable) text in various fonts</li>
+        <li><a href="../intro/pictures.html">Picture</a>, to display images</li>
+        <li>
+          <a href="../intro/panels.html">Panel</a>, containers to hold a collection of other objects that
+          can be positioned and sized in different manners according to the type of the Panel (like tables,
+          vertical stacks, and stretching containers)
+        </li>
+      </ul>
 
-    <p>
-      All of these building blocks are derived from the
-      <a href="../api/symbols/GraphObject.html">GraphObject</a> abstract class,
-      so we casually refer to them as GraphObjects or objects or elements.
-      Note that a GraphObject is <em>not</em> an HTML DOM element, so there is not as much overhead in
-      creating or modifying such objects.
-    </p>
+      <p>
+        All of these building blocks are derived from the
+        <a href="../api/symbols/GraphObject.html">GraphObject</a> abstract class,
+        so we casually refer to them as GraphObjects or objects or elements.
+        Note that a GraphObject is <em>not</em> an HTML DOM element, so there is not as much overhead in
+        creating or modifying such objects.
+      </p>
 
-    <p>
-      We want the model data properties to affect our Nodes, and this is done by way of data bindings.
-      Data bindings allow us to change the appearance and behavior of GraphObjects in Nodes by automatically setting
-      properties on those GraphObjects to values that are taken from the model data.
-      The model data objects are plain JavaScript objects.
-      You can choose to use whatever property names you like on the node data in the model.
-    </p>
+      <p>
+        We want the model data properties to affect our Nodes, and this is done by way of data bindings.
+        Data bindings allow us to change the appearance and behavior of GraphObjects in Nodes by automatically setting
+        properties on those GraphObjects to values that are taken from the model data.
+        The model data objects are plain JavaScript objects.
+        You can choose to use whatever property names you like on the node data in the model.
+      </p>
 
-    <p>
-      The default Node template is simple: A Node which contains one TextBlock.
-      There is a data binding between a TextBlock's <code>text</code> property and
-      the model data's <code>key</code> property.
-      In code, the template looks something like this:
-    </p>
+      <p>
+        The default Node template is simple: A Node which contains one TextBlock.
+        There is a data binding between a TextBlock's <code>text</code> property and
+        the model data's <code>key</code> property.
+        In code, the template looks something like this:
+      </p>
 
-    <pre><code>
+      <pre><code>
 myDiagram.nodeTemplate =
   $(go.Node,
     $(go.TextBlock,
@@ -271,17 +275,17 @@ myDiagram.nodeTemplate =
       new go.Binding("text", "key"))
   );
     </code></pre>
-    <p>
-      TextBlocks, Shapes, and Pictures are the primitive building blocks of <b>GoJS</b>.
-      TextBlocks cannot contain images; Shapes cannot contain text.
-      If you want your node to show some text, you must use a TextBlock.
-      If you want to draw or fill some geometrical figures, you must use a Shape.
-    </p>
-    <p>
-      More generally, the skeleton of a Node template will look something like this:
-    </p>
+      <p>
+        TextBlocks, Shapes, and Pictures are the primitive building blocks of <b>GoJS</b>.
+        TextBlocks cannot contain images; Shapes cannot contain text.
+        If you want your node to show some text, you must use a TextBlock.
+        If you want to draw or fill some geometrical figures, you must use a Shape.
+      </p>
+      <p>
+        More generally, the skeleton of a Node template will look something like this:
+      </p>
 
-    <pre><code>
+      <pre><code>
 myDiagram.nodeTemplate =
   $(go.Node, "Vertical", // second argument of a Node/Panel can be a Panel type
     /* set Node properties here */
@@ -309,28 +313,29 @@ myDiagram.nodeTemplate =
   );
     </code></pre>
 
-    <p>
-      The nesting of GraphObjects within Panels can be arbitrarily deep,
-      and every class has its own unique set of properties to explore,
-      but this shows the general idea.
-    </p>
+      <p>
+        The nesting of GraphObjects within Panels can be arbitrarily deep,
+        and every class has its own unique set of properties to explore,
+        but this shows the general idea.
+      </p>
 
-    <p>
-      Now that we have seen how to make a Node template, let's see a live example.
-      We will make a simple template commonly seen in organizational diagrams — an image next to a name.
-      Consider the following Node template:
-    </p>
-    <ul>
-      <li>A Node of "Horizontal" Panel type, meaning that its elements will be laid out horizontally side-by-side.
-        It has two elements:
-        <ul>
-          <li>A Picture for the portrait, with the image source data bound</li>
-          <li>A TextBlock for the name, with the text data bound</li>
-        </ul>
-      </li>
-    </ul>
+      <p>
+        Now that we have seen how to make a Node template, let's see a live example.
+        We will make a simple template commonly seen in organizational diagrams — an image next to a name.
+        Consider the following Node template:
+      </p>
+      <ul>
+        <li>
+          A Node of "Horizontal" Panel type, meaning that its elements will be laid out horizontally side-by-side.
+          It has two elements:
+          <ul>
+            <li>A Picture for the portrait, with the image source data bound</li>
+            <li>A TextBlock for the name, with the text data bound</li>
+          </ul>
+        </li>
+      </ul>
 
-    <pre><code>
+      <pre><code>
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -370,79 +375,79 @@ model.nodeDataArray =
 myDiagram.model = model;
     </code></pre>
 
-    <p>That code produces this diagram:</p>
+      <p>That code produces this diagram:</p>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:200px"></div>
-    <script>
-    var $ = go.GraphObject.make;
-    var myDiagram =
-      $(go.Diagram, "myDiagramDiv3",
-        {
+      <!-- LIVE -->
+      <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:200px"></div>
+      <script>
+        var $ = go.GraphObject.make;
+        var myDiagram =
+          $(go.Diagram, "myDiagramDiv3",
+            {
               "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
-        });
+            });
 
-    // define a simple Node template
-    myDiagram.nodeTemplate =
-      $(go.Node, "Horizontal",
-        // the entire node will have a light-blue background
-        { background: "#44CCFF" },
-        $(go.Picture,
-          // the picture has a red background, only visible when there is no source set
-          // or when the image is partially transparent
-          { margin: 10, width: 50, height: 50, background: "red" },
-          // Picture.source is data bound to the "source" attribute of model data:
-          new go.Binding("source")),
-        $(go.TextBlock,
-          "Default Text",  // the initial value for TextBlock.text
-          // some room around the text, a larger font, and a white stroke
-          { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-          // TextBlock.text is data bound to the "name" attribute of model data:
-          new go.Binding("text", "name"))
-      );
+        // define a simple Node template
+        myDiagram.nodeTemplate =
+          $(go.Node, "Horizontal",
+            // the entire node will have a light-blue background
+            { background: "#44CCFF" },
+            $(go.Picture,
+              // the picture has a red background, only visible when there is no source set
+              // or when the image is partially transparent
+              { margin: 10, width: 50, height: 50, background: "red" },
+              // Picture.source is data bound to the "source" attribute of model data:
+              new go.Binding("source")),
+            $(go.TextBlock,
+              "Default Text",  // the initial value for TextBlock.text
+              // some room around the text, a larger font, and a white stroke
+              { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+              // TextBlock.text is data bound to the "name" attribute of model data:
+              new go.Binding("text", "name"))
+          );
 
-    var model = $(go.Model);
-    model.nodeDataArray =
-    [ // note that each node data object holds whatever properties it needs;
-      // for this app we add the "name" and "source" properties
-      { name: "Don Meow",  source: "cat1.png" },
-      { name: "Copricat", source: "cat2.png" },
-      { name: "Demeter", source: "cat3.png" },
-      { /* Empty node data */  }
-    ];
-    myDiagram.model = model;
-    </script>
+        var model = $(go.Model);
+        model.nodeDataArray =
+          [ // note that each node data object holds whatever properties it needs;
+            // for this app we add the "name" and "source" properties
+            { name: "Don Meow", source: "cat1.png" },
+            { name: "Copricat", source: "cat2.png" },
+            { name: "Demeter", source: "cat3.png" },
+            { /* Empty node data */ }
+          ];
+        myDiagram.model = model;
+      </script>
 
-    <p>
-      We may want to show some "default" state when not all information is present,
-      for instance when an image does not load or when a name is not known.
-      The "empty" node data in this example is used to show that node templates can work
-      perfectly well without any of the properties on the bound data.
-    </p>
+      <p>
+        We may want to show some "default" state when not all information is present,
+        for instance when an image does not load or when a name is not known.
+        The "empty" node data in this example is used to show that node templates can work
+        perfectly well without any of the properties on the bound data.
+      </p>
 
-    <h2>Kinds of Models</h2>
+      <h2>Kinds of Models</h2>
 
-    <p>
-      With a custom node template our diagram is becoming a pretty sight, but perhaps we want to show more.
-      Perhaps we want an organizational chart to show that Don Meow is really the boss of a cat cartel.
-      So we will create a complete organization chart diagram by adding some Links to show the relationship
-      between individual nodes and a Layout to automatically position the nodes.
-    </p>
+      <p>
+        With a custom node template our diagram is becoming a pretty sight, but perhaps we want to show more.
+        Perhaps we want an organizational chart to show that Don Meow is really the boss of a cat cartel.
+        So we will create a complete organization chart diagram by adding some Links to show the relationship
+        between individual nodes and a Layout to automatically position the nodes.
+      </p>
 
-    <p>
-      In order to get links into our diagram, the basic <code>Model</code> is not going to cut it.
-      We are going to have to pick one of the other two models in <b>GoJS</b>, both of which support Links.
-      These are <code>GraphLinksModel</code> and <code>TreeModel</code>.
-      (Read more about models <a href="../intro/usingModels.html">here</a>.)
-    </p>
+      <p>
+        In order to get links into our diagram, the basic <code>Model</code> is not going to cut it.
+        We are going to have to pick one of the other two models in <b>GoJS</b>, both of which support Links.
+        These are <code>GraphLinksModel</code> and <code>TreeModel</code>.
+        (Read more about models <a href="../intro/usingModels.html">here</a>.)
+      </p>
 
-    <p>
-      In GraphLinksModel, we have <code>model.linkDataArray</code> in addition to the <code>model.nodeDataArray</code>.
-      It holds an array of JavaScript objects, each describing a link by specifying the "to" and "from" node keys.
-      Here's an example where node A links to node B and where node B links to node C:
-    </p>
+      <p>
+        In GraphLinksModel, we have <code>model.linkDataArray</code> in addition to the <code>model.nodeDataArray</code>.
+        It holds an array of JavaScript objects, each describing a link by specifying the "to" and "from" node keys.
+        Here's an example where node A links to node B and where node B links to node C:
+      </p>
 
-    <pre><code>
+      <pre><code>
 var model = $(go.GraphLinksModel);
 model.nodeDataArray =
 [
@@ -458,20 +463,20 @@ model.linkDataArray =
 myDiagram.model = model;
     </code></pre>
 
-    <p>
-      A GraphLinksModel allows you to have any number of links between nodes, going in any direction.
-      There could be ten links running from A to B, and three more running the opposite way, from B to A.
-    </p>
+      <p>
+        A GraphLinksModel allows you to have any number of links between nodes, going in any direction.
+        There could be ten links running from A to B, and three more running the opposite way, from B to A.
+      </p>
 
-    <p>
-      A TreeModel works a little differently.
-      Instead of maintaining a separate array of link data,
-      the links in a tree model are created by specifying a "parent" for a node data.
-      Links are then created from this association.
-      Here's the same example done as a TreeModel, with node A linking to node B and node B linking to node C:
-    </p>
+      <p>
+        A TreeModel works a little differently.
+        Instead of maintaining a separate array of link data,
+        the links in a tree model are created by specifying a "parent" for a node data.
+        Links are then created from this association.
+        Here's the same example done as a TreeModel, with node A linking to node B and node B linking to node C:
+      </p>
 
-    <pre><code>
+      <pre><code>
 var model = $(go.TreeModel);
 model.nodeDataArray =
 [
@@ -482,19 +487,19 @@ model.nodeDataArray =
 myDiagram.model = model;
     </code></pre>
 
-    <p>
-      TreeModel is simpler than GraphLinksModel, but it cannot make arbitrary link relationships,
-      such as multiple links between the same two nodes, or having multiple parents.
-      Our organizational diagram is a simple hierarchical tree-like structure,
-      so we will choose TreeModel for this example.
-    </p>
+      <p>
+        TreeModel is simpler than GraphLinksModel, but it cannot make arbitrary link relationships,
+        such as multiple links between the same two nodes, or having multiple parents.
+        Our organizational diagram is a simple hierarchical tree-like structure,
+        so we will choose TreeModel for this example.
+      </p>
 
-    <p>
-      First, we will complete the data by adding a few more nodes, using a TreeModel,
-      and specifying keys and parents in the data.
-    </p>
+      <p>
+        First, we will complete the data by adding a few more nodes, using a TreeModel,
+        and specifying keys and parents in the data.
+      </p>
 
-    <pre><code>
+      <pre><code>
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -528,84 +533,84 @@ model.nodeDataArray =
 myDiagram.model = model;
     </code></pre>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:200px"></div>
-    <script>
-    var $ = go.GraphObject.make;
-    var myDiagram =
-      $(go.Diagram, "myDiagramDiv4",
-        {
+      <!-- LIVE -->
+      <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:200px"></div>
+      <script>
+        var $ = go.GraphObject.make;
+        var myDiagram =
+          $(go.Diagram, "myDiagramDiv4",
+            {
               "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
-        });
+            });
 
-    // the template we defined earlier
-    myDiagram.nodeTemplate =
-      $(go.Node, "Horizontal",
-        { background: "#44CCFF" },
-        $(go.Picture,
-          { margin: 10, width: 50, height: 50, background: "red" },
-          new go.Binding("source")),
-        $(go.TextBlock, "Default Text",
-          { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-          new go.Binding("text", "name"))
-      );
+        // the template we defined earlier
+        myDiagram.nodeTemplate =
+          $(go.Node, "Horizontal",
+            { background: "#44CCFF" },
+            $(go.Picture,
+              { margin: 10, width: 50, height: 50, background: "red" },
+              new go.Binding("source")),
+            $(go.TextBlock, "Default Text",
+              { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+              new go.Binding("text", "name"))
+          );
 
-    var model = $(go.TreeModel);
-    model.nodeDataArray =
-    [
-      { key: "1",              name: "Don Meow",   source: "cat1.png" },
-      { key: "2", parent: "1", name: "Demeter",    source: "cat2.png" },
-      { key: "3", parent: "1", name: "Copricat",   source: "cat3.png" },
-      { key: "4", parent: "3", name: "Jellylorum", source: "cat4.png" },
-      { key: "5", parent: "3", name: "Alonzo",     source: "cat5.png" },
-      { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
-    ];
-    myDiagram.model = model;
-    </script>
+        var model = $(go.TreeModel);
+        model.nodeDataArray =
+          [
+            { key: "1", name: "Don Meow", source: "cat1.png" },
+            { key: "2", parent: "1", name: "Demeter", source: "cat2.png" },
+            { key: "3", parent: "1", name: "Copricat", source: "cat3.png" },
+            { key: "4", parent: "3", name: "Jellylorum", source: "cat4.png" },
+            { key: "5", parent: "3", name: "Alonzo", source: "cat5.png" },
+            { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
+          ];
+        myDiagram.model = model;
+      </script>
 
-    <h2>Diagram Layouts</h2>
+      <h2>Diagram Layouts</h2>
 
-    <p>
-      As you can see the TreeModel automatically creates the necessary Links to associate the Nodes,
-      but it's hard to tell whose parent is who.
-    </p>
+      <p>
+        As you can see the TreeModel automatically creates the necessary Links to associate the Nodes,
+        but it's hard to tell whose parent is who.
+      </p>
 
-    <p>
-      Diagrams have a default layout which takes all nodes that do not have a location and gives them locations,
-      arranging them in a grid.
-      We could explicitly give each of our nodes a location to sort out this organizational mess,
-      but as an easier solution in our case, we will use a layout that gives us good locations automatically.
-    </p>
+      <p>
+        Diagrams have a default layout which takes all nodes that do not have a location and gives them locations,
+        arranging them in a grid.
+        We could explicitly give each of our nodes a location to sort out this organizational mess,
+        but as an easier solution in our case, we will use a layout that gives us good locations automatically.
+      </p>
 
-    <p>
-      We want to show a hierarchy, and are already using a TreeModel, so the most natural layout choice is TreeLayout.
-      TreeLayout defaults to flowing from left to right, so to get it to flow from top to bottom
-      (as is common in organizational diagrams), we will set the <code>angle</code> property to 90.
-    </p>
+      <p>
+        We want to show a hierarchy, and are already using a TreeModel, so the most natural layout choice is TreeLayout.
+        TreeLayout defaults to flowing from left to right, so to get it to flow from top to bottom
+        (as is common in organizational diagrams), we will set the <code>angle</code> property to 90.
+      </p>
 
-    <p>
-      Using layouts in <b>GoJS</b> is usually simple.
-      Each kind of layout has a number of properties that affect the results.
-      There are samples for each layout (like <a href="../samples/tLayout.html">TreeLayout Demo</a>)
-      that showcase its properties.
-    </p>
+      <p>
+        Using layouts in <b>GoJS</b> is usually simple.
+        Each kind of layout has a number of properties that affect the results.
+        There are samples for each layout (like <a href="../samples/tLayout.html">TreeLayout Demo</a>)
+        that showcase its properties.
+      </p>
 
-    <pre><code>
+      <pre><code>
 // define a TreeLayout that flows from top to bottom
 myDiagram.layout =
   $(go.TreeLayout,
     { angle: 90, layerSpacing: 35 });
     </code></pre>
 
-    <p>
-      <b>GoJS</b> has several other layouts, which you can read about <a href="../intro/layouts.html">here</a>.
-    </p>
+      <p>
+        <b>GoJS</b> has several other layouts, which you can read about <a href="../intro/layouts.html">here</a>.
+      </p>
 
-    <p>
-      Adding the layout to the diagram and model so far, we can see our results:
-    </p>
+      <p>
+        Adding the layout to the diagram and model so far, we can see our results:
+      </p>
 
-    <pre><code>
+      <pre><code>
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -640,62 +645,62 @@ model.nodeDataArray =
 myDiagram.model = model;
     </code></pre>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv5" class="diagramStyling" style="width:700px; height:400px"></div>
-    <script>
-    var $ = go.GraphObject.make;
-    var myDiagram =
-      $(go.Diagram, "myDiagramDiv5",
-        {
+      <!-- LIVE -->
+      <div id="myDiagramDiv5" class="diagramStyling" style="width:700px; height:400px"></div>
+      <script>
+        var $ = go.GraphObject.make;
+        var myDiagram =
+          $(go.Diagram, "myDiagramDiv5",
+            {
               "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
-          layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
-                    { angle: 90, layerSpacing: 35 })
-        });
+              layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
+                { angle: 90, layerSpacing: 35 })
+            });
 
-    // the template we defined earlier
-    myDiagram.nodeTemplate =
-      $(go.Node, "Horizontal",
-        { background: "#44CCFF" },
-        $(go.Picture,
-          { margin: 10, width: 50, height: 50, background: "red" },
-          new go.Binding("source")),
-        $(go.TextBlock, "Default Text",
-          { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-          new go.Binding("text", "name"))
-      );
+        // the template we defined earlier
+        myDiagram.nodeTemplate =
+          $(go.Node, "Horizontal",
+            { background: "#44CCFF" },
+            $(go.Picture,
+              { margin: 10, width: 50, height: 50, background: "red" },
+              new go.Binding("source")),
+            $(go.TextBlock, "Default Text",
+              { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+              new go.Binding("text", "name"))
+          );
 
-    var model = $(go.TreeModel);
-    model.nodeDataArray =
-    [
-      { key: "1",              name: "Don Meow",   source: "cat1.png" },
-      { key: "2", parent: "1", name: "Demeter",    source: "cat2.png" },
-      { key: "3", parent: "1", name: "Copricat",   source: "cat3.png" },
-      { key: "4", parent: "3", name: "Jellylorum", source: "cat4.png" },
-      { key: "5", parent: "3", name: "Alonzo",     source: "cat5.png" },
-      { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
-    ];
-    myDiagram.model = model;
-    </script>
+        var model = $(go.TreeModel);
+        model.nodeDataArray =
+          [
+            { key: "1", name: "Don Meow", source: "cat1.png" },
+            { key: "2", parent: "1", name: "Demeter", source: "cat2.png" },
+            { key: "3", parent: "1", name: "Copricat", source: "cat3.png" },
+            { key: "4", parent: "3", name: "Jellylorum", source: "cat4.png" },
+            { key: "5", parent: "3", name: "Alonzo", source: "cat5.png" },
+            { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
+          ];
+        myDiagram.model = model;
+      </script>
 
-    <p>
-      Our diagram is starting to look like a proper organization chart, but we could do better with the links.
-    </p>
+      <p>
+        Our diagram is starting to look like a proper organization chart, but we could do better with the links.
+      </p>
 
-    <h2>Link Templates</h2>
+      <h2>Link Templates</h2>
 
-    <p>
-      We will construct a new Link template that will better suit our wide, boxy nodes.
-      A <a href="../intro/links.html">Link</a> is a different kind of Part, not like a Node.
-      The main element of a Link is the Link's shape,
-      and must be a Shape that will have its geometry computed dynamically by <b>GoJS</b>.
-      Our link is going to consist of just this shape,
-      with its stroke a little thicker than normal and dark gray instead of black.
-      Unlike the default link template we will not have an arrowhead.
-      And we will change the Link <code>routing</code> property from Normal to Orthogonal,
-      and give it a <code>corner</code> value so that right-angle turns are rounded.
-    </p>
+      <p>
+        We will construct a new Link template that will better suit our wide, boxy nodes.
+        A <a href="../intro/links.html">Link</a> is a different kind of Part, not like a Node.
+        The main element of a Link is the Link's shape,
+        and must be a Shape that will have its geometry computed dynamically by <b>GoJS</b>.
+        Our link is going to consist of just this shape,
+        with its stroke a little thicker than normal and dark gray instead of black.
+        Unlike the default link template we will not have an arrowhead.
+        And we will change the Link <code>routing</code> property from Normal to Orthogonal,
+        and give it a <code>corner</code> value so that right-angle turns are rounded.
+      </p>
 
-    <pre><code>
+      <pre><code>
 // define a Link template that routes orthogonally, with no arrowhead
 myDiagram.linkTemplate =
   $(go.Link,
@@ -709,13 +714,13 @@ myDiagram.linkTemplate =
     );
     </code></pre>
 
-    <p>
-      Combining our Link template with our Node template, TreeModel, and TreeLayout,
-      we finally have a full organization diagram.
-      The complete code is repeated below, and the resulting diagram follows:
-    </p>
+      <p>
+        Combining our Link template with our Node template, TreeModel, and TreeLayout,
+        we finally have a full organization diagram.
+        The complete code is repeated below, and the resulting diagram follows:
+      </p>
 
-    <pre><code>
+      <pre><code>
 var $ = go.GraphObject.make;
 
 var myDiagram =
@@ -757,62 +762,65 @@ model.nodeDataArray =
 myDiagram.model = model;
     </code></pre>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv6" class="diagramStyling" style="width:700px; height:400px"></div>
-    <script>
-    var $ = go.GraphObject.make;
-    var myDiagram =
-      $(go.Diagram, "myDiagramDiv6",
-        {
+      <!-- LIVE -->
+      <div id="myDiagramDiv6" class="diagramStyling" style="width:700px; height:400px"></div>
+      <script>
+        var $ = go.GraphObject.make;
+        var myDiagram =
+          $(go.Diagram, "myDiagramDiv6",
+            {
               "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
-          layout: $(go.TreeLayout,
-                    { angle: 90, layerSpacing: 35 })
-        });
+              layout: $(go.TreeLayout,
+                { angle: 90, layerSpacing: 35 })
+            });
 
-    // the template we defined earlier
-    myDiagram.nodeTemplate =
-      $(go.Node, "Horizontal",
-        { background: "#44CCFF" },
-        $(go.Picture,
-          { margin: 10, width: 50, height: 50, background: "red" },
-          new go.Binding("source")),
-        $(go.TextBlock, "Default Text",
-          { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-          new go.Binding("text", "name"))
-      );
+        // the template we defined earlier
+        myDiagram.nodeTemplate =
+          $(go.Node, "Horizontal",
+            { background: "#44CCFF" },
+            $(go.Picture,
+              { margin: 10, width: 50, height: 50, background: "red" },
+              new go.Binding("source")),
+            $(go.TextBlock, "Default Text",
+              { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+              new go.Binding("text", "name"))
+          );
 
-    // define a Link template that routes orthogonally, with no arrowhead
-    myDiagram.linkTemplate =
-      $(go.Link,
-        { routing: go.Link.Orthogonal, corner: 5 },
-        $(go.Shape, { strokeWidth: 3, stroke: "#555" })); // the link shape
+        // define a Link template that routes orthogonally, with no arrowhead
+        myDiagram.linkTemplate =
+          $(go.Link,
+            { routing: go.Link.Orthogonal, corner: 5 },
+            $(go.Shape, { strokeWidth: 3, stroke: "#555" })); // the link shape
 
-    var model = $(go.TreeModel);
-    model.nodeDataArray =
-    [
-      { key: "1",              name: "Don Meow",   source: "cat1.png" },
-      { key: "2", parent: "1", name: "Demeter",    source: "cat2.png" },
-      { key: "3", parent: "1", name: "Copricat",   source: "cat3.png" },
-      { key: "4", parent: "3", name: "Jellylorum", source: "cat4.png" },
-      { key: "5", parent: "3", name: "Alonzo",     source: "cat5.png" },
-      { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
-    ];
-    myDiagram.model = model;
-    </script>
+        var model = $(go.TreeModel);
+        model.nodeDataArray =
+          [
+            { key: "1", name: "Don Meow", source: "cat1.png" },
+            { key: "2", parent: "1", name: "Demeter", source: "cat2.png" },
+            { key: "3", parent: "1", name: "Copricat", source: "cat3.png" },
+            { key: "4", parent: "3", name: "Jellylorum", source: "cat4.png" },
+            { key: "5", parent: "3", name: "Alonzo", source: "cat5.png" },
+            { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
+          ];
+        myDiagram.model = model;
+      </script>
 
-    <p>
-      Now that you are familiar with some of the basics of <b>GoJS</b>,
-      consider perusing the <a href="../samples/index.html">samples</a> to see some of the diagrams possible with <b>GoJS</b>,
-      or read the <a href="../intro/index.html">technical introduction</a> to get
-      an in-depth look at the components of <b>GoJS</b>.
-    </p>
+      <h2>Learn More</h2>
+      <p>
+        You may want to read more tutorials, such as the <a href="graphObject.html">GraphObject manipulation</a> tutorial.
+        You can also watch tutorials on <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">YouTube</a>.
+      </p>
+      <p>
+        Also consider perusing the <a href="../samples/index.html">samples</a> to see some of the diagrams possible with <b>GoJS</b>,
+        or read the <a href="../intro/index.html">technical introduction</a> to get
+        an in-depth look at the components of <b>GoJS</b>.
+      </p>
 
+      <p class="footer">
+        GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2018 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
+      </p>
 
-  <p class="footer">
-    GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2018 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
-  </p>
-
-  </div> <!-- end container-fluid -->
+    </div> <!-- end container-fluid -->
   <div class="banner" id="bannerbottom">
     <!-- text in banner-->
   </div>

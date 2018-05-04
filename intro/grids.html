@@ -18,7 +18,7 @@ It is common to want to display a grid of lines drawn at regular intervals.
 You may also want to force dragged parts to be aligned on grid points, and to resize parts to be multiples of the grid cell size.
 </p>
 <p>
-Grids are implemented using a type of <a>Panel</a>, <a>Panel.Grid</a>.
+Grids are implemented using a type of <a>Panel</a>, <a>Panel,Grid</a>.
 Grid Panels, like most other types of Panels, can be used within <a>Node</a>s or any other kind of <a>Part</a>.
 However when they are used as the <a>Diagram.grid</a>, they are effectively infinite in extent.
 </p>
@@ -35,8 +35,6 @@ To display a grid pattern in the background of the diagram, you can just make th
 </p>
 <pre data-language="javascript" id="defaultGrid">
   diagram.grid.visible = true;
-
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -61,7 +59,6 @@ if you set the <a>DraggingTool.isGridSnapEnabled</a> and/or <a>ResizingTool.isGr
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
   diagram.toolManager.resizingTool.isGridSnapEnabled = true;
 
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -87,7 +84,6 @@ You can change the size of the grid cell by setting <a>Panel.gridCellSize</a>:
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
   diagram.toolManager.resizingTool.isGridSnapEnabled = true;
 
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -106,7 +102,9 @@ You can change the size of the grid cell by setting <a>Panel.gridCellSize</a>:
 <p>
 The cell size used when snapping the locations of Parts during a drag need not be exactly
 the same as the background grid's cell size.
-The value of <a>DraggingTool.gridSnapCellSize</a> takes precedence over the <a>Panel.gridCellSize</a>.
+The value of <a>DraggingTool.gridSnapCellSize</a> takes precedence over the <a>Panel.gridCellSize</a>. 
+Note that if <a>DraggingTool.gridSnapCellSize</a> is set but <a>ResizingTool.cellSize</a> is not,
+Parts will use the DraggingTool.gridSnapCellSize value when resizing.
 </p>
 <pre data-language="javascript" id="gridSnapping2">
   diagram.grid.visible = true;
@@ -117,7 +115,6 @@ The value of <a>DraggingTool.gridSnapCellSize</a> takes precedence over the <a>P
   // (the default background grid has a cell size of 10x10)
   diagram.toolManager.draggingTool.gridSnapCellSize = new go.Size(20, 20);
 
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -135,7 +132,7 @@ The value of <a>DraggingTool.gridSnapCellSize</a> takes precedence over the <a>P
 
 <h2 id="CustomGrids">Custom Grids</h2>
 <p>
-Grid patterns are implemented by the <a>Panel</a> class when its <a>Panel.type</a> is <a>Panel.Grid</a>.
+Grid patterns are implemented by the <a>Panel</a> class when its <a>Panel.type</a> is <a>Panel,Grid</a>.
 The elements of a Grid Panel must be <a>Shape</a>s whose <a>Shape.figure</a> is one of a small set of known kinds of figures.
 The only figures it can accept are: "LineH", "LineV", "BarH", and "BarV".
 The two "Line" figures result in stroked lines separating the grid cells;
@@ -169,7 +166,6 @@ So if you wanted darker blue and darker green lines every five cells:
       $(go.Shape, "LineV", { stroke: "green", interval: 5 })
       );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -224,7 +220,6 @@ instead of <a>Shape.stroke</a> and explicitly setting the <a>GraphObject.height<
       $(go.Shape, "BarH", { fill: "lightgreen", interval: 2, height: 50 })
       );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -260,7 +255,6 @@ To get a tablecloth effect, one can use both vertical and horizontal bars with a
       $(go.Shape, "BarH", { fill: "rgba(255,0,0,0.1)", height: 50 })
       );
 
-  diagram.initialContentAlignment = go.Spot.Center;
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
 
   diagram.nodeTemplate =
@@ -283,7 +277,6 @@ This example limits dragging of all nodes by setting <a>DraggingTool.isGridSnapE
 Here is an example of using a "Grid" <a>Panel</a> as a regular data bound element in a <a>Node</a>:
 </p>
 <pre data-language="javascript" id="nodeGrid">
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
