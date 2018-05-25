@@ -6032,7 +6032,7 @@ declare namespace go {
         history: List<Transaction>;
 
         /**This read-only property returns the index into .history for the current undoable Transaction.*/
-        hisotryIndex: number;
+        historyIndex: number;
 
         /**Gets or sets whether this UndoManager records any changes.*/
         isEnabled: boolean;

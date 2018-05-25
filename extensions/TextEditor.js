@@ -118,14 +118,14 @@
     textarea.style['width'] = (textwidth) + 'px';
     textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
     textarea.style['top'] = ((top - (textheight / 2) | 0) - paddingsize) + 'px';
-    textarea.style['text'] = textblock.textAlign;
+    textarea.style['text'] = textBlock.textAlign;
     textarea.style['margin'] = ' 0';
     textarea.style['padding'] = paddingsize + 'px';
     textarea.style['border'] = '0';
     textarea.style['outline'] = 'none';
     textarea.style['whiteSpace'] = 'pre-wrap';
     textarea.style['overflow'] = ' hidden'; // for proper IE wrap
-    textarea.rows = textblock.lineCount;
+    textarea.rows = textBlock.lineCount;
     textarea.textScale = textscale; // attach a value to the textarea, for convenience
 
     // Show:
