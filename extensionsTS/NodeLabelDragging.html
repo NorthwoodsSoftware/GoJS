@@ -1,30 +1,38 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>State Chart with Draggable Node Labels</title>
   <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
-  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
   <meta charset="UTF-8">
+  <script src="../samples/assets/require.js"></script>
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      require(["NodeLabelDraggingScript"], function(app) {
+        app.init();
+        document.getElementById("SaveButton").onclick = app.save;
+        document.getElementById("LoadButton").onclick = app.load;
+      });
+    }
+  </script>
 </head>
-
-<body>
+<body onload="init()">
   <div id="sample">
-  <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
-  <p>
-    This sample is a modification of the <a href="../samples/stateChart.html">State Chart</a> sample
-    that makes use of the NodeLabelDraggingTool that is defined in its own file, as <a href="NodeLabelDraggingTool.ts">NodeLabelDraggingTool.ts</a>.
-  </p>
-  <p>
-    Note that after dragging a node label you can move that node and the label maintains the same position relative to the node.
-    That relative position is specified by the <a>GraphObject.alignment</a> property, used by the "Spot" <a>Panel</a>.
-    This sample also saves any changes to that property by means of a TwoWay <a>Binding</a>.
-  </p>
-  <button id="SaveButton">Save</button>
-  <button id="LoadButton">Load</button> Diagram Model saved in JSON format:
-  <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+    <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
+    <p>
+      This sample is a modification of the <a href="../samples/stateChart.html">State Chart</a> sample
+      that makes use of the NodeLabelDraggingTool that is defined in its own file, as <a href="NodeLabelDraggingTool.ts">NodeLabelDraggingTool.ts</a>.
+    </p>
+    <p>
+      Note that after dragging a node label you can move that node and the label maintains the same position relative to the node.
+      That relative position is specified by the <a>GraphObject.alignment</a> property, used by the "Spot" <a>Panel</a>.
+      This sample also saves any changes to that property by means of a TwoWay <a>Binding</a>.
+    </p>
+    <button id="SaveButton">Save</button>
+    <button id="LoadButton">Load</button> Diagram Model saved in JSON format:
+    <br />
+    <textarea id="mySavedModel" style="width:100%;height:300px">
 { "nodeKeyProperty": "id",
   "nodeDataArray": [
     { "id": 0, "loc": "120 120", "text": "Initial" },
@@ -48,16 +56,7 @@
     { "from": 4, "to": 4, "text": "down" }
   ]
 }
-  </textarea>
+    </textarea>
   </div>
-  <script src="../samples/assets/require.js"></script>
-  <script>
-    require(["NodeLabelDraggingScript"], function(app) {
-      app.init();
-      document.getElementById("SaveButton").onclick = app.save;
-      document.getElementById("LoadButton").onclick = app.load;
-    });
-  </script>
 </body>
-
 </html>

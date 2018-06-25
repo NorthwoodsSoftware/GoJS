@@ -99,8 +99,6 @@ var __extends = (this && this.__extends) || (function () {
             "animationManager.isInitial": false,
             "undoManager.isEnabled": true
         });
-        var margins = myDiagram.nodeTemplate.margin;
-        var layouts = myDiagram.layout;
         myDiagram.nodeTemplateMap.add("Header", // an overall table header, at the top
         $(go.Part, "Auto", {
             row: 0, column: 1, columnSpan: 9999,
@@ -130,7 +128,7 @@ var __extends = (this && this.__extends) || (function () {
         }, new go.Binding("column", "col"), $(go.Shape, { fill: null }, new go.Binding("fill", "color")), $(go.Panel, "Auto", {
             alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
             stretch: go.GraphObject.Horizontal,
-            height: layouts.getRowDefinition(1).height
+            height: myDiagram.layout.getRowDefinition(1).height
         }, $(go.Shape, { fill: "transparent", strokeWidth: 0 }), $(go.TextBlock, {
             font: "bold 10pt sans-serif", isMultiline: false,
             wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
@@ -152,7 +150,7 @@ var __extends = (this && this.__extends) || (function () {
         }, new go.Binding("row"), $(go.Shape, { fill: null }, new go.Binding("fill", "color")), $(go.Panel, "Auto", {
             alignment: go.Spot.Left, alignmentFocus: go.Spot.Right,
             stretch: go.GraphObject.Vertical, angle: 270,
-            height: layouts.getColumnDefinition(1).width
+            height: myDiagram.layout.getColumnDefinition(1).width
         }, $(go.Shape, { fill: "transparent", strokeWidth: 0 }), $(go.TextBlock, {
             font: "bold 10pt sans-serif", isMultiline: false,
             wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
@@ -193,7 +191,7 @@ var __extends = (this && this.__extends) || (function () {
             // the group is normally unseen -- it is completely transparent except when given a color or when highlighted
             $(go.Shape, {
                 fill: "transparent", stroke: "transparent",
-                strokeWidth: margins.left,
+                strokeWidth: myDiagram.nodeTemplate.margin.left,
                 stretch: go.GraphObject.Fill
             }, new go.Binding("fill", "color"), new go.Binding("stroke", "isHighlighted", function (h) { return h ? "red" : "transparent"; }).ofObject()), $(go.Placeholder, {
                 alignment: (function (m) { return new go.Spot(0, 0, m.top, m.left); })(myDiagram.nodeTemplate.margin),

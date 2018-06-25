@@ -347,8 +347,8 @@ export class TableLayout extends go.Layout {
 						if ((<any>nosizeCols)[j] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal)) {
 							(<any>nosizeCols)[j] = -1; nosizeCols.count++;
 						}
-						if ((<any>nosizeCols)[i] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
-							(<any>nosizeCols)[i] = -1; nosizeRows.count++;
+						if ((<any>nosizeRows)[i] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
+							(<any>nosizeRows)[i] = -1; nosizeRows.count++;
 						}
 						nosize.push(child);
 					}
@@ -435,8 +435,8 @@ export class TableLayout extends go.Layout {
 		// we also have the amount left over
 		var desiredRowTotal = 0.0;
 		var desiredColTotal = 0.0;
-		for (let j in nosizeRows) { if (parseInt(j) !== nosizeRows.count) desiredRowTotal += (<any>nosizeRows)[i] }
-		for (let j in nosizeCols) { if (parseInt(j) !== nosizeCols.count) desiredColTotal += (<any>nosizeCols)[i] }
+		for (let j in nosizeRows) { if (j !== "count") desiredRowTotal += (<any>nosizeRows)[j]; }
+		for (let j in nosizeCols) { if (j !== "count") desiredColTotal += (<any>nosizeCols)[j]; }
 
 		var allowedSize = new go.Size(); // used in stretch and span loops
 
@@ -866,4 +866,3 @@ export class TableLayout extends go.Layout {
 
 	// end TableLayout class
 }
-

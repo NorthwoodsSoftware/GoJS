@@ -5,9 +5,28 @@
   <title>Polygon Drawing Tool</title>
   <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
+  <script src="../samples/assets/require.js"></script>
   <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      require(["PolygonDrawingScript"], function (app) {
+        app.init();
+        document.getElementById("select").onclick = app.select;
+        document.getElementById("drawPolygon").onclick = app.drawPolygon;
+        document.getElementById("drawPolyline").onclick = app.drawPolyline;
+        document.getElementById("finishDrawing").onclick = app.finishDrawing;
+        document.getElementById("cancelDrawing").onclick = app.cancelDrawing;
+        document.getElementById("undo").onclick = app.undo;
+        document.getElementById("allowResizing").onclick = app.allowResizing;
+        document.getElementById("allowReshaping").onclick = app.allowReshaping;
+        document.getElementById("allowRotating").onclick = app.allowRotating;
+        document.getElementById("save").onclick = app.save;
+        document.getElementById("load").onclick = app.load;
+      });
+    }
+  </script>
 </head>
-<body>
+<body onload="init()">
   <div id="sample">
     <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 350px"></div>
     <div id="buttons">
@@ -41,31 +60,12 @@
       <button id="load">Load</button>
     </div>
     <textarea id="mySavedDiagram" style="width:100%;height:300px">
-      { "position": "0 0",
-        "model": { "class": "go.GraphLinksModel",
-        "nodeDataArray": [ {"loc":"183 148", "category": "PolygonDrawing", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
-        "linkDataArray": [  ]
-      } }
+{ "position": "0 0",
+  "model": { "class": "go.GraphLinksModel",
+  "nodeDataArray": [ {"loc":"183 148", "category": "PolygonDrawing", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
+  "linkDataArray": [  ]
+} }
     </textarea>
   </div>
-
-  <script src="../samples/assets/require.js"></script>
-  <script>
-    require(["PolygonDrawingScript"], function (app) {
-      app.init();
-      document.getElementById("select").onclick = app.select;
-      document.getElementById("drawPolygon").onclick = app.drawPolygon;
-      document.getElementById("drawPolyline").onclick = app.drawPolyline;
-      document.getElementById("finishDrawing").onclick = app.finishDrawing;
-      document.getElementById("cancelDrawing").onclick = app.cancelDrawing;
-      document.getElementById("undo").onclick = app.undo;
-      document.getElementById("allowResizing").onclick = app.allowResizing;
-      document.getElementById("allowReshaping").onclick = app.allowReshaping;
-      document.getElementById("allowRotating").onclick = app.allowRotating;
-      document.getElementById("save").onclick = app.save;
-      document.getElementById("load").onclick = app.load;
-    });
-  </script>
 </body>
-
 </html>

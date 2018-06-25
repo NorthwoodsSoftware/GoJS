@@ -15,7 +15,9 @@
     <!-- CDN's -->
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropbox.js/2.5.7/Dropbox-sdk.min.js"></script>
+    <!-- both these are necesary for GoDropBox -->
     <script src="https://js.live.net/v7.2/OneDrive.js"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="3sm2ko6q7u1gbix"></script>
     
     <!-- CSS for GoCloudStorage/Manager -->
     <link rel="stylesheet" type="text/css" href="GoCloudStorageUI.css" />
@@ -122,8 +124,19 @@
 
         // create the model data that will be represented by Nodes and Links
         myDiagram2.model = new go.GraphLinksModel(
-            myDiagram.model.nodeDataArray, myDiagram.model.linkDataArray
-        );
+        [
+          { key: "Alpha", color: "lightblue" },
+          { key: "Beta", color: "orange" },
+          { key: "Gamma", color: "lightgreen" },
+          { key: "Delta", color: "pink" }
+        ],
+        [
+          { from: "Alpha", to: "Beta" },
+          { from: "Alpha", to: "Gamma" },
+          { from: "Beta", to: "Beta" },
+          { from: "Gamma", to: "Delta" },
+          { from: "Delta", to: "Alpha" }
+        ]);
 
         defaultModel = myDiagram.model.toJson();
 
@@ -153,6 +166,7 @@
                     case 'Delete': words = ['Deleted', 'from']; break;
                     case 'New': words = ['Created', 'at']; break;
                     case 'Save': words = ['Saved', 'to']; break;
+                    case 'SaveAs': words = ['Saved', 'to']; break;
                 }
                 var storageServiceName = storageManager.currentStorage.serviceName;
                 if (fileData.id && fileData.name && fileData.path) storageManager.showMessage(words[0] + ' ' + fileData.name + ' (file ID ' + fileData.id + ') ' + 

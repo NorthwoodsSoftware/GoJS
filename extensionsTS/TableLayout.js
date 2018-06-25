@@ -375,8 +375,8 @@ var __extends = (this && this.__extends) || (function () {
                                 nosizeCols[j] = -1;
                                 nosizeCols.count++;
                             }
-                            if (nosizeCols[i] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
-                                nosizeCols[i] = -1;
+                            if (nosizeRows[i] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
+                                nosizeRows[i] = -1;
                                 nosizeRows.count++;
                             }
                             nosize.push(child);
@@ -463,12 +463,12 @@ var __extends = (this && this.__extends) || (function () {
             var desiredRowTotal = 0.0;
             var desiredColTotal = 0.0;
             for (var j_1 in nosizeRows) {
-                if (parseInt(j_1) !== nosizeRows.count)
-                    desiredRowTotal += nosizeRows[i];
+                if (j_1 !== "count")
+                    desiredRowTotal += nosizeRows[j_1];
             }
             for (var j_2 in nosizeCols) {
-                if (parseInt(j_2) !== nosizeCols.count)
-                    desiredColTotal += nosizeCols[i];
+                if (j_2 !== "count")
+                    desiredColTotal += nosizeCols[j_2];
             }
             var allowedSize = new go.Size(); // used in stretch and span loops
             // Deal with objects that have a stretch

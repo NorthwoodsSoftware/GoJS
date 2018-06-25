@@ -115,7 +115,7 @@
             textarea.style['zIndex'] = '100';
             textarea.style['font'] = 'inherit';
             textarea.style['fontSize'] = (textscale * 100) + '%';
-            textarea.style['lineHeight'] = ' normal';
+            textarea.style['lineHeight'] = 'normal';
             textarea.style['width'] = (textwidth) + 'px';
             textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
             textarea.style['top'] = ((top - (textheight / 2) | 0) - paddingsize) + 'px';

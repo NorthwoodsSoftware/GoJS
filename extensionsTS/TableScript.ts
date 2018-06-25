@@ -82,9 +82,6 @@ export function init() {
 				"undoManager.isEnabled": true
 			});
 
-	var margins = myDiagram.nodeTemplate.margin as go.Margin;
-	var layouts = myDiagram.layout as TableLayout;
-
 	myDiagram.nodeTemplateMap.add("Header",  // an overall table header, at the top
 		$(go.Part, "Auto",
 			{
@@ -136,7 +133,7 @@ export function init() {
 				{ // this is positioned above the Shape, in row 1
 					alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
 					stretch: go.GraphObject.Horizontal,
-					height: layouts.getRowDefinition(1).height
+					height: myDiagram.layout.getRowDefinition(1).height
 				},
 				$(go.Shape, { fill: "transparent", strokeWidth: 0 }),
 				$(go.TextBlock,
@@ -175,7 +172,7 @@ export function init() {
 				{ // this is positioned to the left of the Shape, in column 1
 					alignment: go.Spot.Left, alignmentFocus: go.Spot.Right,
 					stretch: go.GraphObject.Vertical, angle: 270,
-					height: layouts.getColumnDefinition(1).width
+					height: myDiagram.layout.getColumnDefinition(1).width
 				},
 				$(go.Shape, { fill: "transparent", strokeWidth: 0 }),
 				$(go.TextBlock,
@@ -220,8 +217,8 @@ export function init() {
 					});
 					if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true)) {
 						if (anynew) {
-							(e.diagram.layout as any).getRowDefinition(group.row).height = NaN;
-							(e.diagram.layout as any).getColumnDefinition(group.column).width = NaN;
+							(e.diagram.layout as TableLayout).getRowDefinition(group.row).height = NaN;
+							(e.diagram.layout as TableLayout).getColumnDefinition(group.column).width = NaN;
 						}
 					} else {  // failure upon trying to add parts to this group
 						e.diagram.currentTool.doCancel();
@@ -234,7 +231,7 @@ export function init() {
 			$(go.Shape,
 				{
 					fill: "transparent", stroke: "transparent",
-					strokeWidth: margins.left,
+					strokeWidth: myDiagram.nodeTemplate.margin.left,
 					stretch: go.GraphObject.Fill
 				},
 				new go.Binding("fill", "color"),
