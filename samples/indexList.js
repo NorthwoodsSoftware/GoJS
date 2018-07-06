@@ -8,8 +8,6 @@
  * in case we use tag filtering.
  */
 var tags = [
-  "all",
-  "featured",
   "tables",
   "itemarrays",
   "collections",
@@ -42,7 +40,8 @@ var tags = [
   "inspector",
   "frameworks",
   "storage"
-];
+].sort();
+tags.unshift("all", "featured");
 
 /**
  * Full array of all samples

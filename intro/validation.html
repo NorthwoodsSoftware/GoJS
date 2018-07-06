@@ -215,6 +215,11 @@ This example has no limit on the number of links that may come out of "from" nod
 If this property is set, it is most commonly set to one.
 Of course it depends on the nature of the application.
 </p>
+<p>
+Note that the <a>GraphObject.toMaxLinks</a> and <a>GraphObject.fromMaxLinks</a> properties are independent of each other.
+If you want to control the total number of links connecting with a port, not only "to" or "from" but both directions,
+then you cannot use those two properties and instead must implement your own link validation predicate, as discussed below.
+</p>
 
 <h2 id="CyclesInGraphs">Cycles in graphs</h2>
 <p>
@@ -336,6 +341,38 @@ You will see that the only permitted link destinations are nodes of the same col
 To emphasize the color restriction, links have their colors bound to the "from" node data.
 </p>
 
+<h3 id="Limitingtotalnumberoflinksconnectingwithanode">Limiting total number of links connecting with a node</h3>
+<p>
+  One can limit the number of links coming into a port by setting <a>GraphObject.toMaxLinks</a>.
+  Similarly, one can limit the number of links coming out of a port by setting <a>GraphObject.fromMaxLinks</a>.
+  But what if you want to limit the total number of links connecting with a port regardless of whether they are coming into or going out of a port?
+  Such constraints can only be implemented by a link validation predicate.
+</p>
+<p>
+  When wanting to limit the total number of links in either direction, connecting with each port, one can use this <a>Node.linkValidation</a> predicate:
+</p>
+<pre>
+  $(go.Node, . . .,
+    {
+      linkValidation: function(fromnode, fromport, tonode, toport) {
+        // total number of links connecting with a port is limited to 1:
+        return fromnode.findLinksConnected(fromport.portId).count +
+               tonode.findLinksConnected(toport.portId).count < 1;
+      }
+    }, . . .
+</pre>
+<p>
+  When wanting to limit the total number of links in either direction, connecting with a node for all of its ports, one can use this <a>Node.linkValidation</a> predicate:
+</p>
+<pre>
+  $(go.Node, . . .,
+    {
+      linkValidation: function(fromnode, fromport, tonode, toport) {
+        // total number of links connecting with all ports of a node is limited to 1:
+        return fromnode.linksConnected.count + tonode.linksConnected.count < 1;
+      }
+    }, . . .
+</pre>
 
 <h2 id="GroupingValidation">Grouping validation</h2>
 <p>

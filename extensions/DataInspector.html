@@ -19,9 +19,9 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
+          "animationManager.isEnabled":false,
           // position the graph in the middle of the diagram
           initialContentAlignment: go.Spot.Center,
-          "animationManager.isEnabled":false,
           // allow double-click in background to create a new node
           "clickCreatingTool.archetypeNodeData": { text: "Node", color: "white" },
           // allow Ctrl-G to call groupSelection()
@@ -128,6 +128,13 @@
     // Show the primary selection's data, or blanks if no Part is selected:
     var inspector = new Inspector('myInspectorDiv', myDiagram,
       {
+				// allows for multiple nodes to be inspected at once
+				multipleSelection: true,
+				// max number of node properties will be shown when multiple selection is true
+				showSize: 4,
+				// when multipleSelection is true, when showAllProperties is true it takes the union of properties
+				// otherwise it takes the intersection of properties
+				showAllProperties: true,
         // uncomment this line to only inspect the named properties below instead of all properties on each object:
         // includesOwnProperties: false,
         properties: {

@@ -56,6 +56,17 @@ Once you learn about models and data binding you will generally not create parts
 </pre>
 <script>goCode("basicTextBlocks", 600, 100)</script>
 
+<h2 id="NaturalSizingOfTextBlocksVariesByBrowser">Natural Sizing of TextBlocks Varies by Browser</h2>
+<p>
+Because different browsers measure canvas text differently,
+TextBlocks are the only objects in <b>GoJS</b> that may have inconsistent natural sizes between browsers or different devices.
+For this reason, if you need objects to measure precisely and consistently across all browsers,
+TextBlocks without an explicit size (<a>GraphObject.desiredSize</a>) should not be used to dictate
+the size of any objects (ie, a TextBlock with no explicit size should not be the main element
+of a <a>Panel</a> of type <a>Panel.Auto</a>).
+</p>
+
+
 <h2 id="SizingAndClipping">Sizing and Clipping</h2>
 <p>
 The natural size of a <a>TextBlock</a> is just big enough to render the text string with the given font.
@@ -83,15 +94,55 @@ To better show the actual size of the TextBlocks below, we have given them light
 </pre>
 <script>goCode("sizingTextBlocks", 600, 160)</script>
 
-<h2 id="NaturalSizingOfTextBlocksVariesByBrowser">Natural Sizing of TextBlocks Varies by Browser</h2>
+
+
+<h2 id="MaxLinesAndOverflow">Max Lines and Overflow</h2>
 <p>
-Because different browsers measure canvas text differently,
-TextBlocks are the only objects in <b>GoJS</b> that may have inconsistent natural sizes between browsers or different devices.
-For this reason, if you need objects to measure precisely and consistently across all browsers,
-TextBlocks without an explicit size (<a>GraphObject.desiredSize</a>) should not be used to dictate
-the size of any objects (ie, a TextBlock with no explicit size should not be the main element
-of a <a>Panel</a> of type <a>Panel.Auto</a>).
+You can constrain the TextBlock's available size using <a>GraphObject.desiredSize</a> (width and height),
+but you can also limit the vertical height with <a>TextBlock.maxLines</a>, which will limit the number allowed.
+When there isn't enough space to display all text, you can decide how to use the remaining space with different
+values for <a>TextBlock.overflow</a>. There are additional options in the wrapping section below.
 </p>
+<p>
+The example below starts with a naturally sized TextBlock,
+followed by ones with a max of 2 lines using the default <a>TextBlock.overflow</a> value of <code>OverflowClip</code>,
+followed by one using the <a>TextBlock.overflow</a> value of <code>OverflowEllipsis</code>.
+</p>
+<pre data-language="javascript" id="sizingTextBlocks2">
+  diagram.contentAlignment = go.Spot.Center,
+  diagram.add(
+    $(go.Part, "Vertical",
+      // Allow 2 lines, no clipping needed:
+      $(go.TextBlock, { text: "a Text Block that takes 4 lines",
+                        font: '14pt sans-serif',
+                        background: "lightblue",
+                        overflow: go.TextBlock.OverflowClip /* the default value */,
+                        // No max lines
+                        margin: 2,
+                        width: 90 }),
+      // Allow only 1 line, OverflowClip:
+      $(go.TextBlock, { text: "a Text Block that takes 4 lines",
+                        font: '14pt sans-serif',
+                        background: "lightblue",
+                        overflow: go.TextBlock.OverflowClip /* the default value */,
+                        maxLines: 2,
+                        margin: 2,
+                        width: 90 }),
+      // Allow only 1 line, OverflowEllipsis:
+      $(go.TextBlock, { text: "a Text Block that takes 4 lines",
+                        font: '14pt sans-serif',
+                        background: "lightblue",
+                        overflow: go.TextBlock.OverflowEllipsis,
+                        maxLines: 2,
+                        margin: 2,
+                        width: 90 })
+    ));
+</pre>
+<script>goCode("sizingTextBlocks2", 600, 200)</script>
+
+
+
+
 
 <h2 id="Wrapping">Wrapping</h2>
 <p>
