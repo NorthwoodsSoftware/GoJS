@@ -33,14 +33,14 @@ var __extends = (this && this.__extends) || (function () {
     var LinkLabelOnPathDraggingTool = /** @class */ (function (_super) {
         __extends(LinkLabelOnPathDraggingTool, _super);
         function LinkLabelOnPathDraggingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "LinkLabelOnPathDragging";
+            var _this = _super.call(this) || this;
             /** @type {GraphObject} */
             _this.label = null;
             /** @type {number} */
             _this._originalIndex = null;
             /** @type {number} */
             _this._originalFraction = null;
+            _this.name = "LinkLabelOnPathDragging";
             return _this;
         }
         /**

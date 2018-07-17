@@ -17,12 +17,15 @@ import * as go from "../release/go";
 * It works by modifying that port's GraphObject.alignment property.
 */
 export class PortShiftingTool extends go.Tool {
-  public readonly name: string = "PortShifting";
-
   /** @type {GraphObject} */
   public port: go.GraphObject = null;
   /** @type {Spot} */
   private _originalAlignment: go.Spot = null;
+
+  constructor() {
+    super();
+    this.name = "PortShifting";
+  }
 
   /**
   * This tool can only start if the mouse has moved enough so that it is not a click,

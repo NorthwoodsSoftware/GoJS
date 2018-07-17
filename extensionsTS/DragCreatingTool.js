@@ -58,7 +58,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(DragCreatingTool, _super);
         function DragCreatingTool() {
             var _this = _super.call(this) || this;
-            _this.name = "DragCreating";
             /** @type {Object} */
             _this._archetypeNodeData = null;
             /** @type {number} */
@@ -74,6 +73,7 @@ var __extends = (this && this.__extends) || (function () {
             r.position = new go.Point(0, 0);
             b.add(r);
             _this._box = b;
+            _this.name = "DragCreating";
             return _this;
         }
         /**

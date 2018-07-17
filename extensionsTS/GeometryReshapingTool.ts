@@ -10,7 +10,7 @@ import * as go from "../release/go";
 * @extends Tool
 * @class
 * This GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user
-* via the dragging of tool handles. 
+* via the dragging of tool handles.
 * This does not handle Links, whose routes should be reshaped by the LinkReshapingTool.
 * The {@link #reshapeObjectName} needs to identify the named {@link Shape} within the
 * selected {@link Part}.
@@ -34,10 +34,9 @@ export class GeometryReshapingTool extends go.Tool {
 		h.stroke = "dodgerblue";
 		h.cursor = "move";
 		this._handleArchetype = h;
+		this.name = "GeometryReshaping";
 	}
 
-	public readonly name = "GeometryReshaping";
-	
 	/** @type {string} */
 	private _reshapeObjectName = 'SHAPE';  //??? can't add Part.reshapeObjectName property
 	// there's no Part.reshapeAdornmentTemplate either
@@ -53,7 +52,7 @@ export class GeometryReshapingTool extends go.Tool {
   /**
   * A small GraphObject used as a reshape handle for each segment.
   * The default GraphObject is a small blue diamond.
-  * @name GeometryReshapingTool#handleArchetype 
+  * @name GeometryReshapingTool#handleArchetype
   * @function.
   * @return {GraphObject}
   */

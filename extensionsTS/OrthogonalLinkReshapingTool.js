@@ -34,7 +34,7 @@ var __extends = (this && this.__extends) || (function () {
     var OrthogonalLinkReshapingTool = /** @class */ (function (_super) {
         __extends(OrthogonalLinkReshapingTool, _super);
         function OrthogonalLinkReshapingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super.call(this) || this;
             _this.name = "OrthogonalLinkReshaping";
             return _this;
         }

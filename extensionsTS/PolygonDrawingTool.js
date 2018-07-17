@@ -41,8 +41,7 @@ var __extends = (this && this.__extends) || (function () {
     var PolygonDrawingTool = /** @class */ (function (_super) {
         __extends(PolygonDrawingTool, _super);
         function PolygonDrawingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "PolygonDrawing";
+            var _this = _super.call(this) || this;
             _this._isPolygon = true;
             _this._hasArcs = false;
             _this._archetypePartData = {}; // the data to copy for a new polygon Part
@@ -50,6 +49,7 @@ var __extends = (this && this.__extends) || (function () {
             _this._temporaryShape = go.GraphObject.make(go.Shape, { name: "SHAPE", fill: "lightgray", strokeWidth: 1.5 });
             // the Shape has to be inside a temporary Part that is used during the drawing operation
             _this.temp = go.GraphObject.make(go.Part, { layerName: "Tool" }, _this._temporaryShape);
+            _this.name = "PolygonDrawing";
             return _this;
         }
         /**

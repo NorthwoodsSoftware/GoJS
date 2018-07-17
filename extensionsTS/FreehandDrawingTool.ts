@@ -23,7 +23,6 @@ import * as go from "../release/go";
 * The node data added to the model can be customized by setting {@link #archetypePartData}.
 */
 export class FreehandDrawingTool extends go.Tool {
-  public readonly name: string = "FreehandDrawing";
   private _archetypePartData: {} = {}; // the data to copy for a new polyline Part
   private _isBackgroundOnly: boolean = true; // affects canStart()
 
@@ -31,6 +30,11 @@ export class FreehandDrawingTool extends go.Tool {
   private _temporaryShape: go.GraphObject = go.GraphObject.make(go.Shape, { name: "SHAPE", fill: null, strokeWidth: 1.5 });
   // the Shape has to be inside a temporary Part that is used during the drawing operation
   private temp: go.GraphObject = go.GraphObject.make(go.Part, { layerName: "Tool" }, this._temporaryShape);
+
+  constructor() {
+    super();
+    this.name = "FreehandDrawing";
+  }
 
   /**
   * Only start if the diagram is modifiable and allows insertions.

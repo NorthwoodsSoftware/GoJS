@@ -42,14 +42,14 @@ var __extends = (this && this.__extends) || (function () {
     var FreehandDrawingTool = /** @class */ (function (_super) {
         __extends(FreehandDrawingTool, _super);
         function FreehandDrawingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "FreehandDrawing";
+            var _this = _super.call(this) || this;
             _this._archetypePartData = {}; // the data to copy for a new polyline Part
             _this._isBackgroundOnly = true; // affects canStart()
             // this is the Shape that is shown during a drawing operation
             _this._temporaryShape = go.GraphObject.make(go.Shape, { name: "SHAPE", fill: null, strokeWidth: 1.5 });
             // the Shape has to be inside a temporary Part that is used during the drawing operation
             _this.temp = go.GraphObject.make(go.Part, { layerName: "Tool" }, _this._temporaryShape);
+            _this.name = "FreehandDrawing";
             return _this;
         }
         /**

@@ -21,11 +21,14 @@ import * as go from "../release/go";
 * that can be data-bound by your link template for the Links that are actually created.
 */
 export class PolylineLinkingTool extends go.LinkingTool {
-  public readonly name: string = "PolylineLinking";
-	
-  public portGravity: number = 0;  // gotta click on a target port in order to complete the link
   private _firstMouseDown: boolean = null;
   private _horizontal: boolean = null;
+
+  constructor() {
+    super();
+    this.portGravity = 0; // must click on a target port in order to complete the link
+    this.name = 'PolylineLinking';
+  }
 
   /**
 * Use a "crosshair" cursor.

@@ -38,9 +38,8 @@ var __extends = (this && this.__extends) || (function () {
     var ParallelLayout = /** @class */ (function (_super) {
         __extends(ParallelLayout, _super);
         function ParallelLayout() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super.call(this) || this;
             _this.isRealtime = false;
-            // these are desired for the Parallel Layout:
             _this.alignment = go.TreeLayout.AlignmentCenterChildren;
             _this.compaction = go.TreeLayout.CompactionNone;
             _this.alternateAlignment = go.TreeLayout.AlignmentCenterChildren;

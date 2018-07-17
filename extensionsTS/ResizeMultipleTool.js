@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     var ResizeMultipleTool = /** @class */ (function (_super) {
         __extends(ResizeMultipleTool, _super);
         function ResizeMultipleTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super.call(this) || this;
             _this.name = "ResizeMultiple";
             return _this;
         }

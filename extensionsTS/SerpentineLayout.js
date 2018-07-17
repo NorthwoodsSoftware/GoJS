@@ -38,10 +38,10 @@ var __extends = (this && this.__extends) || (function () {
     var SerpentineLayout = /** @class */ (function (_super) {
         __extends(SerpentineLayout, _super);
         function SerpentineLayout() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.isViewportSized = true;
+            var _this = _super.call(this) || this;
             _this._spacing = new go.Size(30, 30);
             _this._wrap = NaN;
+            _this.isViewportSized = true;
             return _this;
         }
         /**

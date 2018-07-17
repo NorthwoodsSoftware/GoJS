@@ -36,12 +36,12 @@ var __extends = (this && this.__extends) || (function () {
     var PortShiftingTool = /** @class */ (function (_super) {
         __extends(PortShiftingTool, _super);
         function PortShiftingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "PortShifting";
+            var _this = _super.call(this) || this;
             /** @type {GraphObject} */
             _this.port = null;
             /** @type {Spot} */
             _this._originalAlignment = null;
+            _this.name = "PortShifting";
             return _this;
         }
         /**

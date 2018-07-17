@@ -387,7 +387,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
 	* @return {string}
 	*/
 	get verticalGuidelineColor(): string { return this._verticalGuidelineColor; }
-	set veritcalGuidelineColor(val: string) {
+	set verticalGuidelineColor(val: string) {
 		if (this._verticalGuidelineColor !== val) {
 			this._verticalGuidelineColor = val;
 			(this.guidelineVleft.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;

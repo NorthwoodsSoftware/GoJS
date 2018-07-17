@@ -15,7 +15,10 @@ import * as go from "../release/go";
 * @class
 */
 export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
-	public readonly name: string = "OrthogonalLinkReshaping";
+	constructor() {
+		super();
+		this.name = "OrthogonalLinkReshaping";
+	}
 
   /**
   * For orthogonal, straight links, create the handles and set reshaping behavior.
@@ -90,7 +93,7 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
 	};
 
   /**
-  * Create the segment dragging handles. 
+  * Create the segment dragging handles.
   * There are two parts: one invisible handle that spans the segment, and a visible handle at the middle of the segment.
   * These are inserted at the front of the adornment such that the normal handles have priority.
   * @param {Link} link

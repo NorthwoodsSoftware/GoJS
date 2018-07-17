@@ -60,7 +60,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(DragZoomingTool, _super);
         function DragZoomingTool() {
             var _this = _super.call(this) || this;
-            _this.name = "DragZooming";
             /** @type {number} */
             _this._delay = 175;
             /** @type {Diagram} */
@@ -76,6 +75,7 @@ var __extends = (this && this.__extends) || (function () {
             r.position = new go.Point(0, 0);
             b.add(r);
             _this._box = b;
+            _this.name = "DragZooming";
             return _this;
         }
         /**

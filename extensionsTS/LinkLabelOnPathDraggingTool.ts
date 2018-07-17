@@ -14,14 +14,17 @@ import * as go from "../release/go";
 * This tool only works when the Link has a label marked by the "_isLinkLabel" property.
 */
 export class LinkLabelOnPathDraggingTool extends go.Tool {
-	public readonly name = "LinkLabelOnPathDragging";
-
 	/** @type {GraphObject} */
 	public label: go.GraphObject = null;
 	/** @type {number} */
 	private _originalIndex: number = null;
 	/** @type {number} */
 	private _originalFraction: number = null;
+
+	constructor() {
+		super();
+		this.name = "LinkLabelOnPathDragging";
+	}
 
   /**
 	* This tool can only start if the mouse has moved enough so that it is not a click,

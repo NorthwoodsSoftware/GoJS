@@ -8,11 +8,14 @@ import * as go from "../release/go";
 /**
 * @constructor
 * @extends ResizingTool
-* @class 
+* @class
 * A custom tool for resizing multiple objects at once.
 */
 export class ResizeMultipleTool extends go.ResizingTool {
-	public readonly name = "ResizeMultiple";
+	constructor() {
+		super();
+		this.name = "ResizeMultiple";
+	}
 
   /**
   * Overrides ResizingTool.resize to resize all selected objects to the same size.

@@ -35,14 +35,14 @@ var __extends = (this && this.__extends) || (function () {
     var LinkLabelDraggingTool = /** @class */ (function (_super) {
         __extends(LinkLabelDraggingTool, _super);
         function LinkLabelDraggingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "LinkLabelDragging";
+            var _this = _super.call(this) || this;
             /** @type {GraphObject} */
             _this.label = null;
             /** @type {Point} */
             _this._offset = new go.Point(); // of the mouse relative to the center of the label object
             /** @type {Point} */
             _this._originalOffset = null;
+            _this.name = 'LinkLabelDragging';
             return _this;
         }
         /**

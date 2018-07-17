@@ -19,9 +19,13 @@ import * as go from "../release/go";
 * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
 */
 export class SerpentineLayout extends go.Layout {
-  public isViewportSized: boolean = true;
   private _spacing: go.Size = new go.Size(30, 30);
   private _wrap: number = NaN;
+
+  constructor() {
+    super();
+    this.isViewportSized = true;
+  }
 
   /**
   * @ignore
@@ -30,7 +34,6 @@ export class SerpentineLayout extends go.Layout {
   * @param {Layout} copy
   * @override
   */
-
   public cloneProtected(copy: SerpentineLayout) {
     super.cloneProtected.call(this, copy);
     copy._spacing = this._spacing;

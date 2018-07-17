@@ -36,14 +36,14 @@ var __extends = (this && this.__extends) || (function () {
     var RotateMultipleTool = /** @class */ (function (_super) {
         __extends(RotateMultipleTool, _super);
         function RotateMultipleTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "RotateMultiple";
+            var _this = _super.call(this) || this;
             // holds references to all selected non-Link Parts and their offset & angles
             _this.initialInfo = null;
             // initial angle when rotating as a whole
             _this.initialAngle = 0;
             // rotation point of selection
             _this.centerPoint = null;
+            _this.name = "RotateMultiple";
             return _this;
         }
         /**

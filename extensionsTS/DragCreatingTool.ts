@@ -55,9 +55,8 @@ export class DragCreatingTool extends go.Tool {
 		r.position = new go.Point(0, 0);
 		b.add(r);
 		this._box = b;
+		this.name = "DragCreating";
 	}
-
-	readonly name: string = "DragCreating";
 
 	/** @type {Object} */
 	private _archetypeNodeData: Object | null = null;

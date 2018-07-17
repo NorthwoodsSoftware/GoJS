@@ -29,6 +29,7 @@ The ChangedEvent records the kind of change that occurred and enough information
 Changed events are produced by both <a>Model</a> and <a>Diagram</a>.
 They are multicast events, so you can call <a>Model.addChangedListener</a> and <a>Diagram.addChangedListener</a>,
 as well as the corresponding removeChangedListener methods.
+For convenience you can also specify a Model change listener on a Diagram: <a>Diagram.addModelChangedListener</a>.
 <a>ChangedEvent</a>s received by a Model change listener will have a non-null value for <a>ChangedEvent.model</a>.
 Similarly, ChangedEvents received by a Diagram change listener will have non-null value for <a>ChangedEvent.diagram</a>.
 </p>
@@ -86,6 +87,11 @@ Such a call will result in the property name to be recorded as the <a>ChangedEve
 These cases are treated as normal property changes, not structural model changes,
 so <a>ChangedEvent.modelChange</a> will be the empty string.
 The value of <a>ChangedEvent.object</a> will of course be the JavaScript object that was modified.
+</p>
+<p>
+Some changes may happen temporarily because some code, such as in a Tool, might want to use temporary objects for their own purposes.
+However your change listener might not be interested in such <a>ChangedEvent</a>s.
+If that is the case, you may want to ignore the ChangedEvent if <a>Model.skipsUndoManager</a> (or <a>Diagram.skipsUndoManager</a>) is true.
 </p>
 <p>
 Finally, there are property changes on the model itself.

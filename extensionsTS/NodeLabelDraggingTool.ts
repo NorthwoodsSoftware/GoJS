@@ -17,8 +17,6 @@ import * as go from "../release/go";
 * offset from the center of the panel.
 */
 export class NodeLabelDraggingTool extends go.Tool {
-	public readonly name = "NodeLabelDragging";
-
 	/** @type {GraphObject} */
 	public label: go.GraphObject = null;
 	/** @type {Point} */
@@ -27,6 +25,11 @@ export class NodeLabelDraggingTool extends go.Tool {
 	private _originalAlignment: go.Spot = null;
 	/** @type {Point} */
 	private _originalCenter: go.Point = null;
+
+	constructor() {
+		super();
+		this.name = "NodeLabelDragging";
+	}
 
   /**
 * This tool can only start if the mouse has moved enough so that it is not a click,

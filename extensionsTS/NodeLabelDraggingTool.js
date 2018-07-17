@@ -36,8 +36,7 @@ var __extends = (this && this.__extends) || (function () {
     var NodeLabelDraggingTool = /** @class */ (function (_super) {
         __extends(NodeLabelDraggingTool, _super);
         function NodeLabelDraggingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "NodeLabelDragging";
+            var _this = _super.call(this) || this;
             /** @type {GraphObject} */
             _this.label = null;
             /** @type {Point} */
@@ -46,6 +45,7 @@ var __extends = (this && this.__extends) || (function () {
             _this._originalAlignment = null;
             /** @type {Point} */
             _this._originalCenter = null;
+            _this.name = "NodeLabelDragging";
             return _this;
         }
         /**

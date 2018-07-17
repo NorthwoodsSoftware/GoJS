@@ -270,8 +270,8 @@ export class TableLayout extends go.Layout {
 		var resetCols = [];  // keep track of which columns we've already reset
 
 		// Objects that span multiple columns and
-		var spanners = [];
-		var nosize = [];
+		var spanners: Array<go.Part> = [];
+		var nosize: Array<go.Part> = [];
 		// These hashes are used to tally the number of rows and columns that do not have a size
 		var nosizeCols = { count: 0 };
 		var nosizeRows = { count: 0 };

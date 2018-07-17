@@ -20,10 +20,6 @@ import * as go from "../release/go";
 * @class
 */
 export class SectorReshapingTool extends go.Tool {
-	constructor() {
-		super();
-	}
-	public readonly name: string = "SectorReshaping";
 	private _handle: go.GraphObject | null = null;
 	private _originalRadius: number = 0;
 	private _originalAngle: number = 0;
@@ -33,6 +29,11 @@ export class SectorReshapingTool extends go.Tool {
 	radiusProperty: string = "radius";
 	angleProperty: string = "angle";
 	sweepProperty: string = "sweep";
+
+	constructor() {
+		super();
+		this.name = "SectorReshaping";
+	}
 
 	/**
 	* This tool can only start if Diagram.allowReshape is true and the mouse-down event

@@ -25,8 +25,6 @@ import * as go from "../release/go";
 
 
 export class PolygonDrawingTool extends go.Tool {
-	public readonly name: string = "PolygonDrawing";
-
 	private _isPolygon: boolean = true;
 	private _hasArcs: boolean = false;
 	private _archetypePartData: Object = {}; // the data to copy for a new polygon Part
@@ -36,6 +34,10 @@ export class PolygonDrawingTool extends go.Tool {
 	// the Shape has to be inside a temporary Part that is used during the drawing operation
 	private temp: go.Part = go.GraphObject.make(go.Part, { layerName: "Tool" }, this._temporaryShape);
 
+	constructor() {
+		super();
+		this.name = "PolygonDrawing";
+	}
 
   /**
   * Don't start this tool in a mode-less fashion when the user's mouse-down is on an existing Part.

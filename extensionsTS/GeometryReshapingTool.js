@@ -40,7 +40,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(GeometryReshapingTool, _super);
         function GeometryReshapingTool() {
             var _this = _super.call(this) || this;
-            _this.name = "GeometryReshaping";
             /** @type {string} */
             _this._reshapeObjectName = 'SHAPE'; //??? can't add Part.reshapeObjectName property
             // there's no Part.reshapeAdornmentTemplate either
@@ -58,6 +57,7 @@ var __extends = (this && this.__extends) || (function () {
             h.stroke = "dodgerblue";
             h.cursor = "move";
             _this._handleArchetype = h;
+            _this.name = "GeometryReshaping";
             return _this;
         }
         Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {

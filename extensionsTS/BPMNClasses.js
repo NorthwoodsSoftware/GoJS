@@ -92,18 +92,20 @@ var __extends = (this && this.__extends) || (function () {
             var _this = _super.call(this) || this;
             // don't allow user to create link starting on the To node
             _this.direction = go.LinkingTool.ForwardsOnly;
-            _this.linkValidation = function (fromnode, fromport, tonode, toport) {
-                return _this.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
-                    _this.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
-            };
+            // orthogonal routing during linking
             _this.temporaryLink.routing = go.Link.Orthogonal;
+            // link validation using the validate methods defined below
+            _this.linkValidation = function (fromnode, fromport, tonode, toport) {
+                return BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
+                    BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
+            };
             return _this;
         }
         /** @override */
         BPMNLinkingTool.prototype.insertLink = function (fromnode, fromport, tonode, toport) {
             var lsave = null;
             // maybe temporarily change the link data that is copied to create the new link
-            if (this.validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
+            if (BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
                 lsave = this.archetypeLinkData;
                 this.archetypeLinkData = { category: "msg" };
             }
@@ -123,10 +125,10 @@ var __extends = (this && this.__extends) || (function () {
         ;
         // static utility validation routines for linking & relinking as well as insert link logic
         // in BPMN, can't link sequence flows across subprocess or pool boundaries
-        BPMNLinkingTool.prototype.validateSequenceLinkConnection = function (fromnode, fromport, tonode, toport) {
+        BPMNLinkingTool.validateSequenceLinkConnection = function (fromnode, fromport, tonode, toport) {
             if (fromnode.category === null || tonode.category === null)
                 return true;
-            // if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+            // if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows)
             if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") ||
                 (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
                 if (fromnode.containingGroup !== tonode.containingGroup)
@@ -140,12 +142,12 @@ var __extends = (this && this.__extends) || (function () {
         };
         ;
         // in BPMN, Message Links must cross pool boundaries
-        BPMNLinkingTool.prototype.validateMessageLinkConnection = function (fromnode, fromport, tonode, toport) {
+        BPMNLinkingTool.validateMessageLinkConnection = function (fromnode, fromport, tonode, toport) {
             if (fromnode.category === null || tonode.category === null)
                 return true;
             if (fromnode.category === "privateProcess" || tonode.category === "privateProcess")
                 return true;
-            // if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+            // if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows)
             if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") ||
                 (tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
                 if (fromnode.containingGroup !== tonode.containingGroup)

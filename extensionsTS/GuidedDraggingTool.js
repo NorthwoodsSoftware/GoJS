@@ -420,10 +420,6 @@ var __extends = (this && this.__extends) || (function () {
             * @return {string}
             */
             get: function () { return this._verticalGuidelineColor; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(GuidedDraggingTool.prototype, "veritcalGuidelineColor", {
             set: function (val) {
                 if (this._verticalGuidelineColor !== val) {
                     this._verticalGuidelineColor = val;

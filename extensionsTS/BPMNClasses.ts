@@ -65,25 +65,24 @@ export class PoolLink extends go.Link {
 // BPMNLinkingTool, a custom linking tool to switch the class of the link created.
 
 export class BPMNLinkingTool extends go.LinkingTool {
-	// don't allow user to create link starting on the To node
-	public direction: go.EnumValue = go.LinkingTool.ForwardsOnly;
-	public temporaryLink: go.Link;
-
 	constructor() {
 		super();
-		this.temporaryLink.routing = go.Link.Orthogonal;
+    // don't allow user to create link starting on the To node
+    this.direction = go.LinkingTool.ForwardsOnly;
+    // orthogonal routing during linking
+    this.temporaryLink.routing = go.Link.Orthogonal;
+    // link validation using the validate methods defined below
+    this.linkValidation = (fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) => {
+      return BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
+        BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
+    };
 	}
-
-	public linkValidation = (fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) => {
-		return this.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
-			this.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
-	};
 
 	/** @override */
 	public insertLink(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) {
 		var lsave = null;
 		// maybe temporarily change the link data that is copied to create the new link
-		if (this.validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
+		if (BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport)) {
 			lsave = this.archetypeLinkData;
 			this.archetypeLinkData = { category: "msg" };
 		}
@@ -105,10 +104,10 @@ export class BPMNLinkingTool extends go.LinkingTool {
 	// static utility validation routines for linking & relinking as well as insert link logic
 
 	// in BPMN, can't link sequence flows across subprocess or pool boundaries
-	public validateSequenceLinkConnection(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) {
+	public static validateSequenceLinkConnection(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) {
 		if (fromnode.category === null || tonode.category === null) return true;
 
-		// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+		// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows)
 		if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") ||
 			(tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
 			if (fromnode.containingGroup !== tonode.containingGroup) return false;
@@ -121,12 +120,12 @@ export class BPMNLinkingTool extends go.LinkingTool {
 	};
 
 	// in BPMN, Message Links must cross pool boundaries
-	public validateMessageLinkConnection(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) {
+	public static validateMessageLinkConnection(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject) {
 		if (fromnode.category === null || tonode.category === null) return true;
 
 		if (fromnode.category === "privateProcess" || tonode.category === "privateProcess") return true;
 
-		// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows) 
+		// if either node is in a subprocess, both nodes must be in same subprocess (not even Message Flows)
 		if ((fromnode.containingGroup !== null && fromnode.containingGroup.category === "subprocess") ||
 			(tonode.containingGroup !== null && tonode.containingGroup.category === "subprocess")) {
 			if (fromnode.containingGroup !== tonode.containingGroup) return false;

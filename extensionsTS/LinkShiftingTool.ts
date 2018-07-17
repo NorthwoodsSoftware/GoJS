@@ -47,9 +47,8 @@ export class LinkShiftingTool extends go.Tool {
 
 		this._fromHandleArchetype = h;
 		this._toHandleArchetype = g;
+		this.name = "LinkShifting";
 	}
-
-	public readonly name: string = "LinkShifting";
 
 	// transient state
 	/** @type {GraphObject} */
@@ -59,7 +58,7 @@ export class LinkShiftingTool extends go.Tool {
 
   /*
   * A small GraphObject used as a shifting handle.
-  * @name LinkShiftingTool#fromHandleArchetype 
+  * @name LinkShiftingTool#fromHandleArchetype
   * @function.
   * @return {GraphObject}
   */
@@ -68,7 +67,7 @@ export class LinkShiftingTool extends go.Tool {
 
   /*
   * A small GraphObject used as a shifting handle.
-  * @name LinkShiftingTool#toHandleArchetype 
+  * @name LinkShiftingTool#toHandleArchetype
   * @function.
   * @return {GraphObject}
   */

@@ -177,11 +177,14 @@
     if (myOverview === null || myOverviewDiv.style.display === "none") {
       // show DIV
       myOverviewDiv.style.display = "inline";
+      if (myOverview !== null) return;
 
       // create Overview
       myOverview =
         go.GraphObject.make(go.Overview, myOverviewDiv,  // the HTML DIV element for the Overview
           {
+            scrollMode: go.Diagram.InfiniteScroll,
+            "box.visible": false,
             observed: myDiagram,   // tell it which Diagram to show
             // disable normal Overview functionality to make it act as a magnifying glass:
             initialScale: 2,  // zoom in even more than normal
@@ -189,6 +192,8 @@
             hasHorizontalScrollbar: false,  // don't show any scrollbars
             hasVerticalScrollbar: false
           });
+
+
 
       // disable all mouse-down tools
       myOverview.toolManager.mouseDownTools.each(function(t) { t.isEnabled = false; });

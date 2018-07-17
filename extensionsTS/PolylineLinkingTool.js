@@ -40,11 +40,11 @@ var __extends = (this && this.__extends) || (function () {
     var PolylineLinkingTool = /** @class */ (function (_super) {
         __extends(PolylineLinkingTool, _super);
         function PolylineLinkingTool() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = "PolylineLinking";
-            _this.portGravity = 0; // gotta click on a target port in order to complete the link
+            var _this = _super.call(this) || this;
             _this._firstMouseDown = null;
             _this._horizontal = null;
+            _this.portGravity = 0; // must click on a target port in order to complete the link
+            _this.name = 'PolylineLinking';
             return _this;
         }
         /**

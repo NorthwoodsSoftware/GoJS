@@ -36,7 +36,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(LinkShiftingTool, _super);
         function LinkShiftingTool() {
             var _this = _super.call(this) || this;
-            _this.name = "LinkShifting";
             // transient state
             /** @type {GraphObject} */
             _this._handle = null;
@@ -60,6 +59,7 @@ var __extends = (this && this.__extends) || (function () {
             g.segmentOrientation = go.Link.OrientAlong;
             _this._fromHandleArchetype = h;
             _this._toHandleArchetype = g;
+            _this.name = "LinkShifting";
             return _this;
         }
         Object.defineProperty(LinkShiftingTool.prototype, "fromHandleArchetype", {

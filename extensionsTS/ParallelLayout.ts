@@ -19,12 +19,14 @@ import * as go from "../release/go";
 * except that for simplicity this code just works for angle === 0 or angle === 90.
 */
 export class ParallelLayout extends go.TreeLayout {
-  public isRealtime = false;
-  // these are desired for the Parallel Layout:
-  public alignment = go.TreeLayout.AlignmentCenterChildren;
-  public compaction = go.TreeLayout.CompactionNone;
-  public alternateAlignment = go.TreeLayout.AlignmentCenterChildren;
-  public alternateCompaction = go.TreeLayout.CompactionNone;
+  constructor() {
+    super();
+    this.isRealtime = false;
+    this.alignment = go.TreeLayout.AlignmentCenterChildren;
+    this.compaction = go.TreeLayout.CompactionNone;
+    this.alternateAlignment = go.TreeLayout.AlignmentCenterChildren;
+    this.alternateCompaction = go.TreeLayout.CompactionNone;
+  }
 
   public makeNetwork(coll: go.Iterable<go.Part>): go.LayoutNetwork {
     var net = super.makeNetwork.call(this, coll);

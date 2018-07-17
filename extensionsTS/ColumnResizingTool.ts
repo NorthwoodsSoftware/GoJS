@@ -26,9 +26,8 @@ export class ColumnResizingTool extends go.Tool {
 		h.background = "rgba(255,255,255,0.5)";
 		h.stroke = "rgba(30,144,255,0.5)";
 		this._handleArchetype = h;
+		this.name = "ColumnResizing";
 	}
-
-	public readonly name: string = "ColumnResizing";
 
 	/** @type {string} */
 	private _tableName: string = "TABLE";
@@ -42,7 +41,7 @@ export class ColumnResizingTool extends go.Tool {
   /**
   * A small GraphObject used as a resize handle for each column.
   * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
-  * @name ColumnResizingTool#handleArchetype 
+  * @name ColumnResizingTool#handleArchetype
   * @function.
   * @return {Shape}
   */
@@ -126,7 +125,7 @@ export class ColumnResizingTool extends go.Tool {
 		part.removeAdornment(this.name);
 	};
 
-  /** 
+  /**
   * @this {ColumnResizingTool}
   * @param {Panel} table the Table Panel whose columns may be resized
   * @return {Adornment}

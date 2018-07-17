@@ -42,8 +42,6 @@ import * as go from "../release/go";
 
 
 export class DragZoomingTool extends go.Tool {
-	public readonly name: string = "DragZooming";
-
 	/** @type {Part} */
 	private _box: go.Part;
 
@@ -61,6 +59,7 @@ export class DragZoomingTool extends go.Tool {
 		b.add(r);
 
 		this._box = b;
+		this.name = "DragZooming";
 	}
 
 	/** @type {number} */

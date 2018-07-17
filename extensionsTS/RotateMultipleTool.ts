@@ -16,13 +16,17 @@ import * as  go from "../release/go";
 * Caution: this only works for Groups that do *not* have a Placeholder.
 */
 export class RotateMultipleTool extends go.RotatingTool {
-	public readonly name = "RotateMultiple";
 	// holds references to all selected non-Link Parts and their offset & angles
 	public initialInfo: go.Map<go.Part, PartInfo> = null;
 	// initial angle when rotating as a whole
 	public initialAngle: number = 0;
 	// rotation point of selection
 	public centerPoint: go.Point = null;
+
+	constructor() {
+		super();
+		this.name = "RotateMultiple";
+	}
 
 	/**
 	* Calls RotatingTool.doActivate, and then remembers the center point of the collection,

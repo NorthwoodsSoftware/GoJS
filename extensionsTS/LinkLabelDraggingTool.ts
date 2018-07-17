@@ -16,14 +16,17 @@ import * as go from "../release/go";
 * It does not work for labels that have a particular segmentIndex.
 */
 export class LinkLabelDraggingTool extends go.Tool {
-  public readonly name = "LinkLabelDragging";
-
   /** @type {GraphObject} */
   public label: go.GraphObject = null;
   /** @type {Point} */
   private _offset: go.Point = new go.Point();  // of the mouse relative to the center of the label object
   /** @type {Point} */
   private _originalOffset: go.Point = null;
+
+  constructor() {
+    super();
+    this.name = 'LinkLabelDragging';
+  }
 
   /**
   * This tool can only start if the mouse has moved enough so that it is not a click,

@@ -33,7 +33,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(RowResizingTool, _super);
         function RowResizingTool() {
             var _this = _super.call(this) || this;
-            _this.name = "RowResizing";
             /** @type {string} */
             _this._tableName = "TABLE";
             // internal state
@@ -49,6 +48,7 @@ var __extends = (this && this.__extends) || (function () {
             h.background = "rgba(255,255,255,0.5)";
             h.stroke = "rgba(30,144,255,0.5)";
             _this._handleArchetype = h;
+            _this.name = "RowResizing";
             return _this;
         }
         Object.defineProperty(RowResizingTool.prototype, "handleArchetype", {

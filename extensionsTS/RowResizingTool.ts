@@ -14,8 +14,6 @@ import * as go from "../release/go";
 */
 
 export class RowResizingTool extends go.Tool {
-	public readonly name = "RowResizing";
-
 	/** @type {GraphObject} */
 	private _handleArchetype: go.GraphObject;
 
@@ -30,6 +28,7 @@ export class RowResizingTool extends go.Tool {
 		h.stroke = "rgba(30,144,255,0.5)";
 
 		this._handleArchetype = h;
+		this.name = "RowResizing";
 	}
 
 	/** @type {string} */
@@ -44,7 +43,7 @@ export class RowResizingTool extends go.Tool {
   /*
   * A small GraphObject used as a resize handle for each row.
   * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
-  * @name RowResizingTool#handleArchetype 
+  * @name RowResizingTool#handleArchetype
   * @function.
   * @return {GraphObject}
   */

@@ -39,7 +39,6 @@ var __extends = (this && this.__extends) || (function () {
         __extends(SectorReshapingTool, _super);
         function SectorReshapingTool() {
             var _this = _super.call(this) || this;
-            _this.name = "SectorReshaping";
             _this._handle = null;
             _this._originalRadius = 0;
             _this._originalAngle = 0;
@@ -48,6 +47,7 @@ var __extends = (this && this.__extends) || (function () {
             _this.radiusProperty = "radius";
             _this.angleProperty = "angle";
             _this.sweepProperty = "sweep";
+            _this.name = "SectorReshaping";
             return _this;
         }
         /**
