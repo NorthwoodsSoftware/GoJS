@@ -415,7 +415,7 @@ var myNavbar = '\
           <li><a href="../intro/index.html">Intro</a></li>\
           <li><a href="../api/index.html" target="api">API</a></li>\
           <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>\
-          <li><a href="../doc/download.html">Download</a></li>\
+          <li><a href="../download.html">Download</a></li>\
           <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>\
           <li><a href="https://www.nwoods.com/contact.html" onclick="ga(\'send\',\'event\',\'Outbound Link\',\'click\',\'contact\');">Contact</a></li>\
           <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga(\'send\',\'event\',\'Outbound Link\',\'click\',\'buy\');">Buy</a></li>\

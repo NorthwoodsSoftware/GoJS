@@ -35,6 +35,6 @@ please visit Northwoods Software's <a href="https://www.nwoods.com/contact.html"
 
 <h3>License</h3>
 
-The GoJS <a href="https://gojs.net/latest/doc/license.html">software license</a>.
+The GoJS <a href="https://gojs.net/latest/license.html">software license</a>.
 
 Copyright (c) Northwoods Software Corporation
