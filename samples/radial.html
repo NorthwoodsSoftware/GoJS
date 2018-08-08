@@ -193,16 +193,18 @@
 
   // called when "Set Max Layers" button is clicked
   function adjustMaxLayers() {
-      var newMaxLayers = document.getElementById("maxLayersChanger").value;
-      function IsNumeric(val) {
-          return Number(parseInt(val)) == val;
-      }
-      if (!IsNumeric(newMaxLayers) || newMaxLayers < 1 || newMaxLayers > 10) {
-        alert("Please enter an integer larger than zero and less than or equal to 10.");
-      } else {
-        myDiagram.layout.maxLayers = Math.max(1, Math.min(newMaxLayers, 10));
-        nodeClicked(null, myDiagram.layout.root);
-      }
+    var newMaxLayers = parseInt(document.getElementById('maxLayersChanger').value);
+    function isInteger(val) {
+      return typeof val === 'number' &&
+        isFinite(val) &&
+        Math.floor(val) === val;
+    }
+    if (!isInteger(newMaxLayers) || newMaxLayers < 1 || newMaxLayers > 10) {
+      alert("Please enter an integer larger than zero and less than or equal to 10.");
+    } else {
+      myDiagram.layout.maxLayers = Math.max(1, Math.min(newMaxLayers, 10));
+      nodeClicked(null, myDiagram.layout.root);
+    }
   }
 </script>
 </head>

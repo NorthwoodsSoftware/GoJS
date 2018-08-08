@@ -154,11 +154,13 @@
     }
     // called when "Set Max Layers" button is clicked
     function adjustMaxLayers() {
-        var newMaxLayers = document.getElementById("maxLayersChanger").value;
-        function IsNumeric(val) {
-            return Number(parseInt(val.toString())) == val;
+        var newMaxLayers = parseInt(document.getElementById('maxLayersChanger').value);
+        function isInteger(val) {
+            return typeof val === 'number' &&
+                isFinite(val) &&
+                Math.floor(val) === val;
         }
-        if (!IsNumeric(newMaxLayers) || newMaxLayers < 1 || newMaxLayers > 10) {
+        if (!isInteger(newMaxLayers) || newMaxLayers < 1 || newMaxLayers > 10) {
             alert("Please enter an integer larger than zero and less than or equal to 10.");
         }
         else {

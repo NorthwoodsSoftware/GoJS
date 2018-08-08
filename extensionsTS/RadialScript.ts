@@ -193,11 +193,13 @@ function nodeClicked(e: go.InputEvent, root: go.Node) {
 
 // called when "Set Max Layers" button is clicked
 export function adjustMaxLayers() {
-  var newMaxLayers = (document.getElementById("maxLayersChanger") as any).value;
-  function IsNumeric(val: number) {
-    return Number(parseInt(val.toString())) == val;
+  var newMaxLayers = parseInt((document.getElementById('maxLayersChanger') as any).value);
+  function isInteger(val: any) {
+    return typeof val === 'number' &&
+      isFinite(val) &&
+      Math.floor(val) === val;
   }
-  if (!IsNumeric(newMaxLayers) || newMaxLayers < 1 || newMaxLayers > 10) {
+  if (!isInteger(newMaxLayers) || newMaxLayers < 1 || newMaxLayers > 10) {
     alert("Please enter an integer larger than zero and less than or equal to 10.");
   } else {
     var lay = myDiagram.layout as RadialLayout;
