@@ -28,7 +28,7 @@ You can use the GitHub repository to quickly [search through all of the sources]
 
 <h2>Minimal Sample</h2>
 
-Graphs are constructed by creating one or more templates, which desired properties data-bound, and adding model data.
+Graphs are constructed by creating one or more templates, with desired properties data-bound, and adding model data.
 
 ```html
 <script src="go.js"></script>
