@@ -26,8 +26,61 @@ Read more about GoJS at [gojs.net](https://gojs.net)
 This repository contains both the library and the sources for all samples, extensions, and documentation.
 You can use the GitHub repository to quickly [search through all of the sources](https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&type=Code).
 
+<h2>Minimal Sample</h2>
 
-<h3>Support</h3>
+Graphs are constructed by creating one or more templates, which desired properties data-bound, and adding model data.
+
+```html
+<script src="go.js"></script>
+
+<script id="code">
+  function init() {
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    var myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                  {
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",  // the Shape will go around the TextBlock
+        $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+          // Shape.fill is bound to Node.data.color
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8 },  // some room around the text
+          // TextBlock.text is bound to Node.data.key
+          new go.Binding("text", "key"))
+      );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Beta", to: "Beta" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+  }
+</script>
+```
+
+Creates this graph:
+
+[<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](file:///C:/canvas/main/samples/minimal.html)
+
+
+<h2>Support</h2>
 
 Northwoods Software offers a month of free developer-to-developer support for GoJS to help you get started on your project.
 
@@ -40,7 +93,7 @@ For any nontechnical questions about GoJS, such as about sales or licensing,
 please visit Northwoods Software's <a href="https://www.nwoods.com/contact.html">contact form</a>.
 
 
-<h3>License</h3>
+<h2>License</h2>
 
 The GoJS <a href="https://gojs.net/latest/license.html">software license</a>.
 
