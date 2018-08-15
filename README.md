@@ -39,7 +39,10 @@ Graphs are constructed by creating one or more templates, with desired propertie
 
     var myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
-                    "undoManager.isEnabled": true  // enable undo & redo
+                    // allow double-click in background to create a new node
+                    "clickCreatingTool.archetypeNodeData": { key: "newKey", color: "white" },
+                    // enable undo & redo
+                    "undoManager.isEnabled": true
                   });
 
     // define a simple Node template
