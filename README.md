@@ -39,8 +39,6 @@ Graphs are constructed by creating one or more templates, with desired propertie
 
     var myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
-                    // allow double-click in background to create a new node
-                    "clickCreatingTool.archetypeNodeData": { key: "newKey", color: "white" },
                     // enable undo & redo
                     "undoManager.isEnabled": true
                   });
@@ -78,9 +76,11 @@ Graphs are constructed by creating one or more templates, with desired propertie
 </script>
 ```
 
-Creates this graph:
+Creates this graph. The user can now click on nodes or links to select them, copy-and-paste them, drag them, delete them, scroll, pan, and zoom, with a mouse or with fingers.
 
-[<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](file:///C:/canvas/main/samples/minimal.html)
+[<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](https://gojs.net/latest/samples/minimal.html)
+
+*Click the image to see the interactive GoJS Diagram*
 
 
 <h2>Support</h2>
