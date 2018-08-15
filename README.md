@@ -19,7 +19,7 @@ GoJS is rendered with an HTML5 Canvas element (with export to SVG or image forma
 
 GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams, including data visualizations, drawing tools, and graph editors. There are samples for [flowchart](https://gojs.net/latest/samples/flowchart.html), [org chart](https://gojs.net/latest/samples/orgChartEditor.html), [business process BPMN](https://gojs.net/latest/extensions/BPMN.html), [swimlanes](https://gojs.net/latest/samples/swimlanes.html), [timelines](https://gojs.net/latest/samples/timeline.html), [state charts](https://gojs.net/latest/samples/statechart.html), [kanban](https://gojs.net/latest/samples/kanban.html), [network](https://gojs.net/latest/samples/network.html), [mindmap](https://gojs.net/latest/samples/mindMap.html), [sankey](https://gojs.net/latest/samples/sankey.html), [family trees](https://gojs.net/latest/samples/familyTree.html) and [genogram charts](https://gojs.net/latest/samples/genogram.html), [fishbone diagrams](https://gojs.net/latest/extensions/Fishbone.html), [floor plans](https://gojs.net/latest/projects/floorplanner/FloorPlanner.html), [UML](https://gojs.net/latest/samples/umlClass.html), [decision trees](https://gojs.net/latest/samples/decisionTree.html), [pert charts](https://gojs.net/latest/samples/PERT.html), [Gantt](https://gojs.net/latest/samples/gantt.html), and [hundreds more](https://gojs.net/latest/samples/index.html). GoJS includes a number of built in layouts including tree layout, force directed, radial, and layered digraph layout, and a number of custom layout examples.
 
-
+[<img src="https://raw.githubusercontent.com/NorthwoodsSoftware/GoJS/master/.github/github-970x354.png">](https://gojs.net/latest/samples/index.html)
 
 Read more about GoJS at [gojs.net](https://gojs.net)
 
@@ -43,5 +43,6 @@ please visit Northwoods Software's <a href="https://www.nwoods.com/contact.html"
 <h3>License</h3>
 
 The GoJS <a href="https://gojs.net/latest/license.html">software license</a>.
+
 
 Copyright (c) Northwoods Software Corporation
