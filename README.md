@@ -48,7 +48,7 @@ Graphs are constructed by creating one or more templates, with desired propertie
     // define a simple Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",  // the Shape will go around the TextBlock
-        $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+        $(go.Shape, "RoundedRectangle", { strokeWidth: 0, fill: "white" },
           // Shape.fill is bound to Node.data.color
           new go.Binding("fill", "color")),
         $(go.TextBlock,
