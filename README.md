@@ -3,7 +3,7 @@ GoJS, a JavaScript Library for HTML Diagrams
 
 <img align="right" height="150" src="https://www.nwoods.com/images/go.png">
 
-[GoJS](https://gojs.net) is a JavaScript and HTML5 library for creating interactive diagrams, charts, and graphs.
+[GoJS](https://gojs.net) is a JavaScript and TypeScript library for creating and manipulating diagrams, charts, and graphs.
 
 [![GitHub release](https://img.shields.io/github/release/NorthwoodsSoftware/GoJS.svg)]()
 [![](https://img.shields.io/github/issues-raw/NorthwoodsSoftware/GoJS.svg)]()
@@ -13,6 +13,13 @@ GoJS, a JavaScript Library for HTML Diagrams
 [See GoJS Samples](https://gojs.net/latest/samples).
 
 [Get Started with GoJS](https://gojs.net/latest/learn)
+
+
+GoJS is rendered with an HTML5 Canvas element. Exporting to SVG and image formats are also options. GoJS can work in the web browser, or server side in [Node](https://nodejs.org/en/) or [Puppeteer](https://github.com/GoogleChrome/puppeteer). GoJS Diagrams are backed by Models, with saving and loading typically via JSON.
+
+GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams, including data visualizations, drawing tools, and graph editors. There are samples for [flowchart](https://gojs.net/latest/samples/flowchart.html), [org chart](https://gojs.net/latest/samples/orgChartEditor.html), [business process BPMN](https://gojs.net/latest/extensions/BPMN.html), [swimlanes](https://gojs.net/latest/samples/swimlanes.html), [timelines](https://gojs.net/latest/samples/timeline.html), [state charts](https://gojs.net/latest/samples/statechart.html), [kanban](https://gojs.net/latest/samples/kanban.html), [network](https://gojs.net/latest/samples/network.html), [mindmap](https://gojs.net/latest/samples/mindMap.html), [sankey](https://gojs.net/latest/samples/sankey.html), [family trees](https://gojs.net/latest/samples/familyTree.html) and [genogram charts](https://gojs.net/latest/samples/genogram.html), [fishbone diagrams](https://gojs.net/latest/extensions/Fishbone.html), [floor plans](https://gojs.net/latest/projects/floorplanner/FloorPlanner.html), [UML](https://gojs.net/latest/samples/umlClass.html), [decision trees](https://gojs.net/latest/samples/decisionTree.html), [pert charts](https://gojs.net/latest/samples/PERT.html), [Gantt](https://gojs.net/latest/samples/gantt.html), and [hundreds more](https://gojs.net/latest/samples/index.html). GoJS includes a number of built in layouts including tree layout, force directed, radial, and layered digraph layout, and a number of custom layout examples.
+
+
 
 Read more about GoJS at [gojs.net](https://gojs.net)
 
