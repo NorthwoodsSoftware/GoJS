@@ -5,9 +5,10 @@ GoJS, a JavaScript Library for HTML Diagrams
 
 [GoJS](https://gojs.net) is a JavaScript and TypeScript library for creating and manipulating diagrams, charts, and graphs.
 
-[![GitHub release](https://img.shields.io/github/release/NorthwoodsSoftware/GoJS.svg)]()
-[![](https://img.shields.io/github/issues-raw/NorthwoodsSoftware/GoJS.svg)]()
-[![GitHub last commit](https://img.shields.io/github/last-commit/NorthwoodsSoftware/GoJS.svg)]()
+![release](https://img.shields.io/github/release/NorthwoodsSoftware/GoJS.svg)
+![open issues](https://img.shields.io/github/issues-raw/NorthwoodsSoftware/GoJS.svg)
+![last commit](https://img.shields.io/github/last-commit/NorthwoodsSoftware/GoJS.svg)
+![downloads](https://img.shields.io/npm/dw/gojs.svg)
 [![Twitter Follow](https://img.shields.io/twitter/follow/NorthwoodsGo.svg?style=social&label=Follow)](https://twitter.com/NorthwoodsGo)
 
 [See GoJS Samples](https://gojs.net/latest/samples)

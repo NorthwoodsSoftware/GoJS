@@ -177,16 +177,12 @@
                 this.tabIndex = 0;
                 var declaredProperties = this.declaredProperties;
                 // Go through all the properties passed in to the inspector and show them, if appropriate:
-                for (var k in declaredProperties) {
-                    var val = declaredProperties[k];
-                    if (!this.canShowProperty(k, val, inspectedObject))
+                for (var name_1 in declaredProperties) {
+                    var desc = declaredProperties[name_1];
+                    if (!this.canShowProperty(name_1, desc, inspectedObject))
                         continue;
-                    var defaultValue = '';
-                    if (val.defaultValue !== undefined)
-                        defaultValue = val.defaultValue;
-                    if (data[k] !== undefined)
-                        defaultValue = data[k];
-                    tbody.appendChild(this.buildPropertyRow(k, defaultValue || ''));
+                    var val = this.findValue(name_1, desc, data);
+                    tbody.appendChild(this.buildPropertyRow(name_1, val));
                 }
                 // Go through all the properties on the model data and show them, if appropriate:
                 if (this.includesOwnProperties) {
@@ -222,22 +218,18 @@
                 var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
                 if (data) { // initial pass to set shared and all
                     // Go through all the properties passed in to the inspector and add them to the map, if appropriate:
-                    for (var k in declaredProperties) {
-                        var val = declaredProperties[k];
-                        if (!this.canShowProperty(k, val, inspectedObject))
+                    for (var name_2 in declaredProperties) {
+                        var desc = declaredProperties[name_2];
+                        if (!this.canShowProperty(name_2, desc, inspectedObject))
                             continue;
-                        var defaultValue = '';
-                        if (val.defaultValue !== undefined)
-                            defaultValue = val.defaultValue;
-                        if (data[k] !== undefined)
-                            defaultValue = data[k];
-                        if (defaultValue === '' && this.declaredProperties[k] && this.declaredProperties[k].type === 'checkbox') {
-                            shared.add(k, false);
-                            all.add(k, false);
+                        var val = this.findValue(name_2, desc, data);
+                        if (val === '' && this.declaredProperties[name_2] && this.declaredProperties[name_2].type === 'checkbox') {
+                            shared.add(name_2, false);
+                            all.add(name_2, false);
                         }
                         else {
-                            shared.add(k, defaultValue || '');
-                            all.add(k, defaultValue || '');
+                            shared.add(name_2, val);
+                            all.add(name_2, val);
                         }
                     }
                     // Go through all the properties on the model data and add them to the map, if appropriate:
@@ -263,20 +255,16 @@
                         data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
                         if (data) {
                             // Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
-                            for (var k in declaredProperties) {
-                                var val = declaredProperties[k];
-                                if (!this.canShowProperty(k, val, inspectedObject))
+                            for (var name_3 in declaredProperties) {
+                                var desc = declaredProperties[name_3];
+                                if (!this.canShowProperty(name_3, desc, inspectedObject))
                                     continue;
-                                var defaultValue = '';
-                                if (val.defaultValue !== undefined)
-                                    defaultValue = val.defaultValue;
-                                if (data[k] !== undefined)
-                                    defaultValue = data[k];
-                                if (defaultValue === '' && this.declaredProperties[k] && this.declaredProperties[k].type === 'checkbox') {
-                                    properties.add(k, false);
+                                var val = this.findValue(name_3, desc, data);
+                                if (val === '' && this.declaredProperties[name_3] && this.declaredProperties[name_3].type === 'checkbox') {
+                                    properties.add(name_3, false);
                                 }
                                 else {
-                                    properties.add(k, defaultValue || '');
+                                    properties.add(name_3, val || '');
                                 }
                             }
                             // Go through all the properties on the model data and add them to properties to add, if appropriate:
@@ -419,6 +407,22 @@
         };
         /**
          * @ignore
+         * @param propName
+         * @param propDesc
+         * @param data
+         */
+        Inspector.prototype.findValue = function (propName, propDesc, data) {
+            var val = '';
+            if (propDesc && propDesc.defaultValue !== undefined)
+                val = propDesc.defaultValue;
+            if (data[propName] !== undefined)
+                val = data[propName];
+            if (val === undefined)
+                return '';
+            return val;
+        };
+        /**
+         * @ignore
          * This sets this._inspectedProperties[propertyName] and creates the HTML table row:
          *    <tr>
          *      <td>propertyName</td>
@@ -555,8 +559,8 @@
             var isPart = this.inspectedObject instanceof go.Part;
             var data = isPart ? this.inspectedObject.data : this.inspectedObject;
             if (!data) { // clear out all of the fields
-                for (var name_1 in inspectedProps) {
-                    var input = inspectedProps[name_1];
+                for (var name_4 in inspectedProps) {
+                    var input = inspectedProps[name_4];
                     if (input instanceof HTMLSelectElement) {
                         input.innerHTML = '';
                     }
@@ -572,12 +576,12 @@
                 }
             }
             else {
-                for (var name_2 in inspectedProps) {
-                    var input = inspectedProps[name_2];
-                    var propertyValue = data[name_2];
+                for (var name_5 in inspectedProps) {
+                    var input = inspectedProps[name_5];
+                    var propertyValue = data[name_5];
                     if (input instanceof HTMLSelectElement) {
-                        var decProp = this.declaredProperties[name_2];
-                        this.updateSelect(decProp, input, name_2, propertyValue);
+                        var decProp = this.declaredProperties[name_5];
+                        this.updateSelect(decProp, input, name_5, propertyValue);
                     }
                     else if (input.type === 'color') {
                         input.value = this.convertToColor(propertyValue);
@@ -625,12 +629,12 @@
                 if (!data)
                     return; // must not try to update data when there's no data!
                 diagram.startTransaction('set all properties');
-                for (var name_3 in inspectedProps) {
-                    var input = inspectedProps[name_3];
+                for (var name_6 in inspectedProps) {
+                    var input = inspectedProps[name_6];
                     var value = input.value;
                     // don't update "readOnly" data properties
-                    var decProp = this.declaredProperties[name_3];
-                    if (!this.canEditProperty(name_3, decProp, this.inspectedObject))
+                    var decProp = this.declaredProperties[name_6];
+                    if (!this.canEditProperty(name_6, decProp, this.inspectedObject))
                         continue;
                     // If it's a boolean, or if its previous value was boolean,
                     // parse the value to be a boolean and then update the input.value to match
@@ -639,7 +643,7 @@
                         type = decProp.type;
                     }
                     if (type === '') {
-                        var oldval = data[name_3];
+                        var oldval = data[name_6];
                         if (typeof oldval === 'boolean')
                             type = 'boolean'; // infer boolean
                         else if (typeof oldval === 'number')
@@ -692,43 +696,43 @@
                     // the value shown should match the actual value
                     input.value = value;
                     // modify the data object in an undo-able fashion
-                    diagram.model.setDataProperty(data, name_3, value);
+                    diagram.model.setDataProperty(data, name_6, value);
                     // notify any listener
                     if (this.propertyModified !== null)
-                        this.propertyModified(name_3, value, this);
+                        this.propertyModified(name_6, value, this);
                 }
                 diagram.commitTransaction('set all properties');
             }
             else { // selection object update
                 diagram.startTransaction('set all properties');
-                for (var name_4 in inspectedProps) {
-                    var input = inspectedProps[name_4];
+                for (var name_7 in inspectedProps) {
+                    var input = inspectedProps[name_7];
                     var value = input.value;
                     var arr1 = value.split('|');
                     var arr2 = [];
-                    if (this._multipleProperties[name_4]) {
+                    if (this._multipleProperties[name_7]) {
                         // don't split if it is union and its checkbox type
-                        if (this.declaredProperties[name_4] && this.declaredProperties[name_4].type === 'checkbox' && this.showAllProperties) {
-                            arr2.push(this._multipleProperties[name_4]);
+                        if (this.declaredProperties[name_7] && this.declaredProperties[name_7].type === 'checkbox' && this.showAllProperties) {
+                            arr2.push(this._multipleProperties[name_7]);
                         }
                         else {
-                            arr2 = this._multipleProperties[name_4].toString().split('|');
+                            arr2 = this._multipleProperties[name_7].toString().split('|');
                         }
                     }
                     var it = diagram.selection.iterator;
                     var change = false;
-                    if (this.declaredProperties[name_4] && this.declaredProperties[name_4].type === 'checkbox')
+                    if (this.declaredProperties[name_7] && this.declaredProperties[name_7].type === 'checkbox')
                         change = true; // always change checkbox
                     if (arr1.length < arr2.length // i.e Alpha|Beta -> Alpha procs the change
-                        && (!this.declaredProperties[name_4] // from and to links
-                            || !(this.declaredProperties[name_4] // do not change color checkbox and choices due to them always having less
-                                && (this.declaredProperties[name_4].type === 'color' || this.declaredProperties[name_4].type === 'checkbox' || this.declaredProperties[name_4].type === 'choices')))) {
+                        && (!this.declaredProperties[name_7] // from and to links
+                            || !(this.declaredProperties[name_7] // do not change color checkbox and choices due to them always having less
+                                && (this.declaredProperties[name_7].type === 'color' || this.declaredProperties[name_7].type === 'checkbox' || this.declaredProperties[name_7].type === 'choices')))) {
                         change = true;
                     }
                     else { // standard detection in change in properties
                         for (var j = 0; j < arr1.length && j < arr2.length; j++) {
                             if (!(arr1[j] === arr2[j])
-                                && !(this.declaredProperties[name_4] && this.declaredProperties[name_4].type === 'color' && arr1[j].toLowerCase() === arr2[j].toLowerCase())) {
+                                && !(this.declaredProperties[name_7] && this.declaredProperties[name_7].type === 'color' && arr1[j].toLowerCase() === arr2[j].toLowerCase())) {
                                 change = true;
                             }
                         }
@@ -744,8 +748,8 @@
                                 else
                                     value = arr1[0];
                                 // don't update "readOnly" data properties
-                                var decProp = this.declaredProperties[name_4];
-                                if (!this.canEditProperty(name_4, decProp, it.value))
+                                var decProp = this.declaredProperties[name_7];
+                                if (!this.canEditProperty(name_7, decProp, it.value))
                                     continue;
                                 // If it's a boolean, or if its previous value was boolean,
                                 // parse the value to be a boolean and then update the input.value to match
@@ -754,7 +758,7 @@
                                     type = decProp.type;
                                 }
                                 if (type === '') {
-                                    var oldval = data[name_4];
+                                    var oldval = data[name_7];
                                     if (typeof oldval === 'boolean')
                                         type = 'boolean'; // infer boolean
                                     else if (typeof oldval === 'number')
@@ -807,10 +811,10 @@
                                 // the value shown should match the actual value
                                 input.value = value;
                                 // modify the data object in an undo-able fashion
-                                diagram.model.setDataProperty(data, name_4, value);
+                                diagram.model.setDataProperty(data, name_7, value);
                                 // notify any listener
                                 if (this.propertyModified !== null)
-                                    this.propertyModified(name_4, value, this);
+                                    this.propertyModified(name_7, value, this);
                             }
                         }
                     }

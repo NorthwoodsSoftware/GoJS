@@ -24,7 +24,6 @@
                                 only affects if multipleSelection is true
     showSize {number} Defaults 0, shows how many nodes are showed when selecting multiple nodes
                       when its lower than 1, it shows all nodes
-		
 
   Options for properties:
     show: {boolean|function} a boolean value to show or hide the property from the inspector, or a predicate function to show conditionally.
@@ -65,7 +64,7 @@ function Inspector(divid, diagram, options) {
   this._div = mainDiv;
   this._diagram = diagram;
   this._inspectedProperties = {};
-	this._multipleProperties = {};
+  this._multipleProperties = {};
 
   // Either a GoJS Part or a simple data object, such as Model.modelData
   this.inspectedObject = null;
@@ -75,16 +74,16 @@ function Inspector(divid, diagram, options) {
   this.declaredProperties = {};
   this.inspectsSelection = true;
   this.propertyModified = null;
-	this.multipleSelection = false;
-	this.showAllProperties = false;
-	this.showSize = 0;
+  this.multipleSelection = false;
+  this.showAllProperties = false;
+  this.showSize = 0;
 
   if (options !== undefined) {
     if (options["includesOwnProperties"] !== undefined) this.includesOwnProperties = options["includesOwnProperties"];
     if (options["properties"] !== undefined) this.declaredProperties = options["properties"];
     if (options["inspectSelection"] !== undefined) this.inspectsSelection = options["inspectSelection"];
     if (options["propertyModified"] !== undefined) this.propertyModified = options["propertyModified"];
-		if (options['multipleSelection'] !== undefined) this.multipleSelection = options['multipleSelection'];
+    if (options['multipleSelection'] !== undefined) this.multipleSelection = options['multipleSelection'];
     if (options['showAllProperties'] !== undefined) this.showAllProperties = options['showAllProperties'];
     if (options['showSize'] !== undefined) this.showSize = options['showSize'];
   }
@@ -115,219 +114,213 @@ Inspector.showIfPresent = function(data, propname) {
 *                        set {@link #inspectedObject} and show and edit that object's properties.
 */
 Inspector.prototype.inspectObject = function(object) {
-	var inspectedObject = null;
-	var inspectedObjects = null;
-	if (object === null) return;
-	if (object === undefined) {
-		if (this.inspectsSelection) {
-			if (this.multipleSelection) { // gets the selection if multiple selection is true
-				inspectedObjects = this._diagram.selection;
-			} else { // otherwise grab the first object
-				inspectedObject = this._diagram.selection.first();
-			}
-		} else { // if there is a single inspected object
-			inspectedObject = this.inspectedObject;
-		}
-	} else { // if object was passed in as a parameter
-		inspectedObject = object;
-	}
-	if (inspectedObjects && inspectedObjects.count === 1) {
-		inspectedObject = inspectedObjects.first();
-	}
-	if (inspectedObjects && inspectedObjects.count <= 1) {
-		inspectedObjects = null;
-	}
+  var inspectedObject = null;
+  var inspectedObjects = null;
+  if (object === null) return;
+  if (object === undefined) {
+    if (this.inspectsSelection) {
+      if (this.multipleSelection) { // gets the selection if multiple selection is true
+        inspectedObjects = this._diagram.selection;
+      } else { // otherwise grab the first object
+        inspectedObject = this._diagram.selection.first();
+      }
+    } else { // if there is a single inspected object
+      inspectedObject = this.inspectedObject;
+    }
+  } else { // if object was passed in as a parameter
+    inspectedObject = object;
+  }
+  if (inspectedObjects && inspectedObjects.count === 1) {
+    inspectedObject = inspectedObjects.first();
+  }
+  if (inspectedObjects && inspectedObjects.count <= 1) {
+    inspectedObjects = null;
+  }
 
-	// single object or no objects
-	if (!inspectedObjects || !this.multipleSelection) {
-		if (inspectedObject === null || this.inspectedObject === inspectedObject) {
-			this.inspectedObject = inspectedObject;
-			this.updateAllHTML();
-			return;
-		}
+  // single object or no objects
+  if (!inspectedObjects || !this.multipleSelection) {
+    if (inspectedObject === null || this.inspectedObject === inspectedObject) {
+      this.inspectedObject = inspectedObject;
+      this.updateAllHTML();
+      return;
+    }
 
-		this.inspectedObject = inspectedObject;
-		if (this.inspectObject === null) return;
-		var mainDiv = this._div;
-		mainDiv.innerHTML = '';
+    this.inspectedObject = inspectedObject;
+    if (this.inspectObject === null) return;
+    var mainDiv = this._div;
+    mainDiv.innerHTML = '';
 
-		// use either the Part.data or the object itself (for model.modelData)
-		var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
-		if (!data) return;
-		// Build table:
-		var table = document.createElement('table');
-		var tbody = document.createElement('tbody');
-		this._inspectedProperties = {};
-		this.tabIndex = 0;
-		var declaredProperties = this.declaredProperties;
+    // use either the Part.data or the object itself (for model.modelData)
+    var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
+    if (!data) return;
+    // Build table:
+    var table = document.createElement('table');
+    var tbody = document.createElement('tbody');
+    this._inspectedProperties = {};
+    this.tabIndex = 0;
+    var declaredProperties = this.declaredProperties;
 
-		// Go through all the properties passed in to the inspector and show them, if appropriate:
-		for (var k in declaredProperties) {
-			var val = declaredProperties[k];
-			if (!this.canShowProperty(k, val, inspectedObject)) continue;
-			var defaultValue = '';
-			if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
-			if (data[k] !== undefined) defaultValue = data[k];
-			tbody.appendChild(this.buildPropertyRow(k, defaultValue || ''));
-		}
-		// Go through all the properties on the model data and show them, if appropriate:
-		if (this.includesOwnProperties) {
-			for (var k in data) {
-				if (k === '__gohashid') continue; // skip internal GoJS hash property
-				if (this._inspectedProperties[k]) continue; // already exists
-				if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
-				tbody.appendChild(this.buildPropertyRow(k, data[k]));
-			}
-		}
+    // Go through all the properties passed in to the inspector and show them, if appropriate:
+    for (var name in declaredProperties) {
+      var desc = declaredProperties[name];
+      if (!this.canShowProperty(name, desc, inspectedObject)) continue;
+      var val = this.findValue(name, desc, data);
+      tbody.appendChild(this.buildPropertyRow(name, val));
+    }
+    // Go through all the properties on the model data and show them, if appropriate:
+    if (this.includesOwnProperties) {
+      for (var k in data) {
+        if (k === '__gohashid') continue; // skip internal GoJS hash property
+        if (this._inspectedProperties[k]) continue; // already exists
+        if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
+        tbody.appendChild(this.buildPropertyRow(k, data[k]));
+      }
+    }
 
-		table.appendChild(tbody);
-		mainDiv.appendChild(table);
-	} else { // multiple objects selected
-		var mainDiv = this._div;
-		mainDiv.innerHTML = '';
-		var shared = new go.Map(); // for properties that the nodes have in common
-		var properties = new go.Map(); // for adding properties
-		var all = new go.Map(); // used later to prevent changing properties when unneeded
-		var it = inspectedObjects.iterator;
-		// Build table:
-		var table = document.createElement('table');
-		var tbody = document.createElement('tbody');
-		this._inspectedProperties = {};
-		this.tabIndex = 0;
-		var declaredProperties = this.declaredProperties;
-		it.next();
-		inspectedObject = it.value;
-		this.inspectedObject = inspectedObject;
-		var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
-		if (data) { // initial pass to set shared and all
-			// Go through all the properties passed in to the inspector and add them to the map, if appropriate:
-			for (var k in declaredProperties) {
-				var val = declaredProperties[k];
-				if (!this.canShowProperty(k, val, inspectedObject)) continue;
-				var defaultValue = '';
-				if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
-				if (data[k] !== undefined) defaultValue = data[k];
-				if (defaultValue === '' && this.declaredProperties[k] && this.declaredProperties[k].type === 'checkbox') {
-					shared.add(k, false);
-					all.add(k, false);
-				} else {
-					shared.add(k, defaultValue || '');
-					all.add(k, defaultValue || '');
-				}
-			}
-			// Go through all the properties on the model data and add them to the map, if appropriate:
-			if (this.includesOwnProperties) {
-				for (var k in data) {
-					if (k === '__gohashid') continue; // skip internal GoJS hash property
-					if (this._inspectedProperties[k]) continue; // already exists
-					if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
-					shared.add(k, data[k]);
-					all.add(k, data[k]);
-				}
-			}
-		}
-		var nodecount = 2;
-		while (it.next() && (this.showSize < 1 || nodecount <= this.showSize)) { // grabs all the properties from the other selected objects
-			properties.clear();
-			inspectedObject = it.value;
-			if (inspectedObject) {
-				// use either the Part.data or the object itself (for model.modelData)
-				data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
-				if (data) {
-					// Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
-					for (var k in declaredProperties) {
-						var val = declaredProperties[k];
-						if (!this.canShowProperty(k, val, inspectedObject)) continue;
-						var defaultValue = '';
-						if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
-						if (data[k] !== undefined) defaultValue = data[k];
-						if (defaultValue === '' && this.declaredProperties[k] && this.declaredProperties[k].type === 'checkbox') {
-							properties.add(k, false);
-						} else {
-							properties.add(k, defaultValue || '');
-						}
-					}
-					// Go through all the properties on the model data and add them to properties to add, if appropriate:
-					if (this.includesOwnProperties) {
-						for (var k in data) {
-							if (k === '__gohashid') continue; // skip internal GoJS hash property
-							if (this._inspectedProperties[k]) continue; // already exists
-							if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
-							properties.add(k, data[k]);
-						}
-					}
-				}
-			}
-			if (!this.showAllProperties) {
-				// Cleans up shared map with properties that aren't shared between the selected objects
-				// Also adds properties to the add and shared maps if applicable
-				var addIt = shared.iterator;
-				var toRemove = [];
-				while (addIt.next()) {
-					if (properties.has(addIt.key)) {
-						var newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
-						all.set(addIt.key, newVal);
-						if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
-								&& declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
-								|| !declaredProperties[addIt.key]) { // for non-string properties i.e color
-							newVal = shared.get(addIt.key) + '|' + properties.get(addIt.key);
-							shared.set(addIt.key, newVal);
-						}
-					} else { // toRemove array since addIt is still iterating
-						toRemove.push(addIt.key);
-					}
-				}
-				for (var i = 0; i < toRemove.length; i++) { // removes anything that doesn't showAllPropertiess
-					shared.remove(toRemove[i]);
-					all.remove(toRemove[i]);
-				}
-			} else {
-				// Adds missing properties to all with the correct amount of seperators
-				var addIt = properties.iterator;
-				while (addIt.next()) {
-					if (all.has(addIt.key)) {
-						if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
-								&& declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
-								|| !declaredProperties[addIt.key]) { // for non-string properties i.e color
-							var newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
-							all.set(addIt.key, newVal);
-						}
-					} else {
-						var newVal = '';
-						for (var i = 0; i < nodecount - 1; i++) newVal += '|';
-						newVal += properties.get(addIt.key);
-						all.set(addIt.key, newVal);
-					}
-				}
-				// Adds bars in case properties is not in all
-				addIt = all.iterator;
-				while (addIt.next()) {
-					if (!properties.has(addIt.key)) {
-						if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
-								&& declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
-								|| !declaredProperties[addIt.key]) { // for non-string properties i.e color
-							var newVal = all.get(addIt.key) + '|';
-							all.set(addIt.key, newVal);
-						}
-					}
-				}
-			}
-			nodecount++;
-		}
-		// builds the table property rows and sets multipleProperties to help with updateall
-		var mapIt;
-		if (!this.showAllProperties) mapIt = shared.iterator;
-		else mapIt = all.iterator;
-		while (mapIt.next()) {
-			tbody.appendChild(this.buildPropertyRow(mapIt.key, mapIt.value)); // shows the properties that are allowed
-		}
-		table.appendChild(tbody);
-		mainDiv.appendChild(table);
-		var allIt = all.iterator;
-		while (allIt.next()) {
-			this._multipleProperties[allIt.key] = allIt.value; // used for updateall to know which properties to change
-		}
-	}
+    table.appendChild(tbody);
+    mainDiv.appendChild(table);
+  } else { // multiple objects selected
+    var mainDiv = this._div;
+    mainDiv.innerHTML = '';
+    var shared = new go.Map(); // for properties that the nodes have in common
+    var properties = new go.Map(); // for adding properties
+    var all = new go.Map(); // used later to prevent changing properties when unneeded
+    var it = inspectedObjects.iterator;
+    // Build table:
+    var table = document.createElement('table');
+    var tbody = document.createElement('tbody');
+    this._inspectedProperties = {};
+    this.tabIndex = 0;
+    var declaredProperties = this.declaredProperties;
+    it.next();
+    inspectedObject = it.value;
+    this.inspectedObject = inspectedObject;
+    var data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
+    if (data) { // initial pass to set shared and all
+      // Go through all the properties passed in to the inspector and add them to the map, if appropriate:
+      for (var name in declaredProperties) {
+        var desc = declaredProperties[name];
+        if (!this.canShowProperty(name, desc, inspectedObject)) continue;
+        var val = this.findValue(name, desc, data);
+        if (val === '' && desc && desc.type === 'checkbox') {
+          shared.add(name, false);
+          all.add(name, false);
+        } else {
+          shared.add(name, val);
+          all.add(name, val);
+        }
+      }
+      // Go through all the properties on the model data and add them to the map, if appropriate:
+      if (this.includesOwnProperties) {
+        for (var k in data) {
+          if (k === '__gohashid') continue; // skip internal GoJS hash property
+          if (this._inspectedProperties[k]) continue; // already exists
+          if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
+          shared.add(k, data[k]);
+          all.add(k, data[k]);
+        }
+      }
+    }
+    var nodecount = 2;
+    while (it.next() && (this.showSize < 1 || nodecount <= this.showSize)) { // grabs all the properties from the other selected objects
+      properties.clear();
+      inspectedObject = it.value;
+      if (inspectedObject) {
+        // use either the Part.data or the object itself (for model.modelData)
+        data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
+        if (data) {
+          // Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
+          for (var name in declaredProperties) {
+            var desc = declaredProperties[name];
+            if (!this.canShowProperty(name, desc, inspectedObject)) continue;
+            var val = this.findValue(name, desc, data);
+            if (val === '' && desc && desc.type === 'checkbox') {
+              properties.add(name, false);
+            } else {
+              properties.add(name, val);
+            }
+          }
+          // Go through all the properties on the model data and add them to properties to add, if appropriate:
+          if (this.includesOwnProperties) {
+            for (var k in data) {
+              if (k === '__gohashid') continue; // skip internal GoJS hash property
+              if (this._inspectedProperties[k]) continue; // already exists
+              if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
+              properties.add(k, data[k]);
+            }
+          }
+        }
+      }
+      if (!this.showAllProperties) {
+        // Cleans up shared map with properties that aren't shared between the selected objects
+        // Also adds properties to the add and shared maps if applicable
+        var addIt = shared.iterator;
+        var toRemove = [];
+        while (addIt.next()) {
+          if (properties.has(addIt.key)) {
+            var newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
+            all.set(addIt.key, newVal);
+            if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
+              && declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
+              || !declaredProperties[addIt.key]) { // for non-string properties i.e color
+              newVal = shared.get(addIt.key) + '|' + properties.get(addIt.key);
+              shared.set(addIt.key, newVal);
+            }
+          } else { // toRemove array since addIt is still iterating
+            toRemove.push(addIt.key);
+          }
+        }
+        for (var i = 0; i < toRemove.length; i++) { // removes anything that doesn't showAllPropertiess
+          shared.remove(toRemove[i]);
+          all.remove(toRemove[i]);
+        }
+      } else {
+        // Adds missing properties to all with the correct amount of seperators
+        var addIt = properties.iterator;
+        while (addIt.next()) {
+          if (all.has(addIt.key)) {
+            if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
+              && declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
+              || !declaredProperties[addIt.key]) { // for non-string properties i.e color
+              var newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
+              all.set(addIt.key, newVal);
+            }
+          } else {
+            var newVal = '';
+            for (var i = 0; i < nodecount - 1; i++) newVal += '|';
+            newVal += properties.get(addIt.key);
+            all.set(addIt.key, newVal);
+          }
+        }
+        // Adds bars in case properties is not in all
+        addIt = all.iterator;
+        while (addIt.next()) {
+          if (!properties.has(addIt.key)) {
+            if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
+              && declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
+              || !declaredProperties[addIt.key]) { // for non-string properties i.e color
+              var newVal = all.get(addIt.key) + '|';
+              all.set(addIt.key, newVal);
+            }
+          }
+        }
+      }
+      nodecount++;
+    }
+    // builds the table property rows and sets multipleProperties to help with updateall
+    var mapIt;
+    if (!this.showAllProperties) mapIt = shared.iterator;
+    else mapIt = all.iterator;
+    while (mapIt.next()) {
+      tbody.appendChild(this.buildPropertyRow(mapIt.key, mapIt.value)); // shows the properties that are allowed
+    }
+    table.appendChild(tbody);
+    mainDiv.appendChild(table);
+    var allIt = all.iterator;
+    while (allIt.next()) {
+      this._multipleProperties[allIt.key] = allIt.value; // used for updateall to know which properties to change
+    }
+  }
 };
 
 /**
@@ -372,6 +365,21 @@ Inspector.prototype.canEditProperty = function(propertyName, propertyDesc, inspe
 }
 
 /**
+ * @ignore
+ * @param {any} propName
+ * @param {any} propDesc
+ * @param {any} data
+ * @return {any}
+ */
+Inspector.prototype.findValue = function(propName, propDesc, data) {
+  var val = '';
+  if (propDesc && propDesc.defaultValue !== undefined) val = propDesc.defaultValue;
+  if (data[propName] !== undefined) val = data[propName];
+  if (val === undefined) return '';
+  return val;
+}
+
+/**
 * @ignore
 * This sets this._inspectedProperties[propertyName] and creates the HTML table row:
 *    <tr>
@@ -407,8 +415,8 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
     if (decProp) {
       var t = decProp.type;
       if (t !== 'string' && t !== 'number' && t !== 'boolean' &&
-          t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
-          t !== 'rect' && t !== 'spot' && t !== 'margin') {
+        t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
+        t !== 'rect' && t !== 'spot' && t !== 'margin') {
         input.setAttribute("type", decProp.type);
       }
       if (decProp.type === "color") {
@@ -559,153 +567,153 @@ Inspector.prototype.updateSelect = function(decProp, select, propertyName, prope
 * current values held in the HTML input elements.
 */
 Inspector.prototype.updateAllProperties = function() {
-	var inspectedProps = this._inspectedProperties;
-	var diagram = this._diagram;
-	if (diagram.selection.count === 1 || !this.multipleSelection) { // single object update
-		var isPart = this.inspectedObject instanceof go.Part;
-		var data = isPart ? this.inspectedObject.data : this.inspectedObject;
-		if (!data) return;  // must not try to update data when there's no data!
+  var inspectedProps = this._inspectedProperties;
+  var diagram = this._diagram;
+  if (diagram.selection.count === 1 || !this.multipleSelection) { // single object update
+    var isPart = this.inspectedObject instanceof go.Part;
+    var data = isPart ? this.inspectedObject.data : this.inspectedObject;
+    if (!data) return;  // must not try to update data when there's no data!
 
-		diagram.startTransaction('set all properties');
-		for (var name in inspectedProps) {
-			var input = inspectedProps[name];
-			var value = input.value;
+    diagram.startTransaction('set all properties');
+    for (var name in inspectedProps) {
+      var input = inspectedProps[name];
+      var value = input.value;
 
-			// don't update "readOnly" data properties
-			var decProp = this.declaredProperties[name];
-			if (!this.canEditProperty(name, decProp, this.inspectedObject)) continue;
+      // don't update "readOnly" data properties
+      var decProp = this.declaredProperties[name];
+      if (!this.canEditProperty(name, decProp, this.inspectedObject)) continue;
 
-			// If it's a boolean, or if its previous value was boolean,
-			// parse the value to be a boolean and then update the input.value to match
-			var type = '';
-			if (decProp !== undefined && decProp.type !== undefined) {
-				type = decProp.type;
-			}
-			if (type === '') {
-				var oldval = data[name];
-				if (typeof oldval === 'boolean') type = 'boolean'; // infer boolean
-				else if (typeof oldval === 'number') type = 'number';
-				else if (oldval instanceof go.Point) type = 'point';
-				else if (oldval instanceof go.Size) type = 'size';
-				else if (oldval instanceof go.Rect) type = 'rect';
-				else if (oldval instanceof go.Spot) type = 'spot';
-				else if (oldval instanceof go.Margin) type = 'margin';
-			}
+      // If it's a boolean, or if its previous value was boolean,
+      // parse the value to be a boolean and then update the input.value to match
+      var type = '';
+      if (decProp !== undefined && decProp.type !== undefined) {
+        type = decProp.type;
+      }
+      if (type === '') {
+        var oldval = data[name];
+        if (typeof oldval === 'boolean') type = 'boolean'; // infer boolean
+        else if (typeof oldval === 'number') type = 'number';
+        else if (oldval instanceof go.Point) type = 'point';
+        else if (oldval instanceof go.Size) type = 'size';
+        else if (oldval instanceof go.Rect) type = 'rect';
+        else if (oldval instanceof go.Spot) type = 'spot';
+        else if (oldval instanceof go.Margin) type = 'margin';
+      }
 
-			// convert to specific type, if needed
-			switch (type) {
-				case 'boolean': value = !(value === false || value === 'false' || value === '0'); break;
-				case 'number': value = parseFloat(value); break;
-				case 'arrayofnumber': value = this.convertToArrayOfNumber(value); break;
-				case 'point': value = go.Point.parse(value); break;
-				case 'size': value = go.Size.parse(value); break;
-				case 'rect': value = go.Rect.parse(value); break;
-				case 'spot': value = go.Spot.parse(value); break;
-				case 'margin': value = go.Margin.parse(value); break;
-				case 'checkbox': value = input.checked; break;
-				case 'select': value = decProp.choicesArray[input.selectedIndex]; break;
-			}
+      // convert to specific type, if needed
+      switch (type) {
+        case 'boolean': value = !(value === false || value === 'false' || value === '0'); break;
+        case 'number': value = parseFloat(value); break;
+        case 'arrayofnumber': value = this.convertToArrayOfNumber(value); break;
+        case 'point': value = go.Point.parse(value); break;
+        case 'size': value = go.Size.parse(value); break;
+        case 'rect': value = go.Rect.parse(value); break;
+        case 'spot': value = go.Spot.parse(value); break;
+        case 'margin': value = go.Margin.parse(value); break;
+        case 'checkbox': value = input.checked; break;
+        case 'select': value = decProp.choicesArray[input.selectedIndex]; break;
+      }
 
-			// in case parsed to be different, such as in the case of boolean values,
-			// the value shown should match the actual value
-			input.value = value;
+      // in case parsed to be different, such as in the case of boolean values,
+      // the value shown should match the actual value
+      input.value = value;
 
-			// modify the data object in an undo-able fashion
-			diagram.model.setDataProperty(data, name, value);
+      // modify the data object in an undo-able fashion
+      diagram.model.setDataProperty(data, name, value);
 
-			// notify any listener
-			if (this.propertyModified !== null) this.propertyModified(name, value, this);
-		}
-		diagram.commitTransaction('set all properties');
-	} else { // selection object update
-		diagram.startTransaction('set all properties');
-		for (var name in inspectedProps) {
-			var input = inspectedProps[name];
-			var value = input.value;
-			var arr1 = value.split('|');
-			var arr2 = [];
-			if (this._multipleProperties[name]) {
-				// don't split if it is union and its checkbox type
-				if (this.declaredProperties[name] && this.declaredProperties[name].type === 'checkbox' && this.showAllProperties) {
-					arr2.push(this._multipleProperties[name]);
-				} else {
-					arr2 = this._multipleProperties[name].toString().split('|');
-				}
-			}
-			var it = diagram.selection.iterator;
-			var change = false;
-			if (this.declaredProperties[name] && this.declaredProperties[name].type === 'checkbox') change = true; // always change checkbox
-			if (arr1.length < arr2.length // i.e Alpha|Beta -> Alpha procs the change
-					&& (!this.declaredProperties[name] // from and to links
-					|| !(this.declaredProperties[name] // do not change color checkbox and choices due to them always having less
-					&& (this.declaredProperties[name].type === 'color' || this.declaredProperties[name].type === 'checkbox' || this.declaredProperties[name].type === 'choices')))) {
-						change = true;
-			} else { // standard detection in change in properties
-				for (var j = 0; j < arr1.length && j < arr2.length; j++) {
-					if (!(arr1[j] === arr2[j])
-							&& !(this.declaredProperties[name] && this.declaredProperties[name].type === 'color' && arr1[j].toLowerCase() === arr2[j].toLowerCase())) {
-						change = true;
-					}
-				}
-			}
-			if (change) { // only change properties it needs to change instead all of them
-				for (var i = 0; i < diagram.selection.count; i++) {
-					it.next();
-					var isPart = it.value instanceof go.Part;
-					var data = isPart ? it.value.data : it.value;
+      // notify any listener
+      if (this.propertyModified !== null) this.propertyModified(name, value, this);
+    }
+    diagram.commitTransaction('set all properties');
+  } else { // selection object update
+    diagram.startTransaction('set all properties');
+    for (var name in inspectedProps) {
+      var input = inspectedProps[name];
+      var value = input.value;
+      var arr1 = value.split('|');
+      var arr2 = [];
+      if (this._multipleProperties[name]) {
+        // don't split if it is union and its checkbox type
+        if (this.declaredProperties[name] && this.declaredProperties[name].type === 'checkbox' && this.showAllProperties) {
+          arr2.push(this._multipleProperties[name]);
+        } else {
+          arr2 = this._multipleProperties[name].toString().split('|');
+        }
+      }
+      var it = diagram.selection.iterator;
+      var change = false;
+      if (this.declaredProperties[name] && this.declaredProperties[name].type === 'checkbox') change = true; // always change checkbox
+      if (arr1.length < arr2.length // i.e Alpha|Beta -> Alpha procs the change
+        && (!this.declaredProperties[name] // from and to links
+          || !(this.declaredProperties[name] // do not change color checkbox and choices due to them always having less
+            && (this.declaredProperties[name].type === 'color' || this.declaredProperties[name].type === 'checkbox' || this.declaredProperties[name].type === 'choices')))) {
+        change = true;
+      } else { // standard detection in change in properties
+        for (var j = 0; j < arr1.length && j < arr2.length; j++) {
+          if (!(arr1[j] === arr2[j])
+            && !(this.declaredProperties[name] && this.declaredProperties[name].type === 'color' && arr1[j].toLowerCase() === arr2[j].toLowerCase())) {
+            change = true;
+          }
+        }
+      }
+      if (change) { // only change properties it needs to change instead all of them
+        for (var i = 0; i < diagram.selection.count; i++) {
+          it.next();
+          var isPart = it.value instanceof go.Part;
+          var data = isPart ? it.value.data : it.value;
 
-					if (data) { // ignores the selected node if there is no data
-						if (i < arr1.length) value = arr1[i];
-						else value = arr1[0];
+          if (data) { // ignores the selected node if there is no data
+            if (i < arr1.length) value = arr1[i];
+            else value = arr1[0];
 
-						// don't update "readOnly" data properties
-						var decProp = this.declaredProperties[name];
-						if (!this.canEditProperty(name, decProp, it.value)) continue;
+            // don't update "readOnly" data properties
+            var decProp = this.declaredProperties[name];
+            if (!this.canEditProperty(name, decProp, it.value)) continue;
 
-						// If it's a boolean, or if its previous value was boolean,
-						// parse the value to be a boolean and then update the input.value to match
-						var type = '';
-						if (decProp !== undefined && decProp.type !== undefined) {
-							type = decProp.type;
-						}
-						if (type === '') {
-							var oldval = data[name];
-							if (typeof oldval === 'boolean') type = 'boolean'; // infer boolean
-							else if (typeof oldval === 'number') type = 'number';
-							else if (oldval instanceof go.Point) type = 'point';
-							else if (oldval instanceof go.Size) type = 'size';
-							else if (oldval instanceof go.Rect) type = 'rect';
-							else if (oldval instanceof go.Spot) type = 'spot';
-							else if (oldval instanceof go.Margin) type = 'margin';
-						}
+            // If it's a boolean, or if its previous value was boolean,
+            // parse the value to be a boolean and then update the input.value to match
+            var type = '';
+            if (decProp !== undefined && decProp.type !== undefined) {
+              type = decProp.type;
+            }
+            if (type === '') {
+              var oldval = data[name];
+              if (typeof oldval === 'boolean') type = 'boolean'; // infer boolean
+              else if (typeof oldval === 'number') type = 'number';
+              else if (oldval instanceof go.Point) type = 'point';
+              else if (oldval instanceof go.Size) type = 'size';
+              else if (oldval instanceof go.Rect) type = 'rect';
+              else if (oldval instanceof go.Spot) type = 'spot';
+              else if (oldval instanceof go.Margin) type = 'margin';
+            }
 
-						// convert to specific type, if needed
-						switch (type) {
-							case 'boolean': value = !(value === false || value === 'false' || value === '0'); break;
-							case 'number': value = parseFloat(value); break;
-							case 'arrayofnumber': value = this.convertToArrayOfNumber(value); break;
-							case 'point': value = go.Point.parse(value); break;
-							case 'size': value = go.Size.parse(value); break;
-							case 'rect': value = go.Rect.parse(value); break;
-							case 'spot': value = go.Spot.parse(value); break;
-							case 'margin': value = go.Margin.parse(value); break;
-							case 'checkbox': value = input.checked; break;
-							case 'select': value = decProp.choicesArray[input.selectedIndex]; break;
-						}
+            // convert to specific type, if needed
+            switch (type) {
+              case 'boolean': value = !(value === false || value === 'false' || value === '0'); break;
+              case 'number': value = parseFloat(value); break;
+              case 'arrayofnumber': value = this.convertToArrayOfNumber(value); break;
+              case 'point': value = go.Point.parse(value); break;
+              case 'size': value = go.Size.parse(value); break;
+              case 'rect': value = go.Rect.parse(value); break;
+              case 'spot': value = go.Spot.parse(value); break;
+              case 'margin': value = go.Margin.parse(value); break;
+              case 'checkbox': value = input.checked; break;
+              case 'select': value = decProp.choicesArray[input.selectedIndex]; break;
+            }
 
-						// in case parsed to be different, such as in the case of boolean values,
-						// the value shown should match the actual value
-						input.value = value;
+            // in case parsed to be different, such as in the case of boolean values,
+            // the value shown should match the actual value
+            input.value = value;
 
-						// modify the data object in an undo-able fashion
-						diagram.model.setDataProperty(data, name, value);
+            // modify the data object in an undo-able fashion
+            diagram.model.setDataProperty(data, name, value);
 
-						// notify any listener
-						if (this.propertyModified !== null) this.propertyModified(name, value, this);
-					}
-				}
-			}
-		}
-		diagram.commitTransaction('set all properties');
-	}
+            // notify any listener
+            if (this.propertyModified !== null) this.propertyModified(name, value, this);
+          }
+        }
+      }
+    }
+    diagram.commitTransaction('set all properties');
+  }
 };

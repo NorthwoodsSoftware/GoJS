@@ -171,13 +171,11 @@ export class Inspector {
       const declaredProperties = this.declaredProperties;
 
       // Go through all the properties passed in to the inspector and show them, if appropriate:
-      for (const k in declaredProperties) {
-        const val = declaredProperties[k];
-        if (!this.canShowProperty(k, val, inspectedObject)) continue;
-        let defaultValue = '';
-        if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
-        if (data[k] !== undefined) defaultValue = data[k];
-        tbody.appendChild(this.buildPropertyRow(k, defaultValue || ''));
+      for (const name in declaredProperties) {
+        const desc = declaredProperties[name];
+        if (!this.canShowProperty(name, desc, inspectedObject)) continue;
+        let val = this.findValue(name, desc, data);
+        tbody.appendChild(this.buildPropertyRow(name, val));
       }
       // Go through all the properties on the model data and show them, if appropriate:
       if (this.includesOwnProperties) {
@@ -210,18 +208,16 @@ export class Inspector {
       let data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
       if (data) { // initial pass to set shared and all
         // Go through all the properties passed in to the inspector and add them to the map, if appropriate:
-        for (const k in declaredProperties) {
-          const val = declaredProperties[k];
-          if (!this.canShowProperty(k, val, inspectedObject)) continue;
-          let defaultValue = '';
-          if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
-          if (data[k] !== undefined) defaultValue = data[k];
-          if (defaultValue === '' && this.declaredProperties[k] && this.declaredProperties[k].type === 'checkbox') {
-            shared.add(k, false);
-            all.add(k, false);
+        for (const name in declaredProperties) {
+          const desc = declaredProperties[name];
+          if (!this.canShowProperty(name, desc, inspectedObject)) continue;
+          let val = this.findValue(name, desc, data);
+          if (val === '' && this.declaredProperties[name] && this.declaredProperties[name].type === 'checkbox') {
+            shared.add(name, false);
+            all.add(name, false);
           } else {
-            shared.add(k, defaultValue || '');
-            all.add(k, defaultValue || '');
+            shared.add(name, val);
+            all.add(name, val);
           }
         }
         // Go through all the properties on the model data and add them to the map, if appropriate:
@@ -244,16 +240,14 @@ export class Inspector {
           data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
           if (data) {
             // Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
-            for (const k in declaredProperties) {
-              const val = declaredProperties[k];
-              if (!this.canShowProperty(k, val, inspectedObject)) continue;
-              let defaultValue = '';
-              if (val.defaultValue !== undefined) defaultValue = val.defaultValue;
-              if (data[k] !== undefined) defaultValue = data[k];
-              if (defaultValue === '' && this.declaredProperties[k] && this.declaredProperties[k].type === 'checkbox') {
-                properties.add(k, false);
+            for (const name in declaredProperties) {
+              const desc = declaredProperties[name];
+              if (!this.canShowProperty(name, desc, inspectedObject)) continue;
+              let val = this.findValue(name, desc, data);
+              if (val === '' && this.declaredProperties[name] && this.declaredProperties[name].type === 'checkbox') {
+                properties.add(name, false);
               } else {
-                properties.add(k, defaultValue || '');
+                properties.add(name, val || '');
               }
             }
             // Go through all the properties on the model data and add them to properties to add, if appropriate:
@@ -379,6 +373,20 @@ export class Inspector {
       if (typeof propertyDesc.readOnly === 'function') return !propertyDesc.readOnly(inspectedObject, propertyName);
     }
     return true;
+  }
+
+  /**
+   * @ignore
+   * @param propName
+   * @param propDesc
+   * @param data
+   */
+  private findValue(propName: string, propDesc: any, data: any): any {
+    let val = '';
+    if (propDesc && propDesc.defaultValue !== undefined) val = propDesc.defaultValue;
+    if (data[propName] !== undefined) val = data[propName];
+    if (val === undefined) return '';
+    return val;
   }
 
   /**

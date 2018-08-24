@@ -176,16 +176,16 @@ function initSearch () {
   }).on('input', function () {
     setQuery($.trim($field.val()));
   }).on('keydown', function (e) {
-    if (e.keyCode == 13 || e.keyCode == 27 || e.keyCode == 38 || e.keyCode == 40) {
+    if (e.key === 'Enter' || e.key === 'Escape' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       preventPress = true;
       e.preventDefault();
-      if (e.keyCode == 13) {
+      if (e.key === 'Enter') {
         gotoCurrentResult();
-      } else if (e.keyCode == 27) {
+      } else if (e.key === 'Escape') {
         $field.blur();
-      } else if (e.keyCode == 38) {
+      } else if (e.key === 'ArrowUp') {
         setCurrentResult(-1);
-      } else if (e.keyCode == 40) {
+      } else if (e.key === 'ArrowDown') {
         setCurrentResult(1);
       }
     } else {
@@ -197,11 +197,11 @@ function initSearch () {
   });
 
   /**
-   * Start searching by pressing a key on the body.
+   * Start searching by pressing an alpha key on the body.
    */
   $('body').on('keydown', function (e) {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
-    if (!hasFocus && e.keyCode > 47 && e.keyCode < 112) {
+    if (!hasFocus && e.key && e.key.length === 1 && e.key.match(/[a-zA-Z]/) !== null) {
         $field.focus();
     }
   });

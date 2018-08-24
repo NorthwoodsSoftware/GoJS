@@ -264,17 +264,24 @@
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
   }
 
-  // add an SVG rendering of the diagram at the end of this page
-  function makeSVG() {
-    var svg = myDiagram.makeSvg({
-        scale: 0.5
-      });
-    svg.style.border = "1px solid black";
-    obj = document.getElementById("SVGArea");
-    obj.appendChild(svg);
-    if (obj.children.length > 0) {
-      obj.replaceChild(svg, obj.children[0]);
+  // print the diagram by opening a new window holding SVG images of the diagram contents for each page
+  function printDiagram() {
+    var svgWindow = window.open();
+    if (!svgWindow) return;  // failure to open a new Window
+    var printSize = new go.Size(700, 960);
+    var bnds = myDiagram.documentBounds;
+    var x = bnds.x;
+    var y = bnds.y;
+    while (y < bnds.bottom) {
+      while (x < bnds.right) {
+        var svg = myDiagram.makeSVG({ scale: 1.0, position: new go.Point(x, y), size: printSize });
+        svgWindow.document.body.appendChild(svg);
+        x += printSize.width;
+      }
+      x = bnds.x;
+      y += printSize.height;
     }
+    setTimeout(function() { svgWindow.print(); }, 1);
   }
 </script>
 </head>
@@ -334,11 +341,7 @@
 {"from":0, "to":4, "fromPort":"B", "toPort":"T"}
  ]}
   </textarea>
-  <p>Click the button below to render the current GoJS Diagram into SVG at one-half scale.
-     The SVG is not interactive like the GoJS diagram, but can be used for printing or display.
-     For more information, see the page on <a href="../intro/makingSVG.html">making SVG</a>.</p>
-  <button onclick="makeSVG()">Render as SVG</button>
-  <div id="SVGArea"></div>
+  <button onclick="printDiagram()">Print Diagram Using SVG</button>
 </div>
 </body>
 </html>
