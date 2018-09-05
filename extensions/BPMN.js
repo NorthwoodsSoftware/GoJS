@@ -568,7 +568,7 @@ $(go.Shape, "NotAllowed",
               name: "SHAPE",
               desiredSize: new go.Size(GatewayNodeSize, GatewayNodeSize),
               portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-              fromSpot: go.Spot.NotLeftSide, toSpot: go.Spot.MiddleLeft
+              fromSpot: go.Spot.NotLeftSide, toSpot: go.Spot.NotRightSide
             },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),  // end main shape
           $(go.Shape, "NotAllowed",

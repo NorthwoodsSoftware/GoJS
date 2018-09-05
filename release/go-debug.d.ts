@@ -1227,6 +1227,7 @@ declare namespace go {
         static InfiniteScroll: EnumValue;
 
         delaysLayout: boolean;  // undocumented
+        isVirtualized: boolean;  // undocumented
         getRenderingHint(name: string): any;  // undocumented
         setRenderingHint(name: string, val: any): void;  // undocumented
         getInputOption(name: string): any;  // undocumented
@@ -5907,6 +5908,9 @@ declare namespace go {
         *   otherwise update only those bindings using this source property name.
         */
         updateTargetBindings(data: Object, srcpropname?: string): void;
+
+      computeJsonDifference(newmodel: Model, classname?: string): string; // undocumented
+      computeJSONDifference(newmodel: Model, classname?: string): string; // undocumented
     }
 
     /**

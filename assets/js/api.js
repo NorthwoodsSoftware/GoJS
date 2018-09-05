@@ -73,8 +73,8 @@ function initSearch () {
   var hasFocus = false;
   var preventPress = false;
   var search;
-  var index;
   var fuse;
+  var resultClicked = false;
   function createIndex() {
     // get search data JSON
     $.getJSON(base + 'search.json')
@@ -168,10 +168,20 @@ function initSearch () {
       $field.blur();
     }
   }
+  $results.on('mousedown', () => {
+    resultClicked = true;
+  }).on('mouseup', () => {
+    resultClicked = false;
+    setHasFocus(false);
+  });
   $field.on('focusin', function () {
     setHasFocus(true);
     loadIndex();
   }).on('focusout', function () {
+    if (resultClicked) {
+      resultClicked = false;
+      return;
+    }
     setTimeout(function () { return setHasFocus(false); }, 100);
   }).on('input', function () {
     setQuery($.trim($field.val()));
