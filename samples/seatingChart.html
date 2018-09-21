@@ -6,7 +6,7 @@
 <meta name="description" content="A seating chart editor for assigning places at tables." />
 <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<style> 
+<style>
   /* Use a Flexbox to make the Palette/Diagram responsive */
   #myFlexDiv {
     display: -webkit-flex;
@@ -74,8 +74,14 @@
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         new go.Binding("text", "key"),
         { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-          mouseDragEnter: function(e, node, prev) { highlightSeats(node, node.diagram.selection, true); },
-          mouseDragLeave: function(e, node, next) { highlightSeats(node, node.diagram.selection, false); },
+          mouseDragEnter: function(e, node, prev) {
+            var dragCopy = node.diagram.toolManager.draggingTool.copiedParts;  // could be copied from palette
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
+          },
+          mouseDragLeave: function(e, node, next) {
+            var dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
+          },
           mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
         },
         $(go.Shape, "Rectangle", { fill: "blanchedalmond", stroke: null }),
@@ -116,8 +122,14 @@
         { rotatable: true },
         new go.Binding("angle").makeTwoWay(),
         { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-          mouseDragEnter: function(e, node, prev) { highlightSeats(node, node.diagram.selection, true); },
-          mouseDragLeave: function(e, node, next) { highlightSeats(node, node.diagram.selection, false); },
+          mouseDragEnter: function(e, node, prev) {
+            var dragCopy = node.diagram.toolManager.draggingTool.copiedParts;  // could be copied from palette
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
+          },
+          mouseDragLeave: function(e, node, next) {
+            var dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
+          },
           mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
         }
       ];
@@ -282,9 +294,11 @@
       node = node.diagram.findNodeForKey(node.data.table);
       if (node === null) return;
     }
-    if (coll.any(isTable)) {
+    var it = coll.iterator;
+    while (it.next()) {
+      var n = it.key;
       // if dragging a Table, don't do any highlighting
-      return;
+      if (isTable(n)) return;
     }
     var guests = node.data.guests;
     for (var sit = node.elements; sit.next();) {

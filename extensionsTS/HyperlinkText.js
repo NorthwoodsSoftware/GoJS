@@ -34,6 +34,8 @@
     //    )
     // The first argument to the "HyperlinkText" builder should be either the URL string or a function
     // that takes the data-bound Panel and returns the URL string.
+    // If the URL string is empty or if the function returns an empty string,
+    // the text will not be underlined on a mouse-over and a click has no effect.
     // The second argument to the "HyperlinkText" builder may be either a string to display in a TextBlock,
     // or a function that takes the data-bound Panel and returns the string to display in a TextBlock.
     // If no text string or function is provided, it assumes all of the arguments are used to
@@ -53,20 +55,21 @@
         }
         // define the click behavior
         var click = function (e, obj) {
-            var url = obj["_url"];
-            if (typeof url === "function")
-                url = url(obj.findTemplateBinder());
-            window.open(url, "_blank");
+            var u = obj._url;
+            if (typeof u === "function")
+                u = u(obj.findTemplateBinder());
+            if (u)
+                window.open(u, "_blank");
         };
         // define the tooltip
-        var tooltip = go.GraphObject.make(go.Adornment, "Auto", go.GraphObject.make(go.Shape, { fill: "#EFEFCC" }), go.GraphObject.make(go.TextBlock, { margin: 4 }, new go.Binding("text", "", function (obj) {
+        var tooltip = go.GraphObject.make(go.Adornment, "Auto", go.GraphObject.make(go.Shape, { fill: "#EFEFCC" }), go.GraphObject.make(go.TextBlock, { name: "TB", margin: 4 }, new go.Binding("text", "", function (obj) {
             // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
             obj = obj.part.adornedObject;
-            var url = obj._url;
-            if (typeof url === "function")
-                url = url(obj.findTemplateBinder());
-            return url;
-        }).ofObject()));
+            var u = obj._url;
+            if (typeof u === "function")
+                u = u(obj.findTemplateBinder());
+            return u;
+        }).ofObject()), new go.Binding("visible", "text", function (t) { return !!t; }).ofObject("TB"));
         // if the text is provided, use a new TextBlock; otherwise assume the TextBlock is provided
         if (typeof (text) === "string" || typeof (text) === "function" || !anyGraphObjects) {
             if (text === null && typeof (url) === "string")
@@ -74,7 +77,13 @@
             var tb = go.GraphObject.make(go.TextBlock, {
                 "_url": url,
                 cursor: "pointer",
-                mouseEnter: function (e, obj) { obj.isUnderline = true; },
+                mouseEnter: function (e, tb) {
+                    var u = tb._url;
+                    if (typeof u === "function")
+                        u = u(tb.findTemplateBinder());
+                    if (u)
+                        tb.isUnderline = true;
+                },
                 mouseLeave: function (e, obj) { obj.isUnderline = false; },
                 click: click,
                 toolTip: tooltip // shared by all HyperlinkText textblocks
@@ -91,17 +100,32 @@
             return tb;
         }
         else {
-            findTextBlock(args);
+            var findTextBlock_1 = function (obj) {
+                if (obj instanceof go.TextBlock)
+                    return obj;
+                if (obj instanceof go.Panel) {
+                    var it = obj.elements;
+                    while (it.next()) {
+                        var result = findTextBlock_1(it.value);
+                        if (result !== null)
+                            return result;
+                    }
+                }
+                return null;
+            };
             return go.GraphObject.make(go.Panel, {
                 "_url": url,
                 cursor: "pointer",
                 mouseEnter: function (e, panel) {
-                    var tb = findTextBlock(panel);
-                    if (tb !== null)
+                    var tb = findTextBlock_1(panel);
+                    var u = panel._url;
+                    if (typeof u === "function")
+                        u = u(panel.findTemplateBinder());
+                    if (tb !== null && u)
                         tb.isUnderline = true;
                 },
                 mouseLeave: function (e, panel) {
-                    var tb = findTextBlock(panel);
+                    var tb = findTextBlock_1(panel);
                     if (tb !== null)
                         tb.isUnderline = false;
                 },
@@ -110,17 +134,4 @@
             });
         }
     });
-    function findTextBlock(obj) {
-        if (obj instanceof go.TextBlock)
-            return obj;
-        if (obj instanceof go.Panel) {
-            var it = obj.elements;
-            while (it.next()) {
-                var result = findTextBlock(it.value);
-                if (result !== null)
-                    return result;
-            }
-        }
-        return null;
-    }
 });

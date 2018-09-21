@@ -29,6 +29,8 @@ import * as go from "../release/go";
 
 // The first argument to the "HyperlinkText" builder should be either the URL string or a function
 // that takes the data-bound Panel and returns the URL string.
+// If the URL string is empty or if the function returns an empty string,
+// the text will not be underlined on a mouse-over and a click has no effect.
 
 // The second argument to the "HyperlinkText" builder may be either a string to display in a TextBlock,
 // or a function that takes the data-bound Panel and returns the string to display in a TextBlock.
@@ -39,47 +41,52 @@ import * as go from "../release/go";
 
 go.GraphObject.defineBuilder("HyperlinkText", (args) => {
   // the URL is required as the first argument, either a string or a side-effect-free function returning a string
-  var url = go.GraphObject.takeBuilderArgument(args, undefined, (x) => { return typeof x === "string" || typeof x === "function"; });
+  const url = go.GraphObject.takeBuilderArgument(args, undefined, (x) => { return typeof x === "string" || typeof x === "function"; });
   // the text for the HyperlinkText is the optional second argument, either a string or a side-effect-free function returning a string
-  var text = go.GraphObject.takeBuilderArgument(args, null, (x) => { return typeof x === "string" || typeof x === "function"; });
+  let text = go.GraphObject.takeBuilderArgument(args, null, (x) => { return typeof x === "string" || typeof x === "function"; });
 
   // see if the visual tree is supplied in the arguments to the "HyperlinkText"
-  var anyGraphObjects = false;
-  for (var i = 0; i < args.length; i++) {
-    var a = args[i];
+  let anyGraphObjects = false;
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
     if (a && a instanceof go.GraphObject) anyGraphObjects = true;
   }
 
   // define the click behavior
-  var click =
+  const click =
     (e: go.InputEvent, obj: go.TextBlock) => {
-      var url = (<any>obj)["_url"];
-      if (typeof url === "function") url = url(obj.findTemplateBinder());
-      window.open(url, "_blank");
+      let u = (<any>obj)._url;
+      if (typeof u === "function") u = u(obj.findTemplateBinder());
+      if (u) window.open(u, "_blank");
     };
 
   // define the tooltip
-  var tooltip =
+  const tooltip =
     go.GraphObject.make(go.Adornment, "Auto",
       go.GraphObject.make(go.Shape, { fill: "#EFEFCC" }),
-      go.GraphObject.make(go.TextBlock, { margin: 4 },
+      go.GraphObject.make(go.TextBlock, { name: "TB", margin: 4 },
         new go.Binding("text", "", (obj) => {
           // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
           obj = obj.part.adornedObject;
-          var url = obj._url;
-          if (typeof url === "function") url = url(obj.findTemplateBinder());
-          return url;
-        }).ofObject())
+          let u = obj._url;
+          if (typeof u === "function") u = u(obj.findTemplateBinder());
+          return u;
+        }).ofObject()),
+      new go.Binding("visible", "text", function(t) { return !!t; }).ofObject("TB")
     );
 
   // if the text is provided, use a new TextBlock; otherwise assume the TextBlock is provided
   if (typeof (text) === "string" || typeof (text) === "function" || !anyGraphObjects) {
     if (text === null && typeof (url) === "string") text = url;
-    var tb = go.GraphObject.make(go.TextBlock,
+    const tb = go.GraphObject.make(go.TextBlock,
       {
         "_url": url,
         cursor: "pointer",
-        mouseEnter: (e: go.InputEvent, obj: go.TextBlock) => { obj.isUnderline = true; },
+        mouseEnter: function(e: go.InputEvent, tb: go.TextBlock) {
+          let u = (<any>tb)._url;
+          if (typeof u === "function") u = u(tb.findTemplateBinder());
+          if (u) tb.isUnderline = true;
+        },
         mouseLeave: (e: go.InputEvent, obj: go.TextBlock) => { obj.isUnderline = false; },
         click: click,  // defined above
         toolTip: tooltip // shared by all HyperlinkText textblocks
@@ -94,17 +101,29 @@ go.GraphObject.defineBuilder("HyperlinkText", (args) => {
     }
     return tb;
   } else {
-    findTextBlock(args)
+    const findTextBlock = function(obj: Object): go.TextBlock | null {
+      if (obj instanceof go.TextBlock) return obj;
+      if (obj instanceof go.Panel) {
+        var it = obj.elements;
+        while (it.next()) {
+          var result = findTextBlock(it.value);
+          if (result !== null) return result;
+        }
+      }
+      return null;
+    }
     return go.GraphObject.make(go.Panel,
       {
         "_url": url,
         cursor: "pointer",
         mouseEnter: (e: go.InputEvent, panel: go.Panel) => {
-          var tb = findTextBlock(panel);
-          if (tb !== null) tb.isUnderline = true;
+          const tb = findTextBlock(panel);
+          let u = (<any>panel)._url;
+          if (typeof u === "function") u = u(panel.findTemplateBinder());
+          if (tb !== null && u) tb.isUnderline = true;
         },
         mouseLeave: (e: go.InputEvent, panel: go.Panel) => {
-          var tb = findTextBlock(panel);
+          const tb = findTextBlock(panel);
           if (tb !== null) tb.isUnderline = false;
         },
         click: click,  // defined above
@@ -113,14 +132,3 @@ go.GraphObject.defineBuilder("HyperlinkText", (args) => {
     );
   }
 });
-function findTextBlock(obj: Object): go.TextBlock {
-  if (obj instanceof go.TextBlock) return obj;
-  if (obj instanceof go.Panel) {
-    var it = obj.elements;
-    while (it.next()) {
-      var result = findTextBlock(it.value);
-      if (result !== null) return result;
-    }
-  }
-  return null;
-}

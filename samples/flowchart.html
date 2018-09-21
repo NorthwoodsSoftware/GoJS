@@ -200,13 +200,15 @@
           resegmentable: true,
           // mouse-overs subtly highlight links:
           mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-          mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; }
+          mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+          selectionAdorned: false
         },
         new go.Binding("points").makeTwoWay(),
         $(go.Shape,  // the highlight shape, normally transparent
           { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
         $(go.Shape,  // the link path shape
-          { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
+          { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
+          new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
         $(go.Shape,  // the arrowhead
           { toArrow: "standard", strokeWidth: 0, fill: "gray"}),
         $(go.Panel, "Auto",  // the link label, normally not visible
@@ -229,7 +231,7 @@
     // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
     function showLinkLabel(e) {
       var label = e.subject.findObject("LABEL");
-      if (label !== null) label.visible = (e.subject.fromNode.data.figure === "Diamond");
+      if (label !== null) label.visible = (e.subject.fromNode.data.category === "Conditional");
     }
 
     // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
