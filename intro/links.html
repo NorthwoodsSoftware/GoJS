@@ -165,6 +165,7 @@ This example shows the two most common routing values: <a>Link.Normal</a> (the d
 <p>
 Note that the computed route also depends on the properties of the node, including its shape.
 There are other properties, including <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a>, that affect the route.
+For more discussion about spots, please read this Introduction page: <a href="connectionPoints.html">Link Connection Points</a>.
 Furthermore some <a>Layout</a>s set properties on links to control their routing according to what the layout expects.
 </p>
 
@@ -218,9 +219,57 @@ This is commonly done for <a>Group</a>s to allow links connecting outside of the
 Note the the use of AvoidsNodes routing is distinctly slower than normal Orthogonal routing, especially for large diagrams.
 </p>
 
+<h3 id="EndSegmentLengths">End Segment Lengths</h3>
+<p>
+  Another way to affect the precise route that Orthogonal and AvoidsNodes routing take is to set or bind
+  <a>GraphObject.fromEndSegmentLength</a> and <a>GraphObject.toEndSegmentLength</a>.
+  These properties determine the length of the very first segment or the very last segment, but only for orthogonally routed links.
+  Those properties can be set either on the port element of the node or on the link.
+  On the link the property value takes precedence over the corresponding property's value at the port.
+</p>
+<pre data-language="javascript" id="endseg">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { routing: go.Link.Orthogonal, fromSpot: go.Spot.Left, toSpot: go.Spot.Right },
+      new go.Binding("fromEndSegmentLength"),
+      new go.Binding("toEndSegmentLength"),
+      $(go.Shape),
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" },
+    { key: "Gamma", loc: "0 100" },
+    { key: "Delta", loc: "100 150" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" },
+    { from: "Gamma", to: "Delta", fromEndSegmentLength: 4, toEndSegmentLength: 30 },
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("endseg", 600, 200)</script>
+<p>
+  In this example the values of the <a>Link.fromEndSegmentLength</a> and <a>Link.toEndSegmentLength</a> are bound
+  to the same named properties on the link data.
+  In both cases the link's route is force to come out of the left side of the source node and to the right side of the destination node.
+  In the case from "Alpha" to "Beta", you see the default behavior.
+  In the case from "Gamma" to "Delta", you see the results of a shorter-than-normal <code>fromEndSegmentLength</code>
+  and a longer-than-normal <code>toEndSegmentLength</code>.
+</p>
+
 <h2 id="CurveCurvinessCorner">Curve, Curviness, Corner</h2>
 <p>
-Once the <a>Link.routing</a> determines the route (i.e., the sequence of points) that the link takes,
+Once the <a>Link.routing</a> and other properties determine the exact route (i.e., the sequence of points) that the link takes,
 other properties control the details of how the link shape gets its path geometry.
 The first such property is <a>Link.curve</a>, which controls whether the link shape has basically straight segments
 or is a big curve.
@@ -258,7 +307,7 @@ A value of <a>Link.Bezier</a> produces a naturally curved path for the link shap
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </pre>
-<script>  goCode("bezier", 600, 100)</script>
+<script>goCode("bezier", 600, 100)</script>
 <p>
 You can control how curved it is by setting the <a>Link.curviness</a> property.
 The default produces a slight curve.
