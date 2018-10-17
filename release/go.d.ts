@@ -2115,13 +2115,13 @@ declare namespace go {
         /**
         * Returns the curve}, unless this link is supposed to pretend to be curved, as with reflexive links.
         */
-        protected computeCurve(): EnumValue;
+        computeCurve(): EnumValue;
 
         /**
         * Returns the curviness, if it's a number,
         * or else a computed value based on how many links connect this pair of nodes/ports.
         */
-        protected computeCurviness(): number;
+        computeCurviness(): number;
 
         /**
         * Get the length of the end segment, typically a short distance, in document units.
@@ -2130,14 +2130,14 @@ declare namespace go {
         * If the value is <code>NaN</code>, this will return the fromPort's GraphObject.fromEndSegmentLength
         * or the toPort's GraphObject.toEndSegmentLength.
         */
-        protected computeEndSegmentLength(node: Node, port: GraphObject, spot: Spot, from: boolean): number;
+        computeEndSegmentLength(node: Node, port: GraphObject, spot: Spot, from: boolean): number;
 
         /**
         * Find the approximate point of the other end of the link.
         * This is useful when computing the connection point when there is no specific spot, to have an idea of which general direction the link should be going.
         * By default this will return the center of the other port.
         */
-        protected computeOtherPoint(othernode: Node, otherport: GraphObject): Point;
+        computeOtherPoint(othernode: Node, otherport: GraphObject): Point;
 
         /**
         * The code that constructs a new route by modifying the points.
@@ -2148,20 +2148,20 @@ declare namespace go {
         * Returns the expected spacing between this link and others that connect this link's fromPort and toPort.
         * This calls computeThickness and also takes any "mid label"'s breadth into account.
         */
-        protected computeSpacing(): number;
+        computeSpacing(): number;
         /**
         * Get the Spot that describes how the end of the link should connect with the port.
         * Depending on the <code>from</code> argument, this will return fromSpot or toSpot.
         * If the value is Spot.isDefault, this will return the fromPort's GraphObject.fromSpot
         * or the toPort's GraphObject.toSpot.
         */
-        protected computeSpot(from: boolean, port?: GraphObject): Spot;
+        computeSpot(from: boolean, port?: GraphObject): Spot;
 
         /**
         * Returns the thickness of this link.
         * By default it uses the strokeWidth of the main element, assuming it's a Shape.
         */
-        protected computeThickness(): number;
+        computeThickness(): number;
 
         /**
         * Find the index of the segment that is closest to a given point.
