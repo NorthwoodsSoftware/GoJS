@@ -8849,8 +8849,9 @@ declare namespace go {
 
         /**
         * This is called a certain delay after a call to .standardWaitAfter if there has not been any call to .cancelWaitAfter.
+        * @param {InputEvent} event The event that caused .standardWaitAfter.
         */
-        doWaitAfter(): void;
+        doWaitAfter(event: InputEvent): void;
 
         /**
         * This convenience function finds the front-most GraphObject that is at a given point and that is part of an Adornment that is of a given category.
@@ -8902,8 +8903,9 @@ declare namespace go {
         /**
         * This is called to start a new timer to call .doWaitAfter after a given delay.
         * @param {number} delay in milliseconds
+        * @param {InputEvent=} event An optional event that caused this timer.
         */
-        standardWaitAfter(delay: number): void;
+        standardWaitAfter(delay: number, event?: InputEvent): void;
 
         /**
         * Call Diagram.startTransaction with the given transaction name.
@@ -9046,8 +9048,9 @@ declare namespace go {
 
         /**
         * Implement the standard behavior for when the mouse has not moved for a period of time.
+        * @param {InputEvent} event The event that caused .standardWaitAfter.
         */
-        doWaitAfter(): void;
+        doWaitAfter(event: InputEvent): void;
 
         /**
         * Find a mouse tool of a given name.
