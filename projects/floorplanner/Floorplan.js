@@ -41,6 +41,7 @@ function Floorplan(div) {
         modelData: {
             "units": "centimeters",
             "unitsAbbreviation": "cm",
+            "unitsConversionFactor": 2,
             "gridSize": 10,
             "wallThickness": 5,
             "preferences": {
@@ -108,26 +109,36 @@ function Floorplan(div) {
     // If a node has been dropped onto the Floorplan from a Palette...
     this.addDiagramListener("ExternalObjectsDropped", function (e) {
         var garbage = [];
+        var paletteWallNodes = [];
+        var otherNodes = [];
         e.diagram.selection.iterator.each(function(node){
             // Event 1: handle a drag / drop of a wall node from the Palette (as opposed to wall construction via WallBuildingTool)
             if (node.category === "PaletteWallNode") {
-                var paletteWallNode = node;
-                var endpoints = getWallPartEndpoints(paletteWallNode);
-                var data = { key: "wall", category: "WallGroup", caption: "Wall", startpoint: endpoints[0], endpoint: endpoints[1], thickness: parseFloat(e.diagram.model.modelData.wallThickness), isGroup: true, notes: "" };
-                e.diagram.model.addNodeData(data);
-                var wall = e.diagram.findPartForKey(data.key);
-                e.diagram.updateWall(wall);
-                garbage.push(paletteWallNode);
+                paletteWallNodes.push(node);
             }
             if (e.diagram.floorplanUI) {
-                var floorplanUI = e.diagram.floorplanUI;
-                // Event 2: Update the text of the Diagram Helper
-                if (node.category === "WindowNode" || node.category === "DoorNode") floorplanUI.setDiagramHelper("Drag part so the cursor is over a wall to add this part to a wall");
-                else floorplanUI.setDiagramHelper("Drag, resize, or rotate your selection (hold SHIFT for no grid-snapping)");
-                // Event 3: If the select tool is not active, make it active
-                if (e.diagram.toolManager.mouseDownTools.elt(0).isEnabled) floorplanUI.setBehavior('dragging', e.diagram);
+                otherNodes.push(node);
             }
         });
+        for (var i in paletteWallNodes) {
+            var node = paletteWallNodes[i];
+            var paletteWallNode = node;
+            var endpoints = getWallPartEndpoints(paletteWallNode);
+            var data = { key: "wall", category: "WallGroup", caption: "Wall", startpoint: endpoints[0], endpoint: endpoints[1], thickness: parseFloat(e.diagram.model.modelData.wallThickness), isGroup: true, notes: "" };
+            e.diagram.model.addNodeData(data);
+            var wall = e.diagram.findPartForKey(data.key);
+            e.diagram.updateWall(wall);
+            garbage.push(paletteWallNode);
+        }
+        for (var i in otherNodes) {
+            var node = otherNodes[i];
+            var floorplanUI = e.diagram.floorplanUI;
+            // Event 2: Update the text of the Diagram Helper
+            if (node.category === "WindowNode" || node.category === "DoorNode") floorplanUI.setDiagramHelper("Drag part so the cursor is over a wall to add this part to a wall");
+            else floorplanUI.setDiagramHelper("Drag, resize, or rotate your selection (hold SHIFT for no grid-snapping)");
+            // Event 3: If the select tool is not active, make it active
+            if (e.diagram.toolManager.mouseDownTools.elt(0).isEnabled) floorplanUI.setBehavior('dragging', e.diagram);
+        }
         for (var i in garbage) {
             e.diagram.remove(garbage[i]);
         }
