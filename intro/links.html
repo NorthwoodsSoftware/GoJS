@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Links -- Northwoods Software</title>
-  <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
@@ -459,6 +459,190 @@ that also has a JumpGap curve.
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </pre>
 <script>goCode("jumpGaps", 600, 150)</script>
+
+<h2 id="Easier Clicking on Links">Easier Clicking on Links</h2>
+<p>
+  A problem that users may notice, especially when using fingers but also with the mouse,
+  is that it can be difficult to click on links that have a thin <a>Link.path</a>.
+  One could set the <a>Shape.strokeWidth</a> to a larger value, such as 8, but you may not want that appearance.
+</p>
+<pre data-language="javascript" id="thickPath">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape, { strokeWidth: 8 }),  // thick path
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("thickPath", 600, 100)</script>
+
+<p>
+  The solution is to add a thick path Shape but not have it draw anything.
+  This is easily done by setting <code>{ stroke: "transparent", strokeWidth: 8 }</code>.
+  However if you want to keep the original path Shape, <em>both</em> Shapes need to be declared as the "main" element
+  for the Link by setting <a>GraphObject.isPanelMain</a> to true.
+  The Link panel knows that all such Shapes should get the same computed Geometry for the link path.
+</p>
+<pre data-language="javascript" id="doublePath">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 8 }),  // thick undrawn path
+      $(go.Shape, { isPanelMain: true }),  // default stroke === "black", strokeWidth === 1
+      $(go.Shape, { toArrow: "Standard" })
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("doublePath", 600, 100)</script>
+<p>
+  In this example you will find it easier to select the link than without the second transparent link path shape.
+</p>
+<p>
+  The transparent shape can also be used for highlighting purposes.
+  For example, to implement the effect of highlighting the link when the mouse passes over it,
+  add <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers:
+</p>
+<pre data-language="javascript" id="doublePathHighlight">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 8 }),  // thick undrawn path
+      $(go.Shape, { isPanelMain: true }),  // default stroke === "black", strokeWidth === 1
+      $(go.Shape, { toArrow: "Standard" }),
+      {
+        // a mouse-over highlights the link by changing the first main path shape's stroke:
+        mouseEnter: function(e, link) { link.elt(0).stroke = "rgba(0,90,156,0.3)"; },
+        mouseLeave: function(e, link) { link.elt(0).stroke = "transparent"; }
+      }
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("doublePathHighlight", 600, 100)</script>
+<p>
+  Pass the mouse over the link to see the effect.
+  Such feedback also helps the user click or context click on the link.
+</p>
+
+<h2 id="ShortLengths">Short Lengths</h2>
+<p>
+  Note in the example above with the thick black path shape,
+  that the arrowhead seems to have disappeared due to the thickness of the link path.
+  One can avoid the problem by increasing the <a>GraphObject.scale</a> of the arrowhead, perhaps to 2.
+</p>
+<pre data-language="javascript" id="thickPath2">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape, { strokeWidth: 8 }),  // thick path
+      $(go.Shape, { toArrow: "Standard", scale: 2 }) // bigger arrowhead
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("thickPath2", 600, 100)</script>
+
+<p>
+  Now the arrowhead is clearly visible.
+  But that in turn shows that the arrowhead is still obscured at the very end of the link path,
+  where it is too wide to show the point of the arrowhead.
+  That problem can be avoided by setting <a>Link.toShortLength</a> to a value such as 8,
+  depending on the kind of arrowhead used.
+  The path geometry will be shortened by that distance so that the link path does not interfere with the arrowhead.
+</p>
+<pre data-language="javascript" id="shortLength">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { toShortLength: 8 },  // shortens path to avoid interfering with arrowhead
+      $(go.Shape, { strokeWidth: 8 }),  // thick path
+      $(go.Shape, { toArrow: "Standard", scale: 2 }) // bigger arrowhead
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</pre>
+<script>goCode("shortLength", 600, 100)</script>
+
+<p>
+  There is also a <a>Link.fromShortLength</a> property, to control how far the "from" end of the link path is drawn.
+  If there is an end segment, the distance that it can be shortened is limited to the corresponding
+  <a>Link.toEndSegmentLength</a> or <a>Link.fromEndSegmentLength</a>.
+  Note also that the short length may be negative, which would cause the link path to be drawn longer --
+  into the port at which the link is connected.
+</p>
 
 <h2 id="DisconnectedLinks">Disconnected Links</h2>
 <p>

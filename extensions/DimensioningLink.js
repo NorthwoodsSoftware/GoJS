@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom routed Link for showing the distances between a point on one node and a point on another node.

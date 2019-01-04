@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Tool for moving a label on a Link that keeps the label on the link's path.

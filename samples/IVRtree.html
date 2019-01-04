@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IVR Tree</title>
 <meta name="description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses." />
-  <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
   <script src="../release/go.js"></script>
     <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -14,13 +14,14 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
-          { allowCopy: false,
+          {
+            allowCopy: false,
             initialContentAlignment: go.Spot.Center,
             "draggingTool.dragsTree": true,
             "commandHandler.deletesTree": true,
             layout:
               $(go.TreeLayout,
-                { angle: 90 }),
+                { angle: 90, arrangement: go.TreeLayout.ArrangementFixedRoots }),
             "undoManager.isEnabled": true
           });
 
@@ -57,7 +58,7 @@
       // controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
       myDiagram.nodeTemplate =  // the default node template
         $(go.Node, "Vertical",
-          { selectionObjectName: "BODY", deletable: false },
+          { selectionObjectName: "BODY" },
           // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
           $(go.Panel, "Auto",
             { name: "BODY" },
@@ -114,7 +115,6 @@
       // define a second kind of Node:
       myDiagram.nodeTemplateMap.add("Terminal",
         $(go.Node, "Spot",
-          { deletable: false },
           $(go.Shape, "Circle",
             { width: 55, height: 55, fill: greengrad, stroke: null }
           ),

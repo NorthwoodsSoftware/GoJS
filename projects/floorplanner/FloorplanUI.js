@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2018 by Northwoods Software Corporation
+* Copyright (C) 1998-2019 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANN UI CLASS

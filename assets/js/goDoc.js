@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved. */
 
 // Traverse the whole document and replace <a>TYPENAME</a> with:
 //    <a href="../api/symbols/TYPENAME.html">TYPENAME</a>
@@ -10,7 +10,7 @@ function goDoc(rootpath) {
   // add standard footer
   var ftr = document.createElement("div");
   ftr.className = "footer";
-  var msg = "Copyright &copy; 1998-2018 by Northwoods Software Corporation.";
+  var msg = "Copyright &copy; 1998-2019 by Northwoods Software Corporation.";
   if (go && go.version) {
     msg = "GoJS&reg; version " + go.version + ". " + msg;
   }

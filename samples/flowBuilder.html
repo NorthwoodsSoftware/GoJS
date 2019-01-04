@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flow Builder</title>
   <meta name="description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link." />
-  <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
   <script src="../release/go.js"></script>
     <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -298,7 +298,6 @@
       });
 
       load();  // load initial diagram from the mySavedModel textarea
-      layout();
     }
 
     function save() {
@@ -307,6 +306,8 @@
     }
     function load() {
       myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+      // if any nodes don't have a real location, explicitly do a layout
+      if (myDiagram.nodes.any(function(n) { return !n.location.isReal(); })) layout();
     }
 
     function layout() {

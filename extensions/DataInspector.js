@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /**
@@ -139,7 +139,7 @@ Inspector.prototype.inspectObject = function(object) {
 
   // single object or no objects
   if (!inspectedObjects || !this.multipleSelection) {
-    if (inspectedObject === null || this.inspectedObject === inspectedObject) {
+    if (inspectedObject === null) {
       this.inspectedObject = inspectedObject;
       this.updateAllHTML();
       return;

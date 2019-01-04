@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dragging a Field from a Record onto an HTML Element</title>
   <meta name="description" content="Drag an item from a node out of the diagram and onto another HTML element." />
-  <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
   <script src="../release/go.js"></script>
     <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
@@ -84,7 +84,15 @@
       if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseUp.call(this);
       var diagram = this.diagram;
       var data = this.temporaryPart.data;
-      if (diagram.lastInput.event && diagram.lastInput.event.target.id === "myDroppedFields") {
+      var input = diagram.lastInput;
+      var id = input.event.target.id;
+      if (input.isTouchEvent) {
+        // Touch events always target the first object touched, we want the last.
+        // Determine if you are using Touch or Pointer:
+        var evt = input.event.changedTouches ? input.event.changedTouches[0] : input.event;
+        id = document.elementFromPoint(evt.clientX, evt.clientY).id;
+      }
+      if (input.event && id === "myDroppedFields") {
         document.getElementById("myDroppedFields").textContent += data.name + " (" + data.info + ")\n";
       }
       this.transactionResult = "Dragged Field";

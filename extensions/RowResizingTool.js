@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2018 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Tool for resizing each row of a named Table Panel in a selected Part.
