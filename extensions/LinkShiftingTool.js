@@ -53,7 +53,7 @@ go.Diagram.inherit(LinkShiftingTool, go.Tool);
 
 /*
 * A small GraphObject used as a shifting handle.
-* @name LinkShiftingTool#fromHandleArchetype 
+* @name LinkShiftingTool#fromHandleArchetype
 * @function.
 * @return {GraphObject}
 */
@@ -64,7 +64,7 @@ Object.defineProperty(LinkShiftingTool.prototype, "fromHandleArchetype", {
 
 /*
 * A small GraphObject used as a shifting handle.
-* @name LinkShiftingTool#toHandleArchetype 
+* @name LinkShiftingTool#toHandleArchetype
 * @function.
 * @return {GraphObject}
 */
@@ -94,6 +94,9 @@ LinkShiftingTool.prototype.updateAdornments = function(part) {
           adornment = this.makeAdornment(selelt, false);
           adornment.category = category;
           link.addAdornment(category, adornment);
+        } else {
+          // This is just to invalidate the measure, so it recomputes itself based on the adorned link
+          adornment.segmentFraction = Math.random();
         }
       }
     }
@@ -113,6 +116,9 @@ LinkShiftingTool.prototype.updateAdornments = function(part) {
           adornment = this.makeAdornment(selelt, true);
           adornment.category = category;
           link.addAdornment(category, adornment);
+        } else {
+          // This is just to invalidate the measure, so it recomputes itself based on the adorned link
+          adornment.segmentFraction = Math.random();
         }
       }
     }
@@ -240,10 +246,16 @@ LinkShiftingTool.prototype.doReshape = function(pt) {
   } else {
     port = link.toPort;
   }
-  var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-                          port.getDocumentPoint(go.Spot.BottomRight));
-  var lp = link.getLinkPointFromPoint(port.part, port, port.getDocumentPoint(go.Spot.Center), pt, fromend);
-  var spot = new go.Spot((lp.x - portb.x) / (portb.width || 1), (lp.y - portb.y) / (portb.height || 1));
+  if (port === null) return;
+  // support rotated ports
+  var portang = port.getDocumentAngle();
+  var center = port.getDocumentPoint(go.Spot.Center);
+  var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center),
+                          port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center));
+  var lp = link.getLinkPointFromPoint(port.part, port, center, pt, fromend);
+  lp = lp.copy().subtract(center).rotate(-portang).add(center);
+  var spot = new go.Spot(Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))),
+                         Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1))));
   if (fromend) {
     link.fromSpot = spot;
   } else {

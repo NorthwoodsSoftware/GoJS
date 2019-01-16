@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -110,14 +110,14 @@ Some commonly set properties include:
 Remember that all of the individual tools are available via the <a>Diagram.toolManager</a>.
 For example, to enable the <a>ClickCreatingTool</a>:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   myDiagram.toolManager.clickCreatingTool.archetypeNodeData =
     { key: "Node", text: "some description", color: "green" };
 </pre>
 <p>
 You can also set tool properties when using <a>GraphObject,make</a> to define your <a>Diagram</a>:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   var diagram =
     $(go.Diagram, "myDiagramDiv",
       {
@@ -143,58 +143,63 @@ At this time the syntax for setting properties on predefined subobjects only wor
 </p>
 
 <h2 id="ToolLifecycle">The Tool Lifecycle</h2>
-<p>While each prebuilt tool in GoJS is used for a different purpose, all Tools are guaranteed to share some functions and properties. 
+<p>While each prebuilt tool in GoJS is used for a different purpose, all Tools are guaranteed to share some functions and properties.
   All tools share a general "lifecycle" -- that is, the order in which these common functions are called. One can think of this
   cycle as "starting" when the ToolManager is alerted of some input event and begins searching through the pertinent list of tools (i.e.,
   if the mouse-down event is registered, ToolManager starts searching its <a>ToolManager.mouseDownTools</a> list). Below is a diagram
   representing the general lifecycle of a tool.
-                                                                          <pre data-language="javascript" id="toolLifecycle" style="display: none">
-  diagram.nodeTemplate = 
+                                                                          <pre class="lang-js" id="toolLifecycle" style="display: none">
+  diagram.nodeTemplate =
       $(go.Node, "Auto", { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, "RoundedRectangle", { fill: "lightblue", stroke: null },
-          new go.Binding("fill", "color")
-        ),
-        $(go.TextBlock, { margin: 8, wrap: go.TextBlock.WrapFit, width: 150 },
-          new go.Binding("text")
-        )
+        $(go.Shape, "RoundedRectangle", { fill: "lightgreen", stroke: "lightgray" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          {
+            margin: 8,
+            wrap: go.TextBlock.WrapFit,
+            width: 170,
+            font: "bold 10pt sans-serif",
+            textAlign: "center"
+          },
+          new go.Binding("text"))
       );
 
     diagram.linkTemplate =
-      $(go.Link, 
+      $(go.Link,
         new go.Binding("curve"),
         $(go.Shape),
         $(go.Shape,   // the arrowhead
-        { toArrow: "OpenTriangle", fill: null }),
+          { toArrow: "OpenTriangle", fill: null }),
         $(go.TextBlock, { margin: 1, segmentOffset: new go.Point(0,0) },
           new go.Binding("text"),
           new go.Binding("segmentOffset"),
-          new go.Binding("segmentOrientation")
-        ) 
+          new go.Binding("segmentOrientation"))
       );
 
-    diagram.model = 
+    diagram.model =
       $(go.GraphLinksModel,
       {
-        nodeDataArray: 
+        nodeDataArray:
         [
-          { key: 1, text: "toolManager searches tool list (i.e. mouseDownTools)", loc: "50 0" },
-          { key: 2, text: "canStart()", loc: "50 100" },
+          { key: 1, text: "ToolManager receives mouse event and searches a tool list such as mouseDownTools", loc: "50 0" },
+          { key: 2, text: "tool.canStart()", loc: "50 100", color: "lightyellow" },
           { key: 3, text: "toolManager.currentTool = the chosen tool", loc: "50 200" },
-          { key: 4, text: "doStart()", loc: "50 275" },
-          { key: 5, text: "doActivate()", loc: "50 350" },
+          { key: 4, text: "tool.doStart()", loc: "50 275", color: "lightyellow" },
+          { key: 5, text: "tool.doActivate()", loc: "50 350", color: "lightyellow" },
           { key: 6, text: "isActive === true", loc: "50 425" },
-          { key: 7, text: "doMouseDown() |\ndoMouseMove() |\ndoMouseUp() |\ndoMouseWheel() |\ndoKeyDown() |\ndoKeyUp()", loc: "-200 500" },
-          { key: 8, text: "doCancel()", loc: "250 500" },
-          { key: 9, text: "stopTool()", loc: "50 575" },
+          { key: 7, text: "tool.doMouseDown() or\ntool.doMouseMove() or\ntool.doMouseUp() or\ntool.doMouseWheel() or\ntool.doKeyDown() or\ntool.doKeyUp()",
+            loc: "-200 500", color: "lightyellow" },
+          { key: 8, text: "tool.doCancel()", loc: "250 500", color: "lightyellow" },
+          { key: 9, text: "tool.stopTool()", loc: "50 575", color: "lightyellow" },
           { key: 10, text: "toolManager.currentTool = toolManager.defaultTool", loc: "50 650" },
-          { key: 11, text: "doDeactivate()", loc: "50 725" },
-          { key: 12, text: "doStop()", loc: "50 800" }
+          { key: 11, text: "tool.doDeactivate()", loc: "50 725", color: "lightyellow" },
+          { key: 12, text: "tool.doStop()", loc: "50 800", color: "lightyellow" }
         ],
-        linkDataArray: 
+        linkDataArray:
         [
-          { from: 1, to: 2, text: "on each tool", segmentOffset: new go.Point(0,-40) },
-          { from: 2, to: 3, text: "if returns true", segmentOffset: new go.Point(0,-45) },
+          { from: 1, to: 2, text: "on each tool call", segmentOffset: new go.Point(0,-50) },
+          { from: 2, to: 3, text: "if it returns true", segmentOffset: new go.Point(0,-50) },
           { from: 3, to: 4 },
           { from: 4, to: 5 },
           { from: 5, to: 6 },
@@ -210,9 +215,9 @@ At this time the syntax for setting properties on predefined subobjects only wor
       }
       );
 </pre>
-<script>goCode("toolLifecycle", 600, 900)</script>
+<script>goCode("toolLifecycle", 700, 900)</script>
 <p>
-  For more information on how these specific functions work, see the <a>Tool</a> documentation. 
+  For more information on how these specific functions work, see the <a>Tool</a> documentation.
 </p>
 
 
@@ -233,7 +238,7 @@ resize handles, four at the corners and four at the middles of the sides.
 If you want to let the user resize the whole node, just set <a>Part.resizable</a> to true.
 In this case resizing will set the Node's <a>GraphObject.desiredSize</a>.
 </p>
-<pre data-language="javascript" id="resizing">
+<pre class="lang-js" id="resizing">
   diagram.add(
     $(go.Node, "Auto",
       { resizable: true },
@@ -250,7 +255,7 @@ you need to name that object and assign <a>Part.resizeObjectName</a>.
 Resizing will set the <a>Part.resizeObject</a>'s <a>GraphObject.desiredSize</a>,
 in this case the Shape's desiredSize.
 </p>
-<pre data-language="javascript" id="resizingObject">
+<pre class="lang-js" id="resizingObject">
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",  // resize the Shape, not the Node
@@ -268,7 +273,7 @@ You can limit the minimum and maximum size for the resized object by setting
 <a>GraphObject.maxSize</a> and <a>GraphObject.minSize</a>.
 Note that these GraphObject properties are set on the <a>Part.resizeObject</a>, not on the <a>Part</a> itself.
 </p>
-<pre data-language="javascript" id="resizingMaxMin">
+<pre class="lang-js" id="resizingMaxMin">
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -286,7 +291,7 @@ Note that these GraphObject properties are set on the <a>Part.resizeObject</a>, 
 <p>
 You can also cause resizing to be multiples of a given size by setting <a>Part.resizeCellSize</a>.
 </p>
-<pre data-language="javascript" id="resizingCellSize">
+<pre class="lang-js" id="resizingCellSize">
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -307,7 +312,7 @@ This can be accomplished with a TwoWay <a>Binding</a> on the <a>GraphObject.desi
 But note that the binding needs to be on the actual GraphObject that is resized, not on the whole Node.
 In this case, because the <a>Part.resizeObjectName</a> is referring to a Shape, that means the binding needs to be on the Shape.
 </p>
-<pre data-language="javascript" id="resizingObjectBinding">
+<pre class="lang-js" id="resizingObjectBinding">
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -330,7 +335,7 @@ The Adornment is implemented as a Spot Panel that surrounds a <a>Placeholder</a>
 representing the adorned Shape, with two rectangular blue Shapes, each representing a handle.
 There is also a TextBlock placed above the adorned shape showing the shape's current width.
 </p>
-<pre data-language="javascript" id="resizingTemplate">
+<pre class="lang-js" id="resizingTemplate">
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -379,7 +384,7 @@ Since the default <a>GraphObject.angle</a> is zero, the rotate handle typically 
 If you want to let the user rotate the whole node, just set <a>Part.rotatable</a> to true.
 Rotating will set the Node's <a>GraphObject.angle</a>.
 </p>
-<pre data-language="javascript" id="rotating">
+<pre class="lang-js" id="rotating">
   diagram.add(
     $(go.Node, "Auto",
       { rotatable: true, locationSpot: go.Spot.Center },
@@ -396,7 +401,7 @@ you need to name that object and assign <a>Part.rotateObjectName</a>.
 Rotating will set the <a>Part.rotateObject</a>'s <a>GraphObject.angle</a>,
 in this case the Shape's angle.
 </p>
-<pre data-language="javascript" id="rotatingObject">
+<pre class="lang-js" id="rotatingObject">
   diagram.add(
     $(go.Node, "Vertical",
       { rotatable: true, rotateObjectName: "SHAPE",  // rotate the Shape, not the Node
@@ -416,7 +421,7 @@ This can be accomplished with a TwoWay <a>Binding</a> on the <a>GraphObject.angl
 But note that the binding needs to be on the actual GraphObject that is rotated, not on the whole Node.
 In this case, because the <a>Part.rotateObjectName</a> is referring to a Shape, that means the binding needs to be on the Shape.
 </p>
-<pre data-language="javascript" id="rotatingObjectBinding">
+<pre class="lang-js" id="rotatingObjectBinding">
   diagram.add(
     $(go.Node, "Vertical",
       { rotatable: true, rotateObjectName: "SHAPE",
@@ -432,18 +437,37 @@ In this case, because the <a>Part.rotateObjectName</a> is referring to a Shape, 
 <script>goCode("rotatingObjectBinding", 600, 150)</script>
 
 <p>
+Another common customization is to position the rotate handle above the object when it is not rotated,
+i.e. when its <a>GraphObject.angle</a> is zero.
+This is accomplished by setting <a>RotatingTool.handleAngle</a> to 270.
+</p>
+<pre class="lang-js" id="rotatingToolAngle">
+  diagram.add(
+    $(go.Node, "Auto",
+      { rotatable: true, locationSpot: go.Spot.Center },
+      new go.Binding("angle").makeTwoWay(),  // TwoWay Binding of Node.angle
+      $(go.Shape, "RoundedRectangle", { fill: "orange" }),
+      $(go.TextBlock, "Hello!", { margin: 5 })
+    ));
+  diagram.toolManager.rotatingTool.handleAngle = 270;
+  diagram.commandHandler.selectAll();
+</pre>
+<script>goCode("rotatingToolAngle", 600, 150)</script>
+
+<p>
 You can customize the rotate handle by setting <a>Part.rotateAdornmentTemplate</a>.
 </p>
-<pre data-language="javascript" id="rotatingTemplate">
+<pre class="lang-js" id="rotatingTemplate">
   diagram.add(
     $(go.Node, "Vertical",
       { rotatable: true, rotateObjectName: "SHAPE",
         locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
         rotateAdornmentTemplate:  // specify appearance of rotation handle
           $(go.Adornment,
-            { locationSpot: go.Spot.Center, background: "transparent" },
+            { locationSpot: go.Spot.Center },
             $(go.Shape, "BpmnActivityLoop",
-              { width: 12, height: 12, stroke: "dodgerblue", strokeWidth: 2 })),
+              { width: 12, height: 12, cursor: "pointer",
+                background: "transparent", stroke: "dodgerblue", strokeWidth: 2 })),
         selectionObjectName: "SHAPE" },
       $(go.Shape, "RoundedRectangle",
         { name: "SHAPE", fill: "orange", width: 50, height: 30 }),
@@ -470,7 +494,7 @@ The user can drag a relinking handle to reconnect that end of the link to anothe
 The <a>RelinkingTool</a> will automatically update the relationships between the nodes/ports,
 both in the diagram and in the model.  No <a>Binding</a>s are needed for such model updates.
 </p>
-<pre data-language="javascript" id="relinking">
+<pre class="lang-js" id="relinking">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Rectangle",
@@ -520,7 +544,7 @@ This can be accomplished with a TwoWay <a>Binding</a> on the <a>Link.points</a> 
 If one also uses the property name "points" on the link data, <a>Model.toJson</a> will
 automatically convert the <a>List</a> of <a>Point</a>s into an Array of numbers and vice-versa.
 </p>
-<pre data-language="javascript" id="linkReshaping">
+<pre class="lang-js" id="linkReshaping">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -560,7 +584,7 @@ For orthogonal links, two new segments are introduced in order to maintain ortho
 When the user reshapes the link so that adjacent segments are co-linear (or nearly so),
 the segment(s) are removed from the route.
 </p>
-<pre data-language="javascript" id="linkResegmenting">
+<pre class="lang-js" id="linkResegmenting">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -612,7 +636,7 @@ The <a>DragSelectingTool</a> uses the <a>DragSelectingTool.box</a> to show the a
 Normally this is a simple magenta rectangular shape.  You can change it.  For example here is a drag-selecting box
 that is in the shape of a blue-outlined cloud.
 </p>
-<pre data-language="javascript" id="dragSelecting">
+<pre class="lang-js" id="dragSelecting">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -664,7 +688,7 @@ The originating port and the potential target port are shown by the <a>LinkingBa
 and <a>LinkingBaseTool.temporaryToNode</a>.
 The default temporary ports are magenta rectangles.
 </p>
-<pre data-language="javascript" id="linkingTools">
+<pre class="lang-js" id="linkingTools">
 
   diagram.nodeTemplate =
     $(go.Node, "Spot",

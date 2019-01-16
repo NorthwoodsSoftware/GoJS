@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,6 +6,7 @@
   <title>GoJS Template Maps -- Northwoods Software</title>
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
@@ -58,7 +59,7 @@ You may wish to copy and adapt these definitions when creating your own template
 </p>
 
 <h2 id="ExampleOfNodeTemplates">Example of Node templates</h2>
-<pre data-language="javascript" id="templates">
+<pre class="lang-js" id="templates">
   // the "simple" template just shows the key string and the color in the background,
   // but it also includes a tooltip that shows the description
   var simpletemplate =
@@ -69,8 +70,7 @@ You may wish to copy and adapt these definitions when creating your own template
         new go.Binding("text", "key")),
       {
         toolTip:
-          $(go.Adornment, "Auto",
-            $(go.Shape, { fill: "#FFFFCC" }),
+          $("ToolTip",
             $(go.TextBlock, { margin: 4 },
               new go.Binding("text", "desc"))
           )
@@ -94,7 +94,7 @@ You may wish to copy and adapt these definitions when creating your own template
     );
 
   // create the nodeTemplateMap, holding three node templates:
-  var templmap = new go.Map("string", go.Node);
+  var templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
   // for each of the node categories, specify which template to use
   templmap.add("simple", simpletemplate);
   templmap.add("detailed", detailtemplate);
@@ -133,9 +133,9 @@ with the empty string in the <a>Panel.itemTemplateMap</a>.
 Similarly, the <a>Panel.itemCategoryProperty</a> names the property on the item data that identifies the
 template to use from the itemTemplateMap.
 </p>
-<pre data-language="javascript" id="itemTemplates">
+<pre class="lang-js" id="itemTemplates">
   // create a template map for items
-  var itemtemplates = new go.Map("string", go.Panel);
+  var itemtemplates = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Panel&gt;();
 
   // the template when type == "text"
   itemtemplates.add("text",
@@ -199,8 +199,6 @@ template to use from the itemTemplateMap.
   ],[
     { from: "Alpha", to: "Beta" }
   ]);
-
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("itemTemplates", 600, 150)</script>
 
@@ -210,7 +208,7 @@ The natural way to have a distinct header for a Table Panel is to have the first
 hold the data for the header, but have it be styled differently.
 In this example we define a "Header" item template in the <a>Panel.itemTemplateMap</a>.
 </p>
-<pre data-language="javascript" id="header">
+<pre class="lang-js" id="header">
   var itemTemplateMap = new go.Map();
   itemTemplateMap.add("",
     $(go.Panel, "TableRow",
@@ -267,8 +265,6 @@ In this example we define a "Header" item template in the <a>Panel.itemTemplateM
         ]
       }
     );
-
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("header", 600, 200)</script>
 <p>
@@ -285,7 +281,7 @@ or <a>GraphLinksModel.setCategoryForLinkData</a>.
 This causes the diagram to discard any existing Part for the data and re-create it using the new template that
 is associated with the new category value.
 </p>
-<pre data-language="javascript" id="changingCategory">
+<pre class="lang-js" id="changingCategory">
   // this function changes the category of the node data to cause the Node to be replaced
   function changeCategory(e, obj) {
     var node = obj.part;
@@ -341,7 +337,7 @@ is associated with the new category value.
         { click: changeCategory })
     );
 
-  var templmap = new go.Map("string", go.Node);
+  var templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
   templmap.add("simple", simpletemplate);
   templmap.add("detailed", detailtemplate);
   diagram.nodeTemplateMap = templmap;
@@ -378,7 +374,7 @@ If you zoom out in this example, the <a>DiagramEvent</a> listener will detect wh
 becomes small enough to use the simpler template for all of the nodes.
 Zoom in again and suddenly it uses the more detailed template.
 </p>
-<pre data-language="javascript" id="changingMap">
+<pre class="lang-js" id="changingMap">
   // The "simple" template just shows the key string and the color in the background.
   var simpletemplate =
     $(go.Node, "Spot",

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,11 +16,8 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
-          initialContentAlignment: go.Spot.Center,
-          allowDrop: true,  // must be true to accept drops from the Palette
           "LinkDrawn": showLinkLabel,  // this DiagramEvent listener is defined below
           "LinkRelinked": showLinkLabel,
-          scrollsPageOnFocus: false,
           "undoManager.isEnabled": true  // enable undo & redo
         });
 
@@ -168,10 +165,29 @@
         makePort("R", go.Spot.Right, go.Spot.Right, false, true)
       ));
 
+    // taken from ../extensions/Figures.js:
+    go.Shape.defineFigureGenerator("File", function(shape, w, h) {
+      var geo = new go.Geometry();
+      var fig = new go.PathFigure(0, 0, true); // starting point
+      geo.add(fig);
+      fig.add(new go.PathSegment(go.PathSegment.Line, .75 * w, 0));
+      fig.add(new go.PathSegment(go.PathSegment.Line, w, .25 * h));
+      fig.add(new go.PathSegment(go.PathSegment.Line, w, h));
+      fig.add(new go.PathSegment(go.PathSegment.Line, 0, h).close());
+      var fig2 = new go.PathFigure(.75 * w, 0, false);
+      geo.add(fig2);
+      // The Fold
+      fig2.add(new go.PathSegment(go.PathSegment.Line, .75 * w, .25 * h));
+      fig2.add(new go.PathSegment(go.PathSegment.Line, w, .25 * h));
+      geo.spot1 = new go.Spot(0, .25);
+      geo.spot2 = go.Spot.BottomRight;
+      return geo;
+    });
+
     myDiagram.nodeTemplateMap.add("Comment",
       $(go.Node, "Auto", nodeStyle(),
         $(go.Shape, "File",
-          { fill: "#EFFAB4", strokeWidth: 0 }),
+          { fill: "#DEE0A3", strokeWidth: 0 }),
         $(go.TextBlock, textStyle(),
           {
             margin: 5,
@@ -244,7 +260,6 @@
     myPalette =
       $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
         {
-          scrollsPageOnFocus: false,
           nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
           model: new go.GraphLinksModel([  // specify the contents of the Palette
             { category: "Start", text: "Start" },

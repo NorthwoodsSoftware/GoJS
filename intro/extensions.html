@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -16,7 +16,7 @@
 <p>
   <b>GoJS</b> can be extended in a variety of ways.
   The most common way to change the standard behavior is to set properties on the <a>GraphObject</a>, <a>Diagram</a>, <a>CommandHandler</a>, <a>Tool</a>, or <a>Layout</a>.
-  But when no such properties exist, you might need to override methods of CommandHandler, Tool, or Layout.
+  But when no such properties exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
   Methods that you can override are documented in the API reference.
   This page describes how to override methods, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
   You should not modify the prototypes of any of the <b>GoJS</b> classes.
@@ -83,7 +83,7 @@
   Typical scaffolding for overriding a method in such a manner is as follows:
 </p>
 
-<pre data-language="javascript">
+<pre class="lang-js">
   var tool = diagram.toolManager.clickSelectingTool;
   tool.standardMouseSelect = function() {
     // Maybe do something else before
@@ -107,7 +107,7 @@
   Otherwise, we call the base functionality to select as we normally might.
 </p>
 
-<pre data-language="javascript" id="tool">
+<pre class="lang-js" id="tool">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Rectangle",
@@ -117,8 +117,6 @@
         { margin: 5 },
         new go.Binding("text", "key"))
     );
-
-  diagram.initialContentAlignment = go.Spot.Center;
 
   var tool = diagram.toolManager.clickSelectingTool;
   tool.standardMouseSelect = function() {
@@ -165,7 +163,7 @@
 
 <ul>
   <li>Create a new class (function), and call the base class constructor.
-  <li>Call <a>Diagram.inherit</a> with the new class and the base class.
+  <li>Call <a>Diagram,inherit</a> with the new class and the base class.
   <li>Modify the prototype of your derived class to add new functionality.
 </ul>
 
@@ -173,7 +171,7 @@
   To create a new Layout, called <code>CascadeLayout</code>, we would start with the following scaffolding:
 </p>
 
-<pre data-language="javascript">
+<pre class="lang-js">
   function CascadeLayout() {
     // Note the direct constructor call, no use of "prototype"
     go.Layout.call(this);
@@ -194,7 +192,7 @@
   To add a "offset" property to <code>CascadeLayout</code>, we will use the convention that an underscore member is private, and will set a default value in the constructor:
 </p>
 
-<pre data-language="javascript">
+<pre class="lang-js">
   function CascadeLayout() {
     go.Layout.call(this);
     this._offset = new go.Size(12, 12);
@@ -207,7 +205,7 @@
   This setter makes sure the offset value is a <code>go.Size</code> object and invalidates the layout only if the value has changed.
 </p>
 
-<pre data-language="javascript">
+<pre class="lang-js">
   Object.defineProperty(CascadeLayout.prototype, "offset", {
     get: function() { return this._offset; },
     set: function(val) {
@@ -229,7 +227,7 @@
   All together, we can see the cascade layout in action:
 </p>
 
-<pre data-language="javascript" id="example">
+<pre class="lang-js" id="example">
   /**
   * @constructor
   * @extends Layout
@@ -293,8 +291,6 @@
         { margin: 5 },
         new go.Binding("text", "key"))
     );
-
-  diagram.initialContentAlignment = go.Spot.Center;
 
   diagram.model = new go.Model([
     { key: "Alpha", color: "lightblue" },

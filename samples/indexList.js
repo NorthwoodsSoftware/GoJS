@@ -476,7 +476,7 @@ arr.push([
 arr.push([
   "roundedGroups",
   "Rounded Groups",
-  "Demonstrates subgraphs that have rounded headers and rounded footers.",
+  "BPMN Choreography that demonstrates subgraphs that have rounded headers and rounded footers.",
   "roundedGroups",
   ["groups", "geometries"]
 ]);
@@ -897,6 +897,8 @@ arr.push([
   ["tables", "itemarrays", "buttons", "geometries"]
 ]);
 
+
+
 arr.push([
   "records",
   "Record Mapper",
@@ -950,6 +952,14 @@ arr.push([
   "Comments",
   "GoJS supports the notion of \"Comments\", including the ability to create balloon-like comments.",
   "comments",
+  ["links", "treelayout", "geometries"]
+]);
+
+arr.push([
+  "wordcloud",
+  "Word Cloud",
+  "A word cloud visualization using the PackedLayout extension.",
+  "wordcloud",
   ["links", "treelayout", "geometries"]
 ]);
 
@@ -1011,6 +1021,14 @@ arr.push([
   ["tables", "collections", "customlayout", "groups", "tools", "palette", "extensions"]
 ]);
 
+arr.push([
+  "../extensions/PackedLayout",
+  "Packed Layout",
+  "A custom Layout that positions nodes in a packed area.",
+  "PackedLayout",
+  ["customlayout", "extensions"]
+]);
+
 // Tools
 arr.push([
   "../extensions/RealtimeDragSelecting",
@@ -1065,6 +1083,14 @@ arr.push([
   "A custom Tool that lets the user reshape orthogonal links by dragging entire segments.",
   "OrthogonalLinkReshaping",
   ["links", "tools", "extensions", "geometries"]
+]);
+
+arr.push([
+  "../extensions/OverviewResizing",
+  "Overview Resizing",
+  "A custom Tool which allows the user to resize the overview box.",
+  "OverviewResizing",
+  ["tools", "overview", "extensions"]
 ]);
 
 arr.push([
@@ -1278,15 +1304,16 @@ arr.push([
 ]);
 
 arr.push([
-  "../storage/samples/GoCloudStorageManager",
+  "../projects/storage/samples/GoCloudStorageManager",
   "Cloud Storage Manager",
   "Demonstrates dynamically choosing the user's cloud storage service (using the user's credentials) or localStorage.",
   "GoCloudStorageManager",
   ["extensions", "storage"]
 ]);
+
 /*
 arr.push([
-  "../storage/samples/GoDropBox",
+  "../projects/storage/samples/GoDropBox",
   "DropBox Storage",
   "Demonstrates saving models in the user's DropBox storage.",
   "GoDropBox",
@@ -1294,7 +1321,7 @@ arr.push([
 ]);
 
 arr.push([
-  "../storage/samples/GoGoogleDrive",
+  "../projects/storage/samples/GoGoogleDrive",
   "Google Drive Storage",
   "Demonstrates saving models in the user's Google Drive storage.",
   "GoGoogleDrive",
@@ -1302,7 +1329,7 @@ arr.push([
 ]);
 
 arr.push([
-  "../storage/samples/GoOneDrive",
+  "../projects/storage/samples/GoOneDrive",
   "Microsoft One Drive Storage",
   "Demonstrates saving models in the user's OneDrive storage.",
   "GoOneDrive",
@@ -1310,13 +1337,14 @@ arr.push([
 ]);
 
 arr.push([
-  "../storage/samples/GoLocalStorage",
+  "../projects/storage/samples/GoLocalStorage",
   "Local Web Storage",
   "Demonstrates saving models in the browser's limited localStorage.",
   "GoLocalStorage",
   ["extensions", "storage"]
 ]);
 */
+
 arr.push([
   "../extensions/Robot",
   "Simulating Input",
@@ -1326,7 +1354,15 @@ arr.push([
 ]);
 
 arr.push([
-  "../extensions/BPMN",
+  "../extensions/ZoomSlider",
+  "Zoom Slider",
+  "Demonstrates use of the ZoomSlider class to zoom in/out using a control.",
+  "zoomSlider",
+  ["extensions", "html"]
+]);
+
+arr.push([
+  "../projects/bpmn/BPMN",
   "BPMN Editor",
   "The start of a Business Process Model and Notation editor.",
   "BPMN",
@@ -1431,7 +1467,7 @@ arr.push([
 ]);
 
 arr.push([
-  "zoomPinch",
+  "pinchResizing",
   "Pinch Zooming",
   "Demonstrates customization of pinch-zooming to scale a node.",
   "minimal",
@@ -1621,3 +1657,12 @@ arr.push([
   "tabs",
   ["frameworks"]
 ]);
+
+arr.push([
+  "panelLayout",
+  "Panel Layout",
+  "Shows how to create a custom PaneLayout.",
+  "minimal",
+  [""]
+]);
+

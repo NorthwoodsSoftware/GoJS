@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BPMN Editor</title>
+    <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../../assets/css/jquery-ui.min.css" />
+  <script src="../../assets/js/jquery.min.js"></script>
+  <script src="../../assets/js/jquery-ui.min.js"></script>
+  <link href="BPMN.css" rel="stylesheet" type="text/css" />
+  <script src="../../samples/assets/require.js"></script>
+  <script>
+    function init() {
+      require(["BPMNScript"], function (app) {
+        app.init();
+        document.getElementById("newDocument").onclick = app.newDocument;
+        document.getElementById("openDocuments").onclick = app.openDocument;
+        document.getElementById("saveDocument").onclick = app.saveDocument;
+        document.getElementById("saveDocumentAs").onclick = app.saveDocumentAs;
+        document.getElementById("removeDocuments").onclick = app.removeDocument;
+
+        document.getElementById("undo").onclick = app.undo;
+        document.getElementById("redo").onclick = app.redo;
+        document.getElementById("cutSelection").onclick = app.cutSelection;
+        document.getElementById("copySelection").onclick = app.copySelection;
+        document.getElementById("pasteSelection").onclick = app.pasteSelection;
+        document.getElementById("deleteSelection").onclick = app.deleteSelection;
+        document.getElementById("selectAll").onclick = app.selectAll;
+
+        document.getElementById("alignLeft").onclick = app.alignLeft;
+        document.getElementById("alignRight").onclick = app.alignRight;
+        document.getElementById("alignTop").onclick = app.alignTop;
+        document.getElementById("alignBottom").onclick = app.alignBottom;
+        document.getElementById("alignCenterX").onclick = app.alignCenterX;
+        document.getElementById("alignCenterY").onclick = app.alignCenterY;
+
+        document.getElementById("alignRows").onclick = app.alignRows;
+        document.getElementById("alignColumns").onclick = app.alignColumns;
+
+        document.getElementById("grid").onclick = app.updateGridOption;
+        document.getElementById("snap").onclick = app.updateSnapOption;
+
+        document.getElementById("basicOrderProcess").onclick = app.basicOrderProcess;
+        document.getElementById("5.1").onclick = app.BPMNdata51;
+        document.getElementById("5.2").onclick = app.BPMNdata52;
+        document.getElementById("5.3").onclick = app.BPMNdata53;
+
+        document.getElementById("openBtn").onclick = app.loadFile;
+        document.getElementById("cancelBtn").onclick = app.cancel1;
+
+        document.getElementById("removeBtn").onclick = app.removeFile;
+        document.getElementById("cancelBtn2").onclick = app.cancel2;
+      });
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div>
+    <div id="currentFile">(Unsaved File)</div>
+      <ul id="menuui">
+        <li><a href="#">File</a>
+          <ul>
+            <li><a href="#" id="newDocument">New</a></li>
+            <li><a href="#" id="openDocuments">Open...</a></li>
+            <li><a href="#" id="saveDocument">Save</a></li>
+            <li><a href="#" id="saveDocumentAs">Save As...</a></li>
+            <li><a href="#" id="removeDocuments">Delete...</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Edit</a>
+          <ul>
+            <li><a href="#" id="undo">Undo</a></li>
+            <li><a href="#" id="redo">Redo</a></li>
+            <li><a href="#" id="cutSelection">Cut</a></li>
+            <li><a href="#" id="copySelection">Copy</a></li>
+            <li><a href="#" id="pasteSelection">Paste</a></li>
+            <li><a href="#" id="deleteSelection">Delete</a></li>
+            <li><a href="#" id="selectAll">Select All</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Align</a>
+          <ul>
+            <li><a href="#" id="alignLeft">Left Sides</a></li>
+            <li><a href="#" id="alignRight">Right Sides</a></li>
+            <li><a href="#" id="alignTop">Tops</a></li>
+            <li><a href="#" id="alignBottom">Bottoms</a></li>
+            <li><a href="#" id="alignCenterX">Center X</a></li>
+            <li><a href="#" id="alignCenterY">Center Y</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Space</a>
+          <ul>
+            <li><a href="#" id="alignRows">In Row...</a></li>
+            <li><a href="#" id="alignColumns">In Column...</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Options</a>
+          <ul>
+            <li><a href="#">
+              <input id="grid" type="checkbox" name="options" value="grid">Grid</a></li>
+            <li><a href="#">
+              <input id="snap" type="checkbox" name="options" value="0">Snapping</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!--END menu bar -->
+
+    <!-- Styling for this portion is in BPMN.css -->
+    <div id="PaletteAndDiagram">
+      <div id="sideBar">
+        <span style="display: inline-block; vertical-align: top; padding: 5px; width:100%">
+          <div id="accordion">
+            <h4>Level 1 items</h4>
+            <div>
+              <div id="myPaletteLevel1" class="myPaletteDiv" ></div>
+            </div>
+            <h4>Level 2 items</h4>
+            <div>
+              <div id="myPaletteLevel2" class="myPaletteDiv"></div>
+            </div>
+            <h4>Other items</h4>
+            <div>
+              <div id="myPaletteLevel3" class="myPaletteDiv"></div>
+            </div>
+          </div>
+        </span>
+        <div class="handle">Overview:</div>
+        <div id="myOverviewDiv"></div>
+      </div>
+      <div id="myDiagramDiv"></div>
+      <div id="description">
+        <p>
+          This sample describes templates and relationships typically used in <a href="https://en.wikipedia.org/wiki/Business_Process_Model_and_Notation">Business Process Model and Notation (BPMN)</a>,
+          to be used as a starting point for developing BPMN or flow-like web applications.
+        </p>
+        <p>In addition to this HTML file, this sample uses the files:</p>
+        <ul>
+          <li><a href="BPMN.css">BPMN.css</a> for styling
+          <li><a href="BPMNScript.ts">BPMN.ts</a> for the Diagram logic
+          <li><a href="BPMNClasses.ts">BPMNClasses.ts</a> - Custom PoolLink and BPMNLinkingTool classes
+          <li><a href="../../extensionsTS/DrawCommandHandler.ts">DrawCommandHandler.ts</a> - Custom CommandHandler class
+        </ul>
+        <span>
+            <div>
+            <p>Additional sample data files:</p>
+                <figure>
+                    <img src="BPMNdata/BasicOrderProcess.png" id='basicOrderProcess' title="Basic Order Process"></img>
+                    <figcaption>Basic Order Process</figcaption>
+                </figure>
+                <figure>
+                    <img src="BPMNdata/OMG BPMN by Example Figure 5.1.png" id='5.1' title="OMG BPMN by Example Figure 5.1"></img>
+                    <figcaption>OMG BPMN by Example Figure 5.1</figcaption>
+                </figure>
+                <figure>
+                    <img src="BPMNdata/OMG BPMN by Example Figure 5.2.png" id='5.2' title="OMG BPMN by Example Figure 5.2"></img>
+                    <figcaption>OMG BPMN by Example Figure 5.2</figcaption>
+                </figure>
+                <figure>
+                    <img src="BPMNdata/OMG BPMN by Example Figure 5.3.png" id='5.3' title="OMG BPMN by Example Figure 5.3"></img>
+                    <figcaption>OMG BPMN by Example Figure 5.3</figcaption>
+                </figure>
+          </div>
+        </span>
+      </div>
+    </div>
+
+    <div id="openDocument" class="draggable">
+      <div id="openDraggableHandle" class="handle">Open File</div>
+      <div id="openText" class="elementText">Choose file to open...</div>
+      <select id="mySavedFiles" class="mySavedFiles"></select>
+      <br />
+      <button id="openBtn" class="elementBtn" type="button"style="margin-left: 70px">Open</button>
+      <button id="cancelBtn" class="elementBtn" type="button">Cancel</button>
+    </div>
+
+    <div id="removeDocument" class="draggable">
+      <div id="removeDraggableHandle" class="handle">Delete File</div>
+      <div id="removeText" class="elementText">Choose file to remove...</div>
+      <select id="mySavedFiles2" class="mySavedFiles"></select>
+      <br />
+      <button id="removeBtn" class="elementBtn" type="button" style="margin-left: 70px">Remove</button>
+      <button id="cancelBtn2" class="elementBtn" type="button">Cancel</button>
+    </div>
+  </div>
+</body>
+</html>

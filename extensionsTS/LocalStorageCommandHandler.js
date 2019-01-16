@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,53 +25,50 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     /**
-        * @constructor
-        * @extends CommandHandler
-        * @class
-        * This CommandHandler class uses localStorage as the repository for the clipboard,
-        * rather than an in-memory global variable.
-        * It requires that the {@link Diagram#model} be serializable and deserializable using {@link Model#toJson} and {@link Model.fromJson}.
-        * <p>
-        * The {@link #copyToClipboard} and {@link #pasteFromClipboard} functions fall back to using the standard definitions
-        * if there are any errors calling <code>Storage.getItem</code> or <code>Storage.setItem</code>.
-        * <p>
-        * Typical usage:
-        * <pre>
-        *   $(go.Diagram, "myDiagramDiv",
-        *     {
-        *       commandHandler: $(LocalStorageCommandHandler),
-        *       . . .
-        *     }
-        *   )
-        * </pre>
-        * or:
-        * <pre>
-        *    myDiagram.commandHandler = new LocalStorageCommandHandler();
-        * </pre>
-        */
+     * This CommandHandler class uses localStorage as the repository for the clipboard,
+     * rather than an in-memory global variable.
+     * It requires that the {@link Diagram#model} be serializable and deserializable using {@link Model#toJson} and {@link Model.fromJson}.
+     *
+     * The {@link #copyToClipboard} and {@link #pasteFromClipboard} functions fall back to using the standard definitions
+     * if there are any errors calling `Storage.getItem` or `Storage.setItem`.
+     *
+     * Typical usage:
+     * ```js
+     *   $(go.Diagram, "myDiagramDiv",
+     *     {
+     *       commandHandler: $(LocalStorageCommandHandler),
+     *       ...
+     *     }
+     *   )
+     * ```
+     * or:
+     * ```js
+     *   myDiagram.commandHandler = new LocalStorageCommandHandler();
+     * ```
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/LocalStorageCommandHandler.html">Local Storage Commands</a> sample.
+     * @category Extension
+     */
     var LocalStorageCommandHandler = /** @class */ (function (_super) {
         __extends(LocalStorageCommandHandler, _super);
         function LocalStorageCommandHandler() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.StorageKey = "go._clipboard";
-            _this.FormatKey = "go._clipboardFormat";
+            _this.StorageKey = 'go._clipboard';
+            _this.FormatKey = 'go._clipboardFormat';
             return _this;
         }
         /**
-              * @override
-              * @this {LocalStorageCommandHandler}
-              * @param {Iterable.<Part>} coll a collection of {@link Part}s.
-              */
+         * Makes a copy of the given collection of {@link Part}s
+         * and stores it as JSON in LocalStorage.
+         * @param {Iterable.<Part>} coll a collection of {@link Part}s.
+         */
         LocalStorageCommandHandler.prototype.copyToClipboard = function (coll) {
             try {
                 if (coll === null) {
-                    window.localStorage.setItem(this.StorageKey, "");
-                    window.localStorage.setItem(this.FormatKey, "");
+                    window.localStorage.setItem(this.StorageKey, '');
+                    window.localStorage.setItem(this.FormatKey, '');
                 }
                 else {
                     var clipdiag = new go.Diagram(); // create a temporary Diagram
@@ -82,20 +85,21 @@ var __extends = (this && this.__extends) || (function () {
             }
             catch (ex) {
                 // fallback implementation
-                go.CommandHandler.prototype.copyToClipboard.call(this, coll);
+                _super.prototype.copyToClipboard.call(this, coll);
             }
         };
         /**
-            * @override
-            * @this {LocalStorageCommandHandler}
-            * @return {Set.<Part>} a collection of newly pasted {@link Part}s
-            */
+         * If LocalStorage holds JSON for a collection of {@link Part}s,
+         * and if the {@link Model#dataFormat} matches that stored in the clipboard,
+         * this makes a copy of the clipboard's parts and adds the copies to this {@link Diagram}.
+         * @return {Set.<Part>} a collection of newly pasted {@link Part}s
+         */
         LocalStorageCommandHandler.prototype.pasteFromClipboard = function () {
-            var coll = new go.Set(go.Part);
+            var coll = new go.Set();
             try {
                 var clipstr = window.localStorage.getItem(this.StorageKey);
                 var clipfrmt = window.localStorage.getItem(this.FormatKey);
-                if (clipstr === null || clipstr === "" || clipfrmt !== this.diagram.model.dataFormat) {
+                if (clipstr === null || clipstr === '' || clipfrmt !== this.diagram.model.dataFormat) {
                     return coll;
                 }
                 else {
@@ -103,23 +107,23 @@ var __extends = (this && this.__extends) || (function () {
                     // recover the model from the clipboard rendering
                     clipdiag.model = go.Model.fromJson(clipstr);
                     // copy all the CLIPDIAG Parts into this Diagram
-                    var allparts = new go.Set(go.Part);
+                    var allparts = new go.Set();
                     allparts.addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
                     var copymap = this.diagram.copyParts(allparts, this.diagram, false);
                     // return a Set of the copied Parts
-                    return new go.Set(go.Part).addAll(copymap.iteratorValues);
+                    return new go.Set().addAll(copymap.iteratorValues);
                 }
             }
             catch (ex) {
                 // fallback implementation
-                return go.CommandHandler.prototype.pasteFromClipboard.call(this);
+                return _super.prototype.pasteFromClipboard.call(this);
             }
         };
         /**
-            * @override
-            * @this {LocalStorageCommandHandler}
-            * @return {boolean}
-            */
+         * This predicate controls whether or not the user can invoke the {@link #pasteSelection} command.
+         *
+         * This works just like {@link CommandHandler#canPasteSelection}, but looks at LocalStorage instead of a static variable.
+         */
         LocalStorageCommandHandler.prototype.canPasteSelection = function () {
             var diagram = this.diagram;
             if (diagram.isReadOnly || diagram.isModelReadOnly)
@@ -129,7 +133,7 @@ var __extends = (this && this.__extends) || (function () {
             try {
                 var clipstr = window.localStorage.getItem(this.StorageKey);
                 var clipfrmt = window.localStorage.getItem(this.FormatKey);
-                if (clipstr === null || clipstr === "")
+                if (clipstr === null || clipstr === '')
                     return false;
                 if (clipfrmt !== diagram.model.dataFormat)
                     return false;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,8 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
-          // start everything in the middle of the viewport
-          initialContentAlignment: go.Spot.Center,
           allowCopy: false,
           allowDelete: false,
           draggingTool: $(CustomDraggingTool),
@@ -78,17 +76,16 @@
   }
   go.Diagram.inherit(CustomLayout, go.Layout);
 
-  /** @override */
   CustomLayout.prototype.doLayout = function(coll) {
     coll = this.collectParts(coll);
 
-    var supers = new go.Set(go.Node);
+    var supers = new go.Set(/*go.Node*/);
     coll.each(function(p) {
       if (p instanceof go.Node && p.category === "Super") supers.add(p);
     });
 
     function membersOf(sup, diag) {
-      var set = new go.Set(go.Part);
+      var set = new go.Set(/*go.Part*/);
       var arr = sup.data._members;
       for (var i = 0; i < arr.length; i++) {
         var d = arr[i];
@@ -103,7 +100,7 @@
         var d = arr[i];
         if (d.category !== "Super") continue;
         var n = diag.findNodeForData(d);
-        if (supers.contains(n)) return false;
+        if (supers.has(n)) return false;
       }
       return true;
     }
@@ -139,15 +136,13 @@
   }
   go.Diagram.inherit(CustomDraggingTool, go.DraggingTool);
 
-  /** @override */
   CustomDraggingTool.prototype.moveParts = function(parts, offset, check) {
     go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
     this.diagram.layoutDiagram(true);
   };
 
-  /** @override */
   CustomDraggingTool.prototype.computeEffectiveCollection = function(parts) {
-    var coll = new go.Set(go.Part).addAll(parts);
+    var coll = new go.Set(/*go.Part*/).addAll(parts);
     var tool = this;
     parts.each(function(p) {
       tool.walkSubTree(p, coll);
@@ -231,7 +226,8 @@
   Diagram Model saved in JSON format:
   <br />
   <textarea id="mySavedModel" style="width:100%;height:300px">
-{ "nodeDataArray": [
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
     { "key": -1, "text": "Operating", "category": "Super" },
     { "key": -2, "text": "Drying", "category": "Super", "supers": [-1] },
     { "key": -3, "text": "Non Drying", "category": "Super" },

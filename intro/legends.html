@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -28,8 +28,6 @@ You can create whatever you want in HTML outside of the diagram.
 function setupForLegend(diagram) {
   var $ = go.GraphObject.make;
 
-  diagram.initialContentAlignment = go.Spot.Center;
-
   diagram.layout = $(go.TreeLayout, { angle: 90 });
 
   diagram.nodeTemplate =
@@ -53,7 +51,7 @@ function setupForLegend(diagram) {
   ]);
 }
 </script>
-<pre style="display:none" id="diagramPre">
+<pre class="lang-js" style="display:none" id="diagramPre">
   setupForLegend(diagram);
 </pre>
 <div style="width:100%">
@@ -85,7 +83,7 @@ If you do not want to these objects to be included in your application's data mo
 you can just create them as simple <a>Part</a>s and <a>Diagram.add</a> them to your diagram
 at explicitly defined <a>Part.location</a>s.
 </p>
-<pre data-language="javascript" id="unmodeled">
+<pre class="lang-js" id="unmodeled">
   setupForLegend(diagram);  // this creates a diagram just like the first example
 
   diagram.add(
@@ -135,7 +133,7 @@ However if you really want to implement it using a <b>GoJS</b> <a>Part</a>, you 
 "ViewportBoundsChanged" <a>DiagramEvent</a> listener that continually resets the position and scale to values that
 make them appear not to move as the user scrolls or zooms.
 </p>
-<pre data-language="javascript" id="static">
+<pre class="lang-js" id="static">
   setupForLegend(diagram);  // this creates a diagram just like the first example
 
   diagram.add(
@@ -151,17 +149,16 @@ make them appear not to move as the user scrolls or zooms.
   // Whenever the Diagram.position or Diagram.scale change,
   // update the position of all simple Parts that have a _viewPosition property.
   diagram.addDiagramListener("ViewportBoundsChanged", function(e) {
-    var dia = e.diagram;
-    dia.startTransaction("fix Parts");
-    // only iterates through simple Parts in the diagram, not Nodes or Links
-    dia.parts.each(function(part) {
-      // and only on those that have the "_viewPosition" property set to a Point
-      if (part._viewPosition) {
-        part.position = dia.transformViewToDoc(part._viewPosition);
-        part.scale = 1/dia.scale;
-      }
-    });
-    dia.commitTransaction("fix Parts");
+    e.diagram.commit(function(dia) {
+      // only iterates through simple Parts in the diagram, not Nodes or Links
+      dia.parts.each(function(part) {
+        // and only on those that have the "_viewPosition" property set to a Point
+        if (part._viewPosition) {
+          part.position = dia.transformViewToDoc(part._viewPosition);
+          part.scale = 1/dia.scale;
+        }
+      })
+    }, "fix Parts");
   });
 </pre>
 <script>goCode("static", 300, 200);</script>

@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,10 +25,13 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
+    /**
+     * A custom {@link Layout} that lays out hierarchical data using nested rectangles.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/TreeMap.html">Tree Map Layout</a> sample.
+     * @category Layout Extension
+     */
     var TreeMapLayout = /** @class */ (function (_super) {
         __extends(TreeMapLayout, _super);
         function TreeMapLayout() {
@@ -30,19 +39,34 @@ var __extends = (this && this.__extends) || (function () {
             _this._isTopLevelHorizontal = false;
             return _this;
         }
+        Object.defineProperty(TreeMapLayout.prototype, "isTopLevelHorizontal", {
+            /**
+             * Gets or sets whether top level Parts are laid out horizontally.
+             */
+            get: function () { return this._isTopLevelHorizontal; },
+            set: function (val) {
+                if (this._isTopLevelHorizontal !== val) {
+                    this._isTopLevelHorizontal = val;
+                    this.invalidateLayout();
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         /**
-        * @ignore
-        * Copies properties to a cloned Layout.
-        * @this {TreeMapLayout}
-        * @param {Layout} copy
-        * @override */
+         * Copies properties to a cloned Layout.
+         */
         TreeMapLayout.prototype.cloneProtected = function (copy) {
             _super.prototype.cloneProtected.call(this, copy);
             copy._isTopLevelHorizontal = this._isTopLevelHorizontal;
         };
+        /**
+         * This method actually positions all of the nodes by determining total area and then recursively tiling nodes from the top-level down.
+         * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
+         */
         TreeMapLayout.prototype.doLayout = function (coll) {
             if (!(coll instanceof go.Diagram))
-                throw new Error("TreeMapLayout only works as the Diagram.layout");
+                throw new Error('TreeMapLayout only works as the Diagram.layout');
             var diagram = coll;
             this.computeTotals(diagram); // make sure data.total has been computed for every node
             // figure out how large an area to cover;
@@ -84,49 +108,52 @@ var __extends = (this && this.__extends) || (function () {
                 }
             });
         };
-        ;
+        /**
+         * @hidden @internal
+         */
         TreeMapLayout.prototype.layoutNode = function (horiz, n, x, y, w, h) {
             n.position = new go.Point(x, y);
             n.desiredSize = new go.Size(w, h);
             if (n instanceof go.Group) {
                 var g = n;
-                var total = g.data.total;
-                var gx = x;
-                var gy = y;
-                var lay = this;
+                var total_1 = g.data.total;
+                var gx_1 = x;
+                var gy_1 = y;
+                var lay_1 = this;
                 g.memberParts.each(function (p) {
                     if (p instanceof go.Link)
                         return;
                     var tot = p.data.total;
                     if (horiz) {
-                        var pw = w * tot / total;
-                        lay.layoutNode(!horiz, p, gx, gy, pw, h);
-                        gx += pw;
+                        var pw = w * tot / total_1;
+                        lay_1.layoutNode(!horiz, p, gx_1, gy_1, pw, h);
+                        gx_1 += pw;
                     }
                     else {
-                        var ph = h * tot / total;
-                        lay.layoutNode(!horiz, p, gx, gy, w, ph);
-                        gy += ph;
+                        var ph = h * tot / total_1;
+                        lay_1.layoutNode(!horiz, p, gx_1, gy_1, w, ph);
+                        gy_1 += ph;
                     }
                 });
             }
         };
-        ;
+        /**
+         * Compute the `data.total` for each node in the Diagram, with a {@link Group}'s being a sum of its members.
+         */
         TreeMapLayout.prototype.computeTotals = function (diagram) {
             if (!diagram.nodes.all(function (g) { return !(g instanceof go.Group) || g.data.total >= 0; })) {
-                var groups = new go.Set();
+                var groups_1 = new go.Set();
                 diagram.nodes.each(function (n) {
                     if (n instanceof go.Group) { // collect all groups
-                        groups.add(n);
+                        groups_1.add(n);
                     }
                     else { // regular nodes just have their total == size
                         n.data.total = n.data.size;
                     }
                 });
-                // keep looking for groups whose total can be computed, until all groups have been processed
-                while (groups.count > 0) {
+                var _loop_1 = function () {
                     var grps = new go.Set();
-                    groups.each(function (g) {
+                    groups_1.each(function (g) {
                         // for a group all of whose member nodes have an initialized data.total,
                         if (g.memberParts.all(function (m) { return !(m instanceof go.Group) || m.data.total >= 0; })) {
                             // compute the group's total as the sum of the sizes of all of the member nodes
@@ -138,22 +165,14 @@ var __extends = (this && this.__extends) || (function () {
                             grps.add(g);
                         }
                     });
-                    groups = grps;
+                    groups_1 = grps;
+                };
+                // keep looking for groups whose total can be computed, until all groups have been processed
+                while (groups_1.count > 0) {
+                    _loop_1();
                 }
             }
         };
-        ;
-        Object.defineProperty(TreeMapLayout.prototype, "isTopLevelHorizontal", {
-            get: function () { return this._isTopLevelHorizontal; },
-            set: function (val) {
-                if (this._isTopLevelHorizontal !== val) {
-                    this._isTopLevelHorizontal = val;
-                    this.invalidateLayout();
-                }
-            },
-            enumerable: true,
-            configurable: true
-        });
         return TreeMapLayout;
     }(go.Layout));
     exports.TreeMapLayout = TreeMapLayout;

@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -10,6 +10,8 @@
 // both the "sourceDiagram" and "targetDiagram" properties.
 // Although InputEvent.targetDiagram is a real property,
 // the "sourceDiagram" property is only used by these Robot methods.
+
+var isMac = (this.navigator !== undefined && this.navigator.platform !== undefined && this.navigator.platform.toUpperCase().indexOf('MAC') >= 0);
 
 /**
 * @constructor
@@ -32,6 +34,14 @@ Robot.prototype.initializeEvent = function(e, props) {
   if (!props) return;
   for (var p in props) {
     if (p !== "sourceDiagram") e[p] = props[p];
+    // If people write control: true, switch to alt: true on macs, for ctrl+copy
+    if (p === "control") {
+      if (isMac) {
+        e['alt'] = props[p];
+      } else {
+        e[p] = props[p];
+      }
+    }
   }
 };
 
@@ -86,7 +96,6 @@ Robot.prototype.mouseMove = function(x, y, time, eventprops) {
   n.timestamp = time;
   this.initializeEvent(n, eventprops);
   diagram.lastInput = n;
-  if (diagram.simulatedMouseMove(null, n.documentPoint, n.targetDiagram)) return;
   diagram.currentTool.doMouseMove();
 };
 
@@ -115,7 +124,7 @@ Robot.prototype.mouseUp = function(x, y, time, eventprops) {
   if (diagram.firstInput.documentPoint.equals(n.documentPoint)) n.clickCount = 1;  // at least??
   this.initializeEvent(n, eventprops);
   diagram.lastInput = n;
-  if (diagram.simulatedMouseUp(null, n.sourceDiagram, n.documentPoint, n.targetDiagram)) return;
+  // if (diagram.simulatedMouseUp(null, (n as any).sourceDiagram, n.documentPoint, n.targetDiagram)) return;
   diagram.currentTool.doMouseUp();
 };
 

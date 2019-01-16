@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,9 +51,7 @@
       $(go.Diagram, "myDiagramDiv",
         {
           allowDragOut: true,  // to myGuests
-          allowDrop: true,  // from myGuests
           allowClipboard: false,
-          initialContentAlignment: go.Spot.Center,
           draggingTool: $(SpecialDraggingTool),
           rotatingTool: $(HorizontalTextRotatingTool),
           // For this sample, automatically show the state of the diagram's model on the page
@@ -82,7 +80,9 @@
             var dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
             highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
           },
-          mouseDrop: function(e, node) { assignPeopleToSeats(node, node.diagram.selection, e.documentPoint); }
+          mouseDrop: function(e, node) {
+            assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
+          }
         },
         $(go.Shape, "Rectangle", { fill: "blanchedalmond", stroke: null }),
         $(go.Panel, "Viewbox",
@@ -242,7 +242,6 @@
                       sorting: go.GridLayout.Ascending  // sort by Node.text value
                     }),
           allowDragOut: true,  // to myDiagram
-          allowDrop: true  // from myDiagram
         });
 
     myGuests.nodeTemplateMap = myDiagram.nodeTemplateMap;
@@ -461,7 +460,6 @@
   }
   go.Diagram.inherit(SpecialDraggingTool, go.DraggingTool);
 
-  /** @override */
   SpecialDraggingTool.prototype.computeEffectiveCollection = function(parts) {
     var map = go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts);
     // for each Node representing a table, also drag all of the people seated at that table
@@ -471,7 +469,7 @@
       for (var nit = table.diagram.nodes; nit.next(); ) {
         var n = nit.value;
         if (isPerson(n) && n.data.table === table.data.key) {
-          if (!map.contains(n)) map.add(n, { point: n.location.copy() });
+          if (!map.has(n)) map.add(n, new go.DraggingInfo(n.location.copy()));
         }
       }
     });
@@ -488,7 +486,6 @@
   }
   go.Diagram.inherit(HorizontalTextRotatingTool, go.RotatingTool);
 
-  /** @override */
   HorizontalTextRotatingTool.prototype.rotate = function(newangle) {
     go.RotatingTool.prototype.rotate.call(this, newangle);
     var node = this.adornedObject.part;

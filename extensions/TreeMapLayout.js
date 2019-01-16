@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -22,7 +22,6 @@ go.Diagram.inherit(TreeMapLayout, go.Layout);
 * Copies properties to a cloned Layout.
 * @this {TreeMapLayout}
 * @param {Layout} copy
-* @override
 */
 TreeMapLayout.prototype.cloneProtected = function(copy) {
   go.Layout.prototype.cloneProtected.call(this, copy);

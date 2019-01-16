@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          initialContentAlignment: go.Spot.Center,
           "undoManager.isEnabled": true
         });
     myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool));
@@ -28,7 +27,7 @@
           fromLinkable: true, toLinkable: true,
           locationSpot: go.Spot.Center
         },
-        new go.Binding("location"),
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, { fill: "lightgray" }),
         $(go.TextBlock, { margin: 10 },
           { fromLinkable: false, toLinkable: false },
@@ -42,13 +41,18 @@
           relinkableFrom: true, relinkableTo: true,
           adjusting: go.Link.Stretch
         },
+        // remember the (potentially) user-modified route
+        new go.Binding("points").makeTwoWay(),
+        // remember any spots modified by LinkShiftingTool
+        new go.Binding("fromSpot", "fromSpot", go.Spot.parse).makeTwoWay(go.Spot.stringify),
+        new go.Binding("toSpot", "toSpot", go.Spot.parse).makeTwoWay(go.Spot.stringify),
         $(go.Shape),
         $(go.Shape, { toArrow: "Standard" })
       );
 
     myDiagram.model = new go.GraphLinksModel([
-      { key: "Alpha", location: new go.Point(0, 0) },
-      { key: "Beta", location: new go.Point(0, 100) }
+      { key: "Alpha", location: "0 0" },
+      { key: "Beta", location: "0 100" }
     ],[
       { from: "Alpha", to: "Beta" }
     ]);

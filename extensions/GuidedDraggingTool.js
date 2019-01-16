@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -144,19 +144,19 @@ GuidedDraggingTool.prototype.invalidateLinks = function(node) {
 * @param {boolean} snap if true, snap the part to where the guideline would be
 */
 GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, snap) {
-  var partBounds = part.actualBounds;
-  var p0 = partBounds.y;
-  var p1 = partBounds.y + partBounds.height/2;
-  var p2 = partBounds.y + partBounds.height;
+  var objBounds = part.locationObject.getDocumentBounds();
+  var p0 = objBounds.y;
+  var p1 = objBounds.y + objBounds.height/2;
+  var p2 = objBounds.y + objBounds.height;
 
   var marginOfError = this.guidelineSnapDistance;
   var distance = this.searchDistance;
-  // compares with parts within narrow vertical area
-  var area = partBounds.copy();
+  // compares with parts (or location objects) within narrow vertical area
+  var area = objBounds.copy();
   area.inflate(distance, marginOfError + 1);
   var otherParts = this.diagram.findObjectsIn(area,
       function(obj) { return obj.part; },
-      function(part) { return part instanceof go.Part && !(part instanceof go.Link) && part.isTopLevel && !part.layer.isTemporary; },
+      function(part) { return part instanceof go.Part && !part.isSelected && !(part instanceof go.Link) && part.isTopLevel && !part.layer.isTemporary; },
       true);
 
   var bestDiff = marginOfError;
@@ -167,7 +167,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
   otherParts.each(function(other) {
     if (other === part) return; // ignore itself
 
-    var otherBounds = other.actualBounds;
+    var otherBounds = other.locationObject.getDocumentBounds();
     var q0 = otherBounds.y;
     var q1 = otherBounds.y + otherBounds.height/2;
     var q2 = otherBounds.y + otherBounds.height;
@@ -185,16 +185,16 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
   });
 
   if (bestPart !== null) {
-    var bestBounds = bestPart.actualBounds;
+    var bestBounds = bestPart.locationObject.getDocumentBounds();
     // line extends from x0 to x2
-    var x0 = Math.min(partBounds.x, bestBounds.x) - 10;
-    var x2 = Math.max(partBounds.x + partBounds.width, bestBounds.x + bestBounds.width) + 10;
+    var x0 = Math.min(objBounds.x, bestBounds.x) - 10;
+    var x2 = Math.max(objBounds.x + objBounds.width, bestBounds.x + bestBounds.width) + 10;
     // find bestPart's desired Y
     var bestPoint = new go.Point().setRectSpot(bestBounds, bestOtherSpot);
     if (bestSpot === go.Spot.Center) {
       if (snap) {
         // call Part.move in order to automatically move member Parts of Groups
-        part.move(new go.Point(partBounds.x, bestPoint.y - partBounds.height / 2));
+        part.move(new go.Point(objBounds.x, bestPoint.y - objBounds.height / 2));
         this.invalidateLinks(part);
       }
       if (guideline) {
@@ -204,7 +204,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
       }
     } else if (bestSpot === go.Spot.Top) {
       if (snap) {
-        part.move(new go.Point(partBounds.x, bestPoint.y));
+        part.move(new go.Point(objBounds.x, bestPoint.y));
         this.invalidateLinks(part);
       }
       if (guideline) {
@@ -214,7 +214,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
       }
     } else if (bestSpot === go.Spot.Bottom) {
       if (snap) {
-        part.move(new go.Point(partBounds.x, bestPoint.y - partBounds.height));
+        part.move(new go.Point(objBounds.x, bestPoint.y - objBounds.height));
         this.invalidateLinks(part);
       }
       if (guideline) {
@@ -237,19 +237,19 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
 * @param {boolean} snap if true, don't show guidelines but just snap the part to where the guideline would be
 */
 GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, snap) {
-  var partBounds = part.actualBounds;
-  var p0 = partBounds.x;
-  var p1 = partBounds.x + partBounds.width/2;
-  var p2 = partBounds.x + partBounds.width;
+  var objBounds = part.locationObject.getDocumentBounds();
+  var p0 = objBounds.x;
+  var p1 = objBounds.x + objBounds.width/2;
+  var p2 = objBounds.x + objBounds.width;
 
   var marginOfError = this.guidelineSnapDistance;
   var distance = this.searchDistance;
   // compares with parts within narrow vertical area
-  var area = partBounds.copy();
+  var area = objBounds.copy();
   area.inflate(marginOfError + 1, distance);
   var otherParts = this.diagram.findObjectsIn(area,
       function(obj) { return obj.part; },
-      function(part) { return part instanceof go.Part && !(part instanceof go.Link) && part.isTopLevel && !part.layer.isTemporary; },
+    function(part) { return part instanceof go.Part && !part.isSelected && !(part instanceof go.Link) && part.isTopLevel && !part.layer.isTemporary; },
       true);
 
   var bestDiff = marginOfError;
@@ -260,7 +260,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
   otherParts.each(function(other) {
     if (other === part) return; // ignore itself
 
-    var otherBounds = other.actualBounds;
+    var otherBounds = other.locationObject.getDocumentBounds();
     var q0 = otherBounds.x;
     var q1 = otherBounds.x + otherBounds.width/2;
     var q2 = otherBounds.x + otherBounds.width;
@@ -278,16 +278,16 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
   });
 
   if (bestPart !== null) {
-    var bestBounds = bestPart.actualBounds;
+    var bestBounds = bestPart.locationObject.getDocumentBounds();
     // line extends from y0 to y2
-    var y0 = Math.min(partBounds.y, bestBounds.y) - 10;
-    var y2 = Math.max(partBounds.y + partBounds.height, bestBounds.y + bestBounds.height) + 10;
+    var y0 = Math.min(objBounds.y, bestBounds.y) - 10;
+    var y2 = Math.max(objBounds.y + objBounds.height, bestBounds.y + bestBounds.height) + 10;
     // find bestPart's desired X
     var bestPoint = new go.Point().setRectSpot(bestBounds, bestOtherSpot);
     if (bestSpot === go.Spot.Center) {
       if (snap) {
         // call Part.move in order to automatically move member Parts of Groups
-        part.move(new go.Point(bestPoint.x - partBounds.width / 2, partBounds.y));
+        part.move(new go.Point(bestPoint.x - objBounds.width / 2, objBounds.y));
         this.invalidateLinks(part);
       }
       if (guideline) {
@@ -297,7 +297,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
       }
     } else if (bestSpot === go.Spot.Left) {
       if (snap) {
-        part.move(new go.Point(bestPoint.x, partBounds.y));
+        part.move(new go.Point(bestPoint.x, objBounds.y));
         this.invalidateLinks(part);
       }
       if (guideline) {
@@ -307,7 +307,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
       }
     } else if (bestSpot === go.Spot.Right) {
       if (snap) {
-        part.move(new go.Point(bestPoint.x - partBounds.width, partBounds.y));
+        part.move(new go.Point(bestPoint.x - objBounds.width, objBounds.y));
         this.invalidateLinks(part);
       }
       if (guideline) {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,6 +6,7 @@
   <title>GoJS Selection -- Northwoods Software</title>
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
@@ -40,7 +41,7 @@ For nodes this is normally a blue rectangle surrounding the whole Node.
 This is the default behavior; if you do not want such an adornment, you can set <a>Part.selectionAdorned</a> to false.
 </p>
 
-<pre data-language="javascript" id="adornmentDefault">
+<pre class="lang-js" id="adornmentDefault">
   diagram.nodeTemplate =
     $(go.Node, "Vertical",
       // the location is the center of the Shape, not the center of the whole Node
@@ -76,7 +77,7 @@ By default an <a>Adornment</a> will apply to the whole <a>Node</a>.
 What if you want attention to be drawn only to the main piece of a node?
 You can accomplish that by naming that object and setting <a>Part.selectionObjectName</a> to that name.
 </p>
-<pre data-language="javascript" id="adornmentObject">
+<pre class="lang-js" id="adornmentObject">
   diagram.nodeTemplate =
     $(go.Node, "Vertical",
       { selectionObjectName: "ICON" },  // added this property!
@@ -119,7 +120,7 @@ Such customization can be done by setting the <a>Part.selectionAdornmentTemplate
 In this example, nodes get thick blue rounded rectangles surrounding the selected node,
 and links get thick blue lines following the selected link's path.
 </p>
-<pre data-language="javascript" id="custom">
+<pre class="lang-js" id="custom">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -169,7 +170,7 @@ Adornments for nodes must contain a <a>Placeholder</a> in their visual tree.
 The Placeholder gets positioned where the selected object is.
 </p>
 <p>
-Adornments for links are assumed to be panels of <a>Panel.type</a> that is <a>Panel.Link</a>.
+Adornments for links are assumed to be panels of <a>Panel.type</a> that is <a>Panel,Link</a>.
 Hence the main element may be a <a>Shape</a> that gets the geometry of the selected Link's path shape,
 and the other elements of the adornment may be positioned on or near the segments of the link route just as for a regular <a>Link</a>.
 </p>
@@ -179,7 +180,7 @@ and the other elements of the adornment may be positioned on or near the segment
 The custom <a>Adornment</a> for a <a>Node</a> need not be only a simple <a>Shape</a> outlining the selected node.
 Here is an adornment that adds a button to the adornment which inserts a node and a link to that new node.
 </p>
-<pre data-language="javascript" id="complex">
+<pre class="lang-js" id="complex">
   function addNodeAndLink(e, b) {
     // take a button panel in an Adornment, get its Adornment, and then get its adorned Node
     var node = b.part.adornedPart;
@@ -247,7 +248,7 @@ Like all <a>Part</a>s, <a>Adornment</a>s support data binding.
 If the adorned Part has a data binding (i.e. if <a>Part.data</a> is non-null),
 all adornments for that part will also be bound to the same data object.
 </p>
-<pre data-language="javascript" id="binding">
+<pre class="lang-js" id="binding">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -293,7 +294,7 @@ Here we data bind the <a>Shape.fill</a> to the <a>Part.isSelected</a> property
 with a converter function that converts the boolean value to a color string or brush.
 We also turn off the regular rectangular blue selection adornment.
 </p>
-<pre data-language="javascript" id="isSelected">
+<pre class="lang-js" id="isSelected">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { selectionAdorned: false },  // don't bother with any selection adornment
@@ -327,7 +328,7 @@ Now when you select a node its background color changes to cyan.
 More generally you can execute code to modify the Part when <a>Part.isSelected</a> has changed value.
 In this example we will have the same side effects as the previous example.
 </p>
-<pre data-language="javascript" id="selectionChanged">
+<pre class="lang-js" id="selectionChanged">
   function onSelectionChanged(node) {
     var icon = node.findObject("Icon");
     if (icon !== null) {

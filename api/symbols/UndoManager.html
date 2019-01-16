@@ -1,1983 +1,924 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; UndoManager Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>UndoManager | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class UndoManager</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">UndoManager</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>UndoManager observes and records model and diagram changes in transactions and
+						supports undo/redo operations.
+						You will need to set the <a href="UndoManager.html#isEnabled">isEnabled</a> property to true
+					in order for users to perform an undo or a redo.</p>
+					<p>Typically an operation will call <a href="UndoManager.html#startTransaction">startTransaction</a>,
+						make some changes to the <a href="Model.html">Model</a> or <a href="Diagram.html">Diagram</a>,
+						and then call <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
+						Any <a href="ChangedEvent.html">ChangedEvent</a>s that occur will be recorded in a
+						<a href="Transaction.html">Transaction</a> object.
+						If for some reason you do not wish to complete the transaction
+						successfully, you can call <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> instead
+					of <a href="UndoManager.html#commitTransaction">commitTransaction</a>.</p>
+					<p>The <a href="UndoManager.html#history">history</a> property is a list of <a href="Transaction.html">Transaction</a>s.
+						<a href="UndoManager.html#commitTransaction">commitTransaction</a> will add the <a href="UndoManager.html#currentTransaction">currentTransaction</a>
+						to the <a href="UndoManager.html#history">history</a> list.
+						<a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> will undo the changes remembered in the
+						<a href="UndoManager.html#currentTransaction">currentTransaction</a> and then discard it, without changing the <a href="UndoManager.html#history">history</a>.
+						You can limit how many transactions are remembered in the history
+					by setting <a href="UndoManager.html#maxHistoryLength">maxHistoryLength</a>.</p>
+					<p>Transactions may be nested.
+						Be sure to call either <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a>
+						for each call to <a href="UndoManager.html#startTransaction">startTransaction</a>.
+						Avoid repeated start-commit-start-commit calls as a result of a user&#39;s actions.
+					Instead, start, make all changes, and then commit.</p>
+					<p>If you want to restore the diagram to the state before the latest complete
+						transaction, call <a href="UndoManager.html#undo">undo</a>.
+						Call <a href="UndoManager.html#redo">redo</a> to change the diagram to a later state.
+						If after some number of undo&#39;s you start a transaction,
+						all of the history after the current state is discarded,
+						and a new transaction may be recorded.
+					You cannot undo or redo during a transaction.</p>
+					<p>Initially each <a href="Model.html">Model</a> has its own UndoManager.
+						UndoManagers may be shared by multiple Models by replacing
+					the standard <a href="Model.html#undoManager">Model.undoManager</a> created by the model constructor.</p>
+					<p>There are several informational properties:</p>
+					<ul>
+						<li><a href="UndoManager.html#isInTransaction">isInTransaction</a> is true when a top-level transaction has been started that has not yet been committed or rolled-back.</li>
+						<li><a href="UndoManager.html#currentTransaction">currentTransaction</a> holds the flattened list of all <a href="ChangedEvent.html">ChangedEvent</a>s
+						that have happened within the current transaction.</li>
+						<li><a href="UndoManager.html#transactionLevel">transactionLevel</a> indicates the current depth of nesting.</li>
+						<li><a href="UndoManager.html#nestedTransactionNames">nestedTransactionNames</a> holds the stack of transaction names supplied to
+						<a href="UndoManager.html#startTransaction">startTransaction</a> calls.</li>
+						<li><a href="UndoManager.html#history">history</a> holds only complete top-level transactions.</li>
+						<li><a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</li>
+						<li><a href="UndoManager.html#historyIndex">historyIndex</a> indicates which <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> is the next to be &quot;undone&quot;;
+						this is decremented by each undo and incremented by a redo.</li>
+						<li><a href="UndoManager.html#transactionToUndo">transactionToUndo</a> and <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> indicate which <a href="Transaction.html">Transaction</a> may be undone or redone next, if any.</li>
+						<li><a href="UndoManager.html#models">models</a> returns an iterator over all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="UndoManager.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#currentTransaction" class="tsd-kind-icon">current<wbr>Transaction</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#history" class="tsd-kind-icon">history</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#historyIndex" class="tsd-kind-icon">history<wbr>Index</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#isEnabled" class="tsd-kind-icon">is<wbr>Enabled</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isInTransaction" class="tsd-kind-icon">is<wbr>InTransaction</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isUndoingRedoing" class="tsd-kind-icon">is<wbr>Undoing<wbr>Redoing</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#maxHistoryLength" class="tsd-kind-icon">max<wbr>History<wbr>Length</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#models" class="tsd-kind-icon">models</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#nestedTransactionNames" class="tsd-kind-icon">nested<wbr>Transaction<wbr>Names</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionLevel" class="tsd-kind-icon">transaction<wbr>Level</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToRedo" class="tsd-kind-icon">transaction<wbr>ToRedo</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToUndo" class="tsd-kind-icon">transaction<wbr>ToUndo</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#addModel" class="tsd-kind-icon">add<wbr>Model</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canRedo" class="tsd-kind-icon">can<wbr>Redo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canUndo" class="tsd-kind-icon">can<wbr>Undo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#clear" class="tsd-kind-icon">clear</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#commitTransaction" class="tsd-kind-icon">commit<wbr>Transaction</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#handleChanged" class="tsd-kind-icon">handle<wbr>Changed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#redo" class="tsd-kind-icon">redo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#removeModel" class="tsd-kind-icon">remove<wbr>Model</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#rollbackTransaction" class="tsd-kind-icon">rollback<wbr>Transaction</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#skipsEvent" class="tsd-kind-icon">skips<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#startTransaction" class="tsd-kind-icon">start<wbr>Transaction</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#undo" class="tsd-kind-icon">undo</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Undo<wbr>Manager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="UndoManager.html" class="tsd-signature-type">UndoManager</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>The constructor produces an empty UndoManager
+								with no transaction history.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="UndoManager.html" class="tsd-signature-type">UndoManager</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="currentTransaction" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						current<wbr>Transaction
+					<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type">Transaction</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the current <a href="Transaction.html">Transaction</a> for recording additional model change events.
+									This is initialized and augmented by <a href="UndoManager.html#handleChanged">handleChanged</a>
+									before it is added to <a href="UndoManager.html#history">history</a> by a top-level call
+									to <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
+								The value will be null between transactions.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="history" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						history
+					<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type">List</a><span class="tsd-signature-symbol">&lt;</span><a href="Transaction.html" class="tsd-signature-type">Transaction</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the whole history, a list of all of the <a href="Transaction.html">Transaction</a>s,
+								each representing a transaction with some number of <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
+								<p>You should not modify this List.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="historyIndex" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						history<wbr>Index
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the index into <a href="UndoManager.html#history">history</a> for the current undoable <a href="Transaction.html">Transaction</a>.
+								The value is -1 if there is no undoable <a href="Transaction.html">Transaction</a> to be undone.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="isEnabled" class="tsd-anchor"></a>
+					<h3>
+						is<wbr>Enabled
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether this UndoManager records any changes.
+									The default value is false -- you need to set this to true if
+								you want the user to be able to undo or redo.</p>
+								<p>You can temporarily turn off recording by setting <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a>
+								and <a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> to true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="isInTransaction" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						is<wbr>InTransaction
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property is true after the first call to <a href="UndoManager.html#startTransaction">startTransaction</a>
+								and before a corresponding call to <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a>.</p>
+								<p>During a transaction <a href="UndoManager.html#canUndo">canUndo</a> and <a href="UndoManager.html#canRedo">canRedo</a> will be false.
+								<a href="UndoManager.html#currentTransaction">currentTransaction</a> may be non-null if any <a href="ChangedEvent.html">ChangedEvent</a>s were recorded.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="isUndoingRedoing" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						is<wbr>Undoing<wbr>Redoing
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="maxHistoryLength" class="tsd-anchor"></a>
+					<h3>
+						max<wbr>History<wbr>Length
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the maximum number of transactions that this undo manager will remember.
+									When a transaction is committed and the number exceeds this value,
+									the UndoManager will discard the oldest transaction(s).
+									The initial value is 999.
+								A negative value is treated as if there were no limit.</p>
+								<p>This property is useful in helping limit the memory consumption of typical applications.
+									But this does not limit the number of <a href="ChangedEvent.html">ChangedEvent</a>s that are recorded,
+									because there may be an unlimited number of those within each <a href="Transaction.html">Transaction</a>.
+									Decreasing this value will not necessarily remove any existing <a href="Transaction.html">Transaction</a>s
+								if there currently exist more in <a href="UndoManager.html#history">history</a> than the new value permits.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="models" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						models
+					<span class="tsd-signature-symbol">: </span><a href="Iterator.html" class="tsd-signature-type">Iterator</a><span class="tsd-signature-symbol">&lt;</span><a href="Model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns an iterator for all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#addModel">addModel</a>, <a href="UndoManager.html#removeModel">removeModel</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="nestedTransactionNames" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						nested<wbr>Transaction<wbr>Names
+					<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type">List</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns a stack of ongoing transaction names.
+									The outermost transaction name will be the first item in the list.
+									The last one will be the name of the most recent (nested) call
+								to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
+								<p>You should not modify this List.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="transactionLevel" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						transaction<wbr>Level
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the current transaction level.
+									The value is zero when there is no ongoing transaction.
+									The initial value is zero.
+									<a href="UndoManager.html#startTransaction">startTransaction</a> will increment this value;
+									<a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> will decrement it.
+									When this value is greater than zero, <a href="UndoManager.html#canUndo">canUndo</a>
+									and <a href="UndoManager.html#canRedo">canRedo</a> will be false, because
+								additional logically related model change events may occur.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="transactionToRedo" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						transaction<wbr>ToRedo
+					<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type">Transaction</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> to be redone next.
+								The value may be null if the UndoManager is not ready to perform a redo.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#transactionToUndo">transactionToUndo</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="transactionToUndo" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						transaction<wbr>ToUndo
+					<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type">Transaction</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> to be undone next.
+								The value may be null if the UndoManager is not ready to perform an undo.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#transactionToRedo">transactionToRedo</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addModel" class="tsd-anchor"></a>
+					<h3>
+						add<wbr>Model
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Model<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Make sure this UndoManager knows about a <a href="Model.html">Model</a> for which
+									it may receive <a href="ChangedEvent.html">ChangedEvent</a>s when the given <a href="Model.html">Model</a> is changed.
+								The model will also receive notifications about transactions and undo or redo operations.</p>
+								<p>You should not call this method during a transaction.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#models">models</a>, <a href="UndoManager.html#removeModel">removeModel</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>model: <a href="Model.html" class="tsd-signature-type">Model</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A <a href="Model.html">Model</a> that this UndoManager is managing.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canRedo" class="tsd-anchor"></a>
+					<h3>
+						can<wbr>Redo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate returns true if you can call <a href="UndoManager.html#redo">redo</a>.
+									This will return false if <a href="UndoManager.html#isEnabled">isEnabled</a> is false (as it is by default),
+									if any transaction is ongoing, or
+								if there is no <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> that can be redone.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if ready for <a href="UndoManager.html#redo">redo</a> to be called.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canUndo" class="tsd-anchor"></a>
+					<h3>
+						can<wbr>Undo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate returns true if you can call <a href="UndoManager.html#undo">undo</a>.
+									This will return false if <a href="UndoManager.html#isEnabled">isEnabled</a> is false (as it is by default),
+									if any transaction is ongoing, or
+								if there is no <a href="UndoManager.html#transactionToUndo">transactionToUndo</a> that can be undone.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if ready for <a href="UndoManager.html#undo">undo</a> to be called.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="clear" class="tsd-anchor"></a>
+					<h3>
+						clear
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Clear all of the <a href="Transaction.html">Transaction</a>s and clear all other state,
+									including any ongoing transaction without rolling back.
+								However, this maintains its references to its <a href="Model.html">Model</a>s.</p>
+								<p>You should not call this method during a transaction.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="commitTransaction" class="tsd-anchor"></a>
+					<h3>
+						commit<wbr>Transaction
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">commit<wbr>Transaction<span class="tsd-signature-symbol">(</span>tname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Commit the current transaction started by a call to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
+								<p>For convenience, this method is called by <a href="Model.html#commitTransaction">Model.commitTransaction</a> and <a href="Diagram.html#commitTransaction">Diagram.commitTransaction</a>.</p>
+								<p>If this call stops a top-level transaction,
+									we mark the <a href="UndoManager.html#currentTransaction">currentTransaction</a> as complete (<a href="Transaction.html#isComplete">Transaction.isComplete</a>),
+									we add the <a href="Transaction.html">Transaction</a> to the <a href="UndoManager.html#history">history</a> list,
+									and we return true.
+									Committing a transaction when there have been some undos without corresponding
+									redos will throw away the <a href="Transaction.html">Transaction</a>s holding changes that happened
+									after the current state, before adding the new <a href="Transaction.html">Transaction</a> to the
+								<a href="UndoManager.html#history">history</a> list.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#startTransaction">startTransaction</a>, <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> tname: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a short string describing the transaction;
+											this is recorded as the <a href="Transaction.html#name">Transaction.name</a> and need not be the same as the string passed to <a href="UndoManager.html#startTransaction">startTransaction</a>.
+										If the value is an empty string or not supplied, this will use the name given to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if ending a top-level transaction.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="handleChanged" class="tsd-anchor"></a>
+					<h3>
+						handle<wbr>Changed
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Changed<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Maybe record a <a href="ChangedEvent.html">ChangedEvent</a> in the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+									This calls <a href="UndoManager.html#skipsEvent">skipsEvent</a> to see if this should ignore the change.
+									If <a href="UndoManager.html#skipsEvent">skipsEvent</a> returns false, this creates a copy of the <a href="ChangedEvent.html">ChangedEvent</a>
+									and adds it to the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+								If there is no <a href="UndoManager.html#currentTransaction">currentTransaction</a>, this first creates and remembers it.</p>
+								<p>This method always ignores all changes while performing
+									an <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.
+								This method is also a no-op if <a href="UndoManager.html#isEnabled">isEnabled</a> is false.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a <a href="ChangedEvent.html">ChangedEvent</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="redo" class="tsd-anchor"></a>
+					<h3>
+						redo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>After an <a href="UndoManager.html#undo">undo</a>, re-perform the changes in <a href="UndoManager.html#transactionToRedo">transactionToRedo</a>.
+								<a href="UndoManager.html#canRedo">canRedo</a> must be true for this method to have any effect.</p>
+								<p>This is called by <a href="CommandHandler.html#redo">CommandHandler.redo</a>.</p>
+								<p>This will raise a &quot;StartingRedo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>,
+									perform the <a href="Transaction.html#redo">Transaction.redo</a> on the <a href="UndoManager.html#transactionToRedo">transactionToRedo</a>, and then
+									raise a &quot;FinishedRedo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.
+									The two ChangedEvents are to let model listeners know that a redo is about to take place
+									and that it just finished.
+								<a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> will temporarily be set to true during this operation.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="removeModel" class="tsd-anchor"></a>
+					<h3>
+						remove<wbr>Model
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Model<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Inform this UndoManager that it will no longer be receiving <a href="ChangedEvent.html">ChangedEvent</a>s
+									when the given <a href="Model.html">Model</a> is changed.
+								The model will no longer receive notifications about transactions and undo or redo operations.</p>
+								<p>You should not call this method during a transaction.
+									If you call this method between transactions when there is a transaction history,
+								you should be careful that there are no <a href="ChangedEvent.html">ChangedEvent</a>s referring to that model in any <a href="Transaction.html">Transaction</a>s.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#models">models</a>, <a href="UndoManager.html#addModel">addModel</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>model: <a href="Model.html" class="tsd-signature-type">Model</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A <a href="Model.html">Model</a> that this UndoManager should no longer manage.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="rollbackTransaction" class="tsd-anchor"></a>
+					<h3>
+						rollback<wbr>Transaction
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">rollback<wbr>Transaction<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Rollback the current transaction started by a call to <a href="UndoManager.html#startTransaction">startTransaction</a>, undoing any changes.</p>
+								<p>For convenience, this method is called by <a href="Model.html#rollbackTransaction">Model.rollbackTransaction</a> and <a href="Diagram.html#rollbackTransaction">Diagram.rollbackTransaction</a>.</p>
+								<p>This undoes and then discards the changes in the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+								You must have started a transaction previously.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#startTransaction">startTransaction</a>, <a href="UndoManager.html#commitTransaction">commitTransaction</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if ending a top-level transaction.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="skipsEvent" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						skips<wbr>Event
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">skips<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate is called by <a href="UndoManager.html#handleChanged">handleChanged</a> to decide if a <a href="ChangedEvent.html">ChangedEvent</a>
+								is not interesting enough to be remembered.</p>
+								<p>Transactional events (of change type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>) are always skipped.
+								Changed events for <a href="GraphObject.html">GraphObject</a>s that are in <a href="Layer.html#isTemporary">Layer.isTemporary</a> layers are also skipped.</p>
+								<p>Sometimes changed events do not even get to <a href="UndoManager.html#handleChanged">handleChanged</a> because
+								<a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> or <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a> is true.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the <a href="ChangedEvent.html">ChangedEvent</a> received by <a href="UndoManager.html#handleChanged">handleChanged</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true to not record the change.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="startTransaction" class="tsd-anchor"></a>
+					<h3>
+						start<wbr>Transaction
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Transaction<span class="tsd-signature-symbol">(</span>tname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Begin a transaction, where the changes are held by a <a href="Transaction.html">Transaction</a> object
+									as the value of <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+								You must call either <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> afterwards.</p>
+								<p>For convenience, this method is called by <a href="Model.html#startTransaction">Model.startTransaction</a> and <a href="Diagram.html#startTransaction">Diagram.startTransaction</a>.</p>
+								<p>Transactions can be nested.
+									Starting or ending a nested transaction will return false.
+								Nested transactions will share the same <a href="Transaction.html">Transaction</a> list of <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
+								<p>Starting a transaction will not necessarily cause <a href="UndoManager.html#currentTransaction">currentTransaction</a> to be non-null.
+								A <a href="Transaction.html">Transaction</a> object is usually only created by <a href="UndoManager.html#handleChanged">handleChanged</a> when a <a href="ChangedEvent.html">ChangedEvent</a> first occurs.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="UndoManager.html#commitTransaction">commitTransaction</a>, <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> tname: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a short string describing the transaction, pushed onto the <a href="UndoManager.html#nestedTransactionNames">nestedTransactionNames</a> stack.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if starting a top-level transaction.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="undo" class="tsd-anchor"></a>
+					<h3>
+						undo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Reverse the effects of the <a href="UndoManager.html#transactionToUndo">transactionToUndo</a>.
+								<a href="UndoManager.html#canUndo">canUndo</a> must be true for this method to have any effect.</p>
+								<p>This is called by <a href="CommandHandler.html#undo">CommandHandler.undo</a>.</p>
+								<p>This will raise a &quot;StartingUndo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>,
+									perform the <a href="Transaction.html#undo">Transaction.undo</a> on the <a href="UndoManager.html#transactionToUndo">transactionToUndo</a>, and then
+									raise a &quot;FinishedUndo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.
+									The two ChangedEvents are to let model listeners know that an undo is about to take place
+									and that it just finished.
+								<a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> will temporarily be set to true during this operation.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="UndoManager.html" class="tsd-kind-icon">Undo<wbr>Manager</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="UndoManager.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#currentTransaction" class="tsd-kind-icon">current<wbr>Transaction</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#history" class="tsd-kind-icon">history</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#historyIndex" class="tsd-kind-icon">history<wbr>Index</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="UndoManager.html#isEnabled" class="tsd-kind-icon">is<wbr>Enabled</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#isInTransaction" class="tsd-kind-icon">is<wbr>InTransaction</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#isUndoingRedoing" class="tsd-kind-icon">is<wbr>Undoing<wbr>Redoing</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="UndoManager.html#maxHistoryLength" class="tsd-kind-icon">max<wbr>History<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#models" class="tsd-kind-icon">models</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#nestedTransactionNames" class="tsd-kind-icon">nested<wbr>Transaction<wbr>Names</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#transactionLevel" class="tsd-kind-icon">transaction<wbr>Level</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#transactionToRedo" class="tsd-kind-icon">transaction<wbr>ToRedo</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="UndoManager.html#transactionToUndo" class="tsd-kind-icon">transaction<wbr>ToUndo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#addModel" class="tsd-kind-icon">add<wbr>Model</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#canRedo" class="tsd-kind-icon">can<wbr>Redo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#canUndo" class="tsd-kind-icon">can<wbr>Undo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#clear" class="tsd-kind-icon">clear</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#commitTransaction" class="tsd-kind-icon">commit<wbr>Transaction</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#handleChanged" class="tsd-kind-icon">handle<wbr>Changed</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#redo" class="tsd-kind-icon">redo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#removeModel" class="tsd-kind-icon">remove<wbr>Model</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#rollbackTransaction" class="tsd-kind-icon">rollback<wbr>Transaction</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#skipsEvent" class="tsd-kind-icon">skips<wbr>Event</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#startTransaction" class="tsd-kind-icon">start<wbr>Transaction</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="UndoManager.html#undo" class="tsd-kind-icon">undo</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class UndoManager
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                
-
-                UndoManager observes and records model and diagram changes in transactions andsupports undo/redo operations.You will need to set the <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">isEnabled</a> property to truein order for users to perform an undo or a redo.<p>Typically an operation will call <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>,make some changes to the <a href="../symbols/Model.html" class="linkConstructor">Model</a> or <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>,and then call <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a>.Any <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s that occur will be recorded in a<a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> object.If for some reason you do not wish to complete the transactionsuccessfully, you can call <a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a> insteadof <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a>.<p>The <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> property is a list of <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>s.<a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a> will add the <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a>to the <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> list.<a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a> will undo the changes remembered in the<a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a> and then discard it, without changing the <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a>.You can limit how many transactions are remembered in the historyby setting <a href="../symbols/UndoManager.html#maxHistoryLength" class="linkProperty">maxHistoryLength</a>.<p>Transactions may be nested.Be sure to call either <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a> or <a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a>for each call to <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>.Avoid repeated start-commit-start-commit calls as a result of a user's actions.Instead, start, make all changes, and then commit.<p>If you want to restore the diagram to the state before the latest completetransaction, call <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a>.Call <a href="../symbols/UndoManager.html#redo" class="linkMethod">redo</a> to change the diagram to a later state.If after some number of undo's you start a transaction,all of the history after the current state is discarded,and a new transaction may be recorded.You cannot undo or redo during a transaction.<p>Initially each <a href="../symbols/Model.html" class="linkConstructor">Model</a> has its own UndoManager.UndoManagers may be shared by multiple Models by replacingthe standard <a href="../symbols/Model.html#undoManager" class="linkProperty">Model.undoManager</a> created by the model constructor.<p>There are several informational properties:<ul><li><a href="../symbols/UndoManager.html#isInTransaction" class="linkProperty">isInTransaction</a> is true when a top-level transaction has been started that has not yet been committed or rolled-back.</li><li><a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a> holds the flattened list of all <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>sthat have happened within the current transaction.</li><li><a href="../symbols/UndoManager.html#transactionLevel" class="linkProperty">transactionLevel</a> indicates the current depth of nesting.</li><li><a href="../symbols/UndoManager.html#nestedTransactionNames" class="linkProperty">nestedTransactionNames</a> holds the stack of transaction names supplied to<a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a> calls.</li><li><a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> holds only complete top-level transactions.</li><li><a href="../symbols/UndoManager.html#isUndoingRedoing" class="linkProperty">isUndoingRedoing</a> is true during a call to <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a> or <a href="../symbols/UndoManager.html#redo" class="linkMethod">redo</a>.</li><li><a href="../symbols/UndoManager.html#historyIndex" class="linkProperty">historyIndex</a> indicates which <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> in the <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> is the next to be "undone";this is decremented by each undo and incremented by a redo.</li><li><a href="../symbols/UndoManager.html#transactionToUndo" class="linkProperty">transactionToUndo</a> and <a href="../symbols/UndoManager.html#transactionToRedo" class="linkProperty">transactionToRedo</a> indicate which <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> may be undone or redone next, if any.</li><li><a href="../symbols/UndoManager.html#models" class="linkProperty">models</a> returns an iterator over all of the <a href="../symbols/Model.html" class="linkConstructor">Model</a>s that this UndoManager is handling.</li></ul>
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class UndoManager.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                UndoManager()
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>The constructor produces an empty UndoManagerwith no transaction history.
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class UndoManager.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="currentTransaction" >
-                
-                <td class="name">
-                  <div class="name">
-                    currentTransaction
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the current <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> for recording additional model change events.<span class="nodetails" id="xpropcurrentTransaction"><a class="morelink" onclick="hst('propcurrentTransaction')">More...</a></span> <span class="details" id="propcurrentTransaction">This is initialized and augmented by <a href="../symbols/UndoManager.html#handleChanged" class="linkMethod">handleChanged</a>before it is added to <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> by a top-level callto <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a>.The value will be null between transactions.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="history" >
-                
-                <td class="name">
-                  <div class="name">
-                    history
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{List.<Transaction>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the whole history, a list of all of the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>s,each representing a transaction with some number of <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s.<span class="nodetails" id="xprophistory"><a class="morelink" onclick="hst('prophistory')">More...</a></span> <span class="details" id="prophistory"></span><div class="details" id="dprophistory"><p>You should not modify this List.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="historyIndex" >
-                
-                <td class="name">
-                  <div class="name">
-                    historyIndex
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the index into <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> for the current undoable <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>.<span class="nodetails" id="xprophistoryIndex"><a class="morelink" onclick="hst('prophistoryIndex')">More...</a></span> <span class="details" id="prophistoryIndex">The value is -1 if there is no undoable <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> to be undone.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="isEnabled" >
-                
-                <td class="name">
-                  <div class="name">
-                    isEnabled
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether this UndoManager records any changes.<span class="nodetails" id="xpropisEnabled"><a class="morelink" onclick="hst('propisEnabled')">More...</a></span> <span class="details" id="propisEnabled">The default value is false -- you need to set this to true ifyou want the user to be able to undo or redo.</span><div class="details" id="dpropisEnabled"><p>You can temporarily turn off recording by setting <a href="../symbols/Diagram.html#skipsUndoManager" class="linkProperty">Diagram.skipsUndoManager</a>and <a href="../symbols/Model.html#skipsUndoManager" class="linkProperty">Model.skipsUndoManager</a> to true.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="isInTransaction" >
-                
-                <td class="name">
-                  <div class="name">
-                    isInTransaction
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property is true after the first call to <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>and before a corresponding call to <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a> or <a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a>.<span class="nodetails" id="xpropisInTransaction"><a class="morelink" onclick="hst('propisInTransaction')">More...</a></span> <span class="details" id="propisInTransaction"></span><div class="details" id="dpropisInTransaction"><p>During a transaction <a href="../symbols/UndoManager.html#canUndo" class="linkMethod">canUndo</a> and <a href="../symbols/UndoManager.html#canRedo" class="linkMethod">canRedo</a> will be false.<a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a> may be non-null if any <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s were recorded.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="isUndoingRedoing" >
-                
-                <td class="name">
-                  <div class="name">
-                    isUndoingRedoing
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property is true during a call to <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a> or <a href="../symbols/UndoManager.html#redo" class="linkMethod">redo</a>.
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="maxHistoryLength" >
-                
-                <td class="name">
-                  <div class="name">
-                    maxHistoryLength
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the maximum number of transactions that this undo manager will remember.<span class="nodetails" id="xpropmaxHistoryLength"><a class="morelink" onclick="hst('propmaxHistoryLength')">More...</a></span> <span class="details" id="propmaxHistoryLength">When a transaction is committed and the number exceeds this value,the UndoManager will discard the oldest transaction(s).The initial value is 999.A negative value is treated as if there were no limit.</span><div class="details" id="dpropmaxHistoryLength"><p>This property is useful in helping limit the memory consumption of typical applications.But this does not limit the number of <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s that are recorded,because there may be an unlimited number of those within each <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>.Decreasing this value will not necessarily remove any existing <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>sif there currently exist more in <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> than the new value permits.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="models" >
-                
-                <td class="name">
-                  <div class="name">
-                    models
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Iterator.<Model>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns an iterator for all of the <a href="../symbols/Model.html" class="linkConstructor">Model</a>s that this UndoManager is handling.<span class="nodetails" id="xpropmodels"><a class="morelink" onclick="hst('propmodels')">More...</a></span> <span class="details" id="propmodels"></span>
-                
-                    <div class="seealso">See also:
-                        <ul class="seealsolist">
-                            
-                                <li><a href="../symbols/UndoManager.html#addModel" class="linkMethod">addModel</a></li>
-                            
-                                <li><a href="../symbols/UndoManager.html#removeModel" class="linkMethod">removeModel</a></li>
-                            
-                        </ul>
-                    </div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="nestedTransactionNames" >
-                
-                <td class="name">
-                  <div class="name">
-                    nestedTransactionNames
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{List.<string>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns a stack of ongoing transaction names.<span class="nodetails" id="xpropnestedTransactionNames"><a class="morelink" onclick="hst('propnestedTransactionNames')">More...</a></span> <span class="details" id="propnestedTransactionNames">The outermost transaction name will be the first item in the list.The last one will be the name of the most recent (nested) callto <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>.</span><div class="details" id="dpropnestedTransactionNames"><p>You should not modify this List.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="transactionLevel" >
-                
-                <td class="name">
-                  <div class="name">
-                    transactionLevel
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the current transaction level.<span class="nodetails" id="xproptransactionLevel"><a class="morelink" onclick="hst('proptransactionLevel')">More...</a></span> <span class="details" id="proptransactionLevel">The value is zero when there is no ongoing transaction.The initial value is zero.<a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a> will increment this value;<a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a> or <a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a> will decrement it.When this value is greater than zero, <a href="../symbols/UndoManager.html#canUndo" class="linkMethod">canUndo</a>and <a href="../symbols/UndoManager.html#canRedo" class="linkMethod">canRedo</a> will be false, becauseadditional logically related model change events may occur.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="transactionToRedo" >
-                
-                <td class="name">
-                  <div class="name">
-                    transactionToRedo
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> in the <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> to be redone next.<span class="nodetails" id="xproptransactionToRedo"><a class="morelink" onclick="hst('proptransactionToRedo')">More...</a></span> <span class="details" id="proptransactionToRedo">The value may be null if the UndoManager is not ready to perform a redo.</span>
-                
-                    <div class="seealso">See also:
-                        <ul class="seealsolist">
-                            
-                                <li><a href="../symbols/UndoManager.html#transactionToUndo" class="linkProperty">transactionToUndo</a></li>
-                            
-                        </ul>
-                    </div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="transactionToUndo" >
-                
-                <td class="name">
-                  <div class="name">
-                    transactionToUndo
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> in the <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> to be undone next.<span class="nodetails" id="xproptransactionToUndo"><a class="morelink" onclick="hst('proptransactionToUndo')">More...</a></span> <span class="details" id="proptransactionToUndo">The value may be null if the UndoManager is not ready to perform an undo.</span>
-                
-                    <div class="seealso">See also:
-                        <ul class="seealsolist">
-                            
-                                <li><a href="../symbols/UndoManager.html#transactionToRedo" class="linkProperty">transactionToRedo</a></li>
-                            
-                        </ul>
-                    </div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class UndoManager.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="addModel">
-                <td class="name">
-                  
-                  <div class="name">
-                    addModel(model)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Make sure this UndoManager knows about a <a href="../symbols/Model.html" class="linkConstructor">Model</a> for whichit may receive <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s when the given <a href="../symbols/Model.html" class="linkConstructor">Model</a> is changed.<span class="nodetails" id="xmethaddModel"><a class="morelink" onclick="hst('methaddModel')">More...</a></span> <span class="details" id="methaddModel">The model will also receive notifications about transactions and undo or redo operations.</span><div class="details" id="dmethaddModel"><p>You should not call this method during a transaction.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/UndoManager.html#models" class="linkProperty">models</a></li>
-                                
-                                    <li><a href="../symbols/UndoManager.html#removeModel" class="linkMethod">removeModel</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Model.html" class="linkConstructor">Model</a>}</span> <b>model</b>
-                                          
-                                      </dt>
-                                      <dd>A <a href="../symbols/Model.html" class="linkConstructor">Model</a> that this UndoManager is managing.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="canRedo">
-                <td class="name">
-                  
-                  <div class="name">
-                    canRedo()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate returns true if you can call <a href="../symbols/UndoManager.html#redo" class="linkMethod">redo</a>.<span class="nodetails" id="xmethcanRedo"><a class="morelink" onclick="hst('methcanRedo')">More...</a></span> <span class="details" id="methcanRedo">This will return false if <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">isEnabled</a> is false (as it is by default),if any transaction is ongoing, orif there is no <a href="../symbols/UndoManager.html#transactionToRedo" class="linkProperty">transactionToRedo</a> that can be redone.</span>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if ready for <a href="../symbols/UndoManager.html#redo" class="linkMethod">redo</a> to be called.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="canUndo">
-                <td class="name">
-                  
-                  <div class="name">
-                    canUndo()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate returns true if you can call <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a>.<span class="nodetails" id="xmethcanUndo"><a class="morelink" onclick="hst('methcanUndo')">More...</a></span> <span class="details" id="methcanUndo">This will return false if <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">isEnabled</a> is false (as it is by default),if any transaction is ongoing, orif there is no <a href="../symbols/UndoManager.html#transactionToUndo" class="linkProperty">transactionToUndo</a> that can be undone.</span>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if ready for <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a> to be called.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="clear">
-                <td class="name">
-                  
-                  <div class="name">
-                    clear()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Clear all of the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>s and clear all other state,including any ongoing transaction without rolling back.<span class="nodetails" id="xmethclear"><a class="morelink" onclick="hst('methclear')">More...</a></span> <span class="details" id="methclear">However, this maintains its references to its <a href="../symbols/Model.html" class="linkConstructor">Model</a>s.</span><div class="details" id="dmethclear"><p>You should not call this method during a transaction.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="commitTransaction">
-                <td class="name">
-                  
-                  <div class="name">
-                    commitTransaction(tname)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Commit the current transaction started by a call to <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>.<span class="nodetails" id="xmethcommitTransaction"><a class="morelink" onclick="hst('methcommitTransaction')">More...</a></span> <span class="details" id="methcommitTransaction"></span><div class="details" id="dmethcommitTransaction"><p>For convenience, this method is called by <a href="../symbols/Model.html#commitTransaction" class="linkMethod">Model.commitTransaction</a> and <a href="../symbols/Diagram.html#commitTransaction" class="linkMethod">Diagram.commitTransaction</a>.<p>If this call stops a top-level transaction,we mark the <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a> as complete (<a href="../symbols/Transaction.html#isComplete" class="linkProperty">Transaction.isComplete</a>),we add the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> to the <a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> list,and we return true.Committing a transaction when there have been some undos without correspondingredos will throw away the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>s holding changes that happenedafter the current state, before adding the new <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> to the<a href="../symbols/UndoManager.html#history" class="linkProperty">history</a> list.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a></li>
-                                
-                                    <li><a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string=}</span> <b>tname</b>
-                                          
-                                      </dt>
-                                      <dd>a short string describing the transaction;       this is recorded as the <a href="../symbols/Transaction.html#name" class="linkProperty">Transaction.name</a> and need not be the same as the string passed to <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>.       If the value is an empty string or not supplied, this will use the name given to <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if ending a top-level transaction.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="handleChanged">
-                <td class="name">
-                  
-                  <div class="name">
-                    handleChanged(e)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Maybe record a <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> in the <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a>.<span class="nodetails" id="xmethhandleChanged"><a class="morelink" onclick="hst('methhandleChanged')">More...</a></span> <span class="details" id="methhandleChanged">This calls <a href="../symbols/UndoManager.html#skipsEvent" class="linkMethod">skipsEvent</a> to see if this should ignore the change.If <a href="../symbols/UndoManager.html#skipsEvent" class="linkMethod">skipsEvent</a> returns false, this creates a copy of the <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>and adds it to the <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a>.If there is no <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a>, this first creates and remembers it.</span><div class="details" id="dmethhandleChanged"><p>This method always ignores all changes while performingan <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a> or <a href="../symbols/UndoManager.html#redo" class="linkMethod">redo</a>.This method is also a no-op if <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">isEnabled</a> is false.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>}</span> <b>e</b>
-                                          
-                                      </dt>
-                                      <dd>a <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="redo">
-                <td class="name">
-                  
-                  <div class="name">
-                    redo()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>After an <a href="../symbols/UndoManager.html#undo" class="linkMethod">undo</a>, re-perform the changes in <a href="../symbols/UndoManager.html#transactionToRedo" class="linkProperty">transactionToRedo</a>.<span class="nodetails" id="xmethredo"><a class="morelink" onclick="hst('methredo')">More...</a></span> <span class="details" id="methredo"><a href="../symbols/UndoManager.html#canRedo" class="linkMethod">canRedo</a> must be true for this method to have any effect.</span><div class="details" id="dmethredo"><p>This is called by <a href="../symbols/CommandHandler.html#redo" class="linkMethod">CommandHandler.redo</a>.<p>This will raise a "StartingRedo" <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> of type <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>,perform the <a href="../symbols/Transaction.html#redo" class="linkMethod">Transaction.redo</a> on the <a href="../symbols/UndoManager.html#transactionToRedo" class="linkProperty">transactionToRedo</a>, and thenraise a "FinishedRedo" <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> of type <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>.The two ChangedEvents are to let model listeners know that a redo is about to take placeand that it just finished.<a href="../symbols/UndoManager.html#isUndoingRedoing" class="linkProperty">isUndoingRedoing</a> will temporarily be set to true during this operation.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="removeModel">
-                <td class="name">
-                  
-                  <div class="name">
-                    removeModel(model)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Inform this UndoManager that it will no longer be receiving <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>swhen the given <a href="../symbols/Model.html" class="linkConstructor">Model</a> is changed.<span class="nodetails" id="xmethremoveModel"><a class="morelink" onclick="hst('methremoveModel')">More...</a></span> <span class="details" id="methremoveModel">The model will no longer receive notifications about transactions and undo or redo operations.</span><div class="details" id="dmethremoveModel"><p>You should not call this method during a transaction.If you call this method between transactions when there is a transaction history,you should be careful that there are no <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s referring to that model in any Transactions.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/UndoManager.html#models" class="linkProperty">models</a></li>
-                                
-                                    <li><a href="../symbols/UndoManager.html#addModel" class="linkMethod">addModel</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Model.html" class="linkConstructor">Model</a>}</span> <b>model</b>
-                                          
-                                      </dt>
-                                      <dd>A <a href="../symbols/Model.html" class="linkConstructor">Model</a> that this UndoManager should no longer manage.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="rollbackTransaction">
-                <td class="name">
-                  
-                  <div class="name">
-                    rollbackTransaction()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Rollback the current transaction started by a call to <a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a>, undoing any changes.<span class="nodetails" id="xmethrollbackTransaction"><a class="morelink" onclick="hst('methrollbackTransaction')">More...</a></span> <span class="details" id="methrollbackTransaction"></span><div class="details" id="dmethrollbackTransaction"><p>For convenience, this method is called by <a href="../symbols/Model.html#rollbackTransaction" class="linkMethod">Model.rollbackTransaction</a> and <a href="../symbols/Diagram.html#rollbackTransaction" class="linkMethod">Diagram.rollbackTransaction</a>.<p>This undoes and then discards the changes in the <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a>.You must have started a transaction previously.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/UndoManager.html#startTransaction" class="linkMethod">startTransaction</a></li>
-                                
-                                    <li><a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if ending a top-level transaction.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="skipsEvent">
-                <td class="name">
-                  
-                  <div class="name">
-                    skipsEvent(e)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate is called by <a href="../symbols/UndoManager.html#handleChanged" class="linkMethod">handleChanged</a> to decide if a <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>is not interesting enough to be remembered.<span class="nodetails" id="xmethskipsEvent"><a class="morelink" onclick="hst('methskipsEvent')">More...</a></span> <span class="details" id="methskipsEvent"></span><div class="details" id="dmethskipsEvent"><p>Transactional events (of change type <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>) are always skipped.Changed events for <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s that are in <a href="../symbols/Layer.html#isTemporary" class="linkProperty">Layer.isTemporary</a> layers are also skipped.<p>Sometimes changed events do not even get to <a href="../symbols/UndoManager.html#handleChanged" class="linkMethod">handleChanged</a> because<a href="../symbols/Model.html#skipsUndoManager" class="linkProperty">Model.skipsUndoManager</a> or <a href="../symbols/Diagram.html#skipsUndoManager" class="linkProperty">Diagram.skipsUndoManager</a> is true.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>}</span> <b>e</b>
-                                          
-                                      </dt>
-                                      <dd>the <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> received by <a href="../symbols/UndoManager.html#handleChanged" class="linkMethod">handleChanged</a>.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true to not record the change.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="startTransaction">
-                <td class="name">
-                  
-                  <div class="name">
-                    startTransaction(tname)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Begin a transaction, where the changes are held by a <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> objectas the value of <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a>.<span class="nodetails" id="xmethstartTransaction"><a class="morelink" onclick="hst('methstartTransaction')">More...</a></span> <span class="details" id="methstartTransaction">You must call either <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a> or <a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a> afterwards.</span><div class="details" id="dmethstartTransaction"><p>For convenience, this method is called by <a href="../symbols/Model.html#startTransaction" class="linkMethod">Model.startTransaction</a> and <a href="../symbols/Diagram.html#startTransaction" class="linkMethod">Diagram.startTransaction</a>.<p>Transactions can be nested.Starting or ending a nested transaction will return false.Nested transactions will share the same <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> list of <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>s.<p>Starting a transaction will not necessarily cause <a href="../symbols/UndoManager.html#currentTransaction" class="linkProperty">currentTransaction</a> to be non-null.A <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> object is usually only created by <a href="../symbols/UndoManager.html#handleChanged" class="linkMethod">handleChanged</a> when a <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> first occurs.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">commitTransaction</a></li>
-                                
-                                    <li><a href="../symbols/UndoManager.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string=}</span> <b>tname</b>
-                                          
-                                      </dt>
-                                      <dd>a short string describing the transaction, pushed onto the <a href="../symbols/UndoManager.html#nestedTransactionNames" class="linkProperty">nestedTransactionNames</a> stack.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if starting a top-level transaction.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="undo">
-                <td class="name">
-                  
-                  <div class="name">
-                    undo()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Reverse the effects of the <a href="../symbols/UndoManager.html#transactionToUndo" class="linkProperty">transactionToUndo</a>.<span class="nodetails" id="xmethundo"><a class="morelink" onclick="hst('methundo')">More...</a></span> <span class="details" id="methundo"><a href="../symbols/UndoManager.html#canUndo" class="linkMethod">canUndo</a> must be true for this method to have any effect.</span><div class="details" id="dmethundo"><p>This is called by <a href="../symbols/CommandHandler.html#undo" class="linkMethod">CommandHandler.undo</a>.<p>This will raise a "StartingUndo" <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> of type <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>,perform the <a href="../symbols/Transaction.html#undo" class="linkMethod">Transaction.undo</a> on the <a href="../symbols/UndoManager.html#transactionToUndo" class="linkProperty">transactionToUndo</a>, and thenraise a "FinishedUndo" <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a> of type <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>.The two ChangedEvents are to let model listeners know that an undo is about to take placeand that it just finished.<a href="../symbols/UndoManager.html#isUndoingRedoing" class="linkProperty">isUndoingRedoing</a> will temporarily be set to true during this operation.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

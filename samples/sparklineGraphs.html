@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,6 @@
     myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
                     layout: $(go.GridLayout, { wrappingColumn: 2, isOngoing: false }),
-                    initialContentAlignment: go.Spot.Center,  // center the content
                     "undoManager.isEnabled": true  // enable undo & redo
                   });
 
@@ -113,37 +112,44 @@
       return values;
     }
 
-    myDiagram.model = new go.GraphLinksModel(
-    [
-      { key: "Alpha", items: [
-          { color: '#FF69B4', values: makeRandomValues(50, 20) },
-          { color: '#FFB6C1', values: makeRandomValues(50) },
-          { color: '#FF69B4', values: makeRandomValues(50) },
-          { color: '#C71585', values: makeRandomValues(50, -20) },
-          { color: 'gray', values: [0] }
-        ]
-      },
+    myDiagram.model = $(go.GraphLinksModel,
+      {
+        copiesArrays: true,
+        copiesArrayObjects: true,
+        nodeDataArray:
+          [
+            {
+              key: "Alpha", items: [
+                { color: '#FF69B4', values: makeRandomValues(50, 20) },
+                { color: '#FFB6C1', values: makeRandomValues(50) },
+                { color: '#FF69B4', values: makeRandomValues(50) },
+                { color: '#C71585', values: makeRandomValues(50, -20) },
+                { color: 'gray', values: [0] }
+              ]
+            },
 
-      { key: "Beta", items: [
-          { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50), label: 'label A' },
-          { color: 'rgba(0,0,255,.6)', values: makeRandomValues(50), label: 'long label B' },
-          { color: 'darkgray', values: makeRandomValues(50), label: 'label C' },
-          { color: 'lime', values: makeRandomValues(50), label: 'label D' },
-          { color: 'gray', values: [0] }
-        ]
-      },
+            {
+              key: "Beta", items: [
+                { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50), label: 'label A' },
+                { color: 'rgba(0,0,255,.6)', values: makeRandomValues(50), label: 'long label B' },
+                { color: 'darkgray', values: makeRandomValues(50), label: 'label C' },
+                { color: 'lime', values: makeRandomValues(50), label: 'label D' },
+                { color: 'gray', values: [0] }
+              ]
+            },
 
-      { key: "Gamma", items: [
-          { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50, -10), label: 'Important\nYear' },
-          { color: 'gray', values: makeRandomValues(20, 30) },
-          { color: 'gray', values: makeRandomValues(40, 30) },
-          { color: 'gray', values: makeRandomValues(50, 30) },
-          { color: 'gray', values: [0] }
-        ]
-      }
+            {
+              key: "Gamma", items: [
+                { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50, -10), label: 'Important\nYear' },
+                { color: 'gray', values: makeRandomValues(20, 30) },
+                { color: 'gray', values: makeRandomValues(40, 30) },
+                { color: 'gray', values: makeRandomValues(50, 30) },
+                { color: 'gray', values: [0] }
+              ]
+            }
 
-    ],
-    [ ]);
+          ],
+      });
   }
 </script>
 </head>

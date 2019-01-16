@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -9,57 +12,69 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // A class for simulating mouse and keyboard input.
-    // As a special hack, this supports limited simulation of drag-and-drop between Diagrams,
-    // by setting on the EVENTPROPS argument of the mouseDown/mouseMove/mouseUp methods
-    // both the "sourceDiagram" and "targetDiagram" properties.
-    // Although InputEvent.targetDiagram is a real property,
-    // the "sourceDiagram" property is only used by these Robot methods.
     /**
-    * @constructor
-    * @class
-    * @param {Diagram=} dia the Diagram on which the Robot simulates input events
-    */
+     * A class for simulating mouse and keyboard input.
+     *
+     * As a special hack, this supports limited simulation of drag-and-drop between Diagrams,
+     * by setting both the `sourceDiagram` and `targetDiagram` properties
+     * on the `eventprops` argument of the mouseDown/mouseMove/mouseUp methods.
+     * Although {@link InputEvent#targetDiagram} is a real property,
+     * the `sourceDiagram` property is only used by these Robot methods.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/Robot.html">Simulating Input</a> sample.
+     * @category Extension
+     */
     var Robot = /** @class */ (function () {
-        function Robot(dia) {
-            if (dia === undefined)
-                dia = null;
-            this.diagram = dia;
-        }
         /**
-        * @ignore
-        * Transfer property settings from a JavaScript Object to an InputEvent.
-        * @this {Robot}
-        * @param {InputEvent} e
-        * @param {Object} props
-        */
+         * Construct a robot for a given {@link Diagram}. If none is provided, a new Diagram will be created.
+         */
+        function Robot(dia) {
+            if (dia instanceof go.Diagram) {
+                this._diagram = dia;
+            }
+            else {
+                this._diagram = new go.Diagram();
+            }
+        }
+        Object.defineProperty(Robot.prototype, "diagram", {
+            /**
+             * Gets or sets the {@link Diagram} associated with this Robot.
+             */
+            get: function () { return this._diagram; },
+            set: function (val) {
+                if (!(val instanceof go.Diagram))
+                    throw new Error('Robot.diagram must be a Diagram, not: ' + val);
+                this._diagram = val;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        /**
+         * @hidden @internal
+         * Transfer property settings from a JavaScript Object to an {@link InputEvent}.
+         */
         Robot.prototype.initializeEvent = function (e, props) {
             if (!props)
                 return;
             for (var p in props) {
-                if (p !== "sourceDiagram")
+                if (p !== 'sourceDiagram')
                     e[p] = props[p];
             }
         };
-        ;
         /**
-        * Simulate a mouse down event.
-        * @this {Robot}
-        * @param {number} x the X-coordinate of the mouse point in document coordinates.
-        * @param {number} y the Y-coordinate of the mouse point in document coordinates.
-        * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
-        * @param {object=} eventprops an optional argument providing properties for the InputEvent.
-        */
+         * Simulate a mouse down event.
+         * @param {number} x the X-coordinate of the mouse point in document coordinates.
+         * @param {number} y the Y-coordinate of the mouse point in document coordinates.
+         * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
+         * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
+         */
         Robot.prototype.mouseDown = function (x, y, time, eventprops) {
-            if (typeof x !== "number" || typeof y !== "number")
-                throw new Error("Robot.mouseDown first two args must be X,Y numbers");
+            if (typeof x !== 'number' || typeof y !== 'number')
+                throw new Error('Robot.mouseDown first two args must be X,Y numbers');
             if (time === undefined)
                 time = 0;
-            var diagram = this.diagram;
+            var diagram = this._diagram;
             if (eventprops && eventprops.sourceDiagram)
                 diagram = eventprops.sourceDiagram;
             if (!diagram.isEnabled)
@@ -75,21 +90,19 @@
             diagram.firstInput = n.copy();
             diagram.currentTool.doMouseDown();
         };
-        ;
         /**
-        * Simulate a mouse move event.
-        * @this {Robot}
-        * @param {number} x the X-coordinate of the mouse point in document coordinates.
-        * @param {number} y the Y-coordinate of the mouse point in document coordinates.
-        * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
-        * @param {object=} eventprops an optional argument providing properties for the InputEvent.
-        */
+         * Simulate a mouse move event.
+         * @param {number} x the X-coordinate of the mouse point in document coordinates.
+         * @param {number} y the Y-coordinate of the mouse point in document coordinates.
+         * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
+         * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
+         */
         Robot.prototype.mouseMove = function (x, y, time, eventprops) {
-            if (typeof x !== "number" || typeof y !== "number")
-                throw new Error("Robot.mouseMove first two args must be X,Y numbers");
+            if (typeof x !== 'number' || typeof y !== 'number')
+                throw new Error('Robot.mouseMove first two args must be X,Y numbers');
             if (time === undefined)
                 time = 0;
-            var diagram = this.diagram;
+            var diagram = this._diagram;
             if (eventprops && eventprops.sourceDiagram)
                 diagram = eventprops.sourceDiagram;
             if (!diagram.isEnabled)
@@ -101,25 +114,21 @@
             n.timestamp = time;
             this.initializeEvent(n, eventprops);
             diagram.lastInput = n;
-            if (diagram.simulatedMouseMove(null, n.documentPoint, n.targetDiagram))
-                return;
             diagram.currentTool.doMouseMove();
         };
-        ;
         /**
-        * Simulate a mouse up event.
-        * @this {Robot}
-        * @param {number} x the X-coordinate of the mouse point in document coordinates.
-        * @param {number} y the Y-coordinate of the mouse point in document coordinates.
-        * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
-        * @param {object=} eventprops an optional argument providing properties for the InputEvent.
-        */
+         * Simulate a mouse up event.
+         * @param {number} x the X-coordinate of the mouse point in document coordinates.
+         * @param {number} y the Y-coordinate of the mouse point in document coordinates.
+         * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
+         * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
+         */
         Robot.prototype.mouseUp = function (x, y, time, eventprops) {
-            if (typeof x !== "number" || typeof y !== "number")
-                throw new Error("Robot.mouseUp first two args must be X,Y numbers");
+            if (typeof x !== 'number' || typeof y !== 'number')
+                throw new Error('Robot.mouseUp first two args must be X,Y numbers');
             if (time === undefined)
                 time = 0;
-            var diagram = this.diagram;
+            var diagram = this._diagram;
             if (eventprops && eventprops.sourceDiagram)
                 diagram = eventprops.sourceDiagram;
             if (!diagram.isEnabled)
@@ -134,24 +143,21 @@
                 n.clickCount = 1; // at least??
             this.initializeEvent(n, eventprops);
             diagram.lastInput = n;
-            if (diagram.simulatedMouseUp(null, n.sourceDiagram, n.documentPoint, n.targetDiagram))
-                return;
+            // if (diagram.simulatedMouseUp(null, (n as any).sourceDiagram, n.documentPoint, n.targetDiagram)) return;
             diagram.currentTool.doMouseUp();
         };
-        ;
         /**
-        * Simulate a mouse wheel event.
-        * @this {Robot}
-        * @param {number} delta non-zero turn
-        * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
-        * @param {object=} eventprops an optional argument providing properties for the InputEvent.
-        */
+         * Simulate a mouse wheel event.
+         * @param {number} delta non-zero turn
+         * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
+         * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
+         */
         Robot.prototype.mouseWheel = function (delta, time, eventprops) {
-            if (typeof delta !== "number")
-                throw new Error("Robot.mouseWheel first arg must be DELTA number");
+            if (typeof delta !== 'number')
+                throw new Error('Robot.mouseWheel first arg must be DELTA number');
             if (time === undefined)
                 time = 0;
-            var diagram = this.diagram;
+            var diagram = this._diagram;
             if (!diagram.isEnabled)
                 return;
             var n = diagram.lastInput.copy();
@@ -162,20 +168,18 @@
             diagram.lastInput = n;
             diagram.currentTool.doMouseWheel();
         };
-        ;
         /**
-        * Simulate a key down event.
-        * @this {Robot}
-        * @param {string|number} keyorcode
-        * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
-        * @param {object=} eventprops an optional argument providing properties for the InputEvent.
-        */
+         * Simulate a key down event.
+         * @param {string|number} keyorcode
+         * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
+         * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
+         */
         Robot.prototype.keyDown = function (keyorcode, time, eventprops) {
-            if (typeof keyorcode !== "string" && typeof keyorcode !== "number")
-                throw new Error("Robot.keyDown first arg must be a string or a number");
+            if (typeof keyorcode !== 'string' && typeof keyorcode !== 'number')
+                throw new Error('Robot.keyDown first arg must be a string or a number');
             if (time === undefined)
                 time = 0;
-            var diagram = this.diagram;
+            var diagram = this._diagram;
             if (!diagram.isEnabled)
                 return;
             var n = diagram.lastInput.copy();
@@ -192,20 +196,18 @@
             diagram.lastInput = n;
             diagram.currentTool.doKeyDown();
         };
-        ;
         /**
-        * Simulate a key up event.
-        * @this {Robot}
-        * @param {string|number} keyorcode
-        * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
-        * @param {object=} eventprops an optional argument providing properties for the InputEvent.
-        */
+         * Simulate a key up event.
+         * @param {string|number} keyorcode
+         * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
+         * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
+         */
         Robot.prototype.keyUp = function (keyorcode, time, eventprops) {
-            if (typeof keyorcode !== "string" && typeof keyorcode !== "number")
-                throw new Error("Robot.keyUp first arg must be a string or a number");
+            if (typeof keyorcode !== 'string' && typeof keyorcode !== 'number')
+                throw new Error('Robot.keyUp first arg must be a string or a number');
             if (time === undefined)
                 time = 0;
-            var diagram = this.diagram;
+            var diagram = this._diagram;
             if (!diagram.isEnabled)
                 return;
             var n = diagram.lastInput.copy();
@@ -222,7 +224,6 @@
             diagram.lastInput = n;
             diagram.currentTool.doKeyUp();
         };
-        ;
         return Robot;
     }());
     exports.Robot = Robot;

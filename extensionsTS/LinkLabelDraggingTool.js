@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,45 +25,58 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // A custom Tool for moving a label on a Link
     /**
-    * @constructor
-    * @extends Tool
-    * @class
-    * This tool only works when the Link has a label
-    * that is positioned at the Link.midPoint plus some offset.
-    * It does not work for labels that have a particular segmentIndex.
-    */
+     * The LinkLabelDraggingTool class lets the user move a label on a {@link Link}.
+     *
+     * This tool only works when the Link has a label
+     * that is positioned at the {@link Link#midPoint} plus some offset.
+     * It does not work for labels that have a particular {@link GraphObject#segmentIndex}.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/LinkLabelDragging.html">Link Label Dragging</a> sample.
+     * @category Tool Extension
+     */
     var LinkLabelDraggingTool = /** @class */ (function (_super) {
         __extends(LinkLabelDraggingTool, _super);
+        /**
+         * Constructs a LinkLabelDraggingTool and sets the name for the tool.
+         */
         function LinkLabelDraggingTool() {
             var _this = _super.call(this) || this;
-            /** @type {GraphObject} */
             _this.label = null;
-            /** @type {Point} */
             _this._offset = new go.Point(); // of the mouse relative to the center of the label object
-            /** @type {Point} */
             _this._originalOffset = null;
             _this.name = 'LinkLabelDragging';
             return _this;
         }
         /**
-        * This tool can only start if the mouse has moved enough so that it is not a click,
-        * and if the mouse down point is on a GraphObject "label" in a Link Panel,
-        * as determined by findLabel().
-        * @this {LinkLabelDraggingTool}
-        * @return {boolean}
-        */
+         * From the GraphObject at the mouse point, search up the visual tree until we get to
+         * an object that is a label of a Link.
+         * @return {GraphObject} This returns null if no such label is at the mouse down point.
+         */
+        LinkLabelDraggingTool.prototype.findLabel = function () {
+            var diagram = this.diagram;
+            var e = diagram.lastInput;
+            var elt = diagram.findObjectAt(e.documentPoint, null, null);
+            if (elt === null || !(elt.part instanceof go.Link))
+                return null;
+            while (elt !== null && elt.panel !== elt.part) {
+                elt = elt.panel;
+            }
+            // If it's at an arrowhead segment index, don't consider it a label:
+            if (elt !== null && (elt.segmentIndex === 0 || elt.segmentIndex === -1))
+                return null;
+            return elt;
+        };
+        /**
+         * This tool can only start if the mouse has moved enough so that it is not a click,
+         * and if the mouse down point is on a GraphObject "label" in a Link Panel,
+         * as determined by {@link #findLabel}.
+         */
         LinkLabelDraggingTool.prototype.canStart = function () {
-            if (!go.Tool.prototype.canStart.call(this))
+            if (!_super.prototype.canStart.call(this))
                 return false;
             var diagram = this.diagram;
-            if (diagram === null)
-                return false;
             // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
             var e = diagram.lastInput;
             if (!e.left)
@@ -67,94 +86,66 @@ var __extends = (this && this.__extends) || (function () {
             return this.findLabel() !== null;
         };
         /**
-        * From the GraphObject at the mouse point, search up the visual tree until we get to
-        * an object that is a label of a Link.
-        * @this {LinkLabelDraggingTool}
-        * @return {GraphObject} This returns null if no such label is at the mouse down point.
-        */
-        LinkLabelDraggingTool.prototype.findLabel = function () {
-            var diagram = this.diagram;
-            var e = diagram.lastInput;
-            var elt = diagram.findObjectAt(e.documentPoint, null, null);
-            if (elt === null || !(elt.part instanceof go.Link))
-                return null;
-            while (elt.panel !== elt.part) {
-                elt = elt.panel;
-            }
-            // If it's at an arrowhead segment index, don't consider it a label:
-            if (elt.segmentIndex === 0 || elt.segmentIndex === -1)
-                return null;
-            return elt;
-        };
-        ;
-        /**
-        * Start a transaction, call findLabel and remember it as the "label" property,
-        * and remember the original value for the label's segmentOffset property.
-        * @this {LinkLabelDraggingTool}
-        */
+         * Start a transaction, call {@link #findLabel} and remember it as the "label" property,
+         * and remember the original value for the label's {@link GraphObject#segmentOffset} property.
+         */
         LinkLabelDraggingTool.prototype.doActivate = function () {
-            this.startTransaction("Shifted Label");
+            this.startTransaction('Shifted Label');
             this.label = this.findLabel();
             if (this.label !== null) {
                 // compute the offset of the mouse-down point relative to the center of the label
                 this._offset = this.diagram.firstInput.documentPoint.copy().subtract(this.label.getDocumentPoint(go.Spot.Center));
                 this._originalOffset = this.label.segmentOffset.copy();
             }
-            go.Tool.prototype.doActivate.call(this);
+            _super.prototype.doActivate.call(this);
         };
         /**
-        * Stop any ongoing transaction.
-        * @this {LinkLabelDraggingTool}
-        */
+         * Stop any ongoing transaction.
+         */
         LinkLabelDraggingTool.prototype.doDeactivate = function () {
-            go.Tool.prototype.doDeactivate.call(this);
+            _super.prototype.doDeactivate.call(this);
             this.stopTransaction();
         };
         /**
-        * Clear any reference to a label element.
-        * @this {LinkLabelDraggingTool}
-        */
+         * Clear any reference to a label element.
+         */
         LinkLabelDraggingTool.prototype.doStop = function () {
             this.label = null;
-            go.Tool.prototype.doStop.call(this);
+            _super.prototype.doStop.call(this);
         };
         /**
-        * Restore the label's original value for GraphObject.segmentOffset.
-        * @this {LinkLabelDraggingTool}
-        */
+         * Restore the label's original value for {@link GraphObject#segmentOffset}.
+         */
         LinkLabelDraggingTool.prototype.doCancel = function () {
-            if (this.label !== null) {
+            if (this.label !== null && this._originalOffset !== null) {
                 this.label.segmentOffset = this._originalOffset;
             }
-            go.Tool.prototype.doCancel.call(this);
+            _super.prototype.doCancel.call(this);
         };
         /**
-        * During the drag, call updateSegmentOffset in order to set
-        * the GraphObject.segmentOffset of the label.
-        * @this {LinkLabelDraggingTool}
-        */
+         * During the drag, call {@link #updateSegmentOffset} in order to set
+         * the {@link GraphObject#segmentOffset} of the label.
+         */
         LinkLabelDraggingTool.prototype.doMouseMove = function () {
             if (!this.isActive)
                 return;
             this.updateSegmentOffset();
         };
         /**
-        * At the end of the drag, update the segment offset of the label and finish the tool,
-        * completing a transaction.
-        * @this {LinkLabelDraggingTool}
-        */
+         * At the end of the drag, update the segment offset of the label and finish the tool,
+         * completing a transaction.
+         */
         LinkLabelDraggingTool.prototype.doMouseUp = function () {
             if (!this.isActive)
                 return;
             this.updateSegmentOffset();
-            this.transactionResult = "Shifted Label";
+            this.transactionResult = 'Shifted Label';
             this.stopTool();
         };
         /**
-        * Save the label's GraphObject.segmentOffset as a rotated offset from the midpoint of the
-        * Link that the label is in.
-        * @this {LinkLabelDraggingTool}
-        */
+         * Save the label's {@link GraphObject#segmentOffset} as a rotated offset from the midpoint of the
+         * Link that the label is in.
+         */
         LinkLabelDraggingTool.prototype.updateSegmentOffset = function () {
             var lab = this.label;
             if (lab === null)
@@ -174,7 +165,8 @@ var __extends = (this && this.__extends) || (function () {
             }
             else { // handle the label point being on a partiular segment with a given fraction
                 var frac = lab.segmentFraction;
-                var a, b;
+                var a = void 0;
+                var b = void 0;
                 if (idx >= 0) { // indexing forwards
                     a = link.getPoint(idx);
                     b = (idx < numpts - 1) ? link.getPoint(idx + 1) : a;

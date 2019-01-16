@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          initialContentAlignment: go.Spot.Center,
           "textEditingTool.starting": go.TextEditingTool.SingleClick,
           "ModelChanged": onModelChanged,
           "undoManager.isEnabled": true
@@ -83,8 +82,8 @@
         },
         {
           toolTip:
-            $(go.Adornment, "Auto",
-              $(go.Shape, { fill: "lightgray" }),
+            $("ToolTip",
+              { "Border.fill": "lightgray" },
               $(go.TextBlock,
                 { font: "10pt Verdana, sans-serif", margin: 4 },
                 new go.Binding("text", "", function(data) {
@@ -166,22 +165,25 @@
         )
       );
 
-    myDiagram.model = new go.Model(
-      [
-        { key: 0,
-          text: "Sample Poll",
-          slices: [
-            { text: "Option 1", count: 21, color: "#B378C1" },
-            { text: "Option 2", count: 11, color: "#F25F5C" },
-            { text: "Option 3", count: 5, color: "#FFE066" },
-            { text: "Option 4", count: 2, color: "#2B98C5" },
-            { text: "Option 5", count: 1, color: "#70C1B3" }
+    myDiagram.model = $(go.Model,
+      {
+        copiesArrays: true,
+        copiesArrayObjects: true,
+        nodeDataArray:
+          [
+            {
+              key: 0,
+              text: "Sample Poll",
+              slices: [
+                { text: "Option 1", count: 21, color: "#B378C1" },
+                { text: "Option 2", count: 11, color: "#F25F5C" },
+                { text: "Option 3", count: 5, color: "#FFE066" },
+                { text: "Option 4", count: 2, color: "#2B98C5" },
+                { text: "Option 5", count: 1, color: "#70C1B3" }
+              ]
+            }
           ]
-        }
-      ]
-    );
-    myDiagram.model.copiesArrays = true;
-    myDiagram.model.copiesArrayObjects = true;
+      });
 
     // Validation function for editing text
     function isValidCount(textblock, oldstr, newstr) {
@@ -325,7 +327,7 @@
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px;"></div>
   <p>
     This sample demonstrates the ability to build an updateable pie chart with selectable slices.
-    The Geometry for each slice is built using a <a>PathFigure</a> with a <a>PathSegment.Arc</a>.
+    The Geometry for each slice is built using a <a>PathFigure</a> with a <a>PathSegment,Arc</a>.
     Slices use a custom <b>click</b> function, which sets a stroke and offsets slices as they are selected.
     Functionality for "selection" and deletion of these slices is similar to the <a href="selectableFields.html">Selectable Fields sample</a>,
     using some overridden <a>CommandHandler</a> functions.

@@ -1,1956 +1,1071 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; Shape Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Shape | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class Shape</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="GraphObject.html" class="tsd-signature-type">GraphObject</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">Shape</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>A Shape is a <a href="GraphObject.html">GraphObject</a> that shows a geometric figure.
+						The <a href="Geometry.html">Geometry</a> determines what is drawn;
+						the properties <a href="Shape.html#fill">fill</a> and <a href="Shape.html#stroke">stroke</a>
+					(and other stroke properties) determine how it is drawn.</p>
+					<p>There are generally two types of shapes: Those that use a custom <a href="Geometry.html">Geometry</a> by setting
+						<a href="Shape.html#geometry">Shape.geometry</a>, and those that receive an automatically generated Geometry using the value of
+						<a href="Shape.html#figure">figure</a>, <a href="Shape.html#toArrow">toArrow</a>, or <a href="Shape.html#fromArrow">fromArrow</a>. An explicitly set Geometry always supersedes
+					the figure and arrowhead properties.</p>
+					<p>Some created Shapes:</p>
+					<pre><code class="hljs js"><span class="hljs-keyword">var</span> $ = go.GraphObject.make;  <span class="hljs-comment">// for conciseness in defining GraphObjects</span>
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
+<span class="hljs-comment">// A shape with the figure set to RoundedRectangle:</span>
+$(go.Shape, { <span class="hljs-attr">figure</span>: <span class="hljs-string">"RoundedRectangle"</span>, <span class="hljs-attr">fill</span>: <span class="hljs-string">"lightgreen"</span> })
+<span class="hljs-comment">// Alternatively:</span>
+$(go.Shape, <span class="hljs-string">"RoundedRectangle"</span>, { <span class="hljs-attr">fill</span>: <span class="hljs-string">"lightgreen"</span> })
 
-    </head>
+<span class="hljs-comment">// A shape with a custom geometry, using geometryString:</span>
+$(go.Shape,
+    { <span class="hljs-attr">geometry</span>: go.Geometry.parse(<span class="hljs-string">"M120 0 L80 80 0 50z"</span>) })
 
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
+<span class="hljs-comment">// A shape with a custom geometry, using geometryString:</span>
+$(go.Shape,
+   { <span class="hljs-attr">geometryString</span>: <span class="hljs-string">"F M120 0 L80 80 0 50z"</span>,
+     <span class="hljs-attr">fill</span>: <span class="hljs-string">"lightgreen"</span> })
 
+<span class="hljs-comment">// A common link template, using two shapes,</span>
+<span class="hljs-comment">// the first for the link path and the second for the arrowhead</span>
+myDiagram.linkTemplate =
+  $(go.Link,
+    <span class="hljs-comment">// The first shape in a link is special, its geometry is set by the Link's routing,</span>
+    <span class="hljs-comment">// so it does not need a geometry or figure set manually</span>
+    $(go.Shape,
+      { <span class="hljs-attr">strokeWidth</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">stroke</span>: <span class="hljs-string">'gray'</span> }),
+    $(go.Shape,
+      { <span class="hljs-attr">toArrow</span>: <span class="hljs-string">"Standard"</span>, <span class="hljs-attr">fill</span>: <span class="hljs-string">'gray'</span>, <span class="hljs-attr">stroke</span>: <span class="hljs-literal">null</span> })
+  );
+</code></pre>
+					<p><p class="box">
+							You can see more custom geometry examples and read about geometryString
+						on the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page.</a></p>
+						<p>When automatically generating a Shape <a href="Geometry.html">Geometry</a>, the value of <a href="Shape.html#toArrow">toArrow</a> takes precedence,
+							then <a href="Shape.html#fromArrow">fromArrow</a>, then <a href="Shape.html#figure">figure</a>. If the value of <a href="Shape.html#toArrow">toArrow</a> or <a href="Shape.html#fromArrow">fromArrow</a> is &quot;None&quot;
+						then it is ignored, and the &quot;None&quot; value of <a href="Shape.html#figure">figure</a> is identical to &quot;Rectangle&quot;.</p>
+						<p>All of the predefined figures are shown in the <a href="../../samples/shapes.html">Shapes sample</a>.
+							You can define your own named figures by calling the static function <a href="Shape.html#static-defineFigureGenerator">Shape.defineFigureGenerator</a>.
+						Get a <a href="Map.html">Map</a> of named figures by calling the static function <a href="Shape.html#static-getFigureGenerators">Shape.getFigureGenerators</a>.</p>
+						<p>All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.
+							You can define your own named arrowheads by calling the static function <a href="Shape.html#static-defineArrowheadGeometry">Shape.defineArrowheadGeometry</a>.
+						Get a <a href="Map.html">Map</a> of named arrowheads by calling the static function <a href="Shape.html#static-getArrowheadGeometries">Shape.getArrowheadGeometries</a>.</p>
+						<p>You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.</p>
+						<p>The Shape properties <a href="Shape.html#parameter1">parameter1</a>, and <a href="Shape.html#parameter2">parameter2</a> determine details of the
+							construction of some <a href="Shape.html#figure">figure</a> geometries.
+							Specifically, they often set the <a href="Shape.html#spot1">spot1</a>, <a href="Shape.html#spot2">spot2</a> for the Shape.
+							These spots determine the &quot;inner area&quot; of an Auto panel when a Shape is the main object.
+						See the <a href="../../intro/panels.html">Auto Panels section of the Panels Introduction page</a> for more details.</p>
+						<p>Shapes use their geometric bounds when determining hit testing,
+						but use rectangular bounds when participating in (panel) layouts.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Shape.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#figure" class="tsd-kind-icon">figure</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#fill" class="tsd-kind-icon">fill</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#fromArrow" class="tsd-kind-icon">from<wbr>Arrow</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#geometry" class="tsd-kind-icon">geometry</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#geometryStretch" class="tsd-kind-icon">geometry<wbr>Stretch</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#geometryString" class="tsd-kind-icon">geometry<wbr>String</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#graduatedEnd" class="tsd-kind-icon">graduated<wbr>End</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#graduatedSkip" class="tsd-kind-icon">graduated<wbr>Skip</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#graduatedStart" class="tsd-kind-icon">graduated<wbr>Start</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#interval" class="tsd-kind-icon">interval</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#isGeometryPositioned" class="tsd-kind-icon">is<wbr>Geometry<wbr>Positioned</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="Shape.html#naturalBounds" class="tsd-kind-icon">natural<wbr>Bounds</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#parameter1" class="tsd-kind-icon">parameter1</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#parameter2" class="tsd-kind-icon">parameter2</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#pathPattern" class="tsd-kind-icon">path<wbr>Pattern</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#spot1" class="tsd-kind-icon">spot1</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#spot2" class="tsd-kind-icon">spot2</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#stroke" class="tsd-kind-icon">stroke</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#strokeCap" class="tsd-kind-icon">stroke<wbr>Cap</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#strokeDashArray" class="tsd-kind-icon">stroke<wbr>Dash<wbr>Array</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#strokeDashOffset" class="tsd-kind-icon">stroke<wbr>Dash<wbr>Offset</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#strokeJoin" class="tsd-kind-icon">stroke<wbr>Join</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#strokeMiterLimit" class="tsd-kind-icon">stroke<wbr>Miter<wbr>Limit</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#strokeWidth" class="tsd-kind-icon">stroke<wbr>Width</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Shape.html#toArrow" class="tsd-kind-icon">to<wbr>Arrow</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Shape.html#static-defineArrowheadGeometry" class="tsd-kind-icon">define<wbr>Arrowhead<wbr>Geometry</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Shape.html#static-defineFigureGenerator" class="tsd-kind-icon">define<wbr>Figure<wbr>Generator</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Shape.html#static-getArrowheadGeometries" class="tsd-kind-icon">get<wbr>Arrowhead<wbr>Geometries</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Shape.html#getDocumentBounds" class="tsd-kind-icon">get<wbr>Document<wbr>Bounds</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Shape.html#static-getFigureGenerators" class="tsd-kind-icon">get<wbr>Figure<wbr>Generators</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Shape<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Shape.html" class="tsd-signature-type">Shape</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>A newly constructed <a href="Shape.html">Shape</a> has a default <a href="Shape.html#figure">figure</a> of &quot;None&quot;,
+								which constructs a rectangular geometry, and is filled and stroked with a black brush.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Shape.html" class="tsd-signature-type">Shape</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="figure" class="tsd-anchor"></a>
+					<h3>
+						figure
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the figure name, used to construct a <a href="Geometry.html">Geometry</a>.
+								The value must be a string. The default value is &quot;None&quot;.</p>
+								<p>The name can be any case but will always be canonicalized when set. For instance,
+									setting &quot;roundedrectangle&quot; will set the value of figure to &quot;RoundedRectangle&quot;.
+								All of the predefined figures are shown in the <a href="../../samples/shapes.html">Shapes sample</a>.</p>
+								<p>At most one of the following three properties may be set to a non-&quot;None&quot; value at the same time on the same shape:
+								<a href="Shape.html#figure">figure</a>, <a href="Shape.html#toArrow">toArrow</a>, <a href="Shape.html#fromArrow">fromArrow</a>.</p>
+								<p>You can define your own named figures by calling the static function <a href="Shape.html#static-defineFigureGenerator">Shape.defineFigureGenerator</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="fill" class="tsd-anchor"></a>
+					<h3>
+						fill
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#BrushLike" class="tsd-signature-type">BrushLike</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the <a href="Brush.html">Brush</a> or string that describes how the geometry is filled when drawn.</p>
+								<p>The default value is &quot;black&quot;, causing the shape to be filled with solid black.
+									Any valid CSS string can specify a solid color, and the <a href="Brush.html">Brush</a>
+									class can be used to specify a gradient or pattern.
+									A null fill will mean no fill is drawn and the filled portion
+									of the Shape will not be pickable.
+									A &quot;transparent&quot; fill is useful when wanting to allow a shape to be pickable
+									without obscuring any other objects behind it.
+									More information about the syntax of CSS color strings is available at:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.</p>
+								<p>The geometry is filled before the <a href="Shape.html#stroke">stroke</a> is drawn.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="fromArrow" class="tsd-anchor"></a>
+					<h3>
+						from<wbr>Arrow
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the kind of arrowhead that this shape should take
+									when this shape is an element of a <a href="Link.html">Link</a>.
+									Value must be a string.
+								For bi-directional links the arrowhead name often starts with &quot;Backward...&quot;.</p>
+								<p>The default is &quot;None&quot;, which means that this Shape is not an arrowhead, causing it to be the default Shape, a large filled Rectangle.
+									If you want to have an arrowhead Shape but sometimes not show an arrowhead, you can set or bind
+									the <a href="GraphObject.html#visible">GraphObject.visible</a> property, or you can set or bind this &quot;toArrow&quot; property to
+									be the empty string.
+								The arrowhead named &quot;&quot;, an empty string, will display as nothing.</p>
+								<p>The name can be any case but will always be canonicalized when set. For instance,
+									setting &quot;opentriangle&quot; will set the value of the arrowhead to &quot;OpenTriangle&quot;.
+								All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.</p>
+								<p>Setting this property may also set the <a href="GraphObject.html#segmentIndex">GraphObject.segmentIndex</a>,
+									<a href="GraphObject.html#segmentOrientation">GraphObject.segmentOrientation</a>, and <a href="GraphObject.html#alignmentFocus">GraphObject.alignmentFocus</a> properties.
+								This shape should be an element of a <a href="Link.html">Link</a>.</p>
+								<p>At most one of the following three properties may be set to a non-&quot;None&quot; value at the same time on the same shape:
+								<a href="Shape.html#figure">figure</a>, <a href="Shape.html#toArrow">toArrow</a>, <a href="Shape.html#fromArrow">fromArrow</a>.</p>
+								<p>You can define your own named arrowheads by calling the static function <a href="Shape.html#static-defineArrowheadGeometry">Shape.defineArrowheadGeometry</a>.</p>
+								<p>You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="geometry" class="tsd-anchor"></a>
+					<h3>
+						geometry
+					<span class="tsd-signature-symbol">: </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the Shape&#39;s <a href="Geometry.html">Geometry</a> that defines the Shape&#39;s figure.
+									Setting a geometry is not necessary if a <a href="Shape.html#figure">figure</a> is specified,
+								as that will construct a geometry instead.</p>
+								<p>Setting this geometry property will freeze the supplied Geometry.</p>
+								<p>Setting this geometry property always overrides any set figure.
+								The default value is null.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Shape.html#geometryString">geometryString</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="geometryStretch" class="tsd-anchor"></a>
+					<h3>
+						geometry<wbr>Stretch
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets how the shape&#39;s geometry is proportionally created given its computed size.
+									Possible values are <a href="GraphObject.html#static-None">GraphObject.None</a>, <a href="GraphObject.html#static-Fill">GraphObject.Fill</a>, <a href="GraphObject.html#static-Uniform">GraphObject.Uniform</a>, and <a href="GraphObject.html#static-Default">GraphObject.Default</a>.
+									The default is <a href="GraphObject.html#static-Default">GraphObject.Default</a>, which resolves to <a href="GraphObject.html#static-Fill">GraphObject.Fill</a> for most figures, though
+								some regular figures such as &quot;Circle&quot; and &quot;Square&quot; default to <a href="GraphObject.html#static-Uniform">GraphObject.Uniform</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="geometryString" class="tsd-anchor"></a>
+					<h3>
+						geometry<wbr>String
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>When set, creates a <a href="Geometry.html">Geometry</a> and normalizes it from a given path string,
+									then sets the <a href="Shape.html#geometry">geometry</a> property on this Shape and
+									set the <a href="GraphObject.html#position">GraphObject.position</a> to the amount computed by normalization.
+									The property getter simply returns the toString value of the <a href="Shape.html#geometry">geometry</a>,
+								or the empty string if there is no Geometry value.</p>
+								<p>See the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page</a> for examples.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="graduatedEnd" class="tsd-anchor"></a>
+					<h3>
+						graduated<wbr>End
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the fractional distance along the main shape of a &quot;Graduated&quot; <a href="Panel.html">Panel</a> at which this kind of tick should end.
+								The default is 1. Any new value should range from 0 to 1.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.7</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="graduatedSkip" class="tsd-anchor"></a>
+					<h3>
+						graduated<wbr>Skip
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">val</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the function to determine which values along a &quot;Graduated&quot; <a href="Panel.html">Panel</a> will be skipped.
+								The default is null and doesn&#39;t skip any ticks.</p>
+								<p>The function takes a number argument, a value between <a href="Panel.html#graduatedMin">Panel.graduatedMin</a> and <a href="Panel.html#graduatedMax">Panel.graduatedMax</a>.
+								The function will return a boolean, whether the tick will be skipped at the value of the argument.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.0</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="graduatedStart" class="tsd-anchor"></a>
+					<h3>
+						graduated<wbr>Start
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the fractional distance along the main shape of a &quot;Graduated&quot; <a href="Panel.html">Panel</a> at which this kind of tick should start.
+								The default is 0. Any new value should range from 0 to 1.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.7</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="interval" class="tsd-anchor"></a>
+					<h3>
+						interval
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets how frequently this shape should be drawn within a &quot;Grid&quot; or &quot;Graduated&quot; <a href="Panel.html">Panel</a>,
+									in multiples of the <a href="Panel.html#gridCellSize">Panel.gridCellSize</a> or <a href="Panel.html#graduatedTickUnit">Panel.graduatedTickUnit</a>.
+								The default is 1.  Any new value must be a positive integer.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="isGeometryPositioned" class="tsd-anchor"></a>
+					<h3>
+						is<wbr>Geometry<wbr>Positioned
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the whether the <a href="GraphObject.html#position">GraphObject.position</a> of this shape denotes
+									the top-left corner of this shape in panel coordinates or the origin of this geometry&#39;s coordinate system.
+									Basically, this determines whether the <a href="Shape.html#strokeWidth">strokeWidth</a> affects the rendered location.
+									A true value allows multiple shapes to be positioned precisely in a &quot;Position&quot; Panel independent of the stroke width.
+								The default is false.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="naturalBounds" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						natural<wbr>Bounds
+					<span class="tsd-signature-symbol">: </span><a href="Rect.html" class="tsd-signature-type">Rect</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the natural bounds of this Shape as determined by its <a href="Shape.html#geometry">geometry</a>&#39;s bounds.
+									The bounds will always include the (0,0) point.
+									If there is no geometry available, it returns a <a href="Rect.html">Rect</a> with the <a href="GraphObject.html#desiredSize">desiredSize</a>,
+								which may have NaN values for the width and height.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="parameter1" class="tsd-anchor"></a>
+					<h3>
+						parameter1
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets a property for parameterizing the construction of a <a href="Geometry.html">Geometry</a> from a figure.
+									The meaning of this property depends on the particular figure.
+								The value must be a number; the default value is NaN.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="parameter2" class="tsd-anchor"></a>
+					<h3>
+						parameter2
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets a property for parameterizing the construction of a <a href="Geometry.html">Geometry</a> from a figure.
+									The meaning of this property depends on the particular figure.
+								The value must be a number; the default value is NaN.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="pathPattern" class="tsd-anchor"></a>
+					<h3>
+						path<wbr>Pattern
+					<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets a <a href="GraphObject.html">GraphObject</a> that is drawn repeatedly along the path of the stroke of this shape.
+									This property may be set to a shared GraphObject; the GraphObject should not belong to any Panel.
+									Note that data bindings do <em>not</em> work in such shared GraphObjects, because they are not part of the visual tree.
+								The default value is null, causing no object to be drawn repeatedly.</p>
+								<p>Typically the object is a small <a href="Shape.html">Shape</a> or a <a href="Picture.html">Picture</a>.
+									The larger the object is the worse the results will be, especially if the stroke has short segments or sharp curves.
+								The pathPattern object is not part of the measured bounds of the Shape, it is a cosmetic element only.</p>
+								<p>The stroke is always drawn normally -- having a value for this property will draw the value along the stroke as well,
+									so it is commonplace to set the <a href="Shape.html#stroke">stroke</a> to &quot;transparent&quot; and the <a href="Shape.html#strokeWidth">strokeWidth</a> to be as wide as
+								the height of the GraphObject being drawn along the stroke.</p>
+								<p>Examples of path patterns can be seen in the <a href="../../samples/relationships.html">Relationships sample</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.6</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="spot1" class="tsd-anchor"></a>
+					<h3>
+						spot1
+					<span class="tsd-signature-symbol">: </span><a href="Spot.html" class="tsd-signature-type">Spot</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the top-left Spot used by some <a href="Panel.html">Panel</a>s for determining where in the shape other objects may be placed.
+								The value is normally <a href="Spot.html#static-Default">Spot.Default</a>, but you may want to set it to override the value that many <a href="Shape.html#figure">figure</a>s use.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="spot2" class="tsd-anchor"></a>
+					<h3>
+						spot2
+					<span class="tsd-signature-symbol">: </span><a href="Spot.html" class="tsd-signature-type">Spot</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the bottom-right Spot used by some <a href="Panel.html">Panel</a>s for determining where in the shape other objects may be placed.
+								The value is normally <a href="Spot.html#static-Default">Spot.Default</a>, but you may want to set it to override the value that many <a href="Shape.html#figure">figure</a>s use.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="stroke" class="tsd-anchor"></a>
+					<h3>
+						stroke
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#BrushLike" class="tsd-signature-type">BrushLike</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the <a href="Brush.html">Brush</a> or string that describes how the geometry is drawn as if by a pen.</p>
+								<p>The default value is &quot;black&quot;, causing the shape to be outlined in black.
+									Any valid CSS string can specify a solid color, and the <a href="Brush.html">Brush</a>
+									class can be used to specify a gradient or pattern.
+									A null stroke will mean no stroke is drawn.
+									A &quot;transparent&quot; stroke is useful when wanting to allow a shape to be pickable
+									without obscuring any other objects behind it.
+									More information about the syntax of CSS color strings is available at:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.</p>
+								<p>The stroke is drawn after the geometry is filled with the <a href="Shape.html#fill">fill</a> Brush.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="strokeCap" class="tsd-anchor"></a>
+					<h3>
+						stroke<wbr>Cap
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the style for how the ends of the stroke&#39;s line are drawn.
+								The value must be one of &quot;butt&quot;, &quot;round&quot;, or &quot;square&quot;. The default is &quot;butt&quot;.</p>
+								<p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linecap">Stroke Line Cap (w3.org)</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="strokeDashArray" class="tsd-anchor"></a>
+					<h3>
+						stroke<wbr>Dash<wbr>Array
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the dash array for creating dashed or dotted lines.
+									The value must be an array of positive numbers and zeroes,
+									or else null to indicate a solid line.
+									For example, the array [5, 10] would create dashes of 5 pixels and spaces of 10 pixels.
+								For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-setlinedash">Stroke Line Dash Array (w3.org)</a>.</p>
+								<p>The default value is null, resulting in a line without dashes or dots.
+								Setting an array with all zeroes will set the value to null.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="strokeDashOffset" class="tsd-anchor"></a>
+					<h3>
+						stroke<wbr>Dash<wbr>Offset
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the offset for dashed lines, used to start the drawing of the dash pattern with some space.
+								The value must be a real non-negative number. The default is zero.</p>
+								<p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linedashoffset">Stroke Line Dash Offset (w3.org)</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="strokeJoin" class="tsd-anchor"></a>
+					<h3>
+						stroke<wbr>Join
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the type of corner that will be drawn for a stroke at the intersection of two straight segments of the geometry.
+								The value must be one of &quot;miter&quot;, &quot;bevel&quot;, or &quot;round&quot;. The default is &quot;miter&quot;.</p>
+								<p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linejoin">Stroke Line Join (w3.org)</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="strokeMiterLimit" class="tsd-anchor"></a>
+					<h3>
+						stroke<wbr>Miter<wbr>Limit
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the style for the stroke&#39;s mitre limit ratio.
+									The value must be a real number greater than or equal to one.
+								The default is 10.0.</p>
+								<p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-miterlimit">Stroke Miter Limit (w3.org)</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="strokeWidth" class="tsd-anchor"></a>
+					<h3>
+						stroke<wbr>Width
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the thickness of the stroke&#39;s pen.</p>
+								<p>Value must be a real number greater than or equal to zero.
+									The default value is 1.0.
+								A value of zero will cause the stroke not to be drawn.</p>
+								<p>The stroke width will affect the <a href="GraphObject.html#measuredBounds">GraphObject.measuredBounds</a> and <a href="GraphObject.html#actualBounds">GraphObject.actualBounds</a> of this shape.
+								The stroke is drawn centered on the path of the geometry.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="toArrow" class="tsd-anchor"></a>
+					<h3>
+						to<wbr>Arrow
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the kind of arrowhead that this shape should take
+									when this shape is an element of a <a href="Link.html">Link</a>.
+								Value must be a string.</p>
+								<p>The default is &quot;None&quot;, which means that this Shape is not an arrowhead, causing it to be the default Shape, a large filled Rectangle.
+									If you want to have an arrowhead Shape but sometimes not show an arrowhead, you can set or bind
+									the <a href="GraphObject.html#visible">GraphObject.visible</a> property, or you can set or bind this &quot;toArrow&quot; property to
+									be the empty string.
+								The arrowhead named &quot;&quot;, an empty string, will display as nothing.</p>
+								<p>The name can be any case but will always be canonicalized when set. For instance,
+									setting &quot;opentriangle&quot; will set the value of the arrowhead to &quot;OpenTriangle&quot;.
+								All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.</p>
+								<p>Setting this property may also set the <a href="GraphObject.html#segmentIndex">GraphObject.segmentIndex</a>,
+									<a href="GraphObject.html#segmentOrientation">GraphObject.segmentOrientation</a>, and <a href="GraphObject.html#alignmentFocus">GraphObject.alignmentFocus</a> properties.
+								This shape should be an element of a <a href="Link.html">Link</a>.</p>
+								<p>At most one of the following three properties may be set to a non-&quot;None&quot; value at the same time on the same shape:
+								<a href="Shape.html#figure">figure</a>, <a href="Shape.html#toArrow">toArrow</a>, <a href="Shape.html#fromArrow">fromArrow</a>.</p>
+								<p>You can define your own named arrowheads by calling the static function <a href="Shape.html#static-defineArrowheadGeometry">Shape.defineArrowheadGeometry</a>.</p>
+								<p>You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-defineArrowheadGeometry" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						define<wbr>Arrowhead<wbr>Geometry
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">define<wbr>Arrowhead<wbr>Geometry<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, pathstr<span class="tsd-signature-symbol">: </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function defines a named arrowhead geometry.
+								Once this is called one can use the name as a value for <a href="Shape.html#toArrow">Shape.toArrow</a> or <a href="Shape.html#fromArrow">Shape.fromArrow</a>.</p>
+								<p>The first argument is the new arrowhead name and must be a non-empty string that starts with a capital letter and that is not &quot;None&quot;.</p>
+								<p>If the second argument is a string, it is converted into a <a href="Geometry.html">Geometry</a> by calling
+									<code>go.Geometry.parse(pathstr, false)</code>,
+								which may throw an error if there are problems with the syntax of the string.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.5</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a capitalized arrowhead name (&quot;OpenTriangle&quot;); must not be &quot;&quot; or &quot;None&quot;</p>
+									</div>
+								</li>
+								<li>
+									<h5>pathstr: <a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a <a href="Geometry.html">Geometry</a> or a Geometry path string, e.g. &quot;m 0,0 l 8,4 -8,4&quot;</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-defineFigureGenerator" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						define<wbr>Figure<wbr>Generator
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">define<wbr>Figure<wbr>Generator<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, func<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="Shape.html" class="tsd-signature-type">Shape</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">c</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function defines a named figure geometry generator for Shapes.
+								Once this is called one can use the name as a value for <a href="Shape.html#figure">Shape.figure</a>.</p>
+								<p>The first argument is the new figure name and must be a non-empty string that starts with a capital letter and that is not &quot;None&quot;.</p>
+								<p>If the second argument is a string this call defines a synonym for an existing figure generator.
+								Do not define cycles of synonyms -- the behavior will be undefined.</p>
+								<p>If the second argument is a function,
+									the <a href="Geometry.html">Geometry</a> generator function&#39;s first argument is the <a href="Shape.html">Shape</a> for which the function is producing a Geometry.
+									But this Shape argument may be null in some circumstances.
+									The second and third arguments are the desired width and height.
+									These will always be finite non-negative numbers.
+									The function may look at the <a href="Shape.html#parameter1">Shape.parameter1</a> and <a href="Shape.html#parameter2">Shape.parameter2</a> properties, which may be NaN,
+								to decide what geometry to create for the figure given its intended width and height.</p>
+								<p>The function must return a Geometry; you may want to set <a href="Geometry.html#spot1">Geometry.spot1</a> and <a href="Geometry.html#spot2">Geometry.spot2</a> on it
+									to indicate where content should be placed within the figure when using an &quot;Auto&quot; Panel.
+									For some figures you may also want to set <a href="Geometry.html#defaultStretch">Geometry.defaultStretch</a> to <a href="GraphObject.html#static-Uniform">GraphObject.Uniform</a>
+								in order to maintain the geometry&#39;s aspect ratio within the Shape.</p>
+								<p>Generated figures must create a Geometry that is not larger than the supplied with and height. Doing so will signal an error.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.5</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a capitalized figure name (&quot;RoundedRectangle&quot;); must not be &quot;&quot; or &quot;None&quot;</p>
+									</div>
+								</li>
+								<li>
+									<h5>func: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="Shape.html" class="tsd-signature-type">Shape</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">c</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function that takes (Shape,width,height) and returns a Geometry,
+										or an existing figure generator name for which the new name will be a synonym.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-getArrowheadGeometries" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						get<wbr>Arrowhead<wbr>Geometries
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Arrowhead<wbr>Geometries<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Map.html" class="tsd-signature-type">Map</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function returns a read-only Map of named arrowhead geometries.
+									The keys are arrowhead names.
+								The values are <a href="Geometry.html">Geometry</a> objects.</p>
+								<p>The predefined arrowheads can be seen in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.5</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Map.html" class="tsd-signature-type">Map</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getDocumentBounds" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						get<wbr>Document<wbr>Bounds
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Document<wbr>Bounds<span class="tsd-signature-symbol">(</span>result<span class="tsd-signature-symbol">?: </span><a href="Rect.html" class="tsd-signature-type">Rect</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Rect.html" class="tsd-signature-type">Rect</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the Rect in document coordinates for this object&#39;s bounds.
+								If this GraphObject is a Part, the rect will be identical to its <a href="GraphObject.html#actualBounds">actualBounds</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#getDocumentPoint">getDocumentPoint</a></p>
+									</dd>
+									<dt>since</dt>
+									<dd><p>2.0</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> result: <a href="Rect.html" class="tsd-signature-type">Rect</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an optional Rect that is modified and returned.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Rect.html" class="tsd-signature-type">Rect</a></h4>
+							<p>in document coordinates.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-getFigureGenerators" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						get<wbr>Figure<wbr>Generators
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Figure<wbr>Generators<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Map.html" class="tsd-signature-type">Map</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="Shape.html" class="tsd-signature-type">Shape</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">c</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function returns a read-only Map of named geometry generators.
+									The keys are figure names.
+									The values are either string synonyms for other figure names, or functions
+								that take a <a href="Shape.html">Shape</a> and a width and a height and return a <a href="Geometry.html">Geometry</a>.</p>
+								<p>The predefined shape figures can be seen in the <a href="../../samples/shapes.html">Shapes sample</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.5</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Map.html" class="tsd-signature-type">Map</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="Shape.html" class="tsd-signature-type">Shape</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">c</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Geometry.html" class="tsd-signature-type">Geometry</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="Shape.html" class="tsd-kind-icon">Shape</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="Shape.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#figure" class="tsd-kind-icon">figure</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#fill" class="tsd-kind-icon">fill</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#fromArrow" class="tsd-kind-icon">from<wbr>Arrow</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#geometry" class="tsd-kind-icon">geometry</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#geometryStretch" class="tsd-kind-icon">geometry<wbr>Stretch</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#geometryString" class="tsd-kind-icon">geometry<wbr>String</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#graduatedEnd" class="tsd-kind-icon">graduated<wbr>End</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#graduatedSkip" class="tsd-kind-icon">graduated<wbr>Skip</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#graduatedStart" class="tsd-kind-icon">graduated<wbr>Start</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#interval" class="tsd-kind-icon">interval</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#isGeometryPositioned" class="tsd-kind-icon">is<wbr>Geometry<wbr>Positioned</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="Shape.html#naturalBounds" class="tsd-kind-icon">natural<wbr>Bounds</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#parameter1" class="tsd-kind-icon">parameter1</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#parameter2" class="tsd-kind-icon">parameter2</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#pathPattern" class="tsd-kind-icon">path<wbr>Pattern</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#spot1" class="tsd-kind-icon">spot1</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#spot2" class="tsd-kind-icon">spot2</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#stroke" class="tsd-kind-icon">stroke</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#strokeCap" class="tsd-kind-icon">stroke<wbr>Cap</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#strokeDashArray" class="tsd-kind-icon">stroke<wbr>Dash<wbr>Array</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#strokeDashOffset" class="tsd-kind-icon">stroke<wbr>Dash<wbr>Offset</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#strokeJoin" class="tsd-kind-icon">stroke<wbr>Join</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#strokeMiterLimit" class="tsd-kind-icon">stroke<wbr>Miter<wbr>Limit</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#strokeWidth" class="tsd-kind-icon">stroke<wbr>Width</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Shape.html#toArrow" class="tsd-kind-icon">to<wbr>Arrow</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Shape.html#static-defineArrowheadGeometry" class="tsd-kind-icon">define<wbr>Arrowhead<wbr>Geometry</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Shape.html#static-defineFigureGenerator" class="tsd-kind-icon">define<wbr>Figure<wbr>Generator</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Shape.html#static-getArrowheadGeometries" class="tsd-kind-icon">get<wbr>Arrowhead<wbr>Geometries</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Shape.html#getDocumentBounds" class="tsd-kind-icon">get<wbr>Document<wbr>Bounds</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Shape.html#static-getFigureGenerators" class="tsd-kind-icon">get<wbr>Figure<wbr>Generators</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class Shape
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                <span class="extends"> Extends
-                    <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>.</span>
-                
-
-                A Shape is a <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> that shows a geometric figure.The <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> determines what is drawn;the properties <a href="../symbols/Shape.html#fill" class="linkProperty">fill</a> and <a href="../symbols/Shape.html#stroke" class="linkProperty">stroke</a>(and other stroke properties) determine how it is drawn.<p>There are generally two types of shapes: Those that use a custom <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> by setting<a href="../symbols/Shape.html#geometry" class="linkProperty">Shape.geometry</a>, and those that receive an automatically generated Geometry using the value of<a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>, <a href="../symbols/Shape.html#toArrow" class="linkProperty">toArrow</a>, or <a href="../symbols/Shape.html#fromArrow" class="linkProperty">fromArrow</a>. An explicitly set Geometry always supersedesthe figure and arrowhead properties.<p>Some created Shapes:<pre>var $ = go.GraphObject.make;  // for conciseness in defining GraphObjects// A shape with the figure set to RoundedRectangle:$(go.Shape, { figure: "RoundedRectangle", fill: "lightgreen" })// Alternatively:$(go.Shape, "RoundedRectangle", { fill: "lightgreen" })// A shape with a custom geometry, using geometryString:$(go.Shape,    { geometry: go.Geometry.parse("M120 0 L80 80 0 50z") })// A shape with a custom geometry, using geometryString:$(go.Shape,   { geometryString: "F M120 0 L80 80 0 50z",     fill: "lightgreen" })// A common link template, using two shapes,// the first for the link path and the second for the arrowheadmyDiagram.linkTemplate =  $(go.Link,    // The first shape in a link is special, its geometry is set by the Link's routing,    // so it does not need a geometry or figure set manually    $(go.Shape,      { strokeWidth: 2, stroke: 'gray' }),    $(go.Shape,      { toArrow: "Standard", fill: 'gray', stroke: null })  );</pre><p class="box">You can see more custom geometry examples and read about geometryStringon the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page.</a><p>When automatically generating a Shape <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a>, the value of <a href="../symbols/Shape.html#toArrow" class="linkProperty">toArrow</a> takes precedence,then <a href="../symbols/Shape.html#fromArrow" class="linkProperty">fromArrow</a>, then <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>. If the value of <a href="../symbols/Shape.html#toArrow" class="linkProperty">toArrow</a> or <a href="../symbols/Shape.html#fromArrow" class="linkProperty">fromArrow</a> is "None"then it is ignored, and the "None" value of <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a> is identical to "Rectangle".<p>All of the predefined figures are shown in the <a href="../../samples/shapes.html">Shapes sample</a>.You can define your own named figures by calling the static function <a href="../symbols/Shape.html#.defineFigureGenerator" class="linkStatic">Shape.defineFigureGenerator</a>.Get a <a href="../symbols/Map.html" class="linkConstructor">Map</a> of named figures by calling the static function <a href="../symbols/Shape.html#.getFigureGenerators" class="linkStatic">Shape.getFigureGenerators</a>.<p>All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.You can define your own named arrowheads by calling the static function <a href="../symbols/Shape.html#.defineArrowheadGeometry" class="linkStatic">Shape.defineArrowheadGeometry</a>.Get a <a href="../symbols/Map.html" class="linkConstructor">Map</a> of named arrowheads by calling the static function <a href="../symbols/Shape.html#.getArrowheadGeometries" class="linkStatic">Shape.getArrowheadGeometries</a>.<p>You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.<p>The Shape properties <a href="../symbols/Shape.html#parameter1" class="linkProperty">parameter1</a>, and <a href="../symbols/Shape.html#parameter2" class="linkProperty">parameter2</a> determine details of theconstruction of some <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a> geometries.Specifically, they often set the <a href="../symbols/Shape.html#spot1" class="linkProperty">spot1</a>, <a href="../symbols/Shape.html#spot2" class="linkProperty">spot2</a> for the Shape.These spots determine the "inner area" of an Auto panel when a Shape is the main object.See the <a href="../../intro/panels.html">Auto Panels section of the Panels Introduction page</a> for more details.<p>Shapes use their geometric bounds when determining hit testing,but use rectangular bounds when participating in (panel) layouts.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class Shape.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                Shape()
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>A newly constructed <a href="../symbols/Shape.html" class="linkConstructor">Shape</a> has a default <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a> of "None",which constructs a rectangular geometry, and is filled and stroked with a black brush.
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class Shape.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="figure" >
-                
-                <td class="name">
-                  <div class="name">
-                    figure
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the figure name, used to construct a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a>.<span class="nodetails" id="xpropfigure"><a class="morelink" onclick="hst('propfigure')">More...</a></span> <span class="details" id="propfigure">The value must be a string. The default value is "None".</span><div class="details" id="dpropfigure"><p>The name can be any case but will always be canonicalized when set. For instance,setting "roundedrectangle" will set the value of figure to "RoundedRectangle".All of the predefined figures are shown in the <a href="../../samples/shapes.html">Shapes sample</a>.<p>At most one of the following three properties may be set to a non-"None" value at the same time on the same shape:<a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>, <a href="../symbols/Shape.html#toArrow" class="linkProperty">toArrow</a>, <a href="../symbols/Shape.html#fromArrow" class="linkProperty">fromArrow</a>.<p>You can define your own named figures by calling the static function <a href="../symbols/Shape.html#.defineFigureGenerator" class="linkStatic">Shape.defineFigureGenerator</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="fill" >
-                
-                <td class="name">
-                  <div class="name">
-                    fill
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string|<a href="../symbols/Brush.html" class="linkConstructor">Brush</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the <a href="../symbols/Brush.html" class="linkConstructor">Brush</a> or string that describes how the geometry is filled when drawn.<span class="nodetails" id="xpropfill"><a class="morelink" onclick="hst('propfill')">More...</a></span> <span class="details" id="propfill"></span><div class="details" id="dpropfill"><p>The default value is "black", causing the shape to be filled with solid black.Any valid CSS string can specify a solid color, and the <a href="../symbols/Brush.html" class="linkConstructor">Brush</a>class can be used to specify a gradient or pattern.A null fill will mean no fill is drawn and the filled portionof the Shape will not be pickable.A "transparent" fill is useful when wanting to allow a shape to be pickablewithout obscuring any other objects behind it.More information about the syntax of CSS color strings is available at:<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.<p>The geometry is filled before the <a href="../symbols/Shape.html#stroke" class="linkProperty">stroke</a> is drawn.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="fromArrow" >
-                
-                <td class="name">
-                  <div class="name">
-                    fromArrow
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the name of the kind of arrowhead that this shape should takewhen this shape is an element of a <a href="../symbols/Link.html" class="linkConstructor">Link</a>.<span class="nodetails" id="xpropfromArrow"><a class="morelink" onclick="hst('propfromArrow')">More...</a></span> <span class="details" id="propfromArrow">Value must be a string.For bi-directional links the arrowhead name often starts with "Backward...".</span><div class="details" id="dpropfromArrow"><p>The default is "None", which means that this Shape is not an arrowhead, causing it to be the default Shape, a large filled Rectangle.If you want to have an arrowhead Shape but sometimes not show an arrowhead, you can set or bindthe <a href="../symbols/GraphObject.html#visible" class="linkProperty">GraphObject.visible</a> property, or you can set or bind this "toArrow" property tobe the empty string.The arrowhead named "", an empty string, will display as nothing.<p>The name can be any case but will always be canonicalized when set. For instance,setting "opentriangle" will set the value of the arrowhead to "OpenTriangle".All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.<p>Setting this property may also set the <a href="../symbols/GraphObject.html#segmentIndex" class="linkProperty">GraphObject.segmentIndex</a>,<a href="../symbols/GraphObject.html#segmentOrientation" class="linkProperty">GraphObject.segmentOrientation</a>, and <a href="../symbols/GraphObject.html#alignmentFocus" class="linkProperty">GraphObject.alignmentFocus</a> properties.This shape should be an element of a <a href="../symbols/Link.html" class="linkConstructor">Link</a>.<p>At most one of the following three properties may be set to a non-"None" value at the same time on the same shape:<a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>, <a href="../symbols/Shape.html#toArrow" class="linkProperty">toArrow</a>, <a href="../symbols/Shape.html#fromArrow" class="linkProperty">fromArrow</a>.<p>You can define your own named arrowheads by calling the static function <a href="../symbols/Shape.html#.defineArrowheadGeometry" class="linkStatic">Shape.defineArrowheadGeometry</a>.<p>You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="geometry" >
-                
-                <td class="name">
-                  <div class="name">
-                    geometry
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the Shape's <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> that defines the Shape's figure.<span class="nodetails" id="xpropgeometry"><a class="morelink" onclick="hst('propgeometry')">More...</a></span> <span class="details" id="propgeometry">Setting a geometry is not necessary if a <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a> is specified,as that will construct a geometry instead.</span><div class="details" id="dpropgeometry"><p>Setting this geometry property will freeze the supplied Geometry.<p>Setting this geometry property always overrides any set figure.The default value is null.</div>
-                
-                    <div class="seealso">See also:
-                        <ul class="seealsolist">
-                            
-                                <li><a href="../symbols/Shape.html#geometryString" class="linkProperty">geometryString</a></li>
-                            
-                        </ul>
-                    </div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="geometryStretch" >
-                
-                <td class="name">
-                  <div class="name">
-                    geometryStretch
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{EnumValue}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets how the shape's geometry is proportionally created given its computed size.<span class="nodetails" id="xpropgeometryStretch"><a class="morelink" onclick="hst('propgeometryStretch')">More...</a></span> <span class="details" id="propgeometryStretch">Possible values are <a href="../symbols/GraphObject.html#None" class="linkConstant">GraphObject.None</a>, <a href="../symbols/GraphObject.html#Fill" class="linkConstant">GraphObject.Fill</a>, <a href="../symbols/GraphObject.html#Uniform" class="linkConstant">GraphObject.Uniform</a>, and <a href="../symbols/GraphObject.html#Default" class="linkConstant">GraphObject.Default</a>.The default is <a href="../symbols/GraphObject.html#Default" class="linkConstant">GraphObject.Default</a>, which resolves to <a href="../symbols/GraphObject.html#Fill" class="linkConstant">GraphObject.Fill</a> for most figures, thoughsome regular figures such as "Circle" and "Square" default to <a href="../symbols/GraphObject.html#Uniform" class="linkConstant">GraphObject.Uniform</a>.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="geometryString" >
-                
-                <td class="name">
-                  <div class="name">
-                    geometryString
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                      <span class="since" title="since">1.1</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>When set, creates a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> and normalizes it from a given path string,then sets the <a href="../symbols/Shape.html#geometry" class="linkProperty">geometry</a> property on this Shape andset the <a href="../symbols/GraphObject.html#position" class="linkProperty">GraphObject.position</a> to the amount computed by normalization.<span class="nodetails" id="xpropgeometryString"><a class="morelink" onclick="hst('propgeometryString')">More...</a></span> <span class="details" id="propgeometryString">The property getter simply returns the toString value of the <a href="../symbols/Shape.html#geometry" class="linkProperty">geometry</a>,or the empty string if there is no Geometry value.</span><div class="details" id="dpropgeometryString"><p>See the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page</a> for examples.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="graduatedEnd" >
-                
-                <td class="name">
-                  <div class="name">
-                    graduatedEnd
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                      <span class="since" title="since">1.7</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the fractional distance along the main shape of a "Graduated" <a href="../symbols/Panel.html" class="linkConstructor">Panel</a> at which this kind of tick should end.<span class="nodetails" id="xpropgraduatedEnd"><a class="morelink" onclick="hst('propgraduatedEnd')">More...</a></span> <span class="details" id="propgraduatedEnd">The default is 1. Any new value should range from 0 to 1.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="graduatedStart" >
-                
-                <td class="name">
-                  <div class="name">
-                    graduatedStart
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                      <span class="since" title="since">1.7</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the fractional distance along the main shape of a "Graduated" <a href="../symbols/Panel.html" class="linkConstructor">Panel</a> at which this kind of tick should start.<span class="nodetails" id="xpropgraduatedStart"><a class="morelink" onclick="hst('propgraduatedStart')">More...</a></span> <span class="details" id="propgraduatedStart">The default is 0. Any new value should range from 0 to 1.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="interval" >
-                
-                <td class="name">
-                  <div class="name">
-                    interval
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets how frequently this shape should be drawn within a "Grid" or "Graduated" <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>,in multiples of the <a href="../symbols/Panel.html#gridCellSize" class="linkProperty">Panel.gridCellSize</a> or <a href="../symbols/Panel.html#graduatedTickUnit" class="linkProperty">Panel.graduatedTickUnit</a>.<span class="nodetails" id="xpropinterval"><a class="morelink" onclick="hst('propinterval')">More...</a></span> <span class="details" id="propinterval">The default is 1.  Any new value must be a positive integer.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="isGeometryPositioned" >
-                
-                <td class="name">
-                  <div class="name">
-                    isGeometryPositioned
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                      <span class="since" title="since">1.1</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the whether the <a href="../symbols/GraphObject.html#position" class="linkProperty">GraphObject.position</a> of this shape denotesthe top-left corner of this shape in panel coordinates or the origin of this geometry's coordinate system.<span class="nodetails" id="xpropisGeometryPositioned"><a class="morelink" onclick="hst('propisGeometryPositioned')">More...</a></span> <span class="details" id="propisGeometryPositioned">Basically, this determines whether the <a href="../symbols/Shape.html#strokeWidth" class="linkProperty">strokeWidth</a> affects the rendered location.A true value allows multiple shapes to be positioned precisely in a "Position" Panel independent of the stroke width.The default is false.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="naturalBounds" >
-                
-                <td class="name">
-                  <div class="name">
-                    naturalBounds
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Rect.html" class="linkConstructor">Rect</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the natural bounds of this Shape as determined by its <a href="../symbols/Shape.html#geometry" class="linkProperty">geometry</a>'s bounds.<span class="nodetails" id="xpropnaturalBounds"><a class="morelink" onclick="hst('propnaturalBounds')">More...</a></span> <span class="details" id="propnaturalBounds">The bounds will always include the (0,0) point.If there is no geometry available, it returns a <a href="../symbols/Rect.html" class="linkConstructor">Rect</a> with the <a href="../symbols/GraphObject.html#desiredSize" class="linkProperty">desiredSize</a>,which may have NaN values for the width and height.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="parameter1" >
-                
-                <td class="name">
-                  <div class="name">
-                    parameter1
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets a property for parameterizing the construction of a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> from a figure.<span class="nodetails" id="xpropparameter1"><a class="morelink" onclick="hst('propparameter1')">More...</a></span> <span class="details" id="propparameter1">The meaning of this property depends on the particular figure.The value must be a number; the default value is NaN.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="parameter2" >
-                
-                <td class="name">
-                  <div class="name">
-                    parameter2
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets a property for parameterizing the construction of a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> from a figure.<span class="nodetails" id="xpropparameter2"><a class="morelink" onclick="hst('propparameter2')">More...</a></span> <span class="details" id="propparameter2">The meaning of this property depends on the particular figure.The value must be a number; the default value is NaN.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="pathPattern" >
-                
-                <td class="name">
-                  <div class="name">
-                    pathPattern
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>}</span>
-                    
-                      <span class="since" title="since">1.6</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets a <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> that is drawn repeatedly along the path of the stroke of this shape.<span class="nodetails" id="xproppathPattern"><a class="morelink" onclick="hst('proppathPattern')">More...</a></span> <span class="details" id="proppathPattern">This property may be set to a shared GraphObject; the GraphObject should not belong to any Panel.Note that data bindings do <em>not</em> work in such shared GraphObjects, because they are not part of the visual tree.The default value is null, causing no object to be drawn repeatedly.</span><div class="details" id="dproppathPattern"><p>Typically the object is a small <a href="../symbols/Shape.html" class="linkConstructor">Shape</a> or a <a href="../symbols/Picture.html" class="linkConstructor">Picture</a>.The larger the object is the worse the results will be, especially if the stroke has short segments or sharp curves.<p>The stroke is always drawn normally -- having a value for this property will draw the value along the stroke as well,so it is commonplace to set the <a href="../symbols/Shape.html#stroke" class="linkProperty">stroke</a> to "transparent" and the <a href="../symbols/Shape.html#strokeWidth" class="linkProperty">strokeWidth</a> to be as wide asthe height of the GraphObject being drawn along the stroke.<p>Examples of path patterns can be seen in the <a href="../../samples/relationships.html">Relationships sample</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="spot1" >
-                
-                <td class="name">
-                  <div class="name">
-                    spot1
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Spot.html" class="linkConstructor">Spot</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the top-left Spot used by some <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>s for determining where in the shape other objects may be placed.<span class="nodetails" id="xpropspot1"><a class="morelink" onclick="hst('propspot1')">More...</a></span> <span class="details" id="propspot1">The value is normally <a href="../symbols/Spot.html#Default" class="linkConstant">Spot.Default</a>, but you may want to set it to override the value that many <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>s use.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="spot2" >
-                
-                <td class="name">
-                  <div class="name">
-                    spot2
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Spot.html" class="linkConstructor">Spot</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the bottom-right Spot used by some <a href="../symbols/Panel.html" class="linkConstructor">Panel</a>s for determining where in the shape other objects may be placed.<span class="nodetails" id="xpropspot2"><a class="morelink" onclick="hst('propspot2')">More...</a></span> <span class="details" id="propspot2">The value is normally <a href="../symbols/Spot.html#Default" class="linkConstant">Spot.Default</a>, but you may want to set it to override the value that many <a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>s use.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="stroke" >
-                
-                <td class="name">
-                  <div class="name">
-                    stroke
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string|<a href="../symbols/Brush.html" class="linkConstructor">Brush</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the <a href="../symbols/Brush.html" class="linkConstructor">Brush</a> or string that describes how the geometry is drawn as if by a pen.<span class="nodetails" id="xpropstroke"><a class="morelink" onclick="hst('propstroke')">More...</a></span> <span class="details" id="propstroke"></span><div class="details" id="dpropstroke"><p>The default value is "black", causing the shape to be outlined in black.Any valid CSS string can specify a solid color, and the <a href="../symbols/Brush.html" class="linkConstructor">Brush</a>class can be used to specify a gradient or pattern.A null stroke will mean no stroke is drawn.A "transparent" stroke is useful when wanting to allow a shape to be pickablewithout obscuring any other objects behind it.More information about the syntax of CSS color strings is available at:<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.<p>The stroke is drawn after the geometry is filled with the <a href="../symbols/Shape.html#fill" class="linkProperty">fill</a> Brush.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="strokeCap" >
-                
-                <td class="name">
-                  <div class="name">
-                    strokeCap
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the style for how the ends of the stroke's line are drawn.<span class="nodetails" id="xpropstrokeCap"><a class="morelink" onclick="hst('propstrokeCap')">More...</a></span> <span class="details" id="propstrokeCap">The value must be one of "butt", "round", or "square". The default is "butt".</span><div class="details" id="dpropstrokeCap"><p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linecap">Stroke Line Cap (w3.org)</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="strokeDashArray" >
-                
-                <td class="name">
-                  <div class="name">
-                    strokeDashArray
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Array.<number>|null}</span>
-                    
-                      <span class="since" title="since">1.1</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the dash array for creating dashed or dotted lines.<span class="nodetails" id="xpropstrokeDashArray"><a class="morelink" onclick="hst('propstrokeDashArray')">More...</a></span> <span class="details" id="propstrokeDashArray">The value must be an array of positive numbers and zeroes,or else null to indicate a solid line.For example, the array [5, 10] would create dashes of 5 pixels and spaces of 10 pixels.For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-setlinedash">Stroke Line Dash Array (w3.org)</a>.</span><div class="details" id="dpropstrokeDashArray"><p>The default value is null, resulting in a line without dashes or dots.Setting an array with all zeroes will set the value to null.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="strokeDashOffset" >
-                
-                <td class="name">
-                  <div class="name">
-                    strokeDashOffset
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                      <span class="since" title="since">1.1</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the offset for dashed lines, used to start the drawing of the dash pattern with some space.<span class="nodetails" id="xpropstrokeDashOffset"><a class="morelink" onclick="hst('propstrokeDashOffset')">More...</a></span> <span class="details" id="propstrokeDashOffset">The value must be a real non-negative number. The default is zero.</span><div class="details" id="dpropstrokeDashOffset"><p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linedashoffset">Stroke Line Dash Offset (w3.org)</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="strokeJoin" >
-                
-                <td class="name">
-                  <div class="name">
-                    strokeJoin
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the type of corner that will be drawn for a stroke at the intersection of two straight segments of the geometry.<span class="nodetails" id="xpropstrokeJoin"><a class="morelink" onclick="hst('propstrokeJoin')">More...</a></span> <span class="details" id="propstrokeJoin">The value must be one of "miter", "bevel", or "round". The default is "miter".</span><div class="details" id="dpropstrokeJoin"><p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linejoin">Stroke Line Join (w3.org)</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="strokeMiterLimit" >
-                
-                <td class="name">
-                  <div class="name">
-                    strokeMiterLimit
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the style for the stroke's mitre limit ratio.<span class="nodetails" id="xpropstrokeMiterLimit"><a class="morelink" onclick="hst('propstrokeMiterLimit')">More...</a></span> <span class="details" id="propstrokeMiterLimit">The value must be a real number greater than or equal to one.The default is 10.0.</span><div class="details" id="dpropstrokeMiterLimit"><p>For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-miterlimit">Stroke Miter Limit (w3.org)</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="strokeWidth" >
-                
-                <td class="name">
-                  <div class="name">
-                    strokeWidth
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the thickness of the stroke's pen.<span class="nodetails" id="xpropstrokeWidth"><a class="morelink" onclick="hst('propstrokeWidth')">More...</a></span> <span class="details" id="propstrokeWidth"></span><div class="details" id="dpropstrokeWidth"><p>Value must be a real number greater than or equal to zero.The default value is 1.0.A value of zero will cause the stroke not to be drawn.<p>The stroke width will affect the <a href="../symbols/GraphObject.html#measuredBounds" class="linkProperty">GraphObject.measuredBounds</a> and <a href="../symbols/GraphObject.html#actualBounds" class="linkProperty">GraphObject.actualBounds</a> of this shape.The stroke is drawn centered on the path of the geometry.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="toArrow" >
-                
-                <td class="name">
-                  <div class="name">
-                    toArrow
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the name of the kind of arrowhead that this shape should takewhen this shape is an element of a <a href="../symbols/Link.html" class="linkConstructor">Link</a>.<span class="nodetails" id="xproptoArrow"><a class="morelink" onclick="hst('proptoArrow')">More...</a></span> <span class="details" id="proptoArrow">Value must be a string.</span><div class="details" id="dproptoArrow"><p>The default is "None", which means that this Shape is not an arrowhead, causing it to be the default Shape, a large filled Rectangle.If you want to have an arrowhead Shape but sometimes not show an arrowhead, you can set or bindthe <a href="../symbols/GraphObject.html#visible" class="linkProperty">GraphObject.visible</a> property, or you can set or bind this "toArrow" property tobe the empty string.The arrowhead named "", an empty string, will display as nothing.<p>The name can be any case but will always be canonicalized when set. For instance,setting "opentriangle" will set the value of the arrowhead to "OpenTriangle".All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.<p>Setting this property may also set the <a href="../symbols/GraphObject.html#segmentIndex" class="linkProperty">GraphObject.segmentIndex</a>,<a href="../symbols/GraphObject.html#segmentOrientation" class="linkProperty">GraphObject.segmentOrientation</a>, and <a href="../symbols/GraphObject.html#alignmentFocus" class="linkProperty">GraphObject.alignmentFocus</a> properties.This shape should be an element of a <a href="../symbols/Link.html" class="linkConstructor">Link</a>.<p>At most one of the following three properties may be set to a non-"None" value at the same time on the same shape:<a href="../symbols/Shape.html#figure" class="linkProperty">figure</a>, <a href="../symbols/Shape.html#toArrow" class="linkProperty">toArrow</a>, <a href="../symbols/Shape.html#fromArrow" class="linkProperty">fromArrow</a>.<p>You can define your own named arrowheads by calling the static function <a href="../symbols/Shape.html#.defineArrowheadGeometry" class="linkStatic">Shape.defineArrowheadGeometry</a>.<p>You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Properties borrowed from class <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>: </dt><dd><a href="../symbols/GraphObject.html#actionCancel" class="linkProperty">actionCancel</a>, <a href="../symbols/GraphObject.html#actionDown" class="linkProperty">actionDown</a>, <a href="../symbols/GraphObject.html#actionMove" class="linkProperty">actionMove</a>, <a href="../symbols/GraphObject.html#actionUp" class="linkProperty">actionUp</a>, <a href="../symbols/GraphObject.html#actualBounds" class="linkProperty">actualBounds</a>, <a href="../symbols/GraphObject.html#alignment" class="linkProperty">alignment</a>, <a href="../symbols/GraphObject.html#alignmentFocus" class="linkProperty">alignmentFocus</a>, <a href="../symbols/GraphObject.html#angle" class="linkProperty">angle</a>, <a href="../symbols/GraphObject.html#areaBackground" class="linkProperty">areaBackground</a>, <a href="../symbols/GraphObject.html#background" class="linkProperty">background</a>, <a href="../symbols/GraphObject.html#click" class="linkProperty">click</a>, <a href="../symbols/GraphObject.html#column" class="linkProperty">column</a>, <a href="../symbols/GraphObject.html#columnSpan" class="linkProperty">columnSpan</a>, <a href="../symbols/GraphObject.html#contextClick" class="linkProperty">contextClick</a>, <a href="../symbols/GraphObject.html#contextMenu" class="linkProperty">contextMenu</a>, <a href="../symbols/GraphObject.html#cursor" class="linkProperty">cursor</a>, <a href="../symbols/GraphObject.html#Default" class="linkConstant">Default</a>, <a href="../symbols/GraphObject.html#desiredSize" class="linkProperty">desiredSize</a>, <a href="../symbols/GraphObject.html#diagram" class="linkProperty">diagram</a>, <a href="../symbols/GraphObject.html#doubleClick" class="linkProperty">doubleClick</a>, <a href="../symbols/GraphObject.html#enabledChanged" class="linkProperty">enabledChanged</a>, <a href="../symbols/GraphObject.html#Fill" class="linkConstant">Fill</a>, <a href="../symbols/GraphObject.html#fromEndSegmentLength" class="linkProperty">fromEndSegmentLength</a>, <a href="../symbols/GraphObject.html#fromLinkable" class="linkProperty">fromLinkable</a>, <a href="../symbols/GraphObject.html#fromLinkableDuplicates" class="linkProperty">fromLinkableDuplicates</a>, <a href="../symbols/GraphObject.html#fromLinkableSelfNode" class="linkProperty">fromLinkableSelfNode</a>, <a href="../symbols/GraphObject.html#fromMaxLinks" class="linkProperty">fromMaxLinks</a>, <a href="../symbols/GraphObject.html#fromShortLength" class="linkProperty">fromShortLength</a>, <a href="../symbols/GraphObject.html#fromSpot" class="linkProperty">fromSpot</a>, <a href="../symbols/GraphObject.html#height" class="linkProperty">height</a>, <a href="../symbols/GraphObject.html#Horizontal" class="linkConstant">Horizontal</a>, <a href="../symbols/GraphObject.html#isActionable" class="linkProperty">isActionable</a>, <a href="../symbols/GraphObject.html#isPanelMain" class="linkProperty">isPanelMain</a>, <a href="../symbols/GraphObject.html#layer" class="linkProperty">layer</a>, <a href="../symbols/GraphObject.html#margin" class="linkProperty">margin</a>, <a href="../symbols/GraphObject.html#maxSize" class="linkProperty">maxSize</a>, <a href="../symbols/GraphObject.html#measuredBounds" class="linkProperty">measuredBounds</a>, <a href="../symbols/GraphObject.html#minSize" class="linkProperty">minSize</a>, <a href="../symbols/GraphObject.html#mouseDragEnter" class="linkProperty">mouseDragEnter</a>, <a href="../symbols/GraphObject.html#mouseDragLeave" class="linkProperty">mouseDragLeave</a>, <a href="../symbols/GraphObject.html#mouseDrop" class="linkProperty">mouseDrop</a>, <a href="../symbols/GraphObject.html#mouseEnter" class="linkProperty">mouseEnter</a>, <a href="../symbols/GraphObject.html#mouseHold" class="linkProperty">mouseHold</a>, <a href="../symbols/GraphObject.html#mouseHover" class="linkProperty">mouseHover</a>, <a href="../symbols/GraphObject.html#mouseLeave" class="linkProperty">mouseLeave</a>, <a href="../symbols/GraphObject.html#mouseOver" class="linkProperty">mouseOver</a>, <a href="../symbols/GraphObject.html#name" class="linkProperty">name</a>, <a href="../symbols/GraphObject.html#None" class="linkConstant">None</a>, <a href="../symbols/GraphObject.html#opacity" class="linkProperty">opacity</a>, <a href="../symbols/GraphObject.html#panel" class="linkProperty">panel</a>, <a href="../symbols/GraphObject.html#part" class="linkProperty">part</a>, <a href="../symbols/GraphObject.html#pickable" class="linkProperty">pickable</a>, <a href="../symbols/GraphObject.html#portId" class="linkProperty">portId</a>, <a href="../symbols/GraphObject.html#position" class="linkProperty">position</a>, <a href="../symbols/GraphObject.html#row" class="linkProperty">row</a>, <a href="../symbols/GraphObject.html#rowSpan" class="linkProperty">rowSpan</a>, <a href="../symbols/GraphObject.html#scale" class="linkProperty">scale</a>, <a href="../symbols/GraphObject.html#segmentFraction" class="linkProperty">segmentFraction</a>, <a href="../symbols/GraphObject.html#segmentIndex" class="linkProperty">segmentIndex</a>, <a href="../symbols/GraphObject.html#segmentOffset" class="linkProperty">segmentOffset</a>, <a href="../symbols/GraphObject.html#segmentOrientation" class="linkProperty">segmentOrientation</a>, <a href="../symbols/GraphObject.html#shadowVisible" class="linkProperty">shadowVisible</a>, <a href="../symbols/GraphObject.html#stretch" class="linkProperty">stretch</a>, <a href="../symbols/GraphObject.html#toEndSegmentLength" class="linkProperty">toEndSegmentLength</a>, <a href="../symbols/GraphObject.html#toLinkable" class="linkProperty">toLinkable</a>, <a href="../symbols/GraphObject.html#toLinkableDuplicates" class="linkProperty">toLinkableDuplicates</a>, <a href="../symbols/GraphObject.html#toLinkableSelfNode" class="linkProperty">toLinkableSelfNode</a>, <a href="../symbols/GraphObject.html#toMaxLinks" class="linkProperty">toMaxLinks</a>, <a href="../symbols/GraphObject.html#toolTip" class="linkProperty">toolTip</a>, <a href="../symbols/GraphObject.html#toShortLength" class="linkProperty">toShortLength</a>, <a href="../symbols/GraphObject.html#toSpot" class="linkProperty">toSpot</a>, <a href="../symbols/GraphObject.html#Uniform" class="linkConstant">Uniform</a>, <a href="../symbols/GraphObject.html#UniformToFill" class="linkConstant">UniformToFill</a>, <a href="../symbols/GraphObject.html#Vertical" class="linkConstant">Vertical</a>, <a href="../symbols/GraphObject.html#visible" class="linkProperty">visible</a>, <a href="../symbols/GraphObject.html#width" class="linkProperty">width</a></dd>
-                </dl>
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class Shape.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id=".defineArrowheadGeometry">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Shape.defineArrowheadGeometry(name, pathstr)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                      <span class="since" title="since">1.5</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function defines a named arrowhead geometry.<span class="nodetails" id="xmethdefineArrowheadGeometry"><a class="morelink" onclick="hst('methdefineArrowheadGeometry')">More...</a></span> <span class="details" id="methdefineArrowheadGeometry">Once this is called one can use the name as a value for <a href="../symbols/Shape.html#toArrow" class="linkProperty">Shape.toArrow</a> or <a href="../symbols/Shape.html#fromArrow" class="linkProperty">Shape.fromArrow</a>.</span><div class="details" id="dmethdefineArrowheadGeometry"><p>The first argument is the new arrowhead name and must be a non-empty string that starts with a capital letter and that is not "None".<p>If the second argument is a string, it is converted into a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> by calling<code>go.Geometry.parse(pathstr, false)</code>,which may throw an error if there are problems with the syntax of the string.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>name</b>
-                                          
-                                      </dt>
-                                      <dd>a capitalized arrowhead name ("OpenTriangle"); must not be "" or "None"</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a>|string}</span> <b>pathstr</b>
-                                          
-                                      </dt>
-                                      <dd>a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> or a Geometry path string, e.g. "m 0,0 l 8,4 -8,4"</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".defineFigureGenerator">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Shape.defineFigureGenerator(name, func)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                      <span class="since" title="since">1.5</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function defines a named figure geometry generator for Shapes.<span class="nodetails" id="xmethdefineFigureGenerator"><a class="morelink" onclick="hst('methdefineFigureGenerator')">More...</a></span> <span class="details" id="methdefineFigureGenerator">Once this is called one can use the name as a value for <a href="../symbols/Shape.html#figure" class="linkProperty">Shape.figure</a>.</span><div class="details" id="dmethdefineFigureGenerator"><p>The first argument is the new figure name and must be a non-empty string that starts with a capital letter and that is not "None".<p>If the second argument is a string this call defines a synonym for an existing figure generator.Do not define cycles of synonyms -- the behavior will be undefined.<p>If the second argument is a function,the <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> generator function's first argument is the <a href="../symbols/Shape.html" class="linkConstructor">Shape</a> for which the function is producing a Geometry.But this Shape argument may be null in some circumstances.The second and third arguments are the desired width and height.These will always be finite non-negative numbers.The function may look at the <a href="../symbols/Shape.html#parameter1" class="linkProperty">Shape.parameter1</a> and <a href="../symbols/Shape.html#parameter2" class="linkProperty">Shape.parameter2</a> properties, which may be NaN,to decide what geometry to create for the figure given its intended width and height.<p>The function must return a Geometry; you may want to set <a href="../symbols/Geometry.html#spot1" class="linkProperty">Geometry.spot1</a> and <a href="../symbols/Geometry.html#spot2" class="linkProperty">Geometry.spot2</a> on itto indicate where content should be placed within the figure when using an "Auto" Panel.For some figures you may also want to set <a href="../symbols/Geometry.html#defaultStretch" class="linkProperty">Geometry.defaultStretch</a> to <a href="../symbols/GraphObject.html#Uniform" class="linkConstant">GraphObject.Uniform</a>in order to maintain the geometry's aspect ratio within the Shape.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>name</b>
-                                          
-                                      </dt>
-                                      <dd>a capitalized figure name ("RoundedRectangle"); must not be "" or "None"</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(Shape, number, number):Geometry|string}</span> <b>func</b>
-                                          
-                                      </dt>
-                                      <dd>A function that takes (Shape,width,height) and returns a Geometry,   or an existing figure generator name for which the new name will be a synonym.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".getArrowheadGeometries">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Shape.getArrowheadGeometries()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Map.<string,Geometry>}</span>
-                    
-                      <span class="since" title="since">1.5</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function returns a read-only Map of named arrowhead geometries.<span class="nodetails" id="xmethgetArrowheadGeometries"><a class="morelink" onclick="hst('methgetArrowheadGeometries')">More...</a></span> <span class="details" id="methgetArrowheadGeometries">The keys are arrowhead names.The values are <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a> objects.</span><div class="details" id="dmethgetArrowheadGeometries"><p>The predefined arrowheads can be seen in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.</div>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{Map.<string,Geometry>}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".getFigureGenerators">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Shape.getFigureGenerators()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Map.<string,string|function(Shape,number,number):Geometry>}</span>
-                    
-                      <span class="since" title="since">1.5</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function returns a read-only Map of named geometry generators.<span class="nodetails" id="xmethgetFigureGenerators"><a class="morelink" onclick="hst('methgetFigureGenerators')">More...</a></span> <span class="details" id="methgetFigureGenerators">The keys are figure names.The values are either string synonyms for other figure names, or functionsthat take a <a href="../symbols/Shape.html" class="linkConstructor">Shape</a> and a width and a height and return a <a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a>.</span><div class="details" id="dmethgetFigureGenerators"><p>The predefined shape figures can be seen in the <a href="../../samples/shapes.html">Shapes sample</a>.</div>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{Map.<string,string|function(Shape,number,number):Geometry>}</span> ))</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Methods borrowed from class <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>: </dt><dd><a href="../symbols/GraphObject.html#bind" class="linkMethod">bind</a>, <a href="../symbols/GraphObject.html#copy" class="linkMethod">copy</a>, <a href="../symbols/GraphObject.html#getDocumentAngle" class="linkMethod">getDocumentAngle</a>, <a href="../symbols/GraphObject.html#getDocumentPoint" class="linkMethod">getDocumentPoint</a>, <a href="../symbols/GraphObject.html#getDocumentScale" class="linkMethod">getDocumentScale</a>, <a href="../symbols/GraphObject.html#getLocalPoint" class="linkMethod">getLocalPoint</a>, <a href="../symbols/GraphObject.html#isContainedBy" class="linkMethod">isContainedBy</a>, <a href="../symbols/GraphObject.html#isEnabledObject" class="linkMethod">isEnabledObject</a>, <a href="../symbols/GraphObject.html#isVisibleObject" class="linkMethod">isVisibleObject</a>, <a href="../symbols/GraphObject.html#setProperties" class="linkMethod">setProperties</a></dd>
-                </dl>
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

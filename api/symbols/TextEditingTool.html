@@ -1,2004 +1,891 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; TextEditingTool Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>TextEditingTool | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class TextEditingTool</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="Tool.html" class="tsd-signature-type">Tool</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">TextEditingTool</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>The TextEditingTool is used to let the user interactively edit text in place.
+						This sets the <a href="TextBlock.html#text">TextBlock.text</a> property; you may want to save the changed text to the model
+					by using a TwoWay <a href="Binding.html">Binding</a> on the &quot;text&quot; property of editable TextBlocks.</p>
+					<p>Typically this is used by setting the <a href="TextBlock.html#editable">TextBlock.editable</a> property to true
+						on a particular <a href="TextBlock.html">TextBlock</a> in a part.
+						When the part is selected and the user clicks on the <a href="TextBlock.html">TextBlock</a>
+						or invokes the <a href="CommandHandler.html#editTextBlock">CommandHandler.editTextBlock</a> command,
+						this tool is started and it uses an HTMLTextArea to perform in-place text editing.
+					(For more details see the description for <a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a>.)</p>
+					<p>The <a href="TextBlock.html">TextBlock</a> is accessible as the <a href="TextEditingTool.html#textBlock">TextEditingTool.textBlock</a> property.
+						The text editor is accessible as the <a href="TextEditingTool.html#currentTextEditor">TextEditingTool.currentTextEditor</a> property.
+						From the text editor control one can access the <a href="TextBlock.html">TextBlock</a> being edited via the
+						&#39;textEditingTool&#39; property to get to this tool, from which one can use
+					the <a href="TextEditingTool.html#textBlock">TextEditingTool.textBlock</a> property.</p>
+					<p>You can disable mouse clicking from starting this text editing tool
+						by setting <a href="Tool.html#isEnabled">Tool.isEnabled</a> to false.
+						You can disable the F2 key from starting this text editing tool
+						by making sure <a href="Part.html#canEdit">Part.canEdit</a> returns false,
+						by either setting <a href="Diagram.html#allowTextEdit">Diagram.allowTextEdit</a> to false
+					or by setting <a href="Part.html#textEditable">Part.textEditable</a> to false.</p>
+					<p>If you want to programmatically start the user editing a particular TextBlock,
+						call <a href="CommandHandler.html#editTextBlock">CommandHandler.editTextBlock</a>.
+					That command method is also invoked by the F2 key on the keyboard.</p>
+					<p><p class="boxread">
+							For a general discussion of text editing validation, see: <a href="../../intro/validation.html#TextEditingValidation">Introduction to Text Validation</a>.
+						For customizing the TextEditingTool, read about <a href="HTMLInfo.html">HTMLInfo</a> and see <a href="../../intro/HTMLInteraction.html#TextEditors">Introduction to Text Editors</a>.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="TextEditingTool.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#currentTextEditor" class="tsd-kind-icon">current<wbr>Text<wbr>Editor</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#defaultTextEditor" class="tsd-kind-icon">default<wbr>Text<wbr>Editor</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#selectsTextOnActivate" class="tsd-kind-icon">selects<wbr>Text<wbr>OnActivate</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#starting" class="tsd-kind-icon">starting</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#state" class="tsd-kind-icon">state</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#textBlock" class="tsd-kind-icon">text<wbr>Block</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TextEditingTool.html#textValidation" class="tsd-kind-icon">text<wbr>Validation</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#acceptText" class="tsd-kind-icon">accept<wbr>Text</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#canStart" class="tsd-kind-icon">can<wbr>Start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#doActivate" class="tsd-kind-icon">do<wbr>Activate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#doCancel" class="tsd-kind-icon">do<wbr>Cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#doDeactivate" class="tsd-kind-icon">do<wbr>Deactivate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#doMouseDown" class="tsd-kind-icon">do<wbr>Mouse<wbr>Down</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#doMouseUp" class="tsd-kind-icon">do<wbr>Mouse<wbr>Up</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#doStart" class="tsd-kind-icon">do<wbr>Start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#isValidText" class="tsd-kind-icon">is<wbr>Valid<wbr>Text</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TextEditingTool.html#measureTemporaryTextBlock" class="tsd-kind-icon">measure<wbr>Temporary<wbr>Text<wbr>Block</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Constants</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-DoubleClick" class="tsd-kind-icon">Double<wbr>Click</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-Enter" class="tsd-kind-icon">Enter</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-LostFocus" class="tsd-kind-icon">Lost<wbr>Focus</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-MouseDown" class="tsd-kind-icon">Mouse<wbr>Down</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-SingleClick" class="tsd-kind-icon">Single<wbr>Click</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-SingleClickSelected" class="tsd-kind-icon">Single<wbr>Click<wbr>Selected</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-StateActive" class="tsd-kind-icon">State<wbr>Active</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-StateEditing" class="tsd-kind-icon">State<wbr>Editing</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-StateInvalid" class="tsd-kind-icon">State<wbr>Invalid</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-StateNone" class="tsd-kind-icon">State<wbr>None</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-StateValidated" class="tsd-kind-icon">State<wbr>Validated</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-StateValidating" class="tsd-kind-icon">State<wbr>Validating</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="TextEditingTool.html#static-Tab" class="tsd-kind-icon">Tab</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Text<wbr>Editing<wbr>Tool<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="TextEditingTool.html" class="tsd-signature-type">TextEditingTool</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>You do not normally need to create an instance of this tool
+								because one already exists as the <a href="ToolManager.html#textEditingTool">ToolManager.textEditingTool</a>, which you can modify.</p>
+								<p>The <a href="Tool.html#name">Tool.name</a> of this tool is &quot;TextEditing&quot;.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="TextEditingTool.html" class="tsd-signature-type">TextEditingTool</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="currentTextEditor" class="tsd-anchor"></a>
+					<h3>
+						current<wbr>Text<wbr>Editor
+					<span class="tsd-signature-symbol">: </span><a href="HTMLInfo.html" class="tsd-signature-type">HTMLInfo</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the <a href="HTMLInfo.html">HTMLInfo</a> that is editing the text.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultTextEditor" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Text<wbr>Editor
+					<span class="tsd-signature-symbol">: </span><a href="HTMLInfo.html" class="tsd-signature-type">HTMLInfo</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default <a href="HTMLInfo.html">HTMLInfo</a> that edits the text.</p>
+								<p>When <a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a> is called, the <a href="TextEditingTool.html#currentTextEditor">currentTextEditor</a> is set to this value by default.
+								If a <a href="TextBlock.html#textEditor">TextBlock.textEditor</a> is specified on the TextBlock, that editor is used instead.</p>
+								<p>This tool will call <a href="HTMLInfo.html#show">HTMLInfo.show</a> during <a href="TextEditingTool.html#doActivate">doActivate</a>,
+								and <a href="HTMLInfo.html#hide">HTMLInfo.hide</a> during <a href="TextEditingTool.html#doDeactivate">doDeactivate</a>.</p>
+								<p>By default the value is an <a href="HTMLInfo.html">HTMLInfo</a>, and the <a href="HTMLInfo.html#mainElement">HTMLInfo.mainElement</a> is an <code>HTMLTextArea</code>.
+								You can see the default implementation details <a href="../../extensions/textEditor.html">here</a>.</p>
+								<p>For typical operation, HTMLInfo implementations should have a way of calling <a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="selectsTextOnActivate" class="tsd-anchor"></a>
+					<h3>
+						selects<wbr>Text<wbr>OnActivate
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether to select (highlight) the editable text when the TextEditingTool is activated.
+								The default is true.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.5</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="starting" class="tsd-anchor"></a>
+					<h3>
+						starting
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets how user gestures can start in-place editing of text.</p>
+								<p>Possible values are <a href="TextEditingTool.html#static-SingleClickSelected">TextEditingTool.SingleClickSelected</a>, <a href="TextEditingTool.html#static-SingleClick">TextEditingTool.SingleClick</a>, and <a href="TextEditingTool.html#static-DoubleClick">TextEditingTool.DoubleClick</a>.</p>
+								<p>The default is <a href="TextEditingTool.html#static-SingleClickSelected">TextEditingTool.SingleClickSelected</a></p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="state" class="tsd-anchor"></a>
+					<h3>
+						state
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the state of the TextEditingTool.
+								The only accepted values are listed as constant properties of TextEditingTool, including:</p>
+								<ul>
+									<li><a href="TextEditingTool.html#static-StateNone">TextEditingTool.StateNone</a></li>
+									<li><a href="TextEditingTool.html#static-StateActive">TextEditingTool.StateActive</a></li>
+									<li><a href="TextEditingTool.html#static-StateEditing">TextEditingTool.StateEditing</a></li>
+									<li><a href="TextEditingTool.html#static-StateValidating">TextEditingTool.StateValidating</a></li>
+									<li><a href="TextEditingTool.html#static-StateValidated">TextEditingTool.StateValidated</a></li>
+								</ul>
+								<p>The starting value value is <a href="TextEditingTool.html#static-StateNone">TextEditingTool.StateNone</a>,
+									<a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a> sets the value to <a href="TextEditingTool.html#static-StateActive">TextEditingTool.StateActive</a>.
+									The default text editor receiving focus sets the value to <a href="TextEditingTool.html#static-StateEditing">TextEditingTool.StateEditing</a>.
+									<a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a> sets the value to <a href="TextEditingTool.html#static-StateValidating">TextEditingTool.StateValidating</a>.
+								Once accepted and the tool begins the &quot;TextEditing&quot; transaction, the value is set to <a href="TextEditingTool.html#static-StateValidated">TextEditingTool.StateValidated</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.7</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="textBlock" class="tsd-anchor"></a>
+					<h3>
+						text<wbr>Block
+					<span class="tsd-signature-symbol">: </span><a href="TextBlock.html" class="tsd-signature-type">TextBlock</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the <a href="TextBlock.html">TextBlock</a> that is being edited.
+									This property is initially null and is set in <a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a>
+									as the <a href="TextBlock.html">TextBlock</a> at the mouse click point.
+									However, if you set this property beforehand, <a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a>
+								will not set it, and this tool will edit the given <a href="TextBlock.html">TextBlock</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="textValidation" class="tsd-anchor"></a>
+					<h3>
+						text<wbr>Validation
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="TextBlock.html" class="tsd-signature-type">TextBlock</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">c</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the predicate that determines whether or not a string of text is valid.
+									If this is non-null, this predicate is called in addition to any <a href="TextBlock.html#textValidation">TextBlock.textValidation</a> predicate.
+									See <a href="TextEditingTool.html#isValidText">isValidText</a> for more details.
+								The default predicate is null, which is equivalent to simply returning true.</p>
+								<p>The function, if supplied, must not have any side-effects.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="acceptText" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						accept<wbr>Text
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">accept<wbr>Text<span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Finish editing by trying to accept the new text.</p>
+								<p>Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>reason: <span class="tsd-signature-type">EnumValue</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The reason must be either <a href="TextEditingTool.html#static-LostFocus">TextEditingTool.LostFocus</a>,
+										<a href="TextEditingTool.html#static-MouseDown">TextEditingTool.MouseDown</a>, <a href="TextEditingTool.html#static-Tab">TextEditingTool.Tab</a>, or <a href="TextEditingTool.html#static-Enter">TextEditingTool.Enter</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canStart" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span> <span class="tsd-flag ts-flagOverride">Override</span>
+						can<wbr>Start
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This may run when there is a mouse-click on a <a href="TextBlock.html">TextBlock</a> for which the
+									<a href="TextBlock.html#editable">TextBlock.editable</a> property is true in a <a href="Part.html">Part</a>
+								that <a href="Part.html#isSelected">Part.isSelected</a>.</p>
+								<p>This method may be overridden.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doActivate" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Activate
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Activate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Start editing the text for a <a href="TextEditingTool.html#textBlock">textBlock</a>.</p>
+								<p>If <a href="TextEditingTool.html#textBlock">TextEditingTool.textBlock</a> is not already specified, this looks for one at the current
+								mouse point. If none is found, this method does nothing.</p>
+								<p>This method sets <a href="TextEditingTool.html#currentTextEditor">currentTextEditor</a>.
+									If <a href="TextBlock.html#textEditor">TextBlock.textEditor</a> is defined on the <a href="TextBlock.html">TextBlock</a> it will use that as the value.
+								By default, it uses the value of <a href="TextEditingTool.html#defaultTextEditor">defaultTextEditor</a>, which is an {@HTMLInfo}.</p>
+								<p>If the <a href="TextEditingTool.html#currentTextEditor">currentTextEditor</a> is an <a href="HTMLInfo.html">HTMLInfo</a>, this method calls <a href="HTMLInfo.html#show">HTMLInfo.show</a> on that instance.</p>
+								<p>This sets <a href="Tool.html#isActive">Tool.isActive</a> to true.
+									Custom text editors should call <a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a> to finish the edit
+									by modifying the <a href="TextBlock.html">TextBlock</a> and committing the edit transaction.
+								Or call <a href="TextEditingTool.html#doCancel">TextEditingTool.doCancel</a> to abort the edit.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doCancel" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Cancel
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Abort any text editing operation.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doDeactivate" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Deactivate
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Deactivate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Release the mouse.</p>
+								<p>If the <a href="TextEditingTool.html#currentTextEditor">currentTextEditor</a> is an <a href="HTMLInfo.html">HTMLInfo</a>, this calls <a href="HTMLInfo.html#hide">HTMLInfo.hide</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doMouseDown" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Mouse<wbr>Down
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Mouse<wbr>Down<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This calls <a href="TextEditingTool.html#acceptText">acceptText</a> with the reason <a href="TextEditingTool.html#static-MouseDown">TextEditingTool.MouseDown</a>,
+								if this tool <a href="Tool.html#isActive">Tool.isActive</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doMouseUp" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Mouse<wbr>Up
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Mouse<wbr>Up<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>A click (mouse up) calls <a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a> if this tool is not already active
+								and if <a href="TextEditingTool.html#canStart">TextEditingTool.canStart</a> returns true.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doStart" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Start
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This calls <a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a> if there is a
+								<a href="TextEditingTool.html#textBlock">textBlock</a> set. <a href="TextEditingTool.html#doActivate">doActivate</a> attempts to set <a href="TextEditingTool.html#textBlock">textBlock</a> if it is null.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isValidText" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						is<wbr>Valid<wbr>Text
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Text<span class="tsd-signature-symbol">(</span>textblock<span class="tsd-signature-symbol">: </span><a href="TextBlock.html" class="tsd-signature-type">TextBlock</a>, oldstr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newstr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate checks any <a href="TextBlock.html#textValidation">TextBlock.textValidation</a> predicate and
+									this tool&#39;s <a href="TextEditingTool.html#textValidation">textValidation</a> predicate to make sure the <a href="TextBlock.html#text">TextBlock.text</a>
+								property may be set to the new string.</p>
+								<p>This method may be overridden, although usually it is sufficient to set <a href="TextEditingTool.html#textValidation">textValidation</a>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>textblock: <a href="TextBlock.html" class="tsd-signature-type">TextBlock</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the <a href="TextBlock.html">TextBlock</a> that is being edited.</p>
+									</div>
+								</li>
+								<li>
+									<h5>oldstr: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the previous string value.</p>
+									</div>
+								</li>
+								<li>
+									<h5>newstr: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the proposed new string value.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if the new string is valid for the given TextBlock.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="measureTemporaryTextBlock" class="tsd-anchor"></a>
+					<h3>
+						measure<wbr>Temporary<wbr>Text<wbr>Block
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">measure<wbr>Temporary<wbr>Text<wbr>Block<span class="tsd-signature-symbol">(</span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="TextBlock.html" class="tsd-signature-type">TextBlock</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This method returns a temporary <a href="TextBlock.html">TextBlock</a> used for measuring text during editing.
+									The TextBlock.text is set to the parameter&#39;s value,
+								and the TextBlock is measured with the last available width of the <a href="TextEditingTool.html#textBlock">textBlock</a>.</p>
+								<p>Text editors can use the <a href="GraphObject.html#measuredBounds">GraphObject.measuredBounds</a> and <a href="TextBlock.html#lineCount">TextBlock.lineCount</a>
+								to determine a reasonable size for their text areas.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.7</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>text: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the text to measure</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="TextBlock.html" class="tsd-signature-type">TextBlock</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constants</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-DoubleClick" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Double<wbr>Click
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#starting">TextEditingTool.starting</a>,
+							A double click on a <a href="TextBlock.html">TextBlock</a> with <a href="TextBlock.html#editable">TextBlock.editable</a> property set to true
+						will start in-place editing.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Enter" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Enter
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a>, the user has typed ENTER.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-LostFocus" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Lost<wbr>Focus
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a>, the text editing control has lost focus.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-MouseDown" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Mouse<wbr>Down
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a>, the user has clicked somewhere else in the diagram.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-SingleClick" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Single<wbr>Click
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#starting">TextEditingTool.starting</a>,
+							A single click on a <a href="TextBlock.html">TextBlock</a> with <a href="TextBlock.html#editable">TextBlock.editable</a> property set to true
+						will start in-place editing.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-SingleClickSelected" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Single<wbr>Click<wbr>Selected
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#starting">TextEditingTool.starting</a>,
+							A single click on a <a href="TextBlock.html">TextBlock</a> with <a href="TextBlock.html#editable">TextBlock.editable</a> property set to true
+						will start in-place editing, but only if the <a href="Part.html">Part</a> that the <a href="TextBlock.html">TextBlock</a> is in is already selected.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-StateActive" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						State<wbr>Active
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#state">state</a>,
+						<a href="TextEditingTool.html#doActivate">TextEditingTool.doActivate</a> sets the value of <a href="TextEditingTool.html#state">state</a> to this.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-StateEditing" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						State<wbr>Editing
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#state">state</a>,
+						The default text editor receiving focus sets the value of <a href="TextEditingTool.html#state">state</a> to this.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-StateInvalid" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						State<wbr>Invalid
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#state">state</a>,
+						If validation fails, TextEditingTool.acceptText sets the value of <a href="TextEditingTool.html#state">state</a> to this.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-StateNone" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						State<wbr>None
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#state">state</a>,
+						this is the starting value before the tool is activated.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-StateValidated" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						State<wbr>Validated
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#state">state</a>,
+						Once accepted and the tool begins the &quot;TextEditing&quot; transaction, the value of <a href="TextEditingTool.html#state">state</a> is set to this.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-StateValidating" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						State<wbr>Validating
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#state">state</a>,
+						TextEditingTool.acceptText sets the value of <a href="TextEditingTool.html#state">state</a> to this.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Tab" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Tab
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>A possible value for <a href="TextEditingTool.html#acceptText">TextEditingTool.acceptText</a>, the user has typed TAB.</p>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="TextEditingTool.html" class="tsd-kind-icon">Text<wbr>Editing<wbr>Tool</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#currentTextEditor" class="tsd-kind-icon">current<wbr>Text<wbr>Editor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#defaultTextEditor" class="tsd-kind-icon">default<wbr>Text<wbr>Editor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#selectsTextOnActivate" class="tsd-kind-icon">selects<wbr>Text<wbr>OnActivate</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#starting" class="tsd-kind-icon">starting</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#state" class="tsd-kind-icon">state</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#textBlock" class="tsd-kind-icon">text<wbr>Block</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TextEditingTool.html#textValidation" class="tsd-kind-icon">text<wbr>Validation</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#acceptText" class="tsd-kind-icon">accept<wbr>Text</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#canStart" class="tsd-kind-icon">can<wbr>Start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#doActivate" class="tsd-kind-icon">do<wbr>Activate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#doCancel" class="tsd-kind-icon">do<wbr>Cancel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#doDeactivate" class="tsd-kind-icon">do<wbr>Deactivate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#doMouseDown" class="tsd-kind-icon">do<wbr>Mouse<wbr>Down</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#doMouseUp" class="tsd-kind-icon">do<wbr>Mouse<wbr>Up</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#doStart" class="tsd-kind-icon">do<wbr>Start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#isValidText" class="tsd-kind-icon">is<wbr>Valid<wbr>Text</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TextEditingTool.html#measureTemporaryTextBlock" class="tsd-kind-icon">measure<wbr>Temporary<wbr>Text<wbr>Block</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-DoubleClick" class="tsd-kind-icon">Double<wbr>Click</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-Enter" class="tsd-kind-icon">Enter</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-LostFocus" class="tsd-kind-icon">Lost<wbr>Focus</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-MouseDown" class="tsd-kind-icon">Mouse<wbr>Down</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-SingleClick" class="tsd-kind-icon">Single<wbr>Click</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-SingleClickSelected" class="tsd-kind-icon">Single<wbr>Click<wbr>Selected</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-StateActive" class="tsd-kind-icon">State<wbr>Active</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-StateEditing" class="tsd-kind-icon">State<wbr>Editing</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-StateInvalid" class="tsd-kind-icon">State<wbr>Invalid</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-StateNone" class="tsd-kind-icon">State<wbr>None</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-StateValidated" class="tsd-kind-icon">State<wbr>Validated</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-StateValidating" class="tsd-kind-icon">State<wbr>Validating</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="TextEditingTool.html#static-Tab" class="tsd-kind-icon">Tab</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class TextEditingTool
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                <span class="extends"> Extends
-                    <a href="../symbols/Tool.html" class="linkConstructor">Tool</a>.</span>
-                
-
-                The TextEditingTool is used to let the user interactively edit text in place.This sets the <a href="../symbols/TextBlock.html#text" class="linkProperty">TextBlock.text</a> property; you may want to save the changed text to the modelby using a TwoWay <a href="../symbols/Binding.html" class="linkConstructor">Binding</a> on the "text" property of editable TextBlocks.<p>Typically this is used by setting the <a href="../symbols/TextBlock.html#editable" class="linkProperty">TextBlock.editable</a> property to trueon a particular <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> in a part.When the part is selected and the user clicks on the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a>or invokes the <a href="../symbols/CommandHandler.html#editTextBlock" class="linkMethod">CommandHandler.editTextBlock</a> command,this tool is started and it uses an HTMLTextArea to perform in-place text editing.(For more details see the description for <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a>.)<p>The <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> is accessible as the <a href="../symbols/TextEditingTool.html#textBlock" class="linkProperty">TextEditingTool.textBlock</a> property.The text editor is accessible as the <a href="../symbols/TextEditingTool.html#currentTextEditor" class="linkProperty">TextEditingTool.currentTextEditor</a> property.From the text editor control one can access the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> being edited via the'textEditingTool' property to get to this tool, from which one can usethe <a href="../symbols/TextEditingTool.html#textBlock" class="linkProperty">TextEditingTool.textBlock</a> property.<p>You can disable mouse clicking from starting this text editing toolby setting <a href="../symbols/Tool.html#isEnabled" class="linkProperty">Tool.isEnabled</a> to false.You can disable the F2 key from starting this text editing toolby making sure <a href="../symbols/Part.html#canEdit" class="linkMethod">Part.canEdit</a> returns false,by either setting <a href="../symbols/Diagram.html#allowTextEdit" class="linkProperty">Diagram.allowTextEdit</a> to falseor by setting <a href="../symbols/Part.html#textEditable" class="linkProperty">Part.textEditable</a> to false.<p>If you want to programmatically start the user editing a particular TextBlock,call <a href="../symbols/CommandHandler.html#editTextBlock" class="linkMethod">CommandHandler.editTextBlock</a>.That command method is also invoked by the F2 key on the keyboard.<p class="boxread">For a general discussion of text editing validation, see: <a href="../../intro/validation.html#TextEditingValidation">Introduction to Text Validation</a>.For customizing the TextEditingTool, read about <a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a> and see <a href="../../intro/HTMLInteraction.html#TextEditors">Introduction to Text Editors</a>.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class TextEditingTool.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                TextEditingTool()
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>You do not normally need to create an instance of this toolbecause one already exists as the <a href="../symbols/ToolManager.html#textEditingTool" class="linkProperty">ToolManager.textEditingTool</a>, which you can modify.<span class="nodetails" id="xconTextEditingTool"><a class="morelink" onclick="hst('conTextEditingTool')">More...</a></span> <span class="details" id="conTextEditingTool"></span><div class="details" id="dconTextEditingTool"><p>The <a href="../symbols/Tool.html#name" class="linkProperty">Tool.name</a> of this tool is "TextEditing".</div>
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class TextEditingTool.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="currentTextEditor" >
-                
-                <td class="name">
-                  <div class="name">
-                    currentTextEditor
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a>|HTMLElement}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the <a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a> or HTML Element that is editing the text.<span class="nodetails" id="xpropcurrentTextEditor"><a class="morelink" onclick="hst('propcurrentTextEditor')">More...</a></span> <span class="details" id="propcurrentTextEditor"></span><div class="details" id="dpropcurrentTextEditor"><p>Using an HTML Element as a value is deprecated in 1.7, and may be removed in 2.0.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultTextEditor" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultTextEditor
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a>|HTMLElement}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default <a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a> that edits the text.<span class="nodetails" id="xpropdefaultTextEditor"><a class="morelink" onclick="hst('propdefaultTextEditor')">More...</a></span> <span class="details" id="propdefaultTextEditor"></span><div class="details" id="dpropdefaultTextEditor"><p>When <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a> is called, the <a href="../symbols/TextEditingTool.html#currentTextEditor" class="linkProperty">currentTextEditor</a> is set to this value by default.If a <a href="../symbols/TextBlock.html#textEditor" class="linkProperty">TextBlock.textEditor</a> is specified on the TextBlock, that editor is used instead.<p>This tool will call <a href="../symbols/HTMLInfo.html#show" class="linkProperty">HTMLInfo.show</a> during <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">doActivate</a>,and <a href="../symbols/HTMLInfo.html#hide" class="linkProperty">HTMLInfo.hide</a> during <a href="../symbols/TextEditingTool.html#doDeactivate" class="linkMethod">doDeactivate</a>.<p>By default the value is an <a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a>, and the <a href="../symbols/HTMLInfo.html#mainElement" class="linkProperty">HTMLInfo.mainElement</a> is an <code>HTMLTextArea</code>.You can see the default implementation details <a href="../../extensions/textEditor.html">here</a>.<p>For typical operation, HTMLInfo implementations should have a way of calling <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a>.<p>Using an HTML Element as a value is deprecated in 1.7, and may be removed in 2.0.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="selectsTextOnActivate" >
-                
-                <td class="name">
-                  <div class="name">
-                    selectsTextOnActivate
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                      <span class="since" title="since">1.5</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether to select (highlight) the editable text when the TextEditingTool is activated.<span class="nodetails" id="xpropselectsTextOnActivate"><a class="morelink" onclick="hst('propselectsTextOnActivate')">More...</a></span> <span class="details" id="propselectsTextOnActivate">The default is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="starting" >
-                
-                <td class="name">
-                  <div class="name">
-                    starting
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{EnumValue}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets how user gestures can start in-place editing of text.<span class="nodetails" id="xpropstarting"><a class="morelink" onclick="hst('propstarting')">More...</a></span> <span class="details" id="propstarting"></span><div class="details" id="dpropstarting"><p>Possible values are <a href="../symbols/TextEditingTool.html#SingleClickSelected" class="linkConstant">TextEditingTool.SingleClickSelected</a>, <a href="../symbols/TextEditingTool.html#SingleClick" class="linkConstant">TextEditingTool.SingleClick</a>, and <a href="../symbols/TextEditingTool.html#DoubleClick" class="linkConstant">TextEditingTool.DoubleClick</a>.<p>The default is <a href="../symbols/TextEditingTool.html#SingleClickSelected" class="linkConstant">TextEditingTool.SingleClickSelected</a></div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="state" >
-                
-                <td class="name">
-                  <div class="name">
-                    state
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{EnumValue}</span>
-                    
-                      <span class="since" title="since">1.7</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the state of the TextEditingTool.<span class="nodetails" id="xpropstate"><a class="morelink" onclick="hst('propstate')">More...</a></span> <span class="details" id="propstate">The only accepted values are listed as constant properties of TextEditingTool, including:<ul><li><a href="../symbols/TextEditingTool.html#StateNone" class="linkConstant">TextEditingTool.StateNone</a></li><li><a href="../symbols/TextEditingTool.html#StateActive" class="linkConstant">TextEditingTool.StateActive</a></li><li><a href="../symbols/TextEditingTool.html#StateEditing" class="linkConstant">TextEditingTool.StateEditing</a></li><li><a href="../symbols/TextEditingTool.html#StateValidating" class="linkConstant">TextEditingTool.StateValidating</a></li><li><a href="../symbols/TextEditingTool.html#StateValidated" class="linkConstant">TextEditingTool.StateValidated</a></li></ul>The starting value value is <a href="../symbols/TextEditingTool.html#StateNone" class="linkConstant">TextEditingTool.StateNone</a>,<a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a> sets the value to <a href="../symbols/TextEditingTool.html#StateActive" class="linkConstant">TextEditingTool.StateActive</a>.The default text editor receiving focus sets the value to <a href="../symbols/TextEditingTool.html#StateEditing" class="linkConstant">TextEditingTool.StateEditing</a>.<a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a> sets the value to <a href="../symbols/TextEditingTool.html#StateValidating" class="linkConstant">TextEditingTool.StateValidating</a>.Once accepted and the tool begins the "TextEditing" transaction, the value is set to <a href="../symbols/TextEditingTool.html#StateValidated" class="linkConstant">TextEditingTool.StateValidated</a>.</span><div class="details" id="dpropstate"><p></div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="textBlock" >
-                
-                <td class="name">
-                  <div class="name">
-                    textBlock
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> that is being edited.<span class="nodetails" id="xproptextBlock"><a class="morelink" onclick="hst('proptextBlock')">More...</a></span> <span class="details" id="proptextBlock">This property is initially null and is set in <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a>as the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> at the mouse click point.However, if you set this property beforehand, <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a>will not set it, and this tool will edit the given <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a>.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="textValidation" >
-                
-                <td class="name">
-                  <div class="name">
-                    textValidation
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{function(TextBlock, string, string):boolean | null}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the predicate that determines whether or not a string of text is valid.<span class="nodetails" id="xproptextValidation"><a class="morelink" onclick="hst('proptextValidation')">More...</a></span> <span class="details" id="proptextValidation">If this is non-null, this predicate is called in addition to any <a href="../symbols/TextBlock.html#textValidation" class="linkProperty">TextBlock.textValidation</a> predicate.See <a href="../symbols/TextEditingTool.html#isValidText" class="linkMethod">isValidText</a> for more details.The default predicate is null, which is equivalent to simply returning true.</span><div class="details" id="dproptextValidation"><p>The function, if supplied, must not have any side-effects.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Properties borrowed from class <a href="../symbols/Tool.html" class="linkConstructor">Tool</a>: </dt><dd><a href="../symbols/Tool.html#diagram" class="linkProperty">diagram</a>, <a href="../symbols/Tool.html#isActive" class="linkProperty">isActive</a>, <a href="../symbols/Tool.html#isEnabled" class="linkProperty">isEnabled</a>, <a href="../symbols/Tool.html#name" class="linkProperty">name</a>, <a href="../symbols/Tool.html#transactionResult" class="linkProperty">transactionResult</a></dd>
-                </dl>
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class TextEditingTool.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="acceptText">
-                <td class="name">
-                  
-                  <div class="name">
-                    acceptText(reason)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Finish editing by trying to accept the new text.<span class="nodetails" id="xmethacceptText"><a class="morelink" onclick="hst('methacceptText')">More...</a></span> <span class="details" id="methacceptText"></span><div class="details" id="dmethacceptText"><p>Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{EnumValue}</span> <b>reason</b>
-                                          
-                                      </dt>
-                                      <dd>The reason must be either <a href="../symbols/TextEditingTool.html#LostFocus" class="linkConstant">TextEditingTool.LostFocus</a>,<a href="../symbols/TextEditingTool.html#MouseDown" class="linkConstant">TextEditingTool.MouseDown</a>, <a href="../symbols/TextEditingTool.html#Tab" class="linkConstant">TextEditingTool.Tab</a>, or <a href="../symbols/TextEditingTool.html#Enter" class="linkConstant">TextEditingTool.Enter</a>.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="canStart">
-                <td class="name">
-                  
-                  <div class="name">
-                    canStart()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This may run when there is a mouse-click on a <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> for which the<a href="../symbols/TextBlock.html#editable" class="linkProperty">TextBlock.editable</a> property is true in a <a href="../symbols/Part.html" class="linkConstructor">Part</a>that <a href="../symbols/Part.html#isSelected" class="linkProperty">Part.isSelected</a>.<span class="nodetails" id="xmethcanStart"><a class="morelink" onclick="hst('methcanStart')">More...</a></span> <span class="details" id="methcanStart"></span><div class="details" id="dmethcanStart"><p>This method may be overridden.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doActivate">
-                <td class="name">
-                  
-                  <div class="name">
-                    doActivate()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Start editing the text for a <a href="../symbols/TextEditingTool.html#textBlock" class="linkProperty">textBlock</a>.<span class="nodetails" id="xmethdoActivate"><a class="morelink" onclick="hst('methdoActivate')">More...</a></span> <span class="details" id="methdoActivate"></span><div class="details" id="dmethdoActivate"><p>If <a href="../symbols/TextEditingTool.html#textBlock" class="linkProperty">TextEditingTool.textBlock</a> is not already specified, this looks for one at the currentmouse point. If none is found, this method does nothing.<p>This method sets <a href="../symbols/TextEditingTool.html#currentTextEditor" class="linkProperty">currentTextEditor</a>.If <a href="../symbols/TextBlock.html#textEditor" class="linkProperty">TextBlock.textEditor</a> is defined on the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> it will use that as the value.By default, it uses the value of <a href="../symbols/TextEditingTool.html#defaultTextEditor" class="linkProperty">defaultTextEditor</a>, which is an {@HTMLInfo}.<p>If the <a href="../symbols/TextEditingTool.html#currentTextEditor" class="linkProperty">currentTextEditor</a> is an <a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a>, this method calls <a href="../symbols/HTMLInfo.html#show" class="linkProperty">HTMLInfo.show</a> on that instance.<p>This sets <a href="../symbols/Tool.html#isActive" class="linkProperty">Tool.isActive</a> to true.Custom text editors should call <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a> to finish the editby modifying the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> and committing the edit transaction.Or call <a href="../symbols/TextEditingTool.html#doCancel" class="linkMethod">TextEditingTool.doCancel</a> to abort the edit.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doCancel">
-                <td class="name">
-                  
-                  <div class="name">
-                    doCancel()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Abort any text editing operation.
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doDeactivate">
-                <td class="name">
-                  
-                  <div class="name">
-                    doDeactivate()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Release the mouse.<span class="nodetails" id="xmethdoDeactivate"><a class="morelink" onclick="hst('methdoDeactivate')">More...</a></span> <span class="details" id="methdoDeactivate"></span><div class="details" id="dmethdoDeactivate"><p>If the <a href="../symbols/TextEditingTool.html#currentTextEditor" class="linkProperty">currentTextEditor</a> is an <a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a>, this calls <a href="../symbols/HTMLInfo.html#hide" class="linkProperty">HTMLInfo.hide</a>.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doMouseDown">
-                <td class="name">
-                  
-                  <div class="name">
-                    doMouseDown()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This calls <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">acceptText</a> with the reason <a href="../symbols/TextEditingTool.html#MouseDown" class="linkConstant">TextEditingTool.MouseDown</a>,if this tool <a href="../symbols/Tool.html#isActive" class="linkProperty">Tool.isActive</a>.
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doMouseUp">
-                <td class="name">
-                  
-                  <div class="name">
-                    doMouseUp()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A click (mouse up) calls <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a> if this tool is not already activeand if <a href="../symbols/TextEditingTool.html#canStart" class="linkMethod">TextEditingTool.canStart</a> returns true.
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doStart">
-                <td class="name">
-                  
-                  <div class="name">
-                    doStart()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This calls <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a> if there is a<a href="../symbols/TextEditingTool.html#textBlock" class="linkProperty">textBlock</a> set.<span class="nodetails" id="xmethdoStart"><a class="morelink" onclick="hst('methdoStart')">More...</a></span> <span class="details" id="methdoStart"> <a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">doActivate</a> attempts to set <a href="../symbols/TextEditingTool.html#textBlock" class="linkProperty">textBlock</a> if it is null.</span>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="isValidText">
-                <td class="name">
-                  
-                  <div class="name">
-                    isValidText(textblock, oldstr, newstr)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate checks any <a href="../symbols/TextBlock.html#textValidation" class="linkProperty">TextBlock.textValidation</a> predicate andthis tool's <a href="../symbols/TextEditingTool.html#textValidation" class="linkProperty">textValidation</a> predicate to make sure the <a href="../symbols/TextBlock.html#text" class="linkProperty">TextBlock.text</a>property may be set to the new string.<span class="nodetails" id="xmethisValidText"><a class="morelink" onclick="hst('methisValidText')">More...</a></span> <span class="details" id="methisValidText"></span><div class="details" id="dmethisValidText"><p>This method may be overridden, although usually it is sufficient to set <a href="../symbols/TextEditingTool.html#textValidation" class="linkProperty">textValidation</a>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a>}</span> <b>textblock</b>
-                                          
-                                      </dt>
-                                      <dd>the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> that is being edited.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>oldstr</b>
-                                          
-                                      </dt>
-                                      <dd>the previous string value.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>newstr</b>
-                                          
-                                      </dt>
-                                      <dd>the proposed new string value.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if the new string is valid for the given TextBlock.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="measureTemporaryTextBlock">
-                <td class="name">
-                  
-                  <div class="name">
-                    measureTemporaryTextBlock(text)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a>}</span>
-                    
-                      <span class="since" title="since">1.7</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This method returns a temporary <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> used for measuring text during editing.<span class="nodetails" id="xmethmeasureTemporaryTextBlock"><a class="morelink" onclick="hst('methmeasureTemporaryTextBlock')">More...</a></span> <span class="details" id="methmeasureTemporaryTextBlock">The TextBlock.text is set to the parameter's value,and the TextBlock is measured with the last available width of the textBlock.</span><div class="details" id="dmethmeasureTemporaryTextBlock"><p>Text editors can use the <a href="../symbols/GraphObject.html#measuredBounds" class="linkProperty">GraphObject.measuredBounds</a> and <a href="../symbols/TextBlock.html#lineCount" class="linkProperty">TextBlock.lineCount</a>to determine a reasonable size for their text areas.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>text</b>
-                                          
-                                      </dt>
-                                      <dd>the text to measure</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a>}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Methods borrowed from class <a href="../symbols/Tool.html" class="linkConstructor">Tool</a>: </dt><dd><a href="../symbols/Tool.html#cancelWaitAfter" class="linkMethod">cancelWaitAfter</a>, <a href="../symbols/Tool.html#canStartMultiTouch" class="linkMethod">canStartMultiTouch</a>, <a href="../symbols/Tool.html#doKeyDown" class="linkMethod">doKeyDown</a>, <a href="../symbols/Tool.html#doKeyUp" class="linkMethod">doKeyUp</a>, <a href="../symbols/Tool.html#doMouseMove" class="linkMethod">doMouseMove</a>, <a href="../symbols/Tool.html#doMouseWheel" class="linkMethod">doMouseWheel</a>, <a href="../symbols/Tool.html#doStop" class="linkMethod">doStop</a>, <a href="../symbols/Tool.html#doWaitAfter" class="linkMethod">doWaitAfter</a>, <a href="../symbols/Tool.html#findToolHandleAt" class="linkMethod">findToolHandleAt</a>, <a href="../symbols/Tool.html#isBeyondDragSize" class="linkMethod">isBeyondDragSize</a>, <a href="../symbols/Tool.html#standardMouseClick" class="linkMethod">standardMouseClick</a>, <a href="../symbols/Tool.html#standardMouseOver" class="linkMethod">standardMouseOver</a>, <a href="../symbols/Tool.html#standardMouseSelect" class="linkMethod">standardMouseSelect</a>, <a href="../symbols/Tool.html#standardMouseWheel" class="linkMethod">standardMouseWheel</a>, <a href="../symbols/Tool.html#standardPinchZoomMove" class="linkMethod">standardPinchZoomMove</a>, <a href="../symbols/Tool.html#standardPinchZoomStart" class="linkMethod">standardPinchZoomStart</a>, <a href="../symbols/Tool.html#standardWaitAfter" class="linkMethod">standardWaitAfter</a>, <a href="../symbols/Tool.html#startTransaction" class="linkMethod">startTransaction</a>, <a href="../symbols/Tool.html#stopTool" class="linkMethod">stopTool</a>, <a href="../symbols/Tool.html#stopTransaction" class="linkMethod">stopTransaction</a>, <a href="../symbols/Tool.html#updateAdornments" class="linkMethod">updateAdornments</a></dd>
-                </dl>
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-                <h2 class="summaryCaption">Constants<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class TextEditingTool.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-                        <tr id="DoubleClick">
-                            <td class="name">
-                                <div class="name">
-                                DoubleClick
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#starting" class="linkProperty">TextEditingTool.starting</a>,A double click on a <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> with <a href="../symbols/TextBlock.html#editable" class="linkProperty">TextBlock.editable</a> property set to truewill start in-place editing.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="Enter">
-                            <td class="name">
-                                <div class="name">
-                                Enter
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a>, the user has typed ENTER.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="LostFocus">
-                            <td class="name">
-                                <div class="name">
-                                LostFocus
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a>, the text editing control has lost focus.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="MouseDown">
-                            <td class="name">
-                                <div class="name">
-                                MouseDown
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a>, the user has clicked somewhere else in the diagram.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="SingleClick">
-                            <td class="name">
-                                <div class="name">
-                                SingleClick
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#starting" class="linkProperty">TextEditingTool.starting</a>,A single click on a <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> with <a href="../symbols/TextBlock.html#editable" class="linkProperty">TextBlock.editable</a> property set to truewill start in-place editing.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="SingleClickSelected">
-                            <td class="name">
-                                <div class="name">
-                                SingleClickSelected
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#starting" class="linkProperty">TextEditingTool.starting</a>,A single click on a <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> with <a href="../symbols/TextBlock.html#editable" class="linkProperty">TextBlock.editable</a> property set to truewill start in-place editing, but only if the <a href="../symbols/Part.html" class="linkConstructor">Part</a> that the <a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a> is in is already selected.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="StateActive">
-                            <td class="name">
-                                <div class="name">
-                                StateActive
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a>,<a href="../symbols/TextEditingTool.html#doActivate" class="linkMethod">TextEditingTool.doActivate</a> sets the value of <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a> to this.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="StateEditing">
-                            <td class="name">
-                                <div class="name">
-                                StateEditing
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a>,The default text editor receiving focus sets the value of <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a> to this.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="StateInvalid">
-                            <td class="name">
-                                <div class="name">
-                                StateInvalid
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a>,If validation fails, TextEditingTool.acceptText sets the value of <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a> to this.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="StateNone">
-                            <td class="name">
-                                <div class="name">
-                                StateNone
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a>,this is the starting value before the tool is activated.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="StateValidated">
-                            <td class="name">
-                                <div class="name">
-                                StateValidated
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a>,Once accepted and the tool begins the "TextEditing" transaction, the value of <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a> is set to this.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="StateValidating">
-                            <td class="name">
-                                <div class="name">
-                                StateValidating
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a>,TextEditingTool.acceptText sets the value of <a href="../symbols/TextEditingTool.html#state" class="linkProperty">state</a> to this.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="Tab">
-                            <td class="name">
-                                <div class="name">
-                                Tab
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>A possible value for <a href="../symbols/TextEditingTool.html#acceptText" class="linkMethod">TextEditingTool.acceptText</a>, the user has typed TAB.
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

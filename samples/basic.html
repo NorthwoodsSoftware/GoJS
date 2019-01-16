@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,14 +11,12 @@
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
-          // position the graph in the middle of the diagram
-          initialContentAlignment: go.Spot.Center,
-
           // allow double-click in background to create a new node
           "clickCreatingTool.archetypeNodeData": { text: "Node", color: "white" },
 
@@ -44,7 +42,7 @@
 
     // a context menu is an Adornment with a bunch of buttons in them
     var partContextMenu =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
           makeButton("Properties",
                      function(e, obj) {  // OBJ is this Button
                        var contextmenu = obj.part;  // the Button is in the context menu Adornment
@@ -116,8 +114,7 @@
           new go.Binding("text", "text").makeTwoWay()),  // the label shows the node data's text
         { // this tooltip Adornment is shared by all nodes
           toolTip:
-            $(go.Adornment, "Auto",
-              $(go.Shape, { fill: "#FFFFCC" }),
+            $("ToolTip",
               $(go.TextBlock, { margin: 4 },  // the tooltip shows the result of calling nodeInfo(data)
                 new go.Binding("text", "", nodeInfo))
             ),
@@ -144,8 +141,7 @@
           new go.Binding("fill", "color")),
         { // this tooltip Adornment is shared by all links
           toolTip:
-            $(go.Adornment, "Auto",
-              $(go.Shape, { fill: "#FFFFCC" }),
+            $("ToolTip",
               $(go.TextBlock, { margin: 4 },  // the tooltip shows the result of calling linkInfo(data)
                 new go.Binding("text", "", linkInfo))
             ),
@@ -194,8 +190,7 @@
         ),
         { // this tooltip Adornment is shared by all groups
           toolTip:
-            $(go.Adornment, "Auto",
-              $(go.Shape, { fill: "#FFFFCC" }),
+            $("ToolTip",
               $(go.TextBlock, { margin: 4 },
                 // bind to tooltip, not to Group.data, to allow access to Group properties
                 new go.Binding("text", "", groupInfo).ofObject())
@@ -213,15 +208,14 @@
 
     // provide a tooltip for the background of the Diagram, when not over any Part
     myDiagram.toolTip =
-      $(go.Adornment, "Auto",
-        $(go.Shape, { fill: "#FFFFCC" }),
+      $("ToolTip",
         $(go.TextBlock, { margin: 4 },
           new go.Binding("text", "", diagramInfo))
       );
 
     // provide a context menu for the background of the Diagram, when not over any Part
     myDiagram.contextMenu =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
           makeButton("Paste",
                      function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); },
                      function(o) { return o.diagram.commandHandler.canPasteSelection(); }),

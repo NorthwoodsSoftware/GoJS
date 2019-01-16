@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,55 +25,51 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // A custom Link that draws a "balloon" shape around the Link.fromNode
     /**
-    * @constructor
-    * @extends Link
-    * @class
-    * This custom Link class customizes its Shape to surround the comment node.
-    * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.
-    * Thus the default layer for BalloonLinks is "Background".
-    */
+     * This custom {@link Link} class customizes its {@link Shape} to surround the comment node (the from node).
+     * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.
+     * Thus the default layer for BalloonLinks is "Background".
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/BalloonLink.html">Balloon Links</a> sample.
+     * @category Part Extension
+     */
     var BalloonLink = /** @class */ (function (_super) {
         __extends(BalloonLink, _super);
+        /**
+         * Constructs a BalloonLink and sets the {@link Part#layerName} property to "Background".
+         */
         function BalloonLink() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            //go.Link.call(this);
-            _this.layerName = "Background";
+            var _this = _super.call(this) || this;
             _this._base = 10;
+            _this.layerName = 'Background';
             return _this;
-            // end BalloonLink clas
         }
         Object.defineProperty(BalloonLink.prototype, "base", {
-            /*
-            * The width of the base of the triangle at the center point of the Link.fromNode.
-            * The default value is 10.
-            * @name BalloonLink#base
-            * @function.
-            * @return {number}
-            */
+            /**
+             * Gets or sets width of the base of the triangle at the center point of the {@link Link#fromNode}.
+             *
+             * The default value is 10.
+             */
             get: function () { return this._base; },
             set: function (value) { this._base = value; },
             enumerable: true,
             configurable: true
         });
         /**
-        * Produce a Geometry from the Link's route that draws a "balloon" shape around the Link.fromNode
-        * and has a triangular shape with the base at the fromNode and the top at the toNode.
-        * @override
-        * @this {BalloonLink}
-        */
+         * Produce a Geometry from the Link's route that draws a "balloon" shape around the {@link Link#fromNode}
+         * and has a triangular shape with the base at the fromNode and the top at the toNode.
+         */
         BalloonLink.prototype.makeGeometry = function () {
+            var fromnode = this.fromNode;
+            var tonode = this.toNode;
+            if (fromnode === null || tonode === null)
+                return _super.prototype.makeGeometry.call(this);
             // assume the fromNode is the comment and the toNode is the commented-upon node
-            var bb = this.fromNode.actualBounds;
-            var nb = this.toNode.actualBounds;
-            var numpts = this.pointsCount;
+            var bb = fromnode.actualBounds;
+            var nb = tonode.actualBounds;
             var p0 = bb.center;
-            var pn = this.getPoint(numpts - 1);
+            var pn = this.getPoint(this.pointsCount - 1);
             if (bb.intersectsRect(nb)) {
                 pn = nb.center;
             }
@@ -76,8 +78,8 @@ var __extends = (this && this.__extends) || (function () {
             var ang = pn.directionPoint(p0);
             var L = new go.Point(this.base, 0).rotate(ang - 90).add(p0);
             var R = new go.Point(this.base, 0).rotate(ang + 90).add(p0);
-            this.getLinkPointFromPoint(this.fromNode, this.fromNode, L, pn, true, L);
-            this.getLinkPointFromPoint(this.fromNode, this.fromNode, R, pn, true, R);
+            this.getLinkPointFromPoint(fromnode, fromnode, L, pn, true, L);
+            this.getLinkPointFromPoint(fromnode, fromnode, R, pn, true, R);
             // form a triangular arrow from the comment to the commented node
             var fig = new go.PathFigure(pn.x - pos.x, pn.y - pos.y, true); // filled; start at arrow point at commented node
             fig.add(new go.PathSegment(go.PathSegment.Line, R.x - pos.x, R.y - pos.y)); // a triangle base point on comment's edge
@@ -96,12 +98,9 @@ var __extends = (this && this.__extends) || (function () {
             // return a Geometry
             return new go.Geometry().add(fig);
         };
-        ;
         /**
-        * @ignore
-        * Draw a line to a corner, but not if the comment arrow encompasses that corner.
-        * @this {BalloonLink}
-        */
+         * Draw a line to a corner, but not if the comment arrow encompasses that corner.
+         */
         BalloonLink.prototype.pathToCorner = function (side, bb, fig, pos, L, R) {
             switch (side % 4) {
                 case 0:
@@ -122,9 +121,7 @@ var __extends = (this && this.__extends) || (function () {
                     break;
             }
         };
-        ;
         return BalloonLink;
     }(go.Link));
     exports.BalloonLink = BalloonLink;
 });
-//go.Diagram.inherit(BalloonLink, go.Link);

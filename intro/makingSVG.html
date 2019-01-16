@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -35,9 +35,7 @@
 Below are several examples of using <a>Diagram.makeSvg</a> on the following diagram:
 </p>
 <!-- Don't bother showing this source -->
-<pre data-language="javascript" id="diag" style="display: none;">
-  diagram.initialContentAlignment = go.Spot.Center;
-
+<pre class="lang-js" id="diag" style="display: none;">
   // define a simple Node template (but use the default Link template)
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -94,7 +92,7 @@ Below are several examples of using <a>Diagram.makeSvg</a> on the following diag
 <p>
 Calling makeSvg with no arguments or with an empty properties object results in a scene that is the same size as the Diagram's viewport.
 </p>
-<pre data-language="javascript" id="code0">
+<pre class="lang-js" id="code0">
 myDiagram.makeSvg();
 </pre>
 <script>goCode2("code0");</script>
@@ -104,7 +102,7 @@ myDiagram.makeSvg();
 Calling makeSvg with an object that has the "scale" property set to 1 results in a scene that includes the whole diagram,
 not just the area visible in the viewport.  However, the empty areas around the document bounds are trimmed away.
 </p>
-<pre data-language="javascript" id="codeA">
+<pre class="lang-js" id="codeA">
 myDiagram.makeSvg({
   scale: 1
 });
@@ -115,7 +113,7 @@ myDiagram.makeSvg({
 <p>
 Setting the scale property will create a scaled SVG Scene that is precisely large enough to contain the Diagram. The following SVG is created with a scale of 2.
 </p>
-<pre data-language="javascript" id="code1">
+<pre class="lang-js" id="code1">
 myDiagram.makeSvg({
   scale: 2
 });
@@ -131,7 +129,7 @@ myDiagram.makeSvg({
 <p>
 The following SVG is created by setting the size option of makeSvg. Note that the canvas is scaled uniformly and any extra space is placed on the bottom or right side of the SVG.
 </p>
-<pre data-language="javascript" id="code2">
+<pre class="lang-js" id="code2">
 myDiagram.makeSvg({
   size: new go.Size(100,100)
 });
@@ -141,7 +139,7 @@ myDiagram.makeSvg({
 <hr/>
 
 <p>The following SVG is also created by setting the size option of makeSvg, but only the width is set. The height will be whatever size is needed to uniformly contain the Diagram.</p>
-<pre data-language="javascript" id="code3">
+<pre class="lang-js" id="code3">
 myDiagram.makeSvg({
   size: new go.Size(100,NaN)
 });
@@ -151,20 +149,20 @@ myDiagram.makeSvg({
 <hr/>
 
 <p>The parts option allows us to specify an <a>Iterable</a> collection of Parts to draw. This is useful if you only want to make an image of part of the diagram, such as a selection of nodes.</p>
-<pre data-language="javascript" id="code4a">
+<pre class="lang-js" id="code4a">
   myPartsList = new go.List();
   myPartsList.add(myDiagram.findNodeForKey("Beta"));
   myPartsList.add(myDiagram.findNodeForKey("Delta"));
 </pre>
 <script>goCode3("code4a");</script>
-<pre data-language="javascript" id="code4">
+<pre class="lang-js" id="code4">
 myDiagram.makeSvg({
   parts: myPartsList
 });
 </pre>
 <script>goCode2("code4");</script>
 <p>Or drawing only the links:</p>
-<pre data-language="javascript" id="code4-2">
+<pre class="lang-js" id="code4-2">
 myDiagram.makeSvg({
   parts: myDiagram.links
 });
@@ -174,7 +172,7 @@ myDiagram.makeSvg({
 <hr/>
 
 <p>Setting both scale and size creates an image that is scaled specifically and cropped to the given size, as in the following image.</p>
-<pre data-language="javascript" id="code5">
+<pre class="lang-js" id="code5">
 myDiagram.makeSvg({
   scale: 1.5,
   size: new go.Size(100,100)
@@ -186,7 +184,7 @@ myDiagram.makeSvg({
 
 <p>We may want a very large, scaled image that has a limit on its size, and we can use the maxSize property to constrain one or both dimensions. The following image has a very large scale applied but is limited in size horizontally, so some horizontal cropping will occur.</p>
 <p>The default value for maxSize is <code>go.Size(2000, 2000)</code>, and specifying <code>go.Size(600, NaN)</code> is equivalent to specifying <code>go.Size(600, 2000)</code>. If we wanted no cropping on the height we could instead write <code>go.Size(600, Infinity)</code>.</p>
-<pre data-language="javascript" id="code6">
+<pre class="lang-js" id="code6">
 myDiagram.makeSvg({
   scale: 9,
   maxSize: new go.Size(600, NaN)
@@ -197,7 +195,7 @@ myDiagram.makeSvg({
 <hr/>
 
 <p>Setting both position and size creates a diagram image that is positioned specifically and cropped to the given size. When a position is set but no scale is set, the scale defaults to 1.</p>
-<pre data-language="javascript" id="code7">
+<pre class="lang-js" id="code7">
 myDiagram.makeSvg({
   position: new go.Point(20,20),
   size: new go.Size(50,50)
@@ -206,7 +204,7 @@ myDiagram.makeSvg({
 <script>goCode2("code7");</script>
 
 <p>Setting the background to a CSS color string will replace the transparent Diagram background with the given color.</p>
-<pre data-language="javascript" id="code8">
+<pre class="lang-js" id="code8">
 myDiagram.makeSvg({
   size: new go.Size(NaN,250),
   background: "rgba(0, 255, 0, 0.5)" // semi-transparent green background
@@ -217,7 +215,7 @@ myDiagram.makeSvg({
 <hr/>
 
 <p>In the following code we use the document bounds to split the Diagram into four equal parts, making four images out of each part. In this way we can prepare images for pagination, making a gallery, or printing purposes. The four images created are shown below.</p>
-<pre data-language="javascript" id="manyImgCode">
+<pre class="lang-js" id="manyImgCode">
     var d = myDiagram.documentBounds;
     var halfWidth = d.width / 2;
     var halfHeight = d.height / 2;
@@ -256,7 +254,7 @@ myDiagram.makeSvg({
 
 <button id="openSVG">Open SVG</button>
 
-<pre data-language="javascript" id="codea1">
+<pre class="lang-js" id="codea1">
 var button = document.getElementById('openSVG');
 button.addEventListener('click', function() {
   var newWindow = window.open("","newWindow");

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,8 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element
         {
-          initialContentAlignment: go.Spot.Center,
+          allowCopy: false,  // would need to copy linkdata.path and update all of the refenced node keys
+          allowDelete: false,  // would need to update linkdata.path for all links going through that node
           "Changed": invalidateLinkRoutes,
           "undoManager.isEnabled": true
         });
@@ -97,7 +98,6 @@
   go.Diagram.inherit(MultiNodePathLink, go.Link);
 
   // ignores this.routing, this.adjusting, this.corner, this.smoothness, this.curviness
-  /** @override */
   MultiNodePathLink.prototype.computePoints = function() {
     // get the list of Nodes that should be along the path
     var nodes = [];
@@ -116,7 +116,7 @@
           // but this optimization requires maintaining this cache
           // in a Diagram Changed event listener.
           var set = node._PathLinks;
-          if (!set) set = node._PathLinks = new go.Set(go.Link);
+          if (!set) set = node._PathLinks = new go.Set(/*go.Link*/);
           set.add(this);
         }
       }

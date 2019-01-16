@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,33 +25,25 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // A custom LinkReshapingTool that shows only a single reshape handle on a Bezier curved Link.
-    // Dragging that handle changes the value of {@link Link#curviness}.
     /**
-    * @constructor
-    * @extends LinkReshapingTool
-    * @class
-    * This CurvedLinkReshapingTool class allows for a Link's path to be modified by the user
-    * via the dragging of a single tool handle at the middle of the link.
-    */
+     * This CurvedLinkReshapingTool class allows for a {@link Link}'s path to be modified by the user
+     * via the dragging of a single tool handle at the middle of the link.
+     * Dragging the handle changes the value of {@link Link#curviness}.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/CurvedLinkReshaping.html">Curved Link Reshaping</a> sample.
+     * @category Tool Extension
+     */
     var CurvedLinkReshapingTool = /** @class */ (function (_super) {
         __extends(CurvedLinkReshapingTool, _super);
         function CurvedLinkReshapingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
-            /** @type {number} */
             _this._originalCurviness = NaN;
             return _this;
         }
         /**
-        * @override
-        * @this {CurvedLinkReshapingTool}
-        * @param {Shape} pathshape
-        * @return {Adornment}
-        */
+         * @hidden @internal
+         */
         CurvedLinkReshapingTool.prototype.makeAdornment = function (pathshape) {
             var link = pathshape.part;
             if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
@@ -60,34 +58,37 @@ var __extends = (this && this.__extends) || (function () {
                 return adornment;
             }
             else {
-                return this.makeAdornment.call(this, pathshape);
+                return _super.prototype.makeAdornment.call(this, pathshape);
             }
         };
-        ;
         /**
-        * @override
-        * @this {CurvedLinkReshapingTool}
-        */
+         * Start reshaping, if {@link #findToolHandleAt} finds a reshape handle at the mouse down point.
+         *
+         * If successful this sets {@link #handle} to be the reshape handle that it finds
+         * and {@link #adornedLink} to be the {@link Link} being routed.
+         * It also remembers the original link route (a list of Points) and curviness in case this tool is cancelled.
+         * And it starts a transaction.
+         */
         CurvedLinkReshapingTool.prototype.doActivate = function () {
             _super.prototype.doActivate.call(this);
-            this._originalCurviness = this.adornedLink.curviness;
+            if (this.adornedLink !== null)
+                this._originalCurviness = this.adornedLink.curviness;
         };
-        ;
         /**
-        * @override
-        * @this {CurvedLinkReshapingTool}
-        */
+         * Restore the link route to be the original points and curviness and stop this tool.
+         */
         CurvedLinkReshapingTool.prototype.doCancel = function () {
-            this.adornedLink.curviness = this._originalCurviness;
+            if (this.adornedLink !== null)
+                this.adornedLink.curviness = this._originalCurviness;
             _super.prototype.doCancel.call(this);
         };
-        ;
         /**
-        * @override
-        * @this {CurvedLinkReshapingTool}
-        * @param {Point} newpt
-        * @return {Point}
-        */
+         * Change the route of the {@link #adornedLink} by moving the point corresponding to the current
+         * {@link #handle} to be at the given {@link Point}.
+         * This is called by {@link #doMouseMove} and {@link #doMouseUp} with the result of calling
+         * {@link #computeReshape} to constrain the input point.
+         * @param {Point} newpt the value of the call to {@link #computeReshape}.
+         */
         CurvedLinkReshapingTool.prototype.reshape = function (newpt) {
             var link = this.adornedLink;
             if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
@@ -99,8 +100,9 @@ var __extends = (this && this.__extends) || (function () {
                 var b = new go.Point(9999, 0).rotate(ang - 90).add(mid);
                 var q = newpt.copy().projectOntoLineSegmentPoint(a, b);
                 var curviness = Math.sqrt(mid.distanceSquaredPoint(q));
-                if (link.fromPort === link.toPort) {
-                    if (newpt.y < link.fromPort.getDocumentPoint(go.Spot.Center).y)
+                var port = link.fromPort;
+                if (port === link.toPort && port !== null) {
+                    if (newpt.y < port.getDocumentPoint(go.Spot.Center).y)
                         curviness = -curviness;
                 }
                 else {
@@ -109,10 +111,9 @@ var __extends = (this && this.__extends) || (function () {
                         curviness = -curviness;
                 }
                 link.curviness = curviness;
-                return q;
             }
             else {
-                this.reshape.call(this, newpt);
+                _super.prototype.reshape.call(this, newpt);
             }
         };
         return CurvedLinkReshapingTool;

@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,72 +25,110 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // A custom Tool for creating a new Node with custom size by dragging its outline in the background.
     /**
-    * @constructor
-    * @extends Tool
-    * @class
-    * The DragCreatingTool lets the user create a new node by dragging in the background
-    * to indicate its size and position.
-    * <p/>
-    * The default drag selection box is a magenta rectangle.
-    * You can modify the {@link #box} to customize its appearance.
-    * <p/>
-    * This tool will not be able to start running unless you have set the
-    * {@link #archetypeNodeData} property to an object that can be copied and added to the diagram's model.
-    * <p/>
-    * You can use this tool in a modal manner by executing:
-    * <pre><code>
-    *   diagram.currentTool = new DragCreatingTool();
-    * </code></pre>
-    * <p/>
-    * Use this tool in a mode-less manner by executing:
-    * <pre><code>
-    *   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragCreatingTool());
-    * </code></pre>
-    * However when used mode-lessly as a mouse-move tool, in {@link ToolManager#mouseMoveTools},
-    * this cannot start running unless there has been a motionless delay
-    * after the mouse-down event of at least {@link #delay} milliseconds.
-    * <p/>
-    * This tool does not utilize any {@link Adornment}s or tool handles,
-    * but it does temporarily add the {@link #box} Part to the diagram.
-    * This tool does conduct a transaction when inserting the new node.
-    */
+     * The DragCreatingTool lets the user create a new node by dragging in the background
+     * to indicate its size and position.
+     *
+     * The default drag selection box is a magenta rectangle.
+     * You can modify the {@link #box} to customize its appearance.
+     *
+     * This tool will not be able to start running unless you have set the
+     * {@link #archetypeNodeData} property to an object that can be copied and added to the diagram's model.
+     *
+     * You can use this tool in a modal manner by executing:
+     * ```js
+     *   diagram.currentTool = new DragCreatingTool();
+     * ```
+     *
+     * Use this tool in a mode-less manner by executing:
+     * ```js
+     *   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragCreatingTool());
+     * ```
+     *
+     * However when used mode-lessly as a mouse-move tool, in {@link ToolManager#mouseMoveTools},
+     * this cannot start running unless there has been a motionless delay
+     * after the mouse-down event of at least {@link #delay} milliseconds.
+     *
+     * This tool does not utilize any {@link Adornment}s or tool handles,
+     * but it does temporarily add the {@link #box} Part to the diagram.
+     * This tool does conduct a transaction when inserting the new node.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/DragCreating.html">Drag Creating</a> sample.
+     * @category Tool Extension
+     */
     var DragCreatingTool = /** @class */ (function (_super) {
         __extends(DragCreatingTool, _super);
+        /**
+         * Constructs a DragCreatingTool, sets {@link #box} to a magenta rectangle, and sets name of the tool.
+         */
         function DragCreatingTool() {
             var _this = _super.call(this) || this;
-            /** @type {Object} */
             _this._archetypeNodeData = null;
-            /** @type {number} */
             _this._delay = 175;
             var b = new go.Part();
             var r = new go.Shape();
-            b.layerName = "Tool";
+            b.layerName = 'Tool';
             b.selectable = false;
-            r.name = "SHAPE";
-            r.figure = "Rectangle";
+            r.name = 'SHAPE';
+            r.figure = 'Rectangle';
             r.fill = null;
-            r.stroke = "magenta";
+            r.stroke = 'magenta';
             r.position = new go.Point(0, 0);
             b.add(r);
             _this._box = b;
-            _this.name = "DragCreating";
+            _this.name = 'DragCreating';
             return _this;
         }
+        Object.defineProperty(DragCreatingTool.prototype, "box", {
+            /**
+             * Gets or sets the {@link Part} used as the "rubber-band box"
+             * that is stretched to follow the mouse, as feedback for what area will
+             * be passed to {@link #insertPart} upon a mouse-up.
+             *
+             * Initially this is a {@link Part} containing only a simple magenta rectangular {@link Shape}.
+             * The object to be resized should be named "SHAPE".
+             * Setting this property does not raise any events.
+             *
+             * Modifying this property while this tool {@link Tool#isActive} might have no effect.
+             */
+            get: function () { return this._box; },
+            set: function (val) { this._box = val; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DragCreatingTool.prototype, "delay", {
+            /**
+             * Gets or sets the time in milliseconds for which the mouse must be stationary
+             * before this tool can be started.
+             *
+             * The default value is 175 milliseconds.
+             * A value of zero will allow this tool to run without any wait after the mouse down.
+             * Setting this property does not raise any events.
+             */
+            get: function () { return this._delay; },
+            set: function (val) { this._delay = val; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DragCreatingTool.prototype, "archetypeNodeData", {
+            /**
+             * Gets or sets a data object that will be copied and added to the diagram's model each time this tool executes.
+             *
+             * The default value is null.
+             * The value must be non-null for this tool to be able to run.
+             * Setting this property does not raise any events.
+             */
+            get: function () { return this._archetypeNodeData; },
+            set: function (val) { this._archetypeNodeData = val; },
+            enumerable: true,
+            configurable: true
+        });
         /**
-        * This tool can run when there has been a mouse-drag, far enough away not to be a click,
-        * and there has been delay of at least {@link #delay} milliseconds
-        * after the mouse-down before a mouse-move.
-        * <p/>
-        * This method may be overridden.
-        * @this {DragCreatingTool}
-        * @return {boolean}
-        */
+         * This tool can run when there has been a mouse-drag, far enough away not to be a click,
+         * and there has been delay of at least {@link #delay} milliseconds
+         * after the mouse-down before a mouse-move.
+         */
         DragCreatingTool.prototype.canStart = function () {
             if (!this.isEnabled)
                 return false;
@@ -92,8 +136,6 @@ var __extends = (this && this.__extends) || (function () {
             if (this.archetypeNodeData === null)
                 return false;
             var diagram = this.diagram;
-            if (diagram === null)
-                return false;
             // heed IsReadOnly & AllowInsert
             if (diagram.isReadOnly || diagram.isModelReadOnly)
                 return false;
@@ -113,104 +155,80 @@ var __extends = (this && this.__extends) || (function () {
             }
             return true;
         };
-        ;
         /**
-        * Capture the mouse and show the {@link #box}.
-        * @this {DragCreatingTool}
-        */
+         * Capture the mouse and show the {@link #box}.
+         */
         DragCreatingTool.prototype.doActivate = function () {
             var diagram = this.diagram;
-            if (diagram === null)
-                return;
             this.isActive = true;
             diagram.isMouseCaptured = true;
             diagram.add(this.box);
             this.doMouseMove();
         };
-        ;
         /**
-        * Release the mouse and remove any {@link #box}.
-        * @this {DragCreatingTool}
-        */
+         * Release the mouse and remove any {@link #box}.
+         */
         DragCreatingTool.prototype.doDeactivate = function () {
             var diagram = this.diagram;
-            if (diagram === null)
-                return;
             diagram.remove(this.box);
             diagram.isMouseCaptured = false;
             this.isActive = false;
         };
-        ;
         /**
-        * Update the {@link #box}'s position and size according to the value
-        * of {@link #computeBoxBounds}.
-        * @this {DragCreatingTool}
-        */
+         * Update the {@link #box}'s position and size according to the value
+         * of {@link #computeBoxBounds}.
+         */
         DragCreatingTool.prototype.doMouseMove = function () {
-            var diagram = this.diagram;
-            if (diagram === null)
-                return;
             if (this.isActive && this.box !== null) {
                 var r = this.computeBoxBounds();
-                var shape = this.box.findObject("SHAPE");
+                var shape = this.box.findObject('SHAPE');
                 if (shape === null)
                     shape = this.box.findMainElement();
-                shape.desiredSize = r.size;
+                if (shape !== null)
+                    shape.desiredSize = r.size;
                 this.box.position = r.position;
             }
         };
-        ;
         /**
-        * Call {@link #insertPart} with the value of a call to {@link #computeBoxBounds}.
-        * @this {DragCreatingTool}
-        */
+         * Call {@link #insertPart} with the value of a call to {@link #computeBoxBounds}.
+         */
         DragCreatingTool.prototype.doMouseUp = function () {
             if (this.isActive) {
                 var diagram = this.diagram;
                 diagram.remove(this.box);
                 try {
-                    diagram.currentCursor = "wait";
+                    diagram.currentCursor = 'wait';
                     this.insertPart(this.computeBoxBounds());
                 }
                 finally {
-                    diagram.currentCursor = "";
+                    diagram.currentCursor = '';
                 }
             }
             this.stopTool();
         };
-        ;
         /**
-        * This just returns a {@link Rect} stretching from the mouse-down point to the current mouse point.
-        * <p/>
-        * This method may be overridden.
-        * @this {DragCreatingTool}
-        * @return {Rect} a {@link Rect} in document coordinates.
-        */
+         * This just returns a {@link Rect} stretching from the mouse-down point to the current mouse point.
+         * @return {Rect} a {@link Rect} in document coordinates.
+         */
         DragCreatingTool.prototype.computeBoxBounds = function () {
             var diagram = this.diagram;
-            if (diagram === null)
-                return new go.Rect(0, 0, 0, 0);
             var start = diagram.firstInput.documentPoint;
             var latest = diagram.lastInput.documentPoint;
             return new go.Rect(start, latest);
         };
-        ;
         /**
-        * Create a node by adding a copy of the {@link #archetypeNodeData} object
-        * to the diagram's model, assign its {@link GraphObject#position} and {@link GraphObject#desiredSize}
-        * according to the given bounds, and select the new part.
-        * <p>
-        * The actual part that is added to the diagram may be a {@link Part}, a {@link Node},
-        * or even a {@link Group}, depending on the properties of the {@link #archetypeNodeData}
-        * and the type of the template that is copied to create the part.
-        * @this {DragCreatingTool}
-        * @param {Rect} bounds a Point in document coordinates.
-        * @return {Part} the newly created Part, or null if it failed.
-        */
+         * Create a node by adding a copy of the {@link #archetypeNodeData} object
+         * to the diagram's model, assign its {@link GraphObject#position} and {@link GraphObject#desiredSize}
+         * according to the given bounds, and select the new part.
+         *
+         * The actual part that is added to the diagram may be a {@link Part}, a {@link Node},
+         * or even a {@link Group}, depending on the properties of the {@link #archetypeNodeData}
+         * and the type of the template that is copied to create the part.
+         * @param {Rect} bounds a Point in document coordinates.
+         * @return {Part} the newly created Part, or null if it failed.
+         */
         DragCreatingTool.prototype.insertPart = function (bounds) {
             var diagram = this.diagram;
-            if (diagram === null)
-                return null;
             var arch = this.archetypeNodeData;
             if (arch === null)
                 return null;
@@ -235,59 +253,6 @@ var __extends = (this && this.__extends) || (function () {
             this.stopTransaction();
             return part;
         };
-        ;
-        Object.defineProperty(DragCreatingTool.prototype, "box", {
-            // Public properties
-            /**
-            * Gets or sets the {@link Part} used as the "rubber-band box"
-            * that is stretched to follow the mouse, as feedback for what area will
-            * be passed to {@link #insertPart} upon a mouse-up.
-            * <p/>
-            * Initially this is a {@link Part} containing only a simple magenta rectangular {@link Shape}.
-            * The object to be resized should be named "SHAPE".
-            * Setting this property does not raise any events.
-            * <p/>
-            * Modifying this property while this tool {@link Tool#isActive} might have no effect.
-            * @name DragCreatingTool#box
-            * @function.
-            * @return {Part}
-            */
-            get: function () { return this._box; },
-            set: function (val) { this._box = val; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(DragCreatingTool.prototype, "delay", {
-            /**
-            * Gets or sets the time in milliseconds for which the mouse must be stationary
-            * before this tool can be started.
-            * The default value is 175 milliseconds.
-            * A value of zero will allow this tool to run without any wait after the mouse down.
-            * Setting this property does not raise any events.
-            * @name DragCreatingTool#delay
-            * @function.
-            * @return {number}
-            */
-            get: function () { return this._delay; },
-            set: function (val) { this._delay = val; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(DragCreatingTool.prototype, "archetypeNodeData", {
-            /**
-            * Gets or sets a data object that will be copied and added to the diagram's model each time this tool executes.
-            * The default value is null.
-            * The value must be non-null for this tool to be able to run.
-            * Setting this property does not raise any events.
-            * @name DragCreatingTool#archetypeNodeData
-            * @function.
-            * @return {Object}
-            */
-            get: function () { return this._archetypeNodeData; },
-            set: function (val) { this._archetypeNodeData = val; },
-            enumerable: true,
-            configurable: true
-        });
         return DragCreatingTool;
     }(go.Tool));
     exports.DragCreatingTool = DragCreatingTool;

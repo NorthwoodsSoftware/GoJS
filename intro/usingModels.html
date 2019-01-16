@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -26,7 +26,7 @@ Those templates may be parameterized by properties of the node and link data.
 Let us try to build two nodes and connect them with a link.
 Here is one way of doing that:
 </p>
-<pre data-language="javascript" id="twoNodesOneLinkCode">
+<pre class="lang-js" id="twoNodesOneLinkCode">
   var node1 =
     $(go.Node, "Auto",
       $(go.Shape,
@@ -131,7 +131,7 @@ We declare the link relationships in a separate array of link data objects.
 Each link data holds references to the node data by using their keys.
 Normally the references are the values of the "from" and "to" properties.
 </p>
-<pre data-language="javascript" id="simpleModelNoTemplates">
+<pre class="lang-js" id="simpleModelNoTemplates">
   var nodeDataArray = [
     { key: "Alpha"},
     { key: "Beta" }
@@ -146,7 +146,7 @@ Normally the references are the values of the "from" and "to" properties.
 This results in two nodes and a link, but the nodes do not appear the way we want.
 So we define the node template to be a generalization of the particular node constructions that we did above.
 </p>
-<pre data-language="javascript" id="simpleModelNoBind">
+<pre class="lang-js" id="simpleModelNoBind">
   diagram.nodeTemplate =  // provide custom Node appearance
     $(go.Node, "Auto",
       $(go.Shape,
@@ -188,7 +188,7 @@ We can declare such data-bindings by creating <a>Binding</a> objects and associa
 Programmatically you do this by calling <a>GraphObject.bind</a>.
 But when using <b>go.GraphObject.make</b>, this happens automatically when you pass in a <a>Binding</a>.
 </p>
-<pre data-language="javascript" id="simpleModelWithBind">
+<pre class="lang-js" id="simpleModelWithBind">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape,
@@ -280,7 +280,7 @@ The parent-child relationship inherent in trees is determined by an extra proper
 If that property, whose name defaults to "parent", is undefined, then that data's corresponding node is a tree root.
 Each <a>Link</a> is still data bound, but the link's data is the child node data.
 </p>
-<pre data-language="javascript" id="simpleTree">
+<pre class="lang-js" id="simpleTree">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape,
@@ -329,7 +329,7 @@ Any <a>Binding</a> that depends on the property will not be notified about any c
 so it will not be able to update its target <a>GraphObject</a> property.
 For example, setting the color property will not cause the <a>Shape</a> to change color.
 </p>
-<pre>
+<pre class="lang-js">
     var data = myDiagram.model.findNodeDataForKey("Delta");
     // This will NOT change the color of the "Delta" Node
     if (data !== null) data.color = "red";
@@ -337,7 +337,7 @@ For example, setting the color property will not cause the <a>Shape</a> to chang
 <p>
 Instead you need to call <a>Model.setDataProperty</a> to modify an object in the model.
 </p>
-<pre>
+<pre class="lang-js">
     var data = myDiagram.model.findNodeDataForKey("Delta");
     // This will update the color of the "Delta" Node
     if (data !== null) myDiagram.model.setDataProperty(data, "color", "red");
@@ -358,7 +358,7 @@ we do make it easy to write and read models as text in JSON format.
 </p>
 <p>
 Just call <a>Model.toJson</a> to generate a string representing your model.
-Call the static method <a>Model.fromJson</a> to construct and initialize a model given a string produced by <a>Model.toJson</a>.
+Call the static method <a>Model,fromJson</a> to construct and initialize a model given a string produced by <a>Model.toJson</a>.
 Many of the samples demonstrate this -- search for JavaScript functions named "save" and "load".
 Most of those functions write and read a TextArea on the page itself, so that you can see and modify the JSON text and then load it to get a new diagram.
 But please be cautious when editing because JSON syntax is very strict, and any syntax errors will cause those "load" functions to fail.
@@ -374,7 +374,7 @@ To save and load any data properties that you set on your node data (or link dat
   <li>property values that are Objects or Arrays form a tree structure -- no shared or cyclical references</li>
 </ul>
 <p>
-<a>Model.toJson</a> and <a>Model.fromJson</a> will also handle instances of
+<a>Model.toJson</a> and <a>Model,fromJson</a> will also handle instances of
 <a>Point</a>, <a>Size</a>, <a>Rect</a>, <a>Spot</a>, <a>Margin</a>, <a>Geometry</a>, and non-pattern <a>Brush</a>es.
 However we recommend that you store those objects in their string representations, using those classes' <code>parse</code> and <code>stringify</code> static functions.
 </p>
@@ -383,7 +383,7 @@ Because you are using JavaScript, it is trivial for you to add data properties t
 This allows you to associate whatever information you need with each node.
 But if you need to associate some information with the model, which will be present even if there is no node data at all,
 you can add properties to the <a>Model.modelData</a> object.
-This object's properties will be written by <a>Model.toJson</a> and read by <a>Model.fromJson</a>, just as node data objects are written and read.
+This object's properties will be written by <a>Model.toJson</a> and read by <a>Model,fromJson</a>, just as node data objects are written and read.
 </p>
 
 </div>

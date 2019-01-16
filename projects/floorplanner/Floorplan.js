@@ -12,7 +12,7 @@
 * @param {HTMLDivElement|string} div A reference to a div or its ID as a string
 */
 function Floorplan(div) {
-    
+
     /*
     * Floor Plan Setup:
     * Initialize Floor Plan, Floor Plan Listeners, Floor Plan Overview
@@ -27,13 +27,12 @@ function Floorplan(div) {
     this._palettes = [];
 
     // Point Nodes, Dimension Links, Angle Nodes on the Floorplan (never in model data)
-    this._pointNodes = new go.Set(go.Node);
-    this._dimensionLinks = new go.Set(go.Link);
-    this._angleNodes = new go.Set(go.Node);
+    this._pointNodes = new go.Set(/*go.Node*/);
+    this._dimensionLinks = new go.Set(/*go.Link*/);
+    this._angleNodes = new go.Set(/*go.Node*/);
 
     var $ = go.GraphObject.make;
 
-    this.allowDrop = true;
     this.allowLink = false;
     this.undoManager.isEnabled = true;
     this.layout.isOngoing = false;
@@ -64,7 +63,7 @@ function Floorplan(div) {
     this.commandHandler.canUngroupSelection = true;
     this.commandHandler.archetypeGroupData = { isGroup: true };
 
-    // When floorplan model is changed, update stats in Statistics Window 
+    // When floorplan model is changed, update stats in Statistics Window
     this.addModelChangedListener(function (e) {
         if (e.isTransactionFinished) {
             // find floorplan changed
@@ -95,6 +94,15 @@ function Floorplan(div) {
                 }
             }
         }
+    });
+
+    // if a wall is copied, update its geometry
+    this.addDiagramListener("SelectionCopied", function (e) {
+        e.diagram.selection.iterator.each(function(part){
+            if (part.category == "WallGroup") {
+                e.diagram.updateWall(part);
+            }
+        });
     });
 
     // If floorplan scale has been changed update the 'Scale' item in the View menu
@@ -307,7 +315,7 @@ function Floorplan(div) {
 
     this.toolManager.draggingTool.isGridSnapEnabled = true;
 } go.Diagram.inherit(Floorplan, go.Diagram);
-    
+
 // Get/set the Floorplan Filesystem instance associated with this Floorplan
 Object.defineProperty(Floorplan.prototype, "floorplanFilesystem", {
     get: function () { return this._floorplanFilesystem; },
@@ -351,19 +359,21 @@ Object.defineProperty(Floorplan.prototype, "angleNodes", {
 // Check what units are being used, convert to cm then multiply by 2, (1px = 2cm, change this if you want to use a different paradigm)
 Floorplan.prototype.convertPixelsToUnits = function (num) {
     var units = this.model.modelData.units;
-    if (units === 'meters') return (num / 100) * 2;
-    if (units === 'feet') return (num / 30.48) * 2;
-    if (units === 'inches') return (num / 2.54) * 2;
-    return num * 2;
+    var factor = this.model.modelData.unitsConversionFactor;
+    if (units === 'meters') return (num / 100) * factor;
+    if (units === 'feet') return (num / 30.48) * factor;
+    if (units === 'inches') return (num / 2.54) * factor;
+    return num * factor;
 }
 
 // Take a number of units, convert to cm, then divide by 2, (1px = 2cm, change this if you want to use a different paradigm)
 Floorplan.prototype.convertUnitsToPixels = function (num) {
     var units = this.model.modelData.units;
-    if (units === 'meters') return (num * 100) / 2;
-    if (units === 'feet') return (num * 30.48) / 2;
-    if (units === 'inches') return (num * 2.54) / 2;
-    return num / 2;
+    var factor = this.model.modelData.unitsConversionFactor;
+    if (units === 'meters') return (num * 100) / factor;
+    if (units === 'feet') return (num * 30.48) / factor;
+    if (units === 'inches') return (num * 2.54) / factor;
+    return num / factor;
 }
 
 /*
@@ -460,7 +470,7 @@ Floorplan.prototype.updateWallDimensions = function () {
 
     var selection = floorplan.selection;
     // gather all selected walls, including walls of selected DoorNodes and WindowNodes
-    var walls = new go.Set(go.Group);
+    var walls = new go.Set(/*go.Group*/);
     selection.iterator.each(function (part) {
         if ((part.category === 'WindowNode' || part.category === 'DoorNode') && part.containingGroup !== null) walls.add(part.containingGroup);
         if (part.category === 'WallGroup' && part.data && part.data.startpoint && part.data.endpoint) {
@@ -647,7 +657,7 @@ Floorplan.prototype.updateWallAngles = function () {
         var selectedWalls = [];
         floorplan.selection.iterator.each(function (part) { if (part.category === "WallGroup") selectedWalls.push(part); });
         for (var i = 0; i < selectedWalls.length; i++) {
-            var seen = new go.Set("string"); // Set of all walls "seen" thus far for "wall"
+            var seen = new go.Set(/*"string"*/); // Set of all walls "seen" thus far for "wall"
             var wall = selectedWalls[i];
             var possibleWalls = floorplan.findNodesByExample({ category: "WallGroup" });
 
@@ -772,7 +782,7 @@ Floorplan.prototype.updateWallAngles = function () {
             }
             // Case 2: if there are angleNode clusters with the same walls in their keys as "node" but different locations, destroy and rebuild
             // collect all angleNodes with same walls in their construction as "node"
-            var possibleAngleNodes = new go.Set(go.Node);
+            var possibleAngleNodes = new go.Set(/*go.Node*/);
             var allWalls = node.data.key.slice(0, node.data.key.indexOf("angle"));
             floorplan.angleNodes.iterator.each(function (other) { if (other.data.key.indexOf(allWalls) !== -1) possibleAngleNodes.add(other); });
             possibleAngleNodes.iterator.each(function (pNode) {

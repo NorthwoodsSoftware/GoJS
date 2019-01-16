@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,6 +6,7 @@
   <title>GoJS Nodes -- Northwoods Software</title>
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
@@ -29,10 +30,10 @@ It is common to surround interesting information with a border or other backgrou
 </p>
 <h3 id="SimpleBorders">Simple borders</h3>
 <p>
-Many of the simplest nodes just consist of a <a>Panel</a> of type <a>Panel.Auto</a> with a <a>Shape</a>
+Many of the simplest nodes just consist of a <a>Panel</a> of type <a>Panel,Auto</a> with a <a>Shape</a>
 surrounding a <a>TextBlock</a>.
 </p>
-<pre data-language="javascript" id="border">
+<pre class="lang-js" id="border">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Rectangle",
@@ -53,7 +54,7 @@ surrounding a <a>TextBlock</a>.
 The Shape surrounding the content need not be rectangular.
 This example demonstrates a number of shapes.
 </p>
-<pre data-language="javascript" id="shapes">
+<pre class="lang-js" id="shapes">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape,
@@ -85,7 +86,7 @@ The content of an Auto <a>Panel</a> need not be limited to a single <a>TextBlock
 you can have arbitrarily complex panels of objects.
 In this example the content is a Table Panel with three rows of TextBlocks.
 </p>
-<pre data-language="javascript" id="borderedtable">
+<pre class="lang-js" id="borderedtable">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape,
@@ -129,7 +130,7 @@ In this example the content is a Table Panel with three rows of TextBlocks.
     That may result in the clipping of content that is too large,
     or it may result in extra space if the content is smaller than the available area provided by the "Auto" Panel.
   </p>
-<pre data-language="javascript" id="fixedsize">
+<pre class="lang-js" id="fixedsize">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { desiredSize: new go.Size(100, 50) },  // on Panel
@@ -158,7 +159,7 @@ In this example the content is a Table Panel with three rows of TextBlocks.
     You probably do not want to set the desiredSize of the main element, the Shape in this case above.
     If you did, that would not constrain how the content elements are sized within the Panel.
   </p>
-<pre data-language="javascript" id="fixedsize2">
+<pre class="lang-js" id="fixedsize2">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape,
@@ -193,7 +194,7 @@ Many simple nodes consist of a few objects positioned above each other or next t
 <p>
 Perhaps the most commonly seen kind of node can be implemented using a Vertical <a>Panel</a>.
 </p>
-<pre data-language="javascript" id="icons">
+<pre class="lang-js" id="icons">
   diagram.nodeTemplate =
     $(go.Node, "Vertical",
       $(go.Picture,
@@ -215,7 +216,7 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
   Of course you are not limited to just two objects in a panel.
   In fact you can have as many GraphObjects in a "Vertical" or a "Horizontal" Panel as you like.
 </p>
-<pre data-language="javascript" id="icons2">
+<pre class="lang-js" id="icons2">
   diagram.nodeTemplate =
     $(go.Node, "Vertical",
       $(go.TextBlock,
@@ -243,7 +244,7 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
 <p>
 Another commonly seen kind of node can be implemented using a Horizontal <a>Panel</a>.
 </p>
-<pre data-language="javascript" id="smallicons">
+<pre class="lang-js" id="smallicons">
   diagram.nodeTemplate =
     $(go.Node, "Horizontal",
       $(go.Picture,
@@ -269,7 +270,7 @@ The "Auto" Panel supplies a border around everything but the bottom text.
 The inner "Vertical" Panel places three objects vertically in a stack.
 The "Horizontal" Panel which is the first element of the "Vertical" Panel places three objects horizontally in a row.
 </p>
-<pre data-language="javascript" id="nestedpanel1">
+<pre class="lang-js" id="nestedpanel1">
   // common styling for each indicator
   function makeIndicator(propName) {  // the data property name
     return $(go.Shape,
@@ -329,7 +330,7 @@ to indicate what state it is in.
 One way to implement this is to use a Spot <a>Panel</a>, where the main element is itself a Panel
 containing the elements that you always want to display, and there are additional objects located at spots around the main element.
 </p>
-<pre data-language="javascript" id="spotdecorations">
+<pre class="lang-js" id="spotdecorations">
   diagram.nodeTemplate =
     $(go.Node, "Spot",
       // the main content:
@@ -378,7 +379,7 @@ and the panel is positioned by its <a>GraphObject.alignment</a> and <a>GraphObje
 the Spot Panel that also is the <a>Node</a>.
 The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and binding <a>GraphObject.opacity</a>.
 </p>
-<pre data-language="javascript" id="ribbondecorations">
+<pre class="lang-js" id="ribbondecorations">
   diagram.nodeTemplate =
     $(go.Node, "Spot",
       { locationSpot: go.Spot.Center, locationObjectName: "BODY" },
@@ -438,8 +439,7 @@ Furthermore you can set the <a>Part.locationObjectName</a> to cause the location
 The position will always be at the top-left corner of the whole node,
 but the location may be some point at some spot in some object within the node.
 </p>
-<pre data-language="javascript" id="positionlocation">
-  diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="positionlocation">
   diagram.grid.visible = true;
 
   diagram.add(
@@ -472,8 +472,7 @@ but that it does not move for the "location" node.
 It is common to specify the <a>Part.locationSpot</a> to be <code>go.Spot.Center</code> so that the location point
 is at the center of some element in the node, rather than at the top-left corner of that element.
 </p>
-<pre data-language="javascript" id="positionlocation2">
-diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="positionlocation2">
 diagram.grid.visible = true;
 
 diagram.add(

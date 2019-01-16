@@ -108,7 +108,6 @@ Object.defineProperty(DimensioningLink.prototype, "gap", {
 });
 
 /**
-* @override
 * @return {boolean} true if it computed a route of points
 */
 DimensioningLink.prototype.computePoints = function() {

@@ -25,7 +25,6 @@ go.Diagram.inherit(SpiralLayout, go.Layout);
 * Copies properties to a cloned Layout.
 * @this {SpiralLayout}
 * @param {Layout} copy
-* @override
 */
 SpiralLayout.prototype.cloneProtected = function(copy) {
   go.Layout.prototype.cloneProtected.call(this, copy);

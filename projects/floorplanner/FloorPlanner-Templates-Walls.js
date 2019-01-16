@@ -226,7 +226,7 @@ function getWallPartStretch(part) {
     var endpoint = wall.data.endpoint.copy();
 
     // sort all possible endpoints into either left/above or right/below
-    var leftOrAbove = new go.Set(go.Point); var rightOrBelow = new go.Set(go.Point);
+    var leftOrAbove = new go.Set(/*go.Point*/); var rightOrBelow = new go.Set(/*go.Point*/);
     wall.memberParts.iterator.each(function (wallPart) {
         if (wallPart.data.key !== part.data.key) {
             var endpoints = getWallPartEndpoints(wallPart);

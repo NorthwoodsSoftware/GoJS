@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,7 @@
 <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <script src="../release/go.js"></script>
+<script src="../extensions/Figures.js"></script>
 <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
@@ -16,8 +17,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          allowDrop: true,
-          initialContentAlignment: go.Spot.Center,
           "linkingTool.direction": go.LinkingTool.ForwardsOnly,
           "undoManager.isEnabled": true
         });
@@ -35,25 +34,31 @@
     });
 
     myDiagram.nodeTemplateMap.add("Generator",
-      $(go.Node,
-        { locationSpot: go.Spot.Center, background: "darkblue" },
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center, selectionObjectName: "BODY" },
         new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "ACVoltageSource",
-          { stroke: "white", strokeWidth: 3, fill: "transparent",
+          { name: "BODY", stroke: "white", strokeWidth: 3, fill: "transparent", background: "darkblue",
             width: 40, height: 40, margin: 5,
             portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides
-          })
+          }),
+        $(go.TextBlock,
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true },
+          new go.Binding("text").makeTwoWay())
       ));
 
     myDiagram.nodeTemplateMap.add("Connector",
-      $(go.Node,
-        { locationSpot: go.Spot.Center, background: "gray" },
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center, selectionObjectName: "BODY" },
         new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "Circle",
-          { stroke: null, fill: $(go.Brush, "Linear", { 0: "lightgray", 1: "gray" }),
+          { name: "BODY", stroke: null, fill: $(go.Brush, "Linear", { 0: "lightgray", 1: "gray" }), background: "gray",
             width: 20, height: 20, margin: 2,
             portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides
-          })
+          }),
+        $(go.TextBlock,
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true },
+          new go.Binding("text").makeTwoWay())
       ));
 
     myDiagram.nodeTemplateMap.add("Consumer",
@@ -66,12 +71,12 @@
           portId: "", fromLinkable: true, cursor: "pointer", fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides
           }),
         $(go.TextBlock,
-          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left },
-          new go.Binding("text", "key"))
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true },
+          new go.Binding("text").makeTwoWay())
       ));
 
     myDiagram.nodeTemplateMap.add("HBar",
-      $(go.Node,
+      $(go.Node, "Spot",
         new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         { layerName: "Background",
           // special resizing: just at the ends
@@ -94,7 +99,10 @@
             maxSize: new go.Size(Infinity, 4) },
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           new go.Binding("fill"),
-          { portId: "", toLinkable: true })
+          { portId: "", toLinkable: true }),
+        $(go.TextBlock,
+          { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true },
+          new go.Binding("text").makeTwoWay())
       ));
 
     myDiagram.linkTemplate =
@@ -125,10 +133,10 @@
       );
 
     myPalette.model.nodeDataArray = [
-      { "key": "Gen", "category": "Generator" },
-      { "key": "Cons", "category": "Consumer" },
-      { "key": "Dest", "category": "Connector" },
-      { "key": "Bar", "category":"HBar", "size":"100 4"},
+      { "text": "Generator", "category": "Generator" },
+      { "text": "Consumer", "category": "Consumer" },
+      { "text": "Connector", "category": "Connector" },
+      { "text": "Bar", "category":"HBar", "size":"100 4"},
     ];
 
     // remove cursors on all ports in the Palette
@@ -155,12 +163,10 @@
   }
   go.Diagram.inherit(BarLink, go.Link);
 
-  /** @override */
   BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
     if (node.category === "HBar") {
       var op = go.Link.prototype.getLinkPoint.call(this, othernode, otherport, this.computeSpot(!from), !from, ortho, node, port);
-      var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-                          port.getDocumentPoint(go.Spot.BottomRight));
+      var r = port.getDocumentBounds();
       var y = (op.y > r.centerY) ? r.bottom : r.top;
       if (op.x < r.left) return new go.Point(r.left, y);
       if (op.x > r.right) return new go.Point(r.right, y);
@@ -170,7 +176,6 @@
     }
   };
 
-  /** @override */
   BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
     var op = otherport.getDocumentPoint(go.Spot.Center);
@@ -206,22 +211,22 @@
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
-{"key":"Gen1", "category":"Generator", "location":"300 0"},
-{"key":"1", "category":"HBar", "location":"100 100", "size":"500 4", "fill":"green"},
-{"key":"Cons1", "category":"Consumer", "location":"53 234"},
-{"key":"2", "category":"HBar", "location":"0 300", "size":"600 4", "fill":"orange"},
-{"key":"Conn1", "category":"Connector", "location":"232.5 207.75"},
-{"key":"Cons3", "category":"Consumer", "location":"357.5 230.75"},
-{"key":"Cons2", "category":"Consumer", "location":"484.5 164.75"}
+{"key":0, "text":"Gen1", "category":"Generator", "location":"300 0"},
+{"key":1, "text":"Bar1", "category":"HBar", "location":"100 100", "size":"500 4", "fill":"green"},
+{"key":3, "text":"Cons1", "category":"Consumer", "location":"53 234"},
+{"key":2, "text":"Bar2", "category":"HBar", "location":"0 300", "size":"600 4", "fill":"orange"},
+{"key":4, "text":"Conn1", "category":"Connector", "location":"232.5 207.75"},
+{"key":5, "text":"Cons3", "category":"Consumer", "location":"357.5 230.75"},
+{"key":6, "text":"Cons2", "category":"Consumer", "location":"484.5 164.75"}
  ],
   "linkDataArray": [
-{"from":"Gen1", "to":"1"},
-{"from":"Gen1", "to":"2"},
-{"from":"Cons1", "to":"2"},
-{"from":"Conn1", "to":"1"},
-{"from":"Conn1", "to":"2"},
-{"from":"Cons3", "to":"2"},
-{"from":"Cons2", "to":"1"}
+{"from":0, "to":1},
+{"from":0, "to":2},
+{"from":3, "to":2},
+{"from":4, "to":1},
+{"from":4, "to":2},
+{"from":5, "to":2},
+{"from":6, "to":1}
  ]}
   </textarea>
 </div>

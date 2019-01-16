@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -37,7 +37,7 @@ The primary properties are <a>GraphObject.fromLinkable</a> and <a>GraphObject.to
 If you do not have a <a>Node</a> containing an element with fromLinkable: true and another node
 with toLinkable: true, the user will not be able to draw a new link between the nodes.
 </p>
-<pre data-language="javascript" id="linkable">
+<pre class="lang-js" id="linkable">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -98,7 +98,7 @@ of nodes in the same direction.
 This example sets <a>GraphObject.fromLinkableDuplicates</a> or <a>GraphObject.toLinkableDuplicates</a> to true,
 in order to permit such duplicate links between nodes.
 </p>
-<pre data-language="javascript" id="linkableDuplicates">
+<pre class="lang-js" id="linkableDuplicates">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -128,7 +128,7 @@ in order to permit such duplicate links between nodes.
 Now try drawing multiple links between "From1" and "To1".
 You can see how the links are automatically spread apart.
 Try dragging one of the nodes to see what happens with the link routing.
-A similar effect occurs also when the link's <a>Link.curve</a> is <a>Link.Bezier</a>.
+A similar effect occurs also when the link's <a>Link.curve</a> is <a>Link,Bezier</a>.
 </p>
 
 <h3 id="LinkableSelfNodeProperties">LinkableSelfNode properties</h3>
@@ -138,7 +138,7 @@ Again it is easy to remove that restriction: just set <a>GraphObject.fromLinkabl
 and <a>GraphObject.toLinkableSelfNode</a> to true.
 Note though that each node has to be both <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>.
 </p>
-<pre data-language="javascript" id="linkableSelfNodes">
+<pre class="lang-js" id="linkableSelfNodes">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -181,7 +181,7 @@ This example sets the <a>GraphObject.toMaxLinks</a> property to 2,
 even though <a>GraphObject.toLinkableDuplicates</a> is true,
 to limit how many links may go into "to" nodes.
 </p>
-<pre data-language="javascript" id="linkableMax">
+<pre class="lang-js" id="linkableMax">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -225,15 +225,15 @@ then you cannot use those two properties and instead must implement your own lin
 <p>
 If you want to make sure that the graph structure that your users create never have any cycles of links,
 or that the graph is always tree-structured, <b>GoJS</b> makes that easy to enforce.
-Just set <a>Diagram.validCycle</a> to <a>Diagram.CycleNotDirected</a> or <a>Diagram.CycleDestinationTree</a>.
-The default value is <a>Diagram.CycleAll</a>, which imposes no restrictions -- all kinds of link cycles are allowed.
+Just set <a>Diagram.validCycle</a> to <a>Diagram,CycleNotDirected</a> or <a>Diagram,CycleDestinationTree</a>.
+The default value is <a>Diagram,CycleAll</a>, which imposes no restrictions -- all kinds of link cycles are allowed.
 </p>
 <p>
 This example has nodes that allow links both to and from each node.
 However the assignment of <a>Diagram.validCycle</a> will prevent the user from drawing
 a second incoming link to any node and also ensures that the user draw no cycles in the graph.
 </p>
-<pre data-language="javascript" id="tree">
+<pre class="lang-js" id="tree">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Ellipse",
@@ -283,7 +283,7 @@ to make sure the links only connect nodes of the same color.
 Mouse-down and drag on the ellipses (where the cursor changes to a "pointer") to start drawing a new link.
 You will see that the only permitted link destinations are nodes of the same color that do not already have a link to it from the same node.
 </p>
-<pre data-language="javascript" id="linking">
+<pre class="lang-js" id="linking">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Ellipse",
@@ -351,7 +351,7 @@ To emphasize the color restriction, links have their colors bound to the "from" 
 <p>
   When wanting to limit the total number of links in either direction, connecting with each port, one can use this <a>Node.linkValidation</a> predicate:
 </p>
-<pre>
+<pre class="lang-js">
   $(go.Node, . . .,
     {
       linkValidation: function(fromnode, fromport, tonode, toport) {
@@ -364,7 +364,7 @@ To emphasize the color restriction, links have their colors bound to the "from" 
 <p>
   When wanting to limit the total number of links in either direction, connecting with a node for all of its ports, one can use this <a>Node.linkValidation</a> predicate:
 </p>
-<pre>
+<pre class="lang-js">
   $(go.Node, . . .,
     {
       linkValidation: function(fromnode, fromport, tonode, toport) {
@@ -388,7 +388,7 @@ Try dragging the simple textual nodes on the left side into either of the groups
 Only when dropping the node onto a group that is highlit "green" will the node be added as a member of the group.
 You can verify that by moving the group to see if the textual node moves too.
 </p>
-<pre data-language="javascript" id="grouping">
+<pre class="lang-js" id="grouping">
   // this predicate is true if both node data keys start with the same letter
   function samePrefix(group, node) {
     if (group === null) return true;  // when maybe dropping a node in the background
@@ -497,7 +497,7 @@ set the <a>TextEditingTool.textValidation</a> or <a>TextBlock.textValidation</a>
 Setting the property on the <a>TextEditingTool</a> causes the predicate to be applied to all TextBlocks,
 whereas setting the property on the <a>TextBlock</a> only applies to that text object.
 </p>
-<pre data-language="javascript" id="textEditing">
+<pre class="lang-js" id="textEditing">
   // this predicate is true if the new string has at least three characters
   // and has a vowel in it
   function okName(textblock, oldstr, newstr) {
@@ -519,8 +519,6 @@ whereas setting the property on the <a>TextBlock</a> only applies to that text o
           new go.Binding("text", "text2"))
       )
     );
-
-  diagram.initialContentAlignment = go.Spot.Center;
 
   var nodeDataArray = [
     { key: 1, text1: "Hello", text2: "Dolly!" },

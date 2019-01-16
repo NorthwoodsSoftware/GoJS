@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,6 @@
 
     myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
-                    initialContentAlignment: go.Spot.Center,  // center the content
                     commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
                     "undoManager.isEnabled": true  // enable undo & redo
                   });
@@ -48,9 +47,7 @@
     [
       { from: "Alpha", to: "Beta" },
       { from: "Alpha", to: "Gamma" },
-      { from: "Beta", to: "Beta" },
-      { from: "Gamma", to: "Delta" },
-      { from: "Delta", to: "Alpha" }
+      { from: "Gamma", to: "Delta" }
     ]);
   }
 
@@ -65,12 +62,15 @@
     var move = document.getElementById("move");
     var select = document.getElementById("select");
     var scroll = document.getElementById("scroll");
+    var tree = document.getElementById("tree");
     if (move.checked === true) {
       myDiagram.commandHandler.arrowKeyBehavior = "move";
     } else if (select.checked === true) {
       myDiagram.commandHandler.arrowKeyBehavior = "select";
     } else if (scroll.checked === true) {
       myDiagram.commandHandler.arrowKeyBehavior = "scroll";
+    } else if (tree.checked === true) {
+      myDiagram.commandHandler.arrowKeyBehavior = "tree";
     }
   }
 </script>
@@ -98,14 +98,15 @@
     <button onclick="myDiagram.commandHandler.rotate(-90)">-90°</button>
     <button onclick="myDiagram.commandHandler.rotate(180)">180°</button>
     </br>
-    Arrow Mode: 
+    Arrow Mode:
     <input type="radio" name="arrow" id="move" onclick="arrowMode()" checked="checked">Move</input>
     <input type="radio" name="arrow" id="select" onclick="arrowMode()">Select</input>
     <input type="radio" name="arrow" id="scroll" onclick="arrowMode()">Scroll</input>
+    <input type="radio" name="arrow" id="tree" onclick="arrowMode()">Tree</input>
   </p>
   <p>
-    This example demonstrates a custom <a>CommandHandler</a>. 
-    It allows the user to position selected Parts in a diagram relative to each other, 
+    This example demonstrates a custom <a>CommandHandler</a>.
+    It allows the user to position selected Parts in a diagram relative to each other,
     overrides <a>CommandHandler.doKeyDown</a> to allow handling the arrow keys in additional manners,
     and uses a "paste offset" so that pasting objects will cascade them rather than place them on top of one another.
     It is defined in its own file, as <a href="DrawCommandHandler.js">DrawCommandHandler.js</a>.
@@ -114,7 +115,7 @@
     The above buttons can be used to align Parts, rotate Parts, or change the behavior of the arrow keys.
   </p>
   <p>
-    Usage can also be seen in the <a href="BPMN.html">BPMN Editor</a> sample.
+    Usage can also be seen in the <a href="../projects/bpmn/BPMN.html">BPMN Editor</a> sample.
   </p>
 </div>
 </body>

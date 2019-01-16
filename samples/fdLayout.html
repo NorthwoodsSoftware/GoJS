@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,6 @@
 
   // Override the makeNetwork method to also initialize
   // ForceDirectedVertex.isFixed from the corresponding Node.isSelected.
-  /** @override */
   DemoForceDirectedLayout.prototype.makeNetwork = function(coll) {
     // call base method for standard behavior
     var net = go.ForceDirectedLayout.prototype.makeNetwork.call(this, coll);
@@ -37,7 +36,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
         {
-          initialContentAlignment: go.Spot.Center, // start everything in the middle of the viewport
           initialAutoScale: go.Diagram.Uniform,  // zoom to make everything fit in the viewport
           layout: new DemoForceDirectedLayout()  // use custom layout
           // other Layout properties are set by the layout function, defined below
@@ -132,17 +130,17 @@
     var linkArray = [];
     // make two Lists of nodes to keep track of where links already exist
     var nit = myDiagram.nodes;
-    var nodes = new go.List(go.Node);
+    var nodes = new go.List(/*go.Node*/);
     nodes.addAll(nit);
-    var available = new go.List(go.Node);
+    var available = new go.List(/*go.Node*/);
     available.addAll(nodes);
     for (var i = 0; i < nodes.length; i++) {
-      var next = nodes.elt(i);
+      var next = nodes.get(i);
       available.remove(next)
       var children = Math.floor(Math.random() * (max - min + 1)) + min;
       for (var j = 1; j <= children; j++) {
         if (available.length === 0) break;
-        var to = available.elt(0);
+        var to = available.get(0);
         available.remove(to);
         // get keys from the Node.text strings
         var nextKey = parseInt(next.text, 10);

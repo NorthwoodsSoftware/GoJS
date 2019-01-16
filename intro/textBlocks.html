@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -45,7 +45,7 @@ The background is always rectangular.
 In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
 Once you learn about models and data binding you will generally not create parts (nodes or links) programmatically.
 </p>
-<pre data-language="javascript" id="basicTextBlocks">
+<pre class="lang-js" id="basicTextBlocks">
   diagram.add(
     $(go.Part, "Vertical",
       $(go.TextBlock, { text: "a Text Block" }),
@@ -78,7 +78,7 @@ To demonstrate this, the examples below start with a naturally sized TextBlock,
 followed by ones with decreasing explicit sizes.
 To better show the actual size of the TextBlocks below, we have given them lightgreen backgrounds.
 </p>
-<pre data-language="javascript" id="sizingTextBlocks">
+<pre class="lang-js" id="sizingTextBlocks">
   diagram.add(
     $(go.Part, "Vertical",
       $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2 }),
@@ -108,7 +108,7 @@ The example below starts with a naturally sized TextBlock,
 followed by ones with a max of 2 lines using the default <a>TextBlock.overflow</a> value of <code>OverflowClip</code>,
 followed by one using the <a>TextBlock.overflow</a> value of <code>OverflowEllipsis</code>.
 </p>
-<pre data-language="javascript" id="sizingTextBlocks2">
+<pre class="lang-js" id="sizingTextBlocks2">
   diagram.contentAlignment = go.Spot.Center,
   diagram.add(
     $(go.Part, "Vertical",
@@ -155,7 +155,7 @@ In the following examples, the first TextBlock gets its natural size,
 the second is limited to 50 wide but is not allowed to wrap, and the
 other examples are limited to the same width but are allowed to wrap.
 </p>
-<pre data-language="javascript" id="wrappingTextBlocks">
+<pre class="lang-js" id="wrappingTextBlocks">
   diagram.add(
     $(go.Part, "Vertical",
       $(go.TextBlock, { text: "a Text Block", background: "lightgreen", margin: 2 }),
@@ -178,7 +178,7 @@ The value must be a CSS string.
 This is different than the <a>GraphObject.alignment</a> property,
 which controls where to place the object within the area allocated by the parent <a>Panel</a>.
 </p>
-<pre data-language="javascript" id="textAlignTextBlocks">
+<pre class="lang-js" id="textAlignTextBlocks">
   diagram.add(
     $(go.Part, "Horizontal",
       $(go.Panel, "Vertical",
@@ -206,7 +206,7 @@ which controls where to place the object within the area allocated by the parent
   The <a>TextBlock.verticalAlignment</a> property controls the vertical alignment of the glyphs within the bounds.
   Neither <a>TextBlock.textAlign</a> nor <a>TextBlock.verticalAlignment</a> affect the sizing of the TextBlock.
 </p>
-  <pre data-language="javascript" id="verticalAlignment">
+  <pre class="lang-js" id="verticalAlignment">
   diagram.add(
     $(go.Part, "Horizontal",
       $(go.TextBlock, { text: "verticalAlignment: Top", verticalAlignment: go.Spot.Top,
@@ -226,7 +226,7 @@ This occurs when the text occupies multiple lines, whether by embedded newlines 
 You can control whether text starting with the first newline character is ignored by setting the <a>TextBlock.isMultiline</a>.
 By default both multiline and wrapping are enabled.
 </p>
-<pre data-language="javascript" id="multilineTextBlocks">
+<pre class="lang-js" id="multilineTextBlocks">
   diagram.add(
     $(go.Part, "Vertical",
       $(go.TextBlock, { text: "a Text Block\nwith three logical lines\nof text",
@@ -246,6 +246,36 @@ By default both multiline and wrapping are enabled.
 </pre>
 <script>goCode("multilineTextBlocks", 600, 230)</script>
 
+<h2 id="Flipping">Flipping</h2>
+
+<p>
+  You can flip text horizontally and vertically with the <a>TextBlock.flip</a> property:
+</p>
+
+<pre class="lang-js" id="flipPictures">
+  diagram.add(
+    $(go.Part, "Table",
+      { defaultColumnSeparatorStrokeWidth: 3, defaultColumnSeparatorStroke: "gray", defaultSeparatorPadding: 5 },
+      $(go.TextBlock, { text: "Hello", column: 0, margin: 2, font: '26px serif',
+                      flip: go.GraphObject.None
+                    }),
+      $(go.TextBlock, "None (default)", { row: 1, column: 0 }),
+      $(go.TextBlock, { text: "Hello", column: 1, margin: 2, font: '26px serif',
+                      flip: go.GraphObject.FlipHorizontal
+                    }),
+      $(go.TextBlock, "FlipHorizontal", { row: 1, column: 1 }),
+      $(go.TextBlock, { text: "Hello", column: 2, margin: 2, font: '26px serif',
+                      flip: go.GraphObject.FlipVertical
+                    }),
+      $(go.TextBlock, "FlipVertical", { row: 1, column: 2 }),
+      $(go.TextBlock, { text: "Hello", column: 3, margin: 2, font: '26px serif',
+                      flip: go.GraphObject.FlipBoth
+                    }),
+      $(go.TextBlock, "FlipBoth", { row: 1, column: 3 })
+    ));
+</pre>
+<script>goCode("flipPictures", 600, 160)</script>
+
 <h2 id="Editing">Editing</h2>
 <p>
 <b>GoJS</b> also supports the in-place editing of text by the user.
@@ -256,7 +286,7 @@ If you want to provide text validation of the user's input, you can set the <a>T
 You can also provide a more customized or sophisticated text editor by setting the <a>TextBlock.textEditor</a> property.
 There is an example of text validation on the <a href="validation.html">Validation intro page.</a>
 </p>
-<pre data-language="javascript" id="editingTextBlocks">
+<pre class="lang-js" id="editingTextBlocks">
   diagram.add(
     $(go.Part,
       $(go.TextBlock,

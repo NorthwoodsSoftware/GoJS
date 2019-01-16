@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,6 @@
       $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
         {
           initialAutoScale: go.Diagram.Uniform,
-          initialContentAlignment: go.Spot.Center,
           padding: 10,
           isReadOnly: true,
           layout: $(RadialLayout, {
@@ -37,7 +36,7 @@
               // need to remove any old ones first
               var diagram = this.diagram;
               var gridlayer = diagram.findLayer("Grid");
-              var circles = new go.Set(go.Part);
+              var circles = new go.Set(/*go.Part*/);
               gridlayer.parts.each(function(circle) {
                 if (circle.name === "CIRCLE") circles.add(circle);
               });
@@ -64,9 +63,7 @@
 
     // shows when hovering over a node
     var commonToolTip =
-      $(go.Adornment, "Auto",
-        { isShadowed: true },
-        $(go.Shape, { fill: "#FFFFCC" }),
+      $("ToolTip",
         $(go.Panel, "Vertical",
           { margin: 3 },
           $(go.TextBlock,  // bound to node data

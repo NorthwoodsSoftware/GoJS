@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -7,15 +10,12 @@
         define(["require", "exports", "../release/go"], factory);
     }
 })(function (require, exports) {
-    'use strict';
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     // This file holds the definitions of two useful figures: "RoundedTopRectangle" and "RoundedBottomRectangle".
     // These are demonstrated at ../samples/twoHalves.html and ../samples/roundedGroups.html.
-    go.Shape.defineFigureGenerator("RoundedTopRectangle", function (shape, w, h) {
+    go.Shape.defineFigureGenerator('RoundedTopRectangle', function (shape, w, h) {
         // this figure takes one parameter, the size of the corner
         var p1 = 5; // default corner size
         if (shape !== null) {
@@ -38,7 +38,7 @@
         geo.spot2 = new go.Spot(1, 1, -0.3 * p1, 0);
         return geo;
     });
-    go.Shape.defineFigureGenerator("RoundedBottomRectangle", function (shape, w, h) {
+    go.Shape.defineFigureGenerator('RoundedBottomRectangle', function (shape, w, h) {
         // this figure takes one parameter, the size of the corner
         var p1 = 5; // default corner size
         if (shape !== null) {

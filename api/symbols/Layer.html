@@ -1,1948 +1,893 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; Layer Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Layer | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class Layer</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Layer</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>Layers are how named collections of <a href="Part.html">Part</a>s are drawn in front or behind other collections of Parts in a <a href="Diagram.html">Diagram</a>.
+					Layers can only contain <a href="Part.html">Part</a>s, such as <a href="Node.html">Node</a>s and <a href="Link.html">Link</a>s. They cannot hold <a href="GraphObject.html">GraphObject</a>s directly.</p>
+					<p>You put a Part into a Layer by assigning <a href="Part.html#layerName">Part.layerName</a> with the name of the Layer.
+						You can use data binding to initialize and remember a Part&#39;s layer&#39;s name.
+					You can change a Part&#39;s layer by modifying its <a href="Part.html#layerName">Part.layerName</a>, which changes its <a href="Part.html#layer">Part.layer</a>.</p>
+					<p>Each Diagram starts off with the following list of Layers:
+						&quot;Grid&quot;, &quot;Background&quot;, &quot;&quot; (the default layer), &quot;Foreground&quot;, &quot;Adornment&quot;, &quot;Tool&quot;.
+						Parts are normally put in the default layer.
+						The &quot;Grid&quot;, &quot;Adornment&quot;, and &quot;Tool&quot; layers are considered <a href="Layer.html#isTemporary">isTemporary</a>.
+						Changes to objects in temporary layers are not recorded by the <a href="UndoManager.html">UndoManager</a>.
+						Parts in temporary layers are not selected and are not considered to be part of the document.
+						Objects in temporary layers do not receive click events unless you set their <a href="GraphObject.html#isActionable">GraphObject.isActionable</a> to true.
+						The &quot;Grid&quot; layer is the furthest back; it also contains &quot;temporary&quot; parts that cannot be selected.
+						Furthermore the &quot;Grid&quot; layer has <a href="Layer.html#pickable">pickable</a> set to false so that mouse or touch events
+					and calls to the &quot;find...&quot; methods do not even consider any parts in that layer.</p>
+					<p>Layers have many properties that control what actions users are permitted to perform involving the parts in the layer.
+					These properties are very much like the similarly named properties on <a href="Diagram.html">Diagram</a>.</p>
+					<h3>Z-ordering</h3>
+					<p>Layers are drawn and presented in order.
+						You can add your own layers by calling <a href="Diagram.html#addLayerBefore">Diagram.addLayerBefore</a> or <a href="Diagram.html#addLayerAfter">Diagram.addLayerAfter</a>
+						to insert a new layer at a particular place in the Z-order, or to re-order existing layers.
+						Use <a href="Diagram.html#findLayer">Diagram.findLayer</a> to get the Layer with a particular name.
+					<a href="Part.html">Part</a>s can be individually z-ordered within a layer by setting <a href="Part.html#zOrder">Part.zOrder</a>.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Layer.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowCopy" class="tsd-kind-icon">allow<wbr>Copy</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowDelete" class="tsd-kind-icon">allow<wbr>Delete</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowGroup" class="tsd-kind-icon">allow<wbr>Group</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowLink" class="tsd-kind-icon">allow<wbr>Link</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowMove" class="tsd-kind-icon">allow<wbr>Move</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowRelink" class="tsd-kind-icon">allow<wbr>Relink</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowReshape" class="tsd-kind-icon">allow<wbr>Reshape</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowResize" class="tsd-kind-icon">allow<wbr>Resize</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowRotate" class="tsd-kind-icon">allow<wbr>Rotate</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowSelect" class="tsd-kind-icon">allow<wbr>Select</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowTextEdit" class="tsd-kind-icon">allow<wbr>Text<wbr>Edit</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#allowUngroup" class="tsd-kind-icon">allow<wbr>Ungroup</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="Layer.html#diagram" class="tsd-kind-icon">diagram</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#isTemporary" class="tsd-kind-icon">is<wbr>Temporary</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#opacity" class="tsd-kind-icon">opacity</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="Layer.html#parts" class="tsd-kind-icon">parts</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="Layer.html#partsBackwards" class="tsd-kind-icon">parts<wbr>Backwards</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#pickable" class="tsd-kind-icon">pickable</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Layer.html#visible" class="tsd-kind-icon">visible</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Layer.html#findObjectAt" class="tsd-kind-icon">find<wbr>Object<wbr>At</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Layer.html#findObjectsAt" class="tsd-kind-icon">find<wbr>Objects<wbr>At</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Layer.html#findObjectsIn" class="tsd-kind-icon">find<wbr>Objects<wbr>In</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Layer.html#findObjectsNear" class="tsd-kind-icon">find<wbr>Objects<wbr>Near</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Layer<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Layer.html" class="tsd-signature-type">Layer</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This constructs an empty Layer; you should set the <a href="Layer.html#name">name</a> before adding the Layer to a Diagram.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Layer.html" class="tsd-signature-type">Layer</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowCopy" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Copy
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may copy objects in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowDelete" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Delete
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may delete objects in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowGroup" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Group
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may group parts together in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowLink" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Link
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may draw new links in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowMove" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Move
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may move objects in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowRelink" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Relink
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may reconnect existing links in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowReshape" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Reshape
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may reshape parts in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowResize" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Resize
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may resize parts in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowRotate" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Rotate
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may rotate parts in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowSelect" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Select
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may select objects in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowTextEdit" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Text<wbr>Edit
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may do in-place text editing in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="allowUngroup" class="tsd-anchor"></a>
+					<h3>
+						allow<wbr>Ungroup
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may ungroup existing groups in this layer.
+								The initial value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="diagram" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						diagram
+					<span class="tsd-signature-symbol">: </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the <a href="Diagram.html">Diagram</a> that is using this Layer.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="isTemporary" class="tsd-anchor"></a>
+					<h3>
+						is<wbr>Temporary
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the objects in this layer are considered temporary.</p>
+								<p>Parts in temporary layers are not selectable,
+									and changes to Parts in temporary layers are not recorded in the <a href="UndoManager.html">UndoManager</a>.
+								Objects in temporary layers do not receive click events unless you set their <a href="GraphObject.html#isActionable">GraphObject.isActionable</a> to true.</p>
+								<p>Temporary layers are excluded from bounds calculations, with the exception of the &quot;Tool&quot; layer,
+								so that temporary objects created while dragging are included in the bounds.</p>
+								<p>Default value is false.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>
+						name
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name for this layer.
+									The initial value is an empty string, which is also the name of the default layer.
+								The name should be unique among the diagram&#39;s <a href="Diagram.html#layers">Diagram.layers</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="opacity" class="tsd-anchor"></a>
+					<h3>
+						opacity
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the opacity for all parts in this layer.
+									The value must be between 0.0 (fully transparent) and 1.0 (no additional transparency).
+									This value is multiplicative with any existing transparency,
+									for instance from a <a href="Brush.html">Brush</a> or image transparency.
+								The default value is 1.</p>
+								<p>This property, unlike <a href="Layer.html#visible">visible</a>, does not change whether any objects are found by the &quot;find...&quot; methods.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.1</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#opacity">GraphObject.opacity</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="parts" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						parts
+					<span class="tsd-signature-symbol">: </span><a href="Iterator.html" class="tsd-signature-type">Iterator</a><span class="tsd-signature-symbol">&lt;</span><a href="Part.html" class="tsd-signature-type">Part</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns an iterator for this Layer&#39;s <a href="Part.html">Part</a>s.
+								The Parts can be <a href="Node.html">Node</a>s, <a href="Link.html">Link</a>s, <a href="Group.html">Group</a>s, <a href="Adornment.html">Adornment</a>s, or simple <a href="Part.html">Part</a>s.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="partsBackwards" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						parts<wbr>Backwards
+					<span class="tsd-signature-symbol">: </span><a href="Iterator.html" class="tsd-signature-type">Iterator</a><span class="tsd-signature-symbol">&lt;</span><a href="Part.html" class="tsd-signature-type">Part</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns a backwards iterator for this Layer&#39;s <a href="Part.html">Part</a>s,
+									for iterating over the parts in reverse order.
+								The Parts can be <a href="Node.html">Node</a>s, <a href="Link.html">Link</a>s, <a href="Group.html">Group</a>s, <a href="Adornment.html">Adornment</a>s, or simple <a href="Part.html">Part</a>s.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="pickable" class="tsd-anchor"></a>
+					<h3>
+						pickable
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether methods such as <a href="Layer.html#findObjectAt">findObjectAt</a> find any of the objects in this layer.</p>
+								<p>The default value is true.
+								When this property is false, all of the &quot;find...&quot; methods will fail to find parts that are in this layer.</p>
+								<p>Note that setting pickable to false does not prevent users from selecting nodes.
+									It does prevent them from selecting nodes by clicking on them,
+									but does not prevent selection through other mechanisms such as the <a href="DragSelectingTool.html">DragSelectingTool</a> or
+								<a href="CommandHandler.html#selectAll">CommandHandler.selectAll</a> or calls to <a href="Diagram.html#select">Diagram.select</a>.</p>
+								<p>You can control whether individual GraphObjects are &quot;hittable&quot; by setting <a href="GraphObject.html#pickable">GraphObject.pickable</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.2</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#pickable">GraphObject.pickable</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="visible" class="tsd-anchor"></a>
+					<h3>
+						visible
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the user may view any of the objects in this layer.</p>
+								<p>The default value is true -- all visible Parts are drawn.
+								When this property is false, all of the &quot;find...&quot; methods will fail to find parts that are in this layer.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#visible">GraphObject.visible</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="findObjectAt" class="tsd-anchor"></a>
+					<h3>
+						find<wbr>Object<wbr>At
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Object<wbr>At<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a>, navig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, pred<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Find the front-most <a href="GraphObject.html">GraphObject</a> in this layer
+								at the given point in document coordinates.</p>
+								<p>If <a href="Layer.html#visible">visible</a> is false, this method will not find any objects in this layer.
+								However, <a href="Layer.html#opacity">opacity</a> does not affect this method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A Point in document coordinates.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> navig: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking a GraphObject and
+										returning a GraphObject, defaulting to the identity.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> pred: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking the GraphObject
+											returned by navig and returning true if that object should be returned,
+										defaulting to a predicate that always returns true.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns
+								<a href="GraphObject.html" class="tsd-signature-type">GraphObject</a>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">null</span>
+							</h4>
+							<p>The first GraphObject in the Z-order, or else null.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="findObjectsAt" class="tsd-anchor"></a>
+					<h3>
+						find<wbr>Objects<wbr>At
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Objects<wbr>At&lt;T&gt;<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a>, navig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, pred<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, coll<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Return a collection of the <a href="GraphObject.html">GraphObject</a>s of this layer
+								at the given point in document coordinates.</p>
+								<p>If <a href="Layer.html#visible">visible</a> is false, this method will not find any objects in this layer.
+								However, <a href="Layer.html#opacity">opacity</a> does not affect this method.</p>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type">List</a><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="Set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A Point in document coordinates.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> navig: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking a GraphObject and
+											returning a GraphObject, defaulting to the identity.
+										If this function returns null, the given GraphObject will not be included in the results.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> pred: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking the GraphObject
+											returned by navig and returning true if that object should be returned,
+										defaulting to a predicate that always returns true.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> coll: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional collection (List or Set) to add the results to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+							<p>a collection of GraphObjects that will contain all GraphObjects
+								located at Point p, or else an empty collection.
+							If a List or Set was passed in, it is returned.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="findObjectsIn" class="tsd-anchor"></a>
+					<h3>
+						find<wbr>Objects<wbr>In
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Objects<wbr>In&lt;T&gt;<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><a href="Rect.html" class="tsd-signature-type">Rect</a>, navig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, pred<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, partialInclusion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, coll<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns a collection of all <a href="GraphObject.html">GraphObject</a>s that are inside or that intersect
+								a given <a href="Rect.html">Rect</a> in document coordinates.</p>
+								<p>If <a href="Layer.html#visible">visible</a> is false, this method will not find any objects in this layer.
+								However, <a href="Layer.html#opacity">opacity</a> does not affect this method.</p>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type">List</a><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="Set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <a href="Rect.html" class="tsd-signature-type">Rect</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A Rect in document coordinates.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> navig: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking a GraphObject and
+											returning a GraphObject, defaulting to the identity.
+										If this function returns null, the given GraphObject will not be included in the results.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> pred: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking the GraphObject
+											returned by navig and returning true if that object should be returned,
+										defaulting to a predicate that always returns true.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> partialInclusion: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether an object can match if it merely intersects the rectangular area (true) or
+										if it must be entirely inside the rectangular area (false).  The default value is false.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> coll: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional collection (List or Set) to add the results to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+							<p>a collection of GraphObjects that will contain all GraphObjects
+								located in or near Rect r, or else an empty collection.
+							If a List or Set was passed in, it is returned.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="findObjectsNear" class="tsd-anchor"></a>
+					<h3>
+						find<wbr>Objects<wbr>Near
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Objects<wbr>Near&lt;T&gt;<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a>, dist<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, navig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, pred<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, partialInclusion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span>, coll<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns a collection of all <a href="GraphObject.html">GraphObject</a>s that are within a certain distance
+								of a given point in document coordinates.</p>
+								<p>If <a href="Layer.html#visible">visible</a> is false, this method will not find any objects in this layer.
+								However, <a href="Layer.html#opacity">opacity</a> does not affect this method.</p>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type">List</a><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="Set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A Point in document coordinates.</p>
+									</div>
+								</li>
+								<li>
+									<h5>dist: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The distance from the point.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> navig: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking a GraphObject and
+											returning a GraphObject, defaulting to the identity.
+										If this function returns null, the given GraphObject will not be included in the results.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> pred: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function taking the GraphObject
+											returned by navig and returning true if that object should be returned,
+										defaulting to a predicate that always returns true.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> partialInclusion: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether an object can match if it merely intersects the circular area (true) or
+										if it must be entirely inside the circular area (false).  The default value is true.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> coll: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional collection (List or Set) to add the results to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+							<p>a collection of GraphObjects that will contain all GraphObjects
+								located at Point p, or else an empty collection.
+							If a List or Set was passed in, it is returned.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="Layer.html" class="tsd-kind-icon">Layer</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="Layer.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowCopy" class="tsd-kind-icon">allow<wbr>Copy</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowDelete" class="tsd-kind-icon">allow<wbr>Delete</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowGroup" class="tsd-kind-icon">allow<wbr>Group</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowLink" class="tsd-kind-icon">allow<wbr>Link</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowMove" class="tsd-kind-icon">allow<wbr>Move</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowRelink" class="tsd-kind-icon">allow<wbr>Relink</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowReshape" class="tsd-kind-icon">allow<wbr>Reshape</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowResize" class="tsd-kind-icon">allow<wbr>Resize</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowRotate" class="tsd-kind-icon">allow<wbr>Rotate</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowSelect" class="tsd-kind-icon">allow<wbr>Select</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowTextEdit" class="tsd-kind-icon">allow<wbr>Text<wbr>Edit</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#allowUngroup" class="tsd-kind-icon">allow<wbr>Ungroup</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="Layer.html#diagram" class="tsd-kind-icon">diagram</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#isTemporary" class="tsd-kind-icon">is<wbr>Temporary</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#opacity" class="tsd-kind-icon">opacity</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="Layer.html#parts" class="tsd-kind-icon">parts</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="Layer.html#partsBackwards" class="tsd-kind-icon">parts<wbr>Backwards</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#pickable" class="tsd-kind-icon">pickable</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Layer.html#visible" class="tsd-kind-icon">visible</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Layer.html#findObjectAt" class="tsd-kind-icon">find<wbr>Object<wbr>At</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="Layer.html#findObjectsAt" class="tsd-kind-icon">find<wbr>Objects<wbr>At</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="Layer.html#findObjectsIn" class="tsd-kind-icon">find<wbr>Objects<wbr>In</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="Layer.html#findObjectsNear" class="tsd-kind-icon">find<wbr>Objects<wbr>Near</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class Layer
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                
-
-                Layers are how named collections of <a href="../symbols/Part.html" class="linkConstructor">Part</a>s are drawn in front or behind other collections of Parts in a <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>.Layers can only contain <a href="../symbols/Part.html" class="linkConstructor">Part</a>s, such as <a href="../symbols/Node.html" class="linkConstructor">Node</a>s and <a href="../symbols/Link.html" class="linkConstructor">Link</a>s. They cannot hold <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s directly.<p>You put a Part into a Layer by assigning <a href="../symbols/Part.html#layerName" class="linkProperty">Part.layerName</a> with the name of the Layer.You can use data binding to initialize and remember a Part's layer's name.You can change a Part's layer by modifying its <a href="../symbols/Part.html#layerName" class="linkProperty">Part.layerName</a>, which changes its <a href="../symbols/Part.html#layer" class="linkProperty">Part.layer</a>.<p>Each Diagram starts off with the following list of Layers:"Grid", "Background", "" (the default layer), "Foreground", "Adornment", "Tool".Parts are normally put in the default layer.The "Grid", "Adornment", and "Tool" layers are considered <a href="../symbols/Layer.html#isTemporary" class="linkProperty">isTemporary</a>.Changes to objects in temporary layers are not recorded by the <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a>.Parts in temporary layers are not selected and are not considered to be part of the document.Objects in temporary layers do not receive click events unless you set their <a href="../symbols/GraphObject.html#isActionable" class="linkProperty">GraphObject.isActionable</a> to true.The "Grid" layer is the furthest back; it also contains "temporary" parts that cannot be selected.Furthermore the "Grid" layer has <a href="../symbols/Layer.html#pickable" class="linkProperty">pickable</a> set to false so that mouse or touch eventsand calls to the "find..." methods do not even consider any parts in that layer.<p>Layers have many properties that control what actions users are permitted to perform involving the parts in the layer.These properties are very much like the similarly named properties on <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>.<h3>Z-ordering</h3><p>Layers are drawn and presented in order.You can add your own layers by calling <a href="../symbols/Diagram.html#addLayerBefore" class="linkMethod">Diagram.addLayerBefore</a> or <a href="../symbols/Diagram.html#addLayerAfter" class="linkMethod">Diagram.addLayerAfter</a>to insert a new layer at a particular place in the Z-order, or to re-order existing layers.Use <a href="../symbols/Diagram.html#findLayer" class="linkMethod">Diagram.findLayer</a> to get the Layer with a particular name.<a href="../symbols/Part.html" class="linkConstructor">Part</a>s can be individually z-ordered within a layer by setting <a href="../symbols/Part.html#zOrder" class="linkProperty">Part.zOrder</a>.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class Layer.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                Layer()
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>This constructs an empty Layer; you should set the <a href="../symbols/Layer.html#name" class="linkProperty">name</a> before adding the Layer to a Diagram.
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class Layer.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="allowCopy" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowCopy
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may copy objects in this layer.<span class="nodetails" id="xpropallowCopy"><a class="morelink" onclick="hst('propallowCopy')">More...</a></span> <span class="details" id="propallowCopy">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowDelete" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowDelete
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may delete objects in this layer.<span class="nodetails" id="xpropallowDelete"><a class="morelink" onclick="hst('propallowDelete')">More...</a></span> <span class="details" id="propallowDelete">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowGroup" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowGroup
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may group parts together in this layer.<span class="nodetails" id="xpropallowGroup"><a class="morelink" onclick="hst('propallowGroup')">More...</a></span> <span class="details" id="propallowGroup">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowLink" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowLink
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may draw new links in this layer.<span class="nodetails" id="xpropallowLink"><a class="morelink" onclick="hst('propallowLink')">More...</a></span> <span class="details" id="propallowLink">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowMove" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowMove
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may move objects in this layer.<span class="nodetails" id="xpropallowMove"><a class="morelink" onclick="hst('propallowMove')">More...</a></span> <span class="details" id="propallowMove">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowRelink" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowRelink
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may reconnect existing links in this layer.<span class="nodetails" id="xpropallowRelink"><a class="morelink" onclick="hst('propallowRelink')">More...</a></span> <span class="details" id="propallowRelink">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowReshape" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowReshape
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may reshape parts in this layer.<span class="nodetails" id="xpropallowReshape"><a class="morelink" onclick="hst('propallowReshape')">More...</a></span> <span class="details" id="propallowReshape">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowResize" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowResize
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may resize parts in this layer.<span class="nodetails" id="xpropallowResize"><a class="morelink" onclick="hst('propallowResize')">More...</a></span> <span class="details" id="propallowResize">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowRotate" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowRotate
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may rotate parts in this layer.<span class="nodetails" id="xpropallowRotate"><a class="morelink" onclick="hst('propallowRotate')">More...</a></span> <span class="details" id="propallowRotate">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowSelect" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowSelect
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may select objects in this layer.<span class="nodetails" id="xpropallowSelect"><a class="morelink" onclick="hst('propallowSelect')">More...</a></span> <span class="details" id="propallowSelect">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowTextEdit" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowTextEdit
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may do in-place text editing in this layer.<span class="nodetails" id="xpropallowTextEdit"><a class="morelink" onclick="hst('propallowTextEdit')">More...</a></span> <span class="details" id="propallowTextEdit">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="allowUngroup" >
-                
-                <td class="name">
-                  <div class="name">
-                    allowUngroup
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may ungroup existing groups in this layer.<span class="nodetails" id="xpropallowUngroup"><a class="morelink" onclick="hst('propallowUngroup')">More...</a></span> <span class="details" id="propallowUngroup">The initial value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="diagram" >
-                
-                <td class="name">
-                  <div class="name">
-                    diagram
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> that is using this Layer.
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="isTemporary" >
-                
-                <td class="name">
-                  <div class="name">
-                    isTemporary
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the objects in this layer are considered temporary.<span class="nodetails" id="xpropisTemporary"><a class="morelink" onclick="hst('propisTemporary')">More...</a></span> <span class="details" id="propisTemporary"></span><div class="details" id="dpropisTemporary"><p>Parts in temporary layers are not selectable,and changes to Parts in temporary layers are not recorded in the <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a>.Objects in temporary layers do not receive click events unless you set their <a href="../symbols/GraphObject.html#isActionable" class="linkProperty">GraphObject.isActionable</a> to true.<p>Temporary layers are excluded from bounds calculations, with the exception of the "Tool" layer,so that temporary objects created while dragging are included in the bounds.<p>Default value is false.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="name" >
-                
-                <td class="name">
-                  <div class="name">
-                    name
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the name for this layer.<span class="nodetails" id="xpropname"><a class="morelink" onclick="hst('propname')">More...</a></span> <span class="details" id="propname">The initial value is an empty string, which is also the name of the default layer.The name should be unique among the diagram's <a href="../symbols/Diagram.html#layers" class="linkProperty">Diagram.layers</a>.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="opacity" >
-                
-                <td class="name">
-                  <div class="name">
-                    opacity
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                      <span class="since" title="since">1.1</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the opacity for all parts in this layer.<span class="nodetails" id="xpropopacity"><a class="morelink" onclick="hst('propopacity')">More...</a></span> <span class="details" id="propopacity">The value must be between 0.0 (fully transparent) and 1.0 (no additional transparency).This value is multiplicative with any existing transparency,for instance from a <a href="../symbols/Brush.html" class="linkConstructor">Brush</a> or image transparency.The default value is 1.</span><div class="details" id="dpropopacity"><p>This property, unlike <a href="../symbols/Layer.html#visible" class="linkProperty">visible</a>, does not change whether any objects are found by the "find..." methods.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="parts" >
-                
-                <td class="name">
-                  <div class="name">
-                    parts
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Iterator.<Part>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns an iterator for this Layer's <a href="../symbols/Part.html" class="linkConstructor">Part</a>s.<span class="nodetails" id="xpropparts"><a class="morelink" onclick="hst('propparts')">More...</a></span> <span class="details" id="propparts">The Parts can be <a href="../symbols/Node.html" class="linkConstructor">Node</a>s, <a href="../symbols/Link.html" class="linkConstructor">Link</a>s, <a href="../symbols/Group.html" class="linkConstructor">Group</a>s, <a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a>s, or simple <a href="../symbols/Part.html" class="linkConstructor">Part</a>s.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="partsBackwards" >
-                
-                <td class="name">
-                  <div class="name">
-                    partsBackwards
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Iterator.<Part>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns a backwards iterator for this Layer's <a href="../symbols/Part.html" class="linkConstructor">Part</a>s,for iterating over the parts in reverse order.<span class="nodetails" id="xproppartsBackwards"><a class="morelink" onclick="hst('proppartsBackwards')">More...</a></span> <span class="details" id="proppartsBackwards">The Parts can be <a href="../symbols/Node.html" class="linkConstructor">Node</a>s, <a href="../symbols/Link.html" class="linkConstructor">Link</a>s, <a href="../symbols/Group.html" class="linkConstructor">Group</a>s, <a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a>s, or simple <a href="../symbols/Part.html" class="linkConstructor">Part</a>s.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="pickable" >
-                
-                <td class="name">
-                  <div class="name">
-                    pickable
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                      <span class="since" title="since">1.2</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether methods such as <a href="../symbols/Layer.html#findObjectAt" class="linkMethod">findObjectAt</a> find any of the objects in this layer.<span class="nodetails" id="xproppickable"><a class="morelink" onclick="hst('proppickable')">More...</a></span> <span class="details" id="proppickable"></span><div class="details" id="dproppickable"><p>The default value is true.When this property is false, all of the "find..." methods will fail to find parts that are in this layer.<p>Note that setting pickable to false does not prevent users from selecting nodes.It does prevent them from selecting nodes by clicking on them,but does not prevent selection through other mechanisms such as the <a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a> or<a href="../symbols/CommandHandler.html#selectAll" class="linkMethod">CommandHandler.selectAll</a> or calls to <a href="../symbols/Diagram.html#select" class="linkMethod">Diagram.select</a>.<p>You can control whether individual GraphObjects are "hittable" by setting <a href="../symbols/GraphObject.html#pickable" class="linkProperty">GraphObject.pickable</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="visible" >
-                
-                <td class="name">
-                  <div class="name">
-                    visible
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the user may view any of the objects in this layer.<span class="nodetails" id="xpropvisible"><a class="morelink" onclick="hst('propvisible')">More...</a></span> <span class="details" id="propvisible"></span><div class="details" id="dpropvisible"><p>The default value is true -- all visible Parts are drawn.When this property is false, all of the "find..." methods will fail to find parts that are in this layer.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class Layer.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="findObjectAt">
-                <td class="name">
-                  
-                  <div class="name">
-                    findObjectAt(p, navig, pred)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Find the front-most <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> in this layerat the given point in document coordinates.<span class="nodetails" id="xmethfindObjectAt"><a class="morelink" onclick="hst('methfindObjectAt')">More...</a></span> <span class="details" id="methfindObjectAt"></span><div class="details" id="dmethfindObjectAt"><p>If <a href="../symbols/Layer.html#visible" class="linkProperty">visible</a> is false, this method will not find any objects in this layer.However, <a href="../symbols/Layer.html#opacity" class="linkProperty">opacity</a> does not affect this method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>A Point in document coordinates.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):GraphObject | null=}</span> <b>navig</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking a GraphObject andreturning a GraphObject, defaulting to the identity.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):boolean | null=}</span> <b>pred</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking the GraphObjectreturned by navig and returning true if that object should be returned,defaulting to a predicate that always returns true.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>}</span> The first GraphObject in the Z-order, or else null.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="findObjectsAt">
-                <td class="name">
-                  
-                  <div class="name">
-                    findObjectsAt(p, navig, pred, coll)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Iterable.<GraphObject>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Return a collection of the <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s of this layerat the given point in document coordinates.<span class="nodetails" id="xmethfindObjectsAt"><a class="morelink" onclick="hst('methfindObjectsAt')">More...</a></span> <span class="details" id="methfindObjectsAt"></span><div class="details" id="dmethfindObjectsAt"><p>If <a href="../symbols/Layer.html#visible" class="linkProperty">visible</a> is false, this method will not find any objects in this layer.However, <a href="../symbols/Layer.html#opacity" class="linkProperty">opacity</a> does not affect this method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>A Point in document coordinates.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):GraphObject | null=}</span> <b>navig</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking a GraphObject andreturning a GraphObject, defaulting to the identity.If this function returns null, the given GraphObject will not be included in the results.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):boolean | null=}</span> <b>pred</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking the GraphObjectreturned by navig and returning true if that object should be returned,defaulting to a predicate that always returns true.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{List.<GraphObject>|Set.<GraphObject>=}</span> <b>coll</b>
-                                          
-                                      </dt>
-                                      <dd>An optional collection (List or Set) to add the results to.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{Iterable.<GraphObject>}</span> a collection of GraphObjects that will contain all GraphObjectslocated at Point p, or else an empty collection.If a List or Set was passed in, it is returned.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="findObjectsIn">
-                <td class="name">
-                  
-                  <div class="name">
-                    findObjectsIn(r, navig, pred, partialInclusion, coll)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Iterable.<GraphObject>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns a collection of all <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s that are inside or that intersecta given <a href="../symbols/Rect.html" class="linkConstructor">Rect</a> in document coordinates.<span class="nodetails" id="xmethfindObjectsIn"><a class="morelink" onclick="hst('methfindObjectsIn')">More...</a></span> <span class="details" id="methfindObjectsIn"></span><div class="details" id="dmethfindObjectsIn"><p>If <a href="../symbols/Layer.html#visible" class="linkProperty">visible</a> is false, this method will not find any objects in this layer.However, <a href="../symbols/Layer.html#opacity" class="linkProperty">opacity</a> does not affect this method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Rect.html" class="linkConstructor">Rect</a>}</span> <b>r</b>
-                                          
-                                      </dt>
-                                      <dd>A Rect in document coordinates.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):GraphObject | null=}</span> <b>navig</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking a GraphObject andreturning a GraphObject, defaulting to the identity.If this function returns null, the given GraphObject will not be included in the results.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):boolean | null=}</span> <b>pred</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking the GraphObjectreturned by navig and returning true if that object should be returned,defaulting to a predicate that always returns true.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{boolean=}</span> <b>partialInclusion</b>
-                                          
-                                      </dt>
-                                      <dd>Whether an object can match if it merely intersects the rectangular area (true) orif it must be entirely inside the rectangular area (false).  The default value is false.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{List.<GraphObject>|Set.<GraphObject>=}</span> <b>coll</b>
-                                          
-                                      </dt>
-                                      <dd>An optional collection (List or Set) to add the results to.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{Iterable.<GraphObject>}</span> a collection of GraphObjects that will contain all GraphObjectslocated in or near Rect r, or else an empty collection.If a List or Set was passed in, it is returned.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="findObjectsNear">
-                <td class="name">
-                  
-                  <div class="name">
-                    findObjectsNear(p, dist, navig, pred, partialInclusion, coll)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Iterable.<GraphObject>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns a collection of all <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>s that are within a certain distanceof a given point in document coordinates.<span class="nodetails" id="xmethfindObjectsNear"><a class="morelink" onclick="hst('methfindObjectsNear')">More...</a></span> <span class="details" id="methfindObjectsNear"></span><div class="details" id="dmethfindObjectsNear"><p>If <a href="../symbols/Layer.html#visible" class="linkProperty">visible</a> is false, this method will not find any objects in this layer.However, <a href="../symbols/Layer.html#opacity" class="linkProperty">opacity</a> does not affect this method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>A Point in document coordinates.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>dist</b>
-                                          
-                                      </dt>
-                                      <dd>The distance from the point.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):GraphObject | null=}</span> <b>navig</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking a GraphObject andreturning a GraphObject, defaulting to the identity.If this function returns null, the given GraphObject will not be included in the results.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{function(GraphObject):boolean | null=}</span> <b>pred</b>
-                                          
-                                      </dt>
-                                      <dd>A function taking the GraphObjectreturned by navig and returning true if that object should be returned,defaulting to a predicate that always returns true.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{*=}</span> <b>partialInclusion</b>
-                                          
-                                      </dt>
-                                      <dd>Whether an object can match if it merely intersects the circular area (true) orif it must be entirely inside the circular area (false).  The default value is true.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{List.<GraphObject>|Set.<GraphObject>=}</span> <b>coll</b>
-                                          
-                                      </dt>
-                                      <dd>An optional collection (List or Set) to add the results to.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{Iterable.<GraphObject>}</span> a collection of GraphObjects that will contain all GraphObjectslocated at Point p, or else an empty collection.If a List or Set was passed in, it is returned.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

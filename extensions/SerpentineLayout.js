@@ -29,7 +29,6 @@ go.Diagram.inherit(SerpentineLayout, go.Layout);
 * Copies properties to a cloned Layout.
 * @this {SerpentineLayout}
 * @param {Layout} copy
-* @override
 */
 SerpentineLayout.prototype.cloneProtected = function(copy) {
   go.Layout.prototype.cloneProtected.call(this, copy);
@@ -88,11 +87,11 @@ SerpentineLayout.prototype.doLayout = function(coll) {
   var increasing = true;
   var node = root;
   while (node !== null) {
-    var b = node.actualBounds;
+    var b = this.getLayoutBounds(node);
     // get the next node, if any
     var nextlink = node.findLinksOutOf().first();
     var nextnode = (nextlink !== null ? nextlink.toNode : null);
-    var nb = (nextnode !== null ? nextnode.actualBounds : new go.Rect());
+    var nb = (nextnode !== null ? this.getLayoutBounds(nextnode) : new go.Rect());
     if (increasing) {
       node.move(new go.Point(x, y));
       x += b.width;

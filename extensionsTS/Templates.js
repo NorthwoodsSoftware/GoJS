@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -9,9 +12,6 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     // These are the definitions for all of the predefined templates and tool archetypes.
     // You do not need to load this file in order to use the default templates and archetypes.
@@ -21,7 +21,7 @@
     // Set up the default templates that each Diagram starts off with.
     function setupDiagramTemplates(diagram) {
         // Node Templates
-        var nodeTemplateMap = new go.Map('string', go.Part);
+        var nodeTemplateMap = new go.Map();
         // create the default Node template
         var archnode = new go.Node();
         var nodet = new go.TextBlock();
@@ -48,7 +48,7 @@
         nodeTemplateMap.add('LinkLabel', archllab);
         diagram.nodeTemplateMap = nodeTemplateMap;
         // Group Templates
-        var groupTemplateMap = new go.Map('string', go.Group);
+        var groupTemplateMap = new go.Map();
         // create the default Group template
         var archgrp = new go.Group();
         archgrp.selectionObjectName = 'GROUPPANEL';
@@ -71,7 +71,7 @@
         groupTemplateMap.add('', archgrp);
         diagram.groupTemplateMap = groupTemplateMap;
         // Link Templates
-        var linkTemplateMap = new go.Map('string', go.Link);
+        var linkTemplateMap = new go.Map();
         // create the default Link template
         var archlink = new go.Link();
         var archpath = new go.Shape();
@@ -124,7 +124,7 @@
         seladhandle.isPanelMain = true;
         seladhandle.fill = null;
         seladhandle.stroke = 'dodgerblue';
-        seladhandle.strokeWidth = 3; //?? zero to use selection object's strokeWidth is often not wide enough
+        seladhandle.strokeWidth = 3; // ?? zero to use selection object's strokeWidth is often not wide enough
         selad.add(seladhandle);
         diagram.linkSelectionAdornmentTemplate = selad;
     }
@@ -170,15 +170,15 @@
         grid.add(vlines);
         grid.visible = false; // by default the grid is not visible
         // Create the Part that holds the grid.
-        //var gridpart = new go.Part();
-        //gridpart.add(grid);
-        //gridpart.layerName = 'Grid';  // goes in the "Grid" layer
-        //gridpart.zOrder = 0;  // to make it easier for other background parts to be behind the grid
-        //gridpart.isInDocumentBounds = false;  // never part of the document bounds
-        //gridpart.isAnimated = false;  // not animated
-        //gridpart.pickable = false;  // user cannot pick it with mouse/touch/stylus
-        //gridpart.locationObjectName = 'GRID';
-        //diagram.add(gridpart);
+        // const gridpart = new go.Part();
+        // gridpart.add(grid);
+        // gridpart.layerName = 'Grid';  // goes in the "Grid" layer
+        // gridpart.zOrder = 0;  // to make it easier for other background parts to be behind the grid
+        // gridpart.isInDocumentBounds = false;  // never part of the document bounds
+        // gridpart.isAnimated = false;  // not animated
+        // gridpart.pickable = false;  // user cannot pick it with mouse/touch/stylus
+        // gridpart.locationObjectName = 'GRID';
+        // diagram.add(gridpart);
         // So then: diagram.grid === grid
         // BUT, the gridpart is not actually in the Diagram.parts collection,
         // and that Part cannot be replaced; so the above code is commented out.
@@ -196,7 +196,7 @@
         box.selectable = true;
         box.selectionObjectName = 'BOXSHAPE';
         box.locationObjectName = 'BOXSHAPE';
-        //box.resizable = true;
+        // box.resizable = true;
         box.resizeObjectName = 'BOXSHAPE';
         box.cursor = 'move';
         box.add(s);
@@ -290,9 +290,10 @@
         tool.handleArchetype = h;
         h = new go.Shape();
         h.figure = 'Diamond';
-        h.desiredSize = new go.Size(6, 6);
+        h.desiredSize = new go.Size(8, 8);
         h.fill = 'lightblue';
         h.stroke = 'dodgerblue';
+        h.cursor = 'move';
         tool.midHandleArchetype = h;
     }
     // Set up ResizingTool's default handle archetype

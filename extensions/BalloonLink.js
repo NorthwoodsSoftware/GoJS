@@ -35,7 +35,6 @@ Object.defineProperty(BalloonLink.prototype, "base", {
 /**
 * Produce a Geometry from the Link's route that draws a "balloon" shape around the Link.fromNode
 * and has a triangular shape with the base at the fromNode and the top at the toNode.
-* @override
 * @this {BalloonLink}
 */
 BalloonLink.prototype.makeGeometry = function() {

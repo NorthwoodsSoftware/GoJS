@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,6 +17,8 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
         {
+          allowCopy: false,    // would need to merge copied nodes and links to
+          allowDelete: false,  //   use the single "Split" and "Merge" nodes
           layout: $(ParallelLayout,
                     { layerSpacing: 20, nodeSpacing: 10 })
         });
@@ -63,13 +65,12 @@
     myDiagram.groupTemplate =
       $(go.Group, "Auto",
         {
-          selectable: false,
           layout: $(ParallelLayout,
                     { layerSpacing: 20, nodeSpacing: 10 })
         },
         $(go.Shape, { fill: "transparent", stroke: "darkgoldenrod" }),
         $(go.Placeholder, { padding: 10 }),
-        $("SubGraphExpanderButton", { alignment: go.Spot.TopLeft })
+        $("SubGraphExpanderButton", { alignment: go.Spot.TopLeft, "ButtonBorder.figure": "Rectangle" })
       );
 
     var model = $(go.GraphLinksModel);
@@ -111,7 +112,7 @@
       { from: 4, to: 9 },
       { from: 1, to: 5 },
       { from: 5, to: 6 },
-      { from: 6, to: 9 }, 
+      { from: 6, to: 9 },
       { from: 9, to: 11 },
       { from: 9, to: 21 },
       { from: 11, to: 12 },

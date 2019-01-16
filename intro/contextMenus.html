@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -25,39 +25,44 @@ The context menu is bound to the same data as the part itself.
 See samples that make use of context menus in the <a href="../samples/index.html#contextmenus">samples index</a>.
 </p>
 <p>
-It is typical to have the Adornment be a "Vertical" <a>Panel</a> containing "ContextMenuButton"s,
+It is typical to implement a context menu as a "ContextMenu" Panel containing "ContextMenuButton"s,
 as you can see in the code below in the assignment of the Node's <a>GraphObject.contextMenu</a> and <a>Diagram.contextMenu</a> properties.
+Each "ContextMenu" is just a "Vertical" Panel <a>Adornment</a> that is shadowed.
 Each "ContextMenuButton" is a Panel on which you can set the <a>GraphObject.click</a> event handler.
 In the event handler <code>obj.part</code> will be the whole context menu Adornment.
 <code>obj.part.adornedPart</code> will be adorned Node or Link.
 The bound data is <code>obj.part.data</code>, which will be the same as <code>obj.part.adornedPart.data</code>.
 </p>
 <p>
+You can see how the "ContextMenu" and "ContextMenuButton" builders are defined at
+<a href="../extensions/Buttons.js">Buttons.js</a>.
+</p>
+<p>
 In this example each <a>Node</a> has its <a>GraphObject.contextMenu</a> property set to an Adornment that shows
 a single button that when clicked changes the color property of the bound model data.
 The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
 </p>
-<pre data-language="javascript" id="contextmenus">
+<pre class="lang-js" id="contextmenus">
   // This method is called as a context menu button's click handler.
   // Rotate the selected node's color through a predefined sequence of colors.
   function changeColor(e, obj) {
-    diagram.startTransaction("changed color");
-    // get the context menu that holds the button that was clicked
-    var contextmenu = obj.part;
-    // get the node data to which the Node is data bound
-    var nodedata = contextmenu.data;
-    // compute the next color for the node
-    var newcolor = "lightblue";
-    switch (nodedata.color) {
-      case "lightblue": newcolor = "lightgreen"; break;
-      case "lightgreen": newcolor = "lightyellow"; break;
-      case "lightyellow": newcolor = "orange"; break;
-      case "orange": newcolor = "lightblue"; break;
-    }
-    // modify the node data
-    // this evaluates data Bindings and records changes in the UndoManager
-    diagram.model.setDataProperty(nodedata, "color", newcolor);
-    diagram.commitTransaction("changed color");
+    diagram.commit(function(d) {
+      // get the context menu that holds the button that was clicked
+      var contextmenu = obj.part;
+      // get the node data to which the Node is data bound
+      var nodedata = contextmenu.data;
+      // compute the next color for the node
+      var newcolor = "lightblue";
+      switch (nodedata.color) {
+        case "lightblue": newcolor = "lightgreen"; break;
+        case "lightgreen": newcolor = "lightyellow"; break;
+        case "lightyellow": newcolor = "orange"; break;
+        case "orange": newcolor = "lightblue"; break;
+      }
+      // modify the node data
+      // this evaluates data Bindings and records changes in the UndoManager
+      d.model.set(nodedata, "color", newcolor);
+    }, "changed color");
   }
 
   // this is a normal Node template that also has a contextMenu defined for it
@@ -70,7 +75,7 @@ The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
         new go.Binding("text", "key")),
       {
         contextMenu:     // define a context menu for each node
-          $(go.Adornment, "Vertical",  // that has one button
+          $("ContextMenu",  // that has one button
             $("ContextMenuButton",
               $(go.TextBlock, "Change Color"),
               { click: changeColor })
@@ -81,7 +86,7 @@ The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
 
   // also define a context menu for the diagram's background
   diagram.contextMenu =
-    $(go.Adornment, "Vertical",
+    $("ContextMenu",
       $("ContextMenuButton",
         $(go.TextBlock, "Undo"),
         { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
@@ -98,17 +103,15 @@ The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
       $("ContextMenuButton",
         $(go.TextBlock, "New Node"),
         { click: function(e, obj) {
-          var diagram = e.diagram;
-          diagram.startTransaction('new node');
-          var data = {};
-          diagram.model.addNodeData(data);
-          part = diagram.findPartForData(data);
-          part.location = diagram.toolManager.contextMenuTool.mouseDownPoint;
-          diagram.commitTransaction('new node');
+          e.diagram.commit(function(d) {
+            var data = {};
+            d.model.addNodeData(data);
+            part = d.findPartForData(data);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+          }, 'new node');
         } })
     );
-
-  diagram.initialContentAlignment = go.Spot.Center;
 
   var nodeDataArray = [
     { key: "Alpha", color: "lightyellow" },
@@ -132,8 +135,9 @@ There are two ways to customize the positioning of the context menu relative to 
 One way is to override <a>ContextMenuTool.positionContextMenu</a>.
 Another way is to have the context menu <a>Adornment</a> include a <a>Placeholder</a>.
 The Placeholder is positioned to have the same size and position as the adorned object.
+The context menu will not to have a background, and thus will not display a shadow by default when using a Placeholder.
 </p>
-<pre data-language="javascript" id="contextmenusplaceholder">
+<pre class="lang-js" id="contextmenusplaceholder">
   // this is a shared context menu button click event handler, just for demonstration
   function cmCommand(e, obj) {
     var node = obj.part.adornedPart;  // the Node with the context menu
@@ -151,7 +155,7 @@ The Placeholder is positioned to have the same size and position as the adorned 
         new go.Binding("text", "key")),
       {
         contextMenu:                            // define a context menu for each node
-          $(go.Adornment, "Spot",               // that has several buttons around
+          $("ContextMenu", "Spot",              // that has several buttons around
             $(go.Placeholder, { padding: 5 }),  // a Placeholder object
             $("ContextMenuButton", $(go.TextBlock, "Top"),
               { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom, click: cmCommand }),
@@ -165,7 +169,6 @@ The Placeholder is positioned to have the same size and position as the adorned 
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
   var nodeDataArray = [
     { key: "Alpha", color: "lightyellow" },
     { key: "Beta", color: "orange" }
@@ -184,6 +187,10 @@ The <a href="../samples/customContextMenu.html">Custom Context Menu sample</a> a
 <a href="../samples/htmlLightBoxContextMenu.html">Lightbox Context Menu sample</a> show two such custom context menus.
 See <a href="HTMLInteraction.html">HTMLInteraction</a> for more discussion.
 </p>
+<p>
+HTML context menus require more effort to implement than using the default <b>GoJS</b> "ContextMenu" and "ContextMenuButton".
+However you would have the full power of HTML/CSS/JavaScript to show whatever you want.
+</p>
 
 <h3 id="DefaultContextMenuForTouchEnabledDevices">Default Context Menu for Touch-enabled devices</h3>
 <p>
@@ -197,7 +204,7 @@ The <a href="../samples/htmlLightBoxContextMenu.html">Lightbox Context Menu samp
 </p>
 <p>
 If you define your own custom context menus, they will prevent the default context menu from appearing on touch devices.
-We recommend that your custom context menus include common commands appropriate for your app.
+We recommend that your custom context menus include all common commands appropriate for your app.
 </p>
 
 </div>

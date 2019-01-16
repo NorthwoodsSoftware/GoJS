@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS Wordcloud</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="../release/go.js"></script>
+  <script src="assets/require.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+
+    var myDiagram;
+    var inputBox;
+    var PackedLayout;
+
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+      require(["../extensionsTS/PackedLayout"], function (app) {
+        PackedLayout = app.PackedLayout;
+
+        var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+        myDiagram =
+          $(go.Diagram, 'myDiagramDiv',  // must be the ID or reference to div
+            {
+              'animationManager.isEnabled': true,
+              isReadOnly: true, autoScale: go.Diagram.Uniform
+            });
+
+        // Nodes have a template with bindings for size, shape, and fill color
+        myDiagram.nodeTemplate =
+          $(go.Node, 'Auto',
+            new go.Binding('scale', 'scale'),
+            $(go.TextBlock,
+              new go.Binding('text', 'text'),
+              new go.Binding('stroke', 'stroke'),
+              new go.Binding('font', 'font'))
+          );
+
+        // find the word input box in the DOM
+        inputBox = document.getElementById('textInput');
+
+        // create a layout with the default values
+        rebuildGraph();
+      });
+    }
+
+    function rebuildGraph() {
+      var frequencies = getWordFrequencies();
+      var nodeData = generateNodeData(frequencies);
+      myDiagram.model = new go.GraphLinksModel(nodeData);
+
+      myDiagram.startTransaction('create wordcloud');
+      myDiagram.layout = go.GraphObject.make(PackedLayout, {
+        spacing: 5,
+        arrangesToOrigin: false
+      });
+      myDiagram.commitTransaction('create wordcloud');
+    }
+
+    // returns a map (word -> frequency) of words in the text
+    function getWordFrequencies() {
+      // list of english words to exclude from the wordcloud
+      var stopWords = ['i', 'me', 'my', 'myself', 'we', 'us', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
+        'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
+        'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'whose', 'this', 'that', 'these',
+        'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',
+        'did', 'doing', 'will', 'would', 'should', 'can', 'could', 'ought', 'i\'m', 'you\'re', 'he\'s', 'she\'s', 'it\'s',
+        'we\'re', 'they\'re', 'i\'ve', 'you\'ve', 'we\'ve', 'they\'ve', 'i\'d', 'you\'d', 'he\'d', 'she\'d', 'we\'d',
+        'they\'d', 'i\'ll', 'you\'ll', 'he\'ll', 'she\'ll', 'we\'ll', 'they\'ll', 'isn\'t', 'aren\'t', 'wasn\'t',
+        'weren\'t', 'hasn\'t', 'haven\'t', 'hadn\'t', 'doesn\'t', 'don\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shan\'t',
+        'shouldn\'t', 'can\'t', 'cannot', 'couldn\'t', 'mustn\'t', 'let\'s', 'that\'s', 'who\'s', 'what\'s', 'here\'s',
+        'there\'s', 'when\'s', 'where\'s', 'why\'s', 'how\'s', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
+        'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during',
+        'before', 'after', 'above', 'below', 'to', 'from', 'up', 'upon', 'down', 'in', 'out', 'on', 'off', 'over', 'under',
+        'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each',
+        'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too',
+        'very', 'say', 'says', 'said', 'shall'];
+
+      var word = /[@a-z0-9]+([-.:/'’\u2032\u00A0\u200C\u200D~]+[@a-z0-9]+)*/gi;
+      var text = inputBox.value;
+
+      var frequencies = new go.Map();
+      var result;
+      while ((result = word.exec(text)) !== null) {
+        var match = result[0].toLowerCase();
+        if (stopWords.indexOf(match) > -1) { // skip stop words
+          continue;
+        }
+        if (!isNaN(Number(match))) { // skip numbers
+          continue;
+        }
+
+        if (frequencies.has(match)) {
+          frequencies.add(match, frequencies.get(match) + 1);
+        } else {
+          frequencies.add(match, 1);
+        }
+      }
+
+      return frequencies;
+    }
+
+    // creates a list of nodes from the frequency map
+    function generateNodeData(frequencies) {
+      // convert map to array
+      var it = frequencies.iterator;
+      var freqArr = [];
+      while (it.next()) {
+        freqArr.push({word: it.key, freq: it.value})
+      }
+
+      // sort the frequency array in descending order
+      freqArr.sort(function(a, b) {
+        return b.freq - a.freq;
+      })
+
+      // create an array of nodes, scaled appropriately by frequency
+      var nodes = [];
+      var singleOccurrenceCount = 0;
+      for (var i = 0; i < freqArr.length; i++) {
+        if (freqArr[i].freq === 1) {
+          singleOccurrenceCount++;
+        }
+        // stop creating nodes if we've already added too many that only occurred once, or if we've added 150 already
+        if ((i > 25 && singleOccurrenceCount > 0.25 * i) || i > 150) {
+          break;
+        }
+        // scale node size logarithmically with frequency
+        var scale = 2 * Math.log(freqArr[i].freq) + 1;
+        nodes.push({text: freqArr[i].word, scale: scale});
+      }
+
+      // randomize order if checkbox is checked
+      if (document.getElementById('randomizePositions').checked) {
+        var j, x, i;
+        for (i = nodes.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = nodes[i];
+            nodes[i] = nodes[j];
+            nodes[j] = x;
+        }
+      }
+
+      return nodes;
+    }
+  </script>
+  <style>
+    input[type=checkbox] {
+      vertical-align: middle;
+      position: relative;
+      bottom: 2px;
+    }
+  </style>
+</head>
+<body onload="init()">
+  <div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+      This also adds a border to help see the edges of the viewport. -->
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+  <textarea style="margin-top: 12px; max-width: 100%;" rows="6" cols="75" id='textInput'>
+    GoJS is a feature-rich JavaScript library for implementing custom interactive diagrams and complex visualizations across modern web browsers and platforms. GoJS makes constructing JavaScript diagrams of complex nodes, links, and groups easy with customizable templates and layouts.
+
+GoJS offers many advanced features for user interactivity such as drag-and-drop, copy-and-paste, in-place text editing, tooltips, context menus, automatic layouts, templates, data binding and models, transactional state and undo management, palettes, overviews, event handlers, commands, and an extensible tool system for custom operations.
+
+GoJS is pure JavaScript, so users get interactivity without requiring round-trips to servers and without plugins. GoJS normally runs completely in the browser, rendering to an HTML5 Canvas element or SVG without any server-side requirements. GoJS does not depend on any JavaScript libraries or frameworks, so it should work with any HTML or JavaScript framework or with no framework at all.
+
+Build custom modeling environments and domain-specific visual languages using the powerful features of GoJS. Provide both a system editor and a read-only status monitor using shared code and templates. Simultaneously show alternative visualizations of the same data in different diagrams. Implement drill-down using expansion of subtrees and subgraphs or a detailed view in another diagram.
+
+Yet GoJS is remarkably simple for such a powerful and flexible system. Our thorough documentation introduces the basic concepts and demonstrate typical features that most apps want to offer. Nodes and links can be arbitrarily detailed according to the needs of the application. The API consists of only a few dozen important classes which encapsulate many useful features that interact with each other. There are many properties that permit simple customizations; some methods may be overridden for more complicated customizations.
+
+Explore
+Run over 175 sample apps that are flowcharts, org charts, mind maps, UML diagrams, BPMN diagrams, graph editors, data visualization, and much more.
+
+
+Learn
+Get started with a step-by-step description of how to build a JavaScript diagram in HTML using GoJS and some model data.
+
+
+
+Download
+Get a copy of the library and all of the samples, extensions, and documentation. Search the JavaScript code and modify the samples to start your app.
+
+
+
+Technical Introduction
+Read our introduction for a overview of GoJS concepts and features, including hundreds of live interactive examples embedded right in each page.
+
+
+Unlimited Evaluation
+Evaluate the full library without any limitations. Register with us and get free support for a month to help build your app.
+
+
+
+API Documentation
+Read our comprehensive documentation for an in-depth reference of the properties and methods of all of the JavaScript classes.
+
+
+When upgrading to a newer version, please read the Change Log.
+
+You can explore the newest features and samples in the GoJS Beta for the next version, if a next version is available. Read the beta change log for the new features. Please note that our GitHub directory does not have the beta files.</textarea>
+
+  <br>Randomize word positions <input type="checkbox" id="randomizePositions" onclick="rebuildGraph()" checked/>
+
+  <br><button style="margin-bottom: 12px; margin-top: 6px;" onclick="rebuildGraph()">Generate wordcloud</button>
+
+  <p>
+    This sample demonstrates a simple way to create a wordcloud visualization
+    using the PackedLayout extension. The most frequent words in the text are
+    shown larger, and common english words such as 'the' or 'of' are skipped.
+    This example shows the text from the <a href="https://gojs.net/latest/">GoJS home page</a>,
+    but you can easily create your own by copying text into the box above.
+  </p>
+  </div>
+</body>
+</html>

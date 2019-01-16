@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -62,35 +62,35 @@
       One way to do that is by remembering it in your code.
       You can set a property on the <code>window</code> object to refer to the Diagram that you create.
       Many of the samples do this just by leaving out the <code>var</code> declaration:
-      <pre>    myDiagram = $(go.Diagram, "myDiagramDiv", . . .);</pre>
+      <pre class="lang-js">    myDiagram = $(go.Diagram, "myDiagramDiv", . . .);</pre>
     </p>
     <p>
       Alternatively, in the console, if you know the name of the HTML DIV element,
-      you can call the static function <a>Diagram.fromDiv</a> to get the <a>Diagram</a> object:
-      <pre>> myDiagram = go.Diagram.fromDiv("myDiagramDiv");</pre>
+      you can call the static function <a>Diagram,fromDiv</a> to get the <a>Diagram</a> object:
+      <pre class="lang-js">> myDiagram = go.Diagram.fromDiv("myDiagramDiv");</pre>
       If that DIV element is not named, perhaps you have some other way of getting a reference to the DIV element.
       That may depend on the framework that you are using.
-      You can still call <a>Diagram.fromDiv</a> on that element to get the corresponding Diagram object.
+      You can still call <a>Diagram,fromDiv</a> on that element to get the corresponding Diagram object.
     </p>
     <p>
       Then in the console you can use the <code>myDiagram</code> reference to the <a>Diagram</a> object.  Some examples:
     </p>
     <p>
-      <pre>> myDiagram.nodes.count</pre>
+      <pre class="lang-js">> myDiagram.nodes.size</pre>
       returns the number of <a>Node</a>s in the Diagram.
     </p>
     <p>
-      <pre>> myDiagram.model.nodeDataArray[0]</pre>
+      <pre class="lang-js">> myDiagram.model.nodeDataArray[0]</pre>
       returns the first node data object in the diagram's model's <a>Model.nodeDataArray</a>.
     </p>
     <p>
-      <pre>> myDiagram.layoutDiagram(true)</pre>
+      <pre class="lang-js">> myDiagram.layoutDiagram(true)</pre>
       forces all layouts to happen, rearranging the nodes and routing the links.
     </p>
     <p>
       The code that you execute in the console can be more complicated too.
       For example, you can find, select, and scroll to a particular node:
-      <pre>> myNode = myDiagram.findNodeForKey("Omega");
+      <pre class="lang-js">> myNode = myDiagram.findNodeForKey("Omega");
 > myNode.isSelected = true
 > myDiagram.commandHandler.scrollToPart(myNode)</pre>
       If you don't know the key for the node that you want to see in the viewport,
@@ -100,40 +100,40 @@
 
     <h3>Examining a selected Node</h3>
     <p>
-      <pre>> myDiagram.selection.first()</pre>
+      <pre class="lang-js">> myDiagram.selection.first()</pre>
       returns the first selected <a>Part</a>, which might be either a <a>Node</a>, a <a>Link</a>,
       or null if nothing is selected.
     </p>
     <p>
       If you remember the selected Node or Link, you can then examine it further more easily.  For example:
-      <pre>> myNode = myDiagram.selection.first()
+      <pre class="lang-js">> myNode = myDiagram.selection.first()
 > myNode.data.key</pre>
       remembers the first selected Node and returns the key of the node data.
-      You might want to look at all of the properties of the <pre>myNode.data</pre> object.
+      You might want to look at all of the properties of the <pre class="lang-js">myNode.data</pre> object.
     </p>
     <p>
       You could also look at other properties of the Node and call its methods.  For example:
-      <pre>> myNode.location</pre>
+      <pre class="lang-js">> myNode.location</pre>
       returns a <a>Point</a> whose properties the debugger may show.  Or call:
-      <pre>> myNode.location.toString()</pre>
+      <pre class="lang-js">> myNode.location.toString()</pre>
       to see a human-readable textual rendering of that Point object.
     </p>
     <p>
       As another example, you can print out all of the nodes the selected node is connected to:
-      <pre>myNode.findNodesOutOf().each(function(n) { console.log(n.data.key); })</pre>
+      <pre class="lang-js">myNode.findNodesOutOf().each(function(n) { console.log(n.data.key); })</pre>
       You can find more examples of iterating at <a href="collections.html#MoreIterationExamples">Collections</a>
     </p>
     <p>
       You can also look at the structure of the visual tree of a node.  With this recursive function:
-      <pre>> function walk(x, level, index) {
+      <pre class="lang-js">> function walk(x, level, index) {
 >   console.log(level + "," + index + ": " + x.toString());
 >   if (!(x instanceof go.Panel)) return;
->   for (var i = 0; i < x.elements.count; i++) walk(x.elt(i), level+1, i);
+>   for (var i = 0; i < x.elements.size; i++) walk(x.elt(i), level+1, i);
 > }</pre>
       you could call
-      <pre>> walk(myNode, 0, 0)</pre>
+      <pre class="lang-js">> walk(myNode, 0, 0)</pre>
       and in the Org Chart sample get results such as:
-      <pre>
+      <pre class="lang-js">
 0,0: Node#653(Kensaku Tamaki)
 1,0: Shape(Rectangle)#656
 1,1: Panel(Panel.Table)#657
@@ -162,8 +162,7 @@
     <p>
       Say that you want a node consisting of two TextBlocks, one above the other.  You might start off with:
     </p>
-    <pre data-language="javascript" id="first">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="first">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, { fill: "white" }),
@@ -182,8 +181,7 @@ diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
     <p>
       But wait -- you want the node to be a fixed size.  So you set the node's width and height:
     </p>
-    <pre data-language="javascript" id="second">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="second">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     { width: 80, height: 100 },
@@ -204,8 +202,7 @@ diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
       That looks better, but you are suprised that both TextBlocks are near the center.  Why is that?
       For debugging purposes let's change the <a>GraphObject.background</a> colors of each TextBlock and the nested Panel.
     </p>
-    <pre data-language="javascript" id="third">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="third">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     { width: 80, height: 100 },
@@ -229,8 +226,7 @@ diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
     <p>
       So you think that you just need to <a>GraphObject.stretch</a> the panel.
     </p>
-    <pre data-language="javascript" id="fourth">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="fourth">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     { width: 80, height: 100 },
@@ -256,8 +252,7 @@ diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
       If you want the text to be spaced evenly vertically,
       you might think you only need to stretch those two TextBlocks.
     </p>
-    <pre data-language="javascript" id="fifth">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="fifth">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     { width: 80, height: 100 },
@@ -286,8 +281,7 @@ diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
       Instead of a Vertical Panel we should use a Table Panel.
       This requires assigning the <a>GraphObject.row</a> on each element (i.e. each TextBlock).
     </p>
-    <pre data-language="javascript" id="sixth">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="sixth">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     { width: 80, height: 100 },
@@ -319,8 +313,7 @@ diagram.model.nodeDataArray = [{ t1: "Top", t2: "Bottom"}];
       You can interactively resize the node (the whole node because we haven't set <a>Part.resizeObjectName</a>)
       so you can see how the nested Panel and the TextBlocks handle constrained sizing.
     </p>
-    <pre data-language="javascript" id="seventh">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="seventh">
 diagram.nodeTemplate =
   $(go.Node, "Auto",                 { resizable: true },
     { width: 80, height: 100 },
@@ -349,8 +342,7 @@ diagram.findNodeForData(diagram.model.nodeDataArray[0]).isSelected = true;
       But text normally is drawn at the left side of the bounds of the TextBlock when the text direction is left-to-right.
       If you want each TextBlock to be centered within its bounds, you'll need to set <a>TextBlock.textAlign</a> to "center".
     </p>
-    <pre data-language="javascript" id="eighth">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="eighth">
 diagram.nodeTemplate =
   $(go.Node, "Auto",                 { resizable: true },
     { width: 80, height: 100 },
@@ -380,8 +372,7 @@ diagram.findNodeForData(diagram.model.nodeDataArray[0]).isSelected = true;
       Now we just need to get rid of the colored backgrounds and resizable-ness used for debugging
       and assign the desired colors and fonts.
     </p>
-    <pre data-language="javascript" id="ninth">
-diagram.initialContentAlignment = go.Spot.Center;
+    <pre class="lang-js" id="ninth">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     { width: 80, height: 100 },

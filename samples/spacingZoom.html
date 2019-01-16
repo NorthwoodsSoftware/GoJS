@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,6 @@
 
     myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
-                    initialContentAlignment: go.Spot.Center,  // center the content
                     commandHandler: $(SpacingCommandHandler),
                     // update the SpacingCommandHandler.space from the model at the end of each transaction
                     "ModelChanged": function(e) {
@@ -104,34 +103,28 @@
 
   // Overrides of commands that scale the diagram -- change the space instead
 
-  /** @override */
   SpacingCommandHandler.prototype.decreaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     this.setSpace(this.space * factor);
   };
-  /** @override */
   SpacingCommandHandler.prototype.canDecreaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     return this.checkSpace(this.space * factor);
   };
 
-  /** @override */
   SpacingCommandHandler.prototype.increaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     this.setSpace(this.space / factor);
   };
-  /** @override */
   SpacingCommandHandler.prototype.canIncreaseZoom = function(factor) {
     if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
     return this.checkSpace(this.space / factor);
   };
 
-  /** @override */
   SpacingCommandHandler.prototype.resetZoom = function(newspace) {
     if (newspace === undefined/*notpresent*/) newspace = 1.0;
     this.setSpace(newspace);
   };
-  /** @override */
   SpacingCommandHandler.prototype.canResetZoom = function(newspace) {
     return this.checkSpace(newspace);
   };

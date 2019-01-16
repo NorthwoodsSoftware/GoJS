@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -29,7 +29,7 @@ The same sequence happens for key-up events.
 </p>
 <p>
 Please note that the handling of keyboard commands depends on the diagram getting focus and then getting keyboard events.
-Do not apply any styling such as <pre>canvas:focus { display: none; }</pre>.
+Do not apply any styling such as <pre class="lang-css">canvas:focus { display: none; }</pre>.
 </p>
 
 <h2 id="KeyboardCommandBindings">Keyboard command bindings</h2>
@@ -91,7 +91,7 @@ There are a number of properties that you can set to affect the CommandHandler's
 For example, if you want to allow the user to group selected parts together with the <a>CommandHandler.groupSelection</a>,
 you will need to set <a>CommandHandler.archetypeGroupData</a> to a group node data object:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   diagram.commandHandler.archetypeGroupData =
     { key: "Group", isGroup: true, color: "blue" };
 </pre>
@@ -102,7 +102,7 @@ That data object is copied and added to the model as the new group data object b
 If you want to add your own keyboard bindings, you can override the <a>CommandHandler.doKeyDown</a> method.
 For example, to support using the "T" key to collapse or expand the currently selected <a>Group</a>:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
     myDiagram.commandHandler.doKeyDown = function() {
       var e = myDiagram.lastInput;
       var cmd = myDiagram.commandHandler;
@@ -131,7 +131,7 @@ If the base method takes arguments, be sure to pass arguments to the call to the
 It is common to have HTML elements outside of the diagram that invoke commands.
 You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable UI that would invoke the command.
 </p>
-<pre data-language="javascript" id="commands">
+<pre class="lang-js" id="commands">
   // allow the group command to execute
   diagram.commandHandler.archetypeGroupData =
     { key: "Group", isGroup: true, color: "blue" };
@@ -205,7 +205,7 @@ You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable
 <p>
 Each button is implemented in the following fashion:
 </p>
-<pre>
+<pre class="lang-html">
 &lt;input id="SelectAll" type="button"
        onclick="myDiagram.commandHandler.selectAll()" value="Select All" /&gt;
 </pre>
@@ -234,7 +234,7 @@ for those tools that you want your users to access without a pointing device.
 <p>
 Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.undo</a> and <a>CommandHandler.redo</a> to be called programatically:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   myDiagram.commandHandler.doKeyDown = function() {
     var e = myDiagram.lastInput;
     // The meta (Command) key substitutes for "control" for Mac commands

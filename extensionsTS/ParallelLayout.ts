@@ -1,24 +1,34 @@
-"use strict";
-/*
+﻿/*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from "../release/go";
-
-// A custom TreeLayout that requires a "Split" node and a "Merge" node, by category.
-// The "Split" node should be the root of a tree-like structure if one excludes links to the "Merge" node.
-// This will position the "Merge" node to line up with the "Split" node.
+import * as go from '../release/go';
 
 /**
-* @constructor
-* @extends TreeLayout
-* @class
-* Assume there is a pair of nodes that "Split" and "Merge",
-* along with any number of nodes extending in a tree-structure from the "Split" node.
-* You can set all of the TreeLayout properties that you like,
-* except that for simplicity this code just works for angle === 0 or angle === 90.
-*/
+ * A custom {@link TreeLayout} that requires a "Split" node and a "Merge" node, by category.
+ * The "Split" node should be the root of a tree-like structure if one excludes links to the "Merge" node.
+ * This will position the "Merge" node to line up with the "Split" node.
+ *
+ * Assume there is a pair of nodes that "Split" and "Merge",
+ * along with any number of nodes extending in a tree-structure from the "Split" node.
+ * You can set all of the TreeLayout properties that you like,
+ * except that for simplicity this code just works for angle === 0 or angle === 90.
+ *
+ * If you want to experiment with this extension, try the <a href="../../extensionsTS/Parallel.html">Parallel Layout</a> sample.
+ * @category Layout Extension
+ */
 export class ParallelLayout extends go.TreeLayout {
+  private _splitNode: go.Node | null = null;
+  private _mergeNode: go.Node | null = null;
+
+  /**
+   * Constructs a ParallelLayout and sets the following properties:
+   *   - {@link #isRealtime} = false
+   *   - {@link #alignment} = {@link TreeLayout.AlignmentCenterChildren}
+   *   - {@link #compaction} = {@link TreeLayout.CompactionNone}
+   *   - {@link #alternateAlignment} = {@link TreeLayout.AlignmentCenterChildren}
+   *   - {@link #alternateCompaction} = {@link TreeLayout.CompactionNone}
+   */
   constructor() {
     super();
     this.isRealtime = false;
@@ -28,55 +38,80 @@ export class ParallelLayout extends go.TreeLayout {
     this.alternateCompaction = go.TreeLayout.CompactionNone;
   }
 
+  /**
+   * This read-only property returns the node that the tree will extend from.
+   */
+  get splitNode(): go.Node | null { return this._splitNode; }
+
+  /**
+   * This read-only property returns the node that the tree will converge at.
+   */
+  get mergeNode(): go.Node | null { return this._mergeNode; }
+
+  /**
+   * Create and initialize a {@link LayoutNetwork} with the given nodes and links.
+   * This override finds the split and merge nodes and sets the focus of any {@link Group}s.
+   * @param {Iterable.<Part>} coll a collection of {@link Part}s.
+   * @return {LayoutNetwork}
+   */
   public makeNetwork(coll: go.Iterable<go.Part>): go.LayoutNetwork {
-    var net = super.makeNetwork.call(this, coll);
+    const net = super.makeNetwork(coll);
+    this._splitNode = null;
+    this._mergeNode = null;
     // look for and remember the one "Split" node and the one "Merge" node
-    for (var it = net.vertexes.iterator; it.next();) {
-      var v = it.value;
+    for (const it = net.vertexes.iterator; it.next(); ) {
+      const v = it.value;
+      if (v.node === null) continue;
       // handle asymmetric Groups, where the Placeholder is not centered
       if (v.node instanceof go.Group && v.node.isSubGraphExpanded && v.node.placeholder !== null) {
         v.focus = v.node.placeholder.getDocumentPoint(go.Spot.Center).subtract(v.node.position);
       }
-      if (v.node.category === "Split") {
-        if (net.splitNode) throw new Error("Split node already exists in " + this + " -- existing: " + net.splitNode + " new: " + v.node);
-        net.splitNode = v.node;
-      } else if (v.node.category === "Merge") {
-        if (net.mergeNode) throw new Error("Merge node already exists in " + this + " -- existing: " + net.mergeNode + " new: " + v.node);
-        net.mergeNode = v.node;
+      if (v.node.category === 'Split') {
+        if (this._splitNode) throw new Error('Split node already exists in ' + this + ' -- existing: ' + this._splitNode + ' new: ' + v.node);
+        this._splitNode = v.node;
+      } else if (v.node.category === 'Merge') {
+        if (this._mergeNode) throw new Error('Merge node already exists in ' + this + ' -- existing: ' + this._mergeNode + ' new: ' + v.node);
+        this._mergeNode = v.node;
       }
     }
-    if (net.splitNode || net.mergeNode) {
-      if (!net.splitNode) throw new Error("Missing Split node in " + this);
-      if (!net.mergeNode) throw new Error("Missing Merge node in " + this);
+    if (this._splitNode || this._mergeNode) {
+      if (!this._splitNode) throw new Error('Missing Split node in ' + this);
+      if (!this._mergeNode) throw new Error('Missing Merge node in ' + this);
     }
     // don't lay out the Merge node
-    if (net.mergeNode) net.deleteNode(net.mergeNode);
+    if (this._mergeNode) net.deleteNode(this._mergeNode);
     return net;
-  };
+  }
 
-  public commitNodes() {
-    super.commitNodes.call(this);
-    var mergeNode = (this.network as any).mergeNode;
-    var splitNode = (this.network as any).splitNode;
-    var splitVertex: any = this.network.findVertex(splitNode);
-    if (mergeNode && splitVertex) {
-      // line up the "Merge" node to the center of the "Split" node
-      if (this.angle === 0) {
-        mergeNode.position = new go.Point(splitVertex.x + splitVertex.subtreeSize.width + this.layerSpacing,
-          splitVertex.centerY - mergeNode.actualBounds.height / 2);
-      } else if (this.angle === 90) {
-        mergeNode.position = new go.Point(splitVertex.centerX - mergeNode.actualBounds.width / 2,
-          splitVertex.y + splitVertex.subtreeSize.height + this.layerSpacing);
-      }
+  /**
+   * Assigns a position for the merge node once the other nodes have been committed.
+   */
+  public commitNodes(): void {
+    super.commitNodes();
+    if (this.network === null || this._splitNode === null) return;
+    const mergeNode = this._mergeNode;
+    if (!mergeNode) return;
+    const splitVertex = this.network.findVertex(this._splitNode) as go.TreeVertex;
+    if (!splitVertex) return;
+    // line up the "Merge" node to the center of the "Split" node
+    if (this.angle === 0) {
+      mergeNode.position = new go.Point(splitVertex.x + splitVertex.subtreeSize.width + this.layerSpacing,
+        splitVertex.centerY - mergeNode.actualBounds.height / 2);
+    } else if (this.angle === 90) {
+      mergeNode.position = new go.Point(splitVertex.centerX - mergeNode.actualBounds.width / 2,
+        splitVertex.y + splitVertex.subtreeSize.height + this.layerSpacing);
     }
-  };
+  }
 
-  public commitLinks() {
-    super.commitLinks.call(this);
-    var mergeNode = (this.network as any).mergeNode;
+  /**
+   * Finds links into the merge node and adjusts spots and maybe points.
+   */
+  public commitLinks(): void {
+    super.commitLinks();
+    const mergeNode = this._mergeNode;
     if (mergeNode) {
-      for (var it = mergeNode.findLinksInto(); it.next();) {
-        var link = it.value;
+      for (const it = mergeNode.findLinksInto(); it.next(); ) {
+        const link = it.value;
         if (this.angle === 0) {
           link.fromSpot = go.Spot.Right;
           link.toSpot = go.Spot.Left;
@@ -89,15 +124,15 @@ export class ParallelLayout extends go.TreeLayout {
         // that share a common X (or if angle==90, Y) coordinate
         link.updateRoute();
         if (link.pointsCount >= 6) {
-          var pts = link.points.copy();
-          var p2 = pts.elt(pts.length - 4);
-          var p3 = pts.elt(pts.length - 3);
+          const pts = link.points.copy();
+          const p2 = pts.elt(pts.length - 4);
+          const p3 = pts.elt(pts.length - 3);
           if (this.angle === 0) {
-            var x = mergeNode.position.x - this.layerSpacing / 2;
+            const x = mergeNode.position.x - this.layerSpacing / 2;
             pts.setElt(pts.length - 4, new go.Point(x, p2.y));
             pts.setElt(pts.length - 3, new go.Point(x, p3.y));
           } else if (this.angle === 90) {
-            var y = mergeNode.position.y - this.layerSpacing / 2;
+            const y = mergeNode.position.y - this.layerSpacing / 2;
             pts.setElt(pts.length - 4, new go.Point(p2.x, y));
             pts.setElt(pts.length - 3, new go.Point(p3.x, y));
           }
@@ -105,7 +140,5 @@ export class ParallelLayout extends go.TreeLayout {
         }
       }
     }
-  };
-
+  }
 }
-

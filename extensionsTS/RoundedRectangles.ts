@@ -1,23 +1,22 @@
-'use strict';
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from "../release/go";
+import * as go from '../release/go';
 
 // This file holds the definitions of two useful figures: "RoundedTopRectangle" and "RoundedBottomRectangle".
 // These are demonstrated at ../samples/twoHalves.html and ../samples/roundedGroups.html.
 
-go.Shape.defineFigureGenerator("RoundedTopRectangle", function (shape: go.Shape, w: number, h: number) {
+go.Shape.defineFigureGenerator('RoundedTopRectangle', function (shape: go.Shape, w: number, h: number) {
   // this figure takes one parameter, the size of the corner
-  var p1 = 5;  // default corner size
+  let p1 = 5;  // default corner size
   if (shape !== null) {
-    var param1 = shape.parameter1;
+    const param1 = shape.parameter1;
     if (!isNaN(param1) && param1 >= 0) p1 = param1;  // can't be negative or NaN
   }
   p1 = Math.min(p1, w / 2);
   p1 = Math.min(p1, h / 2);  // limit by whole height or by half height?
-  var geo = new go.Geometry();
+  const geo = new go.Geometry();
   // a single figure consisting of straight lines and quarter-circle arcs
   geo.add(new go.PathFigure(0, p1)
     .add(new go.PathSegment(go.PathSegment.Arc, 180, 90, p1, p1, p1, p1))
@@ -31,16 +30,16 @@ go.Shape.defineFigureGenerator("RoundedTopRectangle", function (shape: go.Shape,
   return geo;
 });
 
-go.Shape.defineFigureGenerator("RoundedBottomRectangle", function (shape: go.Shape, w: number, h: number) {
+go.Shape.defineFigureGenerator('RoundedBottomRectangle', function (shape: go.Shape, w: number, h: number) {
   // this figure takes one parameter, the size of the corner
-  var p1 = 5;  // default corner size
+  let p1 = 5;  // default corner size
   if (shape !== null) {
-    var param1 = shape.parameter1;
+    const param1 = shape.parameter1;
     if (!isNaN(param1) && param1 >= 0) p1 = param1;  // can't be negative or NaN
   }
   p1 = Math.min(p1, w / 2);
   p1 = Math.min(p1, h / 2);  // limit by whole height or by half height?
-  var geo = new go.Geometry();
+  const geo = new go.Geometry();
   // a single figure consisting of straight lines and quarter-circle arcs
   geo.add(new go.PathFigure(0, 0)
     .add(new go.PathSegment(go.PathSegment.Line, w, 0))

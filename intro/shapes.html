@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,6 +6,7 @@
   <title>GoJS Shapes -- Northwoods Software</title>
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
@@ -29,14 +30,14 @@ Once you learn about models and data binding you will generally not create parts
 <h2 id="Figures">Figures</h2>
 <p>
 You can set the <a>Shape.figure</a> property to commonly named kinds of shapes.
-When using <a>GraphObject.make</a>, you can pass the figure name as a string argument.
+When using <a>GraphObject,make</a>, you can pass the figure name as a string argument.
 You may also need to set the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a> properties,
 although it is also common to have the size determined by the Panel that the shape is in.
 </p>
 <p>
 Here are several of the most often used Shape figures:
 </p>
-<pre data-language="javascript" id="figureShapes">
+<pre class="lang-js" id="figureShapes">
   diagram.add(
     $(go.Part, "Horizontal",
       $(go.Shape, "Rectangle",        { width: 40, height: 60, margin: 4, fill: null }),
@@ -68,7 +69,7 @@ The <a>Shape.fill</a> property specifies the brush used to fill the shape's outl
 Additional "stroke..." properties also control how the shape's outline is drawn.
 The most common such property is <a>Shape.strokeWidth</a>.
 </p>
-<pre data-language="javascript" id="strokedShapes">
+<pre class="lang-js" id="strokedShapes">
   diagram.add(
     $(go.Part, "Horizontal",
       $(go.Shape, { figure: "Club", width: 40, height: 40, margin: 4
@@ -101,7 +102,7 @@ the shape will not "hit" that shape and thus not select the <a>Node</a> that tha
 But a shape with a transparent fill produces a "filled" shape -- a mouse event inside the
 shape will "hit" that shape.
 </p>
-<pre data-language="javascript" id="fill">
+<pre class="lang-js" class="lang-js" id="fill">
   diagram.div.style.background = "lightgray";
   diagram.add(
     $(go.Part, "Table",
@@ -143,7 +144,7 @@ This is often necessary when building a geometry whose points are computed based
 </p>
 <p>
 But an easier way to create constant geometries is by
-calling <a>Geometry.parse</a> to read a string that has a geometry-defining path expression,
+calling <a>Geometry,parse</a> to read a string that has a geometry-defining path expression,
 or to set <a>Shape.geometryString</a> to such a string.
 These expressions have commands for moving an imaginary "pen".
 The syntax for geometry paths is documented in the <a href="geometry.html">Geometry Path Strings</a> page.
@@ -157,7 +158,7 @@ because the Geometry defines its own size.
 If the size is set or if it is imposed by the containing Panel, the effective geometry is determined by the <a>Shape.geometryStretch</a> property.
 Depending on the value of the geometryStretch property, this may result in extra empty space or the clipping of the shape.
 </p>
-<pre data-language="javascript" id="geometries">
+<pre class="lang-js" id="geometries">
   var W_geometry = go.Geometry.parse("M 0,0 L 10,50 20,10 30,50 40,0", false);
   diagram.add(
     $(go.Part, "Horizontal",
@@ -194,7 +195,7 @@ Besides setting the <a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> a
 you can also set other properties to affect the appearance.
 For example, you can set the <a>GraphObject.angle</a> and <a>GraphObject.scale</a> properties.
 </p>
-<pre data-language="javascript" id="transformedShapes">
+<pre class="lang-js" id="transformedShapes">
   diagram.add(
     $(go.Part, "Table",
       $(go.Shape, { row: 0, column: 1,
@@ -223,7 +224,7 @@ The following two shapes each use three separate linear gradient brushes, one fo
 Note the unrotated shape on the left.  Because its <a>GraphObject.background</a> brush is opaque,
 you cannot see the <a>GraphObject.areaBackground</a> brush that fills the same area behind it.
 </p>
-<pre data-language="javascript" id="backgrounds">
+<pre class="lang-js" id="backgrounds">
   var bluered = $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" });
   var yellowgreen = $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" });
   var grays = $(go.Brush, "Linear", { 0.0: "black", 1.0: "lightgray" });
@@ -255,14 +256,15 @@ However it is also possible to define additional named figures, which is conveni
 specify or change the geometry of an existing Shape by setting or data binding the <a>Shape.figure</a> property.
 </p>
 <p>
-The static function <a>Shape.defineFigureGenerator</a> can be used to define new figure names.
+The static function <a>Shape,defineFigureGenerator</a> can be used to define new figure names.
 The second argument is a function that is called with the <a>Shape</a> and the expected width and height
 in order to generate and return a <a>Geometry</a>.
 This permits parameterization of the geometry based on properties of the Shape and the expected size.
 In particular, the <a>Shape.parameter1</a> and <a>Shape.parameter2</a> properties can be considered,
 in addition to the width and height, while producing the Geometry.
+To be valid, the generated Geometry bounds must be equal to or less than the supplied width and height.
 </p>
-<pre data-language="javascript" id="defineFigure">
+<pre class="lang-js" id="defineFigure">
   go.Shape.defineFigureGenerator("RoundedTopRectangle", function(shape, w, h) {
     // this figure takes one parameter, the size of the corner
     var p1 = 5;  // default corner size

@@ -165,7 +165,7 @@ WallReshapingTool.prototype.doActivate = function () {
         // store pre-reshape locations of all wall's members (windows / doors)
         var wallParts = wall.memberParts;
         if (wallParts.count != 0) {
-            var locationsMap = new go.Map("string", go.Point);
+            var locationsMap = new go.Map(/*"string", go.Point*/);
             wallParts.iterator.each(function (wallPart) {
                 locationsMap.add(wallPart.data.key, wallPart.location);
             });
@@ -452,7 +452,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     var oldAngle = wall.rotateObject.angle;
     wallParts.iterator.each(function (part) { arr.push(part); });
     // remember the distance each wall part's location was from the stationary point; store these in a Map
-    var distancesMap = new go.Map("string", "number");
+    var distancesMap = new go.Map(/*"string", "number"*/);
     var closestPart  = null; var closestDistance = Number.MAX_VALUE;
     for (var i = 0; i < arr.length; i++) {
         var part = arr[i];
@@ -471,7 +471,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     // if the proposed newPoint would make it so the wall would reshape past closestPart, set newPoint to the edge point of closest part
     if (closestPart !== null) {
         var loc = closestPart.location;
-        var partLength = closestPart.data.width;
+        var partLength = closestPart.data.length;
         var angle = oldAngle;
         var point1 = new go.Point((loc.x + (partLength / 2)), loc.y);
         var point2 = new go.Point((loc.x - (partLength / 2)), loc.y);

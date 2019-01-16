@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -9,9 +12,6 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     // HTML + JavaScript text editor menu, made with HTMLInfo
     // This is a re-implementation of the default text editor
@@ -20,7 +20,7 @@
     (function (window) {
         var TextEditor = new go.HTMLInfo();
         var textarea = document.createElement('textarea');
-        textarea.id = "myTextArea";
+        textarea.id = 'myTextArea';
         textarea.addEventListener('input', function (e) {
             var tool = TextEditor.tool;
             if (tool.textBlock === null)
@@ -125,7 +125,7 @@
             textarea.style['border'] = '0';
             textarea.style['outline'] = 'none';
             textarea.style['whiteSpace'] = 'pre-wrap';
-            textarea.style['overflow'] = ' hidden'; // for proper IE wrap
+            textarea.style['overflow'] = 'hidden'; // for proper IE wrap
             textarea.rows = textBlock.lineCount;
             textarea.textScale = textscale; // attach a value to the textarea, for convenience
             // Show:

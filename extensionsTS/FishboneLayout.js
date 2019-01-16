@@ -2,9 +2,12 @@
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -23,28 +26,39 @@ var __extends = (this && this.__extends) || (function () {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var go = require("../release/go");
-    // FishboneLayout is a custom Layout derived from TreeLayout for creating "fishbone" diagrams.
-    // A fishbone diagram also requires a Link class that implements custom routing, FishboneLink,
-    // which is also defined in this file.
     /**
-    * @constructor
-    * @extends TreeLayout
-    * @class
-    * This only works for angle === 0 or angle === 180.
-    * <p>
-    * This layout assumes Links are automatically routed in the way needed by fishbone diagrams,
-    * by using the FishboneLink class instead of go.Link.
-    */
+     * FishboneLayout is a custom {@link Layout} derived from {@link TreeLayout} for creating "fishbone" diagrams.
+     * A fishbone diagram also requires a {@link Link} class that implements custom routing, {@link FishboneLink}.
+     *
+     * This only works for angle === 0 or angle === 180.
+     *
+     * This layout assumes Links are automatically routed in the way needed by fishbone diagrams,
+     * by using the FishboneLink class instead of go.Link.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/Fishbone.html">Fishbone Layout</a> sample.
+     * @category Layout Extension
+     */
     var FishboneLayout = /** @class */ (function (_super) {
         __extends(FishboneLayout, _super);
+        /**
+         * Constructs a FishboneLayout and sets the following properties:
+         *   - {@link #alignment} = {@link TreeLayout.AlignmentBusBranching}
+         *   - {@link #setsPortSpot} = false
+         *   - {@link #setsChildPortSpot} = false
+         */
         function FishboneLayout() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super.call(this) || this;
             _this.alignment = go.TreeLayout.AlignmentBusBranching;
             _this.setsPortSpot = false;
             _this.setsChildPortSpot = false;
             return _this;
-            // end FishboneLayout
         }
+        /**
+         * Create and initialize a {@link LayoutNetwork} with the given nodes and links.
+         * This override creates dummy vertexes, when necessary, to allow for proper positioning within the fishbone.
+         * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
+         * @return {LayoutNetwork}
+         */
         FishboneLayout.prototype.makeNetwork = function (coll) {
             // assert(this.angle === 0 || this.angle === 180);
             // assert(this.alignment === go.TreeLayout.AlignmentBusBranching);
@@ -53,7 +67,7 @@ var __extends = (this && this.__extends) || (function () {
             var net = _super.prototype.makeNetwork.call(this, coll);
             // make a copy of the collection of TreeVertexes
             // because we will be modifying the TreeNetwork.vertexes collection in the loop
-            var verts = new go.List(go.TreeVertex).addAll(net.vertexes);
+            var verts = new go.List().addAll(net.vertexes);
             verts.each(function (v) {
                 // ignore leaves of tree
                 if (v.destinationEdges.count === 0)
@@ -76,10 +90,12 @@ var __extends = (this && this.__extends) || (function () {
             });
             return net;
         };
-        ;
+        /**
+         * Add a direction property to each vertex and modify {@link TreeVertex#layerSpacing}.
+         */
         FishboneLayout.prototype.assignTreeVertexValues = function (v) {
             _super.prototype.assignTreeVertexValues.call(this, v);
-            v["_direction"] = 0; // add this property to each TreeVertex
+            v['_direction'] = 0; // add this property to each TreeVertex
             if (v.parent !== null) {
                 // The parent node will be moved to where the last dummy will be;
                 // reduce the space to account for the future hole.
@@ -91,7 +107,10 @@ var __extends = (this && this.__extends) || (function () {
                 }
             }
         };
-        ;
+        /**
+         * Assigns {@link Link#fromSpot}s and {@link Link#toSpot}s based on branching and angle
+         * and moves vertexes based on dummy locations.
+         */
         FishboneLayout.prototype.commitNodes = function () {
             if (this.network === null)
                 return;
@@ -120,82 +139,89 @@ var __extends = (this && this.__extends) || (function () {
                 }
             });
             // move the parent node to the location of the last dummy
-            this.network.vertexes.each(function (v) {
+            var vit = this.network.vertexes.iterator;
+            while (vit.next()) {
+                var v = vit.value;
                 var len = v.children.length;
                 if (len === 0)
-                    return; // ignore leaf nodes
+                    continue; // ignore leaf nodes
                 if (v.parent === null)
-                    return; // don't move root node
+                    continue; // don't move root node
                 var dummy2 = v.children[len - 1];
                 v.centerX = dummy2.centerX;
                 v.centerY = dummy2.centerY;
-            });
+            }
             var layout = this;
-            this.network.vertexes.each(function (v) {
+            vit = this.network.vertexes.iterator;
+            while (vit.next()) {
+                var v = vit.value;
                 if (v.parent === null) {
                     layout.shift(v);
                 }
-            });
+            }
             // now actually change the Node.location of all nodes
             _super.prototype.commitNodes.call(this);
         };
-        ;
-        // don't use the standard routing done by TreeLayout
+        /**
+         * This override stops links from being committed since the work is done by the {@link FishboneLink} class.
+         */
         FishboneLayout.prototype.commitLinks = function () { };
-        ;
+        /**
+         * Shifts subtrees within the fishbone based on angle and node spacing.
+         */
         FishboneLayout.prototype.shift = function (v) {
             var p = v.parent;
             if (p !== null && (v.angle === 90 || v.angle === 270)) {
                 var g = p.parent;
                 if (g !== null) {
                     var shift = v.nodeSpacing;
-                    if (g["_direction"] > 0) {
+                    if (g['_direction'] > 0) {
                         if (g.angle === 90) {
                             if (p.angle === 0) {
-                                v["_direction"] = 1;
+                                v['_direction'] = 1;
                                 if (v.angle === 270)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v["_direction"] = -1;
+                                v['_direction'] = -1;
                                 if (v.angle === 90)
                                     this.shiftAll(-2, shift, p, v);
                             }
                         }
                         else if (g.angle === 270) {
                             if (p.angle === 0) {
-                                v["_direction"] = 1;
+                                v['_direction'] = 1;
                                 if (v.angle === 90)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v["_direction"] = -1;
+                                v['_direction'] = -1;
                                 if (v.angle === 270)
                                     this.shiftAll(-2, shift, p, v);
                             }
                         }
                     }
-                    else if (g["_direction"] < 0) {
+                    else if (g['_direction'] < 0) {
                         if (g.angle === 90) {
                             if (p.angle === 0) {
-                                v["_direction"] = 1;
+                                v['_direction'] = 1;
                                 if (v.angle === 90)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v["_direction"] = -1;
+                                v['_direction'] = -1;
                                 if (v.angle === 270)
                                     this.shiftAll(-2, shift, p, v);
                             }
                         }
                         else if (g.angle === 270) {
                             if (p.angle === 0) {
-                                v["_direction"] = 1;
+                                v['_direction'] = 1;
                                 if (v.angle === 270)
                                     this.shiftAll(2, -shift, p, v);
                             }
                             else if (p.angle === 180) {
-                                v["_direction"] = -1;
+                                v['_direction'] = -1;
                                 if (v.angle === 90)
                                     this.shiftAll(-2, shift, p, v);
                             }
@@ -204,7 +230,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 else { // g === null: V is a child of the tree ROOT
                     var dir = ((p.angle === 0) ? 1 : -1);
-                    v["_direction"] = dir;
+                    v['_direction'] = dir;
                     this.shiftAll(dir, 0, p, v);
                 }
             }
@@ -212,9 +238,10 @@ var __extends = (this && this.__extends) || (function () {
                 var c = v.children[i];
                 this.shift(c);
             }
-            ;
         };
-        ;
+        /**
+         * Shifts a subtree.
+         */
         FishboneLayout.prototype.shiftAll = function (direction, absolute, root, v) {
             // assert(root.angle === 0 || root.angle === 180);
             var locx = v.centerX;
@@ -225,25 +252,28 @@ var __extends = (this && this.__extends) || (function () {
                 var c = v.children[i];
                 this.shiftAll(direction, absolute, root, c);
             }
-            ;
         };
-        ;
         return FishboneLayout;
     }(go.TreeLayout));
     exports.FishboneLayout = FishboneLayout;
-    // FishboneLink has custom routing
+    /**
+     * Custom {@link Link} class for {@link FishboneLayout}.
+     * @category Part Extension
+     */
     var FishboneLink = /** @class */ (function (_super) {
         __extends(FishboneLink, _super);
         function FishboneLink() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        //go.Link.call(this);
+        /**
+         * Determines the points for this link based on spots and maintains horizontal lines.
+         */
         FishboneLink.prototype.computePoints = function () {
             var result = _super.prototype.computePoints.call(this);
             if (result) {
                 // insert middle point to maintain horizontal lines
                 if (this.fromSpot.equals(go.Spot.MiddleRight) || this.fromSpot.equals(go.Spot.MiddleLeft)) {
-                    var p1;
+                    var p1 = void 0;
                     // deal with root node being on the "wrong" side
                     var fromnode = this.fromNode;
                     var fromport = this.fromPort;

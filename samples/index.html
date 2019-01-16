@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,27 +12,30 @@
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
     ga('create', 'UA-1506307-5', 'auto');
     ga('send', 'pageview');
   </script>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
   <!-- custom CSS after bootstrap -->
   <link href="../assets/css/main.css" rel="stylesheet" type="text/css"/>
-
   <style type="text/css">
-    img {
-      border: solid 3px #ccc;
+    .flex-container {
+      display: -webkit-flex;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      margin-top:8px
     }
 
-    a:hover, a:focus {
-      text-decoration: none;
-    }
-
-    a:hover img {
-      border-color: #00A9C9;
+    .flex-item {
+      width: 220px;
+      -webkit-flex-grow: 1;
+      -webkit-flex-shrink: 1;
+      flex-grow: 1;
+      flex-shrink: 1;
     }
   </style>
+
 </head>
 <body>
   <!-- non-fixed navbar -->
@@ -177,53 +180,37 @@ GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2019 <a href="https://w
 
   function buildSamples() {
     var sampleListDiv = document.getElementById("samplesDiv");
+    sampleListDiv.className = "flex-container";
     sampleListDiv.innerHTML = ""; // empty the div to start off
     var filteredSamples = filterSamples();
     if (filteredSamples.length === 0) return;
-    var row = document.createElement('div');
-    var couple = document.createElement('div'); // 4 samples per row, but they are grouped into 2 for when 4 won't fit
-    couple.className = "couple";
-    row.className = "row mt30";
-    var rowsize = 4;
-    var couplesize = 2; // see "couple" comment above
-    var inrow = 0;
-    var l = arr.length;
+
     for (var i = 0; i < filteredSamples.length; i++) {
       var sample = filteredSamples[i];
       var samplediv = document.createElement('div');
-      samplediv.className = 'col-sm-3 col-xs-6 samplecontainer';
+      samplediv.className = "flex-item";
+
       var a = document.createElement('a');
       a.href = sample[0] + '.html';
+
       var img = document.createElement('img');
       img.src = '../assets/images/screenshots/' + sample[3] + '.png';
       img.width = 200;
       img.height = 200;
       img.className = "img-responsive";
       a.appendChild(img);
+
       var title = document.createElement('h2');
       title.textContent = sample[1];
+      a.appendChild(title);
+
       var desc = document.createElement('p');
+      desc.style.margin = "4px";
       desc.textContent = sample[2];
 
-      a.appendChild(title);
       samplediv.appendChild(a);
       samplediv.appendChild(desc);
-      couple.appendChild(samplediv);
-      row.appendChild(couple);
-      inrow++;
-      if (inrow === couplesize || inrow === rowsize) {
-        couple = document.createElement('div');
-        couple.className = "couple";
-      }
-      if (inrow >= rowsize) {
-        sampleListDiv.appendChild(row);
-        row = document.createElement('div');
-        row.className = "row mt30";
-        inrow = 0;
-      }
-    }
-    if (inrow > 0) {
-      sampleListDiv.appendChild(row);
+      sampleListDiv.appendChild(samplediv);
     }
   }
 

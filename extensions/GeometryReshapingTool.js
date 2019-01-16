@@ -138,12 +138,7 @@ GeometryReshapingTool.prototype.updateAdornments = function(part) {
             case 2: x = seg.point1X; y = seg.point1Y; break;
             case 3: x = seg.point2X; y = seg.point2Y; break;
           }
-          var bw = b.width;
-          if (bw === 0) bw = 0.001;
-          var bh = b.height;
-          if (bh === 0) bh = 0.001;
-          h.alignment = new go.Spot(Math.max(0, Math.min((x - b.x) / bw, 1)),
-                                    Math.max(0, Math.min((y - b.y) / bh, 1)));
+          h.alignment = new go.Spot(0, 0, x - b.x, y - b.y);
         });
 
         part.addAdornment(this.name, adornment);
@@ -332,8 +327,10 @@ GeometryReshapingTool.prototype.reshape = function(newPoint) {
   var offset = geo.normalize();  // avoid any negative coordinates in the geometry
   shape.geometry = geo;  // modify the Shape
   var part = shape.part;  // move the Part holding the Shape
+  part.ensureBounds();
   if (!part.locationSpot.equals(go.Spot.Center)) {  // but only if the locationSpot isn't Center
-    part.move(part.position.copy().subtract(offset));
+    // support the whole Node being rotated
+    part.move(part.position.copy().subtract(offset.rotate(part.angle)));
   }
   this.updateAdornments(part);  // update any Adornments of the Part
   this.diagram.maybeUpdate();  // force more frequent drawing for smoother looking behavior

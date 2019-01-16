@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -184,7 +184,7 @@
         }
     }*/
 
-function init() {	    
+function init() {
 
 	// hides open HTML Element
 	var openDocument = document.getElementById("openDocument");
@@ -198,7 +198,6 @@ function init() {
 	myDiagram =
 	  $(go.Diagram, "myDiagramDiv",
 		{
-		  allowDrop: true,  // accept drops from palette
 		  allowLink: false,  // no user-drawn links
 
 		  commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
@@ -234,16 +233,14 @@ function init() {
 
 	// sets the qualities of the tooltip
 	var tooltiptemplate =
-	  $(go.Adornment, go.Panel.Auto,
-		$(go.Shape, "RoundedRectangle",
-		  { fill: "whitesmoke", stroke: "gray" }),
-		$(go.TextBlock,
-		  { margin: 3, editable: true },
-		  // converts data about the part into a string
-		  new go.Binding("text", "", function(data) {
-			  if (data.item != undefined) return data.item;
-			  return "(unnamed item)";
-			}))
+	  $("ToolTip",
+			$(go.TextBlock,
+				{ margin: 3, editable: true },
+				// converts data about the part into a string
+				new go.Binding("text", "", function(data) {
+					if (data.item != undefined) return data.item;
+					return "(unnamed item)";
+				}))
 	  );
 
 	// Define the generic furniture and structure Nodes.
@@ -285,7 +282,7 @@ function init() {
 	  );
 
 	myDiagram.nodeTemplate.contextMenu =
-	  $(go.Adornment, "Vertical",
+    $("ContextMenu",
 		$("ContextMenuButton",
 			$(go.TextBlock, "Rename", { margin: 3 }),
 			{ click: function(e, obj) { rename(obj); } }),

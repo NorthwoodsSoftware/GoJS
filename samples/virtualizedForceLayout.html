@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,8 +39,7 @@
                   new go.Binding("text", "color")),
                 {
                   toolTip:
-                    $(go.Adornment, "Auto",
-                      $(go.Shape, { fill: "lightyellow" }),
+                    $("ToolTip",
                       $(go.TextBlock, { margin: 3 },
                         new go.Binding("text", "",
                                        function(d) { return "key: " + d.key + "\nbounds: " + d.bounds.toString(); }))
@@ -55,8 +54,7 @@
                 $(go.Shape)
               ),
 
-            "animationManager.isEnabled": false,
-            "undoManager.isEnabled": true
+            "animationManager.isEnabled": false
           });
 
       // This model includes all of the data
@@ -142,13 +140,13 @@
       var available = new go.List();
       available.addAll(nodes);
       for (var i = 0; i < nodes.length; i++) {
-        var next = nodes.elt(i);
-        available.remove(next)
+        var next = nodes.get(i);
+        available.delete(next)
         var children = Math.floor(Math.random() * (max - min + 1)) + min;
         for (var j = 1; j <= children; j++) {
           if (available.length === 0) break;
-          var to = available.elt(0);
-          available.remove(to);
+          var to = available.get(0);
+          available.delete(to);
           linkArray.push({
             from: next.key,
             to: to.key
@@ -333,20 +331,18 @@
     }
     go.Diagram.inherit(VirtualizedForceDirectedLayout, go.ForceDirectedLayout);
 
-    /** @override */
     VirtualizedForceDirectedLayout.prototype.createNetwork = function() {
-      return new VirtualizedForceDirectedNetwork();  // defined below
+      return new VirtualizedForceDirectedNetwork(this);  // defined below
     };
 
     // ignore the argument, an (implicit) collection of Parts
-    /** @override */
     VirtualizedForceDirectedLayout.prototype.makeNetwork = function(coll) {
       var net = this.createNetwork();
       net.addData(this.model);  // use the model data, not any actual Nodes and Links
       return net;
     };
 
-    /** @override */
+    /** k */
     VirtualizedForceDirectedLayout.prototype.commitLayout = function() {
       go.ForceDirectedLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
@@ -359,8 +355,8 @@
     // end VirtualizedForceDirectedLayout class
 
 
-    function VirtualizedForceDirectedNetwork() {
-      go.ForceDirectedNetwork.call(this);
+    function VirtualizedForceDirectedNetwork(layout) {
+      go.ForceDirectedNetwork.call(this, layout);
     }
     go.Diagram.inherit(VirtualizedForceDirectedNetwork, go.ForceDirectedNetwork);
 
@@ -373,7 +369,7 @@
           var d = ndata[i];
           var v = this.createVertex();
           v.data = d;  // associate this Vertex with data, not a Node
-          dataVertexMap.add(model.getKeyForNodeData(d), v);
+          dataVertexMap.set(model.getKeyForNodeData(d), v);
           this.addVertex(v);
         }
         // create an edge for each link data
@@ -381,8 +377,8 @@
         for (var i = 0; i < ldata.length; i++) {
           var d = ldata[i];
           // now find corresponding vertexes
-          var from = dataVertexMap.getValue(model.getFromKeyForLinkData(d));
-          var to = dataVertexMap.getValue(model.getToKeyForLinkData(d));
+          var from = dataVertexMap.get(model.getFromKeyForLinkData(d));
+          var to = dataVertexMap.get(model.getToKeyForLinkData(d));
           if (from === null || to === null) continue;  // skip
           // create and add VirtualizedForceDirectedEdge
           var e = this.createEdge();
@@ -396,7 +392,6 @@
       }
     };
 
-    /** @override */
     VirtualizedForceDirectedNetwork.prototype.deleteArtificialVertexes = function() { };
     // end VirtualizedForceDirectedNetwork class
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,8 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
         {
-          // start everything in the middle of the viewport
-          initialContentAlignment: go.Spot.Center,
           initialAutoScale: go.Diagram.UniformToFill,
           layout: $(go.CircularLayout)
           // other properties are set by the layout function, defined below
@@ -128,7 +126,7 @@
     if (myDiagram.nodes.count < 2) return;
     var linkArray = [];
     var nit = myDiagram.nodes;
-    var nodes = new go.List(go.Node);
+    var nodes = new go.List(/*go.Node*/);
     nodes.addAll(nit);
     var num = nodes.length;
     if (cyclic) {
@@ -143,10 +141,10 @@
       if (isNaN(min) || min < 0) min = 0;
       if (isNaN(max) || max < min) max = min;
       for (var i = 0; i < num; i++) {
-        var next = nodes.elt(i);
+        var next = nodes.get(i);
         var children = Math.floor(Math.random() * (max - min + 1)) + min;
         for (var j = 1; j <= children; j++) {
-          var to = nodes.elt(Math.floor(Math.random() * num));
+          var to = nodes.get(Math.floor(Math.random() * num));
           // get keys from the Node.text strings
           var nextKey = parseInt(next.text, 10);
           var toKey = parseInt(to.text, 10);

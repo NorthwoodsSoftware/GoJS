@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -27,7 +27,7 @@ increasing values of Y going downwards.
 The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates.
 Thus the <a>Point</a>s that may be saved in the model's node data are normally in document coordinates:
 </p>
-<pre>
+<pre class="lang-js">
   diagram.model.nodeDataArray = [
     { key: "Alpha", loc: "0 0" },
     { key: "Beta", loc: "100 50" }
@@ -69,8 +69,8 @@ As you zoom out, the viewport gets larger.
 <p>
 To better understand the difference between document and viewport coordinates, look at this diagram:
 </p>
-<pre data-language="javascript" id="diffCoordSystems" style="display:none">
-  diagram.nodeTemplate = 
+<pre class="lang-js" id="diffCoordSystems" style="display:none">
+  diagram.nodeTemplate =
   $(go.Node, "Auto",
     { scale : 1.3},
     new go.Binding("location", "loc", gridPointParse),
@@ -96,7 +96,7 @@ To better understand the difference between document and viewport coordinates, l
   var docGridStroke = "rgba(70, 130, 180, 0.5)";
   var viewGridStroke = "rgba(255, 128, 128, 1)";
   var commentStroke = "brown";
-  
+
   var cellSide = 20; // side length of one grid cell
   var cellSize = new go.Size(cellSide * 5, cellSide * 5);
   var pointSize = 7;
@@ -172,6 +172,7 @@ To better understand the difference between document and viewport coordinates, l
 
   diagram.nodeTemplateMap.add("Point", // template for denoting points on the grid
     $(go.Node, "Vertical",
+      { movable: false },
       new go.Binding("location", "point", function gridPointLocation(point) {
           label = point.label;
           // measure the longest line's width
@@ -181,7 +182,7 @@ To better understand the difference between document and viewport coordinates, l
             var textBlock = $(go.TextBlock, { text: text, font: "bold 10pt sans-serif"});
             if (textBlock.naturalBounds.right > width) {
               width = textBlock.naturalBounds.right;
-            } 
+            }
           });
 
           // text block with entire string to measure height
@@ -220,6 +221,7 @@ To better understand the difference between document and viewport coordinates, l
 
   diagram.groupTemplateMap.add("Grid",
     $(go.Group, "Position",
+      { movable: false },
       $(go.Shape, "Rectangle", { fill: "transparent", strokeWidth: 2},
         new go.Binding("fill", "fill"),
         new go.Binding("stroke", "border"),
@@ -278,18 +280,18 @@ To better understand the difference between document and viewport coordinates, l
   // Formatting
   function headerStyle() {
     return {
-      margin: 3, 
+      margin: 3,
       font: "bold 12pt sans-serif",
-      minSize: new go.Size(140, 16), 
+      minSize: new go.Size(140, 16),
       maxSize: new go.Size(120, NaN),
       textAlign: "center"
     };
   }
   function textStyle() {
     return {
-      margin: 3, 
+      margin: 3,
       font: "italic 10pt sans-serif",
-      minSize: new go.Size(16, 16), 
+      minSize: new go.Size(16, 16),
       maxSize: new go.Size(160, NaN),
       textAlign: "left"
     };
@@ -307,7 +309,7 @@ the edge of where the diagram's objects are.
 It is also due to <a>Part.locationSpot</a> having the location be at the center of the "+" Shape,
 not at the top-left corner of the whole Part.
 </p>
-<pre data-language="javascript" id="coordsystems">
+<pre class="lang-js" id="coordsystems">
   // read-only to avoid accidentally moving any Part in document coordinates
   diagram.isReadOnly = true;
 
@@ -443,7 +445,7 @@ If you want to be notified whenever the viewport bounds changes, you can registe
 
 <h2 id="ScrollingModes">Scrolling modes</h2>
 <p>
-<a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>Diagram.DocumentScroll</a> (the default), or scroll endlessly with <a>Diagram.InfiniteScroll</a>.
+<a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>Diagram,DocumentScroll</a> (the default), or scroll endlessly with <a>Diagram,InfiniteScroll</a>.
 </p>
 <p>
 <a>Diagram.positionComputation</a> and <a>Diagram.scaleComputation</a> allow you to determine what positions and scales are acceptable to be scrolled to. For instance, you could allow only integer position values, or only allow scaling to the values of 0.5, 1, or 2.
@@ -452,7 +454,7 @@ If you want to be notified whenever the viewport bounds changes, you can registe
 The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all the code for the example below, which lets you toggle these three properties.
 </p>
 
-<pre data-language="javascript" id="scrollmodes" style="display: none;">
+<pre class="lang-js" id="scrollmodes" style="display: none;">
     diagram.minScale = 0.25;
     diagram.grid = $(go.Panel, "Grid",
             $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
@@ -461,7 +463,6 @@ The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all t
             $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
           );
     diagram.toolManager.draggingTool.isGridSnapEnabled = true;
-    diagram.initialContentAlignment = go.Spot.Center;
     diagram.undoManager.isEnabled = true;
 
 
@@ -496,26 +497,26 @@ The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all t
 <p>
   <label><input id="infscroll" type="checkbox" />Enable Infinite Scrolling, setting <a>Diagram.scrollMode</a></label>
 </p>
-<pre data-language="javascript"><code>
+<pre class="lang-js">
   myDiagram.scrollMode = checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
-</code></pre>
+</pre>
 
 <p>
   <label><input id="poscomp" type="checkbox" />Enable <a>Diagram.positionComputation</a> function</label>
 </p>
-<pre data-language="javascript"><code>
+<pre class="lang-js">
   function positionfunc(diagram, pos) {
     var size = diagram.grid.gridCellSize;
     return new go.Point(
       Math.round(pos.x / size.width) * size.width,
       Math.round(pos.y / size.height) * size.height);
   }
-</code></pre>
+</pre>
 
 <p>
   <label><input id="scalecomp" type="checkbox" />Enable <a>Diagram.scaleComputation</a> function</label>
 </p>
-<pre data-language="javascript"><code>
+<pre class="lang-js">
   function scalefunc(diagram, scale) {
     var oldscale = diagram.scale;
     if (scale > oldscale) {
@@ -525,7 +526,7 @@ The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all t
     }
     return oldscale;
   }
-</code></pre>
+</pre>
 <script type="text/javascript">
   function positionfunc(diagram, pos) {
     var size = diagram.grid.gridCellSize;
@@ -546,23 +547,17 @@ The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all t
 
   var infscroll = document.getElementById('infscroll');
   infscroll.addEventListener('change', function(e) {
-    myDiagram2.startTransaction('change scroll mode');
-    myDiagram2.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
-    myDiagram2.commitTransaction('change scroll mode');
+    myDiagram2.commit(function(d) { d.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll; });
   });
 
   var poscomp = document.getElementById('poscomp');
   poscomp.addEventListener('change', function(e) {
-    myDiagram2.startTransaction('change position computation');
-    myDiagram2.positionComputation = poscomp.checked ? positionfunc : null;
-    myDiagram2.commitTransaction('change position computation');
+    myDiagram2.commit(function(d) { d.positionComputation = poscomp.checked ? positionfunc : null; });
   });
 
   var scalecomp = document.getElementById('scalecomp');
   scalecomp.addEventListener('change', function(e) {
-    myDiagram2.startTransaction('change scale computation');
-    myDiagram2.scaleComputation = scalecomp.checked ? scalefunc : null;
-    myDiagram2.commitTransaction('change scale computation');
+    myDiagram2.commit(function(d) { d.scaleComputation = scalecomp.checked ? scalefunc : null; });
   });
 </script>
 
@@ -590,6 +585,238 @@ call <a>GraphObject.getDocumentPoint</a>.
 For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizing GraphObjects</a>.
 </p>
 
+<h3 id="NestedPanelCoordinates">Nested Panel coordinates</h3>
+<pre class="lang-js" id="nestedpanelcoords" style="display: none;">
+  // read-only to avoid accidentally moving any Part in document coordinates
+  diagram.isReadOnly = true;
+  diagram.allowSelect = false;
+  diagram.initialPosition = new go.Point(-5, -5);
+  diagram.initialScale = 0.45;
+
+  // data objects for data tables.
+  function InfoBox(key,gro,loc) {
+    this.category = "info";
+    this.key = key;
+    this.location = go.Point.parse(loc);
+    this.gro = gro;
+  }
+
+  // alignment properties for TextBlocks in data tables.
+  function AlignmentObject(column,columnSpan) {
+    this.column = column;
+    this.columnSpan = columnSpan;
+    this.verticalAlignment = go.Spot.Center;
+    this.textAlign = "center";
+    this.alignment = go.Spot.Center;
+    this.height = 24;
+  }
+
+  // creates functions which have limited precision return values.
+  function prec(conv) { return function (g) { return conv(g).toPrecision(3) }}
+
+  // generates cells in data tables
+  function dataBlock(conv, alo1, alo2) {
+    return $(go.TextBlock, "", new go.Binding("text", "gro", prec(conv)), new AlignmentObject(alo1, alo2));
+  }
+
+  var nodeTemplates = new go.Map();
+
+  // Template for data tables
+  nodeTemplates.add("info",
+    $(go.Node, "Auto",
+      // Allows location to be set in data object
+      new go.Binding("location"), { padding: 0, scale: 2 },
+      $(go.Panel, "Table",
+        {name: "table",
+          defaultRowSeparatorStroke: "black", defaultColumnSeparatorStroke: "black",
+          defaultAlignment: go.Spot.Center, background: "white"
+        },
+        // sets a different look for the defining row.
+        $(go.RowColumnDefinition,
+          {row: 0,
+            background: "lightgray", separatorStrokeWidth: 0,
+            separatorPadding: 0, coversSeparators: true,
+            height: 24
+          }),
+        // sets a different look for the defining column.
+        $(go.RowColumnDefinition,
+          {column: 0,
+            coversSeparators: true, separatorStrokeWidth: 0,
+            separatorPadding: 0, background: "lightgray",
+            width: 45
+          }),
+        // necessary to keep weirdness involving the columnSpan of certain elements in the table
+        // from causing separators to go through elements.
+        $(go.RowColumnDefinition, {column: 1, width: 28}),
+        $(go.RowColumnDefinition, {column: 2, separatorStroke: "transparent", width: 28}),
+        $(go.RowColumnDefinition, {column: 3, width: 28}),
+        $(go.RowColumnDefinition, {column: 4, separatorStroke: "transparent", width: 28}),
+        // defining row
+        $(go.Panel, "TableRow", {row: 0},
+          $(go.TextBlock, "Container", new AlignmentObject(1,2)),
+          $(go.TextBlock, "Diagram", new AlignmentObject(3,2))),
+
+        // angle row
+        $(go.Panel, "TableRow", {row: 1},
+          $(go.TextBlock, "angle", {column: 0}),
+          // container angle
+          dataBlock(function (g) { return g.angle }, 1, 2),
+          // document angle
+          dataBlock(function (g) { return g.getDocumentAngle() }, 3, 2)),
+
+        // scale row
+        $(go.Panel, "TableRow", {row: 2},
+          $(go.TextBlock, "scale", {column: 0}),
+          // container scale
+          dataBlock(function (g) { return g.scale }, 1, 2),
+          // document scale
+          dataBlock(function (g) { return g.getDocumentScale() }, 3, 2)),
+
+        // position row
+        $(go.Panel, "TableRow", {row: 3},
+
+          $(go.TextBlock, "X Y", {column: 0}),
+
+          // container x and y values
+          dataBlock(function (g) { return g.actualBounds.x }, 1, 1),
+          dataBlock(function (g) { return g.actualBounds.y }, 2, 1),
+
+          // document x and y values
+          dataBlock(function (g) { return g.getDocumentBounds().x }, 3, 1),
+          dataBlock(function (g) { return g.getDocumentBounds().y }, 4, 1)),
+
+        // dimension row
+        $(go.Panel, "TableRow", {row: 4},
+          $(go.TextBlock, "size", {column: 0}),
+
+          // container width and height
+          dataBlock(function (g) { return g.actualBounds.width }, 1, 1),
+          dataBlock(function (g) { return g.actualBounds.height }, 2, 1),
+
+          // document width and height
+          dataBlock(function (g) { return g.getDocumentBounds().width }, 3, 1),
+          dataBlock(function (g) { return g.getDocumentBounds().width }, 4, 1)))));
+
+
+  // data object for labels on data tables
+  function WordBubble(key,width,loc,desc,color) {
+    this.key = key; this.category = "words"; this.width = width;
+    this.desc = desc; this.location = go.Point.parse(loc); this.color = color;
+  }
+
+  // template for wordbubble objects
+  nodeTemplates.add("words",
+    $(go.Node, "Auto",
+      new go.Binding("location"),
+      $(go.TextBlock, "",
+        new go.Binding("text", "desc"),
+        new go.Binding("stroke","color"),
+        new go.Binding("width"),
+        { textAlign: "left", font: "24pt sans-serif" })));
+
+  // creating the main node's template, adding the nested Panels to it, and adding it to the node template map.
+  let vertPanel = posPanel = spotPanel = vertLabel = topLabel = {};
+  var BigNode =
+  $(go.Node, "Auto",
+    {
+      location: new go.Point(300,0),
+    },
+    vertPanel =
+    $(go.Panel, "Vertical",
+      {portId: "vertPanel",
+        angle: 165, scale: 1.5,
+        background: "lightblue",
+        padding: 20
+      },
+      vertLabel =
+      $(go.TextBlock, "Vertical Panel", {font: "bold 12pt sans-serif"}),
+      posPanel =
+      $(go.Panel, "Position",
+        {portId: "posPanel",
+          angle: 120, scale: 0.8, padding: 50,
+          background: go.Brush.mix("brown", "lightyellow", 0.4)},
+        $(go.Panel, "Auto", { position: new go.Point(25,0), desiredSize: new go.Size(60,90)},
+          $(go.Shape, "Triangle", { fill: "transparent" }),
+          $(go.TextBlock, "This Side Up")),
+        $(go.TextBlock, "Position Panel", { position: new go.Point(0,100), font: "bold 12pt sans-serif" }),
+       ),
+      spotPanel =
+      $(go.Panel, "Spot",
+        {portId: "spotPanel",
+          angle: 30, scale: 1.5,
+          background: "lightgreen" },
+        $(go.Shape, "RoundedRectangle", {strokeWidth: 0, desiredSize: new go.Size(50,100), fill: "transparent"}),
+        $(go.TextBlock, "Spot Panel",
+          {
+            font: "bold 12pt sans-serif",
+            alignment: go.Spot.Center,
+          }
+         ),
+        $(go.TextBlock, "Top",
+          {
+            margin: 5,
+            font: "bold 12pt sans-serif",
+            alignment: go.Spot.TopCenter,
+          }
+         ),
+        bottomLabel =
+        $(go.TextBlock, "Bottom",
+          {portId: "bottomLabel",
+            font: "bold 12pt sans-serif",
+            alignment: go.Spot.BottomCenter
+          }))));
+  nodeTemplates.add("", BigNode);
+
+  diagram.nodeTemplateMap = nodeTemplates;
+
+  diagram.linkTemplate =
+    $(go.Link,
+      new go.Binding("fromNode", "from", diagram.findNodeForKey),
+      new go.Binding("to"), new go.Binding("toPortId"),
+      $(go.Shape, {strokeWidth: 5}),
+      $(go.Shape, {scale: 3,toArrow: "Standard"}));
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    {key: "bn"},
+    // creating infoboxes
+    new InfoBox(0,vertPanel,"-20 30"),
+    new InfoBox(1,posPanel,"20 470"),
+    new InfoBox(2,spotPanel,"900 500"),
+    new InfoBox(3,bottomLabel,"900 180"),
+
+    // creating wordbubbles
+    new WordBubble(4,250,"60 0","Vertical Panel","blue"),
+    new WordBubble(5,250,"60 440","Position Panel","red"),
+    new WordBubble(6,250,"980 470","Spot Panel","green"),
+    new WordBubble(7,275,"960 105","TextBlock aligned at Spot.Bottom","black")
+  ],
+  [
+    // linking each infobox to an item on the main node.
+    {from: 0, to: "bn", toPortId: "vertPanel"},
+    {from: 1, to: "bn", toPortId: "posPanel"},
+    {from: 2, to: "bn", toPortId: "spotPanel"},
+    {from: 3, to: "bn", toPortId: "bottomLabel"}
+  ]);
+</pre>
+<p>
+  The transformations of each element in a <a>Panel</a> are compounded by that panel's transformations.
+</p>
+<script>goCode("nestedpanelcoords", 600, 400)</script>
+<p>
+  The <a>TextBlock</a> that is "Bottom" has the default <a>GraphObject.angle</a> of zero, so that the text is drawn upright.
+  But that TextBlock is an element in the green "Spot" <a>Panel</a> whose <a>GraphObject.angle</a> to 30,
+  so it and its text should appear somewhat tilted.
+  However the blue "Vertical" Panel itself has an <a>GraphObject.angle</a> of 165.
+  Because each Panel has its own coordinate system and because transformations on nested elements are compounded,
+  the effective angle for the green Panel is 195 degrees, the sum of those individual angles (30 + 165), which is nearly upside down.
+</p>
+<p>
+  The <a>GraphObject.scale</a> property also affects how an object is sized in its container Panel.
+  The brown "Position" <a>Panel</a> has a scale of 0.8 relative to its container.
+  But because the "Vertical" Panel has a scale of 1.5, its effective scale is 1.2 overall,
+  the product of those individual scales (0.8 x 1.5).
+</p>
 </div>
 </div>
 </body>

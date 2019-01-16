@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -24,11 +24,20 @@ The tooltip part is bound to the same data as the part itself.
 See samples that make use of tooltips in the <a href="../samples/index.html#tooltips">samples index</a>.
 </p>
 <p>
+It is typical to implement a tooltip as a "ToolTip" Panel holding a <a>TextBlock</a> or a Panel of TextBlocks and other objects.
+Each "ToolTip" is just an "Auto" Panel <a>Adornment</a> that is shadowed, and where the border is a rectangular <a>Shape</a> with a light gray fill.
+However you can implement the tooltip as any arbitrarily complicated Adornment.
+</p>
+<p>
+You can see how the "ToolTip" builder is defined at
+<a href="../extensions/Buttons.js">Buttons.js</a>.
+</p>
+<p>
 In this example each <a>Node</a> has its <a>GraphObject.toolTip</a> property set to a Part that shows the
 data.color property via a normal data binding.
 The diagram gets its own tooltip by setting <a>Diagram.toolTip</a>.
 </p>
-<pre data-language="javascript" id="tooltips">
+<pre class="lang-js" id="tooltips">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -38,8 +47,7 @@ The diagram gets its own tooltip by setting <a>Diagram.toolTip</a>.
         new go.Binding("text", "key")),
       {
         toolTip:  // define a tooltip for each node that displays the color as text
-          $(go.Adornment, "Auto",
-            $(go.Shape, { fill: "#FFFFCC" }),
+          $("ToolTip",
             $(go.TextBlock, { margin: 4 },
               new go.Binding("text", "color"))
           )  // end of Adornment
@@ -54,8 +62,7 @@ The diagram gets its own tooltip by setting <a>Diagram.toolTip</a>.
 
   // provide a tooltip for the background of the Diagram, when not over any Part
   diagram.toolTip =
-    $(go.Adornment, "Auto",
-      $(go.Shape, { fill: "#CCFFCC" }),
+    $("ToolTip",
       $(go.TextBlock, { margin: 4 },
         // use a converter to display information about the diagram model
         new go.Binding("text", "", diagramInfo))
@@ -90,8 +97,10 @@ There are two ways to customize the positioning of the tooltip relative to the a
 One way is to override <a>ToolManager.positionToolTip</a>.
 Another way is to have the tooltip <a>Adornment</a> include a <a>Placeholder</a>.
 The Placeholder is positioned to have the same size and position as the adorned object.
+When creating tooltips with Placeholders, don't use the predefined "ToolTip" builder as it will introduce an extra shape typically used
+as the border for the "Auto" Panel.
 </p>
-<pre data-language="javascript" id="tooltipsplaceholder">
+<pre class="lang-js" id="tooltipsplaceholder">
   // this is a normal Node template that also has a toolTip defined for it
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -114,7 +123,7 @@ The Placeholder is positioned to have the same size and position as the adorned 
           )  // end Adornment
       }
     );
-  diagram.initialContentAlignment = go.Spot.Center;
+
   var nodeDataArray = [
     { key: "Alpha", color: "lightyellow" },
     { key: "Beta", color: "orange" }
@@ -135,6 +144,10 @@ so that the tooltip is not automatically removed when the mouse moves.
 It is possible to define custom tooltips using HTML instead of <a>Adornment</a>s using the <a>HTMLInfo</a> class.
 The <a href="../samples/dataVisualization.html">Data Visualization sample</a> shows such tooltips.
 See <a href="HTMLInteraction.html">HTML Interaction</a> for more discussion.
+</p>
+<p>
+HTML tooltips require more effort to implement than using the default <b>GoJS</b> "ToolTip" and GraphObjects.
+However you would have the full power of HTML/CSS/JavaScript to show whatever you want.
 </p>
 
 </div>

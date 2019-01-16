@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,85 +25,116 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // The SectorReshapingTool shows three handles:
-    // two for changing the angles of the sides of the filled sector,
-    // and one for controlling the diameter of the sector.
-    // This depends on there being three data properties, "angle", "sweep", and "radius",
-    // that hold the needed information to be able to reproduce the sector.
     /**
-    * This SectorReshapingTool class allows for the user to interactively modify the angles of a "pie"-shaped sector of a circle.
-    * When a node is selected, this shows two handles for changing the angles of the sides of the sector and one handle for changing the radius.
-    * @constructor
-    * @extends Tool
-    * @class
-    */
+     * The SectorReshapingTool class lets the user interactively modify the angles of a "pie"-shaped sector of a circle.
+     * When a node is selected, this shows two handles for changing the angles of the sides of the sector and one handle for changing the radius.
+     *
+     * This depends on there being three data properties, "angle", "sweep", and "radius",
+     * that hold the needed information to be able to reproduce the sector.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/SectorReshaping.html">Sector Reshaping</a> sample.
+     * @category Tool Extension
+     */
     var SectorReshapingTool = /** @class */ (function (_super) {
         __extends(SectorReshapingTool, _super);
+        /**
+         * Constructs a SectorReshapingTool and sets the name for the tool.
+         */
         function SectorReshapingTool() {
             var _this = _super.call(this) || this;
             _this._handle = null;
             _this._originalRadius = 0;
             _this._originalAngle = 0;
             _this._originalSweep = 0;
-            // these are the names of the data properties to read and write
-            _this.radiusProperty = "radius";
-            _this.angleProperty = "angle";
-            _this.sweepProperty = "sweep";
-            _this.name = "SectorReshaping";
+            _this._radiusProperty = 'radius';
+            _this._angleProperty = 'angle';
+            _this._sweepProperty = 'sweep';
+            _this.name = 'SectorReshaping';
             return _this;
         }
+        Object.defineProperty(SectorReshapingTool.prototype, "radiusProperty", {
+            /**
+             * Gets or sets the name of the data property for the sector radius.
+             *
+             * The default value is "radius".
+             */
+            get: function () { return this._radiusProperty; },
+            set: function (val) { this._radiusProperty = val; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(SectorReshapingTool.prototype, "angleProperty", {
+            /**
+             * Gets or sets the name of the data property for the sector start angle.
+             *
+             * The default value is "angle".
+             */
+            get: function () { return this._angleProperty; },
+            set: function (val) { this._angleProperty = val; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(SectorReshapingTool.prototype, "sweepProperty", {
+            /**
+             * Gets or sets the name of the data property for the sector sweep angle.
+             *
+             * The default value is "sweep".
+             */
+            get: function () { return this._sweepProperty; },
+            set: function (val) { this._sweepProperty = val; },
+            enumerable: true,
+            configurable: true
+        });
         /**
-        * This tool can only start if Diagram.allowReshape is true and the mouse-down event
-        * is at a tool handle created by this tool.
-        * @override
-        * @this {SectorReshapingTool}
-        */
+         * This tool can only start if Diagram.allowReshape is true and the mouse-down event
+         * is at a tool handle created by this tool.
+         */
         SectorReshapingTool.prototype.canStart = function () {
             if (!this.isEnabled)
                 return false;
             var diagram = this.diagram;
-            if (diagram === null || diagram.isReadOnly)
+            if (diagram.isReadOnly)
                 return false;
             if (!diagram.allowReshape)
                 return false;
             var h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
             return (h !== null);
         };
-        ;
         /**
-        * If the Part is selected, show two angle-changing tool handles and one radius-changing tool handle.
-        * @override
-        * @this {SectorReshapingTool}
-        * @param {Part} part
-        */
+         * If the Part is selected, show two angle-changing tool handles and one radius-changing tool handle.
+         */
         SectorReshapingTool.prototype.updateAdornments = function (part) {
             var data = part.data;
-            if (part.isSelected && data !== null && this.diagram !== null && !this.diagram.isReadOnly) {
+            if (part.isSelected && data !== null && !this.diagram.isReadOnly) {
                 var ad = part.findAdornment(this.name);
                 if (ad === null) {
                     var $ = go.GraphObject.make;
                     ad =
-                        $(go.Adornment, "Spot", $(go.Placeholder), $(go.Shape, "Diamond", { name: "RADIUS", fill: "lime", width: 10, height: 10, cursor: "move" }, new go.Binding("alignment", "", function (data) {
-                            var angle = SectorReshapingTool.prototype.getAngle(data);
-                            var sweep = SectorReshapingTool.prototype.getSweep(data);
+                        $(go.Adornment, 'Spot', $(go.Placeholder), $(go.Shape, 'Diamond', { name: 'RADIUS', fill: 'lime', width: 10, height: 10, cursor: 'move' }, new go.Binding('alignment', '', function (d) {
+                            var angle = SectorReshapingTool.getAngle(d);
+                            var sweep = SectorReshapingTool.getSweep(d);
                             var p = new go.Point(0.5, 0).rotate(angle + sweep / 2);
                             return new go.Spot(0.5 + p.x, 0.5 + p.y);
-                        })), $(go.Shape, "Circle", { name: "ANGLE", fill: "lime", width: 8, height: 8, cursor: "move" }, new go.Binding("alignment", "", function (data) {
-                            var angle = SectorReshapingTool.prototype.getAngle(data);
+                        })), $(go.Shape, 'Circle', { name: 'ANGLE', fill: 'lime', width: 8, height: 8, cursor: 'move' }, new go.Binding('alignment', '', function (d) {
+                            var angle = SectorReshapingTool.getAngle(d);
                             var p = new go.Point(0.5, 0).rotate(angle);
                             return new go.Spot(0.5 + p.x, 0.5 + p.y);
-                        })), $(go.Shape, "Circle", { name: "SWEEP", fill: "lime", width: 8, height: 8, cursor: "move" }, new go.Binding("alignment", "", function (data) {
-                            var angle = SectorReshapingTool.prototype.getAngle(data);
-                            var sweep = SectorReshapingTool.prototype.getSweep(data);
+                        })), $(go.Shape, 'Circle', { name: 'SWEEP', fill: 'lime', width: 8, height: 8, cursor: 'move' }, new go.Binding('alignment', '', function (d) {
+                            var angle = SectorReshapingTool.getAngle(d);
+                            var sweep = SectorReshapingTool.getSweep(d);
                             var p = new go.Point(0.5, 0).rotate(angle + sweep);
                             return new go.Spot(0.5 + p.x, 0.5 + p.y);
                         })));
                     ad.adornedObject = part.locationObject;
                     part.addAdornment(this.name, ad);
+                }
+                else {
+                    ad.location = part.position;
+                    var ns = part.naturalBounds;
+                    if (ad.placeholder !== null)
+                        ad.placeholder.desiredSize = new go.Size((ns.width) * part.scale, (ns.height) * part.scale);
+                    ad.updateTargetBindings();
                 }
             }
             else {
@@ -105,14 +142,10 @@ var __extends = (this && this.__extends) || (function () {
             }
         };
         /**
-        * Remember the original angles and radius and start a transaction.
-        * @override
-        * @this {SectorReshapingTool}
-        */
+         * Remember the original angles and radius and start a transaction.
+         */
         SectorReshapingTool.prototype.doActivate = function () {
             var diagram = this.diagram;
-            if (diagram === null)
-                return;
             this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
             if (this._handle === null)
                 return;
@@ -120,103 +153,101 @@ var __extends = (this && this.__extends) || (function () {
             if (part === null || part.data === null)
                 return;
             var data = part.data;
-            this._originalRadius = SectorReshapingTool.prototype.getRadius(data);
-            this._originalAngle = SectorReshapingTool.prototype.getAngle(data);
-            this._originalSweep = SectorReshapingTool.prototype.getSweep(data);
+            this._originalRadius = SectorReshapingTool.getRadius(data);
+            this._originalAngle = SectorReshapingTool.getAngle(data);
+            this._originalSweep = SectorReshapingTool.getSweep(data);
             this.startTransaction(this.name);
             this.isActive = true;
         };
         /**
-        * Stop the transaction.
-        * @override
-        * @this {SectorReshapingTool}
-        */
+         * Stop the transaction.
+         */
         SectorReshapingTool.prototype.doDeactivate = function () {
             this.stopTransaction();
             this._handle = null;
             this.isActive = false;
         };
-        ;
         /**
-        * Restore the original angles and radius and then stop this tool.
-        * @override
-        * @this {SectorReshapingTool}
-        */
+         * Restore the original angles and radius and then stop this tool.
+         */
         SectorReshapingTool.prototype.doCancel = function () {
-            if (this._handle !== null && this.diagram !== null) {
+            if (this._handle !== null) {
                 var part = this._handle.part.adornedPart;
                 if (part !== null) {
                     var model = this.diagram.model;
-                    model.setDataProperty(part.data, this.radiusProperty, this._originalRadius);
-                    model.setDataProperty(part.data, this.angleProperty, this._originalAngle);
-                    model.setDataProperty(part.data, this.sweepProperty, this._originalSweep);
+                    model.setDataProperty(part.data, this._radiusProperty, this._originalRadius);
+                    model.setDataProperty(part.data, this._angleProperty, this._originalAngle);
+                    model.setDataProperty(part.data, this._sweepProperty, this._originalSweep);
                 }
             }
             this.stopTool();
         };
-        ;
         /**
-        * Depending on the current handle being dragged, update the "radius", the "angle", or the "sweep"
-        * properties on the model data.
-        * Those property names are currently parameterized as static members of SectorReshapingTool.
-        * @override
-        * @this {SectorReshapingTool}
-        */
+         * Depending on the current handle being dragged, update the "radius", the "angle", or the "sweep"
+         * properties on the model data.
+         * Those property names are currently parameterized as static members of SectorReshapingTool.
+         */
         SectorReshapingTool.prototype.doMouseMove = function () {
             var diagram = this.diagram;
             var h = this._handle;
-            if (this.isActive && diagram !== null && h !== null) {
-                var center = h.part.adornedObject.getDocumentPoint(go.Spot.Center);
-                var node = h.part.adornedPart;
+            if (this.isActive && h !== null) {
+                var adorned = h.part.adornedObject;
+                if (adorned === null)
+                    return;
+                var center = adorned.getDocumentPoint(go.Spot.Center);
+                var node = adorned.part;
+                if (node === null || node.data === null)
+                    return;
                 var mouse = diagram.lastInput.documentPoint;
-                if (h.name === "RADIUS") {
+                if (h.name === 'RADIUS') {
                     var dst = Math.sqrt(center.distanceSquaredPoint(mouse));
-                    diagram.model.setDataProperty(node.data, this.radiusProperty, dst);
+                    diagram.model.setDataProperty(node.data, this._radiusProperty, dst);
                 }
-                else if (h.name === "ANGLE") {
+                else if (h.name === 'ANGLE') {
                     var dir = center.directionPoint(mouse);
-                    diagram.model.setDataProperty(node.data, this.angleProperty, dir);
+                    diagram.model.setDataProperty(node.data, this._angleProperty, dir);
                 }
-                else if (h.name === "SWEEP") {
+                else if (h.name === 'SWEEP') {
                     var dir = center.directionPoint(mouse);
-                    var ang = SectorReshapingTool.prototype.getAngle(node.data);
+                    var ang = SectorReshapingTool.getAngle(node.data);
                     var swp = (dir - ang + 360) % 360;
-                    diagram.model.setDataProperty(node.data, this.sweepProperty, swp);
+                    if (swp > 359)
+                        swp = 360; // make it easier to get a full circle
+                    diagram.model.setDataProperty(node.data, this._sweepProperty, swp);
                 }
             }
         };
-        ;
         /**
-        * Finish the transaction and stop the tool.
-        * @override
-        * @this {SectorReshapingTool}
-        */
+         * Finish the transaction and stop the tool.
+         */
         SectorReshapingTool.prototype.doMouseUp = function () {
             var diagram = this.diagram;
-            if (this.isActive && diagram !== null) {
+            if (this.isActive) {
                 this.transactionResult = this.name; // successful finish
             }
             this.stopTool();
         };
-        ;
         // static functions for getting data
-        SectorReshapingTool.prototype.getRadius = function (data) {
-            var radius = data["radius"];
-            if (!(typeof radius === "number") || isNaN(radius) || radius <= 0)
+        /** @hidden @internal */
+        SectorReshapingTool.getRadius = function (data) {
+            var radius = data['radius'];
+            if (!(typeof radius === 'number') || isNaN(radius) || radius <= 0)
                 radius = 50;
             return radius;
         };
-        SectorReshapingTool.prototype.getAngle = function (data) {
-            var angle = data["angle"];
-            if (!(typeof angle === "number") || isNaN(angle))
+        /** @hidden @internal */
+        SectorReshapingTool.getAngle = function (data) {
+            var angle = data['angle'];
+            if (!(typeof angle === 'number') || isNaN(angle))
                 angle = 0;
             else
                 angle = angle % 360;
             return angle;
         };
-        SectorReshapingTool.prototype.getSweep = function (data) {
-            var sweep = data["sweep"];
-            if (!(typeof sweep === "number") || isNaN(sweep))
+        /** @hidden @internal */
+        SectorReshapingTool.getSweep = function (data) {
+            var sweep = data['sweep'];
+            if (!(typeof sweep === 'number') || isNaN(sweep))
                 sweep = 360;
             return sweep;
         };

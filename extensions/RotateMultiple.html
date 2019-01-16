@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,6 @@
 
     myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
-                    initialContentAlignment: go.Spot.Center,  // center the content
                     rotatingTool: new RotateMultipleTool(),  // defined in RotateMultipleTool.js
                     "undoManager.isEnabled": true  // enable undo & redo
                   });
@@ -26,6 +25,8 @@
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",  // the Shape will go around the TextBlock
         { locationSpot: go.Spot.Center, rotatable: true },
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+        new go.Binding("angle" ).makeTwoWay(),  // save the modified Node.angle in the model data
         $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
           // Shape.fill is bound to Node.data.color
           new go.Binding("fill", "color")),

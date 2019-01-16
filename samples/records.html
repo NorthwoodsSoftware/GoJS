@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            initialContentAlignment: go.Spot.Center,
             validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
             // For this sample, automatically show the state of the diagram's model on the page
             "ModelChanged": function(e) {
@@ -57,9 +56,7 @@
       // This template represents a whole "record".
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          { movable: false,
-            copyable: false,
-            deletable: false },
+          { copyable: false, deletable: false },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           // this rectangular shape surrounds the content of the node
           $(go.Shape,
@@ -107,6 +104,8 @@
       myDiagram.model =
         $(go.GraphLinksModel,
           {
+            copiesArrays: true,
+            copiesArrayObjects: true,
             linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
             nodeDataArray: [
@@ -124,7 +123,7 @@
                   { name: "fieldC", info: "",       color: "#7FBA00", figure: "Diamond" },
                   { name: "fieldD", info: "fourth", color: "#00BCF2",  figure: "Rectangle" }
                 ],
-                loc: "250 0" }
+                loc: "280 0" }
             ],
             linkDataArray: [
               { from: "Record1", fromPort: "field1", to: "Record2", toPort: "fieldA" },
@@ -148,7 +147,7 @@
   <p>
     Draw new links by dragging from the background of any field.
     Reconnect a selected link by dragging its diamond-shaped handle.
-    The "record" Nodes use a <a>Panel.Table</a> to place the various fields into rows.
+    The "record" Nodes use a <a>Panel,Table</a> to place the various fields into rows.
     Records are not movable or copyable or deletable.
   </p>
   <p>For a variation on this sample with selectable fields in the record nodes, see the <a href="selectableFields.html">selectable fields</a> sample.</p>

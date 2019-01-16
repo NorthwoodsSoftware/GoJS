@@ -1,1674 +1,564 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; TreeModel Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>TreeModel | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class TreeModel</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="Model.html" class="tsd-signature-type">Model</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">TreeModel</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>TreeModels support tree-structured graphs of nodes and links.
+						Each node can have at most one &quot;tree parent&quot;; cycles are not permitted.
+					The reference to the parent node&#39;s key is a property of the child node data.</p>
+					<p>TreeModels, unlike <a href="GraphLinksModel.html">GraphLinksModel</a>s, do not support arbitrary link relationships between nodes,
+						nor is there a separate link data object for each parent-child relationship.
+					Furthermore there is no support for grouping or label nodes.</p>
+					<p>The <a href="TreeModel.html#nodeParentKeyProperty">nodeParentKeyProperty</a> property names the property on the node data whose value
+						is the key of the &quot;tree parent&quot; node.
+					The default value for this property is &quot;parent&quot;.</p>
+					<p>For example, one can define a graph consisting of one parent node with two child nodes:</p>
+					<pre><code class="hljs js"> model.nodeDataArray = [
+   { <span class="hljs-attr">key</span>: <span class="hljs-string">"Alpha"</span> },
+   { <span class="hljs-attr">key</span>: <span class="hljs-string">"Beta"</span>, <span class="hljs-attr">parent</span>: <span class="hljs-string">"Alpha"</span> },
+   { <span class="hljs-attr">key</span>: <span class="hljs-string">"Gamma"</span>, <span class="hljs-attr">parent</span>: <span class="hljs-string">"Alpha"</span> }
+ ];
+</code></pre>
+					<p>If you need to show a more complicated graph structure than a tree, use a <a href="GraphLinksModel.html">GraphLinksModel</a>.
+						If you want to have multiple links between the same pair of nodes,
+						or if you want to associate more information with each link and cannot put the information on the child node,
+						you will need to have a separate link data object for each link,
+					and that would require the use of <a href="GraphLinksModel.html">GraphLinksModel</a>.</p>
+					<dl class="tsd-comment-tags">
+						<dt>since</dt>
+						<dd><p>1.1</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="TreeModel.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TreeModel.html#nodeParentKeyProperty" class="tsd-kind-icon">node<wbr>Parent<wbr>Key<wbr>Property</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="TreeModel.html#parentLinkCategoryProperty" class="tsd-kind-icon">parent<wbr>Link<wbr>Category<wbr>Property</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TreeModel.html#copyNodeData" class="tsd-kind-icon">copy<wbr>Node<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TreeModel.html#getParentKeyForNodeData" class="tsd-kind-icon">get<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TreeModel.html#getParentLinkCategoryForNodeData" class="tsd-kind-icon">get<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TreeModel.html#setDataProperty" class="tsd-kind-icon">set<wbr>Data<wbr>Property</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TreeModel.html#setParentKeyForNodeData" class="tsd-kind-icon">set<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TreeModel.html#setParentLinkCategoryForNodeData" class="tsd-kind-icon">set<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Tree<wbr>Model<span class="tsd-signature-symbol">(</span>nodedataarray<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="TreeModel.html" class="tsd-signature-type">TreeModel</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This constructs an empty TreeModel unless one provides arguments as the initial data array values
+								for the <a href="Model.html#nodeDataArray">Model.nodeDataArray</a> property.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> nodedataarray: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an optional Array containing JavaScript objects to be represented by Nodes.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="TreeModel.html" class="tsd-signature-type">TreeModel</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="nodeParentKeyProperty" class="tsd-anchor"></a>
+					<h3>
+						node<wbr>Parent<wbr>Key<wbr>Property
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">?: </span><a href="../index.html#Key" class="tsd-signature-type">Key</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../index.html#Key" class="tsd-signature-type">Key</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the property on node data that specifies
+									the string or number key of the node data that acts as the &quot;parent&quot; for this &quot;child&quot; node data.
+									The value may also be a function taking two arguments, where the first argument will be a node data object.
+									If the second argument is not supplied, the function should return the string or number key for the parent node data object of which the given data object is a child;
+									if the second argument is supplied, the function should modify the node data object so that it has that new key
+									(which may be undefined to refer to no node) as the parent key for that node..
+									The default value is the name &#39;parent&#39;, meaning that it expects the data to have a property named &#39;parent&#39; if the node wants to refer to the parent node by its key.
+								The value must not be null nor an empty string.</p>
+								<p>If you want to set this property you must do so before using the model, and especially before you assign <a href="Diagram.html#model">Diagram.model</a>.
+									Note that functions cannot be serialized into JSON-formatted text, so if you are using <a href="Model.html#toJson">toJson</a> and <a href="Model.html#static-fromJson">Model.fromJson</a>,
+									and if you want this property to be a function, you will need to assign this property to your desired function
+								immediately after creating the model, including when it is created by <a href="Model.html#static-fromJson">Model.fromJson</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="TreeModel.html#getParentKeyForNodeData">getParentKeyForNodeData</a>, <a href="TreeModel.html#setParentKeyForNodeData">setParentKeyForNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="parentLinkCategoryProperty" class="tsd-anchor"></a>
+					<h3>
+						parent<wbr>Link<wbr>Category<wbr>Property
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the data property that returns a string describing that node data&#39;s parent link&#39;s category.
+									The value may also be a function taking two arguments, where the first argument will be a node data object.
+									If the second argument is not supplied, the function should return the category name for any parent link;
+									if the second argument is supplied, the function should modify the node data object so that its parent link has that new category name.
+									The default value is the name &#39;parentLinkCategory&#39;.
+									This is used by the diagram to distinguish between different kinds of links.
+									The name must not be null.
+									If the value is an empty string,
+								<a href="TreeModel.html#getParentLinkCategoryForNodeData">getParentLinkCategoryForNodeData</a> will return an empty string for all node data objects.</p>
+								<p>If you want to set this property you must do so before using the model, and especially before you assign <a href="Diagram.html#model">Diagram.model</a>.
+									Note that functions cannot be serialized into JSON-formatted text, so if you are using <a href="Model.html#toJson">toJson</a> and <a href="Model.html#static-fromJson">Model.fromJson</a>,
+									and if you want this property to be a function, you will need to assign this property to your desired function
+								immediately after creating the model, including when it is created by <a href="Model.html#static-fromJson">Model.fromJson</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="TreeModel.html#getParentLinkCategoryForNodeData">getParentLinkCategoryForNodeData</a>, <a href="TreeModel.html#setParentLinkCategoryForNodeData">setParentLinkCategoryForNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="copyNodeData" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span> <span class="tsd-flag ts-flagOverride">Override</span>
+						copy<wbr>Node<wbr>Data
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">copy<wbr>Node<wbr>Data<span class="tsd-signature-symbol">(</span>nodedata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This override also makes sure any copied node data does not have a reference to a parent node.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Model.html#copyNodeData">Model.copyNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>nodedata: <span class="tsd-signature-type">Object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object represented by a node, group, or non-link.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns
+								<span class="tsd-signature-type">Object</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">null</span>
+							</h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getParentKeyForNodeData" class="tsd-anchor"></a>
+					<h3>
+						get<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data<span class="tsd-signature-symbol">(</span>nodedata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../index.html#Key" class="tsd-signature-type">Key</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>If there is a parent node for the given node data, return the parent&#39;s key.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="TreeModel.html#nodeParentKeyProperty">nodeParentKeyProperty</a>, <a href="TreeModel.html#setParentKeyForNodeData">setParentKeyForNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>nodedata: <span class="tsd-signature-type">Object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object represented by a node.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../index.html#Key" class="tsd-signature-type">Key</a></h4>
+							<p>This returns undefined if there is no parent node data object.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getParentLinkCategoryForNodeData" class="tsd-anchor"></a>
+					<h3>
+						get<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data<span class="tsd-signature-symbol">(</span>childdata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Find the category for the parent link of a given child node data, a string naming the link template
+								that the <a href="Diagram.html">Diagram</a> should use to represent the link.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="TreeModel.html#parentLinkCategoryProperty">parentLinkCategoryProperty</a>, <a href="TreeModel.html#setParentLinkCategoryForNodeData">setParentLinkCategoryForNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>childdata: <span class="tsd-signature-type">Object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object represented by a node data.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setDataProperty" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span> <span class="tsd-flag ts-flagOverride">Override</span>
+						set<wbr>Data<wbr>Property
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Data<wbr>Property<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span>, propname<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This override changes the value of some property of a node data or an item data, given a string naming the property
+								and the new value, in a manner that can be undone/redone and that automatically updates any bindings.</p>
+								<p>This gets the old value of the property; if the value is the same as the new value, no side-effects occur.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Model.html#setDataProperty">Model.setDataProperty</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">Object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object typically the value of a <a href="Panel.html#data">Panel.data</a> and represented by a Node, Link, Group, simple Part,
+										or item in a <a href="Panel.html#itemArray">Panel.itemArray</a>; or this model&#39;s <a href="Model.html#modelData">modelData</a>.</p>
+									</div>
+								</li>
+								<li>
+									<h5>propname: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a string that is not null or the empty string.</p>
+									</div>
+								</li>
+								<li>
+									<h5>val: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the new value for the property.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setParentKeyForNodeData" class="tsd-anchor"></a>
+					<h3>
+						set<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data<span class="tsd-signature-symbol">(</span>nodedata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span>, key<span class="tsd-signature-symbol">: </span><a href="../index.html#Key" class="tsd-signature-type">Key</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Change the parent node for the given node data, given a key for the new parent, or undefined if there should be no parent.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="TreeModel.html#nodeParentKeyProperty">nodeParentKeyProperty</a>, <a href="TreeModel.html#getParentKeyForNodeData">getParentKeyForNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>nodedata: <span class="tsd-signature-type">Object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object represented by a node.</p>
+									</div>
+								</li>
+								<li>
+									<h5>key: <a href="../index.html#Key" class="tsd-signature-type">Key</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>This may be undefined if there should be no parent node data.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setParentLinkCategoryForNodeData" class="tsd-anchor"></a>
+					<h3>
+						set<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data<span class="tsd-signature-symbol">(</span>childdata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span>, cat<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Change the category for the parent link of a given child node data, a string naming the link template
+								that the <a href="Diagram.html">Diagram</a> should use to represent the link.</p>
+								<p>Changing the link template will cause any existing <a href="Link.html">Link</a>
+									to be removed from the <a href="Diagram.html">Diagram</a> and replaced with a new <a href="Link.html">Link</a>
+									created by copying the new link template and applying any data-bindings.
+									Note that the new template must be an instance of the same class as the original link.
+									Thus one cannot change the category of a link from an instance of <a href="Link.html">Link</a>
+								to an instance of a subclass of Link, nor vice-versa.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="TreeModel.html#parentLinkCategoryProperty">parentLinkCategoryProperty</a>, <a href="TreeModel.html#getParentLinkCategoryForNodeData">getParentLinkCategoryForNodeData</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>childdata: <span class="tsd-signature-type">Object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object represented by a node data.</p>
+									</div>
+								</li>
+								<li>
+									<h5>cat: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Must not be null.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="TreeModel.html" class="tsd-kind-icon">Tree<wbr>Model</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="TreeModel.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TreeModel.html#nodeParentKeyProperty" class="tsd-kind-icon">node<wbr>Parent<wbr>Key<wbr>Property</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="TreeModel.html#parentLinkCategoryProperty" class="tsd-kind-icon">parent<wbr>Link<wbr>Category<wbr>Property</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TreeModel.html#copyNodeData" class="tsd-kind-icon">copy<wbr>Node<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TreeModel.html#getParentKeyForNodeData" class="tsd-kind-icon">get<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TreeModel.html#getParentLinkCategoryForNodeData" class="tsd-kind-icon">get<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TreeModel.html#setDataProperty" class="tsd-kind-icon">set<wbr>Data<wbr>Property</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TreeModel.html#setParentKeyForNodeData" class="tsd-kind-icon">set<wbr>Parent<wbr>Key<wbr>For<wbr>Node<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="TreeModel.html#setParentLinkCategoryForNodeData" class="tsd-kind-icon">set<wbr>Parent<wbr>Link<wbr>Category<wbr>For<wbr>Node<wbr>Data</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class TreeModel
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                <span class="extends"> Extends
-                    <a href="../symbols/Model.html" class="linkConstructor">Model</a>.</span>
-                
-
-                TreeModels support tree-structured graphs of nodes and links.Each node can have at most one "tree parent"; cycles are not permitted.The reference to the parent node's key is a property of the child node data.<p>TreeModels, unlike <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>s, do not support arbitrary link relationships between nodes,nor is there a separate link data object for each parent-child relationship.Furthermore there is no support for grouping or label nodes.<p>The <a href="../symbols/TreeModel.html#nodeParentKeyProperty" class="linkProperty">nodeParentKeyProperty</a> property names the property on the node data whose valueis the key of the "tree parent" node.The default value for this property is "parent".<p>For example, one can define a graph consisting of one parent node with two child nodes:<pre class="javascript"> model.nodeDataArray = [   { key: "Alpha" },   { key: "Beta", parent: "Alpha" },   { key: "Gamma", parent: "Alpha" } ];</pre><p>If you need to show a more complicated graph structure than a tree, use a <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>.If you want to have multiple links between the same pair of nodes,or if you want to associate more information with each link and cannot put the information on the child node,you will need to have a separate link data object for each link,and that would require the use of <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a>.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class TreeModel.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                TreeModel(nodedataarray)
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>This constructs an empty TreeModel unless one provides arguments as the initial data array valuesfor the <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">Model.nodeDataArray</a> property.<span class="nodetails" id="xconTreeModel"><a class="morelink" onclick="hst('conTreeModel')">More...</a></span> <span class="details" id="conTreeModel"></span>
-                        
-                            <dl class="detailList">
-                            <dt class="heading">Parameters:</dt>
-                            
-                                <dt>
-                                    <span class="light fixedFont">{Array.<Object>=}</span>  <b>nodedataarray</b>
-                                    
-                                </dt>
-                                    <dd>an optional Array containing JavaScript objects to be represented by Nodes.</dd>
-                            
-                            </dl>
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class TreeModel.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="nodeParentKeyProperty" >
-                
-                <td class="name">
-                  <div class="name">
-                    nodeParentKeyProperty
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string|function(Object,(string|number)=):(string|number)}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the name of the property on node data that specifiesthe string or number key of the node data that acts as the "parent" for this "child" node data.<span class="nodetails" id="xpropnodeParentKeyProperty"><a class="morelink" onclick="hst('propnodeParentKeyProperty')">More...</a></span> <span class="details" id="propnodeParentKeyProperty">The value may also be a function taking two arguments, where the first argument will be a node data object.If the second argument is not supplied, the function should return the string or number key for the parent node data object of which the given data object is a child;if the second argument is supplied, the function should modify the node data object so that it has that new key(which may be undefined to refer to no node) as the parent key for that node..The default value is the name 'parent', meaning that it expects the data to have a property named 'parent' if the node wants to refer to the parent node by its key.The value must not be null nor an empty string.</span><div class="details" id="dpropnodeParentKeyProperty"><p>If you want to set this property you must do so before using the model, and especially before you assign <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a>.Note that functions cannot be serialized into JSON-formatted text, so if you are using <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a> and <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a>,and if you want this property to be a function, you will need to assign this property to your desired functionimmediately after creating the model, including when it is created by <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a>.</div>
-                
-                    <div class="seealso">See also:
-                        <ul class="seealsolist">
-                            
-                                <li><a href="../symbols/TreeModel.html#getParentKeyForNodeData" class="linkMethod">getParentKeyForNodeData</a></li>
-                            
-                                <li><a href="../symbols/TreeModel.html#setParentKeyForNodeData" class="linkMethod">setParentKeyForNodeData</a></li>
-                            
-                        </ul>
-                    </div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="parentLinkCategoryProperty" >
-                
-                <td class="name">
-                  <div class="name">
-                    parentLinkCategoryProperty
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string|function(Object,string=):string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the name of the data property that returns a string describing that node data's parent link's category.<span class="nodetails" id="xpropparentLinkCategoryProperty"><a class="morelink" onclick="hst('propparentLinkCategoryProperty')">More...</a></span> <span class="details" id="propparentLinkCategoryProperty">The value may also be a function taking two arguments, where the first argument will be a node data object.If the second argument is not supplied, the function should return the category name for any parent link;if the second argument is supplied, the function should modify the node data object so that its parent link has that new category name.The default value is the name 'parentLinkCategory'.This is used by the diagram to distinguish between different kinds of links.The name must not be null.If the value is an empty string,<a href="../symbols/TreeModel.html#getParentLinkCategoryForNodeData" class="linkMethod">getParentLinkCategoryForNodeData</a> will return an empty string for all node data objects.</span><div class="details" id="dpropparentLinkCategoryProperty"><p>If you want to set this property you must do so before using the model, and especially before you assign <a href="../symbols/Diagram.html#model" class="linkProperty">Diagram.model</a>.Note that functions cannot be serialized into JSON-formatted text, so if you are using <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a> and <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a>,and if you want this property to be a function, you will need to assign this property to your desired functionimmediately after creating the model, including when it is created by <a href="../symbols/Model.html#.fromJson" class="linkStatic">Model.fromJson</a>.</div>
-                
-                    <div class="seealso">See also:
-                        <ul class="seealsolist">
-                            
-                                <li><a href="../symbols/TreeModel.html#getParentLinkCategoryForNodeData" class="linkMethod">getParentLinkCategoryForNodeData</a></li>
-                            
-                                <li><a href="../symbols/TreeModel.html#setParentLinkCategoryForNodeData" class="linkMethod">setParentLinkCategoryForNodeData</a></li>
-                            
-                        </ul>
-                    </div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Properties borrowed from class <a href="../symbols/Model.html" class="linkConstructor">Model</a>: </dt><dd><a href="../symbols/Model.html#copiesArrayObjects" class="linkProperty">copiesArrayObjects</a>, <a href="../symbols/Model.html#copiesArrays" class="linkProperty">copiesArrays</a>, <a href="../symbols/Model.html#copyNodeDataFunction" class="linkProperty">copyNodeDataFunction</a>, <a href="../symbols/Model.html#dataFormat" class="linkProperty">dataFormat</a>, <a href="../symbols/Model.html#isReadOnly" class="linkProperty">isReadOnly</a>, <a href="../symbols/Model.html#makeUniqueKeyFunction" class="linkProperty">makeUniqueKeyFunction</a>, <a href="../symbols/Model.html#modelData" class="linkProperty">modelData</a>, <a href="../symbols/Model.html#name" class="linkProperty">name</a>, <a href="../symbols/Model.html#nodeCategoryProperty" class="linkProperty">nodeCategoryProperty</a>, <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">nodeDataArray</a>, <a href="../symbols/Model.html#nodeKeyProperty" class="linkProperty">nodeKeyProperty</a>, <a href="../symbols/Model.html#skipsUndoManager" class="linkProperty">skipsUndoManager</a>, <a href="../symbols/Model.html#undoManager" class="linkProperty">undoManager</a></dd>
-                </dl>
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class TreeModel.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="copyNodeData">
-                <td class="name">
-                  
-                  <div class="name">
-                    copyNodeData(nodedata)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Object}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This override also makes sure any copied node data does not have a reference to a parent node.<span class="nodetails" id="xmethcopyNodeData"><a class="morelink" onclick="hst('methcopyNodeData')">More...</a></span> <span class="details" id="methcopyNodeData"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Model.html#copyNodeData" class="linkMethod">Model.copyNodeData</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{Object}</span> <b>nodedata</b>
-                                          
-                                      </dt>
-                                      <dd>a JavaScript object represented by a node, group, or non-link.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{Object}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="getParentKeyForNodeData">
-                <td class="name">
-                  
-                  <div class="name">
-                    getParentKeyForNodeData(nodedata)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string|number|undefined}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>If there is a parent node for the given node data, return the parent's key.<span class="nodetails" id="xmethgetParentKeyForNodeData"><a class="morelink" onclick="hst('methgetParentKeyForNodeData')">More...</a></span> <span class="details" id="methgetParentKeyForNodeData"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/TreeModel.html#nodeParentKeyProperty" class="linkProperty">nodeParentKeyProperty</a></li>
-                                
-                                    <li><a href="../symbols/TreeModel.html#setParentKeyForNodeData" class="linkMethod">setParentKeyForNodeData</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{Object}</span> <b>nodedata</b>
-                                          
-                                      </dt>
-                                      <dd>a JavaScript object represented by a node.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{string|number|undefined}</span> This returns undefined if there is no parent node data object.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="getParentLinkCategoryForNodeData">
-                <td class="name">
-                  
-                  <div class="name">
-                    getParentLinkCategoryForNodeData(childdata)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Find the category for the parent link of a given child node data, a string naming the link templatethat the <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> should use to represent the link.<span class="nodetails" id="xmethgetParentLinkCategoryForNodeData"><a class="morelink" onclick="hst('methgetParentLinkCategoryForNodeData')">More...</a></span> <span class="details" id="methgetParentLinkCategoryForNodeData"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/TreeModel.html#parentLinkCategoryProperty" class="linkProperty">parentLinkCategoryProperty</a></li>
-                                
-                                    <li><a href="../symbols/TreeModel.html#setParentLinkCategoryForNodeData" class="linkMethod">setParentLinkCategoryForNodeData</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{Object}</span> <b>childdata</b>
-                                          
-                                      </dt>
-                                      <dd>a JavaScript object represented by a node data.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{string}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="setDataProperty">
-                <td class="name">
-                  
-                  <div class="name">
-                    setDataProperty(data, propname, val)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This override changes the value of some property of a node data or an item data, given a string naming the propertyand the new value, in a manner that can be undone/redone and that automatically updates any bindings.<span class="nodetails" id="xmethsetDataProperty"><a class="morelink" onclick="hst('methsetDataProperty')">More...</a></span> <span class="details" id="methsetDataProperty"></span><div class="details" id="dmethsetDataProperty"><p>This gets the old value of the property; if the value is the same as the new value, no side-effects occur.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Model.html#setDataProperty" class="linkMethod">Model.setDataProperty</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{Object}</span> <b>data</b>
-                                          
-                                      </dt>
-                                      <dd>a JavaScript object typically the value of a <a href="../symbols/Panel.html#data" class="linkProperty">Panel.data</a> and represented by a Node, Link, Group, simple Part,                     or item in a <a href="../symbols/Panel.html#itemArray" class="linkProperty">Panel.itemArray</a>; or this model's <a href="../symbols/Model.html#modelData" class="linkProperty">modelData</a>.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>propname</b>
-                                          
-                                      </dt>
-                                      <dd>a string that is not null or the empty string.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{*}</span> <b>val</b>
-                                          
-                                      </dt>
-                                      <dd>the new value for the property.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="setParentKeyForNodeData">
-                <td class="name">
-                  
-                  <div class="name">
-                    setParentKeyForNodeData(nodedata, key)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Change the parent node for the given node data, given a key for the new parent, or undefined if there should be no parent.<span class="nodetails" id="xmethsetParentKeyForNodeData"><a class="morelink" onclick="hst('methsetParentKeyForNodeData')">More...</a></span> <span class="details" id="methsetParentKeyForNodeData"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/TreeModel.html#nodeParentKeyProperty" class="linkProperty">nodeParentKeyProperty</a></li>
-                                
-                                    <li><a href="../symbols/TreeModel.html#getParentKeyForNodeData" class="linkMethod">getParentKeyForNodeData</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{Object}</span> <b>nodedata</b>
-                                          
-                                      </dt>
-                                      <dd>a JavaScript object represented by a node.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string|number|undefined}</span> <b>key</b>
-                                          
-                                      </dt>
-                                      <dd>This may be undefined if there should be no parent node data.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="setParentLinkCategoryForNodeData">
-                <td class="name">
-                  
-                  <div class="name">
-                    setParentLinkCategoryForNodeData(childdata, cat)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Change the category for the parent link of a given child node data, a string naming the link templatethat the <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> should use to represent the link.<span class="nodetails" id="xmethsetParentLinkCategoryForNodeData"><a class="morelink" onclick="hst('methsetParentLinkCategoryForNodeData')">More...</a></span> <span class="details" id="methsetParentLinkCategoryForNodeData"></span><div class="details" id="dmethsetParentLinkCategoryForNodeData"><p>Changing the link template will cause any existing <a href="../symbols/Link.html" class="linkConstructor">Link</a>to be removed from the <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> and replaced with a new <a href="../symbols/Link.html" class="linkConstructor">Link</a>created by copying the new link template and applying any data-bindings.Note that the new template must be an instance of the same class as the original link.Thus one cannot change the category of a link from an instance of <a href="../symbols/Link.html" class="linkConstructor">Link</a>to an instance of a subclass of Link, nor vice-versa.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/TreeModel.html#parentLinkCategoryProperty" class="linkProperty">parentLinkCategoryProperty</a></li>
-                                
-                                    <li><a href="../symbols/TreeModel.html#getParentLinkCategoryForNodeData" class="linkMethod">getParentLinkCategoryForNodeData</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{Object}</span> <b>childdata</b>
-                                          
-                                      </dt>
-                                      <dd>a JavaScript object represented by a node data.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>cat</b>
-                                          
-                                      </dt>
-                                      <dd>Must not be null.</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Methods borrowed from class <a href="../symbols/Model.html" class="linkConstructor">Model</a>: </dt><dd><a href="../symbols/Model.html#addArrayItem" class="linkMethod">addArrayItem</a>, <a href="../symbols/Model.html#addChangedListener" class="linkMethod">addChangedListener</a>, <a href="../symbols/Model.html#addNodeData" class="linkMethod">addNodeData</a>, <a href="../symbols/Model.html#addNodeDataCollection" class="linkMethod">addNodeDataCollection</a>, <a href="../symbols/Model.html#applyIncrementalJson" class="linkMethod">applyIncrementalJson</a>, <a href="../symbols/Model.html#clear" class="linkMethod">clear</a>, <a href="../symbols/Model.html#cloneProtected" class="linkMethod">cloneProtected</a>, <a href="../symbols/Model.html#commit" class="linkMethod">commit</a>, <a href="../symbols/Model.html#commitTransaction" class="linkMethod">commitTransaction</a>, <a href="../symbols/Model.html#containsNodeData" class="linkMethod">containsNodeData</a>, <a href="../symbols/Model.html#copy" class="linkMethod">copy</a>, <a href="../symbols/Model.html#findNodeDataForKey" class="linkMethod">findNodeDataForKey</a>, <a href="../symbols/Model.html#getCategoryForNodeData" class="linkMethod">getCategoryForNodeData</a>, <a href="../symbols/Model.html#getKeyForNodeData" class="linkMethod">getKeyForNodeData</a>, <a href="../symbols/Model.html#insertArrayItem" class="linkMethod">insertArrayItem</a>, <a href="../symbols/Model.html#makeNodeDataKeyUnique" class="linkMethod">makeNodeDataKeyUnique</a>, <a href="../symbols/Model.html#raiseChangedEvent" class="linkMethod">raiseChangedEvent</a>, <a href="../symbols/Model.html#raiseDataChanged" class="linkMethod">raiseDataChanged</a>, <a href="../symbols/Model.html#removeArrayItem" class="linkMethod">removeArrayItem</a>, <a href="../symbols/Model.html#removeChangedListener" class="linkMethod">removeChangedListener</a>, <a href="../symbols/Model.html#removeNodeData" class="linkMethod">removeNodeData</a>, <a href="../symbols/Model.html#removeNodeDataCollection" class="linkMethod">removeNodeDataCollection</a>, <a href="../symbols/Model.html#rollbackTransaction" class="linkMethod">rollbackTransaction</a>, <a href="../symbols/Model.html#set" class="linkMethod">set</a>, <a href="../symbols/Model.html#setCategoryForNodeData" class="linkMethod">setCategoryForNodeData</a>, <a href="../symbols/Model.html#setKeyForNodeData" class="linkMethod">setKeyForNodeData</a>, <a href="../symbols/Model.html#startTransaction" class="linkMethod">startTransaction</a>, <a href="../symbols/Model.html#toIncrementalJson" class="linkMethod">toIncrementalJson</a>, <a href="../symbols/Model.html#toJson" class="linkMethod">toJson</a>, <a href="../symbols/Model.html#updateTargetBindings" class="linkMethod">updateTargetBindings</a></dd>
-                </dl>
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

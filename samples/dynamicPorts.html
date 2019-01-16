@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,7 @@
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  //Diagram refers to its DIV HTML element by id
-        { initialContentAlignment: go.Spot.Center, "undoManager.isEnabled": true });
+        { "undoManager.isEnabled": true });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", function(e) {
@@ -39,7 +39,7 @@
     }
 
     var nodeMenu =  // context menu for each Node
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
         makeButton("Copy",
                    function(e, obj) { e.diagram.commandHandler.copySelection(); }),
         makeButton("Delete",
@@ -58,7 +58,7 @@
     var portSize = new go.Size(8, 8);
 
     var portMenu =  // context menu for each port
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
         makeButton("Swap order",
                    function(e, obj) { swapOrder(obj.part.adornedObject); }),
         makeButton("Remove port",
@@ -66,7 +66,7 @@
                    // its adornedObject is the port
                    function (e, obj) { removePort(obj.part.adornedObject); }),
         makeButton("Change color",
-                   function(e, obj) { changeColor(obj.part.adornedObject); }),
+                   function (e, obj) { changeColor(obj.part.adornedObject); }),
         makeButton("Remove side ports",
                    function (e, obj) { removeAll(obj.part.adornedObject); })
       );
@@ -205,7 +205,7 @@
     };
 
     myDiagram.contextMenu =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
           makeButton("Paste",
                      function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); },
                      function(o) { return o.diagram.commandHandler.canPasteSelection(); }),
@@ -243,7 +243,6 @@
     return [-1, len];
   };
 
-  /** @override */
   CustomLink.prototype.computeEndSegmentLength = function(node, port, spot, from) {
     var esl = go.Link.prototype.computeEndSegmentLength.call(this, node, port, spot, from);
     var other = this.getOtherPort(port);
@@ -272,13 +271,11 @@
     return esl;
   };
 
-  /** @override */
   CustomLink.prototype.hasCurviness = function() {
     if (isNaN(this.curviness)) return true;
     return go.Link.prototype.hasCurviness.call(this);
   };
 
-  /** @override */
   CustomLink.prototype.computeCurviness = function() {
     if (isNaN(this.curviness)) {
       var fromnode = this.fromNode;

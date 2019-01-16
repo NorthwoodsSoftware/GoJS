@@ -6,7 +6,7 @@
 /**
 * @constructor
 * @extends CommandHandler
-* @class 
+* @class
 * This CommandHandler class allows the user to position selected Parts in a diagram
 * relative to the first part selected, in addition to overriding the doKeyDown method
 * of the CommandHandler for handling the arrow keys in additional manners.
@@ -33,7 +33,7 @@ function DrawCommandHandler() {
 go.Diagram.inherit(DrawCommandHandler, go.CommandHandler);
 
 /**
-* This controls whether or not the user can invoke the {@link #alignLeft}, {@link #alignRight}, 
+* This controls whether or not the user can invoke the {@link #alignLeft}, {@link #alignRight},
 * {@link #alignTop}, {@link #alignBottom}, {@link #alignCenterX}, {@link #alignCenterY} commands.
 * @this {DrawCommandHandler}
 * @return {boolean}
@@ -128,7 +128,7 @@ DrawCommandHandler.prototype.alignBottom = function() {
 };
 
 /**
-* Aligns selected parts at the x-value of the center point of the first selected part. 
+* Aligns selected parts at the x-value of the center point of the first selected part.
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignCenterX = function() {
@@ -146,7 +146,7 @@ DrawCommandHandler.prototype.alignCenterX = function() {
 
 
 /**
-* Aligns selected parts at the y-value of the center point of the first selected part. 
+* Aligns selected parts at the y-value of the center point of the first selected part.
 * @this {DrawCommandHandler}
 */
 DrawCommandHandler.prototype.alignCenterY = function() {
@@ -167,7 +167,7 @@ DrawCommandHandler.prototype.alignCenterY = function() {
 * Aligns selected parts top-to-bottom in order of the order selected.
 * Distance between parts can be specified. Default distance is 0.
 * @this {DrawCommandHandler}
-* @param {number} distance 
+* @param {number} distance
 */
 DrawCommandHandler.prototype.alignColumn = function(distance) {
   var diagram = this.diagram;
@@ -193,7 +193,7 @@ DrawCommandHandler.prototype.alignColumn = function(distance) {
 * Aligns selected parts left-to-right in order of the order selected.
 * Distance between parts can be specified. Default distance is 0.
 * @this {DrawCommandHandler}
-* @param {number} distance 
+* @param {number} distance
 */
 DrawCommandHandler.prototype.alignRow = function(distance) {
   if (distance === undefined) distance = 0; // for aligning edge to edge
@@ -235,7 +235,7 @@ DrawCommandHandler.prototype.canRotate = function(number) {
 
 /**
 * Change the angle of the parts connected with the given part. This is in the command handler
-* so it can be easily accessed for the purpose of creating commands that change the rotation of a part. 
+* so it can be easily accessed for the purpose of creating commands that change the rotation of a part.
 * @this {DrawCommandHandler}
 * @param {number=} angle the positive (clockwise) or negative (counter-clockwise) change in the rotation angle of each Part, in degrees.
 */
@@ -274,6 +274,9 @@ DrawCommandHandler.prototype.doKeyDown = function() {
     } else if (behavior === "move") {
       this._arrowKeyMove();
       return;
+    } else if (behavior === "tree") {
+      this._arrowKeyTree();
+      return;
     }
     // otherwise drop through to get the default scrolling behavior
   }
@@ -305,7 +308,7 @@ DrawCommandHandler.prototype._arrowKeyMove = function() {
   // moves all selected parts in the specified direction
   var vdistance = 0;
   var hdistance = 0;
-  // if control is being held down, move pixel by pixel. Else, moves by grid cell size    
+  // if control is being held down, move pixel by pixel. Else, moves by grid cell size
   if (e.control || e.meta) {
     vdistance = 1;
     hdistance = 1;
@@ -404,8 +407,94 @@ DrawCommandHandler.prototype._angleCloseness = function(a, dir) {
 };
 
 /**
+* To be called when arrow keys should change the selected node in a tree and expand or collapse subtrees.
+* @this {DrawCommandHandler}
+*/
+DrawCommandHandler.prototype._arrowKeyTree = function() {
+  var diagram = this.diagram;
+  var selected = diagram.selection.first();
+  if (!(selected instanceof go.Node)) return;
+
+  var e = diagram.lastInput;
+  if (e.key === "Right") {
+    if (selected.isTreeLeaf) {
+      // no-op
+    } else if (!selected.isTreeExpanded) {
+      if (diagram.commandHandler.canExpandTree(selected)) {
+        diagram.commandHandler.expandTree(selected);  // expands the tree
+      }
+    } else {  // already expanded -- select the first child node
+      var first = this._sortTreeChildrenByY(selected).first();
+      if (first !== null) diagram.select(first);
+    }
+  } else if (e.key === "Left") {
+    if (!selected.isTreeLeaf && selected.isTreeExpanded) {
+      if (diagram.commandHandler.canCollapseTree(selected)) {
+        diagram.commandHandler.collapseTree(selected);  // collapses the tree
+      }
+    } else {  // either a leaf or is already collapsed -- select the parent node
+      var parent = selected.findTreeParentNode();
+      if (parent !== null) diagram.select(parent);
+    }
+  } else if (e.key === "Up") {
+    var parent = selected.findTreeParentNode();
+    if (parent !== null) {
+      var list = this._sortTreeChildrenByY(parent);
+      var idx = list.indexOf(selected);
+      if (idx > 0) {  // if there is a previous sibling
+        var prev = list.elt(idx - 1);
+        // keep looking at the last child until it's a leaf or collapsed
+        while (prev !== null && prev.isTreeExpanded && !prev.isTreeLeaf) {
+          var children = this._sortTreeChildrenByY(prev);
+          prev = children.last();
+        }
+        if (prev !== null) diagram.select(prev);
+      } else {  // no previous sibling -- select parent
+        diagram.select(parent);
+      }
+    }
+  } else if (e.key === "Down") {
+    // if at an expanded parent, select the first child
+    if (selected.isTreeExpanded && !selected.isTreeLeaf) {
+      var first = this._sortTreeChildrenByY(selected).first();
+      if (first !== null) diagram.select(first);
+    } else {
+      while (selected !== null) {
+        var parent = selected.findTreeParentNode();
+        if (parent === null) break;
+        var list = this._sortTreeChildrenByY(parent);
+        var idx = list.indexOf(selected);
+        if (idx < list.length - 1) {  // select next lower node
+          diagram.select(list.elt(idx + 1));
+          break;
+        } else {  // already at bottom of list of children
+          selected = parent;
+        }
+      }
+    }
+  }
+
+  // make sure the selection is now in the viewport, but not necessarily centered
+  var sel = diagram.selection.first();
+  if (sel !== null) diagram.scrollToRect(sel.actualBounds);
+}
+
+DrawCommandHandler.prototype._sortTreeChildrenByY = function(node) {
+  var list = new go.List().addAll(node.findTreeChildrenNodes());
+  list.sort(function(a, b) {
+    var aloc = a.location;
+    var bloc = b.location;
+    if (aloc.y < bloc.y) return -1;
+    if (aloc.y > bloc.y) return 1;
+    if (aloc.x < bloc.x) return -1;
+    if (aloc.x > bloc.x) return 1;
+    return 0;
+  });
+  return list;
+};
+
+/**
 * Reset the last offset for pasting.
-* @override
 * @this {DrawCommandHandler}
 * @param {Iterable.<Part>} coll a collection of {@link Part}s.
 */
@@ -416,7 +505,6 @@ DrawCommandHandler.prototype.copyToClipboard = function(coll) {
 
 /**
 * Paste from the clipboard with an offset incremented on each paste, and reset when copied.
-* @override
 * @this {DrawCommandHandler}
 * @return {Set.<Part>} a collection of newly pasted {@link Part}s
 */
@@ -428,7 +516,7 @@ DrawCommandHandler.prototype.pasteFromClipboard = function() {
 };
 
 /**
-* Gets or sets the arrow key behavior. Possible values are "move", "select", and "scroll".  
+* Gets or sets the arrow key behavior. Possible values are "move", "select", "scroll", and "tree".
 * The default value is "move".
 * @name DrawCommandHandler#arrowKeyBehavior
 * @function.
@@ -437,8 +525,8 @@ DrawCommandHandler.prototype.pasteFromClipboard = function() {
 Object.defineProperty(DrawCommandHandler.prototype, "arrowKeyBehavior", {
   get: function() { return this._arrowKeyBehavior; },
   set: function(val) {
-    if (val !== "move" && val !== "select" && val !== "scroll" && val !== "none") {
-      throw new Error("DrawCommandHandler.arrowKeyBehavior must be either \"move\", \"select\", \"scroll\", or \"none\", not: " + val);
+    if (val !== "move" && val !== "select" && val !== "scroll" && val !== "tree" && val !== "none") {
+      throw new Error("DrawCommandHandler.arrowKeyBehavior must be either \"move\", \"select\", \"scroll\", \"tree\", or \"none\", not: " + val);
     }
     this._arrowKeyBehavior = val;
   }
@@ -446,6 +534,7 @@ Object.defineProperty(DrawCommandHandler.prototype, "arrowKeyBehavior", {
 
 /**
 * Gets or sets the offset at which each repeated pasteSelection() puts the new copied parts from the clipboard.
+* The default value is (10,10).
 * @name DrawCommandHandler#pasteOffset
 * @function.
 * @return {Point}

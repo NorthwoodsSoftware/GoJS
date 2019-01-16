@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,12 +16,11 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          padding: 20,
           // when the user drags a node, also move/copy/delete the whole subtree starting with that node
           "commandHandler.copiesTree": true,
+          "commandHandler.copiesParentKey": true,
           "commandHandler.deletesTree": true,
           "draggingTool.dragsTree": true,
-          initialContentAlignment: go.Spot.Center,  // center the whole graph
           "undoManager.isEnabled": true
         });
 
@@ -91,7 +90,7 @@
     // the context menu allows users to change the font size and weight,
     // and to perform a limited tree layout starting at that node
     myDiagram.nodeTemplate.contextMenu =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
         $("ContextMenuButton",
           $(go.TextBlock, "Bigger"),
           { click: function(e, obj) { changeTextSize(obj, 1.1); } }),
@@ -101,6 +100,18 @@
         $("ContextMenuButton",
           $(go.TextBlock, "Bold/Normal"),
           { click: function(e, obj) { toggleTextWeight(obj); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Copy"),
+          { click: function(e, obj) { e.diagram.commandHandler.copySelection(); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Delete"),
+          { click: function(e, obj) { e.diagram.commandHandler.deleteSelection(); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Undo"),
+          { click: function(e, obj) { e.diagram.commandHandler.undo(); } }),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Redo"),
+          { click: function(e, obj) { e.diagram.commandHandler.redo(); } }),
         $("ContextMenuButton",
           $(go.TextBlock, "Layout"),
           {
@@ -133,7 +144,10 @@
 
     // the Diagram's context menu just displays commands for general functionality
     myDiagram.contextMenu =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
+        $("ContextMenuButton",
+          $(go.TextBlock, "Paste"),
+          { click: function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); } }),
         $("ContextMenuButton",
           $(go.TextBlock, "Undo"),
           { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
@@ -251,8 +265,8 @@
     if (root === null) return;
     myDiagram.startTransaction("Layout");
     // split the nodes and links into two collections
-    var rightward = new go.Set(go.Part);
-    var leftward = new go.Set(go.Part);
+    var rightward = new go.Set(/*go.Part*/);
+    var leftward = new go.Set(/*go.Part*/);
     root.findLinksConnected().each(function(link) {
         var child = link.toNode;
         if (child.data.dir === "left") {

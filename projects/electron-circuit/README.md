@@ -1,12 +1,3 @@
-This demonstrates a GoJS diagram in an Electron app.
+As of GoJS 2.0 this project has moved to a separate GitHub repository, here:
 
-First, assuming you already have npm and git:
-```
-$ npm install gojs
-$ npm install electron-prebuilt
-```
-
-Start app with:
-```
-$ node_modules/.bin/electron .
-```
+https://github.com/NorthwoodsSoftware/GoJS-projects

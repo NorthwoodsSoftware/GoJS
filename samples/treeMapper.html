@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,6 @@
     }
     go.Diagram.inherit(TreeNode, go.Node);
 
-    /** @override */
     TreeNode.prototype.findVisibleNode = function() {
       // redirect links to lowest visible "ancestor" in the tree
       var n = this;
@@ -36,8 +35,7 @@
     go.Diagram.inherit(MappingLink, go.Link);
 
     MappingLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-      var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-                          port.getDocumentPoint(go.Spot.BottomRight));
+      var r = port.getDocumentBounds();
       var group = node.containingGroup;
       var b = (group !== null) ? group.actualBounds : node.actualBounds;
       var op = othernode.getDocumentPoint(go.Spot.Center);
@@ -59,7 +57,6 @@
             "linkingTool.archetypeLinkData": { category: "Mapping" },
             "linkingTool.linkValidation": checkLink,
             "relinkingTool.linkValidation": checkLink,
-            initialContentAlignment: go.Spot.Center,
             "undoManager.isEnabled": true,
             "ModelChanged": function(e) {
               if (e.isTransactionFinished) {  // show the model data in the page's TextArea
@@ -82,7 +79,7 @@
       // Each node in a tree is defined using the default nodeTemplate.
       myDiagram.nodeTemplate =
         $(TreeNode,
-          { movable: false },  // user cannot move an individual node
+          { movable: false, copyable: false, deletable: false },  // user cannot move an individual node
           // no Adornment: instead change panel background color by binding to Node.isSelected
           { selectionAdorned: false },
           // whether the user can start drawing a link from or to this node depends on which group it's in

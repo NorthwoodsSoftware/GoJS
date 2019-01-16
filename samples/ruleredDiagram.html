@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,10 +14,9 @@
 
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    myDiagram = 
+    myDiagram =
       $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
-          initialContentAlignment: go.Spot.Center,  // center the content
           "undoManager.isEnabled": true,  // enable undo & redo
           scrollMode: go.Diagram.InfiniteScroll,  // allow the diagram to be scrolled beyond content
           padding: 0,  // scales should be allowed right up against the edges of the viewport
@@ -50,17 +49,17 @@
     ]);
 
     // Keep references to the scales and indicators to easily update them
-    var gradScaleHoriz = 
+    var gradScaleHoriz =
       $(go.Node, "Graduated",
-        { 
+        {
           graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
           isInDocumentBounds: false, isAnimated: false
         },
         $(go.Shape, { geometryString: "M0 0 H400" }),
         $(go.Shape, { geometryString: "M0 0 V3", interval: 1 }),
         $(go.Shape, { geometryString: "M0 0 V15", interval: 5 }),
-        $(go.TextBlock, 
-          { 
+        $(go.TextBlock,
+          {
             font: "10px sans-serif",
             interval: 5,
             alignmentFocus: go.Spot.TopLeft,
@@ -68,18 +67,18 @@
           }
         )
       );
-    
-    var gradScaleVert = 
+
+    var gradScaleVert =
       $(go.Node, "Graduated",
-        { 
+        {
           graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
           isInDocumentBounds: false, isAnimated: false
         },
         $(go.Shape, { geometryString: "M0 0 V400" }),
         $(go.Shape, { geometryString: "M0 0 V3", interval: 1, alignmentFocus: go.Spot.Bottom }),
         $(go.Shape, { geometryString: "M0 0 V15", interval: 5, alignmentFocus: go.Spot.Bottom }),
-        $(go.TextBlock, 
-          { 
+        $(go.TextBlock,
+          {
             font: "10px sans-serif",
             segmentOrientation: go.Link.OrientOpposite,
             interval: 5,
@@ -90,9 +89,9 @@
       );
 
     // These indicators are globally defined so they can be accessed by the div's mouseevents
-    gradIndicatorHoriz = 
+    gradIndicatorHoriz =
       $(go.Node,
-        { 
+        {
           pickable: false, layerName: "Foreground", visible: false,
           isInDocumentBounds: false, isAnimated: false,
           locationSpot: go.Spot.Top
@@ -100,9 +99,9 @@
         $(go.Shape, { geometryString: "M0 0 V15", strokeWidth: 2, stroke: "red" })
       );
 
-    gradIndicatorVert = 
+    gradIndicatorVert =
       $(go.Node,
-        { 
+        {
           pickable: false, layerName: "Foreground", visible: false,
           isInDocumentBounds: false, isAnimated: false,
           locationSpot: go.Spot.Left
@@ -189,14 +188,14 @@
     gradIndicatorVert.visible = false;
     myDiagram.commitTransaction("hide indicators");
   }
-  
+
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        This also adds a border to help see the edges of the viewport. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px" 
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"
        onmouseover="showIndicators()" onmouseout="hideIndicators()"></div>
   <p>
     This sample demonstrates a diagram with rulers at its edges and indicators which display the mouse's position.
@@ -219,7 +218,7 @@
         has positioned the rest of the nodes.
       </li>
       <li>
-        <a>ToolManager.doMouseMove</a>, <a>LinkingTool.doMouseMove</a>, <a>DraggingTool.doMouseMove</a>, 
+        <a>ToolManager.doMouseMove</a>, <a>LinkingTool.doMouseMove</a>, <a>DraggingTool.doMouseMove</a>,
         and <a>DragSelectingTool.doMouseMove</a> are overridden to update the mouse indicators after executing
         their default behavior. Each is overridden so that whichever tool is active will properly adjust the
         indicators in addition to its normal functionality.

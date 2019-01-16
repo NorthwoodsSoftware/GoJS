@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,13 +16,11 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          allowDrop: true, // from Palette
           // what to do when a drag-drop occurs in the Diagram's background
           mouseDrop: function(e) { finishDrop(e, null); },
           layout:  // Diagram has simple horizontal layout
             $(go.GridLayout,
               { wrappingWidth: Infinity, alignment: go.GridLayout.Position, cellSize: new go.Size(1, 1) }),
-          initialContentAlignment: go.Spot.Center,
           "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
           "undoManager.isEnabled": true
         });
@@ -85,11 +83,8 @@
           layout:
             $(go.GridLayout,
               { wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) })
-        },
-        { // automatically adjust the scale of the HEADER, depending on the nesting depth
-          containingGroupChanged:
-            function(part, oldgroup, newgroup) { part.findObject("HEADER").scale = 1 / (1+part.findSubGraphLevel()); }
+                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) }),
+          containingGroupChanged: rescale  // automatically adjust the scale of the HEADER, depending on the nesting depth
         },
         new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
         $(go.Shape, "Rectangle",
@@ -132,11 +127,8 @@
           layout:
             $(go.GridLayout,
               { wrappingColumn: 1, alignment: go.GridLayout.Position,
-                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) })
-        },
-        { // automatically adjust the scale of the HEADER, depending on the nesting depth
-          containingGroupChanged:
-            function(part, oldgroup, newgroup) { part.findObject("HEADER").scale = 1 / (1+part.findSubGraphLevel()); }
+                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4) }),
+          containingGroupChanged: rescale  // automatically adjust the scale of the HEADER, depending on the nesting depth
         },
         new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
         $(go.Shape, "Rectangle",
@@ -166,11 +158,8 @@
     myDiagram.nodeTemplate =
       $(go.Node, go.Panel.Auto,
         { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-          mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
-        },
-        { // automatically adjust the scale of the HEADER, depending on the nesting depth
-          containingGroupChanged:
-            function(part, oldgroup, newgroup) { part.scale = 1 / (1+part.findSubGraphLevel()); }
+          mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); },
+          containingGroupChanged: rescale  // automatically adjust the scale of the node, depending on the nesting depth
         },
         $(go.Shape, "Rectangle",
           { fill: "#ACE600", stroke: "#558000", strokeWidth: 2 },
@@ -184,6 +173,17 @@
           },
           new go.Binding("text", "text").makeTwoWay())
       );
+
+    // Change the scale of each node, including groups and their member nodes,
+    // depending on how deeply nested the node is.
+    function rescale(node) {
+      if (node instanceof go.Group) {
+        node.findObject("HEADER").scale = 1 / (1 + node.findSubGraphLevel());
+        node.memberParts.each(rescale)
+      } else if (node instanceof go.Node) {
+        node.scale = 1 / (1 + node.findSubGraphLevel());
+      }
+    }
 
     // initialize the Palette and its contents
     myPalette =

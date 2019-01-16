@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -81,8 +81,8 @@ only if the model's <a>UndoManager.isEnabled</a> has been set to true.
 <p>
 To better understand the relationships between objects and transactions in memory, look at this diagram:
 <p>
-<pre data-language="javascript" id="transactionsDiagram" style="display:none">
-  diagram.nodeTemplate = 
+<pre class="lang-js" id="transactionsDiagram" style="display:none">
+  diagram.nodeTemplate =
     $(go.Node, "Auto",
       { scale : 1.6, isShadowed: true },
       new go.Binding("location", "pos", go.Point.parse),
@@ -99,14 +99,14 @@ To better understand the relationships between objects and transactions in memor
   // Represents the nodeDataArray for the two nodes
   diagram.nodeTemplateMap.add("dataNode",
     $(go.Node, "Auto",
-      { 
+      {
         locationSpot: go.Spot.Center,
         scale: 1.2,
         selectionAdorned: true,
         fromSpot: go.Spot.AllSides,
         toSpot: go.Spot.AllSides,
         isShadowed: true
-      }, 
+      },
       new go.Binding("location", "pos", go.Point.parse),
       new go.Binding("toSpot", "tSpot"),
       new go.Binding("fromSpot", "fSpot"),
@@ -131,14 +131,14 @@ To better understand the relationships between objects and transactions in memor
 
   diagram.nodeTemplateMap.add("dataNodeChanged",
     $(go.Node, "Auto",
-      { 
+      {
         locationSpot: go.Spot.Center,
         scale: 1.2,
         selectionAdorned: true,
         fromSpot: go.Spot.AllSides,
         toSpot: go.Spot.AllSides,
         isShadowed: true
-      }, 
+      },
       new go.Binding("location", "pos", go.Point.parse),
       new go.Binding("toSpot", "tSpot"),
       new go.Binding("fromSpot", "fSpot"),
@@ -157,7 +157,7 @@ To better understand the relationships between objects and transactions in memor
         $(go.TextBlock, textStyle(), // Fill:
           { portId: "ROW2" },
           new go.Binding("text", "txt2")),
-        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }), 
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
         $(go.TextBlock, textStyle(), // Text:
           { portId: "ROW3" },
           new go.Binding("text", "txt3")),
@@ -182,18 +182,18 @@ To better understand the relationships between objects and transactions in memor
 
   diagram.nodeTemplateMap.add("nodeDataArray",
     $(go.Node, "Auto",
-      { 
+      {
         locationSpot: go.Spot.Center,
         scale: 1.2,
         selectionAdorned: true,
         fromSpot: go.Spot.AllSides,
         toSpot: go.Spot.AllSides,
         shadowColor: "#C5C1AA"
-      }, 
+      },
       new go.Binding("location", "pos", go.Point.parse),
       $(go.Shape, "Rectangle", { fill: "lightgray" }),
       $(go.Panel, "Vertical",
-        { defaultStretch: go.GraphObject.Horizontal }, 
+        { defaultStretch: go.GraphObject.Horizontal },
         $(go.TextBlock, headerStyle(),
           { portId: "HEADER", text: "nodeDataArray" }),
         $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
@@ -204,7 +204,7 @@ To better understand the relationships between objects and transactions in memor
           { portId: "dataNode2", desiredSize: new go.Size(NaN,16) })
       )
     ));
-  
+
   diagram.linkTemplateMap.add("Data",
     $(go.Link,
       { corner: 10, routing: go.Link.Orthogonal },
@@ -217,14 +217,13 @@ To better understand the relationships between objects and transactions in memor
   ));
 
   diagram.scale = 0.8;
-  diagram.initialContentAlignment = go.Spot.Center;
-  
+
   var model = new go.GraphLinksModel();
   model.linkFromPortIdProperty = "fPID";
   model.linkToPortIdProperty = "tPID"
 
   model.nodeDataArray = [
-    { key: 1, txt: "Diagram", color: "white",  pos: "15 305"}, 
+    { key: 1, txt: "Diagram", color: "white",  pos: "15 305"},
     { key: 2, txt: "Model",  color: "white", pos: "215 305"},
     { key: 3, category: "dataNode", pos: "215 440",  head: "Node Data Array", txt1: "nodeDataArray[0]", txt2: "nodeDataArray[1]"},
     { key: 4, pos: "215 187", color: "white", txt: "UndoManager"},
@@ -255,18 +254,18 @@ To better understand the relationships between objects and transactions in memor
   // Formatting
   function headerStyle() {
     return {
-      margin: 3, 
+      margin: 3,
       font: "bold 12pt sans-serif",
-      minSize: new go.Size(140, 16), 
+      minSize: new go.Size(140, 16),
       maxSize: new go.Size(120, NaN),
       textAlign: "center"
     };
   }
   function textStyle() {
     return {
-      margin: 3, 
+      margin: 3,
       font: "italic 10pt sans-serif",
-      minSize: new go.Size(16, 16), 
+      minSize: new go.Size(16, 16),
       maxSize: new go.Size(160, NaN),
       textAlign: "left"
     };
@@ -275,24 +274,21 @@ To better understand the relationships between objects and transactions in memor
 <script>goCode("transactionsDiagram", 650, 550)</script>
 <p>
 A typical case for using transactions is when some command makes a change to the model.
-In the following example the addChild function adds a link connecting the selected node to a new node.
-When no Node is selected, nothing happens.
 </p>
-<pre data-language="javascript" id="transaction">
+<pre class="lang-js" id="transaction">
   // define a function named "addChild" that is invoked by a button click
   addChild = function() {
     var selnode = diagram.selection.first();
     if (!(selnode instanceof go.Node)) return;
-    diagram.startTransaction("add node and link");
-    // have the Model add a new node data
-    var newnode = { key: "N" };
-    diagram.model.addNodeData(newnode);  // this makes sure the key is unique
-    // and then add a link data connecting the original node with the new one
-    var newlink = { from: selnode.data.key, to: newnode.key };
-    // add the new link to the model
-    diagram.model.addLinkData(newlink);
-    // finish the transaction
-    diagram.commitTransaction("add node and link");
+    diagram.commit(function(d) {
+      // have the Model add a new node data
+      var newnode = { key: "N" };
+      d.model.addNodeData(newnode);  // this makes sure the key is unique
+      // and then add a link data connecting the original node with the new one
+      var newlink = { from: selnode.data.key, to: newnode.key };
+      // add the new link to the model
+      d.model.addLinkData(newlink);
+    }, "add node and link");
   };
 
   diagram.nodeTemplate =
@@ -315,7 +311,9 @@ When no Node is selected, nothing happens.
   diagram.model.undoManager.isEnabled = true;
 </pre>
 <p>
-
+  In the following example, select a node and then click the button.
+  The addChild function adds a link connecting the selected node to a new node.
+  When no Node is selected, nothing happens.
 </p>
 <input type="button" onclick="addChild()" value="addChild() to selected Node" />
 <script>goCode("transaction", 600, 200)</script>
@@ -329,7 +327,7 @@ This will get the previous value for the property, set the property to the new v
 call <a>Model.raiseDataChanged</a>, which will also automatically update any target bindings in the Node
 corresponding to the data.
 </p>
-<pre data-language="javascript" id="changingData">
+<pre class="lang-js" id="changingData">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
@@ -345,18 +343,16 @@ corresponding to the data.
 
   // define a function named "incrementData" callable by onclick
   incrementData = function() {
-    var model = diagram.model;
-    // all model changes should happen in a transaction
-    model.startTransaction("increment");
-    var data = model.nodeDataArray[0];  // get the first node data
-    model.setDataProperty(data, "someValue", data.someValue + 1);
-    model.commitTransaction("increment");
+    diagram.model.commit(function(m) {
+      var data = m.nodeDataArray[0];  // get the first node data
+      m.set(data, "someValue", data.someValue + 1);
+    }, "increment");
   };
 </pre>
 <p>
 Move the node around.
-Click on the button to increase the value of the "someValue" property on the data.
-Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
+Click on the button to increase the value of the "someValue" property on the first node data.
+Click to focus in the Diagram and then Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
 </p>
 <input type="button" onclick="incrementData()" value="incrementData()" />
 <script>goCode("changingData", 250, 150)</script>

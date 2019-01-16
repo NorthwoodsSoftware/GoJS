@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          initialContentAlignment: go.Spot.Center,
           "undoManager.isEnabled": true,
           "linkReshapingTool": new OrthogonalLinkReshapingTool()
         });
@@ -28,7 +27,7 @@
           height: 50,
           locationSpot: go.Spot.Center
         },
-        new go.Binding("location"),
+        new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, { fill: "lightgray" }),
         $(go.TextBlock, { margin: 10 },
           new go.Binding("text", "key"))
@@ -41,13 +40,14 @@
           reshapable: true,
           resegmentable: true
         },
+        new go.Binding("points").makeTwoWay(),
         $(go.Shape, { strokeWidth: 2 })
       );
 
     myDiagram.model = new go.GraphLinksModel([
-      { key: "Alpha", location: new go.Point(0, 0) },
-      { key: "Beta", location: new go.Point(200, 0) },
-      { key: "Gamma", location: new go.Point(100, 0) }
+      { key: "Alpha", location: "0 0" },
+      { key: "Beta", location: "200 0" },
+      { key: "Gamma", location: "100 0" }
     ],[
       { from: "Alpha", to: "Beta" }
     ]);
@@ -85,7 +85,7 @@
   <p>
     This sample demonstrates the OrthogonalLinkReshapingTool that is defined in its own file, as <a href="OrthogonalLinkReshapingTool.js">OrthogonalLinkReshapingTool.js</a>.
     This tool allow users to shift the sections of orthogonal links in addition to resegmenting them.
-    The Diagram's <a>ToolManager.linkReshapingTool</a> and link template's <a>Part.reshapable</a> properties must be set to use this tool. 
+    The Diagram's <a>ToolManager.linkReshapingTool</a> and link template's <a>Part.reshapable</a> properties must be set to use this tool.
     The <a>Link.resegmentable</a> property can still optionally be used.
   </p>
 </div>

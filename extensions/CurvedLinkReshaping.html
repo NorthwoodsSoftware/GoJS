@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,8 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
-          // start everything in the middle of the viewport
-          initialContentAlignment: go.Spot.Center,
           // have mouse wheel events zoom in and out instead of scroll up and down
           "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
           // support double-click in background creating a new node
@@ -35,7 +33,7 @@
       if (myDiagram.isModified) {
         if (idx < 0) document.title += "*";
       } else {
-        if (idx >= 0) document.title = document.title.substr(0, idx); 
+        if (idx >= 0) document.title = document.title.substr(0, idx);
       }
     });
 
@@ -102,7 +100,7 @@
       // add the new node data to the model
       var model = diagram.model;
       model.addNodeData(toData);
-      
+
       // create a link data from the old node data to the new node data
       var linkdata = {
         from: model.getKeyForNodeData(fromData),  // or just: fromData.id
@@ -111,13 +109,13 @@
       };
       // and add the link data to the model
       model.addLinkData(linkdata);
-      
+
       // select the new Node
       var newnode = diagram.findNodeForData(toData);
       diagram.select(newnode);
-      
+
       diagram.commitTransaction("Add State");
-      
+
       // if the new node is off-screen, scroll the diagram to show the new node
       diagram.scrollToRect(newnode.actualBounds);
     }
@@ -183,7 +181,8 @@
   Diagram Model saved in JSON format:
   <br />
   <textarea id="mySavedModel" style="width:100%;height:300px">
-{ "nodeKeyProperty": "id",
+{ "class": "go.GraphLinksModel",
+  "nodeKeyProperty": "id",
   "nodeDataArray": [
     { "id": 0, "loc": "120 120", "text": "Initial" },
     { "id": 1, "loc": "330 120", "text": "First down" },

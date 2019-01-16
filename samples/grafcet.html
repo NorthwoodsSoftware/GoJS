@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,6 @@
         {
           allowLink: false,  // linking is only started via buttons, not modelessly;
                              // see the "startLink..." functions and CustomLinkingTool defined below
-          initialContentAlignment: go.Spot.Center,
           // double-click in the background creates a new "Start" node
           "clickCreatingTool.archetypeNodeData": { category: "Start", step: 1, text: "Action" },
           linkingTool: new CustomLinkingTool(),  // defined below to automatically turn on allowLink
@@ -43,9 +42,9 @@
     // and a Binding of "visible" to hide the button if it cannot be executed for that particular node.
 
     var commandsAdornment =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
         $(go.Panel, "Auto",
-          $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 2 }),
+          $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 2, shadowVisible: false }),
           $(go.Placeholder)
         ),
         $(go.Panel, "Horizontal",
@@ -90,9 +89,8 @@
       );
 
     function makeTooltip(str) {  // a helper function for defining tooltips for buttons
-      return $(go.Adornment, go.Panel.Auto,
-               $(go.Shape, { fill: "#FFFFCC" }),
-               $(go.TextBlock, str, { margin: 4 }));
+      return $("ToolTip",
+               $(go.TextBlock, str));
     }
 
     // Commands for adding new Nodes
@@ -348,13 +346,11 @@
 
   // user-drawn linking is normally disabled,
   // but needs to be turned on when using this tool
-  /** @override */
   CustomLinkingTool.prototype.doStart = function() {
     this.diagram.allowLink = true;
     go.LinkingTool.prototype.doStart.call(this);
   };
 
-  /** @override */
   CustomLinkingTool.prototype.doStop = function() {
     go.LinkingTool.prototype.doStop.call(this);
     this.diagram.allowLink = false;
@@ -369,7 +365,6 @@
   }
   go.Diagram.inherit(BarLink, go.Link);
 
-  /** @override */
   BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
     var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
                         port.getDocumentPoint(go.Spot.BottomRight));
@@ -385,7 +380,6 @@
     }
   };
 
-  /** @override */
   BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
     var op = otherport.getDocumentPoint(go.Spot.Center);

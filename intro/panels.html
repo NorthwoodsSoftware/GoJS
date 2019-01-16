@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -26,16 +26,16 @@ When you construct a <a>Panel</a> you usually specify its <a>Panel.type</a> as t
 These are the kinds of panels that exist:
 </p>
 <ul>
-<li><a>Panel.Position</a></li>
-<li><a>Panel.Vertical</a></li>
-<li><a>Panel.Horizontal</a></li>
-<li><a>Panel.Auto</a></li>
-<li><a>Panel.Spot</a></li>
-<li><a>Panel.Table</a> (see the next section about <a href="tablePanels.html">Table Panels</a>)</li>
-<li><a>Panel.Viewbox</a></li>
-<li><a>Panel.Link</a> (see the section about <a href="linkLabels.html">Link Labels</a>)</li>
-<li><a>Panel.Grid</a> (see the section about <a href="grids.html">Grid Patterns</a>)</li>
-<li><a>Panel.Graduated</a> (see the section about <a href="graduatedPanels.html">Graduated Panels</a>)</li>
+<li><a>Panel,Position</a></li>
+<li><a>Panel,Vertical</a></li>
+<li><a>Panel,Horizontal</a></li>
+<li><a>Panel,Auto</a></li>
+<li><a>Panel,Spot</a></li>
+<li><a>Panel,Table</a> (see the next section about <a href="tablePanels.html">Table Panels</a>)</li>
+<li><a>Panel,Viewbox</a></li>
+<li><a>Panel,Link</a> (see the section about <a href="linkLabels.html">Link Labels</a>)</li>
+<li><a>Panel,Grid</a> (see the section about <a href="grids.html">Grid Patterns</a>)</li>
+<li><a>Panel,Graduated</a> (see the section about <a href="graduatedPanels.html">Graduated Panels</a>)</li>
 </ul>
 <p>
 In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
@@ -51,7 +51,7 @@ Thus these examples make use of Parts as top-level objects whereas within a Node
 
 <h2 id="PositionPanels">Position Panels</h2>
 <p>
-The simplest kind of <a>Panel</a> is "Position" (<a>Panel.Position</a>).
+The simplest kind of <a>Panel</a> is "Position" (<a>Panel,Position</a>).
 Each element gets its normal size, whether its natural size or a specified <a>GraphObject.desiredSize</a>
 (or equivalently the <a>GraphObject.width</a> and <a>GraphObject.height</a>).
 </p>
@@ -65,7 +65,7 @@ Positions may include negative coordinates.
 The Panel's size is just big enough to hold all of its elements.
 If you want it to be a bit bigger than that, you can set the <a>Panel.padding</a> property.
 </p>
-<pre data-language="javascript" id="positionPanels">
+<pre class="lang-js" id="positionPanels">
   diagram.add(
     // all Parts are Panels
     $(go.Part, go.Panel.Position,  // or "Position"
@@ -84,7 +84,7 @@ If you want it to be a bit bigger than that, you can set the <a>Panel.padding</a
 A Position Panel will always include the (0,0) origin point in its own panel coordinate system.
 Thus a Position Panel that has elements whose collective bounds does not include (0,0) is always extended to include the origin.
 </p>
-<pre data-language="javascript" id="zeroPositionPanel">
+<pre class="lang-js" id="zeroPositionPanel">
   diagram.add(
     $(go.Part, "Position",
       { background: "lightgray" },
@@ -105,7 +105,7 @@ line up with each other, independent of how thick their strokes are, set
 
 <h2 id="VerticalPanels">Vertical Panels</h2>
 <p>
-A very common kind of <a>Panel</a> is "Vertical" (<a>Panel.Vertical</a>).
+A very common kind of <a>Panel</a> is "Vertical" (<a>Panel,Vertical</a>).
 In this Panel all of the panel elements are arranged vertically from top to bottom.
 Each element gets its normal height and either its normal width or, if stretched, the width of the panel.
 If the element's <a>GraphObject.stretch</a> property has any vertical stretch component, it is ignored.
@@ -122,7 +122,7 @@ which in this case is the first element.
 Note how the last element does not set the desired <a>GraphObject.width</a> property,
 so that the <a>GraphObject.stretch</a> value is effective.
 </p>
-<pre data-language="javascript" id="verticalPanels">
+<pre class="lang-js" id="verticalPanels">
   diagram.add(
     $(go.Part, go.Panel.Vertical,  // or "Vertical"
       { background: "lightgray" },
@@ -148,7 +148,7 @@ If the width and/or height are smaller than the natural size, the content elemen
 The Vertical Panel below sets the width to be 140, much wider than needed.
 You can see how the last element's width is stretched.
 </p>
-<pre data-language="javascript" id="excessWidth">
+<pre class="lang-js" id="excessWidth">
   diagram.add(
     $(go.Part, "Vertical",
       { background: "lightgray", width: 140 },
@@ -166,7 +166,7 @@ The latter one also has a restricted height.
 Note how the text is automatically wrapped to try to fit within the limited width,
 because the default value for <a>TextBlock.wrap</a> is to allow wrapping.
 </p>
-<pre data-language="javascript" id="limitedWidth">
+<pre class="lang-js" id="limitedWidth">
   diagram.add(
     $(go.Part, "Vertical",
       { position: new go.Point(0, 0), background: "lightgray", width: 50 },
@@ -189,13 +189,13 @@ because the default value for <a>TextBlock.wrap</a> is to allow wrapping.
 <script>goCode("limitedWidth", 600, 150)</script>
 
 <p>
-Here is a Vertical Panel with a default <a>GraphObject.stretch</a> of <a>GraphObject.Horizontal</a>.
+Here is a Vertical Panel with a default <a>GraphObject.stretch</a> of <a>GraphObject,Horizontal</a>.
 Because no width is specified for the whole panel, its width is the width of the widest element, in this case the second one.
 Note how all of the <a>TextBlock</a>s have the same long width, as highlighted by the lightgreen backgrounds.
 However the last TextBlock has a limited width, so it is not stretched.
 One can limit the width but not the height by supplying a value of <code>NaN</code> or <code>Infinity</code> for the height.
 </p>
-<pre data-language="javascript" id="defaultStretch">
+<pre class="lang-js" id="defaultStretch">
   diagram.add(
     $(go.Part, "Vertical",
       { background: "lightgray", defaultStretch: go.GraphObject.Horizontal },
@@ -214,7 +214,7 @@ If you change that sample to set the <a>GraphObject.width</a> or <a>GraphObject.
 The reduced width will cause the other, stretched, elements to be measured with the limited width (50 in this case),
 which cause those <a>TextBlock</a>s to wrap to fit within the available width.
 </p>
-<pre data-language="javascript" id="defaultStretch2">
+<pre class="lang-js" id="defaultStretch2">
   diagram.add(
     $(go.Part, "Vertical",
       { background: "lightgray", defaultStretch: go.GraphObject.Horizontal },
@@ -232,13 +232,13 @@ which cause those <a>TextBlock</a>s to wrap to fit within the available width.
 <p>
 Horizontal <a>Panel</a>s are just like Vertical Panels, except that the elements are arranged horizontally instead of vertically.
 Elements are never stretched horizontally, but they may be stretched vertically.
-Because elements are never stretched horizontally, a stretch value of <a>GraphObject.Fill</a> is the same as <a>GraphObject.Vertical</a>.
+Because elements are never stretched horizontally, a stretch value of <a>GraphObject,Fill</a> is the same as <a>GraphObject,Vertical</a>.
 </p>
 <p>
 Note that the last element in both panels do not specify a desired <a>GraphObject.height</a>,
 so that the <a>GraphObject.stretch</a> value may be effective.
 </p>
-<pre data-language="javascript" id="horizontalPanels">
+<pre class="lang-js" id="horizontalPanels">
   diagram.add(
     $(go.Part, go.Panel.Horizontal,  // or "Horizontal"
       { position: new go.Point(0, 0), background: "lightgray" },
@@ -265,7 +265,7 @@ so that the <a>GraphObject.stretch</a> value may be effective.
   bottom-to-top for Vertical Panels and right-to-left for Horizontal Panels.
   Just set <a>Panel.isOpposite</a> to true.
 </p>
-<pre data-language="javascript" id="opposite">
+<pre class="lang-js" id="opposite">
   diagram.add(
     $(go.Part, "Horizontal",
       { background: "lightgray", isOpposite: true },
@@ -294,12 +294,12 @@ Both Vertical and Horizontal <a>Panel</a>s support the <a>Panel.defaultAlignment
 This is a convenience so that you do not need to set the <a>GraphObject.alignment</a> or <a>GraphObject.stretch</a> property on each element.
 </p>
 <p>
-Here is a Horizontal Panel with a default <a>GraphObject.alignment</a> of <a>Spot.Bottom</a>.
+Here is a Horizontal Panel with a default <a>GraphObject.alignment</a> of <a>Spot,Bottom</a>.
 All of the <a>Shape</a>s are aligned at the bottom, even though the default alignment would normally be <a>Spot.Center</a>.
 However, the last Shape has its height stretched to the full height of the panel, 90.
 In this case the <a>GraphObject.margin</a> provides a little extra space around the object.
 </p>
-<pre data-language="javascript" id="defaultAlignment">
+<pre class="lang-js" id="defaultAlignment">
   diagram.add(
     $(go.Part, "Horizontal",
       { background: "lightgray", height: 90, defaultAlignment: go.Spot.Bottom },
@@ -329,13 +329,13 @@ as constant values of the <a>Spot</a> class:
 </p>
 <table>
   <tr>
-    <td><a>Spot.TopLeft</a></td> <td><a>Spot.Top</a></td> <td><a>Spot.TopRight</a></td>
+    <td><a>Spot,TopLeft</a></td> <td><a>Spot,Top</a></td> <td><a>Spot,TopRight</a></td>
   </tr>
   <tr>
-    <td><a>Spot.Left</a></td> <td><a>Spot.Center</a></td> <td><a>Spot.Right</a></td>
+    <td><a>Spot,Left</a></td> <td><a>Spot.Center</a></td> <td><a>Spot,Right</a></td>
   </tr>
   <tr>
-    <td><a>Spot.BottomLeft</a></td> <td><a>Spot.Bottom</a></td> <td><a>Spot.BottomRight</a></td>
+    <td><a>Spot,BottomLeft</a></td> <td><a>Spot,Bottom</a></td> <td><a>Spot,BottomRight</a></td>
   </tr>
 </table>
 
@@ -343,15 +343,15 @@ as constant values of the <a>Spot</a> class:
 But Spots are more general than that.
 The <a>Spot.x</a> and <a>Spot.y</a> properties can be any number between zero and one, inclusive.
 Those values are the fractional distances along the X and Y axes from the top-left corner of an arbitrary rectangle.
-So <a>Spot.TopLeft</a> is the same as new go.Spot(0, 0),
-<a>Spot.BottomRight</a> is the same as new go.Spot(1, 1),
-and <a>Spot.Right</a> is the same as new go.Spot(1, 0.5).
+So <a>Spot,TopLeft</a> is the same as new go.Spot(0, 0),
+<a>Spot,BottomRight</a> is the same as new go.Spot(1, 1),
+and <a>Spot,Right</a> is the same as new go.Spot(1, 0.5).
 </p>
 
 <p>
 Here are the standard nine Spots shown on a rectangular shape.
 </p>
-<pre data-language="javascript" id="standardSpots">
+<pre class="lang-js" id="standardSpots">
   diagram.add(
     $(go.Part, go.Panel.Spot,  // or "Spot"
       $(go.Shape, "Rectangle",
@@ -379,7 +379,7 @@ The ones on the left are offset along the X-axis plus or minus 40 units;
 the ones on the right are offset along the Y-axis plus or minus 20 units.
 TextBlocks are also given a semi-transparent red background to help distinguish their bounds.
 </p>
-<pre data-language="javascript" id="spotOffsets">
+<pre class="lang-js" id="spotOffsets">
   var pink = "rgba(255,0,0,.2)";
   diagram.add(
     $(go.Part, "Spot",
@@ -424,7 +424,7 @@ We have set the <a>GraphObject.background</a> and <a>Shape.fill</a> properties t
 <p>
 Auto Panels should have two or more elements in them.
 </p>
-<pre data-language="javascript" id="autoPanels">
+<pre class="lang-js" id="autoPanels">
   diagram.add(
     $(go.Part, "Auto",
       { position: new go.Point(0, 0), background: "lightgray" },
@@ -450,7 +450,7 @@ Auto Panels should have two or more elements in them.
 If you add a <a>GraphObject.margin</a> to the <a>TextBlock</a> in each of the same three panels,
 you will add a little space all around the "content" element inside the "main" element.
 </p>
-<pre data-language="javascript" id="marginAutoPanels">
+<pre class="lang-js" id="marginAutoPanels">
   diagram.add(
     $(go.Part, "Auto",
       { position: new go.Point(0, 0), background: "lightgray" },
@@ -478,7 +478,7 @@ Ellipses, for example, need to be significantly larger than the content to avoid
 This can be controlled by setting the <a>Shape.spot1</a> and <a>Shape.spot2</a> properties, which determine the area where the content should go.
 Many of the predefined figures have their own default values for spot1 and spot2.
 </p>
-<pre data-language="javascript" id="spotAreaAutoPanels">
+<pre class="lang-js" id="spotAreaAutoPanels">
   diagram.add(
     $(go.Part, "Auto",
       { position: new go.Point(0, 0), background: "lightgray" },
@@ -516,7 +516,7 @@ less than the natural width, which results in wrapping of the text.
 However there may not be enough height available to show the whole content element(s), causing them to be clipped.
 You can see that in the third Part the text is clipped, because there is less available area within an ellipse than within a rectangle.
 </p>
-<pre data-language="javascript" id="autoPanelsConstrained">
+<pre class="lang-js" id="autoPanelsConstrained">
   diagram.add(
     $(go.Part, "Auto",
       { width: 60, height: 60 },  // set the size of the whole panel
@@ -560,7 +560,7 @@ This is useful for having the main shape be a specific size and positioning smal
 Note in this example that the TextBlocks are centered at the four corners,
 causing the panel to be larger than the main shape, as can be seen with the light gray background.
 </p>
-<pre data-language="javascript" id="spotPanels">
+<pre class="lang-js" id="spotPanels">
   diagram.add(
     $(go.Part, "Spot",
       { background: "lightgray" },
@@ -580,7 +580,7 @@ The precise point in the content element that is positioned defaults to <a>Spot.
 But you can set the element's <a>GraphObject.alignmentFocus</a> to use a different spot.
 For example, if you use the same alignmentFocus as the alignment, the elements will be just inside the main element's bounds:
 </p>
-<pre data-language="javascript" id="focusInsideSpotPanels">
+<pre class="lang-js" id="focusInsideSpotPanels">
   diagram.add(
     $(go.Part, "Spot",
       { background: "lightgray" },
@@ -601,7 +601,7 @@ For example, if you use the same alignmentFocus as the alignment, the elements w
 <p>
 If you use the opposite alignmentFocus as the alignment, the elements will be just outside the main element's bounds:
 </p>
-<pre data-language="javascript" id="focusOutsideSpotPanels">
+<pre class="lang-js" id="focusOutsideSpotPanels">
   diagram.add(
     $(go.Part, "Spot",
       { background: "lightgray" },
@@ -619,12 +619,110 @@ If you use the opposite alignmentFocus as the alignment, the elements will be ju
 </pre>
 <script>goCode("focusOutsideSpotPanels", 600, 100)</script>
 
+
+  <p>
+  alignmentFocus offsetX/Y will also work to offset the alignmentFocus point, the same way it works for Link labels:
+  </p>
+  <pre class="lang-js" id="focusSpotPanels2">
+  diagram.layout = $(go.GridLayout,
+                       { wrappingColumn: 10, wrappingWidth: 900, isViewportSized: false });
+  var blue = "rgba(0,0,255,.2)";
+  diagram.add(
+    $(go.Part, "Vertical",
+      { locationObjectName: 'main' },
+      $(go.Panel, "Spot",
+        $(go.Shape, "Rectangle",
+          {  name: 'main', fill: "lightgreen", stroke: null, width: 100, height: 100 }),
+          $(go.Shape, "Rectangle",
+          { fill: "lightcoral", stroke: null, width: 30, height: 30,
+            alignment: go.Spot.TopRight, alignmentFocus: go.Spot.TopRight
+          })
+      ),
+      $(go.TextBlock, "alignment: TopRight,\n alignmentFocus: TopRight",
+        { font: '11px sans-serif' })
+    ));
+
+  diagram.add(
+    $(go.Part, "Vertical",
+      { locationObjectName: 'main' },
+      $(go.Panel, "Spot",
+        $(go.Shape, "Rectangle",
+          { name: 'main', fill: "lightgreen", stroke: null, width: 100, height: 100 }),
+          $(go.Shape, "Rectangle",
+          { fill: "lightcoral", stroke: null, width: 30, height: 30,
+            alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomRight
+          })
+      ),
+      $(go.TextBlock, "alignment: TopRight,\n alignmentFocus: BottomRight",
+        { font: '11px sans-serif' })
+    ));
+
+  diagram.add(
+    $(go.Part, "Vertical",
+      { locationObjectName: 'main' },
+      $(go.Panel, "Spot",
+        $(go.Shape, "Rectangle",
+          { name: 'main', fill: "lightgreen", stroke: null, width: 100, height: 100 }),
+          $(go.Shape, "Rectangle",
+          { fill: "lightcoral", stroke: null, width: 30, height: 30,
+            // BottomRight with offsetX = 15
+            alignment: go.Spot.TopRight, alignmentFocus: new go.Spot(1, 1, 15, 0)
+          })
+      ),
+      $(go.TextBlock, "alignment: TopRight,\n alignmentFocus: BottomRight with offsetX = 15",
+        { font: '11px sans-serif' })
+    ));
+  </pre>
+  <script>goCode("focusSpotPanels2", 700, 250)</script>
+
+
+<!-- begin new -->
+<h3 id="StretchingWithSpotPanels">Stretching with Spot Panels</h3>
+<p>
+  When a non-main element in a Spot panel stretches, it takes on the width and/or height of the main element.
+  This can be useful for aligning elements within the Panel.
+</p>
+<p>
+  In the example below, the red main element has three elements around it which stretch to its side's length.
+  The main element is the <a>Part.resizeObject</a>, and as it changes size the stretched elements will change size accordingly.
+</p>
+<pre class="lang-js" id="StretchSpotPanels">
+  diagram.add(
+    $(go.Part, "Spot",
+      {
+        resizable: true,
+        resizeObjectName: 'MAIN'
+      },
+      $(go.Shape, "Rectangle", { name: 'MAIN', strokeWidth: 0, width: 80, height: 60, fill: 'rgba(255,0,0, .8)' }), // red
+
+      $(go.Shape, "Rectangle", { stretch: go.GraphObject.Vertical, strokeWidth: 0, width: 20, fill: 'rgba(0,255,0, .3)', // green
+        alignment: go.Spot.Left,
+        alignmentFocus: go.Spot.Right
+      }),
+      $(go.Shape, "Rectangle", { stretch: go.GraphObject.Vertical, strokeWidth: 0, width: 20, fill: 'rgba(0,0,255, .3)' , // blue
+        alignment: go.Spot.Right,
+        alignmentFocus: go.Spot.Left
+      }),
+      $(go.Shape, "Rectangle", { stretch: go.GraphObject.Horizontal, strokeWidth: 0, height: 20, fill: 'rgba(255,0,255, .3)' , // pink
+        alignment: go.Spot.Bottom,
+        alignmentFocus: go.Spot.Top
+      })
+    ));
+  diagram.select(diagram.parts.first());
+  </pre>
+  <script>goCode("StretchSpotPanels", 600, 300)</script>
+
+
+<!-- end new -->
+
+<h3 id="ConstrainingSizeWithSpotPanels">Constraining size with Spot Panels</h3>
+
 <p>
 If you constrain the size of the whole panel, the panel may clip its elements.
 For example, when the whole panel must be 100x50, there is room horizontally but not vertically
 for the main element plus all of its other elements after arranging them.
 </p>
-<pre data-language="javascript" id="clipping">
+<pre class="lang-js" id="clipping">
   diagram.add(
     $(go.Part, "Spot",
       { background: "lightgray",
@@ -652,7 +750,7 @@ However if you want the main element to be in front of some or all of the other 
 you can move the main element not to be the first element of the panel,
 if you also set its <a>GraphObject.isPanelMain</a> property to true.
 </p>
-<pre data-language="javascript" id="spotZorder">
+<pre class="lang-js" id="spotZorder">
   diagram.add(
     $(go.Part, "Spot",
       { background: "lightgray" },
@@ -689,9 +787,8 @@ depending on the size and alignment of those other TextBlocks.
 <p>
 Example:
 
-<pre data-language="javascript" id="clipPictures">
+<pre class="lang-js" id="clipPictures">
   diagram.layout = $(go.GridLayout);
-  diagram.initialContentAlignment = go.Spot.Center;
 
   // Without Panel.isClipping
   diagram.add(
@@ -748,7 +845,7 @@ the one on the right is its natural size.
 Note that you can still see all of the elements of the panel at a reduced scale so that it can fit inside the Viewbox panel.
 But because the nested panel is taller than it is wider, there is empty space on the sides of the 80x80 Viewbox.
 </p>
-<pre data-language="javascript" id="viewboxPanel">
+<pre class="lang-js" id="viewboxPanel">
   diagram.add(
     $(go.Part, go.Panel.Viewbox,  // or "Viewbox"
       { position: new go.Point(0, 0), background: "lightgray",

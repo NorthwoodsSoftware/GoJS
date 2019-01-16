@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          initialContentAlignment: go.Spot.Center,
           layout: $(go.TreeLayout,
             { layerSpacing: 150, arrangementSpacing: new go.Size(2, 2), setsPortSpot: false, setsChildPortSpot: false })
         });
@@ -58,7 +57,7 @@
     // Conversion functions that make use of the PathPatterns store of pattern Shapes
     function convertPathPatternToShape(name) {
       if (!name) return null;
-      return PathPatterns.getValue(name);
+      return PathPatterns.get(name);
     }
 
     function convertPathPatternToColor(name) {
@@ -68,14 +67,14 @@
 
 
     // Define a bunch of small Shapes that can be used as values for Shape.pathPattern
-    var PathPatterns = new go.Map('string', go.Shape);
+    var PathPatterns = new go.Map();
 
     function definePathPattern(name, geostr, color, width, cap) {
       if (typeof name !== 'string' || typeof geostr !== 'string') throw new Error("invalid name or geometry string argument: " + name + " " + geostr);
       if (color === undefined) color = "black";
       if (width === undefined) width = 1;
       if (cap === undefined) cap = "square";
-      PathPatterns.add(name,
+      PathPatterns.set(name,
         $(go.Shape,
           {
             geometryString: geostr,

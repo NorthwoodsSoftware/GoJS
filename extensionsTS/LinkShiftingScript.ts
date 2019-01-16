@@ -1,58 +1,65 @@
-"use strict"
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from "../release/go";
-import { LinkShiftingTool } from "./LinkShiftingTool";
+import * as go from '../release/go';
+import { LinkShiftingTool } from './LinkShiftingTool';
 
 export function init() {
-	if (typeof (<any>window)["goSamples"] === 'function') (<any>window)["goSamples"]();  // init for these samples -- you don't need to call this
+  if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this
 
-	const $ = go.GraphObject.make;
+  const $ = go.GraphObject.make;
 
-	let myDiagram =
-		$(go.Diagram, "myDiagramDiv",
-			{
-        initialContentAlignment: go.Spot.Center,
-			  "undoManager.isEnabled": true
-			});
-	myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool));
+  const myDiagram =
+    $(go.Diagram, 'myDiagramDiv',
+      {
+        'undoManager.isEnabled': true
+      });
+  myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool));
 
-	myDiagram.nodeTemplate =
-		$(go.Node, "Auto",
-			{
-				fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
-				fromLinkable: true, toLinkable: true,
-				locationSpot: go.Spot.Center
-			},
-			new go.Binding("location"),
-			$(go.Shape, { fill: "lightgray" }),
-			$(go.TextBlock, { margin: 10 },
-				{ fromLinkable: false, toLinkable: false },
-				new go.Binding("text", "key"))
-		);
+  myDiagram.nodeTemplate =
+    $(go.Node, 'Auto',
+      {
+        fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
+        fromLinkable: true, toLinkable: true,
+        locationSpot: go.Spot.Center
+      },
+      new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.Shape, { fill: 'lightgray' }),
+      $(go.TextBlock, { margin: 10 },
+        { fromLinkable: false, toLinkable: false },
+        new go.Binding('text', 'key'))
+    );
 
-	myDiagram.linkTemplate =
-		$(go.Link,
-			{
-				reshapable: true, resegmentable: true,
-				relinkableFrom: true, relinkableTo: true,
-				adjusting: go.Link.Stretch
-			},
-			$(go.Shape),
-			$(go.Shape, { toArrow: "Standard" })
-		);
+  myDiagram.linkTemplate =
+    $(go.Link,
+      {
+        reshapable: true, resegmentable: true,
+        relinkableFrom: true, relinkableTo: true,
+        adjusting: go.Link.Stretch
+      },
+      // remember the (potentially) user-modified route
+      new go.Binding('points').makeTwoWay(),
+      // remember any spots modified by LinkShiftingTool
+      new go.Binding('fromSpot', 'fromSpot', go.Spot.parse).makeTwoWay(go.Spot.stringify),
+      new go.Binding('toSpot', 'toSpot', go.Spot.parse).makeTwoWay(go.Spot.stringify),
+      $(go.Shape),
+      $(go.Shape, { toArrow: 'Standard' })
+    );
 
-	myDiagram.model = new go.GraphLinksModel([
-		{ key: "Alpha", location: new go.Point(0, 0) },
-		{ key: "Beta", location: new go.Point(0, 100) }
-	], [
-			{ from: "Alpha", to: "Beta" }
-		]);
+  myDiagram.model = new go.GraphLinksModel([
+    { key: 'Alpha', location: '0 0' },
+    { key: 'Beta', location: '0 100' }
+  ], [
+    { from: 'Alpha', to: 'Beta' }
+  ]);
 
-	myDiagram.addDiagramListener("InitialLayoutCompleted", function (e: go.DiagramEvent) {
-		// select the Link in order to show its two additional Adornments, for shifting the ends
-		myDiagram.links.first().isSelected = true;
-	});
+  myDiagram.addDiagramListener('InitialLayoutCompleted', function (e: go.DiagramEvent) {
+    // select the Link in order to show its two additional Adornments, for shifting the ends
+    const firstlink = myDiagram.links.first();
+    if (firstlink !== null) firstlink.isSelected = true;
+  });
+
+  // Attach to the window for console manipulation
+  (window as any).myDiagram = myDiagram;
 }

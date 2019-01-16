@@ -24,6 +24,7 @@ function PolygonDrawingTool() {
   this.name = "PolygonDrawing";
   this._isPolygon = true;
   this._hasArcs = false;
+  this._isOrthoOnly = false;
   this._archetypePartData = {}; // the data to copy for a new polygon Part
 
   // this is the Shape that is shown during a drawing operation
@@ -83,6 +84,39 @@ PolygonDrawingTool.prototype.doDeactivate = function() {
 };
 
 /**
+* Given a potential Point for the next segment, return a Point it to snap to the grid, and remain orthogonal, if either is applicable.
+* @this {PolygonDrawingTool}
+*/
+PolygonDrawingTool.prototype.modifyPointForGrid = function(p) {
+  var grid = this.diagram.grid;
+  var pregrid = p.copy();
+  if (grid !== null && grid.visible) {
+    var cell = grid.gridCellSize;
+    var orig = grid.gridOrigin;
+    p.snapToGrid(orig.x, orig.y, cell.width, cell.height); // compute the closest grid point (modifies p)
+  }
+  if (this.temporaryShape.geometry === null) return p;
+  var fig = this.temporaryShape.geometry.figures.first();
+  var segments = fig.segments;
+  if (this.isOrthoOnly && segments.count > 0) {
+    var lastPt = null;
+    if (segments.count === 1) {
+      lastPt = new go.Point(fig.startX, fig.startY);
+    } else if (segments.count > 1) {
+      // the last segment is the current temporary segment, which we might be altering. We want the segment before
+      var secondLastSegment = (segments.elt(segments.count - 2));
+      lastPt = new go.Point(secondLastSegment.endX, secondLastSegment.endY);
+    }
+    if (pregrid.distanceSquared(lastPt.x, pregrid.y) < pregrid.distanceSquared(pregrid.x, lastPt.y)) { // closer to X coord
+      return new go.Point(lastPt.x, p.y);
+    } else { // closer to Y coord
+      return new go.Point(p.x, lastPt.y);
+    }
+  }
+  return p;
+}
+
+/**
 * This internal method adds a segment to the geometry of the {@link #temporaryShape}.
 * @this {PolygonDrawingTool}
 */
@@ -92,7 +126,7 @@ PolygonDrawingTool.prototype.addPoint = function(p) {
 
   // for the temporary Shape, normalize the geometry to be in the viewport
   var viewpt = this.diagram.viewportBounds.position;
-  var q = new go.Point(p.x-viewpt.x, p.y-viewpt.y);
+  var q = this.modifyPointForGrid(new go.Point(p.x - viewpt.x, p.y - viewpt.y));
 
   var part = shape.part;
   // if it's not in the Diagram, re-initialize the Shape's geometry and add the Part to the Diagram
@@ -126,6 +160,8 @@ PolygonDrawingTool.prototype.addPoint = function(p) {
 * @this {PolygonDrawingTool}
 */
 PolygonDrawingTool.prototype.moveLastPoint = function(p) {
+  p = this.modifyPointForGrid(p);
+
   // must copy whole Geometry in order to change a PathSegment
   var shape = this.temporaryShape;
   var geo = shape.geometry.copy();
@@ -307,6 +343,19 @@ Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
   get: function() { return this._hasArcs; },
   set: function(val) { this._hasArcs = val; }
 });
+
+/**
+* Gets or sets whether this tools draws shapes with only orthogonal segments, or segments in any direction.
+* The default value is false -- draw segments in any direction. This does not restrict the closing segment, which may not be orthogonal.
+* @name PolygonDrawingTool#isOrthoOnly
+* @function.
+* @return {boolean}
+*/
+Object.defineProperty(PolygonDrawingTool.prototype, "isOrthoOnly", {
+  get: function() { return this._isOrthoOnly; },
+  set: function(val) { this._isOrthoOnly = val; }
+});
+
 
 /**
 * Gets or sets the Shape that is used to hold the line as it is being drawn.

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -19,10 +19,10 @@ You can iterate over a collection by using an <a>Iterator</a>.
 </p>
 <p>
 These collection classes have several advantages over using JavaScript arrays as lists or objects as maps.
-They optionally enforce type checking of the item types.
 They raise an error when trying to get the next item of an iterator if the collection has been modified since getting the iterator.
 They can be made read-only to avoid unexpected modifications.
 They offer methods not found on simple arrays or objects, such as <a>Iterator.any</a>, <a>Iterator.all</a>, and <a>Iterator.each</a>.
+If you are writing in TypeScript, they optionally enforce compile-time type checking of the item types.
 </p>
 <p>
 In <b>GoJS</b> most of the properties and methods that return collections describing the structure of the diagram return an <a>Iterator</a>.
@@ -47,18 +47,16 @@ See samples that make use of collections in the <a href="../samples/index.html#c
 <p>
 A <a>List</a> is an ordered collection of values that are indexed by integers from zero to one less than the count.
 </p>
-<p>
-The optional argument to the <a>List</a> constructor specifies the type of the items that may be added to the list.
-</p>
-<pre data-language="javascript">
-  var l = new go.List("string");
+
+<pre class="lang-js">
+  var l = new go.List();
   l.add("A");
   l.add("B");
   l.add("C");
 
   assert(l.count === 3);
   assert(l.elt(0) === "A");
-  assert(l.contains("B"));
+  assert(l.has("B"));
   assert(l.indexOf("B") === 1);
 
   l.setElt(1, "z");  // replace an item
@@ -67,18 +65,30 @@ The optional argument to the <a>List</a> constructor specifies the type of the i
   l.removeAt(1);  // remove an item
   assert(l.count === 2);
   assert(l.elt(1) === "C");
-
-  l.add(23);  // throws an error when debugging
-  l.add({});  // throws an error when debugging
 </pre>
+<p>
+  In 2.0, the optional argument to the <a>List</a> constructor has been removed.
+  However, if you are writing in TypeScript, GoJS collections classes (<code>List</code>, <code>Map</code>, <code>Set</code>) are now generic, and will help you enforce types:
+</p>
+
+
+<pre class="lang-ts">
+  // TypeScript:
+  var l = new go.List&lt;string&gt;(); // Create a list of only strings
+  l.add("A");
+  l.add(23);  // throws an error during compilation or in an IDE
+  l.add({});  // throws an error during compilation or in an IDE
+</pre>
+
+
 
 <p>
 To iterate over a <a>List</a>, get its <a>List.iterator</a> and call <a>Iterator.next</a>
 on it to advance its position in the list.  Its <a>Iterator.value</a> will be a list item;
 its <a>Iterator.key</a> will be the corresponding index in the list.
 </p>
-<pre data-language="javascript">
-  var l = new go.List("string");
+<pre class="lang-js">
+  var l = new go.List();
   l.add("A");
   l.add("B");
   l.add("C");
@@ -101,30 +111,40 @@ This class is similar to the <code>Set</code> object that is defined in ECMAScri
 <p>
 The optional argument to the <a>Set</a> constructor specifies the type of the items that may be added to the set.
 </p>
-<pre data-language="javascript">
-  var s = new go.Set("string");
+<pre class="lang-js">
+  var s = new go.Set();
   s.add("A");
   s.add("B");
   s.add("C");
   s.add("B");  // duplicate is ignored
 
   assert(s.count === 3);
-  assert(s.contains("B"));
+  assert(s.has("B"));
 
   s.remove("B");  // remove an item
   assert(s.count === 2);
-  assert(!s.contains("B"));
-
-  s.add(23);  // throws an error when debugging
-  s.add({});  // throws an error when debugging
+  assert(!s.has("B"));
 </pre>
+
+<p>
+  As with <code>List</code> and <code>Map</code>, in 2.0 the optional argument to the <a>Set</a> constructor has been removed, but it is now a generic class in TypeScript and can enforce types:
+</p>
+
+<pre class="lang-ts">
+  // TypeScript:
+  var s = new go.Set&lt;string&gt;(); // Create a set of only strings
+  s.add("A");
+  s.add(23);  // throws an error during compilation or in an IDE
+  s.add({});  // throws an error during compilation or in an IDE
+</pre>
+
 
 <p>
 Iterating over the items in a <a>Set</a> is just like iterating over a <a>List</a>,
 except that the order of the items may vary.
 </p>
-<pre data-language="javascript">
-  var s = new go.Set("string");
+<pre class="lang-js">
+  var s = new go.Set();
   s.add("A");
   s.add("B");
   s.add("C");
@@ -148,26 +168,35 @@ This class is similar to the <code>Map</code> object that is defined in ECMAScri
 <p>
 The two optional arguments to the <a>Map</a> constructor specifies the types of the keys and the types of the item values that may be added to the map.
 </p>
-<pre data-language="javascript">
-  var m = new go.Map("string", "number");
+<pre class="lang-js">
+  var m = new go.Map();
   m.add("A", 1);  // associate "A" with 1
   m.add("B", 2);
   m.add("C", 3);
 
   assert(s.count === 3);
-  assert(s.contains("B"));
-  assert(s.getValue("B") === 2);
+  assert(s.has("B"));
+  assert(s.get("B") === 2);
 
   m.add("B", 222);  // replace the value for "B"
-  assert(s.getValue("B") === 222);
+  assert(s.get("B") === 222);
 
   s.remove("B");  // remove an item
   assert(s.count === 2);
-  assert(!s.contains("B"));
-  assert(s.getValue("B") === null);
+  assert(!s.has("B"));
+  assert(s.get("B") === null);
+</pre>
 
-  s.add(23, 23);  // throws an error when debugging
-  s.add({}, 23);  // throws an error when debugging
+<p>
+  As with <code>List</code> and <code>Set</code>, in 2.0 the optional arguments to the <a>Map</a> constructor have been removed, but it is now a generic class in TypeScript and can enforce types:
+</p>
+
+<pre class="lang-ts">
+  // TypeScript:
+  var m = new go.Map&lt;string, number&gt;(); // Create a map of strings to numbers
+  m.add("A", 1);
+  m.add(23, 23);  // throws an error during compilation or in an IDE
+  m.add({}, 23);  // throws an error during compilation or in an IDE
 </pre>
 
 <p>
@@ -175,8 +204,8 @@ Iterating over the items in a <a>Map</a> is just like iterating over a <a>List</
 but offering access to both the keys and the values.
 As with <a>Set</a>s the order of the items may vary.
 </p>
-<pre data-language="javascript">
-  var m = new go.Map("string", "number");
+<pre class="lang-js">
+  var m = new go.Map();
   m.add("A", 1);  // associate "A" with 1
   m.add("B", 2);
   m.add("C", 3);
@@ -221,7 +250,7 @@ when needing to pass a collection on to other methods that take an <a>Iterator</
 
 <p>
 It is commonplace to iterate over the selected <a>Part</a>s of a <a>Diagram</a>:
-<pre>
+<pre class="lang-js">
   for (var it = diagram.selection.iterator; it.next(); ) {
     var part = it.value;  // part is now a Node or a Group or a Link or maybe a simple Part
     if (part instanceof go.Node) { . . . }
@@ -229,7 +258,7 @@ It is commonplace to iterate over the selected <a>Part</a>s of a <a>Diagram</a>:
   }
 </pre>
 Alternatively:
-<pre>
+<pre class="lang-js">
   diagram.selection.each(function(part) {
     // part is now a Node or a Group or a Link or maybe a simple Part
     if (part instanceof go.Node) { . . . }
@@ -240,7 +269,7 @@ Alternatively:
 
 <p>
 Sometimes one needs to iterate over the <a>Node</a>s in a <a>Diagram</a>:
-<pre>
+<pre class="lang-js">
   for (var it = diagram.nodes; it.next(); ) {
     var n = it.value;  // n is now a Node or a Group
     if (n.category === "Special") { . . . }
@@ -250,7 +279,7 @@ Sometimes one needs to iterate over the <a>Node</a>s in a <a>Diagram</a>:
 
 <p>
 You can also iterate over the port elements in a <a>Node</a>, or the <a>Link</a>s connected to a port element:
-<pre>
+<pre class="lang-js">
   for (var pit = node.ports; pit.next(); ) {
     var port = pit.value;  // port is now a GraphObject within the node
     for (var lit = node.findLinksConnected(port.portId); lit.next(); ) {
@@ -263,7 +292,7 @@ You can also iterate over the port elements in a <a>Node</a>, or the <a>Link</a>
 
 <p>
 Or perhaps you need to iterate over the elements of a <a>Panel</a>:
-<pre>
+<pre class="lang-js">
   for (var it = panel.elements; it.next(); ) {
     var elt = it.value;  // elt is now a GraphObject that is an immediate child of the Panel
     if (elt instanceof go.TextBlock) { . . . }
@@ -274,7 +303,7 @@ Or perhaps you need to iterate over the elements of a <a>Panel</a>:
 
 <p>
 If you want to find <a>Node</a>s that are immediate members of a <a>Group</a>:
-<pre>
+<pre class="lang-js">
   for (var mit = group.memberParts; mit.next(); ) {
     var part = mit.value;  // part is now a Part within the Group
     if (part instanceof go.Node) { . . . maybe work with part.data . . . }

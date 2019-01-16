@@ -1,7 +1,7 @@
 // The diagram model data for the default floorplanner
 DEFAULT_MODEL_DATA = {
 	"class": "go.GraphLinksModel",
-	"modelData": { "units": "centimeters", "unitsAbbreviation": "cm", "gridSize": 10, "wallThickness": 5, "preferences": { "showWallGuidelines": true, "showWallLengths": true, "showWallAngles": true, "showOnlySmallWallAngles": true, "showGrid": true, "gridSnap": true } },
+	"modelData": { "units": "centimeters", "unitsAbbreviation": "cm", "unitsConversionFactor": 2, "gridSize": 10, "wallThickness": 5, "preferences": { "showWallGuidelines": true, "showWallLengths": true, "showWallAngles": true, "showOnlySmallWallAngles": true, "showGrid": true, "gridSnap": true } },
 		"nodeDataArray": [
 		{"key":"wall", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-430, "y":240}, "endpoint":{"class":"go.Point", "x":-430, "y":-240}, "thickness":10, "isGroup":true, "notes":""},
 		{"key":"wall3", "category":"WallGroup", "caption":"Wall", "type":"Wall", "startpoint":{"class":"go.Point", "x":-430, "y":-240}, "endpoint":{"class":"go.Point", "x":260, "y":-240}, "thickness":10, "isGroup":true, "notes":""},
@@ -155,6 +155,7 @@ GUI_STATE = {
 					optionsWindow: {
 						id: "optionsWindow",
 						gridSizeInputId: "gridSizeInput",
+						unitsConversionFactorInputId: "unitsConversionFactorInput",
 						unitsFormId: "unitsForm",
 						unitsFormName: "units",
 							checkboxes: {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -7,6 +7,7 @@
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
+  <script src="../extensions/figures.js"></script>
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
@@ -23,7 +24,7 @@ A Brush must not be modified once it has been assigned to a GraphObject, such as
 
 The simplest brushes are defined by a single solid color. Because they are so simple, anywhere you want a single-color brush you can subsitute a valid CSS color string.
 
-<pre data-language="javascript" id="simpleBrushes">
+<pre class="lang-js" id="simpleBrushes">
   diagram.add($(go.Part,
       $(go.Shape, "Circle", {
         fill: $(go.Brush, { color: "palegreen" })
@@ -40,7 +41,7 @@ The simplest brushes are defined by a single solid color. Because they are so si
 
 <p>Many CSS color strings are valid, including named colors, hex values, RGB values, and RGBA values.
 
-<pre data-language="javascript" id="simpleBrushes2">
+<pre class="lang-js" id="simpleBrushes2">
   diagram.layout = $(go.GridLayout);
 
   diagram.add($(go.Part,
@@ -70,7 +71,7 @@ The simplest brushes are defined by a single solid color. Because they are so si
 <h2 id="GradientBrushes">Gradient Brushes</h2>
 
 <p>Gradient brushes are defined by setting the type and adding a number of color stops to the Brush.</p>
-<pre data-language="javascript">
+<pre class="lang-js">
   // constructs a Linear gradient brush
   var brush = new go.Brush(go.Brush.Linear);
   brush.addColorStop(0, "blue");
@@ -78,14 +79,14 @@ The simplest brushes are defined by a single solid color. Because they are so si
 </pre>
 
 <p>To simplify the syntax, you can use go.GraphObject.make (see <a href="buildingObjects.html">building objects</a>):
-<pre data-language="javascript">
+<pre class="lang-js">
   // constructs the same Brush
   var brush = $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" });
 </pre>
 
 <p>Some examples follow:</p>
 
-<pre data-language="javascript" id="gradients1">
+<pre class="lang-js" id="gradients1">
   diagram.add(
     $(go.Part, "Table",
       $(go.Shape, { row: 0, column: 0,
@@ -106,7 +107,7 @@ The simplest brushes are defined by a single solid color. Because they are so si
 
 <p>Brushes can have any number of color stops:</p>
 
-<pre data-language="javascript" id="gradients2">
+<pre class="lang-js" id="gradients2">
   diagram.add(
     $(go.Part, "Table",
       $(go.Shape, { row: 0, column: 0,
@@ -142,7 +143,7 @@ The simplest brushes are defined by a single solid color. Because they are so si
 
 <p>Radial gradient brushes can be controlled with <a>Brsuh.startRadius</a> and <a>Brush.endRadius</a>, which default to zero and NaN, respectively, meaning the gradient begins at the very center and goes to the farthest measured edge of the object.
 
-<pre data-language="javascript" id="gradients21">
+<pre class="lang-js" id="gradients21">
   diagram.layout = $(go.GridLayout);
 
   diagram.add(
@@ -184,7 +185,7 @@ The simplest brushes are defined by a single solid color. Because they are so si
 
 <p>Several GraphObjects can share the same Brush:
 
-<pre data-language="javascript" id="gradients3">
+<pre class="lang-js" id="gradients3">
 
   diagram.layout = $(go.GridLayout);
 
@@ -260,7 +261,7 @@ The simplest brushes are defined by a single solid color. Because they are so si
 <p>The other Pattern Brush uses this image:</p>
 <p><img src="images/pattern.jpg"/></p>
 
-<pre data-language="javascript" id="diagramPre">
+<pre class="lang-js" id="diagramPre">
 
   // set up an 40x40 HTML Canvas and draw on it to create a repeating "tile" to use as a pattern
   function makePattern() {
@@ -334,100 +335,104 @@ The simplest brushes are defined by a single solid color. Because they are so si
 </p>
 <ul>
   <li>
-    <a>Brush.randomColor</a> - returns a random hexadecimal color value
+    <a>Brush,randomColor</a> - returns a random hexadecimal color value
   <li>
-    <a>Brush.lightenBy</a> and <a>Brush.darkenBy</a> - return lightened or darkened colors/brushes; there are both instance
+    <a>Brush,lightenBy</a> and <a>Brush,darkenBy</a> - return lightened or darkened colors/brushes; there are both instance
     and static versions
   </li>
   <li>
-    <a>Brush.lighten</a> and <a>Brush.darken</a> - convenience static functions which return lightened or darkened colors
+    <a>Brush,lighten</a> and <a>Brush,darken</a> - convenience static functions which return lightened or darkened colors
+  </li>
+  <li>
+    <a>Brush,mix</a> - mixes two colors together
+  </li>
+  <li>
+    <a>Brush,isDark</a> - determines whether a color is dark, often used in bindings; there are both instance and static versions
   </li>
 </ul>
 <p>
   In the following example, parts use the lighten and darken functions to get suitable colors for their stroke/fill.
 </p>
-<pre data-language="javascript" id="functions">
+<pre class="lang-js" id="functions">
   diagram.layout = $(go.GridLayout);
   var color1 = "rgb(80, 130, 210)";
   var color2 = go.Brush.randomColor(192, 224);
-  var gradBrush = $(go.Brush, "Linear", {
-                    0: color1, 1: color2
-                  });
+  var gradBrush = $(go.Brush, "Linear", { 0: color1, 1: color2 });
+  function shapeStyle() {
+    return [ "Ellipse", { width: 120, height: 80, strokeWidth: 4 } ];
+  }
 
-  // static methods
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: color1, stroke: go.Brush.darken(color1)
-        }),
-      $(go.TextBlock, "dark stroke")
-    ));
+  // static Brush methods
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: color1, stroke: go.Brush.darken(color1) }),
+      $(go.TextBlock, "dark stroke")));
 
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: color1, stroke: go.Brush.darkenBy(color1, .4)
-        }),
-      $(go.TextBlock, "darker stroke")
-    ));
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: color1, stroke: go.Brush.darkenBy(color1, .4) }),
+      $(go.TextBlock, "darker stroke")));
 
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: go.Brush.lighten(color1), stroke: color1
-        }),
-      $(go.TextBlock, "light fill")
-    ));
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: go.Brush.lighten(color1), stroke: color1 }),
+      $(go.TextBlock, "light fill")));
 
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: go.Brush.lightenBy(color1, .4), stroke: color1
-        }),
-      $(go.TextBlock, "lighter fill")
-    ));
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: go.Brush.lightenBy(color1, .4), stroke: color1 }),
+      $(go.TextBlock, "lighter fill")));
 
-  // instance methods
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: gradBrush.copy().lightenBy(.2)
-        }),
-      $(go.TextBlock, "lighter")
-    ));
+  // instance Brush methods
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: gradBrush.copy().lightenBy(.2) }),
+      $(go.TextBlock, "lighter")));
 
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: gradBrush
-        }),
-      $(go.TextBlock, "normal")
-    ));
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: gradBrush }),
+      $(go.TextBlock, "normal")));
 
-  diagram.add(
-    $(go.Part, "Auto",
-      $(go.Shape, "Ellipse", 
-        {
-          width: 120, height: 80,
-          fill: gradBrush.copy().darkenBy(.2)
-        }),
-      $(go.TextBlock, "darker")
-    ));
+  diagram.add($(go.Part, "Auto",
+      $(go.Shape, shapeStyle(),
+        { fill: gradBrush.copy().darkenBy(.2) }),
+      $(go.TextBlock, "darker")));
 </pre>
 <script>goCode("functions", 600, 200)</script>
+<p>
+  In the following example, the color of text is determined by whether the background shape is dark.
+</p>
+<pre class="lang-js" id="functions2">
+  diagram.layout = $(go.GridLayout);
 
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { desiredSize: new go.Size(80, 40) },
+      $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock, { margin: 8 },
+        new go.Binding("stroke", "color",
+              // dark nodes use white text, light nodes use dark text
+              function (c) { return go.Brush.isDark(c) ? "white" : "black"; }),
+        new go.Binding("text", "key")
+      )
+    );
+
+  diagram.model = new go.Model(
+    [
+      { key: "Alpha", color: "white" },
+      { key: "Beta", color: "black" },
+      { key: "Gamma", color: "darkblue" },
+      { key: "Delta", color: "lightblue" },
+      { key: "Epsilon", color: "darkgreen" },
+      { key: "Zeta", color: "lightgreen" },
+      { key: "Eta", color: "darkred" },
+      { key: "Theta", color: "lightcoral" }
+    ]
+  )
+</pre>
+<script>goCode("functions2", 600, 200)</script>
 </div>
 </div>
 </body>

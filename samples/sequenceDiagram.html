@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,10 +17,10 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv", // must be the ID or reference to an HTML DIV
         {
-          initialContentAlignment: go.Spot.Center,
           allowCopy: false,
           linkingTool: $(MessagingTool),  // defined below
           "resizingTool.isGridSnapEnabled": true,
+          draggingTool: $(MessageDraggingTool),  // defined below
           "draggingTool.gridSnapCellSize": new go.Size(1, MessageSpacing/4),
           "draggingTool.isGridSnapEnabled": true,
           // automatically extend Lifelines as Activities are moved or resized
@@ -203,11 +203,9 @@
   }
   go.Diagram.inherit(MessageLink, go.Link);
 
-  /** @override */
   MessageLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
-    var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-                        port.getDocumentPoint(go.Spot.BottomRight));
+    var r = port.getDocumentBounds();
     var op = otherport.getDocumentPoint(go.Spot.Center);
 
     var data = this.data;
@@ -233,7 +231,6 @@
     return aw;
   };
 
-  /** @override */
   MessageLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
     var p = port.getDocumentPoint(go.Spot.Center);
     var op = otherport.getDocumentPoint(go.Spot.Center);
@@ -241,7 +238,6 @@
     return right ? 0 : 180;
   };
 
-  /** @override */
   MessageLink.prototype.computePoints = function() {
     if (this.fromNode === this.toNode) {  // also handle a reflexive link as a simple orthogonal loop
       var data = this.data;
@@ -261,11 +257,10 @@
       return go.Link.prototype.computePoints.call(this);
     }
   }
-
   // end MessageLink
 
 
-  // a custom LinkingTool that fixes the "time" (i.e. the Y coordinate)
+  // A custom LinkingTool that fixes the "time" (i.e. the Y coordinate)
   // for both the temporaryLink and the actual newly created Link
   function MessagingTool() {
     go.LinkingTool.call(this);
@@ -279,14 +274,12 @@
   };
   go.Diagram.inherit(MessagingTool, go.LinkingTool);
 
-  /** @override */
   MessagingTool.prototype.doActivate = function() {
     go.LinkingTool.prototype.doActivate.call(this);
     var time = convertYToTime(this.diagram.firstInput.documentPoint.y);
     this.temporaryLink.time = Math.ceil(time);  // round up to an integer value
   };
 
-  /** @override */
   MessagingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
     var newlink = go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
     if (newlink !== null) {
@@ -309,6 +302,56 @@
     return newlink;
   };
   // end MessagingTool
+
+
+  // A custom DraggingTool that supports dragging any number of MessageLinks up and down --
+  // changing their data.time value.
+  function MessageDraggingTool() {
+    go.DraggingTool.call(this);
+  }
+  go.Diagram.inherit(MessageDraggingTool, go.DraggingTool);
+
+  // override the standard behavior to include all selected Links,
+  // even if not connected with any selected Nodes
+  MessageDraggingTool.prototype.computeEffectiveCollection = function(parts, options) {
+    var result = go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts, options);
+    // add a dummy Node so that the user can select only Links and move them all
+    result.add(new go.Node(), new go.DraggingInfo(new go.Point()));
+    // normally this method removes any links not connected to selected nodes;
+    // we have to add them back so that they are included in the "parts" argument to moveParts
+    parts.each(function(part) {
+      if (part instanceof go.Link) {
+        result.add(part, new go.DraggingInfo(part.getPoint(0).copy()));
+      }
+    })
+    return result;
+  }
+
+  // override to allow dragging when the selection only includes Links
+  MessageDraggingTool.prototype.mayMove = function() {
+    return !this.diagram.isReadOnly && this.diagram.allowMove;
+  }
+
+  // override to move Links (which are all assumed to be MessageLinks) by
+  // updating their Link.data.time property so that their link routes will
+  // have the correct vertical position
+  MessageDraggingTool.prototype.moveParts = function(parts, offset, check) {
+    go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
+    var it = parts.iterator;
+    while (it.next()) {
+      if (it.key instanceof go.Link) {
+        var link = it.key;
+        var startY = it.value.point.y;  // DraggingInfo.point.y
+        var y = startY + offset.y;  // determine new Y coordinate value for this link
+        var cellY = this.gridSnapCellSize.height;
+        y = Math.round(y / cellY) * cellY;  // snap to multiple of gridSnapCellSize.height
+        var t = Math.max(0, convertYToTime(y));
+        link.diagram.model.set(link.data, "time", t);
+        link.invalidateRoute();
+      }
+    }
+  }
+  // end MessageDraggingTool
 
 
   // Show the diagram's model in JSON format

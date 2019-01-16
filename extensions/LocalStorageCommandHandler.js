@@ -6,7 +6,7 @@
 /**
 * @constructor
 * @extends CommandHandler
-* @class 
+* @class
 * This CommandHandler class uses localStorage as the repository for the clipboard,
 * rather than an in-memory global variable.
 * It requires that the {@link Diagram#model} be serializable and deserializable using {@link Model#toJson} and {@link Model.fromJson}.
@@ -36,7 +36,6 @@ function LocalStorageCommandHandler() {
 go.Diagram.inherit(LocalStorageCommandHandler, go.CommandHandler);
 
 /**
-* @override
 * @this {LocalStorageCommandHandler}
 * @param {Iterable.<Part>} coll a collection of {@link Part}s.
 */
@@ -65,12 +64,11 @@ LocalStorageCommandHandler.prototype.copyToClipboard = function(coll) {
 };
 
 /**
-* @override
 * @this {LocalStorageCommandHandler}
 * @return {Set.<Part>} a collection of newly pasted {@link Part}s
 */
 LocalStorageCommandHandler.prototype.pasteFromClipboard = function() {
-  var coll = new go.Set(go.Part);
+  var coll = new go.Set(/*go.Part*/);
   try {
     var clipstr = window.localStorage.getItem(this.StorageKey);
     var clipfrmt = window.localStorage.getItem(this.FormatKey);
@@ -81,10 +79,10 @@ LocalStorageCommandHandler.prototype.pasteFromClipboard = function() {
       // recover the model from the clipboard rendering
       clipdiag.model = go.Model.fromJson(clipstr);
       // copy all the CLIPDIAG Parts into this Diagram
-      const all = new go.List().addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
+      var all = new go.List().addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
       var copymap = this.diagram.copyParts(all, this.diagram, false);
       // return a Set of the copied Parts
-      return new go.Set(go.Part).addAll(copymap.iteratorValues);
+      return new go.Set(/*go.Part*/).addAll(copymap.iteratorValues);
     }
   } catch (ex) {
     // fallback implementation
@@ -93,7 +91,6 @@ LocalStorageCommandHandler.prototype.pasteFromClipboard = function() {
 };
 
 /**
-* @override
 * @this {LocalStorageCommandHandler}
 * @return {boolean}
 */

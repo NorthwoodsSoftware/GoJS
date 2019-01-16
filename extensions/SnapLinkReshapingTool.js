@@ -66,7 +66,6 @@ Object.defineProperty(SnapLinkReshapingTool.prototype, "isGridSnapEnabled", {
 });
 
 /**
-* @override
 * Pretend while dragging a reshape handle the mouse point is at the nearest grid point,
 * if {@link #isGridSnapEnabled} is true.
 * This uses {@link #gridCellSize} and {@link #gridOrigin}, unless those are not real values,

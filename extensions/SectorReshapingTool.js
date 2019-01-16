@@ -1,4 +1,4 @@
-"use strict"
+﻿"use strict"
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -35,7 +35,6 @@ SectorReshapingTool.sweepProperty = "sweep";
 /**
 * This tool can only start if Diagram.allowReshape is true and the mouse-down event
 * is at a tool handle created by this tool.
-* @override
 * @this {SectorReshapingTool}
 */
 SectorReshapingTool.prototype.canStart = function() {
@@ -49,7 +48,6 @@ SectorReshapingTool.prototype.canStart = function() {
 
 /**
 * If the Part is selected, show two angle-changing tool handles and one radius-changing tool handle.
-* @override
 * @this {SectorReshapingTool}
 * @param {Part} part
 */
@@ -88,6 +86,11 @@ SectorReshapingTool.prototype.updateAdornments = function(part) {
         );
       ad.adornedObject = part.locationObject;
       part.addAdornment(this.name, ad);
+    } else {
+      ad.location = part.position;
+      var ns = part.naturalBounds;
+      ad.placeholder.desiredSize = new go.Size((ns.width) * part.scale, (ns.height) * part.scale);
+      ad.updateTargetBindings();
     }
   } else {
     part.removeAdornment(this.name);
@@ -96,7 +99,6 @@ SectorReshapingTool.prototype.updateAdornments = function(part) {
 
 /**
 * Remember the original angles and radius and start a transaction.
-* @override
 * @this {SectorReshapingTool}
 */
 SectorReshapingTool.prototype.doActivate = function() {
@@ -118,7 +120,6 @@ SectorReshapingTool.prototype.doActivate = function() {
 
 /**
 * Stop the transaction.
-* @override
 * @this {SectorReshapingTool}
 */
 SectorReshapingTool.prototype.doDeactivate = function() {
@@ -130,7 +131,6 @@ SectorReshapingTool.prototype.doDeactivate = function() {
 
 /**
 * Restore the original angles and radius and then stop this tool.
-* @override
 * @this {SectorReshapingTool}
 */
 SectorReshapingTool.prototype.doCancel = function() {
@@ -150,7 +150,6 @@ SectorReshapingTool.prototype.doCancel = function() {
 * Depending on the current handle being dragged, update the "radius", the "angle", or the "sweep"
 * properties on the model data.
 * Those property names are currently parameterized as static members of SectorReshapingTool.
-* @override
 * @this {SectorReshapingTool}
 */
 SectorReshapingTool.prototype.doMouseMove = function() {
@@ -170,6 +169,7 @@ SectorReshapingTool.prototype.doMouseMove = function() {
       var dir = center.directionPoint(mouse);
       var ang = SectorReshapingTool.getAngle(node.data);
       var swp = (dir - ang + 360) % 360;
+      if (swp > 359) swp = 360;  // make it easier to get a full circle
       diagram.model.setDataProperty(node.data, SectorReshapingTool.sweepProperty, swp);
     }
   }
@@ -177,7 +177,6 @@ SectorReshapingTool.prototype.doMouseMove = function() {
 
 /**
 * Finish the transaction and stop the tool.
-* @override
 * @this {SectorReshapingTool}
 */
 SectorReshapingTool.prototype.doMouseUp = function() {

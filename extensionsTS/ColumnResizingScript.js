@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -9,29 +12,25 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     var ColumnResizingTool_1 = require("./ColumnResizingTool");
     var RowResizingTool_1 = require("./RowResizingTool");
     function init() {
-        if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this
+        if (window.goSamples)
+            window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        var myDiagram = $(go.Diagram, "myDiagramDiv", {
-            initialContentAlignment: go.Spot.Center,
+        var myDiagram = $(go.Diagram, 'myDiagramDiv', {
             validCycle: go.Diagram.CycleNotDirected,
-            "undoManager.isEnabled": true
+            'undoManager.isEnabled': true
         });
         myDiagram.toolManager.mouseDownTools.add(new RowResizingTool_1.RowResizingTool());
         myDiagram.toolManager.mouseDownTools.add(new ColumnResizingTool_1.ColumnResizingTool());
         // This template is a Panel that is used to represent each item in a Panel.itemArray.
         // The Panel is data bound to the item object.
-        var fieldTemplate = $(go.Panel, "TableRow", // this Panel is a row in the containing Table
-        new go.Binding("portId", "name"), // this Panel is a "port"
+        var fieldTemplate = $(go.Panel, 'TableRow', // this Panel is a row in the containing Table
+        new go.Binding('portId', 'name'), // this Panel is a "port"
         {
-            background: "transparent",
+            background: 'transparent',
             fromSpot: go.Spot.Right,
             toSpot: go.Spot.Left,
             // allow drawing links from or to this port:
@@ -41,24 +40,24 @@
             width: 12, height: 12, margin: 4,
             // but disallow drawing links from or to this shape:
             fromLinkable: false, toLinkable: false
-        }, new go.Binding("figure", "figure"), new go.Binding("fill", "color")), $(go.TextBlock, {
+        }, new go.Binding('figure', 'figure'), new go.Binding('fill', 'color')), $(go.TextBlock, {
             column: 1,
             margin: new go.Margin(0, 2),
             stretch: go.GraphObject.Horizontal,
-            font: "bold 13px sans-serif",
+            font: 'bold 13px sans-serif',
             wrap: go.TextBlock.None,
             overflow: go.TextBlock.OverflowEllipsis,
             // and disallow drawing links from or to this text:
             fromLinkable: false, toLinkable: false
-        }, new go.Binding("text", "name")), $(go.TextBlock, {
+        }, new go.Binding('text', 'name')), $(go.TextBlock, {
             column: 2,
             margin: new go.Margin(0, 2),
             stretch: go.GraphObject.Horizontal,
-            font: "13px sans-serif",
+            font: '13px sans-serif',
             maxLines: 3,
             overflow: go.TextBlock.OverflowEllipsis,
             editable: true
-        }, new go.Binding("text", "info").makeTwoWay()));
+        }, new go.Binding('text', 'info').makeTwoWay()));
         // Return initialization for a RowColumnDefinition, specifying a particular column
         // and adding a Binding of RowColumnDefinition.width to the IDX'th number in the data.widths Array
         function makeWidthBinding(idx) {
@@ -83,83 +82,87 @@
             }
             return [
                 { column: idx },
-                new go.Binding("width", "widths", getColumnWidth).makeTwoWay(setColumnWidth)
+                new go.Binding('width', 'widths', getColumnWidth).makeTwoWay(setColumnWidth)
             ];
         }
         // This template represents a whole "record".
         myDiagram.nodeTemplate =
-            $(go.Node, "Auto", new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), 
+            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
             // this rectangular shape surrounds the content of the node
-            $(go.Shape, { fill: "#EEEEEE" }), 
+            $(go.Shape, { fill: '#EEEEEE' }), 
             // the content consists of a header and a list of items
-            $(go.Panel, "Vertical", { stretch: go.GraphObject.Horizontal, alignment: go.Spot.TopLeft }, 
+            $(go.Panel, 'Vertical', { stretch: go.GraphObject.Horizontal, alignment: go.Spot.TopLeft }, 
             // this is the header for the whole node
-            $(go.Panel, "Auto", { stretch: go.GraphObject.Horizontal }, // as wide as the whole node
-            $(go.Shape, { fill: "#1570A6", stroke: null }), $(go.TextBlock, {
+            $(go.Panel, 'Auto', { stretch: go.GraphObject.Horizontal }, // as wide as the whole node
+            $(go.Shape, { fill: '#1570A6', stroke: null }), $(go.TextBlock, {
                 alignment: go.Spot.Center,
                 margin: 3,
-                stroke: "white",
-                textAlign: "center",
-                font: "bold 12pt sans-serif"
-            }, new go.Binding("text", "key"))), 
+                stroke: 'white',
+                textAlign: 'center',
+                font: 'bold 12pt sans-serif'
+            }, new go.Binding('text', 'key'))), 
             // this Panel holds a Panel for each item object in the itemArray;
             // each item Panel is defined by the itemTemplate to be a TableRow in this Table
-            $(go.Panel, "Table", {
-                name: "TABLE", stretch: go.GraphObject.Horizontal,
+            $(go.Panel, 'Table', {
+                name: 'TABLE', stretch: go.GraphObject.Horizontal,
                 minSize: new go.Size(100, 10),
                 defaultAlignment: go.Spot.Left,
                 defaultStretch: go.GraphObject.Horizontal,
-                defaultColumnSeparatorStroke: "gray",
-                defaultRowSeparatorStroke: "gray",
+                defaultColumnSeparatorStroke: 'gray',
+                defaultRowSeparatorStroke: 'gray',
                 itemTemplate: fieldTemplate
-            }, $(go.RowColumnDefinition, makeWidthBinding(0)), $(go.RowColumnDefinition, makeWidthBinding(1)), $(go.RowColumnDefinition, makeWidthBinding(2)), new go.Binding("itemArray", "fields")) // end Table Panel of items
+            }, $(go.RowColumnDefinition, makeWidthBinding(0)), $(go.RowColumnDefinition, makeWidthBinding(1)), $(go.RowColumnDefinition, makeWidthBinding(2)), new go.Binding('itemArray', 'fields')) // end Table Panel of items
             ) // end Vertical Panel
             ); // end Node
         myDiagram.linkTemplate =
             $(go.Link, { relinkableFrom: true, relinkableTo: true, toShortLength: 4 }, // let user reconnect links
-            $(go.Shape, { strokeWidth: 1.5 }), $(go.Shape, { toArrow: "Standard", stroke: null }));
+            $(go.Shape, { strokeWidth: 1.5 }), $(go.Shape, { toArrow: 'Standard', stroke: null }));
         myDiagram.model =
             $(go.GraphLinksModel, {
-                linkFromPortIdProperty: "fromPort",
-                linkToPortIdProperty: "toPort",
+                linkFromPortIdProperty: 'fromPort',
+                linkToPortIdProperty: 'toPort',
                 // automatically update the model that is shown on this page
-                "Changed": function (e) {
+                'Changed': function (e) {
                     if (e.isTransactionFinished)
                         showModel();
                 },
                 nodeDataArray: [
                     {
-                        key: "Record1",
+                        key: 'Record1',
                         widths: [NaN, NaN, 60],
                         fields: [
-                            { name: "field1", info: "first field", color: "#F7B84B", figure: "Ellipse" },
-                            { name: "field2", info: "the second one", color: "#F25022", figure: "Ellipse" },
-                            { name: "fieldThree", info: "3rd", color: "#00BCF2" }
+                            { name: 'field1', info: 'first field', color: '#F7B84B', figure: 'Ellipse' },
+                            { name: 'field2', info: 'the second one', color: '#F25022', figure: 'Ellipse' },
+                            { name: 'fieldThree', info: '3rd', color: '#00BCF2' }
                         ],
-                        loc: "0 0"
+                        loc: '0 0'
                     },
                     {
-                        key: "Record2",
+                        key: 'Record2',
                         widths: [NaN, NaN, NaN],
                         fields: [
-                            { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond" },
-                            { name: "fieldB", info: "", color: "#F25022", figure: "Rectangle" },
-                            { name: "fieldC", info: "", color: "#7FBA00", figure: "Diamond" },
-                            { name: "fieldD", info: "fourth", color: "#00BCF2", figure: "Rectangle" }
+                            { name: 'fieldA', info: '', color: '#FFB900', figure: 'Diamond' },
+                            { name: 'fieldB', info: '', color: '#F25022', figure: 'Rectangle' },
+                            { name: 'fieldC', info: '', color: '#7FBA00', figure: 'Diamond' },
+                            { name: 'fieldD', info: 'fourth', color: '#00BCF2', figure: 'Rectangle' }
                         ],
-                        loc: "250 0"
+                        loc: '250 0'
                     }
                 ],
                 linkDataArray: [
-                    { from: "Record1", fromPort: "field1", to: "Record2", toPort: "fieldA" },
-                    { from: "Record1", fromPort: "field2", to: "Record2", toPort: "fieldD" },
-                    { from: "Record1", fromPort: "fieldThree", to: "Record2", toPort: "fieldB" }
+                    { from: 'Record1', fromPort: 'field1', to: 'Record2', toPort: 'fieldA' },
+                    { from: 'Record1', fromPort: 'field2', to: 'Record2', toPort: 'fieldD' },
+                    { from: 'Record1', fromPort: 'fieldThree', to: 'Record2', toPort: 'fieldB' }
                 ]
             });
         showModel(); // show the diagram's initial model
         function showModel() {
-            document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
+            var elt = document.getElementById('mySavedModel');
+            if (elt !== null)
+                elt.textContent = myDiagram.model.toJson();
         }
+        // Attach to the window for console manipulation
+        window.myDiagram = myDiagram;
     }
     exports.init = init;
 });

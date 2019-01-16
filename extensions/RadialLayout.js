@@ -1,10 +1,10 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /**
-* @constructor 
+* @constructor
 * @extends Layout
 * @class
 * Given a root Node this arranges connected nodes in concentric rings,
@@ -23,7 +23,6 @@ go.Diagram.inherit(RadialLayout, go.Layout);
 * Copies properties to a cloned Layout.
 * @this {RadialLayout}
 * @param {Layout} copy
-* @override
 */
 RadialLayout.prototype.cloneProtected = function(copy) {
   go.Layout.prototype.cloneProtected.call(this, copy);
@@ -85,18 +84,16 @@ Object.defineProperty(RadialLayout.prototype, "maxLayers", {
 * Use a LayoutNetwork that always creates RadialVertexes.
 * @this {RadialLayout}
 * @return {LayoutNetwork}
-* @override
 */
 RadialLayout.prototype.createNetwork = function() {
-  var net = new go.LayoutNetwork();
-  net.createVertex = function() { return new RadialVertex(); };
+  var net = new go.LayoutNetwork(this);
+  net.createVertex = function() { return new RadialVertex(net); };
   return net;
 }
 
 /**
 * @this {RadialLayout}
 * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
-* @override
 */
 RadialLayout.prototype.doLayout = function(coll) {
   if (this.network === null) {
@@ -211,7 +208,7 @@ RadialLayout.prototype.findDistances = function(source) {
   source.distance = 0;
   // keep track of nodes for we have set a non-Infinity distance,
   // but which we have not yet finished examining
-  var seen = new go.Set(go.RadialVertex);
+  var seen = new go.Set(/*go.RadialVertex*/);
   seen.add(source);
 
   // local function for finding a vertex with the smallest distance in a given collection
@@ -232,7 +229,7 @@ RadialLayout.prototype.findDistances = function(source) {
 
   // keep track of vertexes we have finished examining;
   // this avoids unnecessary traversals and helps keep the SEEN collection small
-  var finished = new go.Set(go.RadialVertex);
+  var finished = new go.Set(/*go.RadialVertex*/);
   while (seen.count > 0) {
     // look at the unfinished vertex with the shortest distance so far
     var least = leastVertex(seen);
@@ -263,7 +260,6 @@ RadialLayout.prototype.findDistances = function(source) {
 /**
 * This override positions each Node and also calls {@link #rotateNode}.
 * @this {RadialLayout}
-* @override
 */
 RadialLayout.prototype.commitLayout = function() {
   go.Layout.prototype.commitLayout.call(this);
@@ -309,8 +305,8 @@ RadialLayout.prototype.commitLayers = function() {
 * @extends LayoutVertex
 * @class
 */
-function RadialVertex() {
-  go.LayoutVertex.call(this);
+function RadialVertex(network) {
+  go.LayoutVertex.call(this, network);
   this.distance = Infinity;  // number of layers from the root, non-negative integers
   this.laid = false;  // used internally to keep track
   this.angle = 0;  // the direction at which the node is placed relative to the root node

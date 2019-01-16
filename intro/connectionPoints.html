@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,6 +6,7 @@
   <title>GoJS Link Connection Points on Nodes -- Northwoods Software</title>
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
@@ -30,7 +31,7 @@ connects to the nearest intersection or to the center of the node.
 This example includes arrowheads at both ends of the link, to make it clear that the link route
 really ends right at the edge of the node.
 </p>
-<pre data-language="javascript" id="nonRectangular">
+<pre class="lang-js" id="nonRectangular">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { width: 90, height: 90,
@@ -65,8 +66,9 @@ really ends right at the edge of the node.
 <p>
 You can easily require links to end at a particular point within the bounds of the node,
 rather than at the nearest edge intersection.
-Set the <a>GraphObject.toSpot</a> to a <a>Spot</a> value other than <a>Spot.None</a>
-to cause links coming into the node to end at that spot within the node.
+Set the <a>GraphObject.toSpot</a> to a <a>Spot</a> value other than <a>Spot,None</a>
+to cause links coming into the node to end at that spot within the node, with a direction
+that is appropriate for the side that the spot is at.
 Similarly, set the <a>GraphObject.fromSpot</a> for the ends of links coming out of the node.
 </p>
 
@@ -75,7 +77,7 @@ The following examples all display the same graph but use different templates
 to demonstrate how links can connect to nodes.
 They all call this common function to define some nodes and links.
 </p>
-<pre data-language="javascript" id="makeGraph">
+<pre class="lang-js" id="makeGraph">
 function makeGraph(diagram) {
   var $ = go.GraphObject.make;
 
@@ -107,7 +109,7 @@ Let us specify that links coming into a node connect at the middle of the left s
 of a node connect at the middle of the right side.  Such a convention is appropriate for diagrams that have
 a general sense of direction to them, such as the following one which goes from left to right.
 </p>
-<pre data-language="javascript" id="leftright">
+<pre class="lang-js" id="leftright">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { fromSpot: go.Spot.Right,  // coming out from middle-right
@@ -130,9 +132,9 @@ a general sense of direction to them, such as the following one which goes from 
 
 <p>
 You can also specify that the links go into a node not at a single spot but spread out along one side.
-Instead of <a>Spot.Right</a> use <a>Spot.RightSide</a>, and similarly for the left side.
+Instead of <a>Spot,Right</a> use <a>Spot,RightSide</a>, and similarly for the left side.
 </p>
-<pre data-language="javascript" id="leftrightSides">
+<pre class="lang-js" id="leftrightSides">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { fromSpot: go.Spot.RightSide,  // coming out from right side
@@ -159,7 +161,7 @@ Of course this only looks good when the nodes are basically rectangular.
 <p>
 You can use a different kind of <a>Link.routing</a>:
 </p>
-<pre data-language="javascript" id="leftrightSidesOrthogonal">
+<pre class="lang-js" id="leftrightSidesOrthogonal">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { fromSpot: go.Spot.RightSide,  // coming out from right side
@@ -185,7 +187,7 @@ You can use a different kind of <a>Link.routing</a>:
 <p>
 Or you can use a different kind of <a>Link.curve</a>:
 </p>
-<pre data-language="javascript" id="leftrightSidesBezier">
+<pre class="lang-js" id="leftrightSidesBezier">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { fromSpot: go.Spot.RightSide,  // coming out from right side
@@ -210,7 +212,7 @@ Or you can use a different kind of <a>Link.curve</a>:
 <p>
 But you need to be careful to specify sensible spots for how the graph is arranged.
 </p>
-<pre data-language="javascript" id="leftrightSidesBad">
+<pre class="lang-js" id="leftrightSidesBad">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { fromSpot: go.Spot.TopSide,    // coming out from top side -- BAD!
@@ -237,6 +239,119 @@ But you need to be careful to specify sensible spots for how the graph is arrang
 </pre>
 <script>goCode("leftrightSidesBad", 600, 150)</script>
 
+<h3 id="UndirectedSpots">Undirected Spots</h3>
+<p>
+  When no spot is specified for the <a>GraphObject.fromSpot</a> or <a>GraphObject.toSpot</a>,
+  the route computation will compute the furthest point on the route of the link from the center of the port to the other port
+  that is an intersection of an edge of the port.
+  This was demonstrated above in <a href="#NonRectangularNodes">Non-rectangular Nodes</a> and is again demonstrated here.
+</p>
+<pre class="lang-js" id="noSpotFocus0">
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "YinYang",
+        {
+          fill: "white", portId: ""
+        },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 8 },
+        new go.Binding("text"))
+    );
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue", loc: "0 50" },
+      { key: 2, text: "Beta", color: "orange", loc: "150 0" },
+      { key: 3, text: "Gamma", color: "lightgreen", loc: "300 50" }
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 2, to: 3 }
+    ]);
+</pre>
+<script>goCode("noSpotFocus0", 600, 250)</script>
+
+<p>
+  However it is possible to specify a focus point that is different from the center of the port.
+  Use a <a>Spot</a> value that has <a>Spot.x</a> and <a>Spot.y</a> equal to 0.5 but with <a>Spot.offsetX</a> and <a>Spot.offsetY</a>
+  values that specify where you want links to focus towards, relative to the center of the port.
+</p>
+<pre class="lang-js" id="noSpotFocus1">
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "YinYang",
+        {
+          fill: "white", portId: "",
+          fromSpot: new go.Spot(0.5, 0.5, 0, -25), toSpot: new go.Spot(0.5, 0.5, 0, 25)
+        },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 8 },
+        new go.Binding("text"))
+    );
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue", loc: "0 50" },
+      { key: 2, text: "Beta", color: "orange", loc: "150 0" },
+      { key: 3, text: "Gamma", color: "lightgreen", loc: "300 50" }
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 2, to: 3 }
+    ]);
+</pre>
+<script>goCode("noSpotFocus1", 600, 250)</script>
+<p>
+  In this example, links always appear to be coming from the hole near the top of the "YinYang" figure
+  towards the dot near the bottom of the figure.
+  Try moving the nodes to see this behavior.
+  Note that the <a>Spot.x</a> and <a>Spot.y</a> values are both 0.5, with fixed offsets from the center of the port.
+</p>
+
+<p>
+  It is also possible to have links go directly to particular spots within a port.
+  Use regular <a>Spot</a> values, but set the Link's end segment length to zero,
+  <a>Link.fromEndSegmentLength</a> or <a>Link.toEndSegmentLength</a>.
+</p>
+<pre class="lang-js" id="noSpotFocus2">
+  diagram.nodeTemplate =
+    $(go.Node, "Vertical",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "YinYang",
+        {
+          fill: "white", portId: "",
+          fromSpot: new go.Spot(0.5, 0.25), toSpot: new go.Spot(0.5, 0.75),
+          fromEndSegmentLength: 0, toEndSegmentLength: 0
+        },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 8 },
+        new go.Binding("text"))
+    );
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue", loc: "0 50" },
+      { key: 2, text: "Beta", color: "orange", loc: "150 0" },
+      { key: 3, text: "Gamma", color: "lightgreen", loc: "300 50" }
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 2, to: 3 }
+    ]);
+</pre>
+<script>goCode("noSpotFocus2", 600, 250)</script>
+<p>
+  Again, links always appear to be coming from the hole near the top of the "YinYang" figure
+  towards the dot near the bottom of the figure, but now they go all the way rather than stop at the edge.
+  Note that the <a>Spot.x</a> and <a>Spot.y</a> values are <i>not</i> both 0.5,
+  and that the Link end segment lengths are zero.
+</p>
+
 <h2 id="SpotsForIndividualLinks">Spots for Individual Links</h2>
 <p>
 Setting the <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a> properties specifies
@@ -245,7 +360,7 @@ What if you want some links to go to the middle-top spot but some other links to
 You can achieve this by setting the <a>Link.fromSpot</a> and <a>Link.toSpot</a> properties,
 which take precedence over the correspondingly named properties of what the link connects with.
 </p>
-<pre data-language="javascript" id="customSpots">
+<pre class="lang-js" id="customSpots">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Rectangle", { fill: "lightgray" }),
@@ -280,7 +395,7 @@ which take precedence over the correspondingly named properties of what the link
 Some of the predefined <a>Layout</a>s automatically set <a>Link.fromSpot</a> and <a>Link.toSpot</a>
 when the nature of the layout implies a natural direction.
 So, for example, a <a>TreeLayout</a> with a <a>TreeLayout.angle</a> <code>== 0</code> will set each Link's
-fromSpot to be <a>Spot.Bottom</a> and each Link's toSpot to be <a>Spot.Top</a>.
+fromSpot to be <a>Spot,Bottom</a> and each Link's toSpot to be <a>Spot,Top</a>.
 </p>
 <p>
 You can disable the setting of Link spots for TreeLayout by setting <a>TreeLayout.setsPortSpot</a> and/or <a>TreeLayout.setsChildPortSpot</a> to false.

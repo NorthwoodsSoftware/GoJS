@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -44,8 +44,7 @@
                   new go.Binding("text", "color")),
                 {
                   toolTip:
-                    $(go.Adornment, "Auto",
-                      $(go.Shape, { fill: "lightyellow" }),
+                    $("ToolTip",
                       $(go.TextBlock, { margin: 3 },
                         new go.Binding("text", "",
                                        function(d) { return "key: " + d.key + "\nbounds: " + d.bounds.toString(); }))
@@ -64,8 +63,7 @@
                 $(go.Shape)
               ),
 
-            "animationManager.isEnabled": false,
-            "undoManager.isEnabled": true
+            "animationManager.isEnabled": false
           });
 
       // This model includes all of the data
@@ -298,20 +296,17 @@
     }
     go.Diagram.inherit(VirtualizedTreeLayout, go.TreeLayout);
 
-    /** @override */
     VirtualizedTreeLayout.prototype.createNetwork = function() {
-      return new VirtualizedTreeNetwork();  // defined below
+      return new VirtualizedTreeNetwork(this);  // defined below
     };
 
     // ignore the argument, an (implicit) collection of Parts
-    /** @override */
     VirtualizedTreeLayout.prototype.makeNetwork = function(coll) {
       var net = this.createNetwork();
       net.addData(this.model);  // use the model data, not any actual Nodes and Links
       return net;
     };
 
-    /** @override */
     VirtualizedTreeLayout.prototype.commitLayout = function() {
       go.TreeLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
@@ -324,8 +319,8 @@
     // end VirtualizedTreeLayout class
 
 
-    function VirtualizedTreeNetwork() {
-      go.TreeNetwork.call(this);
+    function VirtualizedTreeNetwork(layout) {
+      go.TreeNetwork.call(this, layout);
     }
     go.Diagram.inherit(VirtualizedTreeNetwork, go.TreeNetwork);
 
@@ -337,7 +332,7 @@
           var d = ndata[i];
           var v = this.createVertex();
           v.data = d;  // associate this Vertex with data, not a Node
-          dataVertexMap.add(d, v);
+          dataVertexMap.set(d, v);
           this.addVertex(v);
         }
 
@@ -347,8 +342,8 @@
           var parent = model.findNodeDataForKey(parentkey);
           if (parent !== null) {  // if there is a parent, there should be an edge
             // now find corresponding vertexes
-            var f = dataVertexMap.getValue(parent);
-            var t = dataVertexMap.getValue(child);
+            var f = dataVertexMap.get(parent);
+            var t = dataVertexMap.get(child);
             if (f === null || t === null) continue;  // skip
             // create and add VirtualizedTreeEdge
             var e = this.createEdge();

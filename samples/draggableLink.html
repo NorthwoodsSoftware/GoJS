@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,7 @@
 <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <script src="../release/go.js"></script>
+<script src="../extensions/Figures.js"></script>
 <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
 <script id="code">
   function init() {
@@ -22,7 +23,6 @@
                   $(go.Shape, "LineV", { stroke: "lightgray", strokeWidth: 0.5 }),
                   $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5, interval: 10 })
                 ),
-          allowDrop: true,  // must be true to accept drops from the Palette
           "draggingTool.dragsLink": true,
           "draggingTool.isGridSnapEnabled": true,
           "linkingTool.isUnconnectedLinkValid": true,
@@ -35,7 +35,8 @@
             $(go.Shape, "Diamond", { segmentIndex: -1, cursor: "pointer", desiredSize: new go.Size(8, 8), fill: "darkred", stroke: "tomato" }),
           "linkReshapingTool.handleArchetype":
             $(go.Shape, "Diamond", { desiredSize: new go.Size(7, 7), fill: "lightblue", stroke: "deepskyblue" }),
-          rotatingTool: $(TopRotatingTool),  // defined below
+          "rotatingTool.handleAngle": 270,
+          "rotatingTool.handleDistance": 30,
           "rotatingTool.snapAngleMultiple": 15,
           "rotatingTool.snapAngleEpsilon": 15,
           "undoManager.isEnabled": true
@@ -234,31 +235,10 @@
             { text: "Comment", figure: "RoundedRectangle", fill: "lightyellow" }
           ], [
             // the Palette also has a disconnected Link, which the user can drag-and-drop
-            { points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
+            { points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
           ])
         });
   }
-
-
-  function TopRotatingTool() {
-    go.RotatingTool.call(this);
-  }
-  go.Diagram.inherit(TopRotatingTool, go.RotatingTool);
-
-  /** @override */
-  TopRotatingTool.prototype.updateAdornments = function(part) {
-    go.RotatingTool.prototype.updateAdornments.call(this, part);
-    var adornment = part.findAdornment("Rotating");
-    if (adornment !== null) {
-      adornment.location = part.rotateObject.getDocumentPoint(new go.Spot(0.5, 0, 0, -30));  // above middle top
-    }
-  };
-
-  /** @override */
-  TopRotatingTool.prototype.rotate = function(newangle) {
-    go.RotatingTool.prototype.rotate.call(this, newangle + 90);
-  };
-  // end of TopRotatingTool class
 
 
   // Show the diagram's model in JSON format that the user may edit
@@ -310,7 +290,7 @@
   <p>
     Finally this sample demonstrates saving and restoring the <a>Diagram.position</a> as a property
     on the <a>Model.modelData</a> object that is automatically saved and restored when calling <a>Model.toJson</a>
-    and <a>Model.fromJson</a>.
+    and <a>Model,fromJson</a>.
   </p>
   <div>
     <div>

@@ -5,7 +5,7 @@
 
 /**
   This class implements an inspector for GoJS model data objects.
-  The varructor takes three arguments:
+  The constructor takes three arguments:
     {string} divid a string referencing the HTML ID of the to-be inspector's div.
     {Diagram} diagram a reference to a GoJS Diagram.
     {Object} options An optional JS Object describing options for the inspector.

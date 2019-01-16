@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS with Modules -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+  <div id="content">
+
+    <h1>GoJS and Modules</h1>
+    <p>
+      The GoJS kit contains examples of using GoJS with UMD modules and <a href="https://requirejs.org/">RequireJS</a>.
+      as well as using GoJS and ES6 modules.
+    </p>
+
+    <h2 id="GoJSRequire">GoJS with <code>RequireJS</code></h2>
+    <p>
+      Both the <code>go.js</code> library and the <code>go-debug.js</code> library can be loaded via <code>require</code>.
+    </p>
+    <p>
+      The <code>extensionsTS</code> directory contains all of the extension classes from the
+      <code>extensions</code> directory, but in TypeScript and pre-compiled as UMD modules.
+      This is reflected in that directory's <code>tsconfig.json</code>:
+    </p>
+    <pre class="lang-json">
+    {
+      "compilerOptions": {
+        "module": "umd",
+        "target": "es5",
+        "strict": true
+      }
+    }</pre>
+    <p>
+      The generated JavaScript can then be loaded as UMD modules via <code>require</code>.
+    </p>
+<pre class="lang-html">
+&lt;script src="../samples/assets/require.js"&gt;&lt;/script&gt;
+&lt;script id="code"&gt;
+  function init() {
+    require(["CheckBoxesScript"], function (app) {
+      app.init();
+    });
+  }
+&lt;/script&gt;</pre>
+
+    <h2 id="GoJSDirectly">Using GoJS as an ES6 module</h2>
+
+    <p>
+      By default the GoJS library does not use the <code>export</code> keyword, for compatibility reasons.
+      So we have had to provide different libraries that are ES6 modules.
+      In the <code>release</code> folder, they are the <code>go-module.js</code> and <code>go-debug-module.js</code> libraries.
+      In addition, there is an ES6 module-specific TypeScript definition file: <code>go-module.d.ts</code>.
+    </p>
+    <p>
+      One sample in <code>samplesTS</code> uses this: <a href="../samplesTS/minimalModule.html">minimalModule.html</a>.
+      This sample has JavaScript which uses
+    </p>
+<pre class="lang-ts">import { go } from '../release/go-module.js';</pre>
+
+    <p>In order to load GoJS and other ES6 modules, the HTML page also uses the <code>type="module"</code> script tag:</p>
+<pre class="lang-html">
+  &lt;!-- requires minimalModule.js, built from minimalModule.ts --&gt;
+  &lt;script type="module"&gt;
+    import { init } from "./minimalModule.js";
+    // lib needs: export const go = self.go;
+    window.onload = function() {
+      init();
+    }
+  &lt;/script&gt;
+</pre>
+
+    <p>
+      Most browsers will not display resources with <code>&lt;script type="module"&gt;</code> if they are served from a local file system,
+      so you may need to open <code>minimalModule.html</code> from a server to see the results.
+    </p>
+
+    <h2 id="GoJSES6">GoJS Extensions as ES6 Modules</h2>
+
+    <p>The extension classes can also be loaded as ES6 modules if you modify the <code>tsconfig.json</code> configuration in the <code>extensionsTS</code>
+    folder, and then rebuild.</p>
+<pre class="lang-json">
+  {
+    "compilerOptions": {
+      "target": "es6",
+      "strict": true
+    }
+  }</pre>
+    <p>
+      Recompiling those TypeScript classes will then produce module-friendly JS libraries.
+    </p>
+
+    <p>
+      Depending on your toolchain, you could also include compiler options directly into your project,
+      as is done in the <a href="https://github.com/NorthwoodsSoftware/GoJS-projects/tree/master/vue-webpack">vue-webpack GoJS project</a>.
+      In its <code>webpack.config.js</code> file, we specify new compiler options for the TypeScript loader so that Webpack + Vue
+      compiles the extensions with ES6 module support instead of the <code>extensionsTS</code> defaults.
+    </p>
+    <pre class="lang-json">
+/* ... in webpack.config.ts in the vue-webpack project ... */
+
+// files with `.ts` or `.tsx` extension will be handled by `ts-loader`
+{ test: /\.tsx?$/,
+  loader: 'ts-loader',
+  options: {
+    // We want to override the tsconfig file currently in:
+    // vue-webpack\node_modules\gojs\extensionsTS
+    // Because it uses ES5 + umd modules and we want to use ES6 + ES6.
+    compilerOptions: {
+      "module": "ES6",
+      "target": "ES6",
+      "noImplicitAny": true
+    }
+  }</pre>
+  </div>
+</div>
+</body>
+</html>

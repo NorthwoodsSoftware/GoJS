@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,17 +20,21 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
         {
-          initialContentAlignment: go.Spot.Center,
           maxSelectionCount: 1, // users can select only one part at a time
           validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
-          "clickCreatingTool.archetypeNodeData": {}, // allow double-click in background to create a new node
-          "clickCreatingTool.insertPart": function(loc) {  // customize the data for the new node
-            this.archetypeNodeData = {
-              key: getNextKey(), // assign the key based on the number of nodes
-              name: "(new person)",
-              title: ""
-            };
-            return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+          "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
+            name: "(new person)",
+            title: "",
+            comments: ""
+          },
+          "clickCreatingTool.insertPart": function(loc) {  // scroll to the new node
+            var node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+            if (node !== null) {
+              this.diagram.select(node);
+              this.diagram.commandHandler.scrollToPart(node);
+              this.diagram.commandHandler.editTextBlock(node.findObject("NAMETB"));
+            }
+            return node;
           },
           layout:
             $(go.TreeLayout,
@@ -101,25 +105,18 @@
       });
     };
 
-    // This function is used to find a suitable ID when modifying/creating nodes.
-    // We used the counter combined with findNodeDataForKey to ensure uniqueness.
-    function getNextKey() {
-      var key = nodeIdCounter;
-      while (myDiagram.model.findNodeDataForKey(key) !== null) {
-        key = nodeIdCounter--;
-      }
-      return key;
-    }
-
-    var nodeIdCounter = -1; // use a sequence to guarantee key uniqueness as we add/remove/modify nodes
-
     // when a node is double-clicked, add a child to it
     function nodeDoubleClick(e, obj) {
       var clicked = obj.part;
       if (clicked !== null) {
         var thisemp = clicked.data;
         myDiagram.startTransaction("add employee");
-        var newemp = { key: getNextKey(), name: "(new person)", title: "", parent: thisemp.key };
+        var newemp = {
+          name: "(new person)",
+          title: "",
+          comments: "",
+          parent: thisemp.key
+        };
         myDiagram.model.addNodeData(newemp);
         myDiagram.commitTransaction("add employee");
       }
@@ -247,7 +244,7 @@
     // the context menu allows users to make a position vacant,
     // remove a role and reassign the subtree, or remove a department
     myDiagram.nodeTemplate.contextMenu =
-      $(go.Adornment, "Vertical",
+      $("ContextMenu",
         $("ContextMenuButton",
           $(go.TextBlock, "Vacate Position"),
           {
@@ -257,7 +254,6 @@
                 var thisemp = node.data;
                 myDiagram.startTransaction("vacate");
                 // update the key, name, and comments
-                myDiagram.model.setKeyForNodeData(thisemp, getNextKey());
                 myDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
                 myDiagram.model.setDataProperty(thisemp, "comments", "");
                 myDiagram.commitTransaction("vacate");
@@ -329,6 +325,14 @@
   }
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    // make sure new data keys are unique positive integers
+    var lastkey = 1;
+    myDiagram.model.makeUniqueKeyFunction = function(model, data) {
+      var k = data.key || lastkey;
+      while (model.findNodeDataForKey(k)) k++;
+      data.key = lastkey = k;
+      return k;
+    };
   }
 </script>
 </head>
@@ -345,7 +349,7 @@
   </p>
   <p>
     Double click on a node in order to add a person or the diagram background to add a new boss. Double clicking the diagram uses the <a>ClickCreatingTool</a>
-    with a custom <a>ClickCreatingTool.insertPart</a> to assign an ID.
+    with a custom <a>ClickCreatingTool.insertPart</a> to scroll to the new node and start editing the <a>TextBlock</a> for its name .
   </p>
   <p>
     Drag a node onto another in order to change relationships.

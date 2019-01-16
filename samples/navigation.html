@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // Diagram refers to its DIV HTML element by id
           {
-            initialContentAlignment: go.Spot.Center,
             maxSelectionCount: 1 // no more than 1 element can be selected at a time
           });
 
@@ -38,8 +37,7 @@
             new go.Binding("text", "key")),
           {
             toolTip:  //  define a tooltip for each node that displays its information
-              $(go.Adornment, "Auto",
-                $(go.Shape, { fill: "#EFEFCC" }),
+              $("ToolTip",
                 $(go.TextBlock, { margin: 4 },
                   new go.Binding("text",  "" , getInfo))
               )
@@ -67,8 +65,7 @@
             { name: "ARWSHAPE", toArrow: "Standard" }),
           {
             toolTip:  //  define a tooltip for each link that displays its information
-              $(go.Adornment, "Auto",
-                $(go.Shape, { fill: "#EFEFCC" }),
+              $("ToolTip",
                 $(go.TextBlock, { margin: 4 },
                   new go.Binding("text",  "" , getInfo))
               )
@@ -103,14 +100,13 @@
             {
               name: "GROUPTEXT",
               alignment: go.Spot.TopLeft,
-              alignmentFocus: new go.Spot(0,0,4,4),
+              alignmentFocus: new go.Spot(0,0,-4,-4),
               font: "Bold 10pt Sans-Serif"
             },
             new go.Binding("text", "key")),
           {
             toolTip:  //  define a tooltip for each group that displays its information
-              $(go.Adornment, "Auto",
-                $(go.Shape, { fill: "#EFEFCC" }),
+              $("ToolTip",
                 $(go.TextBlock, { margin: 4 },
                   new go.Binding("text",  "" , getInfo))
               )
@@ -228,7 +224,7 @@
     // Otherwise highlight the fromNode of each link coming into the selected node.
     // Return a List of the keys of the nodes.
     function nodesTo(x, i) {
-      var nodesToList = new go.List("string");
+      var nodesToList = new go.List(/*"string"*/);
       if (x instanceof go.Link) {
         x.fromNode.highlight = i;
         nodesToList.add(x.data.from);
@@ -243,7 +239,7 @@
 
     // same as nodesTo, but 'from' instead of 'to'
     function nodesFrom(x, i) {
-      var nodesFromList = new go.List("string");
+      var nodesFromList = new go.List(/*"string"*/);
       if (x instanceof go.Link) {
         x.toNode.highlight = i;
         nodesFromList.add(x.data.to);
@@ -303,7 +299,7 @@
 
     // if the Node"s containingGroup is x, highlight it
     function childNodes(x, i) {
-      var childLst = new go.List("string");
+      var childLst = new go.List(/*"string"*/);
       if (x instanceof go.Group) {
         myDiagram.nodes.each(function(node) {
           if (node.containingGroup === x) {
@@ -329,7 +325,7 @@
 
     // if the link"s containing Group is x, highlight it
     function childLinks(x, i) {
-      var childLst = new go.List(go.Link);
+      var childLst = new go.List(/*go.Link*/);
       myDiagram.links.each(function(link) {
         if (link.containingGroup === x) {
           link.highlight = i;
@@ -420,7 +416,7 @@
           var linkChildren = childLinks(x, 0);
           if (linkChildren.count > 0) {
             text += "\nMember links: ";
-            var linkStrings = new go.List("string");
+            var linkStrings = new go.List(/*"string"*/);
             linkChildren.each(function(link) {
               linkStrings.add(link.data.from + " --> " + link.data.to);
             });

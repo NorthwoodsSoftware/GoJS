@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -9,22 +12,18 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     var TreeMapLayout_1 = require("./TreeMapLayout");
     var myDiagram;
     function init() {
-        if (typeof window["goSamples"] === 'function')
-            window["goSamples"](); // init for these samples -- you don't need to call this
+        if (window.goSamples)
+            window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
-            $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
+            $(go.Diagram, 'myDiagramDiv', // must be the ID or reference to div
             {
-                initialContentAlignment: go.Spot.Center,
                 initialAutoScale: go.Diagram.Uniform,
-                "animationManager.isEnabled": false,
+                'animationManager.isEnabled': false,
                 layout: $(TreeMapLayout_1.TreeMapLayout, { isTopLevelHorizontal: false }),
                 allowMove: false, allowCopy: false, allowDelete: false
             });
@@ -61,51 +60,51 @@
         };
         // Nodes and Groups are the absolute minimum template: no elements at all!
         myDiagram.nodeTemplate =
-            $(go.Node, { background: "rgba(99,99,99,0.2)" }, new go.Binding("background", "fill"), {
-                toolTip: $(go.Adornment, $(go.TextBlock, new go.Binding("text", "", tooltipString).ofObject()))
+            $(go.Node, { background: 'rgba(99,99,99,0.2)' }, new go.Binding('background', 'fill'), {
+                toolTip: $('ToolTip', $(go.TextBlock, new go.Binding('text', '', tooltipString).ofObject()))
             });
         myDiagram.groupTemplate =
-            $(go.Group, "Auto", { layout: null }, { background: "rgba(99,99,99,0.2)" }, new go.Binding("background", "fill"), {
-                toolTip: $(go.Adornment, $(go.TextBlock, new go.Binding("text", "", tooltipString).ofObject()))
+            $(go.Group, 'Auto', { layout: null }, { background: 'rgba(99,99,99,0.2)' }, new go.Binding('background', 'fill'), {
+                toolTip: $('ToolTip', $(go.TextBlock, new go.Binding('text', '', tooltipString).ofObject()))
             });
         function tooltipString(part) {
-            if (part instanceof go.Adornment)
+            if (part instanceof go.Adornment && part.adornedPart !== null)
                 part = part.adornedPart;
             var msg = createPath(part);
-            msg += "\nsize: " + part.data.size;
+            msg += '\nsize: ' + part.data.size;
             if (part instanceof go.Group) {
                 var group = part;
-                msg += "\n# children: " + group.memberParts.count;
-                msg += "\nsubtotal size: " + group.data.total;
+                msg += '\n# children: ' + group.memberParts.count;
+                msg += '\nsubtotal size: ' + group.data.total;
             }
             return msg;
         }
         function createPath(part) {
             var parent = part.containingGroup;
-            return (parent !== null ? createPath(parent) + "/" : "") + part.data.text;
+            return (parent !== null ? createPath(parent) + '/' : '') + part.data.text;
         }
         // generate a tree with the default values
         rebuildGraph();
     }
     exports.init = init;
     function rebuildGraph() {
-        var minNodes = document.getElementById("minNodes").value;
+        var minNodes = document.getElementById('minNodes').value;
         minNodes = parseInt(minNodes, 10);
-        var maxNodes = document.getElementById("maxNodes").value;
+        var maxNodes = document.getElementById('maxNodes').value;
         maxNodes = parseInt(maxNodes, 10);
-        var minChil = document.getElementById("minChil").value;
+        var minChil = document.getElementById('minChil').value;
         minChil = parseInt(minChil, 10);
-        var maxChil = document.getElementById("maxChil").value;
+        var maxChil = document.getElementById('maxChil').value;
         maxChil = parseInt(maxChil, 10);
         // create and assign a new model
         var model = new go.GraphLinksModel();
-        model.nodeGroupKeyProperty = "parent";
+        model.nodeGroupKeyProperty = 'parent';
         model.nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil);
         myDiagram.model = model;
     }
     exports.rebuildGraph = rebuildGraph;
-    var nodes = /** @class */ (function () {
-        function nodes(key, isGroup, parent, text, fill, size, total) {
+    var Nodes = /** @class */ (function () {
+        function Nodes(key, isGroup, parent, text, fill, size, total) {
             this.key = key;
             this.isGroup = isGroup;
             this.parent = parent;
@@ -114,7 +113,7 @@
             this.size = size;
             this.total = total;
         }
-        return nodes;
+        return Nodes;
     }());
     // Creates a random number (between MIN and MAX) of randomly colored nodes.
     function generateNodeData(minNodes, maxNodes, minChil, maxChil) {
@@ -127,7 +126,7 @@
         var numNodes = Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes;
         for (var i = 0; i < numNodes; i++) {
             var size = Math.random() * Math.random() * 10000; // non-uniform distribution
-            //nodeArray.push(new nodes(i, false, undefined, i.toString(), go.Brush.randomColor(), size, -1));
+            // nodeArray.push(new nodes(i, false, undefined, i.toString(), go.Brush.randomColor(), size, -1));
             nodeArray.push({
                 key: i,
                 isGroup: false,
@@ -150,8 +149,8 @@
             var available = new go.Set();
             available.addAll(nodeArray);
             for (var i = 0; i < nodeArray.length; i++) {
-                var parent = nodeArray[i];
-                available.remove(parent);
+                var parent_1 = nodeArray[i];
+                available.remove(parent_1);
                 // assign some number of node data as children of this parent node data
                 var children = Math.floor(Math.random() * (maxChil - minChil + 1)) + minChil;
                 for (var j = 0; j < children; j++) {
@@ -160,11 +159,11 @@
                         break; // oops, ran out already
                     available.remove(child);
                     // have the child node data refer to the parent node data by its key
-                    child.parent = parent.key;
-                    if (!parent.isGroup) { // make sure PARENT is a group
-                        parent.isGroup = true;
+                    child.parent = parent_1.key;
+                    if (!parent_1.isGroup) { // make sure PARENT is a group
+                        parent_1.isGroup = true;
                     }
-                    var par = parent;
+                    var par = parent_1;
                     while (par !== null) {
                         par.total += child.total; // sum up sizes of all children
                         if (par.parent !== undefined) {

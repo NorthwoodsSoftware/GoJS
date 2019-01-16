@@ -1,13 +1,3 @@
-This demonstrates a GoJS diagram in an NW.js app.
+As of GoJS 2.0 this project has moved, see:
 
-First, assuming you already have npm and git:
-```
-$ npm install gojs
-```
-
-Second, install NW.js.
-
-Start app with:
-```
-$ path/to/nw .
-```
+https://github.com/NorthwoodsSoftware/GoJS-projects

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -24,17 +24,14 @@ See samples that make use of <a>Palette</a>s in the <a href="../samples/index.ht
 </p>
 <p>
 The following code initializes an empty Diagram on the right side, below.
-Note that we must set <a>Diagram.allowDrop</a> to true.
+Note that <a>Diagram.allowDrop</a> must be true, which it is now by default.
 In this example we do not bother initializing the model with any node data.
 </p>
 <p>
 This code also creates two <a>Palette</a>s, in the same manner as you would any Diagram.
 You initialize a Palette's model in order to show nodes in that Palette.
 </p>
-<pre data-language="javascript" id="diagramPre">
-  // initialize the main Diagram
-  diagram.allowDrop = true;  // permit accepting drag-and-drops
-
+<pre class="lang-js" id="diagramPre">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -45,7 +42,6 @@ You initialize a Palette's model in order to show nodes in that Palette.
         new go.Binding("text", "key"))
     );
 
-  // start off with no Parts
   diagram.undoManager.isEnabled = true;
 
   // create the Palette
@@ -129,7 +125,7 @@ Because each diagram can use its own templates, the same data object can be repr
 If you want the Palette to show exactly the same Nodes for the same data as your main Diagram,
 you can have it share the templates of the main Diagram:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   myPalette.nodeTemplateMap = myDiagram.nodeTemplateMap;
 </pre>
 <p>
@@ -143,13 +139,13 @@ and if needed, its <a>GridLayout.comparer</a> property to a custom sorting funct
 For example, if you want the Palette to show its parts in exactly the same order in which they
 appear in the <code>myPalette.model.nodeDataArray</code>:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   myPalette.layout.sorting = go.GridLayout.Forward;
 </pre>
 <p>
 If you wanted to sort the parts in the Palette according to some property on the model data:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   myPalette.layout.comparer = function(a, b) {
       // A and B are Parts
       var av = a.data.someProp;

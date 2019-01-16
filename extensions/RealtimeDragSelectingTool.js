@@ -29,7 +29,8 @@ RealtimeDragSelectingTool.prototype.doActivate = function() {
   // keep a copy of the original Set of selected Parts
   this._originalSelection = this.diagram.selection.copy();
   // these Part.isSelected may have been temporarily modified
-  this._temporarySelection = new go.Set(go.Part);
+  this._temporarySelection = new go.Set(/*go.Part*/);
+  this.diagram.raiseDiagramEvent("ChangingSelection");
 };
 
 /**
@@ -37,6 +38,7 @@ RealtimeDragSelectingTool.prototype.doActivate = function() {
 * @this {RealtimeDragSelectingTool}
 */
 RealtimeDragSelectingTool.prototype.doDeactivate = function() {
+  this.diagram.raiseDiagramEvent("ChangedSelection");
   this._originalSelection = null;
   this._temporarySelection = null;
   go.DragSelectingTool.prototype.doDeactivate.call(this);
@@ -96,11 +98,7 @@ RealtimeDragSelectingTool.prototype.selectInRect = function(r) {
   var temp = this._temporarySelection;
   if (diagram === null || orig === null) return;
   var e = diagram.lastInput;
-  diagram.raiseDiagramEvent("ChangingSelection");
-  var found = diagram.findObjectsIn(r, null,
-                                    function(p) { return (p instanceof go.Part) && p.canSelect(); },
-                                    this.isPartialInclusion,
-                                    new go.Set(go.Part));
+  var found = diagram.findPartsIn(r, this.isPartialInclusion, true, new go.Set(/*go.Part*/));
   if (e.control || e.meta) {  // toggle or deselect
     if (e.shift) {  // deselect only
       temp.each(function(p) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
@@ -117,5 +115,4 @@ RealtimeDragSelectingTool.prototype.selectInRect = function(r) {
     orig.each(function(p) { if (!found.contains(p)) p.isSelected = false; });
     found.each(function(p) { p.isSelected = true; temp.add(p); });
   }
-  diagram.raiseDiagramEvent("ChangedSelection");
 };

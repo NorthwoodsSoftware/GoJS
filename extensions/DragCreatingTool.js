@@ -19,14 +19,14 @@
 * {@link #archetypeNodeData} property to an object that can be copied and added to the diagram's model.
 * <p/>
 * You can use this tool in a modal manner by executing:
-* <pre><code>
+* <pre>
 *   diagram.currentTool = new DragCreatingTool();
-* </code></pre>
+* </pre>
 * <p/>
 * Use this tool in a mode-less manner by executing:
-* <pre><code>
+* <pre>
 *   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragCreatingTool());
-* </code></pre>
+* </pre>
 * However when used mode-lessly as a mouse-move tool, in {@link ToolManager#mouseMoveTools},
 * this cannot start running unless there has been a motionless delay
 * after the mouse-down event of at least {@link #delay} milliseconds.
@@ -75,7 +75,7 @@ DragCreatingTool.prototype.canStart = function() {
 
   // gotta have some node data that can be copied
   if (this.archetypeNodeData === null) return false;
-  
+
   var diagram = this.diagram;
   if (diagram === null) return false;
   // heed IsReadOnly & AllowInsert

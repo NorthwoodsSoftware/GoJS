@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -33,7 +33,7 @@ FishboneLayout.prototype.makeNetwork = function(coll) {
   var net = go.TreeLayout.prototype.makeNetwork.call(this, coll);
   // make a copy of the collection of TreeVertexes
   // because we will be modifying the TreeNetwork.vertexes collection in the loop
-  var verts = new go.List(go.TreeVertex).addAll(net.vertexes);
+  var verts = new go.List(/*go.TreeVertex*/).addAll(net.vertexes);
   verts.each(function(v) {
     // ignore leaves of tree
     if (v.destinationEdges.count === 0) return;

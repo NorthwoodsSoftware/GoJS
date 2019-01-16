@@ -105,7 +105,7 @@ function goSamples() {
   var p1 = document.createElement("p");
   var samplename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
   p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS/blob/master/" +
-                 (isExtension ? "extensions" : "samples") + 
+                 (isExtension ? "extensions" : "samples") +
                  (isTS ? "TS/" : "/") +
                  samplename +
                  "' target='_blank'>View this sample page's source on GitHub</a>";
@@ -153,7 +153,6 @@ function goSamples() {
   if (!listed) {
     lis[lis.length -1].childNodes[0].className = "selected";
   }
-
 }
 
 // Traverse the whole document and replace <a>TYPENAME</a> with:
@@ -162,12 +161,21 @@ function goSamples() {
 //    <a href="../api/symbols/TYPENAME.html#MEMBERNAME">TYPENAME.MEMBERNAME</a>
 function _traverseDOM(node) {
   if (node.nodeType === 1 && node.nodeName === "A" && !node.getAttribute("href")) {
-    var text = node.innerHTML.split(".");
+    var inner = node.innerHTML;
+    var text = [inner];
+    var isStatic = false;
+    if (inner.indexOf(",") > 0) {
+      text = inner.split(",");
+      isStatic = true;
+      node.innerHTML = inner.replace(",", ".");
+    } else {
+      text = inner.split(".");
+    }
     if (text.length === 1) {
       node.setAttribute("href", "../api/symbols/" + text[0] + ".html");
       node.setAttribute("target", "api");
     } else if (text.length === 2) {
-      node.setAttribute("href", "../api/symbols/" + text[0] + ".html" + "#" + text[1]);
+      node.setAttribute("href", "../api/symbols/" + text[0] + ".html" + "#" + (isStatic ? "static-" : "") + text[1]);
       node.setAttribute("target", "api");
     } else {
       alert("Unknown API reference: " + node.innerHTML);
@@ -332,6 +340,7 @@ var myExtensionMenu = '\
         <ul id="sections" class="classList nav navbar-nav">\
           <li><a href="../samples/index.html"><b>Index</b></a></li>\
           <li><a href="Fishbone.html">Fishbone Layout</a></li>\
+          <li><a href="PackedLayout.html">Packed Layout</a></li>\
           <li><a href="Parallel.html">Parallel Layout</a></li>\
           <li><a href="Serpentine.html">Serpentine Layout</a></li>\
           <li><a href="Spiral.html">Spiral Layout</a></li>\
@@ -354,12 +363,16 @@ var myExtensionMenu = '\
           <li><a href="LinkShifting.html">Link Shifting</a></li>\
           <li><a href="LinkLabelDragging.html">Link Label Dragging</a></li>\
           <li><a href="NodeLabelDragging.html">Node Label Dragging</a></li>\
+          <li><a href="LinkLabelOnPathDragging.html">Label On Path Dragging</a></li>\
           <li><a href="GuidedDragging.html">Guided Dragging</a></li>\
+          <li><a href="NonRealtimeDragging.html">Non-Realtime Dragging</a></li>\
           <li><a href="PortShifting.html">Port Shifting</a></li>\
           <li><a href="ColumnResizing.html">Column Resizing</a></li>\
+          <li><a href="OverviewResizing.html">Overview Resizing</a></li>\
           <hr>\
           <li><a href="ScrollingTable.html">Scrolling Table</a></li>\
           <li><a href="BalloonLink.html">Balloon Links</a></li>\
+          <li><a href="ParallelRoute.html">Parallel Route Links</a></li>\
           <li><a href="Dimensioning.html">Dimensioning Links</a></li>\
           <li><a href="DrawCommandHandler.html">Drawing Commands</a></li>\
           <li><a href="LocalStorageCommandHandler.html">Local Storage</a></li>\
@@ -375,6 +388,7 @@ var myExtensionMenu = '\
           <li><a href="CheckBoxes.html">CheckBoxes</a></li>\
           <li><a href="Hyperlink.html">Hyperlinks</a></li>\
           <li><a href="TextEditor.html">Text Editor</a></li>\
+          <li><a href="ZoomSlider.html">Zoom Slider</a></li>\
           <hr>\
           <li><a href="Buttons.js" target="_blank">Buttons.js</a></li>\
           <li><a href="Figures.js" target="_blank">Figures.js</a></li>\
@@ -391,7 +405,6 @@ var myExtensionMenu = '\
   </div>';
 
 var myNavbar = '\
-  <!-- non-fixed navbar -->\
   <nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">\
     <div class="container-fluid">\
       <div class="navbar-header">\

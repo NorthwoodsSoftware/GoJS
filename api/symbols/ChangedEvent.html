@@ -1,1844 +1,783 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; ChangedEvent Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ChangedEvent | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class ChangedEvent</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ChangedEvent</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>A ChangedEvent represents a change to an object, typically a <a href="GraphObject.html">GraphObject</a>,
+						but also for model data, a <a href="Model.html">Model</a>, or a <a href="Diagram.html">Diagram</a>.
+						The most common case is for remembering the name of a property
+					and the before-and-after values for that property.</p>
+					<p>You can listen for changed events on the model using <a href="Model.html#addChangedListener">Model.addChangedListener</a>
+					or <a href="Diagram.html#addModelChangedListener">Diagram.addModelChangedListener</a>, and on the Diagram using <a href="Diagram.html#addChangedListener">Diagram.addChangedListener</a>.</p>
+					<p>There are four kinds of changes, represented by enumerated values:
+						<a href="ChangedEvent.html#static-Property">ChangedEvent.Property</a> (the most common), <a href="ChangedEvent.html#static-Insert">ChangedEvent.Insert</a> and <a href="ChangedEvent.html#static-Remove">ChangedEvent.Remove</a>
+						(to represent inserting or removing objects from collections),
+					and <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a> (to notify about beginning or ending transactions or undo or redo).</p>
+					<p>The most common kind of ChangedEvent is a Property change.
+						The name of the property is given by <a href="ChangedEvent.html#propertyName">propertyName</a>.
+						The modified object is given by <a href="ChangedEvent.html#object">object</a>.
+					Use the <a href="ChangedEvent.html#oldValue">oldValue</a> and <a href="ChangedEvent.html#newValue">newValue</a> properties for the before and after property values.</p>
+					<p>For an Insert ChangedEvent, the modified collection (often an Array) is a property value on the <a href="ChangedEvent.html#object">object</a>.
+						The <a href="ChangedEvent.html#propertyName">propertyName</a> helps distinguish between different collections on the object.
+						Use the <a href="ChangedEvent.html#newValue">newValue</a> property to indicate the value that was inserted.
+					Use the <a href="ChangedEvent.html#newParam">newParam</a> property to indicate where or how, such as an array index or dictionary key.</p>
+					<p>For a Remove ChangedEvent, the modified collection is a property value on the <a href="ChangedEvent.html#object">object</a>.
+						The <a href="ChangedEvent.html#propertyName">propertyName</a> helps distinguish between different collections on the object.
+						Use the <a href="ChangedEvent.html#oldValue">oldValue</a> property to indicate the value that was removed.
+					Use the <a href="ChangedEvent.html#oldParam">oldParam</a> property to indicate where or how, such as an array index or dictionary key.</p>
+					<p>Transaction ChangedEvents are generated by the <a href="UndoManager.html">UndoManager</a>.
+						The <a href="ChangedEvent.html#propertyName">propertyName</a> names the nature of the ChangedEvent.
+						For the very first transaction, the property name is &quot;StartingFirstTransaction&quot;.
+						This ChangedEvent precedes a ChangedEvent whose property name is &quot;StartedTransaction&quot;,
+					which occurs for every top-level transaction.</p>
+					<p>When ending a transaction, there is first a ChangedEvent whose name is &quot;ComittingTransaction&quot;.
+						This is followed by one with either &quot;CommittedTransaction&quot; or &quot;RolledBackTransaction&quot;,
+						depending on how the transaction is ending.
+						The <a href="ChangedEvent.html#oldValue">oldValue</a> provides the transaction name and the <a href="ChangedEvent.html#object">object</a> is the <a href="ChangedEvent.html#static-Transaction">Transaction</a> being finished.
+						(Note that the Transaction value may be null if no Transaction is available at that time,
+						perhaps because there were no changes made during the transaction.)
+						That Transaction can be scanned to look for ChangedEvents that you may wish to record in a database,
+					all within a single database transaction.</p>
+					<p>There are also Transaction ChangedEvents corresponding to &quot;StartingUndo&quot;, &quot;FinishedUndo&quot;,
+						&quot;StartingRedo&quot;, and &quot;FinishedRedo&quot;.
+					The <a href="ChangedEvent.html#object">object</a> property provides the <a href="ChangedEvent.html#static-Transaction">Transaction</a> that is about-to-be or just-was undone or redone.</p>
+					<p>Non-Transaction ChangedEvents are remembered by the <a href="UndoManager.html">UndoManager</a>, if <a href="UndoManager.html#isEnabled">UndoManager.isEnabled</a>,
+						and held in the <a href="UndoManager.html#history">UndoManager.history</a> as <a href="ChangedEvent.html#static-Transaction">Transaction</a>s which hold lists of ChangedEvents.
+					That is why ChangedEvent implements <a href="ChangedEvent.html#undo">undo</a> and <a href="ChangedEvent.html#redo">redo</a> of the change that it remembers.</p>
+					<p>When the ChangedEvent represents a change to a <a href="Model.html">Model</a>, the value of <a href="ChangedEvent.html#model">model</a> is non-null
+						and the value of <a href="ChangedEvent.html#diagram">diagram</a> is meaningless.
+						If the change is a structural change to the model,
+						the value of <a href="ChangedEvent.html#modelChange">modelChange</a> indicates the kind of change.
+					Currently defined model changed event names include:</p>
+					<ul>
+						<li><strong>&quot;nodeDataArray&quot;</strong>, after the model&#39;s <a href="Model.html#nodeDataArray">Model.nodeDataArray</a> is replaced, inserted into or removed from
+						(setting <a href="Model.html#nodeDataArray">Model.nodeDataArray</a> or calling <a href="Model.html#addNodeData">Model.addNodeData</a> or <a href="Model.html#removeNodeData">Model.removeNodeData</a>)</li>
+						<li><strong>&quot;nodeKey&quot;</strong>, after changing a node data&#39;s unique key (<a href="Model.html#setKeyForNodeData">Model.setKeyForNodeData</a>)</li>
+						<li><strong>&quot;nodeCategory&quot;</strong>, after changing a node data&#39;s category (<a href="Model.html#setCategoryForNodeData">Model.setCategoryForNodeData</a>)</li>
+						<li><strong>&quot;linkFromKey&quot;</strong>, after changing a link data&#39;s &quot;from&quot; node key (<a href="GraphLinksModel.html#setFromKeyForLinkData">GraphLinksModel.setFromKeyForLinkData</a>)</li>
+						<li><strong>&quot;linkToKey&quot;</strong>, after changing a link data&#39;s &quot;to&quot; node key (<a href="GraphLinksModel.html#setToKeyForLinkData">GraphLinksModel.setToKeyForLinkData</a>)</li>
+						<li><strong>&quot;linkFromPortId&quot;</strong>, after changing a link data&#39;s &quot;from&quot; port (<a href="GraphLinksModel.html#setFromPortIdForLinkData">GraphLinksModel.setFromPortIdForLinkData</a>)</li>
+						<li><strong>&quot;linkToPortId&quot;</strong>, after changing a link data&#39;s &quot;to&quot; port (<a href="GraphLinksModel.html#setToPortIdForLinkData">GraphLinksModel.setToPortIdForLinkData</a>)</li>
+						<li><strong>&quot;linkLabelKeys&quot;</strong>, after replacing, inserting into, or removing from a link data&#39;s array of keys to label nodes
+							(calling <a href="GraphLinksModel.html#setLabelKeysForLinkData">GraphLinksModel.setLabelKeysForLinkData</a>, <a href="GraphLinksModel.html#addLabelKeyForLinkData">GraphLinksModel.addLabelKeyForLinkData</a>,
+						or <a href="GraphLinksModel.html#removeLabelKeyForLinkData">GraphLinksModel.removeLabelKeyForLinkData</a>)</li>
+						<li><strong>&quot;linkDataArray&quot;</strong>, after the model&#39;s <a href="GraphLinksModel.html#linkDataArray">GraphLinksModel.linkDataArray</a> is replaced, inserted into or removed from
+							(setting <a href="GraphLinksModel.html#linkDataArray">GraphLinksModel.linkDataArray</a> or calling <a href="GraphLinksModel.html#addLinkData">GraphLinksModel.addLinkData</a>
+						or <a href="GraphLinksModel.html#removeLinkData">GraphLinksModel.removeLinkData</a>)</li>
+						<li><strong>&quot;nodeGroupKey&quot;</strong>, after changing a node data&#39;s key for a containing group data (<a href="GraphLinksModel.html#setGroupKeyForNodeData">GraphLinksModel.setGroupKeyForNodeData</a>)</li>
+						<li><strong>&quot;linkCategory&quot;</strong>, after changing a link data&#39;s category (<a href="GraphLinksModel.html#setCategoryForLinkData">GraphLinksModel.setCategoryForLinkData</a>)</li>
+						<li><strong>&quot;nodeParentKey&quot;</strong>, after changing a node data&#39;s &quot;parent&quot; node key (<a href="TreeModel.html#setParentKeyForNodeData">TreeModel.setParentKeyForNodeData</a>)</li>
+						<li><strong>&quot;parentLinkCategory&quot;</strong>, after changing a node data&#39;s &quot;parent&quot; link&#39;s category(<a href="TreeModel.html#setParentLinkCategoryForNodeData">TreeModel.setParentLinkCategoryForNodeData</a>)</li>
+						<li><strong>&quot;SourceChanged&quot;</strong>, for internal implementation use only</li>
+					</ul>
+					<p>The value of <a href="ChangedEvent.html#propertyName">ChangedEvent.propertyName</a> indicates the actual name of the property that was modified.
+						<a href="ChangedEvent.html#modelChange">ChangedEvent.modelChange</a> is a non-empty string only when there is a known structural change to the model,
+					not just the setting of some property on some object.</p>
+					<p>When the ChangedEvent represents a change to a <a href="Diagram.html">Diagram</a> or a <a href="GraphObject.html">GraphObject</a> within a diagram,
+						the value of <a href="ChangedEvent.html#diagram">diagram</a> is non-null and
+					the values of <a href="ChangedEvent.html#model">model</a> and <a href="ChangedEvent.html#modelChange">modelChange</a> are meaningless.</p>
+					<p>Please note that ChangedEvents can be raised for many different causes.
+						You may not be interested in changes to temporary objects -- in that case ignore the ChangedEvent when
+					<a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> or <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a> is true.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="ChangedEvent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#change" class="tsd-kind-icon">change</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#diagram" class="tsd-kind-icon">diagram</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="ChangedEvent.html#isTransactionFinished" class="tsd-kind-icon">is<wbr>Transaction<wbr>Finished</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#model" class="tsd-kind-icon">model</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#modelChange" class="tsd-kind-icon">model<wbr>Change</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#newParam" class="tsd-kind-icon">new<wbr>Param</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#newValue" class="tsd-kind-icon">new<wbr>Value</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#object" class="tsd-kind-icon">object</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#oldParam" class="tsd-kind-icon">old<wbr>Param</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#oldValue" class="tsd-kind-icon">old<wbr>Value</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ChangedEvent.html#propertyName" class="tsd-kind-icon">property<wbr>Name</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#canRedo" class="tsd-kind-icon">can<wbr>Redo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#canUndo" class="tsd-kind-icon">can<wbr>Undo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#clear" class="tsd-kind-icon">clear</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#copy" class="tsd-kind-icon">copy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#getParam" class="tsd-kind-icon">get<wbr>Param</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#getValue" class="tsd-kind-icon">get<wbr>Value</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#redo" class="tsd-kind-icon">redo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChangedEvent.html#undo" class="tsd-kind-icon">undo</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Constants</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="ChangedEvent.html#static-Insert" class="tsd-kind-icon">Insert</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="ChangedEvent.html#static-Property" class="tsd-kind-icon">Property</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="ChangedEvent.html#static-Remove" class="tsd-kind-icon">Remove</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="ChangedEvent.html#static-Transaction" class="tsd-kind-icon">Transaction</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Changed<wbr>Event<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>The ChangedEvent class constructor produces an empty ChangedEvent object.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="change" class="tsd-anchor"></a>
+					<h3>
+						change
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the nature of change that occurred.
+									The default is <a href="ChangedEvent.html#static-Property">ChangedEvent.Property</a>.
+									Other values are <a href="ChangedEvent.html#static-Insert">ChangedEvent.Insert</a>, <a href="ChangedEvent.html#static-Remove">ChangedEvent.Remove</a>,
+								and <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="diagram" class="tsd-anchor"></a>
+					<h3>
+						diagram
+					<span class="tsd-signature-symbol">: </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the <a href="Diagram.html">Diagram</a> that was modified.
+									When this property is non-null, the <a href="ChangedEvent.html#model">model</a> property will be null.
+									However this property and the <a href="ChangedEvent.html#model">model</a> property may both be null simultaneously,
+								when no particular model or diagram applies.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="isTransactionFinished" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						is<wbr>Transaction<wbr>Finished
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property is true when this ChangedEvent is of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a> and represents the end of a transactional change.
+								It is implemented as:</p>
+								<pre><code class="hljs js"><span class="hljs-keyword">return</span> (<span class="hljs-keyword">this</span>.change === ChangedEvent.Transaction &amp;&amp;
+        (<span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"CommittedTransaction"</span> ||
+         <span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"FinishedUndo"</span> ||
+         <span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"FinishedRedo"</span>));
+</code></pre>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="model" class="tsd-anchor"></a>
+					<h3>
+						model
+					<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the <a href="Model.html">Model</a> or <a href="TreeModel.html">TreeModel</a> or <a href="GraphLinksModel.html">GraphLinksModel</a> that was modified.
+									When this property is non-null, the <a href="ChangedEvent.html#diagram">diagram</a> property will be null.
+									However this property and the <a href="ChangedEvent.html#diagram">diagram</a> property may both be null simultaneously,
+								when no particular model or diagram applies.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="modelChange" class="tsd-anchor"></a>
+					<h3>
+						model<wbr>Change
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the model change, reflecting a change to
+								model data in addition to a change to the model itself.</p>
+								<p>The default is an empty string, which indicates that this is just
+									a regular change to some object&#39;s state, probably its property.
+								For a list of possible model change names, see the documentation for <a href="ChangedEvent.html">ChangedEvent</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="newParam" class="tsd-anchor"></a>
+					<h3>
+						new<wbr>Param
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets an optional value associated with the new value.
+									Most properties do not require any parameter to describe the change.
+									This is typically a value that helps distinguish the new value, such as an index into an array.
+									It is null if it is not used.
+								The default is null.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="newValue" class="tsd-anchor"></a>
+					<h3>
+						new<wbr>Value
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the next or current value that the property has.
+								The default is null.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="object" class="tsd-anchor"></a>
+					<h3>
+						object
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the Object that was modified.
+								The default is null.</p>
+								<p>For <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a> changes, this may be the <a href="ChangedEvent.html#static-Transaction">Transaction</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="oldParam" class="tsd-anchor"></a>
+					<h3>
+						old<wbr>Param
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets an optional value associated with the old value.
+									Most properties do not require any parameter to describe the change.
+									This is typically a value that helps distinguish the old value, such as an index into an array.
+									It is null if it is not used.
+								The default is null.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="oldValue" class="tsd-anchor"></a>
+					<h3>
+						old<wbr>Value
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the previous or old value that the property had.
+								The default is null.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="propertyName" class="tsd-anchor"></a>
+					<h3>
+						property<wbr>Name
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">a</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">b</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the property change.
+									The default is an empty string, which is not a valid property name.
+									This property can be useful even when the type of change is
+									not <a href="ChangedEvent.html#static-Property">ChangedEvent.Property</a>, because it can help identify
+									the collection in the <a href="ChangedEvent.html#object">object</a> that was modified
+									(for <a href="ChangedEvent.html#static-Insert">ChangedEvent.Insert</a> or <a href="ChangedEvent.html#static-Remove">ChangedEvent.Remove</a>)
+								or the stage of the current transaction (for <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>).</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canRedo" class="tsd-anchor"></a>
+					<h3>
+						can<wbr>Redo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate returns true if you can call redo().</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if ready for redo() to be called.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canUndo" class="tsd-anchor"></a>
+					<h3>
+						can<wbr>Undo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate returns true if you can call undo().</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if ready for undo() to be called.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="clear" class="tsd-anchor"></a>
+					<h3>
+						clear
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Forget any object references that this ChangedEvent may have.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="copy" class="tsd-anchor"></a>
+					<h3>
+						copy
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Make a copy of this ChangedEvent.
+								ChangedEvents are copied when the <a href="UndoManager.html">UndoManager</a> adds to a <a href="ChangedEvent.html#static-Transaction">Transaction</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getParam" class="tsd-anchor"></a>
+					<h3>
+						get<wbr>Param
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Param<span class="tsd-signature-symbol">(</span>undo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This is a convenient method to get the right parameter value, depending on the value of undo,
+								when implementing a state change as part of an undo or a redo.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>undo: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If true, returns the oldParam, otherwise returns the newParam.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>Either the oldParam or the newParam.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getValue" class="tsd-anchor"></a>
+					<h3>
+						get<wbr>Value
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Value<span class="tsd-signature-symbol">(</span>undo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This is a convenient method to get the right value, depending on the value of undo,
+								when implementing a state change as part of an undo or a redo.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>undo: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If true, returns the oldValue, otherwise returns the newValue.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>Either the oldValue or the newValue.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="redo" class="tsd-anchor"></a>
+					<h3>
+						redo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Re-perform this object change after an undo().
+								canRedo() must be true for this method to have any effect.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="undo" class="tsd-anchor"></a>
+					<h3>
+						undo
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Reverse the effects of this object change.
+								canUndo() must be true for this method to have any effect.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constants</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Insert" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Insert
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>For inserting into collections,
+							and used as the value for <a href="ChangedEvent.html#change">ChangedEvent.change</a>.
+							The modified object is given by <a href="ChangedEvent.html#object">ChangedEvent.object</a>.
+							Use the optional <a href="ChangedEvent.html#propertyName">ChangedEvent.propertyName</a> to distinguish between different collections on the object.
+							Use the <a href="ChangedEvent.html#newValue">ChangedEvent.newValue</a> property to indicate the value that was inserted.
+						Use the optional <a href="ChangedEvent.html#newParam">ChangedEvent.newParam</a> property to indicate where or how, such as an array index or dictionary key.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Property" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Property
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>For simple property changes,
+							and used as the value for <a href="ChangedEvent.html#change">ChangedEvent.change</a>.
+							The name of the property is given by <a href="ChangedEvent.html#propertyName">ChangedEvent.propertyName</a>.
+							The modified object is given by <a href="ChangedEvent.html#object">ChangedEvent.object</a>.
+						Use the <a href="ChangedEvent.html#oldValue">ChangedEvent.oldValue</a> and <a href="ChangedEvent.html#newValue">ChangedEvent.newValue</a> properties for the previous and next property values.</p>
+						<p>For model changes, the <a href="ChangedEvent.html#modelChange">ChangedEvent.modelChange</a> may be non-empty, indicating a structural change to the model.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Remove" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Remove
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>For removing from collections,
+							and used as the value for <a href="ChangedEvent.html#change">ChangedEvent.change</a>.
+							The modified object is given by <a href="ChangedEvent.html#object">ChangedEvent.object</a>.
+							Use the optional <a href="ChangedEvent.html#propertyName">ChangedEvent.propertyName</a> to distinguish between different collections on the object.
+							Use the <a href="ChangedEvent.html#oldValue">ChangedEvent.oldValue</a> property to indicate the value that was removed.
+						Use the optional <a href="ChangedEvent.html#oldParam">ChangedEvent.oldParam</a> property to indicate where or how, such as an array index or dictionary key.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Transaction" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Transaction
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>For informational events, such as transactions and undo/redo operations,
+							and used as the value for <a href="ChangedEvent.html#change">ChangedEvent.change</a>.
+							The <a href="ChangedEvent.html#object">ChangedEvent.object</a> refers to the <a href="ChangedEvent.html#static-Transaction">Transaction</a> affected, if any.
+							The <a href="ChangedEvent.html#propertyName">ChangedEvent.propertyName</a> distinguishes the different transaction or undo or redo stages.
+						The <a href="ChangedEvent.html#oldValue">ChangedEvent.oldValue</a> may provide the transaction name, if available, as given to <a href="UndoManager.html#commitTransaction">UndoManager.commitTransaction</a>.</p>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="ChangedEvent.html" class="tsd-kind-icon">Changed<wbr>Event</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#change" class="tsd-kind-icon">change</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#diagram" class="tsd-kind-icon">diagram</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="ChangedEvent.html#isTransactionFinished" class="tsd-kind-icon">is<wbr>Transaction<wbr>Finished</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#model" class="tsd-kind-icon">model</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#modelChange" class="tsd-kind-icon">model<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#newParam" class="tsd-kind-icon">new<wbr>Param</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#newValue" class="tsd-kind-icon">new<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#object" class="tsd-kind-icon">object</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#oldParam" class="tsd-kind-icon">old<wbr>Param</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#oldValue" class="tsd-kind-icon">old<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ChangedEvent.html#propertyName" class="tsd-kind-icon">property<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#canRedo" class="tsd-kind-icon">can<wbr>Redo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#canUndo" class="tsd-kind-icon">can<wbr>Undo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#clear" class="tsd-kind-icon">clear</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#copy" class="tsd-kind-icon">copy</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#getParam" class="tsd-kind-icon">get<wbr>Param</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#getValue" class="tsd-kind-icon">get<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#redo" class="tsd-kind-icon">redo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChangedEvent.html#undo" class="tsd-kind-icon">undo</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="ChangedEvent.html#static-Insert" class="tsd-kind-icon">Insert</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="ChangedEvent.html#static-Property" class="tsd-kind-icon">Property</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="ChangedEvent.html#static-Remove" class="tsd-kind-icon">Remove</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="ChangedEvent.html#static-Transaction" class="tsd-kind-icon">Transaction</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class ChangedEvent
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                
-
-                A ChangedEvent represents a change to an object, typically a <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a>,but also for model data, a <a href="../symbols/Model.html" class="linkConstructor">Model</a>, or a <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>.The most common case is for remembering the name of a propertyand the before-and-after values for that property.<p>You can listen for changed events on the model using <a href="../symbols/Model.html#addChangedListener" class="linkMethod">Model.addChangedListener</a>or <a href="../symbols/Diagram.html#addModelChangedListener" class="linkMethod">Diagram.addModelChangedListener</a>, and on the Diagram using <a href="../symbols/Diagram.html#addChangedListener" class="linkMethod">Diagram.addChangedListener</a>.<p>There are four kinds of changes, represented by enumerated values:<a href="../symbols/ChangedEvent.html#Property" class="linkConstant">ChangedEvent.Property</a> (the most common), <a href="../symbols/ChangedEvent.html#Insert" class="linkConstant">ChangedEvent.Insert</a> and <a href="../symbols/ChangedEvent.html#Remove" class="linkConstant">ChangedEvent.Remove</a>(to represent inserting or removing objects from collections),and <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a> (to notify about beginning or ending transactions or undo or redo).<p>The most common kind of ChangedEvent is a Property change.The name of the property is given by <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">propertyName</a>.The modified object is given by <a href="../symbols/ChangedEvent.html#object" class="linkProperty">object</a>.Use the <a href="../symbols/ChangedEvent.html#oldValue" class="linkProperty">oldValue</a> and <a href="../symbols/ChangedEvent.html#newValue" class="linkProperty">newValue</a> properties for the before and after property values.<p>For an Insert ChangedEvent, the modified collection (often an Array) is a property value on the <a href="../symbols/ChangedEvent.html#object" class="linkProperty">object</a>.The <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">propertyName</a> helps distinguish between different collections on the object.Use the <a href="../symbols/ChangedEvent.html#newValue" class="linkProperty">newValue</a> property to indicate the value that was inserted.Use the <a href="../symbols/ChangedEvent.html#newParam" class="linkProperty">newParam</a> property to indicate where or how, such as an array index or dictionary key.<p>For a Remove ChangedEvent, the modified collection is a property value on the <a href="../symbols/ChangedEvent.html#object" class="linkProperty">object</a>.The <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">propertyName</a> helps distinguish between different collections on the object.Use the <a href="../symbols/ChangedEvent.html#oldValue" class="linkProperty">oldValue</a> property to indicate the value that was removed.Use the <a href="../symbols/ChangedEvent.html#oldParam" class="linkProperty">oldParam</a> property to indicate where or how, such as an array index or dictionary key.<p>Transaction ChangedEvents are generated by the <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a>.The <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">propertyName</a> names the nature of the ChangedEvent.For the very first transaction, the property name is "StartingFirstTransaction".This ChangedEvent precedes a ChangedEvent whose property name is "StartedTransaction",which occurs for every top-level transaction.<p>When ending a transaction, there is first a ChangedEvent whose name is "ComittingTransaction".This is followed by one with either "CommittedTransaction" or "RolledBackTransaction",depending on how the transaction is ending.The <a href="../symbols/ChangedEvent.html#oldValue" class="linkProperty">oldValue</a> provides the transaction name and the <a href="../symbols/ChangedEvent.html#object" class="linkProperty">object</a> is the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> being finished.(Note that the Transaction value may be null if no Transaction is available at that time,perhaps because there were no changes made during the transaction.)That Transaction can be scanned to look for ChangedEvents that you may wish to record in a database,all within a single database transaction.<p>There are also Transaction ChangedEvents corresponding to "StartingUndo", "FinishedUndo","StartingRedo", and "FinishedRedo".The <a href="../symbols/ChangedEvent.html#object" class="linkProperty">object</a> property provides the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> that is about-to-be or just-was undone or redone.<p>Non-Transaction ChangedEvents are remembered by the <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a>, if <a href="../symbols/UndoManager.html#isEnabled" class="linkProperty">UndoManager.isEnabled</a>,and held in the <a href="../symbols/UndoManager.html#history" class="linkProperty">UndoManager.history</a> as <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>s which hold lists of ChangedEvents.That is why ChangedEvent implements <a href="../symbols/ChangedEvent.html#undo" class="linkMethod">undo</a> and <a href="../symbols/ChangedEvent.html#redo" class="linkMethod">redo</a> of the change that it remembers.<p>When the ChangedEvent represents a change to a <a href="../symbols/Model.html" class="linkConstructor">Model</a>, the value of <a href="../symbols/ChangedEvent.html#model" class="linkProperty">model</a> is non-nulland the value of <a href="../symbols/ChangedEvent.html#diagram" class="linkProperty">diagram</a> is meaningless.If the change is a structural change to the model,the value of <a href="../symbols/ChangedEvent.html#modelChange" class="linkProperty">modelChange</a> indicates the kind of change.Currently defined model changed event names include:<ul>  <li><b>"nodeDataArray"</b>, after the model's <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">Model.nodeDataArray</a> is replaced, inserted into or removed from      (setting <a href="../symbols/Model.html#nodeDataArray" class="linkProperty">Model.nodeDataArray</a> or calling <a href="../symbols/Model.html#addNodeData" class="linkMethod">Model.addNodeData</a> or <a href="../symbols/Model.html#removeNodeData" class="linkMethod">Model.removeNodeData</a>)  </li>  <li><b>"nodeKey"</b>, after changing a node data's unique key (<a href="../symbols/Model.html#setKeyForNodeData" class="linkMethod">Model.setKeyForNodeData</a>)</li>  <li><b>"nodeCategory"</b>, after changing a node data's category (<a href="../symbols/Model.html#setCategoryForNodeData" class="linkMethod">Model.setCategoryForNodeData</a>)</li>  <li><b>"linkFromKey"</b>, after changing a link data's "from" node key (<a href="../symbols/GraphLinksModel.html#setFromKeyForLinkData" class="linkMethod">GraphLinksModel.setFromKeyForLinkData</a>)</li>  <li><b>"linkToKey"</b>, after changing a link data's "to" node key (<a href="../symbols/GraphLinksModel.html#setToKeyForLinkData" class="linkMethod">GraphLinksModel.setToKeyForLinkData</a>)</li>  <li><b>"linkFromPortId"</b>, after changing a link data's "from" port (<a href="../symbols/GraphLinksModel.html#setFromPortIdForLinkData" class="linkMethod">GraphLinksModel.setFromPortIdForLinkData</a>)</li>  <li><b>"linkToPortId"</b>, after changing a link data's "to" port (<a href="../symbols/GraphLinksModel.html#setToPortIdForLinkData" class="linkMethod">GraphLinksModel.setToPortIdForLinkData</a>)</li>  <li><b>"linkLabelKeys"</b>, after replacing, inserting into, or removing from a link data's array of keys to label nodes       (calling <a href="../symbols/GraphLinksModel.html#setLabelKeysForLinkData" class="linkMethod">GraphLinksModel.setLabelKeysForLinkData</a>, <a href="../symbols/GraphLinksModel.html#addLabelKeyForLinkData" class="linkMethod">GraphLinksModel.addLabelKeyForLinkData</a>,        or <a href="../symbols/GraphLinksModel.html#removeLabelKeyForLinkData" class="linkMethod">GraphLinksModel.removeLabelKeyForLinkData</a>)  </li>  <li><b>"linkDataArray"</b>, after the model's <a href="../symbols/GraphLinksModel.html#linkDataArray" class="linkProperty">GraphLinksModel.linkDataArray</a> is replaced, inserted into or removed from      (setting <a href="../symbols/GraphLinksModel.html#linkDataArray" class="linkProperty">GraphLinksModel.linkDataArray</a> or calling <a href="../symbols/GraphLinksModel.html#addLinkData" class="linkMethod">GraphLinksModel.addLinkData</a>       or <a href="../symbols/GraphLinksModel.html#removeLinkData" class="linkMethod">GraphLinksModel.removeLinkData</a>)  </li>  <li><b>"nodeGroupKey"</b>, after changing a node data's key for a containing group data (<a href="../symbols/GraphLinksModel.html#setGroupKeyForNodeData" class="linkMethod">GraphLinksModel.setGroupKeyForNodeData</a>)</li>  <li><b>"linkCategory"</b>, after changing a link data's category (<a href="../symbols/GraphLinksModel.html#setCategoryForLinkData" class="linkMethod">GraphLinksModel.setCategoryForLinkData</a>)</li>  <li><b>"nodeParentKey"</b>, after changing a node data's "parent" node key (<a href="../symbols/TreeModel.html#setParentKeyForNodeData" class="linkMethod">TreeModel.setParentKeyForNodeData</a>)</li>  <li><b>"parentLinkCategory"</b>, after changing a node data's "parent" link's category(<a href="../symbols/TreeModel.html#setParentLinkCategoryForNodeData" class="linkMethod">TreeModel.setParentLinkCategoryForNodeData</a>)</li>  <li><b>"SourceChanged"</b>, for internal implementation use only</li></ul>The value of <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">ChangedEvent.propertyName</a> indicates the actual name of the property that was modified.<a href="../symbols/ChangedEvent.html#modelChange" class="linkProperty">ChangedEvent.modelChange</a> is a non-empty string only when there is a known structural change to the model,not just the setting of some property on some object.<p>When the ChangedEvent represents a change to a <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> or a <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> within a diagram,the value of <a href="../symbols/ChangedEvent.html#diagram" class="linkProperty">diagram</a> is non-null andthe values of <a href="../symbols/ChangedEvent.html#model" class="linkProperty">model</a> and <a href="../symbols/ChangedEvent.html#modelChange" class="linkProperty">modelChange</a> are meaningless.<p>Please note that ChangedEvents can be raised for many different causes.You may not be interested in changes to temporary objects -- in that case ignore the ChangedEvent when<a href="../symbols/Model.html#skipsUndoManager" class="linkProperty">Model.skipsUndoManager</a> or <a href="../symbols/Diagram.html#skipsUndoManager" class="linkProperty">Diagram.skipsUndoManager</a> is true.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class ChangedEvent.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                ChangedEvent()
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>The ChangedEvent class constructor produces an empty ChangedEvent object.
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class ChangedEvent.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="change" >
-                
-                <td class="name">
-                  <div class="name">
-                    change
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{EnumValue}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the nature of change that occurred.<span class="nodetails" id="xpropchange"><a class="morelink" onclick="hst('propchange')">More...</a></span> <span class="details" id="propchange">The default is <a href="../symbols/ChangedEvent.html#Property" class="linkConstant">ChangedEvent.Property</a>.Other values are <a href="../symbols/ChangedEvent.html#Insert" class="linkConstant">ChangedEvent.Insert</a>, <a href="../symbols/ChangedEvent.html#Remove" class="linkConstant">ChangedEvent.Remove</a>,and <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="diagram" >
-                
-                <td class="name">
-                  <div class="name">
-                    diagram
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> that was modified.<span class="nodetails" id="xpropdiagram"><a class="morelink" onclick="hst('propdiagram')">More...</a></span> <span class="details" id="propdiagram">When this property is non-null, the <a href="../symbols/ChangedEvent.html#model" class="linkProperty">model</a> property will be null.However this property and the <a href="../symbols/ChangedEvent.html#model" class="linkProperty">model</a> property may both be null simultaneously,when no particular model or diagram applies.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="isTransactionFinished" >
-                
-                <td class="name">
-                  <div class="name">
-                    isTransactionFinished
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property is true when this ChangedEvent is of type <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a> and represents the end of a transactional change.<span class="nodetails" id="xpropisTransactionFinished"><a class="morelink" onclick="hst('propisTransactionFinished')">More...</a></span> <span class="details" id="propisTransactionFinished">It is implemented as:<pre>return (this.change === ChangedEvent.Transaction &&        (this.propertyName === "CommittedTransaction" ||         this.propertyName === "FinishedUndo" ||         this.propertyName === "FinishedRedo"));</pre></span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="model" >
-                
-                <td class="name">
-                  <div class="name">
-                    model
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Model.html" class="linkConstructor">Model</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the <a href="../symbols/Model.html" class="linkConstructor">Model</a> or <a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a> or <a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a> that was modified.<span class="nodetails" id="xpropmodel"><a class="morelink" onclick="hst('propmodel')">More...</a></span> <span class="details" id="propmodel">When this property is non-null, the <a href="../symbols/ChangedEvent.html#diagram" class="linkProperty">diagram</a> property will be null.However this property and the <a href="../symbols/ChangedEvent.html#diagram" class="linkProperty">diagram</a> property may both be null simultaneously,when no particular model or diagram applies.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="modelChange" >
-                
-                <td class="name">
-                  <div class="name">
-                    modelChange
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets the name of the model change, reflecting a change tomodel data in addition to a change to the model itself.<span class="nodetails" id="xpropmodelChange"><a class="morelink" onclick="hst('propmodelChange')">More...</a></span> <span class="details" id="propmodelChange"></span><div class="details" id="dpropmodelChange"><p>The default is an empty string, which indicates that this is justa regular change to some object's state, probably its property.For a list of possible model change names, see the documentation for <a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="newParam" >
-                
-                <td class="name">
-                  <div class="name">
-                    newParam
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets an optional value associated with the new value.<span class="nodetails" id="xpropnewParam"><a class="morelink" onclick="hst('propnewParam')">More...</a></span> <span class="details" id="propnewParam">Most properties do not require any parameter to describe the change.This is typically a value that helps distinguish the new value, such as an index into an array.It is null if it is not used.The default is null.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="newValue" >
-                
-                <td class="name">
-                  <div class="name">
-                    newValue
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the next or current value that the property has.<span class="nodetails" id="xpropnewValue"><a class="morelink" onclick="hst('propnewValue')">More...</a></span> <span class="details" id="propnewValue">The default is null.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="object" >
-                
-                <td class="name">
-                  <div class="name">
-                    object
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Object}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the Object that was modified.<span class="nodetails" id="xpropobject"><a class="morelink" onclick="hst('propobject')">More...</a></span> <span class="details" id="propobject">The default is null.</span><div class="details" id="dpropobject"><p>For <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a> changes, this may be the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>.</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="oldParam" >
-                
-                <td class="name">
-                  <div class="name">
-                    oldParam
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets an optional value associated with the old value.<span class="nodetails" id="xpropoldParam"><a class="morelink" onclick="hst('propoldParam')">More...</a></span> <span class="details" id="propoldParam">Most properties do not require any parameter to describe the change.This is typically a value that helps distinguish the old value, such as an index into an array.It is null if it is not used.The default is null.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="oldValue" >
-                
-                <td class="name">
-                  <div class="name">
-                    oldValue
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the previous or old value that the property had.<span class="nodetails" id="xpropoldValue"><a class="morelink" onclick="hst('propoldValue')">More...</a></span> <span class="details" id="propoldValue">The default is null.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="propertyName" >
-                
-                <td class="name">
-                  <div class="name">
-                    propertyName
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string|function(Object):*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the name of the property change.<span class="nodetails" id="xproppropertyName"><a class="morelink" onclick="hst('proppropertyName')">More...</a></span> <span class="details" id="proppropertyName">The default is an empty string, which is not a valid property name.This property can be useful even when the type of change isnot <a href="../symbols/ChangedEvent.html#Property" class="linkConstant">ChangedEvent.Property</a>, because it can help identifythe collection in the <a href="../symbols/ChangedEvent.html#object" class="linkProperty">object</a> that was modified(for <a href="../symbols/ChangedEvent.html#Insert" class="linkConstant">ChangedEvent.Insert</a> or <a href="../symbols/ChangedEvent.html#Remove" class="linkConstant">ChangedEvent.Remove</a>)or the stage of the current transaction (for <a href="../symbols/ChangedEvent.html#Transaction" class="linkConstant">ChangedEvent.Transaction</a>).</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class ChangedEvent.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="canRedo">
-                <td class="name">
-                  
-                  <div class="name">
-                    canRedo()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate returns true if you can call redo().
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if ready for redo() to be called.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="canUndo">
-                <td class="name">
-                  
-                  <div class="name">
-                    canUndo()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate returns true if you can call undo().
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> true if ready for undo() to be called.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="clear">
-                <td class="name">
-                  
-                  <div class="name">
-                    clear()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Forget any object references that this ChangedEvent may have.
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="copy">
-                <td class="name">
-                  
-                  <div class="name">
-                    copy()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Make a copy of this ChangedEvent.<span class="nodetails" id="xmethcopy"><a class="morelink" onclick="hst('methcopy')">More...</a></span> <span class="details" id="methcopy">ChangedEvents are copied when the <a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a> adds to a <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a>.</span>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a>}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="getParam">
-                <td class="name">
-                  
-                  <div class="name">
-                    getParam(undo)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This is a convenient method to get the right parameter value, depending on the value of undo,when implementing a state change as part of an undo or a redo.<span class="nodetails" id="xmethgetParam"><a class="morelink" onclick="hst('methgetParam')">More...</a></span> <span class="details" id="methgetParam"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{boolean}</span> <b>undo</b>
-                                          
-                                      </dt>
-                                      <dd>If true, returns the oldParam, otherwise returns the newParam.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{*}</span> Either the oldParam or the newParam.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="getValue">
-                <td class="name">
-                  
-                  <div class="name">
-                    getValue(undo)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{*}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This is a convenient method to get the right value, depending on the value of undo,when implementing a state change as part of an undo or a redo.<span class="nodetails" id="xmethgetValue"><a class="morelink" onclick="hst('methgetValue')">More...</a></span> <span class="details" id="methgetValue"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{boolean}</span> <b>undo</b>
-                                          
-                                      </dt>
-                                      <dd>If true, returns the oldValue, otherwise returns the newValue.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{*}</span> Either the oldValue or the newValue.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="redo">
-                <td class="name">
-                  
-                  <div class="name">
-                    redo()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Re-perform this object change after an undo().<span class="nodetails" id="xmethredo"><a class="morelink" onclick="hst('methredo')">More...</a></span> <span class="details" id="methredo">canRedo() must be true for this method to have any effect.</span>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="undo">
-                <td class="name">
-                  
-                  <div class="name">
-                    undo()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Reverse the effects of this object change.<span class="nodetails" id="xmethundo"><a class="morelink" onclick="hst('methundo')">More...</a></span> <span class="details" id="methundo">canUndo() must be true for this method to have any effect.</span>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-                <h2 class="summaryCaption">Constants<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class ChangedEvent.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-                        <tr id="Insert">
-                            <td class="name">
-                                <div class="name">
-                                Insert
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>For inserting into collections,and used as the value for <a href="../symbols/ChangedEvent.html#change" class="linkProperty">ChangedEvent.change</a>.<span class="nodetails" id="xfldInsert"><a class="morelink" onclick="hst('fldInsert')">More...</a></span> <span class="details" id="fldInsert">The modified object is given by <a href="../symbols/ChangedEvent.html#object" class="linkProperty">ChangedEvent.object</a>.Use the optional <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">ChangedEvent.propertyName</a> to distinguish between different collections on the object.Use the <a href="../symbols/ChangedEvent.html#newValue" class="linkProperty">ChangedEvent.newValue</a> property to indicate the value that was inserted.Use the optional <a href="../symbols/ChangedEvent.html#newParam" class="linkProperty">ChangedEvent.newParam</a> property to indicate where or how, such as an array index or dictionary key.</span>
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="Property">
-                            <td class="name">
-                                <div class="name">
-                                Property
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>For simple property changes,and used as the value for <a href="../symbols/ChangedEvent.html#change" class="linkProperty">ChangedEvent.change</a>.<span class="nodetails" id="xfldProperty"><a class="morelink" onclick="hst('fldProperty')">More...</a></span> <span class="details" id="fldProperty">The name of the property is given by <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">ChangedEvent.propertyName</a>.The modified object is given by <a href="../symbols/ChangedEvent.html#object" class="linkProperty">ChangedEvent.object</a>.Use the <a href="../symbols/ChangedEvent.html#oldValue" class="linkProperty">ChangedEvent.oldValue</a> and <a href="../symbols/ChangedEvent.html#newValue" class="linkProperty">ChangedEvent.newValue</a> properties for the previous and next property values.</span><div class="details" id="dfldProperty"><p>For model changes, the <a href="../symbols/ChangedEvent.html#modelChange" class="linkProperty">ChangedEvent.modelChange</a> may be non-empty, indicating a structural change to the model.</div>
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="Remove">
-                            <td class="name">
-                                <div class="name">
-                                Remove
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>For removing from collections,and used as the value for <a href="../symbols/ChangedEvent.html#change" class="linkProperty">ChangedEvent.change</a>.<span class="nodetails" id="xfldRemove"><a class="morelink" onclick="hst('fldRemove')">More...</a></span> <span class="details" id="fldRemove">The modified object is given by <a href="../symbols/ChangedEvent.html#object" class="linkProperty">ChangedEvent.object</a>.Use the optional <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">ChangedEvent.propertyName</a> to distinguish between different collections on the object.Use the <a href="../symbols/ChangedEvent.html#oldValue" class="linkProperty">ChangedEvent.oldValue</a> property to indicate the value that was removed.Use the optional <a href="../symbols/ChangedEvent.html#oldParam" class="linkProperty">ChangedEvent.oldParam</a> property to indicate where or how, such as an array index or dictionary key.</span>
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                        <tr id="Transaction">
-                            <td class="name">
-                                <div class="name">
-                                Transaction
-                                
-                                
-                                    <span class="light">{EnumValue}</span>
-                                
-                                </div>
-               </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>For informational events, such as transactions and undo/redo operations,and used as the value for <a href="../symbols/ChangedEvent.html#change" class="linkProperty">ChangedEvent.change</a>.<span class="nodetails" id="xfldTransaction"><a class="morelink" onclick="hst('fldTransaction')">More...</a></span> <span class="details" id="fldTransaction">The <a href="../symbols/ChangedEvent.html#object" class="linkProperty">ChangedEvent.object</a> refers to the <a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a> affected, if any.The <a href="../symbols/ChangedEvent.html#propertyName" class="linkProperty">ChangedEvent.propertyName</a> distinguishes the different transaction or undo or redo stages.The <a href="../symbols/ChangedEvent.html#oldValue" class="linkProperty">ChangedEvent.oldValue</a> may provide the transaction name, if available, as given to <a href="../symbols/UndoManager.html#commitTransaction" class="linkMethod">UndoManager.commitTransaction</a>.</span>
-                            
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

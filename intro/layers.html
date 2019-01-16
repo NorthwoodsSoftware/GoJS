@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -66,7 +66,7 @@ Furthermore you can see how they all have the same depth in the Z-ordering.
 Finally, each Part has a <a>Part.selectionChanged</a> function which puts the part in the "Foreground"
 layer when it is selected and back in its normal color layer when it is not selected.
 </p>
-<pre data-language="javascript" id="layers">
+<pre class="lang-js" id="layers">
   // These new layers come in front of the standard regular layers,
   // but behind the "Foreground" layer:
   var forelayer = diagram.findLayer("Foreground");
@@ -109,10 +109,10 @@ layer when it is selected and back in its normal color layer when it is not sele
 
   // define this function so that the checkbox event handlers can call it
   toggleVisible = function(layername, e) {
-    diagram.startTransaction('toggle ' + layername);
-    var layer = diagram.findLayer(layername);
-    if (layer !== null) layer.visible = e.currentTarget.checked;
-    diagram.commitTransaction('toggle ' + layername);
+    diagram.commit(function(d) {
+      var layer = d.findLayer(layername);
+      if (layer !== null) layer.visible = e.currentTarget.checked;
+    }, 'toggle ' + layername);
   };
 </pre>
 <script>goCode("layers", 610, 290)</script>
@@ -131,12 +131,12 @@ Every <a>Part.zOrder</a> is data-bound to the "zOrder" property of the node data
 <p>
 Buttons on the Part can be used to modify the z-order of each.
 </p>
-<pre data-language="javascript" id="zOrder">
+<pre class="lang-js" id="zOrder">
   function changeZOrder(amt, obj) {
-    var data = obj.part.data;
-    diagram.startTransaction('modified zOrder');
-    diagram.model.setDataProperty(data, "zOrder", data.zOrder + amt);
-    diagram.commitTransaction('modified zOrder');
+    diagram.commit(function(d) {
+      var data = obj.part.data;
+      d.model.set(data, "zOrder", data.zOrder + amt);
+    }, 'modified zOrder');
   }
 
   diagram.nodeTemplate =

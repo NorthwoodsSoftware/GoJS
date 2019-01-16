@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,15 +17,14 @@
     myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
                   {
                     layout: $(TimelineLayout),
-                    isTreePathToChildren: false,  // arrows from children (events) to the parent (timeline bar)
-                    initialContentAlignment: go.Spot.Center,  // center the content
+                    isTreePathToChildren: false  // arrows from children (events) to the parent (timeline bar)
                   });
 
     myDiagram.nodeTemplate =
       $(go.Node, "Table",
         { locationSpot: go.Spot.Center, movable: false },
         $(go.Panel, "Auto",
-          $(go.Shape, "RoundedRectangle", 
+          $(go.Shape, "RoundedRectangle",
             { fill: "#252526", stroke: "#519ABA", strokeWidth: 3 }
           ),
           $(go.Panel, "Table",
@@ -34,7 +33,7 @@
                 row: 0,
                 stroke: "#CCCCCC",
                 wrap: go.TextBlock.WrapFit,
-                font: "bold 12pt sans-serif", 
+                font: "bold 12pt sans-serif",
                 textAlign: "center", margin: 4
               },
               new go.Binding("text", "event")
@@ -64,7 +63,7 @@
             $(go.Adornment, "Spot",
               $(go.Placeholder),
               $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", desiredSize: new go.Size(4, 16), fill: "lightblue", stroke: "deepskyblue" })
-            ) 
+            )
         },
         new go.Binding("graduatedMax", "", timelineDays),
         $(go.Shape, "LineH",
@@ -72,8 +71,8 @@
           new go.Binding("width", "length").makeTwoWay()
         ),
         $(go.Shape, { geometryString: "M0 0 V10", interval: 7, stroke: "#519ABA", strokeWidth: 2 }),
-        $(go.TextBlock, 
-          { 
+        $(go.TextBlock,
+          {
             font: "10pt sans-serif",
             stroke: "#CCCCCC",
             interval: 14,
@@ -228,8 +227,7 @@
   go.Diagram.inherit(BarLink, go.Link);
 
   BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-    var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-                        port.getDocumentPoint(go.Spot.BottomRight));
+    var r = port.getDocumentBounds();
     var op = otherport.getDocumentPoint(go.Spot.Center);
     var main = node.category === "Line" ? node.findMainElement(): othernode.findMainElement();
     var mainOffY = main.actualBounds.y;

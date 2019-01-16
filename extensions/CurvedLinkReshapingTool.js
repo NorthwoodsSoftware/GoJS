@@ -11,7 +11,7 @@
 * @extends LinkReshapingTool
 * @class
 * This CurvedLinkReshapingTool class allows for a Link's path to be modified by the user
-* via the dragging of a single tool handle at the middle of the link. 
+* via the dragging of a single tool handle at the middle of the link.
 */
 function CurvedLinkReshapingTool() {
   go.LinkReshapingTool.call(this);
@@ -21,7 +21,6 @@ function CurvedLinkReshapingTool() {
 go.Diagram.inherit(CurvedLinkReshapingTool, go.LinkReshapingTool);
 
 /**
-* @override
 * @this {CurvedLinkReshapingTool}
 * @param {Shape} pathshape
 * @return {Adornment}
@@ -44,7 +43,6 @@ CurvedLinkReshapingTool.prototype.makeAdornment = function(pathshape) {
 };
 
 /**
-* @override
 * @this {CurvedLinkReshapingTool}
 */
 CurvedLinkReshapingTool.prototype.doActivate = function() {
@@ -53,7 +51,6 @@ CurvedLinkReshapingTool.prototype.doActivate = function() {
 };
 
 /**
-* @override
 * @this {CurvedLinkReshapingTool}
 */
 CurvedLinkReshapingTool.prototype.doCancel = function() {
@@ -62,7 +59,6 @@ CurvedLinkReshapingTool.prototype.doCancel = function() {
 };
 
 /**
-* @override
 * @this {CurvedLinkReshapingTool}
 * @param {Point} newpt
 * @return {Point}

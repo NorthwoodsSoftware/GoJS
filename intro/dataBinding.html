@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -36,8 +36,8 @@ are normally suppressed by the binding system.
 <p>
   First, look at a diagram that includes comments about the GraphObjects used to build some example nodes and links:
 </p>
-<pre data-language="javascript" id="commented" style="display:none">
-  diagram.nodeTemplate = 
+<pre class="lang-js" id="commented" style="display:none">
+  diagram.nodeTemplate =
     $(go.Node, "Auto",
       { scale : 1.6, isShadowed: true },
       new go.Binding("location", "pos", go.Point.parse),
@@ -60,14 +60,14 @@ are normally suppressed by the binding system.
   // Represents the nodeDataArray for the two nodes
   diagram.nodeTemplateMap.add("dataNode",
     $(go.Node, "Auto",
-      { 
+      {
         locationSpot: go.Spot.Center,
         scale: 1.2,
         selectionAdorned: true,
         fromSpot: go.Spot.AllSides,
         toSpot: go.Spot.AllSides,
         shadowColor: "#C5C1AA"
-      }, 
+      },
       new go.Binding("location", "pos", go.Point.parse),
       $(go.Shape, "Rectangle",
         { fill: "lightgray" }),
@@ -84,7 +84,7 @@ are normally suppressed by the binding system.
         $(go.TextBlock, textStyle(), // Fill:
           { portId: "FILL" },
           new go.Binding("text", "color")),
-        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }), 
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
         $(go.TextBlock, textStyle(), // Text:
           { portId: "TEXT" },
           new go.Binding("text", "txt")),
@@ -113,18 +113,18 @@ are normally suppressed by the binding system.
 
   diagram.nodeTemplateMap.add("nodeDataArray",
     $(go.Node, "Auto",
-      { 
+      {
         locationSpot: go.Spot.Center,
         scale: 1.2,
         selectionAdorned: true,
         fromSpot: go.Spot.AllSides,
         toSpot: go.Spot.AllSides,
         shadowColor: "#C5C1AA"
-      }, 
+      },
       new go.Binding("location", "pos", go.Point.parse),
       $(go.Shape, "Rectangle", { fill: "lightgray" }),
       $(go.Panel, "Vertical",
-        { defaultStretch: go.GraphObject.Horizontal }, 
+        { defaultStretch: go.GraphObject.Horizontal },
         $(go.TextBlock, headerStyle(),
           { portId: "HEADER", text: "nodeDataArray" }),
         $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
@@ -160,7 +160,7 @@ are normally suppressed by the binding system.
       $(go.Shape, { stroke: "brown" }),
       $(go.Shape, { toArrow: "OpenTriangle", stroke: "brown" })
   ));
-  
+
   diagram.linkTemplateMap.add("Binding",
     $(go.Link,
       { curve: go.Link.Bezier },
@@ -168,7 +168,7 @@ are normally suppressed by the binding system.
       $(go.Shape, { stroke: "green" , strokeWidth: 2, strokeDashArray: [10, 10] }),
       $(go.Shape, { toArrow: "OpenTriangle", stroke: "green", strokeWidth: 2 })
   ));
-  
+
   diagram.linkTemplateMap.add("Data",
     $(go.Link,
       { curve: go.Link.Bezier },
@@ -178,15 +178,13 @@ are normally suppressed by the binding system.
       $(go.TextBlock, ".data", { font: "bold 12pt Courier", segmentOffset: new go.Point(0, -10) })
   ));
 
-  diagram.initialContentAlignment = go.Spot.Center;
-  
   var model = new go.GraphLinksModel();
   model.linkFromPortIdProperty = "fPID";
   model.linkToPortIdProperty = "tPID"
   model.linkLabelKeysProperty = "labels";
 
   model.nodeDataArray = [
-    { key: 1, txt: "Alpha", color: "lightblue",  pos: "50 20"}, 
+    { key: 1, txt: "Alpha", color: "lightblue",  pos: "50 20"},
     { key: 2, txt: "Beta",  color: "lightgreen", pos: "50 270"},
     { key: 3, category: "dataNode", pos: "300 66",  head: "key: 1", txt: "text: Alpha", color: "color: lightblue",  loc: "location: 50 0",   parent: "parent: null"},
     { key: 4, category: "dataNode", pos: "300 316", head: "key: 2", txt: "text: Beta",  color: "color: lightgreen", loc: "location: 50 250", parent: "parent: 1"},
@@ -239,18 +237,18 @@ are normally suppressed by the binding system.
   // Formatting
   function headerStyle() {
     return {
-      margin: 3, 
+      margin: 3,
       font: "bold 12pt sans-serif",
-      minSize: new go.Size(16, 16), 
+      minSize: new go.Size(16, 16),
       maxSize: new go.Size(120, NaN),
       textAlign: "center"
     };
   }
   function textStyle() {
     return {
-      margin: 2, 
+      margin: 2,
       font: "10pt sans-serif",
-      minSize: new go.Size(16, 16), 
+      minSize: new go.Size(16, 16),
       maxSize: new go.Size(120, NaN),
       textAlign: "center"
     };
@@ -298,7 +296,7 @@ Of course the target property must be a settable property; some GraphObject prop
 If you specify a target property name that does not exist you will get warning messages in the console.
 If the source property value is undefined, the binding is not evaluated.
 </p>
-<pre data-language="javascript" id="simpleModelWithBind">
+<pre class="lang-js" id="simpleModelWithBind">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -344,7 +342,7 @@ For example it is common to data bind the <a>Part.location</a> property.
 <p>
 The value of Part.location is a <a>Point</a>, so in this example the data property must be a Point.
 </p>
-<pre data-language="javascript" id="bindLocationPoint">
+<pre class="lang-js" id="bindLocationPoint">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc"),  // get the Node.location from the data.loc value
@@ -378,20 +376,20 @@ You can provide a conversion function that converts the actual data property val
 </p>
 <p>
 For situations like this example, the <a>Point</a> class includes a static function,
-<a>Point.parse</a>, that you can use to convert a string into a Point object.
+<a>Point,parse</a>, that you can use to convert a string into a Point object.
 It expects two numbers to be in the input string, representing the <a>Point.x</a> and <a>Point.y</a> values.
 It returns a Point object with those values.
 </p>
 <p>
 You can pass a conversion function as the third argument to the <a>Binding</a> constructor.
-In this case it is <a>Point.parse</a>.
+In this case it is <a>Point,parse</a>.
 This allows the location to be specified in the form of a string ("100 50") rather than as an expression that returns a <a>Point</a>.
 For data properties on model objects, you will often want to use strings as the representation of
 <a>Point</a>s, <a>Size</a>s, <a>Rect</a>s, <a>Margin</a>s, and <a>Spot</a>s, rather than references to objects of those classes.
 Strings are easily read and written in JSON and XML.
 Trying to read/write classes of objects would take extra space and would require additional cooperation on the part of both the writer and the reader.
 </p>
-<pre data-language="javascript" id="bindLocationString">
+<pre class="lang-js" id="bindLocationString">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),  // convert string into a Point value
@@ -425,7 +423,7 @@ Here is an example that has several <a>Shape</a> properties data-bound to the sa
 Each conversion function takes the boolean value and returns the appropriate value for the property that is data-bound.
 This makes it trivial to control the appearance of each node from the data by setting the "highlight" data property to be either false or true.
 </p>
-<pre data-language="javascript" id="bindHighlight">
+<pre class="lang-js" id="bindHighlight">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -480,7 +478,7 @@ you can just call <a>Model.setDataProperty</a>.
 In this example we modify the value of "highlight" on a node data object.
 For fun, this modification occurs about twice a second.
 </p>
-<pre data-language="javascript" id="changeBoundValue">
+<pre class="lang-js" id="changeBoundValue">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { locationSpot: go.Spot.Center },
@@ -500,12 +498,11 @@ For fun, this modification occurs about twice a second.
   ];
 
   function flash() {
-    var model = diagram.model;
     // all model changes should happen in a transaction
-    model.startTransaction("flash");
-    var data = model.nodeDataArray[0];  // get the first node data
-    model.setDataProperty(data, "highlight", !data.highlight);
-    model.commitTransaction("flash");
+    diagram.model.commit(function(m) {
+      var data = m.nodeDataArray[0];  // get the first node data
+      m.set(data, "highlight", !data.highlight);
+    }, "flash");
   }
   function loop() {
     setTimeout(function() { flash(); loop(); }, 500);
@@ -540,7 +537,7 @@ For link data, the model methods are
 This example changes the "to" property of a link data, causing the link to
 connect to a different node.
 </p>
-<pre data-language="javascript" id="changeLinkTo">
+<pre class="lang-js" id="changeLinkTo">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { locationSpot: go.Spot.Center },
@@ -562,15 +559,14 @@ connect to a different node.
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
   function switchTo() {
-    var model = diagram.model;
     // all model changes should happen in a transaction
-    model.startTransaction("reconnect link");
-    var data = model.linkDataArray[0];  // get the first link data
-    if (model.getToKeyForLinkData(data) === "Beta")
-      model.setToKeyForLinkData(data, "Gamma");
-    else
-      model.setToKeyForLinkData(data, "Beta");
-    model.commitTransaction("reconnect link");
+    diagram.model.commit(function(m) {
+      var data = m.linkDataArray[0];  // get the first link data
+      if (m.getToKeyForLinkData(data) === "Beta")
+        m.setToKeyForLinkData(data, "Gamma");
+      else
+        m.setToKeyForLinkData(data, "Beta");
+    }, "reconnect link");
   }
   function loop() {
     setTimeout(function() { switchTo(); loop(); }, 1000);
@@ -599,13 +595,12 @@ When the node is selected or de-selected, the <a>Part.isSelected</a> property ch
 The conversion function gets a boolean value and returns the desired brush color to be used as the shape's fill.
 This example also turns off selection adornments, so that the only visual way to tell that a node is selected is by the shape's fill color.
 </p>
-<pre data-language="javascript" id="bindingElements">
+<pre class="lang-js" id="bindingElements">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { selectionAdorned: false },  // no blue selection handle!
       $(go.Shape, "RoundedRectangle",
-        { fill: "white" },
-        // bind Shape.fill to Part.isSelected converted to a color
+        // bind Shape.fill to Node.isSelected converted to a color
         new go.Binding("fill", "isSelected", function(sel) {
               return sel ? "dodgerblue" : "lightgray";
             }).ofObject()),  // no name means bind to the whole Part
@@ -640,7 +635,7 @@ such as ones that return computed values (e.g. <a>Part.isTopLevel</a>) or Iterat
   As you click the button the <code>changeColor</code> function modifies the <code>modelData</code> object
   by calling <a>Model.setDataProperty</a>.
 </p>
-<pre data-language="javascript" id="bindingModel">
+<pre class="lang-js" id="bindingModel">
 diagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "RoundedRectangle",
@@ -661,14 +656,13 @@ diagram.model.nodeDataArray = [
 
 diagram.undoManager.isEnabled = true;
 
-changeColor = function() {
-  var model = diagram.model;
-  diagram.startTransaction();
-  // alternate between lightblue and lightgreen colors
-  var oldcolor = model.modelData.color;
-  var newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
-  model.setDataProperty(model.modelData, "color", newcolor);
-  diagram.commitTransaction("changed shared color");
+changeColor = function() {  // define a function named "changeColor" callable by button.onclick
+  diagram.model.commit(function(m) {
+    // alternate between lightblue and lightgreen colors
+    var oldcolor = m.modelData.color;
+    var newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
+    m.set(m.modelData, "color", newcolor);
+  }, "changed shared color");
 }
 </pre>
 <script>goCode("bindingModel", 450, 100)</script>
@@ -682,7 +676,7 @@ to keep the model data up-to-date with the diagram.
 This is possible by using a TwoWay <a>Binding</a>, which can pass values not only from source to target,
 but also from the target object back to the source data.
 </p>
-<pre data-language="javascript" id="bindTwoWay">
+<pre class="lang-js" id="bindTwoWay">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { locationSpot: go.Spot.Center },
@@ -699,19 +693,19 @@ but also from the target object back to the source data.
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray);
 
-  shiftNode = (function() {  // define a function named "shiftNode" callable by onclick
+  shiftNode = (function() {  // define a function named "shiftNode" callable by button.onclick
     // all model changes should happen in a transaction
-    diagram.startTransaction("shift node");
-    var data = diagram.model.nodeDataArray[0];  // get the first node data
-    var node = diagram.findNodeForData(data);   // find the corresponding Node
-    var p = node.location.copy();  // make a copy of the location, a Point
-    p.x += 10;
-    if (p.x > 200) p.x = 0;
-    // changing the Node.location also changes the data.loc property due to TwoWay binding
-    node.location = p;
-    // show the updated location held by the "loc" property of the node data
-    document.getElementById("bindTwoWayData").textContent = data.loc.toString();
-    diagram.commitTransaction("shift node");
+    diagram.commit(function(d) {
+      var data = d.model.nodeDataArray[0];  // get the first node data
+      var node = d.findNodeForData(data);   // find the corresponding Node
+      var p = node.location.copy();  // make a copy of the location, a Point
+      p.x += 10;
+      if (p.x > 200) p.x = 0;
+      // changing the Node.location also changes the data.loc property due to TwoWay binding
+      node.location = p;
+      // show the updated location held by the "loc" property of the node data
+      document.getElementById("bindTwoWayData").textContent = data.loc.toString();
+    }, "shift node");
   });
   shiftNode();  // initialize everything
 </pre>
@@ -729,7 +723,7 @@ Just as you can use a conversion function when going from source to target,
 you can supply a conversion function to <a>Binding.makeTwoWay</a> for going from target to source.
 For example, to represent the location as a string in the model data instead of as a <a>Point</a>:
 </p>
-<pre>
+<pre class="lang-js">
 // storage representation of Points/Sizes/Rects/Margins/Spots is as strings, not objects:
 new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
 </pre>
@@ -748,7 +742,7 @@ will be copied to the corresponding model data.
 By making sure that the <a>Model</a> is up-to-date, you can easily "save the diagram" just by saving the model
 and "loading a diagram" is just a matter of loading a model into memory and setting <a>Diagram.model</a>.
 If you are careful to only hold JSON-serializable data in the model data, you can just use the <a>Model.toJson</a>
-and <a>Model.fromJson</a> methods for converting a model to and from a textual representation.
+and <a>Model,fromJson</a> methods for converting a model to and from a textual representation.
 </p>
 <p>
 <em>Most bindings do not need to be TwoWay.</em>

@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packed Layout</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="../samples/assets/require.js"></script>
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <style type="text/css">
+    input[type="number"] {
+      width: 60px;
+      margin-left: 3px;
+    }
+    input[type=checkbox], input[type=radio] {
+      vertical-align: middle;
+      position: relative;
+      bottom: 2px;
+    }
+  </style>
+  <script id="code">
+    var rebuildGraph;
+    function init() {
+      require(["../extensionsTS/PackedScript"], function (app) {
+        rebuildGraph = app.rebuildGraph;
+        app.init();
+        document.getElementById("randomizeGraph").onclick = app.randomize;
+      });
+    }
+    function layout() {
+      rebuildGraph();
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>General Properties</b><br />
+        PackShape:<br /> <input type="radio" name="packShape" onclick="layout()" value="Elliptical" checked> Elliptical<br />
+                   <input type="radio" name="packShape" onclick="layout()" value="Rectangular"> Rectangular<br />
+        PackMode:<br /> <input type="radio" name="packMode" onclick="layout()" value="AspectOnly" checked> Aspect Ratio<br />
+                  <input type="radio" name="packMode" onclick="layout()" value="ExpandToFit"> Expand to Fit<br />
+                  <input type="radio" name="packMode" onclick="layout()" value="Fit"> Fit<br />
+
+        <table>
+          <tr>
+            <td>Aspect ratio: </td>
+            <td><input type="number" size="2" id="aspectRatio" value="1" onchange="layout()"></td>
+          </tr>
+          <tr>
+            <td>Layout width: </td>
+            <td><input type="number" size="2" id="width" value="600" onchange="layout()"></td>
+          </tr>
+          <tr>
+            <td>Layout height: </td>
+            <td><input type="number" size="2" id="height" value="600" onchange="layout()"></td>
+        </table>
+      </span>
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>Node Sorting Properties</b><br />
+        SortOrder: <input type="radio" name="sortOrder" onclick="layout()" value="Descending" checked> Descending
+                   <input type="radio" name="sortOrder" onclick="layout()" value="Ascending"> Ascending<br />
+        SortMode: <br />
+          <input type="radio" name="sortMode" onclick="layout()" id="modeNone" value="None"> None (do not sort nodes)<br />
+          <input type="radio" name="sortMode" onclick="layout()" id="modeMaxSide" value="MaxSide"> Max Side Length<br />
+          <input type="radio" name="sortMode" onclick="layout()" id="modeArea" value="Area" checked> Area<br />
+
+        <b>Padding between nodes</b><br />
+          Spacing: <input type="number" id="nodeSpacing" value="0" onchange="layout()"><br />
+        <b>Circle Packing</b><br />
+          hasCircularNodes <input type="checkbox" id="hasCircularNodes" onclick="layout()"><br />
+          isSpiralPacked <input type="checkbox" id="isSpiralPacked" onclick="layout()">
+      </span>
+
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>Node Generation</b><br />
+        <table>
+          <tr>
+            <td>Number of nodes: </td>
+            <td><input type="number" id="numNodes" value="100" onchange="layout()"><br /></td>
+          </tr>
+          <tr>
+            <td>Node shape:<br /><input type="radio" name="shapeToPack" onclick="layout()" value="Rectangle" checked> Rectangles<br />
+                               <input type="radio" name="shapeToPack" onclick="layout()" value="Ellipse"> Ellipses<br />
+          </tr>
+          <tr>
+            <td>Minimum side length: </td>
+            <td><input type="number" id="nodeMinSide" value="30" onchange="layout()"><br /></td>
+          </tr>
+          <tr>
+            <td>Maximum side length: </td>
+            <td><input type="number" id="nodeMaxSide" value="50" onchange="layout()"><br /></td>
+          </tr>
+        </table>
+        Same width/height <input type="checkbox" id="sameSides" onclick="layout()"><br />
+        <button type="button" id="randomizeGraph" style="margin-top: 5px;">Randomize Graph</button>
+      </span>
+    </div>
+    <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+    <p>
+      This sample demonstrates a custom Layout, PackedLayout, which attempts to pack nodes as close together as possible without overlap.
+      Each node is assumed to be either rectangular or circular (dictated by the 'nodesAreCircles' property). This layout supports packing
+      nodes into either a rectangle or an ellipse, with the shape determined by the PackShape and the aspect ratio determined by either the
+      aspectRatio property, or the specified width and height (depending on the PackMode).
+    </p>
+    <p>
+      This extension's code is TypeScript-only and the source files can be found in the <code>extensionsTS</code> directory.
+      The layout is defined in its own file, as <a href="../extensionsTS/PackedLayout.ts">extensionsTS/PackedLayout.ts</a>, with an additional dependency on <a href="../extensionsTS/Quadtree.ts">extensionsTS/Quadtree.ts</a>.
+    </p>
+  </div>
+</body>
+</html>

@@ -1,2214 +1,1099 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; ForceDirectedLayout Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ForceDirectedLayout | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class ForceDirectedLayout</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="Layout.html" class="tsd-signature-type">Layout</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">ForceDirectedLayout</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>Force-directed layout treats the graph as if it were a system of physical bodies
+					with repulsive electrical, attractional gravitational, and spring forces acting on them and between them.</p>
+					<p>Electrical forces come both from the field at the vertex&#39;s location as well as from neighboring vertexes and are quadratic by distance.
+						Gravitational forces come from the field at the vertex&#39;s location and are constant.
+					Spring forces are only exerted between two different vertexes that are connected by an edge and are linear by distance.</p>
+					<p>The electrical forces on a vertex are the sum of the electrical charge times the electrical field at that location
+						(<a href="ForceDirectedLayout.html#electricalCharge">electricalCharge</a>, <a href="ForceDirectedLayout.html#electricalFieldX">electricalFieldX</a>, <a href="ForceDirectedLayout.html#electricalFieldY">electricalFieldY</a>)
+						and the electrical forces of all nearby vertexes divided by the square of the distance between them.
+						You can easily assign the electrical charge for all vertexes by assigning <a href="ForceDirectedLayout.html#defaultElectricalCharge">defaultElectricalCharge</a>.
+						By default there is no electrical field, so all forces are due to nearby charged vertexes.
+					For efficiency, <a href="ForceDirectedLayout.html#infinityDistance">infinityDistance</a> determines a cut-off distance between vertexes for which to consider any influence.</p>
+					<p>The gravitational forces on a vertex are the sum of the gravitational mass times the gravitational field at that location
+						(<a href="ForceDirectedLayout.html#gravitationalMass">gravitationalMass</a>, <a href="ForceDirectedLayout.html#gravitationalFieldX">gravitationalFieldX</a>, <a href="ForceDirectedLayout.html#gravitationalFieldY">gravitationalFieldY</a>).
+						You can easily assign the gravitational mass for all vertexes by assigning <a href="ForceDirectedLayout.html#defaultGravitationalMass">defaultGravitationalMass</a>.
+					By default there is no gravitational field.</p>
+					<p>The spring forces on a vertex are only exerted by the edges connecting it with other vertexes.
+						The force along an edge is the stiffness of the spring times the difference of the distance between the vertexes and the nominal length of the spring
+						(<a href="ForceDirectedLayout.html#springStiffness">springStiffness</a>, <a href="ForceDirectedLayout.html#springLength">springLength</a>) divided by the distance between the vertexes.
+						When the distance is less than the nominal length, the force pushes the vertexes apart; when the distance is greater, the force pulls them together.
+					You can easily assign the spring length and stiffness for all edges by assigning <a href="ForceDirectedLayout.html#defaultSpringLength">defaultSpringLength</a> and <a href="ForceDirectedLayout.html#defaultSpringStiffness">defaultSpringStiffness</a>.</p>
+					<p>When the distance between two vertexes is less than one unit, this uses a random number generator to decide which direction the forces should go.
+						For layouts that start with all of the vertexes at the same location, this results in potentially dramatically different results.
+					Set <a href="ForceDirectedLayout.html#randomNumberGenerator">randomNumberGenerator</a> to null in order to produce reproducible results given the same initial vertex locations.</p>
+					<p>The algorithm seeks a configuration of the bodies with locally minimal energy,
+						i.e. vertex positions such that the sum of the forces on each vertex is zero.
+						This is achieved by repeatedly computing the forces on each vertex, moving them, and repeating.
+					Computations stop when no vertex moves more than <a href="ForceDirectedLayout.html#epsilonDistance">epsilonDistance</a> or when <a href="ForceDirectedLayout.html#maxIterations">maxIterations</a> have happened.</p>
+					<p>The layout cannot guarantee that it provides optimal positioning of nodes.
+					Nodes will normally not overlap each other, but when there is a dense interconnectivity overlaps might not be avoidable.</p>
+					<p><p class="boxrun">
+							If you want to experiment interactively with most of the properties, try the <a href="../../samples/fdLayout.html">Force Directed Layout</a> sample.
+						See samples that make use of ForceDirectedLayout in the <a href="../../samples/index.html#forcedirectedlayout">samples index</a>.</p>
+						<p>This layout makes use of a <a href="LayoutNetwork.html">LayoutNetwork</a> of
+							<a href="ForceDirectedVertex.html">ForceDirectedVertex</a>es and <a href="ForceDirectedEdge.html">ForceDirectedEdge</a>s that normally
+						correspond to the <a href="Node.html">Node</a>s and <a href="Link.html">Link</a>s of the <a href="Diagram.html">Diagram</a>.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#arrangementSpacing" class="tsd-kind-icon">arrangement<wbr>Spacing</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#arrangesToOrigin" class="tsd-kind-icon">arranges<wbr>ToOrigin</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#comments" class="tsd-kind-icon">comments</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="ForceDirectedLayout.html#currentIteration" class="tsd-kind-icon">current<wbr>Iteration</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#defaultCommentElectricalCharge" class="tsd-kind-icon">default<wbr>Comment<wbr>Electrical<wbr>Charge</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#defaultCommentSpringLength" class="tsd-kind-icon">default<wbr>Comment<wbr>Spring<wbr>Length</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#defaultElectricalCharge" class="tsd-kind-icon">default<wbr>Electrical<wbr>Charge</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#defaultGravitationalMass" class="tsd-kind-icon">default<wbr>Gravitational<wbr>Mass</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#defaultSpringLength" class="tsd-kind-icon">default<wbr>Spring<wbr>Length</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#defaultSpringStiffness" class="tsd-kind-icon">default<wbr>Spring<wbr>Stiffness</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#epsilonDistance" class="tsd-kind-icon">epsilon<wbr>Distance</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#infinityDistance" class="tsd-kind-icon">infinity<wbr>Distance</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#maxIterations" class="tsd-kind-icon">max<wbr>Iterations</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#moveLimit" class="tsd-kind-icon">move<wbr>Limit</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#randomNumberGenerator" class="tsd-kind-icon">random<wbr>Number<wbr>Generator</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ForceDirectedLayout.html#setsPortSpots" class="tsd-kind-icon">sets<wbr>Port<wbr>Spots</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#addComments" class="tsd-kind-icon">add<wbr>Comments</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="ForceDirectedLayout.html#commitLayout" class="tsd-kind-icon">commit<wbr>Layout</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="ForceDirectedLayout.html#commitLinks" class="tsd-kind-icon">commit<wbr>Links</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="ForceDirectedLayout.html#commitNodes" class="tsd-kind-icon">commit<wbr>Nodes</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#createNetwork" class="tsd-kind-icon">create<wbr>Network</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#doLayout" class="tsd-kind-icon">do<wbr>Layout</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#electricalCharge" class="tsd-kind-icon">electrical<wbr>Charge</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#electricalFieldX" class="tsd-kind-icon">electrical<wbr>FieldX</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#electricalFieldY" class="tsd-kind-icon">electrical<wbr>FieldY</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#gravitationalFieldX" class="tsd-kind-icon">gravitational<wbr>FieldX</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#gravitationalFieldY" class="tsd-kind-icon">gravitational<wbr>FieldY</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#gravitationalMass" class="tsd-kind-icon">gravitational<wbr>Mass</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#isFixed" class="tsd-kind-icon">is<wbr>Fixed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#moveFixedVertex" class="tsd-kind-icon">move<wbr>Fixed<wbr>Vertex</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#springLength" class="tsd-kind-icon">spring<wbr>Length</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ForceDirectedLayout.html#springStiffness" class="tsd-kind-icon">spring<wbr>Stiffness</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Force<wbr>Directed<wbr>Layout<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ForceDirectedLayout.html" class="tsd-signature-type">ForceDirectedLayout</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Constructs a <a href="ForceDirectedLayout.html">ForceDirectedLayout</a> with no <a href="Layout.html#network">Layout.network</a>
+								and with no owning <a href="Layout.html#diagram">Layout.diagram</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="ForceDirectedLayout.html" class="tsd-signature-type">ForceDirectedLayout</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="arrangementSpacing" class="tsd-anchor"></a>
+					<h3>
+						arrangement<wbr>Spacing
+					<span class="tsd-signature-symbol">: </span><a href="Size.html" class="tsd-signature-type">Size</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the space between which the layout
+									will position the connected graphs that together compose the network.
+									This defaults to Size(100, 100).
+									These distances are used during a clustered layout;
+									afterwards the normal force-directed layout
+									will likely cause the size of any space between connected graphs to change,
+								perhaps considerably.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="arrangesToOrigin" class="tsd-anchor"></a>
+					<h3>
+						arranges<wbr>ToOrigin
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether <a href="ForceDirectedLayout.html#commitNodes">commitNodes</a> should move all of the
+									nodes so that the nodes all fit with the top-left corner at the
+									<a href="Layout.html#arrangementOrigin">Layout.arrangementOrigin</a>.
+									By default this is false -- the <a href="Layout.html#arrangementOrigin">Layout.arrangementOrigin</a> is ignored.
+								When this is true, nodes are moved even though <a href="ForceDirectedLayout.html#isFixed">isFixed</a> was true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="comments" class="tsd-anchor"></a>
+					<h3>
+						comments
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether this layout should find all <a href="Node.html">Node</a>s
+									whose category is &quot;Comment&quot; and
+									whose anchors are nodes represented in the network,
+									and add <a href="ForceDirectedVertex.html">ForceDirectedVertex</a>es representing those balloon comments
+									as nodes in the network.
+								The default value is false.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="currentIteration" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						current<wbr>Iteration
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns the current iteration count, valid during a call to <a href="ForceDirectedLayout.html#doLayout">doLayout</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultCommentElectricalCharge" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Comment<wbr>Electrical<wbr>Charge
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default value computed by <a href="ForceDirectedLayout.html#electricalCharge">electricalCharge</a>.
+								The initial value is 5.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultCommentSpringLength" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Comment<wbr>Spring<wbr>Length
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default value computed by <a href="ForceDirectedLayout.html#springLength">springLength</a>.
+								The initial value is 10.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultElectricalCharge" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Electrical<wbr>Charge
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default value computed by <a href="ForceDirectedLayout.html#electricalCharge">electricalCharge</a>.
+								The initial value is 150.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultGravitationalMass" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Gravitational<wbr>Mass
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default value computed by <a href="ForceDirectedLayout.html#gravitationalMass">gravitationalMass</a>.
+								The initial value is zero.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultSpringLength" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Spring<wbr>Length
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default value computed by <a href="ForceDirectedLayout.html#springLength">springLength</a>.
+								The initial value is 50.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="defaultSpringStiffness" class="tsd-anchor"></a>
+					<h3>
+						default<wbr>Spring<wbr>Stiffness
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the default value computed by <a href="ForceDirectedLayout.html#springStiffness">springStiffness</a>.
+								The initial value is 0.05.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="epsilonDistance" class="tsd-anchor"></a>
+					<h3>
+						epsilon<wbr>Distance
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets approximately how far a node must move in order for the iterations to continue.
+									The default value is 1.
+								The value must be larger than zero.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="infinityDistance" class="tsd-anchor"></a>
+					<h3>
+						infinity<wbr>Distance
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets a threshold for the distance beyond which the electrical charge forces may be ignored.
+									The default value is 1000.
+								The value must be larger than 1.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="maxIterations" class="tsd-anchor"></a>
+					<h3>
+						max<wbr>Iterations
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the maximum number of iterations to perform when doing the
+									force-directed auto layout.
+									The value must be non-negative.
+								The default value is 100.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="moveLimit" class="tsd-anchor"></a>
+					<h3>
+						move<wbr>Limit
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets how far a vertex may be moved in an iteration.
+									The default value is 10.
+								The value must be larger than 1.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.8</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="randomNumberGenerator" class="tsd-anchor"></a>
+					<h3>
+						random<wbr>Number<wbr>Generator
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets a random number generator.
+									The default value is Math, which results in calling Math.random().
+									Change this to null in order to use an instance of an internal repeatable pseudo-random number generator,
+								which will become the new value of this property.</p>
+								<p>The new value must be either null or an Object with a method named &quot;random&quot; taking zero arguments
+								and returning a random number between zero (inclusive) and one (exclusive).</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.5</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="setsPortSpots" class="tsd-anchor"></a>
+					<h3>
+						sets<wbr>Port<wbr>Spots
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether the fromSpot and the toSpot of every <a href="Link.html">Link</a>
+									should be set to <a href="Spot.html#static-Default">Spot.Default</a>.
+								The default value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addComments" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						add<wbr>Comments
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Comments<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Find any associated objects to be positioned along with the <a href="LayoutVertex.html#node">LayoutVertex.node</a>.</p>
+								<p>This method is called for each vertex in the network, when <a href="ForceDirectedLayout.html#comments">comments</a> is true.
+									The standard behavior is to look for <a href="Node.html">Node</a>s whose <a href="Part.html#category">Part.category</a>
+									is &quot;Comment&quot; and that refer to the <a href="LayoutVertex.html#node">LayoutVertex.node</a>.
+								By default this method will not be called unless you set <a href="ForceDirectedLayout.html#comments">comments</a> to true.</p>
+								<p>You may want to override this method in order to customize how any
+									associated objects are found and how a new <a href="ForceDirectedVertex.html">ForceDirectedVertex</a>
+									and <a href="ForceDirectedEdge.html">ForceDirectedEdge</a>
+									may be added to the network to represent the (balloon?) comment.
+									This method sets the new vertex&#39;s <a href="ForceDirectedVertex.html#charge">ForceDirectedVertex.charge</a>
+									to the value of <a href="ForceDirectedLayout.html#defaultCommentElectricalCharge">defaultCommentElectricalCharge</a>,
+									and sets the new edge&#39;s <a href="ForceDirectedEdge.html#length">ForceDirectedEdge.length</a>
+								to the value of <a href="ForceDirectedLayout.html#defaultCommentSpringLength">defaultCommentSpringLength</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.3</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>v: <a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="commitLayout" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagOverride">Override</span>
+						commit<wbr>Layout
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">commit<wbr>Layout<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Set the fromSpot and toSpot on each Link, position each Node according
+								to the vertex position, and then position/route the Links.</p>
+								<p>This calls the <a href="ForceDirectedLayout.html#commitNodes">commitNodes</a> and <a href="ForceDirectedLayout.html#commitLinks">commitLinks</a> methods, the latter only if <a href="Layout.html#isRouting">isRouting</a> is true.
+									You should not call this method -- it is a &quot;protected virtual&quot; method.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="commitLinks" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagVirtual">Virtual</span>
+						commit<wbr>Links
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">commit<wbr>Links<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Routes the links.</p>
+								<p>This is called by <a href="ForceDirectedLayout.html#commitLayout">commitLayout</a>.
+									This is only called if <a href="Layout.html#isRouting">Layout.isRouting</a> is true.
+									See also <a href="ForceDirectedLayout.html#commitNodes">commitNodes</a>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="commitNodes" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagVirtual">Virtual</span>
+						commit<wbr>Nodes
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">commit<wbr>Nodes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Commit the position of all nodes.</p>
+								<p>This is called by <a href="ForceDirectedLayout.html#commitLayout">commitLayout</a>.
+									See also <a href="ForceDirectedLayout.html#commitLinks">commitLinks</a>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="createNetwork" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						create<wbr>Network
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Network<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ForceDirectedNetwork.html" class="tsd-signature-type">ForceDirectedNetwork</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Create a new <a href="LayoutNetwork.html">LayoutNetwork</a> of <a href="ForceDirectedVertex.html">ForceDirectedVertex</a>es and <a href="ForceDirectedEdge.html">ForceDirectedEdge</a>s.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="ForceDirectedNetwork.html" class="tsd-signature-type">ForceDirectedNetwork</a></h4>
+							<p>a new <a href="LayoutNetwork.html">LayoutNetwork</a>.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doLayout" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Layout
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Layout<span class="tsd-signature-symbol">(</span>coll<span class="tsd-signature-symbol">: </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol"> | </span><a href="Group.html" class="tsd-signature-type">Group</a><span class="tsd-signature-symbol"> | </span><a href="Iterable.html" class="tsd-signature-type">Iterable</a><span class="tsd-signature-symbol">&lt;</span><a href="Part.html" class="tsd-signature-type">Part</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Perform the force-directed layout.</p>
+								<p>If there is no <a href="Layout.html#network">Layout.network</a>, this calls <a href="Layout.html#makeNetwork">makeNetwork</a> to create a <a href="LayoutNetwork.html">LayoutNetwork</a> from the given collection of Parts.
+								This removes any reflexive edges in the network, since they should be ignored.</p>
+								<p>For each vertex this calls and remembers the result of <a href="ForceDirectedLayout.html#electricalCharge">electricalCharge</a> as the <a href="ForceDirectedVertex.html#charge">ForceDirectedVertex.charge</a>
+								and the result of <a href="ForceDirectedLayout.html#gravitationalMass">gravitationalMass</a> as the <a href="ForceDirectedVertex.html#mass">ForceDirectedVertex.mass</a>.</p>
+								<p>For each edge this calls and remembers the result of <a href="ForceDirectedLayout.html#springStiffness">springStiffness</a> as the <a href="ForceDirectedEdge.html#stiffness">ForceDirectedEdge.stiffness</a>
+								and the result of <a href="ForceDirectedLayout.html#springLength">springLength</a> as the <a href="ForceDirectedEdge.html#length">ForceDirectedEdge.length</a>.</p>
+								<p>This then iterates, updating the position of each vertex according to the forces upon it,
+								until reaching <a href="ForceDirectedLayout.html#maxIterations">maxIterations</a> or until no vertex moves more than about <a href="ForceDirectedLayout.html#epsilonDistance">epsilonDistance</a>.</p>
+								<p>Finally this calls <a href="Layout.html#updateParts">Layout.updateParts</a> to commit the Node positions from the vertex positions.
+								<a href="Layout.html#updateParts">Layout.updateParts</a> calls <a href="ForceDirectedLayout.html#commitLayout">commitLayout</a> within a transaction.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>coll: <a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol"> | </span><a href="Group.html" class="tsd-signature-type">Group</a><span class="tsd-signature-symbol"> | </span><a href="Iterable.html" class="tsd-signature-type">Iterable</a><span class="tsd-signature-symbol">&lt;</span><a href="Part.html" class="tsd-signature-type">Part</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A <a href="Diagram.html">Diagram</a> or a <a href="Group.html">Group</a> or a collection of <a href="Part.html">Part</a>s</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="electricalCharge" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						electrical<wbr>Charge
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">electrical<wbr>Charge<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the charge of the vertex,
+									the value of <a href="ForceDirectedVertex.html#charge">ForceDirectedVertex.charge</a> if it&#39;s a number,
+								or else the value of <a href="ForceDirectedLayout.html#defaultElectricalCharge">defaultElectricalCharge</a>.</p>
+								<p>The electrical forces between two vertexes decrease by the square of the distance between them.
+								Vertexes that are more than <a href="ForceDirectedLayout.html#infinityDistance">infinityDistance</a> apart are assumed to have no electrical charge effect on each other.</p>
+								<p>Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>v: <a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="electricalFieldX" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						electrical<wbr>FieldX
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">electrical<wbr>FieldX<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the electrical field in the X direction acting on a vertex at the given point.
+								By default there is no electrical field at any location.</p>
+								<p>Used to define an external electrical field at a point independent of the vertex charges.
+									A vertex L is acted upon by a force in the X direction of proportional to
+									<code>electricalFieldX(L.center.x, L.center.y) * electricalCharge(L)</code>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the default implementation returns zero.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="electricalFieldY" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						electrical<wbr>FieldY
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">electrical<wbr>FieldY<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the electrical field in the Y direction acting on a vertex at the given point.
+								By default there is no electrical field at any location.</p>
+								<p>Used to define an external electrical field at a point independent of the vertex charges.
+									A vertex L is acted upon by a force in the Y direction of proportional to
+									<code>electricalFieldY(L.center.x, L.center.y) * electricalCharge(L)</code>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the default implementation returns zero.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="gravitationalFieldX" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						gravitational<wbr>FieldX
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">gravitational<wbr>FieldX<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This returns the gravitational field in the X direction acting on a vertex at the given point.
+								By default there is no gravitational field at any location.</p>
+								<p>Used to define an external gravitational field at a point independent of the vertex masses.
+									A vertex L is acted upon by a force in the X direction of proportional to
+									<code>gravitationalFieldX(L.center.x, L.center.y) * gravitationalMass(L)</code>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the default implementation returns zero.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="gravitationalFieldY" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						gravitational<wbr>FieldY
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">gravitational<wbr>FieldY<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This returns the gravitational field in the Y direction acting on a vertex at the given point.
+								By default there is no gravitational field at any location.</p>
+								<p>Used to define an external gravitational field at a point independent of the vertex masses.
+									A vertex L is acted upon by a force in the Y direction of proportional to
+									<code>gravitationalFieldY(L.center.x, L.center.y) * gravitationalMass(L)</code>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the default implementation returns zero.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="gravitationalMass" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						gravitational<wbr>Mass
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">gravitational<wbr>Mass<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the mass of the vertex,
+									the value of <a href="ForceDirectedVertex.html#mass">ForceDirectedVertex.mass</a> if it&#39;s a number,
+									or else the value of <a href="ForceDirectedLayout.html#defaultGravitationalMass">defaultGravitationalMass</a>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>v: <a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isFixed" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						is<wbr>Fixed
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Fixed<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This predicate returns true if the vertex should not be moved
+									by the layout algorithm but still have an effect on nearby and connected vertexes.
+									The default implementation returns <a href="ForceDirectedVertex.html#isFixed">ForceDirectedVertex.isFixed</a>.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>v: <a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>returns true if the node should not be moved by the layout algorithm.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="moveFixedVertex" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						move<wbr>Fixed<wbr>Vertex
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">move<wbr>Fixed<wbr>Vertex<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Maybe move a vertex that <a href="ForceDirectedLayout.html#isFixed">isFixed</a>.
+									This is called each iteration on each such vertex.
+								By default this does nothing.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>v: <a href="ForceDirectedVertex.html" class="tsd-signature-type">ForceDirectedVertex</a></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="springLength" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						spring<wbr>Length
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">spring<wbr>Length<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ForceDirectedEdge.html" class="tsd-signature-type">ForceDirectedEdge</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the length of the spring representing an edge.
+									The two vertexes connected by the edge E are acted upon by a force of proportional to
+									<code>springStiffness(E) * (getNodeDistance(E.fromVertex, E.toVertex) - springLength(E))</code> divided by the distance between the vertexes.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="ForceDirectedEdge.html" class="tsd-signature-type">ForceDirectedEdge</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>Returns the length of the edge representing a link,
+								the value of <a href="ForceDirectedEdge.html#length">ForceDirectedEdge.length</a> if it&#39;s a number,
+							or else the value of <a href="ForceDirectedLayout.html#defaultSpringLength">defaultSpringLength</a>.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="springStiffness" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						spring<wbr>Stiffness
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">spring<wbr>Stiffness<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ForceDirectedEdge.html" class="tsd-signature-type">ForceDirectedEdge</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the stiffness of the spring representing an edge.</p>
+								<p>The spring force between two vertexes connected by an edge is linearly proportional by distance
+									to the difference between the <a href="ForceDirectedLayout.html#springLength">springLength</a> and the distance.
+									When the distance is greater than the length, the force pulls the vertexes closer to each other.
+								When the distance is less than the length, the force pushes them apart.</p>
+								<p>The two vertexes connected by the edge E are acted upon by a force of proportional to
+									<code>springStiffness(E) * (getNodeDistance(E.fromVertex, E.toVertex) - springLength(E))</code> divided by the distance between the vertexes.
+								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="ForceDirectedEdge.html" class="tsd-signature-type">ForceDirectedEdge</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>Returns the stiffness of the edge representing a link,
+								the value of <a href="ForceDirectedEdge.html#stiffness">ForceDirectedEdge.stiffness</a> if it&#39;s a number,
+							or else the value of <a href="ForceDirectedLayout.html#defaultSpringStiffness">defaultSpringStiffness</a>.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="ForceDirectedLayout.html" class="tsd-kind-icon">Force<wbr>Directed<wbr>Layout</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#arrangementSpacing" class="tsd-kind-icon">arrangement<wbr>Spacing</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#arrangesToOrigin" class="tsd-kind-icon">arranges<wbr>ToOrigin</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#comments" class="tsd-kind-icon">comments</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#currentIteration" class="tsd-kind-icon">current<wbr>Iteration</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#defaultCommentElectricalCharge" class="tsd-kind-icon">default<wbr>Comment<wbr>Electrical<wbr>Charge</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#defaultCommentSpringLength" class="tsd-kind-icon">default<wbr>Comment<wbr>Spring<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#defaultElectricalCharge" class="tsd-kind-icon">default<wbr>Electrical<wbr>Charge</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#defaultGravitationalMass" class="tsd-kind-icon">default<wbr>Gravitational<wbr>Mass</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#defaultSpringLength" class="tsd-kind-icon">default<wbr>Spring<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#defaultSpringStiffness" class="tsd-kind-icon">default<wbr>Spring<wbr>Stiffness</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#epsilonDistance" class="tsd-kind-icon">epsilon<wbr>Distance</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#infinityDistance" class="tsd-kind-icon">infinity<wbr>Distance</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#maxIterations" class="tsd-kind-icon">max<wbr>Iterations</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#moveLimit" class="tsd-kind-icon">move<wbr>Limit</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#randomNumberGenerator" class="tsd-kind-icon">random<wbr>Number<wbr>Generator</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#setsPortSpots" class="tsd-kind-icon">sets<wbr>Port<wbr>Spots</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#addComments" class="tsd-kind-icon">add<wbr>Comments</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="ForceDirectedLayout.html#commitLayout" class="tsd-kind-icon">commit<wbr>Layout</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="ForceDirectedLayout.html#commitLinks" class="tsd-kind-icon">commit<wbr>Links</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="ForceDirectedLayout.html#commitNodes" class="tsd-kind-icon">commit<wbr>Nodes</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#createNetwork" class="tsd-kind-icon">create<wbr>Network</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#doLayout" class="tsd-kind-icon">do<wbr>Layout</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#electricalCharge" class="tsd-kind-icon">electrical<wbr>Charge</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#electricalFieldX" class="tsd-kind-icon">electrical<wbr>FieldX</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#electricalFieldY" class="tsd-kind-icon">electrical<wbr>FieldY</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#gravitationalFieldX" class="tsd-kind-icon">gravitational<wbr>FieldX</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#gravitationalFieldY" class="tsd-kind-icon">gravitational<wbr>FieldY</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#gravitationalMass" class="tsd-kind-icon">gravitational<wbr>Mass</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#isFixed" class="tsd-kind-icon">is<wbr>Fixed</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#moveFixedVertex" class="tsd-kind-icon">move<wbr>Fixed<wbr>Vertex</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#springLength" class="tsd-kind-icon">spring<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ForceDirectedLayout.html#springStiffness" class="tsd-kind-icon">spring<wbr>Stiffness</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class ForceDirectedLayout
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                <span class="extends"> Extends
-                    <a href="../symbols/Layout.html" class="linkConstructor">Layout</a>.</span>
-                
-
-                Force-directed layout treats the graph as if it were a system of physical bodieswith repulsive electrical, attractional gravitational, and spring forces acting on them and between them.<p>Electrical forces come both from the field at the vertex's location as well as from neighboring vertexes and are quadratic by distance.Gravitational forces come from the field at the vertex's location and are constant.Spring forces are only exerted between two different vertexes that are connected by an edge and are linear by distance.<p>The electrical forces on a vertex are the sum of the electrical charge times the electrical field at that location(<a href="../symbols/ForceDirectedLayout.html#electricalCharge" class="linkMethod">electricalCharge</a>, <a href="../symbols/ForceDirectedLayout.html#electricalFieldX" class="linkMethod">electricalFieldX</a>, <a href="../symbols/ForceDirectedLayout.html#electricalFieldY" class="linkMethod">electricalFieldY</a>)and the electrical forces of all nearby vertexes divided by the square of the distance between them.You can easily assign the electrical charge for all vertexes by assigning <a href="../symbols/ForceDirectedLayout.html#defaultElectricalCharge" class="linkProperty">defaultElectricalCharge</a>.By default there is no electrical field, so all forces are due to nearby charged vertexes.For efficiency, <a href="../symbols/ForceDirectedLayout.html#infinityDistance" class="linkProperty">infinityDistance</a> determines a cut-off distance between vertexes for which to consider any influence.<p>The gravitational forces on a vertex are the sum of the gravitational mass times the gravitational field at that location(<a href="../symbols/ForceDirectedLayout.html#gravitationalMass" class="linkMethod">gravitationalMass</a>, <a href="../symbols/ForceDirectedLayout.html#gravitationalFieldX" class="linkMethod">gravitationalFieldX</a>, <a href="../symbols/ForceDirectedLayout.html#gravitationalFieldY" class="linkMethod">gravitationalFieldY</a>).You can easily assign the gravitational mass for all vertexes by assigning <a href="../symbols/ForceDirectedLayout.html#defaultGravitationalMass" class="linkProperty">defaultGravitationalMass</a>.By default there is no gravitational field.<p>The spring forces on a vertex are only exerted by the edges connecting it with other vertexes.The force along an edge is the stiffness of the spring times the difference of the distance between the vertexes and the nominal length of the spring(<a href="../symbols/ForceDirectedLayout.html#springStiffness" class="linkMethod">springStiffness</a>, <a href="../symbols/ForceDirectedLayout.html#springLength" class="linkMethod">springLength</a>) divided by the distance between the vertexes.When the distance is less than the nominal length, the force pushes the vertexes apart; when the distance is greater, the force pulls them together.You can easily assign the spring length and stiffness for all edges by assigning <a href="../symbols/ForceDirectedLayout.html#defaultSpringLength" class="linkProperty">defaultSpringLength</a> and <a href="../symbols/ForceDirectedLayout.html#defaultSpringStiffness" class="linkProperty">defaultSpringStiffness</a>.<p>When the distance between two vertexes is less than one unit, this uses a random number generator to decide which direction the forces should go.For layouts that start with all of the vertexes at the same location, this results in potentially dramatically different results.Set <a href="../symbols/ForceDirectedLayout.html#randomNumberGenerator" class="linkProperty">randomNumberGenerator</a> to null in order to produce reproducible results given the same initial vertex locations.<p>The algorithm seeks a configuration of the bodies with locally minimal energy,i.e. vertex positions such that the sum of the forces on each vertex is zero.This is achieved by repeatedly computing the forces on each vertex, moving them, and repeating.Computations stop when no vertex moves more than <a href="../symbols/ForceDirectedLayout.html#epsilonDistance" class="linkProperty">epsilonDistance</a> or when <a href="../symbols/ForceDirectedLayout.html#maxIterations" class="linkProperty">maxIterations</a> have happened.<p>The layout cannot guarantee that it provides optimal positioning of nodes.Nodes will normally not overlap each other, but when there is a dense interconnectivity overlaps might not be avoidable.<p class="boxrun">If you want to experiment interactively with most of the properties, try the <a href="../../samples/fdLayout.html">Force Directed Layout</a> sample.See samples that make use of ForceDirectedLayout in the <a href="../../samples/index.html#forcedirectedlayout">samples index</a>.<p>This layout makes use of a <a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a> of<a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>es and <a href="../symbols/ForceDirectedEdge.html" class="linkConstructor">ForceDirectedEdge</a>s that normallycorrespond to the <a href="../symbols/Node.html" class="linkConstructor">Node</a>s and <a href="../symbols/Link.html" class="linkConstructor">Link</a>s of the <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class ForceDirectedLayout.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                ForceDirectedLayout()
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>Constructs a <a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a> with no <a href="../symbols/Layout.html#network" class="linkProperty">Layout.network</a>and with no owning <a href="../symbols/Layout.html#diagram" class="linkProperty">Layout.diagram</a>.
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class ForceDirectedLayout.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="arrangementSpacing" >
-                
-                <td class="name">
-                  <div class="name">
-                    arrangementSpacing
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Size.html" class="linkConstructor">Size</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the space between which the layoutwill position the connected graphs that together compose the network.<span class="nodetails" id="xproparrangementSpacing"><a class="morelink" onclick="hst('proparrangementSpacing')">More...</a></span> <span class="details" id="proparrangementSpacing">This defaults to Size(100, 100).These distances are used during a clustered layout;afterwards the normal force-directed layoutwill likely cause the size of any space between connected graphs to change,perhaps considerably.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="arrangesToOrigin" >
-                
-                <td class="name">
-                  <div class="name">
-                    arrangesToOrigin
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether <a href="../symbols/ForceDirectedLayout.html#commitNodes" class="linkMethod">commitNodes</a> should move all of thenodes so that the nodes all fit with the top-left corner at the<a href="../symbols/Layout.html#arrangementOrigin" class="linkProperty">Layout.arrangementOrigin</a>.<span class="nodetails" id="xproparrangesToOrigin"><a class="morelink" onclick="hst('proparrangesToOrigin')">More...</a></span> <span class="details" id="proparrangesToOrigin">By default this is false -- the <a href="../symbols/Layout.html#arrangementOrigin" class="linkProperty">Layout.arrangementOrigin</a> is ignored.When this is true, nodes are moved even though <a href="../symbols/ForceDirectedLayout.html#isFixed" class="linkMethod">isFixed</a> was true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="comments" >
-                
-                <td class="name">
-                  <div class="name">
-                    comments
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether this layout should find all <a href="../symbols/Node.html" class="linkConstructor">Node</a>swhose category is "Comment" andwhose anchors are nodes represented in the network,and add <a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>es representing those balloon commentsas nodes in the network.<span class="nodetails" id="xpropcomments"><a class="morelink" onclick="hst('propcomments')">More...</a></span> <span class="details" id="propcomments">The default value is false.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="currentIteration" >
-                
-                <td class="name">
-                  <div class="name">
-                    currentIteration
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>This read-only property returns the current iteration count, valid during a call to <a href="../symbols/ForceDirectedLayout.html#doLayout" class="linkMethod">doLayout</a>.
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultCommentElectricalCharge" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultCommentElectricalCharge
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default value computed by <a href="../symbols/ForceDirectedLayout.html#electricalCharge" class="linkMethod">electricalCharge</a>.<span class="nodetails" id="xpropdefaultCommentElectricalCharge"><a class="morelink" onclick="hst('propdefaultCommentElectricalCharge')">More...</a></span> <span class="details" id="propdefaultCommentElectricalCharge">The initial value is 5.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultCommentSpringLength" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultCommentSpringLength
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default value computed by <a href="../symbols/ForceDirectedLayout.html#springLength" class="linkMethod">springLength</a>.<span class="nodetails" id="xpropdefaultCommentSpringLength"><a class="morelink" onclick="hst('propdefaultCommentSpringLength')">More...</a></span> <span class="details" id="propdefaultCommentSpringLength">The initial value is 10.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultElectricalCharge" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultElectricalCharge
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default value computed by <a href="../symbols/ForceDirectedLayout.html#electricalCharge" class="linkMethod">electricalCharge</a>.<span class="nodetails" id="xpropdefaultElectricalCharge"><a class="morelink" onclick="hst('propdefaultElectricalCharge')">More...</a></span> <span class="details" id="propdefaultElectricalCharge">The initial value is 150.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultGravitationalMass" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultGravitationalMass
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default value computed by <a href="../symbols/ForceDirectedLayout.html#gravitationalMass" class="linkMethod">gravitationalMass</a>.<span class="nodetails" id="xpropdefaultGravitationalMass"><a class="morelink" onclick="hst('propdefaultGravitationalMass')">More...</a></span> <span class="details" id="propdefaultGravitationalMass">The initial value is zero.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultSpringLength" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultSpringLength
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default value computed by <a href="../symbols/ForceDirectedLayout.html#springLength" class="linkMethod">springLength</a>.<span class="nodetails" id="xpropdefaultSpringLength"><a class="morelink" onclick="hst('propdefaultSpringLength')">More...</a></span> <span class="details" id="propdefaultSpringLength">The initial value is 50.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="defaultSpringStiffness" >
-                
-                <td class="name">
-                  <div class="name">
-                    defaultSpringStiffness
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the default value computed by <a href="../symbols/ForceDirectedLayout.html#springStiffness" class="linkMethod">springStiffness</a>.<span class="nodetails" id="xpropdefaultSpringStiffness"><a class="morelink" onclick="hst('propdefaultSpringStiffness')">More...</a></span> <span class="details" id="propdefaultSpringStiffness">The initial value is 0.05.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="epsilonDistance" >
-                
-                <td class="name">
-                  <div class="name">
-                    epsilonDistance
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets approximately how far a node must move in order for the iterations to continue.<span class="nodetails" id="xpropepsilonDistance"><a class="morelink" onclick="hst('propepsilonDistance')">More...</a></span> <span class="details" id="propepsilonDistance">The default value is 1.The value must be larger than zero.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="infinityDistance" >
-                
-                <td class="name">
-                  <div class="name">
-                    infinityDistance
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets a threshold for the distance beyond which the electrical charge forces may be ignored.<span class="nodetails" id="xpropinfinityDistance"><a class="morelink" onclick="hst('propinfinityDistance')">More...</a></span> <span class="details" id="propinfinityDistance">The default value is 1000.The value must be larger than 1.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="maxIterations" >
-                
-                <td class="name">
-                  <div class="name">
-                    maxIterations
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the maximum number of iterations to perform when doing theforce-directed auto layout.<span class="nodetails" id="xpropmaxIterations"><a class="morelink" onclick="hst('propmaxIterations')">More...</a></span> <span class="details" id="propmaxIterations">The value must be non-negative.The default value is 100.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="moveLimit" >
-                
-                <td class="name">
-                  <div class="name">
-                    moveLimit
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                      <span class="since" title="since">1.8</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets how far a vertex may be moved in an iteration.<span class="nodetails" id="xpropmoveLimit"><a class="morelink" onclick="hst('propmoveLimit')">More...</a></span> <span class="details" id="propmoveLimit">The default value is 10.The value must be larger than 1.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="randomNumberGenerator" >
-                
-                <td class="name">
-                  <div class="name">
-                    randomNumberGenerator
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{Object}</span>
-                    
-                      <span class="since" title="since">1.5</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets a random number generator.<span class="nodetails" id="xproprandomNumberGenerator"><a class="morelink" onclick="hst('proprandomNumberGenerator')">More...</a></span> <span class="details" id="proprandomNumberGenerator">The default value is Math, which results in calling Math.random().Change this to null in order to use an instance of an internal repeatable pseudo-random number generator,which will become the new value of this property.</span><div class="details" id="dproprandomNumberGenerator"><p>The new value must be either null or an Object with a method named "random" taking zero argumentsand returning a random number between zero (inclusive) and one (exclusive).</div>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="setsPortSpots" >
-                
-                <td class="name">
-                  <div class="name">
-                    setsPortSpots
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets whether the fromSpot and the toSpot of every <a href="../symbols/Link.html" class="linkConstructor">Link</a>should be set to <a href="../symbols/Spot.html#Default" class="linkConstant">Spot.Default</a>.<span class="nodetails" id="xpropsetsPortSpots"><a class="morelink" onclick="hst('propsetsPortSpots')">More...</a></span> <span class="details" id="propsetsPortSpots">The default value is true.</span>
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Properties borrowed from class <a href="../symbols/Layout.html" class="linkConstructor">Layout</a>: </dt><dd><a href="../symbols/Layout.html#arrangementOrigin" class="linkProperty">arrangementOrigin</a>, <a href="../symbols/Layout.html#diagram" class="linkProperty">diagram</a>, <a href="../symbols/Layout.html#group" class="linkProperty">group</a>, <a href="../symbols/Layout.html#isInitial" class="linkProperty">isInitial</a>, <a href="../symbols/Layout.html#isOngoing" class="linkProperty">isOngoing</a>, <a href="../symbols/Layout.html#isRealtime" class="linkProperty">isRealtime</a>, <a href="../symbols/Layout.html#isRouting" class="linkProperty">isRouting</a>, <a href="../symbols/Layout.html#isValidLayout" class="linkProperty">isValidLayout</a>, <a href="../symbols/Layout.html#isViewportSized" class="linkProperty">isViewportSized</a>, <a href="../symbols/Layout.html#network" class="linkProperty">network</a></dd>
-                </dl>
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class ForceDirectedLayout.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="addComments">
-                <td class="name">
-                  
-                  <div class="name">
-                    addComments(v)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                      <span class="since" title="since">1.3</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Find any associated objects to be positioned along with the <a href="../symbols/LayoutVertex.html#node" class="linkProperty">LayoutVertex.node</a>.<span class="nodetails" id="xmethaddComments"><a class="morelink" onclick="hst('methaddComments')">More...</a></span> <span class="details" id="methaddComments"></span><div class="details" id="dmethaddComments"><p>This method is called for each vertex in the network, when <a href="../symbols/ForceDirectedLayout.html#comments" class="linkProperty">comments</a> is true.The standard behavior is to look for <a href="../symbols/Node.html" class="linkConstructor">Node</a>s whose <a href="../symbols/Part.html#category" class="linkProperty">Part.category</a>is "Comment" and that refer to the <a href="../symbols/LayoutVertex.html#node" class="linkProperty">LayoutVertex.node</a>.By default this method will not be called unless you set <a href="../symbols/ForceDirectedLayout.html#comments" class="linkProperty">comments</a> to true.<p>You may want to override this method in order to customize how anyassociated objects are found and how a new <a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>and <a href="../symbols/ForceDirectedEdge.html" class="linkConstructor">ForceDirectedEdge</a>may be added to the network to represent the (balloon?) comment.This method sets the new vertex's <a href="../symbols/ForceDirectedVertex.html#charge" class="linkProperty">ForceDirectedVertex.charge</a>to the value of <a href="../symbols/ForceDirectedLayout.html#defaultCommentElectricalCharge" class="linkProperty">defaultCommentElectricalCharge</a>,and sets the new edge's <a href="../symbols/ForceDirectedEdge.html#length" class="linkProperty">ForceDirectedEdge.length</a>to the value of <a href="../symbols/ForceDirectedLayout.html#defaultCommentSpringLength" class="linkProperty">defaultCommentSpringLength</a>.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>}</span> <b>v</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="commitLayout">
-                <td class="name">
-                  
-                  <div class="name">
-                    commitLayout()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Set the fromSpot and toSpot on each Link, position each Node accordingto the vertex position, and then position/route the Links.<span class="nodetails" id="xmethcommitLayout"><a class="morelink" onclick="hst('methcommitLayout')">More...</a></span> <span class="details" id="methcommitLayout"></span><div class="details" id="dmethcommitLayout"><p>This calls the <a href="../symbols/ForceDirectedLayout.html#commitNodes" class="linkMethod">commitNodes</a> and <a href="../symbols/ForceDirectedLayout.html#commitLinks" class="linkMethod">commitLinks</a> methods, the latter only if <a href="../symbols/Layout.html#isRouting" class="linkProperty">isRouting</a> is true.You should not call this method -- it is a "protected virtual" method.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="commitLinks">
-                <td class="name">
-                  
-                  <div class="name">
-                    commitLinks()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Routes the links.<span class="nodetails" id="xmethcommitLinks"><a class="morelink" onclick="hst('methcommitLinks')">More...</a></span> <span class="details" id="methcommitLinks"></span><div class="details" id="dmethcommitLinks"><p>This is called by <a href="../symbols/ForceDirectedLayout.html#commitLayout" class="linkMethod">commitLayout</a>.This is only called if <a href="../symbols/Layout.html#isRouting" class="linkProperty">Layout.isRouting</a> is true.See also <a href="../symbols/ForceDirectedLayout.html#commitNodes" class="linkMethod">commitNodes</a>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="commitNodes">
-                <td class="name">
-                  
-                  <div class="name">
-                    commitNodes()
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Commit the position of all nodes.<span class="nodetails" id="xmethcommitNodes"><a class="morelink" onclick="hst('methcommitNodes')">More...</a></span> <span class="details" id="methcommitNodes"></span><div class="details" id="dmethcommitNodes"><p>This is called by <a href="../symbols/ForceDirectedLayout.html#commitLayout" class="linkMethod">commitLayout</a>.See also <a href="../symbols/ForceDirectedLayout.html#commitLinks" class="linkMethod">commitLinks</a>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="createNetwork">
-                <td class="name">
-                  
-                  <div class="name">
-                    createNetwork()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/ForceDirectedNetwork.html" class="linkConstructor">ForceDirectedNetwork</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Create a new <a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a> of <a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>es and <a href="../symbols/ForceDirectedEdge.html" class="linkConstructor">ForceDirectedEdge</a>s.
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/ForceDirectedNetwork.html" class="linkConstructor">ForceDirectedNetwork</a>}</span> a new <a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a>.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="doLayout">
-                <td class="name">
-                  
-                  <div class="name">
-                    doLayout(coll)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Perform the force-directed layout.<span class="nodetails" id="xmethdoLayout"><a class="morelink" onclick="hst('methdoLayout')">More...</a></span> <span class="details" id="methdoLayout"></span><div class="details" id="dmethdoLayout"><p>If there is no <a href="../symbols/Layout.html#network" class="linkProperty">Layout.network</a>, this calls <a href="../symbols/Layout.html#makeNetwork" class="linkMethod">makeNetwork</a> to create a <a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a> from the given collection of Parts.This removes any reflexive edges in the network, since they should be ignored.<p>For each vertex this calls and remembers the result of <a href="../symbols/ForceDirectedLayout.html#electricalCharge" class="linkMethod">electricalCharge</a> as the <a href="../symbols/ForceDirectedVertex.html#charge" class="linkProperty">ForceDirectedVertex.charge</a>and the result of <a href="../symbols/ForceDirectedLayout.html#gravitationalMass" class="linkMethod">gravitationalMass</a> as the <a href="../symbols/ForceDirectedVertex.html#mass" class="linkProperty">ForceDirectedVertex.mass</a>.<p>For each edge this calls and remembers the result of <a href="../symbols/ForceDirectedLayout.html#springStiffness" class="linkMethod">springStiffness</a> as the <a href="../symbols/ForceDirectedEdge.html#stiffness" class="linkProperty">ForceDirectedEdge.stiffness</a>and the result of <a href="../symbols/ForceDirectedLayout.html#springLength" class="linkMethod">springLength</a> as the <a href="../symbols/ForceDirectedEdge.html#length" class="linkProperty">ForceDirectedEdge.length</a>.<p>This then iterates, updating the position of each vertex according to the forces upon it,until reaching <a href="../symbols/ForceDirectedLayout.html#maxIterations" class="linkProperty">maxIterations</a> or until no vertex moves more than about <a href="../symbols/ForceDirectedLayout.html#epsilonDistance" class="linkProperty">epsilonDistance</a>.<p>Finally this calls <a href="../symbols/Layout.html#updateParts" class="linkMethod">Layout.updateParts</a> to commit the Node positions from the vertex positions.<a href="../symbols/Layout.html#updateParts" class="linkMethod">Layout.updateParts</a> calls <a href="../symbols/ForceDirectedLayout.html#commitLayout" class="linkMethod">commitLayout</a> within a transaction.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>|<a href="../symbols/Group.html" class="linkConstructor">Group</a>|Iterable.<Part>}</span> <b>coll</b>
-                                          
-                                      </dt>
-                                      <dd>A <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a> or a <a href="../symbols/Group.html" class="linkConstructor">Group</a> or a collection of <a href="../symbols/Part.html" class="linkConstructor">Part</a>s</dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="electricalCharge">
-                <td class="name">
-                  
-                  <div class="name">
-                    electricalCharge(v)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the charge of the vertex,the value of <a href="../symbols/ForceDirectedVertex.html#charge" class="linkProperty">ForceDirectedVertex.charge</a> if it's a number,or else the value of <a href="../symbols/ForceDirectedLayout.html#defaultElectricalCharge" class="linkProperty">defaultElectricalCharge</a>.<span class="nodetails" id="xmethelectricalCharge"><a class="morelink" onclick="hst('methelectricalCharge')">More...</a></span> <span class="details" id="methelectricalCharge"></span><div class="details" id="dmethelectricalCharge"><p>The electrical forces between two vertexes decrease by the square of the distance between them.Vertexes that are more than <a href="../symbols/ForceDirectedLayout.html#infinityDistance" class="linkProperty">infinityDistance</a> apart are assumed to have no electrical charge effect on each other.<p>Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>}</span> <b>v</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="electricalFieldX">
-                <td class="name">
-                  
-                  <div class="name">
-                    electricalFieldX(x, y)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the electrical field in the X direction acting on a vertex at the given point.<span class="nodetails" id="xmethelectricalFieldX"><a class="morelink" onclick="hst('methelectricalFieldX')">More...</a></span> <span class="details" id="methelectricalFieldX">By default there is no electrical field at any location.</span><div class="details" id="dmethelectricalFieldX"><p>Used to define an external electrical field at a pointindependent of the vertex charges.A vertex L is acted upon by a force in the X direction of magnitude<code>electricalFieldX(L.center.x, L.center.y) * electricalCharge(L)</code>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the default implementation returns zero.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="electricalFieldY">
-                <td class="name">
-                  
-                  <div class="name">
-                    electricalFieldY(x, y)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the electrical field in the Y direction acting on a vertex at the given point.<span class="nodetails" id="xmethelectricalFieldY"><a class="morelink" onclick="hst('methelectricalFieldY')">More...</a></span> <span class="details" id="methelectricalFieldY">By default there is no electrical field at any location.</span><div class="details" id="dmethelectricalFieldY"><p>Used to define an external electrical field at a pointindependent of the vertex charges.A vertex L is acted upon by a force in the Y direction of magnitude<code>electricalFieldY(L.center.x, L.center.y) * electricalCharge(L)</code>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the default implementation returns zero.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="gravitationalFieldX">
-                <td class="name">
-                  
-                  <div class="name">
-                    gravitationalFieldX(x, y)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This returns the gravitational field in the X direction acting on a vertex at the given point.<span class="nodetails" id="xmethgravitationalFieldX"><a class="morelink" onclick="hst('methgravitationalFieldX')">More...</a></span> <span class="details" id="methgravitationalFieldX">By default there is no gravitational field at any location.</span><div class="details" id="dmethgravitationalFieldX"><p>Used to define an external gravitational field at a pointindependent of the vertex masses.A vertex L is acted upon by a force in the X direction of magnitude<code>gravitationalFieldX(L.center.x, L.center.y) * gravitationalMass(L)</code>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the default implementation returns zero.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="gravitationalFieldY">
-                <td class="name">
-                  
-                  <div class="name">
-                    gravitationalFieldY(x, y)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This returns the gravitational field in the Y direction acting on a vertex at the given point.<span class="nodetails" id="xmethgravitationalFieldY"><a class="morelink" onclick="hst('methgravitationalFieldY')">More...</a></span> <span class="details" id="methgravitationalFieldY">By default there is no gravitational field at any location.</span><div class="details" id="dmethgravitationalFieldY"><p>Used to define an external gravitational field at a pointindependent of the vertex masses.A vertex L is acted upon by a force in the Y direction of magnitude<code>gravitationalFieldY(L.center.x, L.center.y) * gravitationalMass(L)</code>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the default implementation returns zero.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="gravitationalMass">
-                <td class="name">
-                  
-                  <div class="name">
-                    gravitationalMass(v)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the mass of the vertex,the value of <a href="../symbols/ForceDirectedVertex.html#mass" class="linkProperty">ForceDirectedVertex.mass</a> if it's a number,or else the value of <a href="../symbols/ForceDirectedLayout.html#defaultGravitationalMass" class="linkProperty">defaultGravitationalMass</a>.<span class="nodetails" id="xmethgravitationalMass"><a class="morelink" onclick="hst('methgravitationalMass')">More...</a></span> <span class="details" id="methgravitationalMass">Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>}</span> <b>v</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="isFixed">
-                <td class="name">
-                  
-                  <div class="name">
-                    isFixed(v)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This predicate returns true if the vertex should not be movedby the layout algorithm but still have an effect on nearby and connected vertexes.<span class="nodetails" id="xmethisFixed"><a class="morelink" onclick="hst('methisFixed')">More...</a></span> <span class="details" id="methisFixed">The default implementation returns <a href="../symbols/ForceDirectedVertex.html#isFixed" class="linkProperty">ForceDirectedVertex.isFixed</a>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>}</span> <b>v</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> returns true if the node should not be moved by the layout algorithm.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="moveFixedVertex">
-                <td class="name">
-                  
-                  <div class="name">
-                    moveFixedVertex(v)
-                  </div>
-                  <div class="attributes">
-                    
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Maybe move a vertex that <a href="../symbols/ForceDirectedLayout.html#isFixed" class="linkMethod">isFixed</a>.<span class="nodetails" id="xmethmoveFixedVertex"><a class="morelink" onclick="hst('methmoveFixedVertex')">More...</a></span> <span class="details" id="methmoveFixedVertex">This is called each iteration on each such vertex.By default this does nothing.</span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedVertex.html" class="linkConstructor">ForceDirectedVertex</a>}</span> <b>v</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="springLength">
-                <td class="name">
-                  
-                  <div class="name">
-                    springLength(e)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the length of the spring representing an edge.<span class="nodetails" id="xmethspringLength"><a class="morelink" onclick="hst('methspringLength')">More...</a></span> <span class="details" id="methspringLength">The two vertexes connected by the edge E are acted upon by a force of magnitude<code>springStiffness(E) * (getNodeDistance(E.fromVertex, E.toVertex) - springLength(E))</code>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedEdge.html" class="linkConstructor">ForceDirectedEdge</a>}</span> <b>e</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> Returns the length of the edge representing a link,the value of <a href="../symbols/ForceDirectedEdge.html#length" class="linkProperty">ForceDirectedEdge.length</a> if it's a number,or else the value of <a href="../symbols/ForceDirectedLayout.html#defaultSpringLength" class="linkProperty">defaultSpringLength</a>.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="springStiffness">
-                <td class="name">
-                  
-                  <div class="name">
-                    springStiffness(e)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the stiffness of the spring representing an edge.<span class="nodetails" id="xmethspringStiffness"><a class="morelink" onclick="hst('methspringStiffness')">More...</a></span> <span class="details" id="methspringStiffness"></span><div class="details" id="dmethspringStiffness"><p>The spring force between two vertexes connected by an edge is linearly proportional by distanceto the difference between the <a href="../symbols/ForceDirectedLayout.html#springLength" class="linkMethod">springLength</a> and the distance.When the distance is greater than the length, the force pulls the vertexes closer to each other.When the distance is less than the length, the force pushes them apart.<p>The two vertexes connected by the edge E are acted upon by a force of magnitude<code>springStiffness(E) * (getNodeDistance(E.fromVertex, E.toVertex) - springLength(E))</code>.Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/ForceDirectedEdge.html" class="linkConstructor">ForceDirectedEdge</a>}</span> <b>e</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> Returns the stiffness of the edge representing a link,the value of <a href="../symbols/ForceDirectedEdge.html#stiffness" class="linkProperty">ForceDirectedEdge.stiffness</a> if it's a number,or else the value of <a href="../symbols/ForceDirectedLayout.html#defaultSpringStiffness" class="linkProperty">defaultSpringStiffness</a>.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-                <dl class="inheritsList">
-                <dt>Methods borrowed from class <a href="../symbols/Layout.html" class="linkConstructor">Layout</a>: </dt><dd><a href="../symbols/Layout.html#cloneProtected" class="linkMethod">cloneProtected</a>, <a href="../symbols/Layout.html#collectParts" class="linkMethod">collectParts</a>, <a href="../symbols/Layout.html#copy" class="linkMethod">copy</a>, <a href="../symbols/Layout.html#invalidateLayout" class="linkMethod">invalidateLayout</a>, <a href="../symbols/Layout.html#makeNetwork" class="linkMethod">makeNetwork</a>, <a href="../symbols/Layout.html#updateParts" class="linkMethod">updateParts</a></dd>
-                </dl>
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

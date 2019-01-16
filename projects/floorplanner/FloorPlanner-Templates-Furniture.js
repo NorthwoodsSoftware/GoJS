@@ -35,7 +35,7 @@ function makeFurnitureResizeAdornmentTemplate() {
             new go.Binding("stroke", "stroke"));
     }
 
-    return $(go.Adornment, "Spot", { locationSpot: go.Spot.Center },
+    return $(go.Adornment, "Spot",
       $(go.Placeholder),
       makeHandle(go.Spot.Top, "n-resize"),
       makeHandle(go.Spot.TopRight, "n-resize"),
@@ -51,8 +51,8 @@ function makeFurnitureResizeAdornmentTemplate() {
 // Furniture Rotate Adornment
 function makeFurnitureRotateAdornmentTemplate() {
     var $ = go.GraphObject.make;
-    return $(go.Adornment, { locationSpot: go.Spot.Center, locationObjectName: "CIRCLE" },
-        $(go.Shape, "Circle", { name: "CIRCLE", cursor: "pointer", desiredSize: new go.Size(7, 7), fill: "#ffffff", stroke: "#808080" },
+    return $(go.Adornment,
+        $(go.Shape, "Circle", { cursor: "pointer", desiredSize: new go.Size(7, 7), fill: "#ffffff", stroke: "#808080" },
         new go.Binding("fill", "", function (obj) { return (obj.adornedPart === null) ? "#ffffff" : obj.adornedPart.data.color; }).ofObject(),
         new go.Binding("stroke", "", function (obj) { return (obj.adornedPart === null) ? "#000000" : obj.adornedPart.data.stroke; }).ofObject())
         );
@@ -125,21 +125,17 @@ function makeDefaultNode() {
     }).ofObject(),
     $(go.Shape,
     {
-        strokeWidth: 1,
-        name: "SHAPE",
-        stroke: "#000000",
-        geometryString: "F1 M0 0 L20 0 20 20 0 20 z",
+        name: "SHAPE", stroke: "#000000",
         fill: "rgba(128, 128, 128, 0.5)"
     },
     new go.Binding("geometryString", "geo"),
-    new go.Binding("width", "width").makeTwoWay(),
-    new go.Binding("height", "height").makeTwoWay(),
-    new go.Binding("angle", "angle").makeTwoWay(),
-    new go.Binding("figure", "shape").makeTwoWay(),
+    new go.Binding("width").makeTwoWay(),
+    new go.Binding("height").makeTwoWay(),
+    new go.Binding("angle").makeTwoWay(),
+    new go.Binding("fill", "color")),
     new go.Binding("stroke", "isSelected", function (s, obj) {
         return s ? go.Brush.lightenBy(obj.stroke, .5) : invertColor(obj.part.data.color);
-    }).ofObject(),
-    new go.Binding("fill", "color"))
+    }).ofObject()
   )
 }
 
@@ -170,13 +166,14 @@ function makeMultiPurposeNode() {
       new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
       $(go.Shape,
       { strokeWidth: 1, name: "SHAPE", fill: "rgba(128, 128, 128, 0.5)", },
-      new go.Binding("angle", "angle").makeTwoWay(),
-      new go.Binding("width", "width").makeTwoWay(),
-      new go.Binding("height", "height").makeTwoWay(),
+      new go.Binding("angle").makeTwoWay(),
+      new go.Binding("width").makeTwoWay(),
+      new go.Binding("height").makeTwoWay(),
+      new go.Binding("fill", "color"),
       new go.Binding("stroke", "isSelected", function (s, obj) {
           return s ? go.Brush.lightenBy(obj.stroke, .5) : invertColor(obj.part.data.color);
-      }).ofObject(),
-      new go.Binding("fill", "color")),
+      }).ofObject()
+      ),
       $(go.TextBlock,
       {
           margin: 5,

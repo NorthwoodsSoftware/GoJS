@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -40,7 +40,7 @@ RotateMultipleTool.prototype.doActivate = function() {
   this.initialAngle = this.centerPoint.directionPoint(diagram.lastInput.documentPoint);
 
   // remember initial angle and distance for each Part
-  var infos = new go.Map(go.Part, PartInfo);
+  var infos = new go.Map(/*go.Part, PartInfo*/);
   var tool = this;
   diagram.selection.each(function(part) {
     tool.walkTree(part, infos);

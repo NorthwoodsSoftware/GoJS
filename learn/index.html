@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -71,14 +71,13 @@
 
       <h2>GoJS Tutorials</h2>
       <p>
-        For video tutorials, click <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">here</a>.
+        For video tutorials, see our <a href="https://www.nwoods.com/videos.html">YouTube videos</a>.
         For the textual tutorials, read on.
       </p>
 
       <p>
         <b>GoJS</b> is a JavaScript library for implementing interactive diagrams.
         This page will show you the essentials of using <b>GoJS</b>.
-        If you would rather watch videos instead, see our <a href="https://www.nwoods.com/videos.html">YouTube videos</a>.
       </p>
 
       <p>
@@ -87,20 +86,20 @@
         And of course you need to load the library:
       </p>
 
-      <pre><code>
+      <pre class="lang-html">
 &lt;!DOCTYPE html&gt;  &lt;!-- HTML5 document type --&gt;
 &lt;html&gt;
 &lt;head&gt;
   &lt;!-- use go-debug.js when developing and go.js when deploying --&gt;
   &lt;script src="go-debug.js"&gt;&lt;/script&gt;
   . . .
-    </code></pre>
+      </pre>
 
       <p>
         You can download <b>GoJS</b> (and all the samples) <a target="_blank" href="../download.html">here</a>.
         Alternatively you can link straight to the <b>GoJS</b> library provided by <a target="_blank" href="https://cdnjs.com/libraries/gojs">CDNJS</a>:
 
-        <pre><code id="cdnscript"></code></pre>
+        <pre class="lang-html" id="cdnscript"></pre>
 
         <script>
           var vers = go.version || "9.8.7";
@@ -115,22 +114,22 @@
         HTML page that you give an explicit size:
       </p>
 
-      <pre><code>
+      <pre class="lang-html">
 &lt;!-- The DIV for a Diagram needs an explicit size or else we will not see anything.
      In this case we also add a background color so we can see that area. --&gt;
 &lt;div id="myDiagramDiv"
      style="width:400px; height:150px; background-color: #DAE4E4;"&gt;&lt;/div&gt;
-    </code></pre>
+      </pre>
 
       <p>
         In JavaScript code you pass the <code>&lt;div&gt;</code>'s <code>id</code> when making a Diagram:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv");
-    </code></pre>
+      </pre>
 
       <p>
         Together, this creates an empty diagram:
@@ -174,7 +173,7 @@ var myDiagram =
         Here's an example of a Model and Diagram, followed by the actual diagram it generates:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -190,7 +189,7 @@ myModel.nodeDataArray = [
   { key: "Gamma" }
 ];
 myDiagram.model = myModel;
-    </code></pre>
+      </pre>
 
       <!-- LIVE -->
       <div id="myDiagramDiv2" class="diagramStyling" style="width:400px; height:150px"></div>
@@ -267,14 +266,14 @@ myDiagram.model = myModel;
         In code, the template looks something like this:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node,
     $(go.TextBlock,
       // TextBlock.text is bound to Node.data.key
       new go.Binding("text", "key"))
   );
-    </code></pre>
+      </pre>
       <p>
         TextBlocks, Shapes, and Pictures are the primitive building blocks of <b>GoJS</b>.
         TextBlocks cannot contain images; Shapes cannot contain text.
@@ -285,7 +284,7 @@ myDiagram.nodeTemplate =
         More generally, the skeleton of a Node template will look something like this:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Vertical", // second argument of a Node/Panel can be a Panel type
     /* set Node properties here */
@@ -311,7 +310,7 @@ myDiagram.nodeTemplate =
       // example TextBlock binding sets TextBlock.text to the value of Node.data.key
       new go.Binding("text", "key"))
   );
-    </code></pre>
+      </pre>
 
       <p>
         The nesting of GraphObjects within Panels can be arbitrarily deep,
@@ -335,7 +334,7 @@ myDiagram.nodeTemplate =
         </li>
       </ul>
 
-      <pre><code>
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -373,7 +372,7 @@ model.nodeDataArray =
   { /* Empty node data */  }
 ];
 myDiagram.model = model;
-    </code></pre>
+      </pre>
 
       <p>That code produces this diagram:</p>
 
@@ -447,7 +446,7 @@ myDiagram.model = model;
         Here's an example where node A links to node B and where node B links to node C:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var model = $(go.GraphLinksModel);
 model.nodeDataArray =
 [
@@ -461,7 +460,7 @@ model.linkDataArray =
   { from: "B", to: "C" }
 ];
 myDiagram.model = model;
-    </code></pre>
+      </pre>
 
       <p>
         A GraphLinksModel allows you to have any number of links between nodes, going in any direction.
@@ -476,7 +475,7 @@ myDiagram.model = model;
         Here's the same example done as a TreeModel, with node A linking to node B and node B linking to node C:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var model = $(go.TreeModel);
 model.nodeDataArray =
 [
@@ -485,7 +484,7 @@ model.nodeDataArray =
   { key: "C", parent: "B" }
 ];
 myDiagram.model = model;
-    </code></pre>
+      </pre>
 
       <p>
         TreeModel is simpler than GraphLinksModel, but it cannot make arbitrary link relationships,
@@ -499,7 +498,7 @@ myDiagram.model = model;
         and specifying keys and parents in the data.
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -531,7 +530,7 @@ model.nodeDataArray =
   { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
 ];
 myDiagram.model = model;
-    </code></pre>
+      </pre>
 
       <!-- LIVE -->
       <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:200px"></div>
@@ -595,12 +594,12 @@ myDiagram.model = model;
         that showcase its properties.
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 // define a TreeLayout that flows from top to bottom
 myDiagram.layout =
   $(go.TreeLayout,
     { angle: 90, layerSpacing: 35 });
-    </code></pre>
+      </pre>
 
       <p>
         <b>GoJS</b> has several other layouts, which you can read about <a href="../intro/layouts.html">here</a>.
@@ -610,7 +609,7 @@ myDiagram.layout =
         Adding the layout to the diagram and model so far, we can see our results:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
@@ -643,7 +642,7 @@ model.nodeDataArray =
   { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
 ];
 myDiagram.model = model;
-    </code></pre>
+      </pre>
 
       <!-- LIVE -->
       <div id="myDiagramDiv5" class="diagramStyling" style="width:700px; height:400px"></div>
@@ -700,7 +699,7 @@ myDiagram.model = model;
         and give it a <code>corner</code> value so that right-angle turns are rounded.
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 // define a Link template that routes orthogonally, with no arrowhead
 myDiagram.linkTemplate =
   $(go.Link,
@@ -712,7 +711,7 @@ myDiagram.linkTemplate =
     // if we wanted an arrowhead we would also add another Shape with toArrow defined:
     // $(go.Shape, { toArrow: "Standard", stroke: null }
     );
-    </code></pre>
+      </pre>
 
       <p>
         Combining our Link template with our Node template, TreeModel, and TreeLayout,
@@ -720,7 +719,7 @@ myDiagram.linkTemplate =
         The complete code is repeated below, and the resulting diagram follows:
       </p>
 
-      <pre><code>
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 
 var myDiagram =
@@ -760,7 +759,7 @@ model.nodeDataArray =
   { key: "6", parent: "2", name: "Munkustrap", source: "cat6.png" }
 ];
 myDiagram.model = model;
-    </code></pre>
+      </pre>
 
       <!-- LIVE -->
       <div id="myDiagramDiv6" class="diagramStyling" style="width:700px; height:400px"></div>

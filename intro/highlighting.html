@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -20,6 +20,7 @@
   This can be done by changing the fill or stroke of a Shape, replacing a Picture source with another source, adding or removing a shadow, and so on.
 </p>
 
+
 <h2 id="HighlightingNodeUponMouseOver">Highlighting a Node upon Mouse Over</h2>
 <p>
   The most general kind of highlighting is to change appearance when an action occurs, such as mousing over a node.
@@ -29,9 +30,7 @@
 <p>
   To achieve this effect you just need to define <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers.
 </p>
-<pre data-language="javascript" id="highlighting1">
-  diagram.initialContentAlignment = go.Spot.Center;
-
+<pre class="lang-js" id="highlighting1">
   function mouseEnter(e, obj) {
     var shape = obj.findObject("SHAPE");
     shape.fill = "#6DAB80";
@@ -103,9 +102,7 @@
   Here is an example of highlighting all of the nodes and links that come out of a node that the user clicks.
   This example uses the <a>Part.isHighlighted</a> property and data binding of visual properties to that Part.isHighlighted property.
 </p>
-<pre data-language="javascript" id="highlighting2">
-  diagram.initialContentAlignment = go.Spot.Center;
-
+<pre class="lang-js" id="highlighting2">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { // when the user clicks on a Node, highlight all Links coming out of the node
@@ -154,9 +151,7 @@
 
   // when the user clicks on the background of the Diagram, remove all highlighting
   diagram.click = function(e) {
-    diagram.startTransaction("no highlighteds");
-    diagram.clearHighlighteds();
-    diagram.commitTransaction("no highlighteds");
+    e.diagram.commit(function(d) { d.clearHighlighteds(); }, "no highlighteds");
   };
 
   diagram.model = new go.GraphLinksModel(
@@ -195,13 +190,12 @@
   and <a href="../samples/seatingChart.html">Seating Chart</a>.
 </p>
 
-
 <h3 id="ChangingNodeSizeWhenHighlighting">Changing Node Size When Highlighting</h3>
 <p>
   You may want to increase the size of a node or of an element in a node in order to highlight it.
   For example you could have a Binding on <a>GraphObject.scale</a> or <a>Shape.strokeWidth</a>:
 </p>
-<pre data-language="javascript">
+<pre class="lang-js">
   $(go.Node, ...
     $(go.Shape, ...,
       new go.Binding("strokeWidth", "isHighlighted", function(h) { return h ? 5 : 1; })),
@@ -220,12 +214,10 @@
   But do not toggle the <a>GraphObject.visible</a> property, because that would cause the node to change size.
   Instead toggle the <a>GraphObject.opacity</a> property between 0.0 and 1.0.
 </p>
-<pre data-language="javascript" id="highlighting3">
-  diagram.initialContentAlignment = go.Spot.Center;
-
+<pre class="lang-js" id="highlighting3">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
-      { 
+      {
         locationSpot: go.Spot.Center,
         // when the user clicks on a Node, highlight all Links coming out of the node
         // and all of the Nodes at the other ends of those Links.

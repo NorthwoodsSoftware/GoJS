@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -99,7 +99,7 @@
       var distances = findDistances(node1);
       for (var j = 0; j < num; j++) {
         node2 = myDiagram.findNodeForKey(j);
-        var dist = distances.getValue(node2);
+        var dist = distances.get(node2);
         if (dist > 1 && dist < Infinity) {
           node1.isSelected = true;
           node2.isSelected = true;
@@ -148,29 +148,29 @@
   function findDistances(source) {
     var diagram = source.diagram;
     // keep track of distances from the source node
-    var distances = new go.Map(go.Node, "number");
+    var distances = new go.Map(/*go.Node, "number"*/);
     // all nodes start with distance Infinity
     var nit = diagram.nodes;
     while (nit.next()) {
       var n = nit.value;
-      distances.add(n, Infinity);
+      distances.set(n, Infinity);
     }
     // the source node starts with distance 0
-    distances.add(source, 0);
+    distances.set(source, 0);
     // keep track of nodes for which we have set a non-Infinity distance,
     // but which we have not yet finished examining
-    var seen = new go.Set(go.Node);
+    var seen = new go.Set(/*go.Node*/);
     seen.add(source);
 
     // keep track of nodes we have finished examining;
     // this avoids unnecessary traversals and helps keep the SEEN collection small
-    var finished = new go.Set(go.Node);
+    var finished = new go.Set(/*go.Node*/);
     while (seen.count > 0) {
       // look at the unfinished node with the shortest distance so far
       var least = leastNode(seen, distances);
-      var leastdist = distances.getValue(least);
+      var leastdist = distances.get(least);
       // by the end of this loop we will have finished examining this LEAST node
-      seen.remove(least);
+      seen.delete(least);
       finished.add(least);
       // look at all Links connected with this node
       var it = least.findLinksOutOf();
@@ -178,8 +178,8 @@
         var link = it.value;
         var neighbor = link.getOtherNode(least);
         // skip nodes that we have finished
-        if (finished.contains(neighbor)) continue;
-        var neighbordist = distances.getValue(neighbor);
+        if (finished.has(neighbor)) continue;
+        var neighbordist = distances.get(neighbor);
         // assume "distance" along a link is unitary, but could be any non-negative number.
         var dist = leastdist + 1;  //Math.sqrt(least.location.distanceSquaredPoint(neighbor.location));
         if (dist < neighbordist) {
@@ -188,7 +188,7 @@
             seen.add(neighbor);
           }
           // record the new best distance so far to that node
-          distances.add(neighbor, dist);
+          distances.set(neighbor, dist);
         }
       }
     }
@@ -203,7 +203,7 @@
     var it = coll.iterator;
     while (it.next()) {
       var n = it.value;
-      var dist = distances.getValue(n);
+      var dist = distances.get(n);
       if (dist < bestdist) {
         bestdist = dist;
         bestnode = n;
@@ -225,7 +225,7 @@
     while (end !== null) {
       var next = leastNode(end.findNodesInto(), distances);
       if (next !== null) {
-        if (distances.getValue(next) < distances.getValue(end)) {
+        if (distances.get(next) < distances.get(end)) {
           path.add(next);  // making progress towards the beginning
         } else {
           next = null;  // nothing better found -- stop looking
@@ -245,8 +245,8 @@
   // Finally return the collection of paths, which may be empty.
   // This assumes all links are unidirectional.
   function collectAllPaths(begin, end) {
-    var stack = new go.List(go.Node);
-    var coll = new go.List(go.List);
+    var stack = new go.List(/*go.Node*/);
+    var coll = new go.List(/*go.List*/);
 
     function find(source, end) {
       source.findNodesOutOf().each(function(n) {
@@ -255,7 +255,7 @@
           var path = stack.copy();
           path.add(end);  // finish the path at the end node
           coll.add(path);  // remember the whole path
-        } else if (!stack.contains(n)) {  // inefficient way to check having visited
+        } else if (!stack.has(n)) {  // inefficient way to check having visited
           stack.add(n);  // remember that we've been here for this path (but not forever)
           find(n, end);
           stack.removeAt(stack.count - 1);
@@ -273,7 +273,7 @@
     var s = path.length + ": ";
     for (var i = 0; i < path.length; i++) {
       if (i > 0) s += " -- ";
-      s += path.elt(i).data.text;
+      s += path.get(i).data.text;
     }
     return s;
   }
@@ -357,15 +357,15 @@
     var idx = sel.selectedIndex;
     var opt = sel.options[idx];
     var val = opt.value;
-    highlightPath(paths.elt(sel.selectedIndex));
+    highlightPath(paths.get(sel.selectedIndex));
   }
 
   // Highlight a particular path, a List of Nodes.
   function highlightPath(path) {
     myDiagram.clearHighlighteds();
     for (var i = 0; i < path.count - 1; i++) {
-      var f = path.elt(i);
-      var t = path.elt(i + 1);
+      var f = path.get(i);
+      var t = path.get(i + 1);
       f.findLinksTo(t).each(function(l) { l.isHighlighted = true; });
     }
   }

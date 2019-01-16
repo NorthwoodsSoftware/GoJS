@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,6 @@
     go.Diagram.inherit(FieldDraggingTool, go.DraggingTool);
 
     // override this method
-    /** @override */
     FieldDraggingTool.prototype.findDraggablePart = function() {
       var diagram = this.diagram;
       var obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
@@ -41,21 +40,19 @@
       return go.DraggingTool.prototype.findDraggablePart.call(this);
     };
 
-    /** @override */
     FieldDraggingTool.prototype.doActivate = function() {
       if (this.temporaryPart === null) return go.DraggingTool.prototype.doActivate.call(this);
       var diagram = this.diagram;
       this.standardMouseSelect();
       this.isActive = true;
       // instead of the usual result of computeEffectiveCollection, just use the temporaryPart alone
-      var map = new go.Map(go.Part, Object);
-      map.add(this.temporaryPart, { point: diagram.lastInput.documentPoint.copy() });
+      var map = new go.Map(/*go.Part, go.DraggingInfo*/);
+      map.set(this.temporaryPart, new go.DraggingInfo(diagram.lastInput.documentPoint.copy()));
       this.draggedParts = map;
       this.startTransaction("Drag Field");
       diagram.isMouseCaptured = true;
     };
 
-    /** @override */
     FieldDraggingTool.prototype.doDeactivate = function() {
       if (this.temporaryPart === null) return go.DraggingTool.prototype.doDeactivate.call(this);
       var diagram = this.diagram;
@@ -68,7 +65,6 @@
       go.DraggingTool.prototype.doDeactivate.call(this);
     };
 
-    /** @override */
     FieldDraggingTool.prototype.doMouseMove = function() {
       if (!this.isActive) return;
       if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseMove.call(this);
@@ -78,7 +74,6 @@
       this.moveParts(this.draggedParts, offset, false);
     };
 
-    /** @override */
     FieldDraggingTool.prototype.doMouseUp = function() {
       if (!this.isActive) return;
       if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseUp.call(this);
@@ -112,7 +107,6 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            initialContentAlignment: go.Spot.Center,
             validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
             draggingTool: $(FieldDraggingTool),  // use custom DraggingTool
             // automatically update the model that is shown on this page

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
   }
   go.Diagram.inherit(LaneResizingTool, go.ResizingTool);
 
-  /** @override */
   LaneResizingTool.prototype.computeMinSize = function() {
     var diagram = this.diagram;
     var lane = this.adornedObject.part;  // might be row or column
@@ -43,7 +42,6 @@
     return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
   };
 
-  /** @override */
   LaneResizingTool.prototype.resize = function(newr) {
     var lane = this.adornedObject.part;
     var horiz = (lane.category === "Column Header");
@@ -68,14 +66,12 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          initialContentAlignment: go.Spot.Center,
           layout: $(TableLayout,
                     $(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
                     $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
                   ),
           "SelectionMoved": function(e) { e.diagram.layoutDiagram(true); },
           "resizingTool": new LaneResizingTool(),
-          allowDrop: true,
           // feedback that dropping in the background is not allowed
           mouseDragOver: function(e) { e.diagram.currentCursor = "not-allowed"; },
           // when dropped in the background, not on a Node or a Group, cancel the drop
@@ -285,13 +281,9 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div>
-    <span style="display:inline-block; vertical-align:top; width:120px">
-      <div id="myPaletteDiv" style="border: solid 1px black; height:600px"></div>
-    </span>
-    <span style="display:inline-block; vertical-align:top; width:80%">
-      <div id="myDiagramDiv" style="border: solid 1px black; height:600px"></div>
-    </span>
+  <div style="width: 100%; display: flex; justify-content: space-between">
+    <div id="myPaletteDiv" style="width: 120px; height: 600px; margin-right: 2px; border: solid 1px black"></div>
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black"></div>
   </div>
   <p>
   This sample demonstrates a custom Layout, TableLayout, that is very much like a simplified "Table" Panel layout,

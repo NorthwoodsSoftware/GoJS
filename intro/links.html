@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -14,46 +14,46 @@
 
 <h1>Links</h1>
 <p>
-Use the <a>Link</a> class to implement a visual relationship between nodes.
+  Use the <a>Link</a> class to implement a visual relationship between nodes.
 </p>
 <p>
-See samples that make use of customized Links in the <a href="../samples/index.html#links">samples index</a>.
+  See samples that make use of customized Links in the <a href="../samples/index.html#links">samples index</a>.
 </p>
 
 <h2 id="CreatingLinks">Creating Links</h2>
 <p>
-Links are normally created by the presence of link data objects in the <a>GraphLinksModel.linkDataArray</a>
-or by a parent key reference as the value of the <a>TreeModel.nodeParentKeyProperty</a> of a node data object
-in a <a>TreeModel</a>.
-Users can draw new links by using the <a>LinkingTool</a>: Introduction to the <a href="tools.html#LinkingToolAndRelinkingTool">Linking Tools</a>.
+  Links are normally created by the presence of link data objects in the <a>GraphLinksModel.linkDataArray</a>
+  or by a parent key reference as the value of the <a>TreeModel.nodeParentKeyProperty</a> of a node data object
+  in a <a>TreeModel</a>.
+  Users can draw new links by using the <a>LinkingTool</a>: Introduction to the <a href="tools.html#LinkingToolAndRelinkingTool">Linking Tools</a>.
 </p>
 <p>
-You can create new links programmatically by modifying the model.
-It is most common to operate directly on the model by either calling <a>GraphLinksModel.addLinkData</a>
-or by calling <a>TreeModel.setParentKeyForNodeData</a>.
-Such changes are observed by all diagrams that are displaying the model so that they can automatically
-create the corresponding <a>Link</a>s.
-You can find examples of calls to <a>GraphLinksModel.addLinkData</a> in the samples.
+  You can create new links programmatically by modifying the model.
+  It is most common to operate directly on the model by either calling <a>GraphLinksModel.addLinkData</a>
+  or by calling <a>TreeModel.setParentKeyForNodeData</a>.
+  Such changes are observed by all diagrams that are displaying the model so that they can automatically
+  create the corresponding <a>Link</a>s.
+  You can find examples of calls to <a>GraphLinksModel.addLinkData</a> in the samples.
 </p>
 <p>
-It is also possible to create new links without detailed knowledge of the diagram's model by calling
-<a>LinkingTool.insertLink</a>.  That is how the user's actions to draw a new link actually create it.
-That method knows how to modify the <a>GraphLinksModel</a> or the <a>TreeModel</a> appropriately,
-while respecting the additional functionality offered by the <a>LinkingTool.archetypeLinkData</a>
-and other properties of the <a>LinkingTool</a>.
-You can find examples of calls to <a>LinkingTool.insertLink</a> in the samples.
+  It is also possible to create new links without detailed knowledge of the diagram's model by calling
+  <a>LinkingTool.insertLink</a>.  That is how the user's actions to draw a new link actually create it.
+  That method knows how to modify the <a>GraphLinksModel</a> or the <a>TreeModel</a> appropriately,
+  while respecting the additional functionality offered by the <a>LinkingTool.archetypeLinkData</a>
+  and other properties of the <a>LinkingTool</a>.
+  You can find examples of calls to <a>LinkingTool.insertLink</a> in the samples.
 </p>
 
 <h2 id="NondirectionalLinks">Non-directional Links</h2>
 <p>
-The simplest links are those without arrowheads to indicate a visual direction.
-Either the relationship really is non-directional, or the direction is implicit in the organization of the diagram.
+  The simplest links are those without arrowheads to indicate a visual direction.
+  Either the relationship really is non-directional, or the direction is implicit in the organization of the diagram.
 </p>
 <p>
-The template just contains a <a>Shape</a> as the main element, as the line that is drawn between nodes.
-After the link's route is computed the main Shape will get a <a>Geometry</a> based on the points in the route.
+  The template just contains a <a>Shape</a> as the main element, as the line that is drawn between nodes.
+  After the link's route is computed the main Shape will get a <a>Geometry</a> based on the points in the route.
 </p>
-<pre data-language="javascript" id="noArrowheads">
+<pre class="lang-js" id="noArrowheads">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -64,7 +64,8 @@ After the link's route is computed the main Shape will get a <a>Geometry</a> bas
 
   diagram.linkTemplate =
     $(go.Link,       // the whole link panel
-      $(go.Shape));  // the link shape, default black stroke
+      $(go.Shape)  // the link shape, default black stroke
+    );
 
   var nodeDataArray = [
     { key: "Alpha", loc: "0 0" },
@@ -77,25 +78,21 @@ After the link's route is computed the main Shape will get a <a>Geometry</a> bas
 </pre>
 <script>goCode("noArrowheads", 600, 100)</script>
 <p>
-By default the way that the model and diagram know about the node data references of a link data is
-by looking at its from and to properties.
-If you want to use a different properties on the link data, set <a>GraphLinksModel.linkFromKeyProperty</a> to be the name
-of the property that results in the node data's key, and similarly for the <a>GraphLinksModel.linkToKeyProperty</a>.
+  By default the way that the model and diagram know about the node data references of a link data is
+  by looking at its from and to properties.
+  If you want to use a different properties on the link data, set <a>GraphLinksModel.linkFromKeyProperty</a> to be the name
+  of the property that results in the node data's key, and similarly for the <a>GraphLinksModel.linkToKeyProperty</a>.
 </p>
 
 <h2 id="Arrowheads">Arrowheads</h2>
 <p>
-Many links do want to indicate directionality by using arrowheads.
-<b>GoJS</b> makes it easy to create common arrowheads: just add a Shape and set its <a>Shape.toArrow</a> property.
-Setting that property will automatically assign a <a>Geometry</a> to the <a>Shape.geometry</a>
-and will set other properties so that the arrowhead is positioned at the head of the link and is pointing in the correct direction.
-Of course you can set the other Shape properties such as <a>Shape.fill</a> in order to customize the appearance of the arrowhead.
+  Many links do want to indicate directionality by using arrowheads.
+  <b>GoJS</b> makes it easy to create common arrowheads: just add a Shape and set its <a>Shape.toArrow</a> property.
+  Setting that property will automatically assign a <a>Geometry</a> to the <a>Shape.geometry</a>
+  and will set other properties so that the arrowhead is positioned at the head of the link and is pointing in the correct direction.
+  Of course you can set the other Shape properties such as <a>Shape.fill</a> in order to customize the appearance of the arrowhead.
 </p>
-<p>
-You can also have an arrowhead at the end of the link: set the <a>Shape.fromArrow</a> property.
-If the link is meant to be bi-directional, the arrowhead name for the "from" end of a link often starts with the string "Backward...".
-</p>
-<pre data-language="javascript" id="arrowheads">
+<pre class="lang-js" id="arrowheads">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -122,18 +119,25 @@ If the link is meant to be bi-directional, the arrowhead name for the "from" end
 </pre>
 <script>goCode("arrowheads", 600, 100)</script>
 <p>
-You can see all of the predefined arrowhead types in the <a href="../samples/arrowheads.html" target="samples">Arrowheads Sample</a>.
+  You can see all of the predefined arrowhead types in the <a href="../samples/arrowheads.html" target="samples">Arrowheads Sample</a>.
+</p>
+<p>
+  You can also have an arrowhead at the start of the link: set the <a>Shape.fromArrow</a> property.
+  Note that an arrowhead normally goes along the path of the link regardless of its position on the path,
+  so just as with a real arrow, setting <code>{ fromArrow: "TripleFeathers" }</code> has the "feathers" pointing forward.
+  If the link is meant to be bi-directional, the arrowhead name for the "from" end of a link
+  will probably want to start with the string "Backward...".
 </p>
 
 <h2 id="Routing">Routing</h2>
 <p>
-If you want to customize the path that each <a>Link</a> takes, you need to set properties on the link.
-The property that has the most general effect on the points that the link's route follows is <a>Link.routing</a>.
+  If you want to customize the path that each <a>Link</a> takes, you need to set properties on the link.
+  The property that has the most general effect on the points that the link's route follows is <a>Link.routing</a>.
 </p>
 <p>
-This example shows the two most common routing values: <a>Link.Normal</a> (the default) and <a>Link.Orthogonal</a>.
+  This example shows the two most common routing values: <a>Link,Normal</a> (the default) and <a>Link,Orthogonal</a>.
 </p>
-<pre data-language="javascript" id="routing">
+<pre class="lang-js" id="routing">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -163,16 +167,16 @@ This example shows the two most common routing values: <a>Link.Normal</a> (the d
 <script>goCode("routing", 600, 100)</script>
 
 <p>
-Note that the computed route also depends on the properties of the node, including its shape.
-There are other properties, including <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a>, that affect the route.
-For more discussion about spots, please read this Introduction page: <a href="connectionPoints.html">Link Connection Points</a>.
-Furthermore some <a>Layout</a>s set properties on links to control their routing according to what the layout expects.
+  Note that the computed route also depends on the properties of the node, including its shape.
+  There are other properties, including <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a>, that affect the route.
+  For more discussion about spots, please read this Introduction page: <a href="connectionPoints.html">Link Connection Points</a>.
+  Furthermore some <a>Layout</a>s set properties on links to control their routing according to what the layout expects.
 </p>
 
 <p>
-You can also set <a>Link.routing</a> to <a>Link.AvoidsNodes</a>:
+  You can also set <a>Link.routing</a> to <a>Link,AvoidsNodes</a>:
 </p>
-<pre data-language="javascript" id="avoidsNodes">
+<pre class="lang-js" id="avoidsNodes">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -202,21 +206,21 @@ You can also set <a>Link.routing</a> to <a>Link.AvoidsNodes</a>:
 </pre>
 <script>goCode("avoidsNodes", 600, 100)</script>
 <p>
-If you move the nodes interactively, you can see how the link's route adjusts to avoid crossing over nodes.
-Notice that a small gap between nodes might not be considered wide enough for links to go through.
+  If you move the nodes interactively, you can see how the link's route adjusts to avoid crossing over nodes.
+  Notice that a small gap between nodes might not be considered wide enough for links to go through.
 </p>
 <p>
-If a node is very close to or overlaps with either the link's <a>Link.fromNode</a> or <a>Link.toNode</a>
-and would block the link's route, it ignores that node, treating it as if it were just an extension of the connected node.
-Also if no node-avoiding route exists because there is a ring of nodes around one of the connected nodes,
-the routing algorithm will give up and cross over some nodes anyway.
+  If a node is very close to or overlaps with either the link's <a>Link.fromNode</a> or <a>Link.toNode</a>
+  and would block the link's route, it ignores that node, treating it as if it were just an extension of the connected node.
+  Also if no node-avoiding route exists because there is a ring of nodes around one of the connected nodes,
+  the routing algorithm will give up and cross over some nodes anyway.
 </p>
 <p>
-You can declare that it is OK to route through a node by setting <a>Node.avoidable</a> to false.
-This is commonly done for <a>Group</a>s to allow links connecting outside of the group to route nicely within the group.
+  You can declare that it is OK to route through a node by setting <a>Node.avoidable</a> to false.
+  This is commonly done for <a>Group</a>s to allow links connecting outside of the group to route nicely within the group.
 </p>
 <p>
-Note the the use of AvoidsNodes routing is distinctly slower than normal Orthogonal routing, especially for large diagrams.
+  Note the the use of AvoidsNodes routing is distinctly slower than normal Orthogonal routing, especially for large diagrams.
 </p>
 
 <h3 id="EndSegmentLengths">End Segment Lengths</h3>
@@ -269,20 +273,20 @@ Note the the use of AvoidsNodes routing is distinctly slower than normal Orthogo
 
 <h2 id="CurveCurvinessCorner">Curve, Curviness, Corner</h2>
 <p>
-Once the <a>Link.routing</a> and other properties determine the exact route (i.e., the sequence of points) that the link takes,
-other properties control the details of how the link shape gets its path geometry.
-The first such property is <a>Link.curve</a>, which controls whether the link shape has basically straight segments
-or is a big curve.
+  Once the <a>Link.routing</a> determines the route (i.e., the sequence of points) that the link takes,
+  other properties control the details of how the link shape gets its path geometry.
+  The first such property is <a>Link.curve</a>, which controls whether the link shape has basically straight segments
+  or is a big curve.
 </p>
 <p>
-The default value for <a>Link.curve</a> is <a>Link.None</a>, which produces link shapes with straight segments
-as you see above.
+  The default value for <a>Link.curve</a> is <a>Link,None</a>, which produces link shapes with straight segments
+  as you see above.
 </p>
 <p>
-A value of <a>Link.Bezier</a> produces a naturally curved path for the link shape.
+  A value of <a>Link,Bezier</a> produces a naturally curved path for the link shape.
 </p>
 
-<pre data-language="javascript" id="bezier">
+<pre class="lang-js" id="bezier">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -309,15 +313,15 @@ A value of <a>Link.Bezier</a> produces a naturally curved path for the link shap
 </pre>
 <script>goCode("bezier", 600, 100)</script>
 <p>
-You can control how curved it is by setting the <a>Link.curviness</a> property.
-The default produces a slight curve.
+  You can control how curved it is by setting the <a>Link.curviness</a> property.
+  The default produces a slight curve.
 </p>
 
 <p>
-If there are multiple links, it will automatically compute reasonable values for the curviness of each link,
-unless you assign <a>Link.curviness</a> explicitly.
+  If there are multiple links, it will automatically compute reasonable values for the curviness of each link,
+  unless you assign <a>Link.curviness</a> explicitly.
 </p>
-<pre data-language="javascript" id="beziers">
+<pre class="lang-js" id="beziers">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -348,9 +352,9 @@ unless you assign <a>Link.curviness</a> explicitly.
 <script>goCode("beziers", 600, 100)</script>
 
 <p>
-Another kind of curviness comes from rounded corners when the <a>Link.routing</a> is Orthogonal or AvoidsNodes.
+  Another kind of curviness comes from rounded corners when the <a>Link.routing</a> is Orthogonal or AvoidsNodes.
 </p>
-<pre data-language="javascript" id="corners">
+<pre class="lang-js" id="corners">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -382,11 +386,11 @@ Another kind of curviness comes from rounded corners when the <a>Link.routing</a
 <script>goCode("corners", 600, 100)</script>
 
 <p>
-Another kind of curviness comes from setting <a>Link.curve</a> to <a>Link.JumpOver</a>.
-This causes little "hops" in the path of an orthogonal link that crosses another orthogonal link
-that also has a JumpOver curve.
+  Another kind of curviness comes from setting <a>Link.curve</a> to <a>Link,JumpOver</a>.
+  This causes little "hops" in the path of an orthogonal link that crosses another orthogonal link
+  that also has a JumpOver curve.
 </p>
-<pre data-language="javascript" id="jumpOvers">
+<pre class="lang-js" id="jumpOvers">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { locationSpot: go.Spot.Center },
@@ -419,16 +423,16 @@ that also has a JumpOver curve.
 <script>goCode("jumpOvers", 600, 150)</script>
 
 <p>
-Note that the use of link jumping is distinctly slower than normal links because all of the crossing
-points must be computed and the geometry of the link shape will be more complex.
+  Note that the use of link jumping is distinctly slower than normal links because all of the crossing
+  points must be computed and the geometry of the link shape will be more complex.
 </p>
 
 <p>
-Another kind of curviness (or actually lack of it) comes from setting <a>Link.curve</a> to <a>Link.JumpGap</a>.
-This causes little "gaps" in the path of an orthogonal link that crosses another orthogonal link
-that also has a JumpGap curve.
+  Another kind of curviness (or actually lack of it) comes from setting <a>Link.curve</a> to <a>Link,JumpGap</a>.
+  This causes little "gaps" in the path of an orthogonal link that crosses another orthogonal link
+  that also has a JumpGap curve.
 </p>
-<pre data-language="javascript" id="jumpGaps">
+<pre class="lang-js" id="jumpGaps">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { locationSpot: go.Spot.Center },
@@ -466,7 +470,7 @@ that also has a JumpGap curve.
   is that it can be difficult to click on links that have a thin <a>Link.path</a>.
   One could set the <a>Shape.strokeWidth</a> to a larger value, such as 8, but you may not want that appearance.
 </p>
-<pre data-language="javascript" id="thickPath">
+<pre class="lang-js" id="thickPath">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -499,7 +503,7 @@ that also has a JumpGap curve.
   for the Link by setting <a>GraphObject.isPanelMain</a> to true.
   The Link panel knows that all such Shapes should get the same computed Geometry for the link path.
 </p>
-<pre data-language="javascript" id="doublePath">
+<pre class="lang-js" id="doublePath">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -533,7 +537,7 @@ that also has a JumpGap curve.
   For example, to implement the effect of highlighting the link when the mouse passes over it,
   add <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers:
 </p>
-<pre data-language="javascript" id="doublePathHighlight">
+<pre class="lang-js" id="doublePathHighlight">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -575,7 +579,7 @@ that also has a JumpGap curve.
   that the arrowhead seems to have disappeared due to the thickness of the link path.
   One can avoid the problem by increasing the <a>GraphObject.scale</a> of the arrowhead, perhaps to 2.
 </p>
-<pre data-language="javascript" id="thickPath2">
+<pre class="lang-js" id="thickPath2">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -609,7 +613,7 @@ that also has a JumpGap curve.
   depending on the kind of arrowhead used.
   The path geometry will be shortened by that distance so that the link path does not interfere with the arrowhead.
 </p>
-<pre data-language="javascript" id="shortLength">
+<pre class="lang-js" id="shortLength">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -646,29 +650,29 @@ that also has a JumpGap curve.
 
 <h2 id="DisconnectedLinks">Disconnected Links</h2>
 <p>
-The normal expectation is that one cannot have a link relationship unless it connects two nodes.
-However <b>GoJS</b> does support the creation and manipulation of links that have either or both of
-the <a>Link.fromNode</a> and <a>Link.toNode</a> properties with null values.
-This is demonstrated by the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
+  The normal expectation is that one cannot have a link relationship unless it connects two nodes.
+  However <b>GoJS</b> does support the creation and manipulation of links that have either or both of
+  the <a>Link.fromNode</a> and <a>Link.toNode</a> properties with null values.
+  This is demonstrated by the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
 </p>
 <p>
-Both ends of the link must be connected to nodes in order for the standard link routing to operate.
-If a link does not know where to start or where to end, it cannot compute a route or a position for the link.
-However, you can provide a route by setting or binding <a>Link.points</a> to a list of two or more Points.
-That will automatically give the link a position so that it can be seen in the diagram.
+  Both ends of the link must be connected to nodes in order for the standard link routing to operate.
+  If a link does not know where to start or where to end, it cannot compute a route or a position for the link.
+  However, you can provide a route by setting or binding <a>Link.points</a> to a list of two or more Points.
+  That will automatically give the link a position so that it can be seen in the diagram.
 </p>
 <p>
-The linking tools, <a>LinkingTool</a> and <a>RelinkingTool</a>, normally do not permit the creation
-or reconnection of links that connect with "nothing".
-However, you can set <a>LinkingBaseTool.isUnconnectedLinkValid</a> to true to allow the user to do so,
-as the Draggable Link sample demonstrates.
+  The linking tools, <a>LinkingTool</a> and <a>RelinkingTool</a>, normally do not permit the creation
+  or reconnection of links that connect with "nothing".
+  However, you can set <a>LinkingBaseTool.isUnconnectedLinkValid</a> to true to allow the user to do so,
+  as the Draggable Link sample demonstrates.
 </p>
 <p>
-Links cannot normally be dragged unless they are part of a collection that includes the connected nodes.
-However, you can set <a>DraggingTool.dragsLink</a> to true to allow the user to drag a solitary <a>Link</a>.
-This mode allows the user to disconnect a link by dragging it away from the node(s)/port(s) to which it was attached.
-It also allows the user to reconnect one or both ends of the link by dropping it so that the end(s) are at valid port(s).
-This too is demonstrated by the Draggable Link sample.
+  Links cannot normally be dragged unless they are part of a collection that includes the connected nodes.
+  However, you can set <a>DraggingTool.dragsLink</a> to true to allow the user to drag a solitary <a>Link</a>.
+  This mode allows the user to disconnect a link by dragging it away from the node(s)/port(s) to which it was attached.
+  It also allows the user to reconnect one or both ends of the link by dropping it so that the end(s) are at valid port(s).
+  This too is demonstrated by the Draggable Link sample.
 </p>
 
 </div>

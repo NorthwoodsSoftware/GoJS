@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building GoJS from Source -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>Building GoJS from TypeScript Sources</h1>
+<p>
+  All customers can use the <code>go.js</code> and <code>go-debug.js</code> files to run their app.
+
+  However, if you have purchased a license to the <b>GoJS</b> TypeScript source code, you can build your app from the TypeScript source.
+  Popular module bundlers such as Webpack are able to remove a number of modules from the source, provided you are not using them,
+  to shrink the size of the deliverable file.
+</p>
+
+<p>
+  Because the <code>go.js</code> and <code>go-debug.js</code> files are built in a custom process to reduce size,
+  using Webpack or another bundler with the GoJS source, even though it removes unused modules,
+  may result in a larger file size than just using <code>go.js</code>. However, TypeScript
+  authors may appreciate the feedback and debugging capabilities of building from source.
+</p>
+
+<h2 id="MinimalSourceAndMaximal">MinimalSource and MaximalSource projects</h2>
+<p>
+  The GoJS kit has two subdirectories under the <code>/projects</code> directory,
+  <code>/minimalSource</code> and <code>/maximalSource</code>.
+</p>
+<p>
+  The <a href="https://github.com/NorthwoodsSoftware/GoJS/tree/master/projects/minimalSource">minimalSource</a>
+  project shows how to build GoJS while removing all possible optional modules.
+  The <a href="https://github.com/NorthwoodsSoftware/GoJS/tree/master/projects/maximalSource">maximalSource</a>
+  project shows how to build GoJS while matching the functionality of the released go.js and go-debug.js files.
+</p>
+
+<p>
+  Both projects require <code>webpack</code> and <code>npm</code> to run.
+</p>
+
+<p>
+  There is additionally <a href="https://github.com/NorthwoodsSoftware/GoJS/tree/master/projects/minimalSource">minimalSourceBrowserify</a>,
+  which shows how to build from source with Browserify instead of Webpack.
+</p>
+
+<h2 id="ClassesModules">Classes/modules that can be removed when building from source</h2>
+<p>
+  Several classes, such as <code>CommandHandler</code> and the Tools,
+  may be essential to add to your project, while others such as all but one <code>Layout</code> and one type of <code>Model</code> can often be removed.
+  Below is a list of modules that webpack can remove from builds, provided they are not referenced in your code:
+</p>
+
+<ul>
+<li><a>CommandHandler</a>, required for keyboard functionality.
+<li><code>SVGSurface</code>, required to call <a>Diagram.makeSVG</a>
+<li><a>TreeModel</a>
+<li><a>GraphLinksModel</a>, without loading this module, the default Diagram.model is of type <code>Model</code>.
+<li><a>Overview</a>
+<li><a>Palette</a>
+</ul>
+
+Layouts:
+<ul>
+<li><a>GridLayout</a>
+<li><a>TreeLayout</a>
+<li><a>LayeredDigraphLayout</a>
+<li><a>CircularLayout</a>
+<li><a>ForceDirectedLayout,</a>
+</ul>
+
+Mouse-down tools:
+<ul>
+<li><a>ActionTool</a>
+<li><a>RelinkingTool</a>
+<li><a>LinkReshapingTool</a>
+<li><a>ResizingTool</a>
+<li><a>RotatingTool</a>
+</ul>
+
+Mouse-move tools:
+<ul>
+<li><a>LinkingTool</a>
+<li><a>DraggingTool</a>
+<li><a>DragSelectingTool</a>
+<li><a>PanningTool</a>
+</ul>
+
+Mouse-up tools:
+<ul>
+<li><a>ContextMenuTool</a>
+<li><a>TextEditingTool</a>
+<li><a>ClickCreatingTool</a>
+<li><a>ClickSelectingTool</a>
+</ul>
+
+
+<p>There are several "built in" Panel types, each of which is a <a>PanelLayout</a>. Some of these are required for building the source:</p>
+<ul>
+<li><code>PanelLayoutPosition</code>
+<li><code>PanelLayoutVertical</code>
+<li><code>PanelLayoutLink</code>
+<li><code>PanelLayoutAuto</code>
+<li><code>PanelLayoutGrid</code>
+</ul>
+
+However, it is possible to build without the following panel types:
+<ul>
+<li><code>PanelLayoutHorizontal</code>
+<li><code>PanelLayoutSpot</code>
+<li><code>PanelLayoutTable</code>
+<li><code>PanelLayoutViewbox</code>
+<li><code>PanelLayoutTableRow</code>
+<li><code>PanelLayoutTableColumn</code>
+<li><code>PanelLayoutGraduated</code>
+</ul>
+
+<p>The source index files demonstrate the necessary calls to <code>Panel.addPanelLayout</code> to include each panel type.</p>
+
+<h2 id="OptionalClasses">Using the optional classes</h2>
+<p>
+  Many of the classes simply need to be used to be included in source building.
+  For some functionality, like the Tools, CommandHandler, and SVGSurface, you need to make sure you explicitly initalize them.
+  Examples of this can be found in the <a href="..\projects\maximalSource\maximal-index.ts">maximal-index.ts</a> code
+  for the <a href="https://github.com/NorthwoodsSoftware/GoJS/tree/master/projects/maximalSource">maximalSource</a> project.
+
+  Doing so is not necessary with the full <code>go.js</code> library because the <code>go</code> object already has references to each.
+  </p>
+  <p>
+  A typical GoJS project is not expected to remove all or even most of these modules, and may use the majority of them.
+  Because Northwood's internal build process is optimized to use the Google Closure Compiler in Advanced Mode,
+  it may take considerable effort to produce a <code>go.js</code>
+  bundle from source that is smaller than the one we include in the project's release directory.
+</p>
+
+<h2 id="license">Important license information about GoJS source code</h2>
+<p>
+  The GoJS source code is subject to the terms of our license,
+  contained in <a href="https://www.nwoods.com/sales/info/SoftwareLicenseAgreement.pdf">SoftwareLicenseAgreement.pdf</a>.
+</p>
+<p>
+  Do not use, release (deploy), or distribute the unminified source code.
+  To build GoJS for your own application you must use a popular obfuscation/minification tool,
+  such as the Google Closure Compiler.
+</p>
+
+</div>
+</div>
+</body>
+</html>

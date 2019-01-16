@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,14 @@
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    myDiagram = $(go.Diagram, "myDiagramDiv");  // create the Diagram for the HTML DIV element
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create the Diagram for the HTML DIV element
+      {
+        nodeSelectionAdornmentTemplate:
+          $(go.Adornment, "Auto",
+            $(go.Shape, { fill: null, stroke: "orange", strokeWidth: 4 }),
+            $(go.Placeholder, { margin: 2 })
+          )
+      });
 
     function textStyle(big) {
       return {
@@ -67,26 +74,11 @@
             new go.Binding("itemArray", "values"))));
 
     var checkBoxTemplate =
-      $(go.Panel, go.Panel.Horizontal,
-        { alignment: go.Spot.Left },
-        $("Button",
-          $(go.Shape, borderStyle(),
-            { width: 14, height: 14 }),
-          $(go.Shape, borderStyle(),
-            { name: "CHECK",
-              geometryString: "M0 4 L3 9 9 0",
-              visible: false },  // default not checked, unless bound or set to true
-            new go.Binding("visible", "checked").makeTwoWay()),
-          {
-            click: function(e, obj) {
-              var shape = obj.findObject("CHECK");
-              shape.diagram.startTransaction("checkbox");
-              shape.visible = !shape.visible;
-              shape.diagram.commitTransaction("checkbox");
-            }
-          }),
+      $("CheckBox", "checked",
         $(go.TextBlock, textStyle(),
-          new go.Binding("text", "label")));
+          new go.Binding("text", "label")
+        )
+      );
 
     myDiagram.nodeTemplate =
       $(go.Part, go.Panel.Table,

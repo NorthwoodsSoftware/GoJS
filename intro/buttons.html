@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -18,7 +18,7 @@ For your convenience we have defined several <a>Panel</a>s for common uses.
 These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", and "ContextMenuButton".
 </p>
 <p>
-These predefined panels can be used as if they were <a>Panel</a>-derived classes in calls to <a>GraphObject.make</a>.
+These predefined panels can be used as if they were <a>Panel</a>-derived classes in calls to <a>GraphObject,make</a>.
 They are implemented as simple visual trees of <a>GraphObject</a>s in <a>Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -35,8 +35,7 @@ In addition, see the <a href="../extensions/Checkboxes.html">Checkboxes</a> exte
 <p>
 The most general kind of predefined <a>Panel</a> is "Button".
 </p>
-<pre data-language="javascript" id="button">
-  diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="button">
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -58,12 +57,10 @@ The most general kind of predefined <a>Panel</a> is "Button".
   function incrementCounter(e, obj) {
     var node = obj.part;
     var data = node.data;
-    if (data) {
-      node.diagram.startTransaction("clicked");
-      var old = data.clickCount;
-      data.clickCount++;
-      node.diagram.model.raiseDataChanged(data, "clickCount", old, data.clickCount);
-      node.diagram.commitTransaction("clicked");
+    if (data && typeof(data.clickCount) === "number") {
+      node.diagram.model.commit(function(m) {
+        m.set(data, "clickCount", data.clickCount + 1);
+      }, "clicked");
     }
   }
 
@@ -77,8 +74,7 @@ The most general kind of predefined <a>Panel</a> is "Button".
 It is common to want to expand and collapse subtrees.
 It is easy to let the user control this by adding an instance of the "TreeExpanderButton" to your node template.
 </p>
-<pre data-language="javascript" id="treeExpanderButton">
-  diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="treeExpanderButton">
 
   diagram.nodeTemplate =
     $(go.Node, "Spot",
@@ -107,8 +103,7 @@ It is easy to let the user control this by adding an instance of the "TreeExpand
 It is also common to want to expand and collapse groups containing subgraphs.
 You can let the user control this by adding an instance of the "SubGraphExpanderButton" to your group template.
 </p>
-<pre data-language="javascript" id="subgraphExpanderButton">
-  diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="subgraphExpanderButton">
 
   diagram.groupTemplate =
     $(go.Group, "Auto",
@@ -139,11 +134,10 @@ You can let the user control this by adding an instance of the "SubGraphExpander
 It is common to want to expand and collapse a piece of a node,
 thereby showing or hiding details that are sometimes not needed.
 It is easy to let the user control this by adding an instance of the "PanelExpanderButton" to your node template.
-The second argument to <a>GraphObject.make</a> should be a string that names the element in the node whose
+The second argument to <a>GraphObject,make</a> should be a string that names the element in the node whose
 <a>GraphObject.visible</a> property you want the button to toggle.
 </p>
-<pre data-language="javascript" id="panelExpanderButton">
-  diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="panelExpanderButton">
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -190,8 +184,7 @@ The second argument to <a>GraphObject.make</a> should be a string that names the
 <p>
 Although you can implement context menus in any way you choose, it is common to use the predefined "ContextMenuButton".
 </p>
-<pre data-language="javascript" id="contextMenuButtons">
-  diagram.initialContentAlignment = go.Spot.Center;
+<pre class="lang-js" id="contextMenuButtons">
 
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -202,7 +195,7 @@ Although you can implement context menus in any way you choose, it is common to 
     );
 
   diagram.nodeTemplate.contextMenu =
-    $(go.Adornment, "Vertical",
+    $("ContextMenu",
       $("ContextMenuButton",
         $(go.TextBlock, "Shift Left"),
         { click: function(e, obj) { shiftNode(obj, -20); } }),
@@ -214,11 +207,11 @@ Although you can implement context menus in any way you choose, it is common to 
   function shiftNode(obj, dist) {
     var adorn = obj.part;
     var node = adorn.adornedPart;
-    node.diagram.startTransaction("Shift");
-    var pos = node.location.copy();
-    pos.x += dist;
-    node.location = pos;
-    node.diagram.commitTransaction("Shift");
+    node.diagram.commit(function(d) {
+      var pos = node.location.copy();
+      pos.x += dist;
+      node.location = pos;
+    }, "Shift");
   }
 
   diagram.model = new go.GraphLinksModel(
@@ -237,11 +230,11 @@ You may wish to copy and adapt these definitions when creating your own buttons.
 </p>
 <p>
 Those definitions might not be an up-to-date description
-of the actual standard button implementations that are in <b>GoJS</b> and used by <a>GraphObject.make</a>.
+of the actual standard button implementations that are in <b>GoJS</b> and used by <a>GraphObject,make</a>.
 </p>
 <p>
 Note that the definitions of those buttons makes use of the <a>GraphObject.defineBuilder</a> static function.
-That extends the behavior of <a>GraphObject.make</a> to allow the creation of fairly complex visual trees by name with optional arguments.
+That extends the behavior of <a>GraphObject,make</a> to allow the creation of fairly complex visual trees by name with optional arguments.
 You can find the definitions of various kinds of controls throughout the samples and extensions, such as at:
 <ul>
   <li><a href="../extensions/Buttons.js">Buttons.js</a></li>

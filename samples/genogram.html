@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
         $(go.Diagram, "myDiagramDiv",
           {
             initialAutoScale: go.Diagram.Uniform,
-            initialContentAlignment: go.Spot.Center,
             "undoManager.isEnabled": true,
             // when a node is selected, draw a big yellow circle behind it
             nodeSelectionAdornmentTemplate:
@@ -237,6 +236,8 @@
             linkLabelKeysProperty: "labelKeys",
             // this property determines which template is used
             nodeCategoryProperty: "s",
+            // if a node data object is copied, copy its data.a Array
+            copiesArrays: true,
             // create all of the nodes for people
             nodeDataArray: array
           });
@@ -354,7 +355,6 @@
     }
     go.Diagram.inherit(GenogramLayout, go.LayeredDigraphLayout);
 
-    /** @override */
     GenogramLayout.prototype.makeNetwork = function(coll) {
       // generate LayoutEdges for each parent-child Link
       var net = this.createNetwork();
@@ -463,7 +463,7 @@
 
     // collect all of the people indirectly married with a person
     GenogramLayout.prototype.extendCohort = function(coll, node) {
-      if (coll.contains(node)) return;
+      if (coll.has(node)) return;
       coll.add(node);
       var lay = this;
       node.linksConnected.each(function(l) {
@@ -474,7 +474,6 @@
       });
     };
 
-    /** @override */
     GenogramLayout.prototype.assignLayers = function() {
       go.LayeredDigraphLayout.prototype.assignLayers.call(this);
       var horiz = this.direction == 0.0 || this.direction == 180.0;
@@ -504,7 +503,6 @@
       // (other than the ones that are the widest or tallest in their respective layer).
     };
 
-    /** @override */
     GenogramLayout.prototype.commitNodes = function() {
       go.LayeredDigraphLayout.prototype.commitNodes.call(this);
       // position regular nodes

@@ -2,119 +2,106 @@
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from "../release/go";
-
-// A custom DragSelectingTool for selecting and deselecting Parts during a drag.
+import * as go from '../release/go';
 
 /**
-* @constructor
-* @extends DragSelectingTool
-* @class
-* The RealtimeDragSelectingTool selects and deselects Parts within the {@link DragSelectingTool#box}
-* during a drag, not just at the end of the drag.
-*/
+ * The RealtimeDragSelectingTool class lets the user select and deselect Parts within the {@link DragSelectingTool#box}
+ * during a drag, not just at the end of the drag.
+ *
+ * If you want to experiment with this extension, try the <a href="../../extensionsTS/RealtimeDragSelecting.html">Realtime Drag Selecting</a> sample.
+ * @category Tool Extension
+ */
 export class RealtimeDragSelectingTool extends go.DragSelectingTool {
-  private _originalSelection: go.Set<go.Part> = null;
-  private _temporarySelection: go.Set<go.Part> = null;
+  private _originalSelection: go.Set<go.Part> = new go.Set<go.Part>();
+  private _temporarySelection: go.Set<go.Part> = new go.Set<go.Part>();
 
   /**
-  * Remember the original collection of selected Parts.
-  * @this {RealtimeDragSelectingTool}
-  */
-  public doActivate() {
-    go.DragSelectingTool.prototype.doActivate.call(this);
+   * Remember the original collection of selected Parts.
+   */
+  public doActivate(): void {
+    super.doActivate();
     // keep a copy of the original Set of selected Parts
     this._originalSelection = this.diagram.selection.copy();
     // these Part.isSelected may have been temporarily modified
-    this._temporarySelection = new go.Set(go.Part) as go.Set<go.Part>;
-  };
+    this._temporarySelection.clear();
+    this.diagram.raiseDiagramEvent('ChangingSelection');
+  }
 
   /**
-  * Release any references to selected Parts.
-  * @this {RealtimeDragSelectingTool}
-  */
-  public doDeactivate() {
-    this._originalSelection = null;
-    this._temporarySelection = null;
-    go.DragSelectingTool.prototype.doDeactivate.call(this);
-  };
+   * Release any references to selected Parts.
+   */
+  public doDeactivate(): void {
+    this.diagram.raiseDiagramEvent('ChangedSelection');
+    this._originalSelection.clear();
+    this._temporarySelection.clear();
+    super.doDeactivate();
+  }
 
   /**
-  * Restore the selection which may have been modified during a drag.
-  * @this {RealtimeDragSelectingTool}
-  */
-  public doCancel() {
-    var orig = this._originalSelection;
-    if (orig !== null) {
-      orig.each(function (p) { p.isSelected = true; });
-      this._temporarySelection.each(function (p) { if (!orig.contains(p)) p.isSelected = false; });
-    }
-    go.DragSelectingTool.prototype.doCancel.call(this);
-  };
+   * Restore the selection which may have been modified during a drag.
+   */
+  public doCancel(): void {
+    const orig = this._originalSelection;
+    orig.each(function(p) { p.isSelected = true; });
+    this._temporarySelection.each(function(p) { if (!orig.contains(p)) p.isSelected = false; });
+    super.doCancel();
+  }
 
   /**
-  * @this {RealtimeDragSelectingTool}
-  */
-  public doMouseMove() {
+   * Select Parts within the bounds of the drag-select box.
+   */
+  public doMouseMove(): void {
     if (this.isActive) {
-      go.DragSelectingTool.prototype.doMouseMove.call(this);
+      super.doMouseMove();
       this.selectInRect(this.computeBoxBounds());
     }
-  };
+  }
 
   /**
-  * @this {RealtimeDragSelectingTool}
-  */
-  public doKeyDown() {
+   * Select Parts within the bounds of the drag-select box.
+   */
+  public doKeyDown(): void {
     if (this.isActive) {
-      go.DragSelectingTool.prototype.doKeyDown.call(this);
+      super.doKeyDown();
       this.selectInRect(this.computeBoxBounds());
     }
-  };
+  }
 
   /**
-  * @this {RealtimeDragSelectingTool}
-  */
-  public doKeyUp() {
+   * Select Parts within the bounds of the drag-select box.
+   */
+  public doKeyUp(): void {
     if (this.isActive) {
-      go.DragSelectingTool.prototype.doKeyUp.call(this);
+      super.doKeyUp();
       this.selectInRect(this.computeBoxBounds());
     }
-  };
+  }
 
   /**
-  * @expose
-  * @this {RealtimeDragSelectingTool}
-  * @param {Rect} r a rectangular bounds in document coordinates.
-  */
-  public selectInRect(r: go.Rect) {
-    var diagram: any = this.diagram;
-    var orig = this._originalSelection;
-    var temp = this._temporarySelection;
-    if (diagram === null || orig === null) return;
-    var e = diagram.lastInput;
-    diagram.raiseDiagramEvent("ChangingSelection");
-    var found = diagram.findObjectsIn(r, null,
-      function (p: go.Part) { return (p instanceof go.Part) && p.canSelect(); },
-      this.isPartialInclusion,
-      new go.Set(go.Part));
+   * For a given rectangle, select Parts that are within that rectangle.
+   * @param {Rect} r rectangular bounds in document coordinates.
+   */
+  public selectInRect(r: go.Rect): void {
+    const diagram = this.diagram;
+    const orig = this._originalSelection;
+    const temp = this._temporarySelection;
+    const e = diagram.lastInput;
+    const found = diagram.findPartsIn(r, this.isPartialInclusion);
     if (e.control || e.meta) {  // toggle or deselect
       if (e.shift) {  // deselect only
-        temp.each(function (p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
-        found.each(function (p: go.Part) { p.isSelected = false; temp.add(p); });
+        temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
+        found.each(function(p: go.Part) { p.isSelected = false; temp.add(p); });
       } else {  // toggle selectedness of parts based on _originalSelection
-        temp.each(function (p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
-        found.each(function (p: go.Part) { p.isSelected = !orig.contains(p); temp.add(p); });
+        temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
+        found.each(function(p: go.Part) { p.isSelected = !orig.contains(p); temp.add(p); });
       }
     } else if (e.shift) {  // extend selection only
-      temp.each(function (p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
-      found.each(function (p: go.Part) { p.isSelected = true; temp.add(p); });
+      temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
+      found.each(function(p: go.Part) { p.isSelected = true; temp.add(p); });
     } else {  // select found parts, and unselect all other previously selected parts
-      temp.each(function (p: go.Part) { if (!found.contains(p)) p.isSelected = false; });
-      orig.each(function (p: go.Part) { if (!found.contains(p)) p.isSelected = false; });
-      found.each(function (p: go.Part) { p.isSelected = true; temp.add(p); });
+      temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = false; });
+      orig.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = false; });
+      found.each(function(p: go.Part) { p.isSelected = true; temp.add(p); });
     }
-    diagram.raiseDiagramEvent("ChangedSelection");
-  };
-
+  }
 }

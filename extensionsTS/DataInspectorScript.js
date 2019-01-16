@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -7,11 +10,8 @@
         define(["require", "exports", "../release/go", "./DataInspector"], factory);
     }
 })(function (require, exports) {
-    'use strict';
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
     var DataInspector_1 = require("./DataInspector");
     function init() {
@@ -21,8 +21,6 @@
         var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
             'animationManager.isEnabled': false,
-            // position the graph in the middle of the diagram
-            initialContentAlignment: go.Spot.Center,
             // allow double-click in background to create a new node
             'clickCreatingTool.archetypeNodeData': { text: 'Node', color: 'white' },
             // allow Ctrl-G to call groupSelection()
@@ -90,6 +88,7 @@
             { from: 3, to: 1, color: '#6200EA' }
         ];
         myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+        // myDiagram.model = go.Model.fromJson((document.getElementById('mySavedModel') as any).value);
         // some shared model data
         myDiagram.model.modelData = { test: true, hello: 'world', version: 42 };
         // select a Node, so that the first Inspector shows something
@@ -101,10 +100,10 @@
             // allows for multiple nodes to be inspected at once
             multipleSelection: true,
             // max number of node properties will be shown when multiple selection is true
-            showSize: 4,
-            // when multipleSelection is true, when showAllProperties is true it takes the union of properties
+            showLimit: 4,
+            // when multipleSelection is true, when showUnionProperties is true it takes the union of properties
             // otherwise it takes the intersection of properties
-            showAllProperties: true,
+            showUnionProperties: true,
             // uncomment this line to only inspect the named properties below instead of all properties on each object:
             // includesOwnProperties: false,
             properties: {
@@ -157,6 +156,9 @@
         inspector3.inspectObject(myDiagram.model.modelData);
         // Attach to the window for console manipulation
         window.myDiagram = myDiagram;
+        window.inspector1 = inspector1;
+        window.inspector2 = inspector2;
+        window.inspector3 = inspector3;
     }
     exports.init = init;
 });

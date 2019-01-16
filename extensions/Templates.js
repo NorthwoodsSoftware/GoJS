@@ -14,7 +14,7 @@
 // Set up the default templates that each Diagram starts off with.
 function setupDiagramTemplates(diagram /* : go.Diagram */) {
   // Node Templates
-  var nodeTemplateMap = new go.Map('string', go.Part);
+  var nodeTemplateMap = new go.Map(/*'string', go.Part*/);
 
   // create the default Node template
   var archnode = new go.Node();
@@ -46,7 +46,7 @@ function setupDiagramTemplates(diagram /* : go.Diagram */) {
   diagram.nodeTemplateMap = nodeTemplateMap;
 
   // Group Templates
-  var groupTemplateMap = new go.Map('string', go.Group);
+  var groupTemplateMap = new go.Map(/*'string', go.Group*/);
 
   // create the default Group template
   var archgrp = new go.Group();
@@ -72,7 +72,7 @@ function setupDiagramTemplates(diagram /* : go.Diagram */) {
   diagram.groupTemplateMap = groupTemplateMap;
 
   // Link Templates
-  var linkTemplateMap = new go.Map('string', go.Link);
+  var linkTemplateMap = new go.Map(/*'string', go.Link*/);
 
   // create the default Link template
   var archlink = new go.Link();
@@ -331,9 +331,10 @@ function setupLinkReshapingToolHandles(tool /* : go.LinkReshapingTool */) {
 
   h = new go.Shape();
   h.figure = 'Diamond';
-  h.desiredSize = new go.Size(6, 6);
+  h.desiredSize = new go.Size(8, 8);
   h.fill = 'lightblue';
   h.stroke = 'dodgerblue';
+  h.cursor = 'move';
 
   tool.midHandleArchetype = h;
 }

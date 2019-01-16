@@ -42,7 +42,15 @@ go.GraphObject.defineBuilder("AutoRepeatButton", function(args) {
   }
 
   return $("Button",
-           { actionDown: delayClicking, actionUp: endClicking });
+           {
+             actionDown: delayClicking, actionUp: endClicking,
+             "ButtonBorder.figure": "Rectangle",
+             "ButtonBorder.fill": null,
+             "ButtonBorder.stroke": null,
+             "_buttonFillOver": "rgba(0, 0, 0, .25)",
+             "_buttonStrokeOver": null,
+             cursor: "auto"
+           });
 });
 
 // Create a scrolling Table Panel, whose name is given as the optional first argument.
@@ -128,8 +136,6 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
             name: "UP",
             row: 0,
             alignment: go.Spot.Top,
-            "ButtonBorder.figure": "Rectangle",
-            "ButtonBorder.fill": "lightgray",
             click: function(e, obj) { incrTableIndex(obj, -1); }
           },
           $(go.Shape, "TriangleUp",
@@ -141,8 +147,6 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
             name: "DOWN",
             row: 2,
             alignment: go.Spot.Bottom,
-            "ButtonBorder.figure": "Rectangle",
-            "ButtonBorder.fill": "lightgray",
             click: function(e, obj) { incrTableIndex(obj, +1); }
           },
           $(go.Shape, "TriangleDown",

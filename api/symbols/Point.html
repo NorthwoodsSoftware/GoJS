@@ -1,2675 +1,1266 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>GoJS&reg; Point Class</title>
-        
-        <script src="../../assets/js/jquery.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/highlight.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script src="../../assets/js/fuse.min.js"></script>
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Point | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class Point</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Point</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>A Point represents an x- and y-coordinate pair in two-dimensional space.</p>
+					<p>Use the static functions <a href="Point.html#static-parse">Point.parse</a> and <a href="Point.html#static-stringify">Point.stringify</a> to convert to and from
+					a standard string representation that is independent of the current locale.</p>
+					<p>When an instance of this class is the value of a property of a <a href="GraphObject.html">GraphObject</a> class or <a href="Diagram.html">Diagram</a>
+						or <a href="CommandHandler.html">CommandHandler</a> or a <a href="Tool.html">Tool</a> class, you should treat the object
+						as if it were frozen or read-only -- you cannot modify its properties.
+						This allows the property to return a value without allocating a new instance.
+						If you need to do your own calculations with the value, call <a href="Point.html#copy">copy</a> to make
+					a new instance with the same values that you can modify.</p>
+					<p>Many methods modify the object&#39;s properties and then return a reference to &quot;this&quot; object.
+						The only instance method to allocate a new object is the <a href="Point.html#copy">copy</a> method.
+					The static <a href="Point.html#static-parse">Point.parse</a> method also allocates a new object.</p>
+					<p>The &quot;Debug&quot; implementation of this class is significantly slower than the &quot;Release&quot; implementation,
+					mostly due to additional error checking.</p>
+					<p>You cannot inherit from this class.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Point.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Point.html#x" class="tsd-kind-icon">x</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Point.html#y" class="tsd-kind-icon">y</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#copy" class="tsd-kind-icon">copy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#direction" class="tsd-kind-icon">direction</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Point.html#static-direction" class="tsd-kind-icon">direction</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#directionPoint" class="tsd-kind-icon">direction<wbr>Point</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Point.html#static-distanceLineSegmentSquared" class="tsd-kind-icon">distance<wbr>Line<wbr>Segment<wbr>Squared</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#distanceSquared" class="tsd-kind-icon">distance<wbr>Squared</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Point.html#static-distanceSquared" class="tsd-kind-icon">distance<wbr>Squared</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#distanceSquaredPoint" class="tsd-kind-icon">distance<wbr>Squared<wbr>Point</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#equalTo" class="tsd-kind-icon">equal<wbr>To</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#equals" class="tsd-kind-icon">equals</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#isReal" class="tsd-kind-icon">is<wbr>Real</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#normalize" class="tsd-kind-icon">normalize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#offset" class="tsd-kind-icon">offset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Point.html#static-parse" class="tsd-kind-icon">parse</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#projectOntoLineSegment" class="tsd-kind-icon">project<wbr>Onto<wbr>Line<wbr>Segment</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#projectOntoLineSegmentPoint" class="tsd-kind-icon">project<wbr>Onto<wbr>Line<wbr>Segment<wbr>Point</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#rotate" class="tsd-kind-icon">rotate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#scale" class="tsd-kind-icon">scale</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#set" class="tsd-kind-icon">set</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#setRectSpot" class="tsd-kind-icon">set<wbr>Rect<wbr>Spot</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#setSpot" class="tsd-kind-icon">set<wbr>Spot</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#setTo" class="tsd-kind-icon">set<wbr>To</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#snapToGrid" class="tsd-kind-icon">snap<wbr>ToGrid</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#snapToGridPoint" class="tsd-kind-icon">snap<wbr>ToGrid<wbr>Point</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="Point.html#static-stringify" class="tsd-kind-icon">stringify</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Point.html#subtract" class="tsd-kind-icon">subtract</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Point<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>The default constructor produces the Point(0,0).
+								This constructor may take either zero arguments or two arguments.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> x: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The x value.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> y: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The y value.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="x" class="tsd-anchor"></a>
+					<h3>
+						x
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the x value of the Point.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="y" class="tsd-anchor"></a>
+					<h3>
+						y
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the y value of the Point.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="add" class="tsd-anchor"></a>
+					<h3>
+						add
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point so that is the sum of the current Point and the
+								x and y co-ordinates of the given Point.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#offset">offset</a>, <a href="Point.html#subtract">subtract</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Point to add to this Point.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="copy" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						copy
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Create a copy of this Point, with the same values.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="direction" class="tsd-anchor"></a>
+					<h3>
+						direction
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">direction<span class="tsd-signature-symbol">(</span>px<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, py<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Compute the angle from this Point to a given (px,py) point.
+								However, if the point is the same as this Point, the direction is zero.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#directionPoint">directionPoint</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>px: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>py: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the angle, in degrees, of the line from this Point to the given point.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-direction" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						direction
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">direction<span class="tsd-signature-symbol">(</span>px<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, py<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, qx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, qy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function returns the angle in degrees of the line from point P to point Q.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>px: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>py: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>qx: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>qy: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="directionPoint" class="tsd-anchor"></a>
+					<h3>
+						direction<wbr>Point
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">direction<wbr>Point<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Compute the angle from this Point to a given Point.
+								However, if the given Point is the same as this Point, the direction is zero.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#static-direction">direction</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the other Point to which to measure the relative angle.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the angle, in degrees, of the line from this Point to the given point.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-distanceLineSegmentSquared" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						distance<wbr>Line<wbr>Segment<wbr>Squared
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">distance<wbr>Line<wbr>Segment<wbr>Squared<span class="tsd-signature-symbol">(</span>px<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, py<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, ax<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, ay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, by<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function returns the square of the distance from the point P
+								to the finite line segment from point A to point B.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>px: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>py: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>ax: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>ay: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>bx: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>by: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the euclidean distance.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="distanceSquared" class="tsd-anchor"></a>
+					<h3>
+						distance<wbr>Squared
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">distance<wbr>Squared<span class="tsd-signature-symbol">(</span>px<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, py<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the square of the distance from this point to a given point (px, py).</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#distanceSquaredPoint">distanceSquaredPoint</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>px: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>py: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the square of the euclidean distance.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-distanceSquared" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						distance<wbr>Squared
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">distance<wbr>Squared<span class="tsd-signature-symbol">(</span>px<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, py<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, qx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, qy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function returns the square of the distance from the point P to the point Q.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>px: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>py: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>qx: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>qy: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="distanceSquaredPoint" class="tsd-anchor"></a>
+					<h3>
+						distance<wbr>Squared<wbr>Point
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">distance<wbr>Squared<wbr>Point<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Returns the square of the distance from this Point to a given Point.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#static-distanceSquared">distanceSquared</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the other Point to measure to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the square of the euclidean distance.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="equalTo" class="tsd-anchor"></a>
+					<h3>
+						equal<wbr>To
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">equal<wbr>To<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Indicates whether the given point (x, y) is equal to this Point.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#equals">equals</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the two Points have identical X and Y values,
+							false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="equals" class="tsd-anchor"></a>
+					<h3>
+						equals
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">equals<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Indicates whether the given Point is equal to this Point.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#equalTo">equalTo</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Point to compare to the current Point.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the two Points have identical X and Y values,
+							false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isReal" class="tsd-anchor"></a>
+					<h3>
+						is<wbr>Real
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Real<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>True if this Point has X and Y values that are real numbers and not infinity.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="normalize" class="tsd-anchor"></a>
+					<h3>
+						normalize
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">normalize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point so that its X and Y values have been normalized to a unit length.
+								However, if this Point is the origin (zero, zero), its length remains zero.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="offset" class="tsd-anchor"></a>
+					<h3>
+						offset
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">offset<span class="tsd-signature-symbol">(</span>dx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, dy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point by shifting its values with the given DX and DY offsets.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#add">add</a>, <a href="Point.html#subtract">subtract</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>dx: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>dy: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-parse" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						parse
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">parse<span class="tsd-signature-symbol">(</span>str<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function can be used to read in a <a href="Point.html">Point</a> from a string that was produced by <a href="Point.html#static-stringify">Point.stringify</a>.</p>
+								<p><code>go.Point.parse(&quot;1 2&quot;)</code> produces the Point <code>new go.Point(1, 2)</code>.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>str: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="projectOntoLineSegment" class="tsd-anchor"></a>
+					<h3>
+						project<wbr>Onto<wbr>Line<wbr>Segment
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">project<wbr>Onto<wbr>Line<wbr>Segment<span class="tsd-signature-symbol">(</span>px<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, py<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, qx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, qy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point to be the closest point to this point that is on a finite line segment.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.3</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>px: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>one end of the finite line segment</p>
+									</div>
+								</li>
+								<li>
+									<h5>py: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>one end of the finite line segment</p>
+									</div>
+								</li>
+								<li>
+									<h5>qx: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the other end of the finite line segment</p>
+									</div>
+								</li>
+								<li>
+									<h5>qy: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the other end of the finite line segment</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this modified Point</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="projectOntoLineSegmentPoint" class="tsd-anchor"></a>
+					<h3>
+						project<wbr>Onto<wbr>Line<wbr>Segment<wbr>Point
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">project<wbr>Onto<wbr>Line<wbr>Segment<wbr>Point<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a>, q<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point to be the closest point to this point that is on a finite line segment.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.3</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>one end of the finite line segment</p>
+									</div>
+								</li>
+								<li>
+									<h5>q: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the other end of the finite line segment</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this modified Point</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="rotate" class="tsd-anchor"></a>
+					<h3>
+						rotate
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">rotate<span class="tsd-signature-symbol">(</span>angle<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point so that has been rotated about the origin by the given angle.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>angle: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an angle in degrees.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="scale" class="tsd-anchor"></a>
+					<h3>
+						scale
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">scale<span class="tsd-signature-symbol">(</span>sx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, sy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point so that its X and Y values have been scaled by given factors along the X and Y axes.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sx: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>sy: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="set" class="tsd-anchor"></a>
+					<h3>
+						set
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point so that its X and Y values are the same as the given Point.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the given Point.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setRectSpot" class="tsd-anchor"></a>
+					<h3>
+						set<wbr>Rect<wbr>Spot
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Rect<wbr>Spot<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><a href="Rect.html" class="tsd-signature-type">Rect</a>, spot<span class="tsd-signature-symbol">: </span><a href="Spot.html" class="tsd-signature-type">Spot</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point so that its X and Y values correspond to a particular <a href="Spot.html">Spot</a>
+								in a given Rect.</p>
+								<p>The result is meaningless if <a href="Spot.html#isNoSpot">Spot.isNoSpot</a> is true for the given Spot.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#setSpot">setSpot</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <a href="Rect.html" class="tsd-signature-type">Rect</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Rect for which we are finding the point.</p>
+									</div>
+								</li>
+								<li>
+									<h5>spot: <a href="Spot.html" class="tsd-signature-type">Spot</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Spot; <a href="Spot.html#isSpot">Spot.isSpot</a> must be true for this Spot.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setSpot" class="tsd-anchor"></a>
+					<h3>
+						set<wbr>Spot
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Spot<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, w<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, h<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, spot<span class="tsd-signature-symbol">: </span><a href="Spot.html" class="tsd-signature-type">Spot</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point so that its X and Y values correspond to a particular <a href="Spot.html">Spot</a>
+								in a given rectangle.</p>
+								<p>The result is meaningless if <a href="Spot.html#isNoSpot">Spot.isNoSpot</a> is true for the given Spot.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#setRectSpot">setRectSpot</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The X coordinate of the Rect for which we are finding the point.</p>
+									</div>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Y coordinate of the Rect for which we are finding the point.</p>
+									</div>
+								</li>
+								<li>
+									<h5>w: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Width of the Rect for which we are finding the point.</p>
+									</div>
+								</li>
+								<li>
+									<h5>h: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Height of the Rect for which we are finding the point.</p>
+									</div>
+								</li>
+								<li>
+									<h5>spot: <a href="Spot.html" class="tsd-signature-type">Spot</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Spot; <a href="Spot.html#isSpot">Spot.isSpot</a> must be true for this Spot.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this the point of the spot in the rectangle.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setTo" class="tsd-anchor"></a>
+					<h3>
+						set<wbr>To
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>To<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this Point with new X and Y values.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>y: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="snapToGrid" class="tsd-anchor"></a>
+					<h3>
+						snap<wbr>ToGrid
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">snap<wbr>ToGrid<span class="tsd-signature-symbol">(</span>originx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, originy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cellwidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cellheight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point to be at the nearest point on an infinite grid,
+								given the grid&#39;s origin and size of each grid cell.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.3</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>originx: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the top-left point of one of the grid cells</p>
+									</div>
+								</li>
+								<li>
+									<h5>originy: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the top-left point of one of the grid cells</p>
+									</div>
+								</li>
+								<li>
+									<h5>cellwidth: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the size of each grid cell -- must be a real number larger than zero</p>
+									</div>
+								</li>
+								<li>
+									<h5>cellheight: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the size of each grid cell -- must be a real number larger than zero</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this modified Point</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="snapToGridPoint" class="tsd-anchor"></a>
+					<h3>
+						snap<wbr>ToGrid<wbr>Point
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">snap<wbr>ToGrid<wbr>Point<span class="tsd-signature-symbol">(</span>origin<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a>, cellsize<span class="tsd-signature-symbol">: </span><a href="Size.html" class="tsd-signature-type">Size</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point to be at the nearest point on an infinite grid,
+								given the grid&#39;s origin and size of each grid cell.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>1.3</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>origin: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the top-left point of one of the grid cells</p>
+									</div>
+								</li>
+								<li>
+									<h5>cellsize: <a href="Size.html" class="tsd-signature-type">Size</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the size of each grid cell</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this modified Point</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-stringify" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						stringify
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">stringify<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function can be used to write out a <a href="Point.html">Point</a> as a string that can be read by <a href="Point.html#static-parse">Point.parse</a>.</p>
+								<p><code>go.Point.stringify(new go.Point(1, 2))</code> produces the string &quot;1 2&quot;.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>val: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="subtract" class="tsd-anchor"></a>
+					<h3>
+						subtract
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">subtract<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type">Point</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Modify this point so that is the difference of this Point and the
+								x and y co-ordinates of the given Point.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Point.html#offset">offset</a>, <a href="Point.html#add">add</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <a href="Point.html" class="tsd-signature-type">Point</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Point to subtract from the current Point.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+							<p>this.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="Point.html" class="tsd-kind-icon">Point</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="Point.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Point.html#x" class="tsd-kind-icon">x</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Point.html#y" class="tsd-kind-icon">y</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#add" class="tsd-kind-icon">add</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#copy" class="tsd-kind-icon">copy</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#direction" class="tsd-kind-icon">direction</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Point.html#static-direction" class="tsd-kind-icon">direction</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#directionPoint" class="tsd-kind-icon">direction<wbr>Point</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Point.html#static-distanceLineSegmentSquared" class="tsd-kind-icon">distance<wbr>Line<wbr>Segment<wbr>Squared</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#distanceSquared" class="tsd-kind-icon">distance<wbr>Squared</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Point.html#static-distanceSquared" class="tsd-kind-icon">distance<wbr>Squared</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#distanceSquaredPoint" class="tsd-kind-icon">distance<wbr>Squared<wbr>Point</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#equalTo" class="tsd-kind-icon">equal<wbr>To</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#equals" class="tsd-kind-icon">equals</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#isReal" class="tsd-kind-icon">is<wbr>Real</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#normalize" class="tsd-kind-icon">normalize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#offset" class="tsd-kind-icon">offset</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Point.html#static-parse" class="tsd-kind-icon">parse</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#projectOntoLineSegment" class="tsd-kind-icon">project<wbr>Onto<wbr>Line<wbr>Segment</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#projectOntoLineSegmentPoint" class="tsd-kind-icon">project<wbr>Onto<wbr>Line<wbr>Segment<wbr>Point</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#rotate" class="tsd-kind-icon">rotate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#scale" class="tsd-kind-icon">scale</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#set" class="tsd-kind-icon">set</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#setRectSpot" class="tsd-kind-icon">set<wbr>Rect<wbr>Spot</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#setSpot" class="tsd-kind-icon">set<wbr>Spot</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#setTo" class="tsd-kind-icon">set<wbr>To</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#snapToGrid" class="tsd-kind-icon">snap<wbr>ToGrid</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#snapToGridPoint" class="tsd-kind-icon">snap<wbr>ToGrid<wbr>Point</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="Point.html#static-stringify" class="tsd-kind-icon">stringify</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Point.html#subtract" class="tsd-kind-icon">subtract</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" >
-    <!-- custom CSS after bootstrap -->
-    <link href="../../assets/css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="../../assets/css/api.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="../../assets/css/api.css" type="text/css" media="all" />-->
-    <link rel="stylesheet" href="../../assets/css/highlight.css" type="text/css" media="all" />
-
-    </head>
-
-    <body>
-    <!-- non-fixed navbar -->
-<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
-          <a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../../learn/index.html">Learn</a></li>
-        <li><a href="../../samples/index.html">Samples</a></li>
-        <li><a href="../../intro/index.html">Intro</a></li>
-        <li><a href="../../api/index.html">API</a></li>
-        <li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
-        <li><a href="../../download.html">Download</a></li>
-        <li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
-        <li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-        <li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
-        <li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
-</nav>
-
-
-    <div class="container-fluid">
-
-<!-- ============================== classes index ============================ -->
-     <div id="navindex" class="col-md-2">
-        <!-- begin publish.classesIndex -->
-        <!-- <div><a href="../index.html">GoJS Class Index</a></div> -->
-
-<div class="sidebar-nav">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#DiagramNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#DiagramNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Diagram Classes</span>
-      </div>
-    </div>
-    <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Adornment.html" class="linkConstructor">Adornment</a></li>
-      
-        <li><a href="../symbols/AnimationManager.html" class="linkConstructor">AnimationManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a></li>
-      
-        
-      
-        <li><a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a></li>
-      
-        <li><a href="../symbols/DiagramEvent.html" class="linkConstructor">DiagramEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a></li>
-      
-        
-      
-        <li><a href="../symbols/Group.html" class="linkConstructor">Group</a></li>
-      
-        
-      
-        <li><a href="../symbols/InputEvent.html" class="linkConstructor">InputEvent</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layer.html" class="linkConstructor">Layer</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Link.html" class="linkConstructor">Link</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Node.html" class="linkConstructor">Node</a></li>
-      
-        <li><a href="../symbols/Overview.html" class="linkConstructor">Overview</a></li>
-      
-        <li><a href="../symbols/Palette.html" class="linkConstructor">Palette</a></li>
-      
-        <li><a href="../symbols/Panel.html" class="linkConstructor">Panel</a></li>
-      
-        
-      
-        <li><a href="../symbols/Part.html" class="linkConstructor">Part</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Picture.html" class="linkConstructor">Picture</a></li>
-      
-        <li><a href="../symbols/Placeholder.html" class="linkConstructor">Placeholder</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RowColumnDefinition.html" class="linkConstructor">RowColumnDefinition</a></li>
-      
-        
-      
-        <li><a href="../symbols/Shape.html" class="linkConstructor">Shape</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextBlock.html" class="linkConstructor">TextBlock</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#GeometryNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#GeometryNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Geometry Classes</span>
-      </div>
-    </div>
-    <div id="GeometryNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Brush.html" class="linkConstructor">Brush</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Geometry.html" class="linkConstructor">Geometry</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Margin.html" class="linkConstructor">Margin</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PathFigure.html" class="linkConstructor">PathFigure</a></li>
-      
-        <li><a href="../symbols/PathSegment.html" class="linkConstructor">PathSegment</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Point.html" class="linkConstructor">Point</a></li>
-      
-        <li><a href="../symbols/Rect.html" class="linkConstructor">Rect</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Size.html" class="linkConstructor">Size</a></li>
-      
-        <li><a href="../symbols/Spot.html" class="linkConstructor">Spot</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ModelNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ModelNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Model Classes</span>
-      </div>
-    </div>
-    <div id="ModelNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Binding.html" class="linkConstructor">Binding</a></li>
-      
-        
-      
-        <li><a href="../symbols/ChangedEvent.html" class="linkConstructor">ChangedEvent</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GraphLinksModel.html" class="linkConstructor">GraphLinksModel</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Model.html" class="linkConstructor">Model</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Transaction.html" class="linkConstructor">Transaction</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeModel.html" class="linkConstructor">TreeModel</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/UndoManager.html" class="linkConstructor">UndoManager</a></li>
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#LayoutNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#LayoutNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Layout Classes</span>
-      </div>
-    </div>
-    <div id="LayoutNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/CircularLayout.html" class="linkConstructor">CircularLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ForceDirectedLayout.html" class="linkConstructor">ForceDirectedLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/GridLayout.html" class="linkConstructor">GridLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LayeredDigraphLayout.html" class="linkConstructor">LayeredDigraphLayout</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Layout.html" class="linkConstructor">Layout</a></li>
-      
-        
-      
-        <li><a href="../symbols/LayoutNetwork.html" class="linkConstructor">LayoutNetwork</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TreeLayout.html" class="linkConstructor">TreeLayout</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#ToolNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ToolNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Tool Classes</span>
-      </div>
-    </div>
-    <div id="ToolNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        <li><a href="../symbols/ActionTool.html" class="linkConstructor">ActionTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/ClickCreatingTool.html" class="linkConstructor">ClickCreatingTool</a></li>
-      
-        <li><a href="../symbols/ClickSelectingTool.html" class="linkConstructor">ClickSelectingTool</a></li>
-      
-        
-      
-        <li><a href="../symbols/ContextMenuTool.html" class="linkConstructor">ContextMenuTool</a></li>
-      
-        
-      
-        
-      
-        <li><a href="../symbols/DraggingTool.html" class="linkConstructor">DraggingTool</a></li>
-      
-        <li><a href="../symbols/DragSelectingTool.html" class="linkConstructor">DragSelectingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/HTMLInfo.html" class="linkConstructor">HTMLInfo</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/LinkingBaseTool.html" class="linkConstructor">LinkingBaseTool</a></li>
-      
-        <li><a href="../symbols/LinkingTool.html" class="linkConstructor">LinkingTool</a></li>
-      
-        <li><a href="../symbols/LinkReshapingTool.html" class="linkConstructor">LinkReshapingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/PanningTool.html" class="linkConstructor">PanningTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/RelinkingTool.html" class="linkConstructor">RelinkingTool</a></li>
-      
-        <li><a href="../symbols/ResizingTool.html" class="linkConstructor">ResizingTool</a></li>
-      
-        <li><a href="../symbols/RotatingTool.html" class="linkConstructor">RotatingTool</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/TextEditingTool.html" class="linkConstructor">TextEditingTool</a></li>
-      
-        <li><a href="../symbols/Tool.html" class="linkConstructor">Tool</a></li>
-      
-        <li><a href="../symbols/ToolManager.html" class="linkConstructor">ToolManager</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-
-  <div class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-      <div class="navheader-container">
-        <div class="navheader-collapse" data-toggle="collapse" data-target="#CollectionNavbar">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#CollectionNavbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <span class="navbar-brand">Collection Classes</span>
-      </div>
-    </div>
-    <div id="CollectionNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">
-    <ul class="classList nav navbar-nav">
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Iterable.html" class="linkConstructor">Iterable</a></li>
-      
-        <li><a href="../symbols/Iterator.html" class="linkConstructor">Iterator</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/List.html" class="linkConstructor">List</a></li>
-      
-        <li><a href="../symbols/Map.html" class="linkConstructor">Map</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <li><a href="../symbols/Set.html" class="linkConstructor">Set</a></li>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-    </div>
-  </div>
-</div> <!-- /class="sidebar-nav -->
-
-
-
-
-        <!-- end publish.classesIndex -->
-    </div>
-
-    <div id="contentBody" class="col-md-10">
-
-        <div class="searchsumm">
-            <div class="table-wrap">
-                <div class="table-cell" id="apisearch" data-base="../">
-                    <div class="title">Search API</div>
-                    <div class="field">
-                        <label for="search-field" class="search-icon"></label>
-                        <input id="search-field" type="text" />
-                    </div>
-                    <ul class="results">
-                        <li class="state loading">Preparing search index...</li>
-                        <li class="state failure">The search index is not available</li>
-                    </ul>
-                </div>
-                <div class="table-cell" id="apisumm">
-                    <input type="checkbox" id="showsumms" />
-                    <label class="apisumms" for="showsumms">Show Summaries</label>
-                </div>
-            </div>
-        </div>
-
-    <!-- ============================== header ================================= -->
-    <div id="header" class="fineprint">
-      <b>GoJS</b>&reg; Diagramming Components<br/>version 1.8.36 for JavaScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-    </div>
-
-<!-- ============================== class title ============================ -->
-            <h2 class="classTitle">
-                
-                Class Point
-                
-            </h2>
-
-<!-- ============================== class summary ========================== -->
-            <p class="classsummary">
-                
-                
-
-                A Point represents an x- and y-coordinate pair in two-dimensional space.<p>Use the static functions <a href="../symbols/Point.html#.parse" class="linkStatic">Point.parse</a> and <a href="../symbols/Point.html#.stringify" class="linkStatic">Point.stringify</a> to convert to and froma standard string representation that is independent of the current locale.<p>When an instance of this class is the value of a property of a <a href="../symbols/GraphObject.html" class="linkConstructor">GraphObject</a> class or <a href="../symbols/Diagram.html" class="linkConstructor">Diagram</a>or <a href="../symbols/CommandHandler.html" class="linkConstructor">CommandHandler</a> or a <a href="../symbols/Tool.html" class="linkConstructor">Tool</a> class, you should treat the objectas if it were frozen or read-only -- you cannot modify its properties.This allows the property to return a value without allocating a new instance.If you need to do your own calculations with the value, call <a href="../symbols/Point.html#copy" class="linkMethod">copy</a> to makea new instance with the same values that you can modify.<p>Many methods modify the object's properties and then return a reference to "this" object.The only instance method to allocate a new object is the <a href="../symbols/Point.html#copy" class="linkMethod">copy</a> method.The static <a href="../symbols/Point.html#.parse" class="linkStatic">Point.parse</a> method also allocates a new object.<p>The "Debug" implementation of this class is significantly slower than the "Release" implementation,mostly due to additional error checking.<p>You cannot inherit from this class.
-            </p>
-
-<!-- ============================== constructor summary ==================== -->
-            
-        <h2 id="constructor" class="summaryCaption"> Constructor <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-            <div class="table-responsive">
-            <table class="summaryTable table table-bordered table-condensed" summary="A summary of the constructor documented in the class Point.">
-                <thead>
-                        <tr>
-                            <th scope="col" class="name">Name</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="name" >
-                            <div class="name">
-                                Point(x, y)
-                            </div>
-              </td>
-              <td class="description">
-                            <div class="description">
-                            <!--newp--><p><p>The default constructor produces the Point(0,0).<span class="nodetails" id="xconPoint"><a class="morelink" onclick="hst('conPoint')">More...</a></span> <span class="details" id="conPoint">This constructor may take either zero arguments or two arguments.</span>
-                        
-                            <dl class="detailList">
-                            <dt class="heading">Parameters:</dt>
-                            
-                                <dt>
-                                    <span class="light fixedFont">{number=}</span>  <b>x</b>
-                                    
-                                </dt>
-                                    <dd>The x value.</dd>
-                            
-                                <dt>
-                                    <span class="light fixedFont">{number=}</span>  <b>y</b>
-                                    
-                                </dt>
-                                    <dd>The y value.</dd>
-                            
-                            </dl>
-                        
-                        
-
-
-              </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div><!-- class="table-responsive">-->
-            
-
-<!-- ============================== properties summary ===================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Properties<span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-        <div class="table-responsive">
-        <table class="summaryTable table table-bordered table-condensed" summary="A summary of the properties documented in the class Point.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Value Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-              <tr id="x" >
-                
-                <td class="name">
-                  <div class="name">
-                    x
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the x value of the Point.
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-              <tr id="y" >
-                
-                <td class="name">
-                  <div class="name">
-                    y
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                <div class="description">
-                <!--newp <p> -->
-                <p>Gets or sets the y value of the Point.
-                
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-
-<!-- ============================== methods summary ======================== -->
-            
-                
-                
-        <h2 class="summaryCaption">Method <span class="nodetails"> Summary</span><span class="details"> Details</span></h2>
-                <div class="table-responsive">
-                <table class="summaryTable table table-bordered table-condensed" summary="A summary of the methods documented in the class Point.">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="name">Name, Return Type</th>
-                            <th scope="col" class="description">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    
-            <tr id="add">
-                <td class="name">
-                  
-                  <div class="name">
-                    add(p)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point so that is the sum of the current Point and thex and y co-ordinates of the given Point.<span class="nodetails" id="xmethadd"><a class="morelink" onclick="hst('methadd')">More...</a></span> <span class="details" id="methadd"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#offset" class="linkMethod">offset</a></li>
-                                
-                                    <li><a href="../symbols/Point.html#subtract" class="linkMethod">subtract</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>The Point to add to this Point.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="copy">
-                <td class="name">
-                  
-                  <div class="name">
-                    copy()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Create a copy of this Point, with the same values.
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="direction">
-                <td class="name">
-                  
-                  <div class="name">
-                    direction(px, py)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Compute the angle from this Point to a given (px,py) point.<span class="nodetails" id="xmethdirection"><a class="morelink" onclick="hst('methdirection')">More...</a></span> <span class="details" id="methdirection">However, if the point is the same as this Point, the direction is zero.</span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#directionPoint" class="linkMethod">directionPoint</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>px</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>py</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the angle, in degrees, of the line from this Point to the given point.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".direction">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Point.direction(px, py, qx, qy)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function returns the angle in degrees of the line from point P to point Q.<span class="nodetails" id="xmethdirection"><a class="morelink" onclick="hst('methdirection')">More...</a></span> <span class="details" id="methdirection"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>px</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>py</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>qx</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>qy</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="directionPoint">
-                <td class="name">
-                  
-                  <div class="name">
-                    directionPoint(p)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Compute the angle from this Point to a given Point.<span class="nodetails" id="xmethdirectionPoint"><a class="morelink" onclick="hst('methdirectionPoint')">More...</a></span> <span class="details" id="methdirectionPoint">However, if the given Point is the same as this Point, the direction is zero.</span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#direction" class="linkMethod">direction</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>the other Point to which to measure the relative angle.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the angle, in degrees, of the line from this Point to the given point.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".distanceLineSegmentSquared">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Point.distanceLineSegmentSquared(px, py, ax, ay, bx, by)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function returns the square of the distance from the point Pto the finite line segment from point A to point B.<span class="nodetails" id="xmethdistanceLineSegmentSquared"><a class="morelink" onclick="hst('methdistanceLineSegmentSquared')">More...</a></span> <span class="details" id="methdistanceLineSegmentSquared"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>px</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>py</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>ax</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>ay</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>bx</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>by</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the euclidean distance.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="distanceSquared">
-                <td class="name">
-                  
-                  <div class="name">
-                    distanceSquared(px, py)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the square of the distance from this point to a given point (px, py).<span class="nodetails" id="xmethdistanceSquared"><a class="morelink" onclick="hst('methdistanceSquared')">More...</a></span> <span class="details" id="methdistanceSquared"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#distanceSquaredPoint" class="linkMethod">distanceSquaredPoint</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>px</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>py</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the square of the euclidean distance.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".distanceSquared">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Point.distanceSquared(px, py, qx, qy)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function returns the square of the distance from the point P to the point Q.<span class="nodetails" id="xmethdistanceSquared"><a class="morelink" onclick="hst('methdistanceSquared')">More...</a></span> <span class="details" id="methdistanceSquared"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>px</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>py</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>qx</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>qy</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="distanceSquaredPoint">
-                <td class="name">
-                  
-                  <div class="name">
-                    distanceSquaredPoint(p)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{number}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Returns the square of the distance from this Point to a given Point.<span class="nodetails" id="xmethdistanceSquaredPoint"><a class="morelink" onclick="hst('methdistanceSquaredPoint')">More...</a></span> <span class="details" id="methdistanceSquaredPoint"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#distanceSquared" class="linkMethod">distanceSquared</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>the other Point to measure to.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{number}</span> the square of the euclidean distance.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="equals">
-                <td class="name">
-                  
-                  <div class="name">
-                    equals(p)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Indicates whether the given Point is equal to this Point.<span class="nodetails" id="xmethequals"><a class="morelink" onclick="hst('methequals')">More...</a></span> <span class="details" id="methequals"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#equalTo" class="linkMethod">equalTo</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>The Point to compare to the current Point.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> True if the two Points have identical X and Y values,false otherwise.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="equalTo">
-                <td class="name">
-                  
-                  <div class="name">
-                    equalTo(x, y)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Indicates whether the given point (x, y) is equal to this Point.<span class="nodetails" id="xmethequalTo"><a class="morelink" onclick="hst('methequalTo')">More...</a></span> <span class="details" id="methequalTo"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#equals" class="linkMethod">equals</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> True if the two Points have identical X and Y values,false otherwise.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="isReal">
-                <td class="name">
-                  
-                  <div class="name">
-                    isReal()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{boolean}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>True if this Point has X and Y values that are real numbers and not infinity.
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{boolean}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="normalize">
-                <td class="name">
-                  
-                  <div class="name">
-                    normalize()
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point so that its X and Y values have been normalized to a unit length.<span class="nodetails" id="xmethnormalize"><a class="morelink" onclick="hst('methnormalize')">More...</a></span> <span class="details" id="methnormalize">However, if this Point is the origin (zero, zero), its length remains zero.</span>
-                 
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="offset">
-                <td class="name">
-                  
-                  <div class="name">
-                    offset(dx, dy)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point by shifting its values with the given DX and DY offsets.<span class="nodetails" id="xmethoffset"><a class="morelink" onclick="hst('methoffset')">More...</a></span> <span class="details" id="methoffset"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#add" class="linkMethod">add</a></li>
-                                
-                                    <li><a href="../symbols/Point.html#subtract" class="linkMethod">subtract</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>dx</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>dy</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".parse">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Point.parse(str)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function can be used to read in a <a href="../symbols/Point.html" class="linkConstructor">Point</a> from a string that was produced by <a href="../symbols/Point.html#.stringify" class="linkStatic">Point.stringify</a>.<span class="nodetails" id="xmethparse"><a class="morelink" onclick="hst('methparse')">More...</a></span> <span class="details" id="methparse"></span><div class="details" id="dmethparse"><p><code>go.Point.parse("1 2")</code> produces the Point <code>new go.Point(1, 2)</code>.</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{string}</span> <b>str</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="projectOntoLineSegment">
-                <td class="name">
-                  
-                  <div class="name">
-                    projectOntoLineSegment(px, py, qx, qy)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                      <span class="since" title="since">1.3</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point to be the closest point to this point that is on a finite line segment.<span class="nodetails" id="xmethprojectOntoLineSegment"><a class="morelink" onclick="hst('methprojectOntoLineSegment')">More...</a></span> <span class="details" id="methprojectOntoLineSegment"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>px</b>
-                                          
-                                      </dt>
-                                      <dd>one end of the finite line segment</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>py</b>
-                                          
-                                      </dt>
-                                      <dd>one end of the finite line segment</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>qx</b>
-                                          
-                                      </dt>
-                                      <dd>the other end of the finite line segment</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>qy</b>
-                                          
-                                      </dt>
-                                      <dd>the other end of the finite line segment</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this modified Point</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="projectOntoLineSegmentPoint">
-                <td class="name">
-                  
-                  <div class="name">
-                    projectOntoLineSegmentPoint(p, q)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                      <span class="since" title="since">1.3</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point to be the closest point to this point that is on a finite line segment.<span class="nodetails" id="xmethprojectOntoLineSegmentPoint"><a class="morelink" onclick="hst('methprojectOntoLineSegmentPoint')">More...</a></span> <span class="details" id="methprojectOntoLineSegmentPoint"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>one end of the finite line segment</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>q</b>
-                                          
-                                      </dt>
-                                      <dd>the other end of the finite line segment</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this modified Point</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="rotate">
-                <td class="name">
-                  
-                  <div class="name">
-                    rotate(angle)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point so that has been rotated about the origin by the given angle.<span class="nodetails" id="xmethrotate"><a class="morelink" onclick="hst('methrotate')">More...</a></span> <span class="details" id="methrotate"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>angle</b>
-                                          
-                                      </dt>
-                                      <dd>an angle in degrees.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="scale">
-                <td class="name">
-                  
-                  <div class="name">
-                    scale(sx, sy)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point so that its X and Y values have been scaled by given factors along the X and Y axes.<span class="nodetails" id="xmethscale"><a class="morelink" onclick="hst('methscale')">More...</a></span> <span class="details" id="methscale"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>sx</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>sy</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="set">
-                <td class="name">
-                  
-                  <div class="name">
-                    set(p)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point so that its X and Y values are the same as the given Point.<span class="nodetails" id="xmethset"><a class="morelink" onclick="hst('methset')">More...</a></span> <span class="details" id="methset"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>the given Point.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="setRectSpot">
-                <td class="name">
-                  
-                  <div class="name">
-                    setRectSpot(r, spot)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point so that its X and Y values correspond to a particular <a href="../symbols/Spot.html" class="linkConstructor">Spot</a>in a given Rect.<span class="nodetails" id="xmethsetRectSpot"><a class="morelink" onclick="hst('methsetRectSpot')">More...</a></span> <span class="details" id="methsetRectSpot"></span><div class="details" id="dmethsetRectSpot"><p>The result is meaningless if <a href="../symbols/Spot.html#isNoSpot" class="linkMethod">Spot.isNoSpot</a> is true for the given Spot.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#setSpot" class="linkMethod">setSpot</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Rect.html" class="linkConstructor">Rect</a>}</span> <b>r</b>
-                                          
-                                      </dt>
-                                      <dd>the Rect for which we are finding the point.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Spot.html" class="linkConstructor">Spot</a>}</span> <b>spot</b>
-                                          
-                                      </dt>
-                                      <dd>the Spot; <a href="../symbols/Spot.html#isSpot" class="linkMethod">Spot.isSpot</a> must be true for this Spot.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="setSpot">
-                <td class="name">
-                  
-                  <div class="name">
-                    setSpot(x, y, w, h, spot)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point so that its X and Y values correspond to a particular <a href="../symbols/Spot.html" class="linkConstructor">Spot</a>in a given rectangle.<span class="nodetails" id="xmethsetSpot"><a class="morelink" onclick="hst('methsetSpot')">More...</a></span> <span class="details" id="methsetSpot"></span><div class="details" id="dmethsetSpot"><p>The result is meaningless if <a href="../symbols/Spot.html#isNoSpot" class="linkMethod">Spot.isNoSpot</a> is true for the given Spot.</div>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#setRectSpot" class="linkMethod">setRectSpot</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd>The X coordinate of the Rect for which we are finding the point.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd>The Y coordinate of the Rect for which we are finding the point.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>w</b>
-                                          
-                                      </dt>
-                                      <dd>The Width of the Rect for which we are finding the point.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>h</b>
-                                          
-                                      </dt>
-                                      <dd>The Height of the Rect for which we are finding the point.</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Spot.html" class="linkConstructor">Spot</a>}</span> <b>spot</b>
-                                          
-                                      </dt>
-                                      <dd>the Spot; <a href="../symbols/Spot.html#isSpot" class="linkMethod">Spot.isSpot</a> must be true for this Spot.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this the point of the spot in the rectangle.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="setTo">
-                <td class="name">
-                  
-                  <div class="name">
-                    setTo(x, y)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this Point with new X and Y values.<span class="nodetails" id="xmethsetTo"><a class="morelink" onclick="hst('methsetTo')">More...</a></span> <span class="details" id="methsetTo"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>x</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>y</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="snapToGrid">
-                <td class="name">
-                  
-                  <div class="name">
-                    snapToGrid(originx, originy, cellwidth, cellheight)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                      <span class="since" title="since">1.3</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point to be at the nearest point on an infinite grid,given the grid's origin and size of each grid cell.<span class="nodetails" id="xmethsnapToGrid"><a class="morelink" onclick="hst('methsnapToGrid')">More...</a></span> <span class="details" id="methsnapToGrid"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>originx</b>
-                                          
-                                      </dt>
-                                      <dd>the top-left point of one of the grid cells</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>originy</b>
-                                          
-                                      </dt>
-                                      <dd>the top-left point of one of the grid cells</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>cellwidth</b>
-                                          
-                                      </dt>
-                                      <dd>the size of each grid cell -- must be a real number larger than zero</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{number}</span> <b>cellheight</b>
-                                          
-                                      </dt>
-                                      <dd>the size of each grid cell -- must be a real number larger than zero</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this modified Point</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="snapToGridPoint">
-                <td class="name">
-                  
-                  <div class="name">
-                    snapToGridPoint(origin, cellsize)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                      <span class="since" title="since">1.3</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point to be at the nearest point on an infinite grid,given the grid's origin and size of each grid cell.<span class="nodetails" id="xmethsnapToGridPoint"><a class="morelink" onclick="hst('methsnapToGridPoint')">More...</a></span> <span class="details" id="methsnapToGridPoint"></span>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>origin</b>
-                                          
-                                      </dt>
-                                      <dd>the top-left point of one of the grid cells</dd>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Size.html" class="linkConstructor">Size</a>}</span> <b>cellsize</b>
-                                          
-                                      </dt>
-                                      <dd>the size of each grid cell</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this modified Point</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id=".stringify">
-                <td class="name">
-                  &lt;static&gt; 
-                  <div class="name">
-                    Point.stringify(val)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{string}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>This static function can be used to write out a <a href="../symbols/Point.html" class="linkConstructor">Point</a> as a string that can be read by <a href="../symbols/Point.html#.parse" class="linkStatic">Point.parse</a>.<span class="nodetails" id="xmethstringify"><a class="morelink" onclick="hst('methstringify')">More...</a></span> <span class="details" id="methstringify"></span><div class="details" id="dmethstringify"><p><code>go.Point.stringify(new go.Point(1, 2))</code> produces the string "1 2".</div>
-                 
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>val</b>
-                                          
-                                      </dt>
-                                      <dd></dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{string}</span> </dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-            <tr id="subtract">
-                <td class="name">
-                  
-                  <div class="name">
-                    subtract(p)
-                  </div>
-                  <div class="attributes">
-                    <span class="light">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span>
-                    
-                  </div>
-                </td>
-                <td class="description">
-                                <div class="description">
-                                <!--newp--><p><p>Modify this point so that is the difference of this Point and thex and y co-ordinates of the given Point.<span class="nodetails" id="xmethsubtract"><a class="morelink" onclick="hst('methsubtract')">More...</a></span> <span class="details" id="methsubtract"></span>
-                 
-                                </p><div class="seealso">See also:
-                  <ul class="seealsolist">
-                                  
-                                    <li><a href="../symbols/Point.html#offset" class="linkMethod">offset</a></li>
-                                
-                                    <li><a href="../symbols/Point.html#add" class="linkMethod">add</a></li>
-                                
-                  </ul></div>
-                            
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Parameters:</dt>
-                                  
-                                      <dt>
-                                          <span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> <b>p</b>
-                                          
-                                      </dt>
-                                      <dd>The Point to subtract from the current Point.</dd>
-                                  
-                                  </dl>
-                              
-                              
-                                  <dl class="detailList">
-                                  <dt class="heading">Returns:</dt>
-                                  
-                                      <dt><span class="light fixedFont">{<a href="../symbols/Point.html" class="linkConstructor">Point</a>}</span> this.</dt>
-                                  
-                                  </dl>
-                              
-
-                </div>
-                            </td>
-                        </tr>
-                    
-                    </tbody>
-                </table>
-                </div><!-- class="table-responsive">-->
-                
-
-                
-            
-<!-- ============================== events summary ======================== -->
-            
-
-<!-- ============================== fields summary ===================== -->
-            
-                
-                
-
-            
-
-<!-- ============================== constructor details ==================== -->
-
-      </div> <!-- end contentBody -->
-    </div> <!-- end container-fluid -->
-
-<!-- ============================== footer ================================= -->
-        <div id="footer" class="fineprint" style="clear:both">
-            Copyright &copy; 1998-2019 by <a href="https://www.nwoods.com/">Northwoods Software Corporation.</a>
-        </div>
-    </body>
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
 </html>

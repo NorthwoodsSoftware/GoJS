@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,8 +14,7 @@
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
-      $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
-        { initialContentAlignment: go.Spot.Center });
+      $(go.Diagram, "myDiagramDiv");
 
     // the template for each attribute in a node's array of item data
     var itemTempl =
@@ -62,7 +61,12 @@
                  { text: "fourth", min: 50, val: 80, max: 130 } ]
       }
     ];
-    myDiagram.model = new go.GraphLinksModel(nodeDataArray);
+    myDiagram.model = $(go.GraphLinksModel,
+      {
+        copiesArrays: true,
+        copiesArrayObjects: true,
+        nodeDataArray: nodeDataArray
+      });
   }
 </script>
 </head>

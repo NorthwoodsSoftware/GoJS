@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,6 +6,7 @@
   <title>GoJS Item Arrays-- Northwoods Software</title>
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
   <script src="goIntro.js"></script>
 </head>
 <body onload="goIntro()">
@@ -26,7 +27,7 @@ See samples that make use of item Arrays in the <a href="../samples/index.html#i
 <p>
 Here is a very simple example demonstrating the standard way of binding <a>Panel.itemArray</a> to a data property whose value is an Array.
 </p>
-<pre data-language="javascript" id="simple">
+<pre class="lang-js" id="simple">
   diagram.nodeTemplate =
     $(go.Node, "Vertical",
       new go.Binding("itemArray", "items"));
@@ -42,8 +43,6 @@ Here is a very simple example demonstrating the standard way of binding <a>Panel
           { from: 1, to: 2 }
         ]
       });
-
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("simple", 450, 200)</script>
 <p>
@@ -80,7 +79,7 @@ Here is a simple customization of the <a>Panel.itemTemplate</a>, working with th
 Note that the second argument to the <a>Binding</a> constructor in this case is the empty string,
 because strings (and numbers) do not have many useful properties.
 </p>
-<pre data-language="javascript" id="vertical">
+<pre class="lang-js" id="vertical">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -112,7 +111,6 @@ because strings (and numbers) do not have many useful properties.
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("vertical", 450, 200)</script>
 <p>
@@ -124,7 +122,7 @@ Of course if the array items are Objects, you can refer to their properties just
 As with node data, you can have as many properties on your item data as your app demands, using whatever property names you prefer.
 Use data binding to automatically use those property values to customize the appearance and behavior of your item Panels.
 </p>
-<pre data-language="javascript" id="verticalobjects">
+<pre class="lang-js" id="verticalobjects">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -172,26 +170,25 @@ Use data binding to automatically use those property values to customize the app
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("verticalobjects", 450, 200)</script>
 
 <h2 id="DifferentPanelTypes">Different Panel types</h2>
 <p>
-Although <a>Panel</a>s that have an item array are often of type <a>Panel.Vertical</a>,
+Although <a>Panel</a>s that have an item array are often of type <a>Panel,Vertical</a>,
 you can use other panel types that support a variable number of elements.
-The most common types are <a>Panel.Vertical</a>, <a>Panel.Horizontal</a>, <a>Panel.Table</a>, and <a>Panel.Position</a>.
-It does not make sense to use a <a>Panel.Viewbox</a> panel, because that panel type only supports a single element.
+The most common types are <a>Panel,Vertical</a>, <a>Panel,Horizontal</a>, <a>Panel,Table</a>, and <a>Panel,Position</a>.
+It does not make sense to use a <a>Panel,Viewbox</a> panel, because that panel type only supports a single element.
 </p>
 <p>
-If the panel type is <a>Panel.Spot</a>, <a>Panel.Auto</a>, or <a>Panel.Link</a>,
+If the panel type is <a>Panel,Spot</a>, <a>Panel,Auto</a>, or <a>Panel,Link</a>,
 the first child element of the Panel is assumed to be the "main" object and is kept as the first child
 in addition to all of the nested panels created for the values in the <a>Panel.itemArray</a>.
 </p>
 <p>
 Here is an example of a horizontal Panel:
 </p>
-<pre data-language="javascript" id="horizontal">
+<pre class="lang-js" id="horizontal">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -224,16 +221,15 @@ Here is an example of a horizontal Panel:
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("horizontal", 450, 200)</script>
 
 <p>
-When using a <a>Panel</a> of type <a>Panel.Table</a> as the container, it is commonplace
-to use an item template that is of type <a>Panel.TableRow</a> or <a>Panel.TableColumn</a>.
+When using a <a>Panel</a> of type <a>Panel,Table</a> as the container, it is commonplace
+to use an item template that is of type <a>Panel,TableRow</a> or <a>Panel,TableColumn</a>.
 This is the only way to specify the individual column or row indexes for the elements inside the template.
 </p>
-<pre data-language="javascript" id="table">
+<pre class="lang-js" id="table">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, { fill: "lightgray" }),
@@ -277,7 +273,6 @@ This is the only way to specify the individual column or row indexes for the ele
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("table", 450, 200)</script>
 <p>
@@ -288,16 +283,16 @@ to the item data's "back" property.
 <p>
 Sometimes one wants to get the row for a particular item, or one wants to have a property value depend on the row index.
 You can always depend on the value of <a>Panel.itemIndex</a> to get that property.
-If the item Panel is of type <a>Panel.TableRow</a>, the item Panel's <a>GraphObject.row</a> property will also be set to the zero-based row number,
+If the item Panel is of type <a>Panel,TableRow</a>, the item Panel's <a>GraphObject.row</a> property will also be set to the zero-based row number,
 so you can access it in code by finding that Panel.
-The same is true for <a>GraphObject.column</a> if the itemTemplate is a <a>Panel.TableColumn</a> Panel.
+The same is true for <a>GraphObject.column</a> if the itemTemplate is a <a>Panel,TableColumn</a> Panel.
 </p>
 <p>
 Because that property is set when the item panels are created for Array item data, you can create <a>Binding</a>s where the source
 is that "row" property: <code>new go.Binding("targetProperty", "row", function(i) { return ...; }).ofObject()</code>.
 The following example demonstrates binding the Panel.background property to be light green if the row is even.
 </p>
-<pre data-language="javascript" id="alternating">
+<pre class="lang-js" id="alternating">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, { fill: "white" }),
@@ -351,7 +346,6 @@ The following example demonstrates binding the Panel.background property to be l
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("alternating", 450, 200)</script>
 <p>
@@ -368,7 +362,7 @@ If you want such a behavior, you will want to use multiple templates -- see the 
 If instead you want to have a table header that is "fixed" and not dependent on item Array data,
 you can have a single "TableRow" (or "TableColumn") Panel in the "Table" Panel that is kept if <a>Panel.isPanelMain</a> is true.
 </p>
-<pre data-language="javascript" id="header">
+<pre class="lang-js" id="header">
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, { fill: "white" }),
@@ -422,7 +416,6 @@ you can have a single "TableRow" (or "TableColumn") Panel in the "Table" Panel t
       }
     );
 
-  diagram.initialContentAlignment = go.Spot.Center;
 </pre>
 <script>goCode("header", 450, 200)</script>
 <p>

@@ -15,12 +15,12 @@
 function OrthogonalLinkReshapingTool() {
   go.LinkReshapingTool.call(this);
   this.name = "OrthogonalLinkReshaping";
+  this._alreadyAddedPoint = false;
 }
 go.Diagram.inherit(OrthogonalLinkReshapingTool, go.LinkReshapingTool);
 
 /**
 * For orthogonal, straight links, create the handles and set reshaping behavior.
-* @override
 * @param {Shape} pathshape
 * @return {Adornment}
 * @this {OrthogonalLinkReshapingTool}
@@ -33,9 +33,9 @@ OrthogonalLinkReshapingTool.prototype.makeAdornment = function(pathshape) {
 
   // add long reshaping handles for orthogonal, straight links
   if (link !== null && link.isOrthogonal && link.curve !== go.Link.Bezier) {
-    var firstindex = link.firstPickIndex;
-    var lastindex = link.lastPickIndex;
-    for (var i = firstindex + 1; i < lastindex - 1; i++) {
+    var firstindex = link.firstPickIndex + (link.resegmentable ? 0 : 1);
+    var lastindex = link.lastPickIndex - (link.resegmentable ? 0 : 1);
+    for (var i = firstindex; i < lastindex; i++) {
       this.makeSegmentDragHandle(link, adornment, i);
     }
   }
@@ -44,10 +44,10 @@ OrthogonalLinkReshapingTool.prototype.makeAdornment = function(pathshape) {
 
 /**
 * Once we finish a reshape, make sure any handles are properly updated.
-* @override
 * @this {OrthogonalLinkReshapingTool}
 */
 OrthogonalLinkReshapingTool.prototype.doDeactivate = function() {
+  this._alreadyAddedPoint = false;
   // when we finish, recreate adornment to ensure proper reshaping behavior/cursor
   var link = this.adornedLink;
   if (link !== null && link.isOrthogonal && link.curve !== go.Link.Bezier) {
@@ -63,7 +63,6 @@ OrthogonalLinkReshapingTool.prototype.doDeactivate = function() {
 
 /**
 * Set the reshaping behavior for segment dragging handles.
-* @override
 * @param {Point} newpt
 * @this {OrthogonalLinkReshapingTool}
 */
@@ -73,7 +72,17 @@ OrthogonalLinkReshapingTool.prototype.reshape = function(newpt) {
   // identify if the handle being dragged is a segment dragging handle
   if (link !== null && link.isOrthogonal && link.curve !== go.Link.Bezier && this.handle.toMaxLinks === 999) {
     link.startRoute();
-    var index = this.handle.segmentIndex; // for these handles, firstPickIndex + 1 <= index < lastPickIndex - 1
+    var index = this.handle.segmentIndex; // for these handles, firstPickIndex <= index < lastPickIndex
+    if (!this._alreadyAddedPoint && link.resegmentable) {  // only change the number of points if Link.resegmentable
+      this._alreadyAddedPoint = true;
+      if (index === link.firstPickIndex) {
+        link.insertPoint(index, link.getPoint(index).copy());
+        index++;
+        this.handle.segmentIndex = index;
+      } else if (index === link.lastPickIndex - 1) {
+        link.insertPoint(index, link.getPoint(index).copy());
+      }
+    }
     var behavior = this.getReshapingBehavior(this.handle);
     if (behavior === go.LinkReshapingTool.Vertical) {
       // move segment vertically
@@ -91,7 +100,7 @@ OrthogonalLinkReshapingTool.prototype.reshape = function(newpt) {
 };
 
 /**
-* Create the segment dragging handles. 
+* Create the segment dragging handles.
 * There are two parts: one invisible handle that spans the segment, and a visible handle at the middle of the segment.
 * These are inserted at the front of the adornment such that the normal handles have priority.
 * @param {Link} link
@@ -122,7 +131,8 @@ OrthogonalLinkReshapingTool.prototype.makeSegmentDragHandle = function(link, ado
 
   // first, make an invisible handle along the whole segment
   var h = new go.Shape();
-  h.opacity = 0;
+  h.strokeWidth = 6;
+  h.opacity = 0.0;
   h.segmentOrientation = go.Link.OrientAlong;
   h.segmentIndex = index;
   h.segmentFraction = 0.5;
@@ -135,24 +145,6 @@ OrthogonalLinkReshapingTool.prototype.makeSegmentDragHandle = function(link, ado
     h.cursor = 'w-resize';
   }
   h.geometryString = "M 0 0 L " + seglength + " 0";
-  adornment.insertAt(0, h);
-
-  // second, make a visible handle near the middle
-  h = new go.Shape();
-  h.fill = "#1B3471"; // different from other handles to make sure it stands out
-  h.stroke = "dodgerblue";
-  h.segmentOrientation = go.Link.OrientAlong;
-  h.segmentIndex = index;
-  h.segmentFraction = 0.5;
-  h.toMaxLinks = 999; // set this unsused property to easily identify that we have a segment dragging handle
-  if (orient === "horizontal") {
-    this.setReshapingBehavior(h, go.LinkReshapingTool.Vertical);
-    h.cursor = 'n-resize';
-  } else {
-    this.setReshapingBehavior(h, go.LinkReshapingTool.Horizontal);
-    h.cursor = 'w-resize';
-  }
-  h.geometryString = "F M 0 0 L 12 0 L 12 4 L 0 4 Z X M 6 0 L 6 -3 X M 6 4 L 6 7";
   adornment.insertAt(0, h);
 };
 

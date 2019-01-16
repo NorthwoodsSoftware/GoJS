@@ -1,7 +1,13 @@
+/*
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*/
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,52 +25,40 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     var go = require("../release/go");
-    // A custom LinkingTool for manually routing a new link
     /**
-    * @constructor
-    * @extends LinkingTool
-    * @class
-    * This tool allows the user to draw a new link by clicking where the route should go,
-    * until clicking on a valid target port.
-    * <p/>
-    * This tool supports routing both orthogonal and straight links.
-    * You can customize the {@link LinkingBaseTool#temporaryLink} as needed to affect the
-    * appearance and behavior of the temporary link that is shown during the linking operation.
-    * You can customize the {@link LinkingTool#archetypeLinkData} to specify property values
-    * that can be data-bound by your link template for the Links that are actually created.
-    */
+     * The PolylineLinkingTool class the user to draw a new {@link Link} by clicking where the route should go,
+     * until clicking on a valid target port.
+     *
+     * This tool supports routing both orthogonal and straight links.
+     * You can customize the {@link LinkingBaseTool#temporaryLink} as needed to affect the
+     * appearance and behavior of the temporary link that is shown during the linking operation.
+     * You can customize the {@link LinkingTool#archetypeLinkData} to specify property values
+     * that can be data-bound by your link template for the Links that are actually created.
+     *
+     * If you want to experiment with this extension, try the <a href="../../extensionsTS/PolylineLinking.html">Polyline Linking</a> sample.
+     * @category Tool Extension
+     */
     var PolylineLinkingTool = /** @class */ (function (_super) {
         __extends(PolylineLinkingTool, _super);
+        /**
+         * Constructs an PolylineLinkingTool, sets {@link #portGravity} to 0, and sets the name for the tool.
+         */
         function PolylineLinkingTool() {
             var _this = _super.call(this) || this;
-            _this._firstMouseDown = null;
-            _this._horizontal = null;
+            _this._firstMouseDown = false;
+            _this._horizontal = false;
             _this.portGravity = 0; // must click on a target port in order to complete the link
             _this.name = 'PolylineLinking';
             return _this;
         }
         /**
-      * Use a "crosshair" cursor.
-      * @this {PolylineLinkingTool}
-      */
-        PolylineLinkingTool.prototype.doActivate = function () {
-            _super.prototype.doActivate.call(this);
-            this.diagram.currentCursor = "crosshair";
-            // until a mouse down occurs, allow the temporary link to be routed to the temporary node/port
-            this._firstMouseDown = true;
-        };
-        ;
-        /**
-        * This internal method adds a point to the route.
-        * During the operation of this tool, the very last point changes to follow the mouse point.
-        * This method is called by {@link #doMouseDown} in order to add a new "last" point.
-        * @this {PolylineLinkingTool}
-        * @param {Point} p
-        */
+         * @hidden @internal
+         * This internal method adds a point to the route.
+         * During the operation of this tool, the very last point changes to follow the mouse point.
+         * This method is called by {@link #doMouseDown} in order to add a new "last" point.
+         * @param {Point} p
+         */
         PolylineLinkingTool.prototype.addPoint = function (p) {
             if (this._firstMouseDown)
                 return;
@@ -73,13 +67,12 @@ var __extends = (this && this.__extends) || (function () {
             pts.add(p.copy());
             this.temporaryLink.points = pts;
         };
-        ;
         /**
-        * This internal method moves the last point of the temporary Link's route.
-        * This is called by {@link #doMouseMove} and other methods that want to adjust the end of the route.
-        * @this {PolylineLinkingTool}
-        * @param {Point} p
-        */
+         * @hidden @internal
+         * This internal method moves the last point of the temporary Link's route.
+         * This is called by {@link #doMouseMove} and other methods that want to adjust the end of the route.
+         * @param {Point} p
+         */
         PolylineLinkingTool.prototype.moveLastPoint = function (p) {
             if (this._firstMouseDown)
                 return;
@@ -97,14 +90,13 @@ var __extends = (this && this.__extends) || (function () {
             pts.setElt(pts.length - 1, p.copy());
             this.temporaryLink.points = pts;
         };
-        ;
         /**
-        * This internal method removes the last point of the temporary Link's route.
-        * This is called by the "Z" command in {@link #doKeyDown}
-        * and by {@link #doMouseUp} when a valid target port is found and we want to
-        * discard the current mouse point from the route.
-        * @this {PolylineLinkingTool}
-        */
+         * @hidden @internal
+         * This internal method removes the last point of the temporary Link's route.
+         * This is called by the "Z" command in {@link #doKeyDown}
+         * and by {@link #doMouseUp} when a valid target port is found and we want to
+         * discard the current mouse point from the route.
+         */
         PolylineLinkingTool.prototype.removeLastPoint = function () {
             if (this._firstMouseDown)
                 return;
@@ -115,11 +107,18 @@ var __extends = (this && this.__extends) || (function () {
             this.temporaryLink.points = pts;
             this._horizontal = !this._horizontal;
         };
-        ;
         /**
-        * Add a point to the route that the temporary Link is accumulating.
-        * @this {PolylineLinkingTool}
-        */
+         * Use a "crosshair" cursor.
+         */
+        PolylineLinkingTool.prototype.doActivate = function () {
+            _super.prototype.doActivate.call(this);
+            this.diagram.currentCursor = 'crosshair';
+            // until a mouse down occurs, allow the temporary link to be routed to the temporary node/port
+            this._firstMouseDown = true;
+        };
+        /**
+         * Add a point to the route that the temporary Link is accumulating.
+         */
         PolylineLinkingTool.prototype.doMouseDown = function () {
             if (!this.isActive) {
                 this.doActivate();
@@ -147,26 +146,22 @@ var __extends = (this && this.__extends) || (function () {
                 this.doCancel();
             }
         };
-        ;
         /**
-        * Have the temporary link reach to the last mouse point.
-        * @this {PolylineLinkingTool}
-        */
+         * Have the temporary link reach to the last mouse point.
+         */
         PolylineLinkingTool.prototype.doMouseMove = function () {
             if (this.isActive) {
                 this.moveLastPoint(this.diagram.lastInput.documentPoint);
                 _super.prototype.doMouseMove.call(this);
             }
         };
-        ;
         /**
-        * If this event happens on a valid target port (as determined by {@link LinkingBaseTool#findTargetPort}),
-        * we complete the link drawing operation.  {@link #insertLink} is overridden to transfer the accumulated
-        * route drawn by user clicks to the new {@link Link} that was created.
-        * <p/>
-        * If this event happens elsewhere in the diagram, this tool is not stopped: the drawing of the route continues.
-        * @this {PolylineLinkingTool}
-        */
+         * If this event happens on a valid target port (as determined by {@link LinkingBaseTool#findTargetPort}),
+         * we complete the link drawing operation.  {@link #insertLink} is overridden to transfer the accumulated
+         * route drawn by user clicks to the new {@link Link} that was created.
+         *
+         * If this event happens elsewhere in the diagram, this tool is not stopped: the drawing of the route continues.
+         */
         PolylineLinkingTool.prototype.doMouseUp = function () {
             if (!this.isActive)
                 return;
@@ -176,7 +171,7 @@ var __extends = (this && this.__extends) || (function () {
                     _super.prototype.doMouseUp.call(this);
                 }
                 else {
-                    var pts;
+                    var pts = void 0;
                     this.removeLastPoint(); // remove temporary point
                     var spot = this.isForwards ? target.toSpot : target.fromSpot;
                     if (spot.equals(go.Spot.None)) {
@@ -225,17 +220,10 @@ var __extends = (this && this.__extends) || (function () {
                 }
             }
         };
-        ;
         /**
-        * This method overrides the standard link creation method by additionally
-        * replacing the default link route with the custom one laid out by the user.
-        * @this {PolylineLinkingTool}
-        * @this {Node} fromnode
-        * @this {GraphObject} fromport
-        * @this {Node} tonode
-        * @this {GraphObject} toport
-        * @return {Link}
-        */
+         * This method overrides the standard link creation method by additionally
+         * replacing the default link route with the custom one laid out by the user.
+         */
         PolylineLinkingTool.prototype.insertLink = function (fromnode, fromport, tonode, toport) {
             var link = _super.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
             if (link !== null && !this._firstMouseDown) {
@@ -244,12 +232,10 @@ var __extends = (this && this.__extends) || (function () {
             }
             return link;
         };
-        ;
         /**
-        * This supports the "Z" command during this tool's operation to remove the last added point of the route.
-        * Type ESCAPE to completely cancel the operation of the tool.
-        * @this {PolylineLinkingTool}
-        */
+         * This supports the "Z" command during this tool's operation to remove the last added point of the route.
+         * Type ESCAPE to completely cancel the operation of the tool.
+         */
         PolylineLinkingTool.prototype.doKeyDown = function () {
             if (!this.isActive)
                 return;
@@ -263,7 +249,6 @@ var __extends = (this && this.__extends) || (function () {
                 _super.prototype.doKeyDown.call(this);
             }
         };
-        ;
         return PolylineLinkingTool;
     }(go.LinkingTool));
     exports.PolylineLinkingTool = PolylineLinkingTool;

@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PanelLayout GoJS Sample</title>
+<meta name="description" content="Example custom PanelLayout." />
+<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                  {
+                    "undoManager.isEnabled": true  // enable undo & redo
+                  });
+
+    function PanelLayoutCascading() {
+      go.PanelLayout.call(this);
+    }
+    go.Diagram.inherit(PanelLayoutCascading, go.PanelLayout);
+
+    /**
+     * Given the available size, measure the Panel and
+     * determine its expected drawing size. Sets the measuredBounds of the object.
+     *
+     * This must call {@link #measureElement} with each Panel element.
+     *
+     * This must also construct the union.width and union.height of the passed in union Rect argument.
+     *
+     * @this {PanelLayout}
+     * @param {Panel} panel Panel which called this layout
+     * @param {number} width expected width of the panel
+     * @param {number} height expected width of the panel
+     * @param {Array.<GraphObject>} elements Array of Panel elements
+     * @param {Rect} union rectangle to contain the expected union bounds of every element in the Panel. Useful for arrange.
+     * @param {number} minw minimum width of the panel
+     * @param {number} minh minimum height of the panel
+     */
+    PanelLayoutCascading.prototype.measure = function(panel, width, height, elements, union, minw, minh) {
+      var l = elements.length;
+      for (var i = 0; i < l; i++) {
+        var elem = elements[i];
+        this.measureElement(elem, width, height, minw, minh);
+        var mb = elem.measuredBounds;
+        union.width += mb.width;
+        union.height += mb.height;
+      }
+    }
+
+
+    /**
+     * Given the panel and its list of elements, arrange each element.
+     *
+     * This must call {@link #arrangeElement} with each Panel element, which will set that element's {@link GraphObject#actualBounds}.
+     *
+     * For arranging some elements, it is useful to know the total unioned area of every element.
+     * This Rect can be used to right-align or center-align, etc, elements within an area.
+     *
+     * @this {PanelLayout}
+     * @param {Panel} panel Panel which called this layout
+     * @param {Rect} ar arranged bounds of the panel
+     * @param {Array.<GraphObject>} elements Array of Panel elements
+     * @param {Rect} union rectangle, if properly constructed in {@link #measure}, that contains the expected union bounds of every element in the Panel.
+     */
+    PanelLayoutCascading.prototype.arrange = function(panel, elements, union) {
+      var l = elements.length;
+      var x = 0;
+      var y = 0;
+      for (var i = 0; i < l; i++) {
+        var elem = elements[i];
+        var mb = elem.measuredBounds;
+        this.arrangeElement(elem, x, y, mb.width, mb.height);
+        /*
+        * By incrementing the arranged x and y by the width and height, we arrange each object in a diagonal fashion:
+        *  A
+        *    B
+        *      C
+        *        D
+        */
+        x += mb.width;
+        y += mb.height;
+      }
+    }
+
+    // Name and register the PanelLayout, so we can reference it in go.GraphObject.make:
+    go.Panel.definePanelLayout('Cascading', new PanelLayoutCascading())
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, { fill: "transparent" }, new go.Binding("stroke", "color")),
+        $(go.Panel, "Cascading",
+          $(go.Shape, "RoundedRectangle", { width: 20, height: 20, fill: go.Brush.randomColor(), strokeWidth: 0 }),
+          $(go.Shape, "Diamond", { width: 25, height: 25, fill: go.Brush.randomColor(), strokeWidth: 0 }),
+          $(go.Shape, "Circle", { width: 25, height: 25, fill: go.Brush.randomColor(), strokeWidth: 0 }),
+          $(go.Shape, "TriangleDown", { width: 20, height: 20, fill: go.Brush.randomColor(), strokeWidth: 0 })
+        )
+      );
+
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      // no links
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       This also adds a border to help see the edges of the viewport. -->
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <p>
+    This sample demonstrates creating a simple custom <a>PanelLayout</a>. It merely cascades the elements diagonally,
+    as if combining a Horizontal and Vertical panel.
+  </p>
+  <p>
+    Creating your own Panel layouts is very uncommon, and you should not need to create your own to use GoJS effectively.
+    However there may be custom applications that require creating a custom Panel layout.
+  </p>
+</div>
+</body>
+</html>

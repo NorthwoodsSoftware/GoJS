@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -74,11 +74,10 @@
       Throughout this guide, we will use the following diagram setup as our starting point:
     </p>
 
-    <pre><code>
+    <pre class="lang-js">
 var $ = go.GraphObject.make;
 myDiagram = $(go.Diagram, "myDiagramDiv",
               {
-                initialContentAlignment: go.Spot.Center,
                 "undoManager.isEnabled": true
               });
 
@@ -99,7 +98,7 @@ myDiagram.model = new go.GraphLinksModel(
   { key: "Gamma", color: "lightgreen" },
   { key: "Delta", color: "pink" }
 ]);
-    </code></pre>
+    </pre>
 
     <p>
       The code produces this Diagram:
@@ -112,7 +111,6 @@ myDiagram.model = new go.GraphLinksModel(
       var $ = go.GraphObject.make;
       var myDiagram = $(go.Diagram, divname,
                     {
-                      initialContentAlignment: go.Spot.Center,
                       "undoManager.isEnabled": true
                     });
 
@@ -147,7 +145,7 @@ myDiagram.model = new go.GraphLinksModel(
       You can then use the Node reference to manipulate and inspect the Node.
     </p>
 
-    <pre><code>
+    <pre class="lang-js">
 var node = myDiagram.findNodeForKey("Alpha");
 
 // Selects the node:
@@ -158,7 +156,7 @@ myDiagram.select(node);
 // { key: "Alpha", color: "lightblue" }
 // plus some internal implementation details.
 console.log(node.data);
-    </code></pre>
+    </pre>
 
     <!-- LIVE -->
     <div id="myDiagramDiv2" class="diagramStyling" style="width:700px; height:150px"></div>
@@ -200,21 +198,19 @@ console.log(node.data);
       This next example uses <code>Diagram.nodes</code> and shows how to iterate over the collection.
     </p>
 
-    <pre><code>
-// wrapping code in startTransaction/commitTransaction automatically updates the display
-// and allows the effects to be undone
-myDiagram.startTransaction("decrease scale");
+    <pre class="lang-js">
+// Calling Diagram.commit executes the given function between startTransaction and commitTransaction
+// calls.  That automatically updates the display and allows the effects to be undone.
+myDiagram.commit(function(d) {  // this Diagram
 
-// get an iterator for all nodes
-var itr = myDiagram.nodes;
-while (itr.next()) {
-  var node = itr.value;
-  if (node.data.key === "Beta") continue; //skip Beta, just to contrast
-  node.scale = 0.4; // shrink each node
-}
+  // iterate over all nodes in Diagram
+  d.nodes.each(function(node) {
+    if (node.data.key === "Beta") continue; //skip Beta, just to contrast
+    node.scale = 0.4; // shrink each node
+  });
 
-myDiagram.commitTransaction("decrease scale");
-    </code></pre>
+}, "decrease scale");
+    </pre>
 
     <p>As a result we have very scaled-down nodes, except for Beta:</p>
 
@@ -222,19 +218,13 @@ myDiagram.commitTransaction("decrease scale");
     <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:150px"></div>
     <script>
     var myDiagram = setupDiagram("myDiagramDiv3");
-    // wrapping code in startTransaction/commitTransaction automatically updates the display
-    // and allows the effects to be undone
-    myDiagram.startTransaction("decrease scale");
-
-    // get an iterator of all nodes
-    var itr = myDiagram.nodes;
-    while (itr.next()) {
-      var node = itr.value;
-      if (node.data.key === "Beta") continue; // skip Beta, just to contrast
-      node.scale = 0.4; // shrink each node
-    }
-
-    myDiagram.commitTransaction("decrease scale");
+    myDiagram.commit(function(d) {  // this Diagram
+      // iterate over all nodes in Diagram
+      d.nodes.each(function(node) {
+        if (node.data.key === "Beta") return; //skip Beta, just to contrast
+        node.scale = 0.4; // shrink each node
+      });
+    }, "decrease scale");
     </script>
 
 
@@ -248,7 +238,7 @@ myDiagram.commitTransaction("decrease scale");
       To make it possible to find, we can give that Shape a name:
     </p>
 
-    <pre><code>
+    <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -258,7 +248,7 @@ myDiagram.nodeTemplate =
       { margin: 6, font: "18px sans-serif" },
       new go.Binding("text", "key"))
   );
-    </code></pre>
+    </pre>
 
     <p>
       Names allow us to easily find GraphObjects inside of Panels
@@ -273,42 +263,38 @@ myDiagram.nodeTemplate =
       Using this, we could make an HTML button that changes the fill of the Shape inside of a selected Node:
     </p>
 
-    <pre><code>
+    <pre class="lang-js">
 var selectionButton = document.getElementById("selectionButton");
 selectionButton.addEventListener("click", function() {
-  myDiagram.startTransaction("change color");
-  var it = myDiagram.selection.iterator;
-  while (it.next()) {
-    var node = it.value;
-    var shape = node.findObject("SHAPE");
-    // If there was a GraphObject in the node named SHAPE, then set its fill to red:
-    if (shape !== null) {
-      shape.fill = "red";
-    }
-  }
-  myDiagram.commitTransaction("change color");
+  myDiagram.commit(function(d) {
+    d.selection.each(function(node) {
+      var shape = node.findObject("SHAPE");
+      // If there was a GraphObject in the node named SHAPE, then set its fill to red:
+      if (shape !== null) {
+        shape.fill = "red";
+      }
+    });
+  }, "change color");
 });
-    </code></pre>
+    </pre>
 
     <!-- LIVE -->
     <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:150px"></div>
-    <button id="selectionButton">Change Shape.fill inside selected Nodes</button>
+    <button id="selectionButton">Select some Nodes; then click here to change Shape.fill inside selected Nodes</button>
     <script>
     var myDiagram = setupDiagram("myDiagramDiv4");
 
     var selectionButton = document.getElementById("selectionButton");
     selectionButton.addEventListener("click", function() {
-      myDiagram.startTransaction("change color");
-      var it = myDiagram.selection.iterator;
-      while (it.next()) {
-        var node = it.value;
-        var shape = node.findObject("SHAPE");
-        // If there was a GraphObject in the node named SHAPE, then set its fill to red:
-        if (shape !== null) {
-          shape.fill = "red";
-        }
-      }
-      myDiagram.commitTransaction("change color");
+      myDiagram.commit(function(d) {
+        d.selection.each(function(node) {
+          var shape = node.findObject("SHAPE");
+          // If there was a GraphObject in the node named SHAPE, then set its fill to red:
+          if (shape !== null) {
+            shape.fill = "red";
+          }
+        });
+      }, "change color");
     });
     </script>
 
@@ -320,7 +306,7 @@ selectionButton.addEventListener("click", function() {
       property data-bound to the "color" property of our Node data:
     </p>
 
-    <pre><code>
+    <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -330,21 +316,21 @@ myDiagram.nodeTemplate =
       { margin: 6, font: "18px sans-serif" },
       new go.Binding("text", "key"))
   );
-    </code></pre>
+    </pre>
 
     <p>
       Changing the Shape's <code>fill</code> property inside our node will not,
       as the Node template currently stands, update the model data.
     </p>
 
-    <pre><code>
+    <pre class="lang-js">
 var node = myDiagram.findNodeForKey("Alpha");
 var shape = node.findObject("SHAPE");
 shape.fill = "red";
 
 // outputs "lightblue" - the model has not changed!
 console.log(node.data.color);
-    </code></pre>
+    </pre>
 
     <p>
       This is undesirable in some cases.
@@ -366,7 +352,7 @@ console.log(node.data.color);
       However, we cannot modify the data directly by just setting the JavaScript property.
     </p>
 
-    <pre style="border: 6px solid red"><code>
+    <pre class="lang-js" style="border: 6px solid red"><
 var node = myDiagram.findNodeForKey("Alpha");
 
 // DO NOT DO THIS!
@@ -374,33 +360,32 @@ var node = myDiagram.findNodeForKey("Alpha");
 // that this arbitrary JavaScript object has been modified,
 // and the associated Node will not be updated appropriately
 node.data.color = "red";
-    </code></pre>
+    </pre>
 
     <p>
       Instead we should set the data property using the method
-      <code>Model.setDataProperty(data, propertyName, propertyValue)</code>.
+      <code>Model.set(data, propertyName, propertyValue)</code>.
     </p>
 
-    <pre style="border: 6px solid lime"><code>
-var node = myDiagram.findNodeForKey("Alpha");
-var model = myDiagram.model;
+    <pre class="lang-js" style="border: 6px solid lime">
+  var node = myDiagram.findNodeForKey("Alpha");
 
-// all model changes should happen in a transaction
-model.startTransaction("change color");
+  // Model.commit executes the given function within a transaction
+  myDiagram.model.commit(function(m) {  // this Model
 
-// This is the safe way to change model data
-// GoJS will be notified that the data has changed
-// and can update the node in the Diagram
-// and record the change in the UndoManager
-model.setDataProperty(node.data, "color", "red");
+    // This is the safe way to change model data
+    // GoJS will be notified that the data has changed
+    // and can update the node in the Diagram
+    // and record the change in the UndoManager
+    m.set(node.data, "color", "red");
 
-model.commitTransaction("change color");
+  }, "change color");
 
-// outputs "red" - the model has changed!
-console.log(node.data.color);
-    </code></pre>
+  // outputs "red" - the model has changed!
+  console.log(node.data.color);
+    </pre>
 
-    <pre><code>
+    <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -410,7 +395,7 @@ myDiagram.nodeTemplate =
       { margin: 6, font: "18px sans-serif" },
       new go.Binding("text", "key"))
   );
-    </code></pre>
+    </pre>
 
     <p>
       Note that there is no longer any need to name the Shape "SHAPE",

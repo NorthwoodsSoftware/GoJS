@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,6 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          initialContentAlignment: go.Spot.Center,
           nodeTemplate:
             $(go.Node, "Vertical",
               $(go.Panel,
@@ -30,8 +29,7 @@
                         new go.Binding("geometry", "", makeGeo)),
                       {
                         toolTip:
-                          $(go.Adornment, "Auto",
-                            $(go.Shape, { fill: "#EFEFCC" }),
+                          $("ToolTip",
                             $(go.TextBlock, { margin: 4 },
                               new go.Binding("text", "", function(data) {
                                    return data.color + ": " + data.start +
@@ -44,27 +42,35 @@
               $(go.TextBlock,
                 new go.Binding("text"))
             ),
-          model: new go.GraphLinksModel([  // node data
-              {
-                key: 1,
-                text: "full circle",
-                slices: [
-                  { start: -30, sweep: 60, color: "white" },
-                  { start: 30, sweep: 300, color: "red" }
+          model: $(go.GraphLinksModel,
+            {
+              copiesArrays: true,
+              copiesArrayObjects: true,
+              nodeDataArray:
+                [  // node data
+                  {
+                    key: 1,
+                    text: "full circle",
+                    slices: [
+                      { start: -30, sweep: 60, color: "white" },
+                      { start: 30, sweep: 300, color: "red" }
+                    ]
+                  },
+                  {
+                    key: 2,
+                    text: "partial circle",
+                    slices: [
+                      { start: 0, sweep: 120, color: "lightgreen" },
+                      { start: 120, sweep: 70, color: "blue" },
+                      { start: 250, sweep: 20, color: "yellow" }
+                    ]
+                  }
+                ],
+              linkDataArray:
+                [  // link data
+                  { from: 1, to: 2 }
                 ]
-              },
-              {
-                key: 2,
-                text: "partial circle",
-                slices: [
-                  { start: 0, sweep: 120, color: "lightgreen" },
-                  { start: 120, sweep: 70, color: "blue" },
-                  { start: 250, sweep: 20, color: "yellow" }
-                ]
-              }
-            ], [  // link data
-              { from: 1, to: 2 }
-            ])
+            })
         }
       );
 

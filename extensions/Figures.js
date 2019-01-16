@@ -14,7 +14,7 @@
 * @param {number=} min defaults to zero
 * @param {number=} max defaults to Infinity
 * @class
-* This FigureParamter class describes various properties each parameter uses in figures.
+* This FigureParameter class describes various properties each parameter uses in figures.
 */
 function FigureParameter(name, def, min, max) {
   if (min === undefined/*notpresent*/) min = 0.0;
@@ -515,11 +515,48 @@ go.Shape.defineFigureGenerator("TriangleUpRight", function(shape, w, h) {
 
 go.Shape.defineFigureGenerator("RightTriangle", "TriangleDownLeft");
 
-go.Shape.setFigureParameter("Parallelogram1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+go.Shape.setFigureParameter("Parallelogram1", 0, new FigureParameter("Indent", .1, -.99, .99));
 go.Shape.defineFigureGenerator("Parallelogram1", function(shape, w, h) {
-  var param1 = shape ? shape.parameter1 : NaN;
-  // Topleft corner's x distance from leftmost point
-  if (isNaN(param1)) param1 = 10; // default value
+  var param1 = shape ? shape.parameter1 : NaN; // indent's percent distance
+  if (isNaN(param1)) param1 = 0.1;
+  else if (param1 < -1) param1 = -1;
+  else if (param1 > 1) param1 = 1;
+  var indent = Math.abs(param1) * w;
+
+
+  if (param1 === 0) {
+    var geo = new go.Geometry(go.Geometry.Rectangle);
+    geo.startX = 0;
+    geo.startY = 0;
+    geo.endX = w;
+    geo.endY = h;
+    return geo;
+  } else {
+    var geo = new go.Geometry();
+    if (param1 > 0) {
+      geo.add(new go.PathFigure(indent, 0)
+                  .add(new go.PathSegment(go.PathSegment.Line, w, 0))
+                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
+                  .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
+    } else {  // param1 < 0
+      geo.add(new go.PathFigure(0, 0)
+                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
+                  .add(new go.PathSegment(go.PathSegment.Line, w, h))
+                  .add(new go.PathSegment(go.PathSegment.Line, indent, h).close()));
+    }
+    if (indent < w / 2) {
+      geo.setSpots(indent / w, 0, (w - indent) / w, 1);
+    }
+    return geo;
+  }
+});
+go.Shape.defineFigureGenerator("Parallelogram", "Parallelogram1"); // alias
+
+// Parallelogram with absolutes instead of scaling
+go.Shape.setFigureParameter("Parallelogram2", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+go.Shape.defineFigureGenerator("Parallelogram2", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // indent's x distance
+  if (isNaN(param1)) param1 = 10;
   else if (param1 < -w) param1 = -w;
   else if (param1 > w) param1 = w;
   var indent = Math.abs(param1);
@@ -551,90 +588,51 @@ go.Shape.defineFigureGenerator("Parallelogram1", function(shape, w, h) {
   }
 });
 
-go.Shape.setFigureParameter("Parallelogram2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
-go.Shape.defineFigureGenerator("Parallelogram2", function(shape, w, h) {
-  var param1 = shape ? shape.parameter1 : NaN;
-  // Topleft corner's x distance from leftmost point
-  if (isNaN(param1)) param1 = 0.1; // default value
-  else if (param1 < -1) param1 = -1;
-  else if (param1 > 1) param1 = 1;
-  var indent = Math.abs(param1) * w;
-
-  if (param1 === 0) {
-    var geo = new go.Geometry(go.Geometry.Rectangle);
-    geo.startX = 0;
-    geo.startY = 0;
-    geo.endX = w;
-    geo.endY = h;
-    return geo;
-  } else {
-    var geo = new go.Geometry();
-    if (param1 > 0) {
-      geo.add(new go.PathFigure(indent, 0)
-                  .add(new go.PathSegment(go.PathSegment.Line, w, 0))
-                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
-                  .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
-    } else {  // param1 < 0
-      geo.add(new go.PathFigure(0, 0)
-                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
-                  .add(new go.PathSegment(go.PathSegment.Line, w, h))
-                  .add(new go.PathSegment(go.PathSegment.Line, indent, h).close()));
-    }
-    if (indent < w / 2) {
-      geo.setSpots(indent / w, 0, (w - indent) / w, 1);
-    }
-    return geo;
-  }
-});
-
-go.Shape.defineFigureGenerator("Parallelogram", "Parallelogram1");
-
-go.Shape.setFigureParameter("Trapezoid1", 0, new FigureParameter("Indent", 10, -Infinity, Infinity));
+go.Shape.setFigureParameter("Trapezoid1", 0, new FigureParameter("Indent", .2, -.99, .99));
 go.Shape.defineFigureGenerator("Trapezoid1", function(shape, w, h) {
-  var param1 = shape ? shape.parameter1 : NaN;
-  // Distance from topleft of bounding rectangle,
-  // in % of the total width, of the topleft corner
-  if (isNaN(param1)) param1 = 10; // default value
-  else if (param1 < -w) param1 = -w/2;
-  else if (param1 > w) param1 = w/2;
-  var indent = Math.abs(param1);
-
-  if (param1 === 0) {
-    var geo = new go.Geometry(go.Geometry.Rectangle);
-    geo.startX = 0;
-    geo.startY = 0;
-    geo.endX = w;
-    geo.endY = h;
-    return geo;
-  } else {
-    var geo = new go.Geometry();
-    if (param1 > 0) {
-      geo.add(new go.PathFigure(indent, 0)
-                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
-                  .add(new go.PathSegment(go.PathSegment.Line, w, h))
-                  .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
-    } else {  // param1 < 0
-      geo.add(new go.PathFigure(0, 0)
-                  .add(new go.PathSegment(go.PathSegment.Line, w, 0))
-                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
-                  .add(new go.PathSegment(go.PathSegment.Line, indent, h).close()));
-    }
-    if (indent < w / 2) {
-      geo.setSpots(indent / w, 0, (w - indent) / w, 1);
-    }
-    return geo;
-  }
-});
-
-go.Shape.setFigureParameter("Trapezoid2", 0, new FigureParameter("IndentFraction", 0.2, -0.999, 0.999));
-go.Shape.defineFigureGenerator("Trapezoid2", function(shape, w, h) {
-  var param1 = shape ? shape.parameter1 : NaN;
-  // Distance from topleft of bounding rectangle,
-  // in % of the total width, of the topleft corner
-  if (isNaN(param1)) param1 = 0.2; // default value
+  var param1 = shape ? shape.parameter1 : NaN; // indent's percent distance
+  if (isNaN(param1)) param1 = 0.2;
   else if (param1 < 0.5) param1 = -0.5;
   else if (param1 > 0.5) param1 = 0.5;
   var indent = Math.abs(param1) * w;
+
+  if (param1 === 0) {
+    var geo = new go.Geometry(go.Geometry.Rectangle);
+    geo.startX = 0;
+    geo.startY = 0;
+    geo.endX = w;
+    geo.endY = h;
+    return geo;
+  } else {
+    var geo = new go.Geometry();
+    if (param1 > 0) {
+      geo.add(new go.PathFigure(indent, 0)
+                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, 0))
+                  .add(new go.PathSegment(go.PathSegment.Line, w, h))
+                  .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
+    } else {  // param1 < 0
+      geo.add(new go.PathFigure(0, 0)
+                  .add(new go.PathSegment(go.PathSegment.Line, w, 0))
+                  .add(new go.PathSegment(go.PathSegment.Line, w - indent, h))
+                  .add(new go.PathSegment(go.PathSegment.Line, indent, h).close()));
+    }
+    if (indent < w / 2) {
+      geo.setSpots(indent / w, 0, (w - indent) / w, 1);
+    }
+    return geo;
+  }
+});
+go.Shape.defineFigureGenerator("Trapezoid", "Trapezoid1"); // alias
+
+// Trapezoid with absolutes instead of scaling
+go.Shape.setFigureParameter("Trapezoid2", 0, new FigureParameter("Indent", 20, -Infinity, Infinity));
+go.Shape.defineFigureGenerator("Trapezoid2", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // indent's x distance
+  if (isNaN(param1)) param1 = 20; // default value
+  else if (param1 < -w) param1 = -w / 2;
+  else if (param1 > w) param1 = w / 2;
+  var indent = Math.abs(param1);
+
 
   if (param1 === 0) {
     var geo = new go.Geometry(go.Geometry.Rectangle);
@@ -699,8 +697,6 @@ go.Shape.defineFigureGenerator("ManualOperation", function(shape, w, h) {
     return geo;
   }
 });
-
-go.Shape.defineFigureGenerator("Trapezoid", "Trapezoid1");
 
 
 // The following functions are used by a group of regular figures that are defined below:
@@ -1335,10 +1331,10 @@ go.Shape.defineFigureGenerator("ThickX", function(shape, w, h) {
     var a2 = Math.atan2(h, w);
     var dx = param1 - Math.min(Math.cos(a2) * param1/2, w2);
     var dy = param1 - Math.min(Math.sin(a2) * param1/2, h2);
+
     var geo = new go.Geometry();
     var fig = new go.PathFigure(dx, 0, true);
     geo.add(fig);
-
     fig.add(new go.PathSegment(go.PathSegment.Line, w2, .2 * h));
     fig.add(new go.PathSegment(go.PathSegment.Line, w-dx, 0));
     fig.add(new go.PathSegment(go.PathSegment.Line, w, dy));
@@ -1358,10 +1354,10 @@ go.Shape.setFigureParameter("ThinX", 0, new FigureParameter("Thickness", 10));
 go.Shape.defineFigureGenerator("ThinX", function(shape, w, h) {
   var param1 = shape ? shape.parameter1 : NaN;
   if (isNaN(param1) || param1 < 0) param1 = 10;
+
   var geo = new go.Geometry();
   var fig = new go.PathFigure(.1 * w, 0, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, .5 * w, .4 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, .9 * w, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, .1 * h));
@@ -1376,17 +1372,14 @@ go.Shape.defineFigureGenerator("ThinX", function(shape, w, h) {
   return geo;
 });
 
-// adjust the width of the vertical beam
 go.Shape.setFigureParameter("SquareIBeam", 0, new FigureParameter("BeamWidth", 0.2, 0.1, 0.9));
 go.Shape.defineFigureGenerator("SquareIBeam", function(shape, w, h) {
-  var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  // Width of the ibeam in % of the total width
+  var param1 = shape ? shape.parameter1 : NaN; // width of the ibeam in % of the total width
   if (isNaN(param1)) param1 = .2;
+
+  var geo = new go.Geometry();
   var fig = new go.PathFigure(0, 0, true);
   geo.add(fig);
-
-  var fig = new go.PathFigure(0, 0, true);
   fig.add(new go.PathSegment(go.PathSegment.Line, w, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, param1 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, (.5 + param1 / 2) * w, param1 * h));
@@ -1401,23 +1394,16 @@ go.Shape.defineFigureGenerator("SquareIBeam", function(shape, w, h) {
   return geo;
 });
 
-// parameter allows it easy to adjust the roundness of the curves that cut inward
-go.Shape.setFigureParameter("RoundedIBeam", 0, new FigureParameter("SideCurved", .5, .05, .65));
+go.Shape.setFigureParameter("RoundedIBeam", 0, new FigureParameter("Curviness", .5, .05, .65));
 go.Shape.defineFigureGenerator("RoundedIBeam", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // curviness of the ibeam relative to total width
+  if (isNaN(param1)) param1 = .5;
+
   var geo = new go.Geometry();
   var fig = new go.PathFigure(0, 0, true);
   geo.add(fig);
-
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .5; // default value of Parameter1
-  // Parameter 1 is based off of the width
-  // I guess I will call it "curved"
-  // param=.5 = 50% curved
-  // .65 has to be the max
-  // .05 has to be min, starts to loose roundesss after that
-  fig.add(new go.PathSegment(go.PathSegment.Line, w, 0)); // top bar
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, h, Math.abs((1 - param1)) * w, .25 * h,
-  Math.abs((1 - param1)) * w, .75 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, h, Math.abs((1 - param1)) * w, .25 * h, Math.abs((1 - param1)) * w, .75 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, param1 * w, .75 * h,
   param1 * w, .25 * h).close());
@@ -1561,7 +1547,7 @@ go.Shape.defineFigureGenerator("Peace", function(shape, w, h) {
   var w2 = 0.5 * w;
   var h2 = 0.5 * h;
   return new go.Geometry()
-         .add(new go.PathFigure(w2, 0, true)
+         .add(new go.PathFigure(w2, 0, false)
               .add(new go.PathSegment(go.PathSegment.Arc, 270, 360, w2, h2, w2, h2))
               .add(new go.PathSegment(go.PathSegment.Line, w2, h))
               .add(new go.PathSegment(go.PathSegment.Move, w2, h2))
@@ -1686,29 +1672,30 @@ go.Shape.defineFigureGenerator("Fragile", function(shape, w, h) {
               .add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .25 * w, .5 * h, 0, .25 * h).close()));
 });
 
-go.Shape.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 20));
+go.Shape.setFigureParameter("HourGlass", 0, new FigureParameter("Thickness", 30));
 go.Shape.defineFigureGenerator("HourGlass", function(shape, w, h) {
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1) || param1 < 0) param1 = 30; // default value for param1
-  var line1 = ((w - param1) / 2) + param1; // 35 + 30 = 65
-  var line2 = ((w - param1) / 2); // 100 - 30 = 70/2 = 35
+  var param1 = shape ? shape.parameter1 : NaN; // width at middle of hourglass
+  if (isNaN(param1) || param1 < 0) param1 = 30;
+  if (param1 > w) param1 = w;
+  var x1 = (w - param1) / 2;
+  var x2 = x1 + param1;
   return new go.Geometry()
-         .add(new go.PathFigure(line1, 0.5 * h)  // This is the right side, this equals 65, (1 - param1) * w
+         .add(new go.PathFigure(x2, 0.5 * h)
               .add(new go.PathSegment(go.PathSegment.Line, w, h))
               .add(new go.PathSegment(go.PathSegment.Line, 0, h))
-              .add(new go.PathSegment(go.PathSegment.Line, line2, 0.5 * h))
+              .add(new go.PathSegment(go.PathSegment.Line, x1, 0.5 * h))
               .add(new go.PathSegment(go.PathSegment.Line, 0, 0))
               .add(new go.PathSegment(go.PathSegment.Line, w, 0).close()));
 });
 
 go.Shape.defineFigureGenerator("Lightning", function(shape, w, h) {
   return new go.Geometry()
-         .add(new go.PathFigure(0, 0.65 * h)
-              .add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, 0))
-              .add(new go.PathSegment(go.PathSegment.Line, 0.25 * w, 0.55 * h))
-              .add(new go.PathSegment(go.PathSegment.Line, 0.9 * w, 0.40 * h))
+         .add(new go.PathFigure(0, 0.55 * h)
+              .add(new go.PathSegment(go.PathSegment.Line, 0.6 * w, 0))
+              .add(new go.PathSegment(go.PathSegment.Line, 0.3 * w, 0.45 * h))
+              .add(new go.PathSegment(go.PathSegment.Line, w, 0.45 * h))
               .add(new go.PathSegment(go.PathSegment.Line, 0.4 * w, h))
-              .add(new go.PathSegment(go.PathSegment.Line, 0.65 * w, 0.50 * h).close()));
+              .add(new go.PathSegment(go.PathSegment.Line, 0.7 * w, 0.55 * h).close()));
 });
 
 go.Shape.defineFigureGenerator("GenderMale", function(shape, w, h) {
@@ -1964,28 +1951,32 @@ go.Shape.defineFigureGenerator("LogicUnion", function(shape, w, h) {
          .setSpots(0, 0, 1, 0.5);
 });
 
+go.Shape.setFigureParameter("Arrow", 0, new FigureParameter("ArrowheadWidth", .3, .01, .99));
+go.Shape.setFigureParameter("Arrow", 1, new FigureParameter("TailHeight", .3, .01, .99));
 go.Shape.defineFigureGenerator("Arrow", function(shape, w, h) {
-  var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  var param2 = shape ? shape.parameter2 : NaN;
-  // % from the edge the ends of the arrow are
+  var param1 = shape ? shape.parameter1 : NaN; // % width of arrowhead
   if (isNaN(param1)) param1 = .3;
-  // Arrow width
+  var param2 = shape ? shape.parameter2 : NaN; // % height of tail
   if (isNaN(param2)) param2 = .3;
-  var fig = new go.PathFigure(0, (.5 - param2 / 2) * h, true);
-  geo.add(fig);
 
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, (.5 - param2 / 2) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, 0));
+  var x = (1 - param1) * w;
+  var y1 = (.5 - param2 / 2) * h;
+  var y2 = (.5 + param2 / 2) * h;
+
+  var geo = new go.Geometry();
+  var fig = new go.PathFigure(0, y1, true);
+  geo.add(fig);
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, .5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, (.5 + param2 / 2) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, (.5 + param2 / 2) * h).close());
-  geo.spot1 = new go.Spot(0, .5 - param2 / 2);
-  var temp = getIntersection(0, .5 + param2 / 2,
-      1, .5 + param2 / 2,
-      1 - param1, 1,
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y2).close());
+  geo.spot1 = new go.Spot(0, y1 / h);
+  var temp = getIntersection(0, y2 / h,
+      1, y2 / h,
+      x / w, 1,
       1, .5,
       tempPoint());
   geo.spot2 = new go.Spot(temp.x, temp.y);
@@ -1993,32 +1984,39 @@ go.Shape.defineFigureGenerator("Arrow", function(shape, w, h) {
   return geo;
 });
 
-go.Shape.setFigureParameter("Arrow2", 0, new FigureParameter("LongHeight", 30));
+// Arrow with absolutes instead of scaling
+go.Shape.setFigureParameter("Arrow2", 0, new FigureParameter("ArrowheadWidth", 30));
+go.Shape.setFigureParameter("Arrow2", 0, new FigureParameter("TailHeight", 30));
 go.Shape.defineFigureGenerator("Arrow2", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // width of arrowhead
+  if (isNaN(param1)) param1 = 30;
+  if (param1 > w) param1 = w;
+  var param2 = shape ? shape.parameter2 : NaN; // height of tail
+  if (isNaN(param2)) param2 = 30;
+  param2 = Math.min(param2, h / 2);
+
+  var x = w - param1;
+  var y1 = (h - param2) / 2;
+  var y2 = y1 + param2;
+
   var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  var param2 = shape ? shape.parameter2 : NaN;
-  // % from the edge the ends of the arrow are
-  if (isNaN(param1)) param1 = .3;
-  // Arrow width
-  if (isNaN(param2)) param2 = 30; // 30 is the default value
-  param2 = Math.min(param2, h/2);
-  var lineWidth = 25;
-  var line1 = ((h - param2) / 2) + param2; // 60
-  var line2 = ((h - param2) / 2); // 100 - 24
-  // 100 - 25 = 75
-  // 75/2 = 37.5
-  var fig = new go.PathFigure(0, line2, true);
+  var fig = new go.PathFigure(0, y1, true);
   geo.add(fig);
-
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, line2)); // ends at 56,28
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, .5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, line1)); // height here matters
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, line1).close());
-
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, x, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y2).close());
+  geo.spot1 = new go.Spot(0, y1 / h);
+  var temp = getIntersection(0, y2 / h,
+      1, y2 / h,
+      x / w, 1,
+      1, .5,
+      tempPoint());
+  geo.spot2 = new go.Spot(temp.x, temp.y);
+  freePoint(temp);
   return geo;
 });
 
@@ -2049,305 +2047,305 @@ go.Shape.defineFigureGenerator("DoubleArrow", function(shape, w, h) {
   return geo;
 });
 
-// JC
-// added a new parameter to allow to adjust the connecter piece height
-// might need to do something about the parameter min and max and make it more accesible
-go.Shape.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .7, .5, 1));
+go.Shape.setFigureParameter("DoubleEndArrow", 0, new FigureParameter("ConnecterHeight", .3, .01, .99));
 go.Shape.defineFigureGenerator("DoubleEndArrow", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // height of midsection
+  if (isNaN(param1)) param1 = .3;
+
+  var y1 = (.5 - param1 / 2) * h;
+  var y2 = (.5 + param1 / 2) * h;
+
   var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .7; // default value for param1
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, param1 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, param1 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, y2));
   fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, .5 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, (1 - param1) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, (1 - param1) * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1));
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
-  var temp = getIntersection(0, .5, .3, 0, 0, .3, .3, .3, tempPoint());  // ?? constant
+  var temp = getIntersection(0, .5,
+    .3, 0,
+    0, y1 / h,
+    .1, y1 / h,
+    tempPoint());
   geo.spot1 = new go.Spot(temp.x, temp.y);
-  temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, temp);  // ?? constant
+  temp = getIntersection(.7, 1,
+    1, .5,
+    0, y2 / h,
+    1, y2 / h,
+    temp);
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC
-// this file is the same version as the one above only it uses absolute values
-// ABSOLUTEValues
-// this allows the user to set exact values
-// set it to an exact value that willl NOT scale
-// also allowing the user to edit the height of those two arrows
-// JC Allowing to modify adjustment too
+// DoubleEndArrow with absolutes instead of scaling
 go.Shape.setFigureParameter("DoubleEndArrow2", 0, new FigureParameter("ConnecterHeight", 40));
-go.Shape.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowPointerHeight", 70));
+go.Shape.setFigureParameter("DoubleEndArrow2", 1, new FigureParameter("ArrowHeight", 100));
 go.Shape.defineFigureGenerator("DoubleEndArrow2", function(shape, w, h) {
-  // This is absolute
-  var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = 70; // default value for param1
-  var param2 = shape ? shape.parameter2 : NaN;
-  if (isNaN(param2)) param2 = 90; // default value for param2
-  var fig = new go.PathFigure(w, .5 * h, true);
-  geo.add(fig);
+  var param1 = shape ? shape.parameter1 : NaN; // height of midsection
+  if (isNaN(param1)) param1 = 40;
+  var param2 = shape ? shape.parameter2 : NaN; // height of arrows
+  if (isNaN(param2)) param2 = 100;
 
-  // everything is based off of having things be 100 w and 100 h
-  var lineThickness = 40;
-  // param1 will represent the line thickness
-  // lets say H = 100, w = 100
-  // h - 40 = 60
-  // 60/2 = 30. each length needs to be 30
-  var line1 = ((h - param1) / 2) + param1; // 70
-  var line2 = ((h - param1) / 2); // 30
-  // With abolute value
-  if (param1 > h) {
-    // in attempts to leave the shape with the same proportions
-    var newParamValue = h / param1; // this will be the proportion we try to recreate
-    // h - newParamValue =
-    var newMiddle = h * newParamValue; // calculates how big the middle will be now
-    // Using the same formula above, we recalculate with the value for the newMiddle instead of Param1
-    line1 = ((h - newMiddle) / 2) + newMiddle;
-    line2 = ((h - newMiddle) / 2);
-  } else {
-    var line1 = ((h - param1) / 2) + param1;
-    var line2 = ((h - param1) / 2);
-  };
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h)); // 70, 100
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, line1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
-  var temp = getIntersection(0, .5, .3, 0, 0, .3, .3, .3, tempPoint());  // ?? constant
-  geo.spot1 = new go.Spot(temp.x, temp.y);
-  temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, temp);  // ?? constant
-  geo.spot2 = new go.Spot(temp.x, temp.y);
-  freePoint(temp);
   /*
-  Backup in case i mess up
-  var line1 = ((h - param1) /2) + param1;
-  var line2 = ((h - param1) /2);
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, line1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
-  var temp = getIntersection(0, .5, .3, 0, 0, .3, .3, .3, tempPoint());  // ?? constant
-  geo.spot1 = new go.Spot(temp.x, temp.y);
-  temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, temp);  // ?? constant
-  geo.spot2 = new go.Spot(temp.x, temp.y);
-  freePoint(temp);
+    y1outer
+      /|     |\
+     / |     | \
+    /  y1----   \
+   /             \
+   \             /
+    \  y2----   /
+     \ |     | /
+      \|     |/
+    y2outer
   */
+  var y1 = (h - param1) / 2;
+  var y2 = y1 + param1;
+  var y1outer = (h - param2) / 2;
+  var y2outer = y1outer + param2;
+  if (param1 > h || param2 > h) {
+    if (param2 > param1) {
+      param1 = param1 * h / param2; // use similar ratio
+      y1 = (h - param1) / 2;
+      y2 = y1 + param1;
+      y1outer = 0;
+      y2outer = h;
+    } else {
+      y1 = 0;
+      y2 = h;
+      y1outer = 0;
+      y2outer = h;
+    }
+  }
+  var geo = new go.Geometry();
+  var fig = new go.PathFigure(w, .5 * h, true);
+  geo.add(fig);
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, y2outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .5 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, y1outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .3 * w, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1outer).close());
+  var temp = getIntersection(0, .5,
+    .3, y1outer / h,
+    0, y1 / h,
+    1, y1 / h,
+    tempPoint());
+  geo.spot1 = new go.Spot(temp.x, temp.y);
+  temp = getIntersection(.7, y2outer / h,
+    1, .5,
+    0, y2 / h,
+    1, y2 / h,
+    temp);
+  geo.spot2 = new go.Spot(temp.x, temp.y);
+  freePoint(temp);
+
   return geo;
 });
 
-// JC
-// this parameter makes it possible for the user to set a width for a long edge of the IBeamArrow
-// allows the user to adjust the vertical width of the long section, i might have to draw a diagram
-go.Shape.setFigureParameter("IBeamArrow", 0, new FigureParameter("ArrowLengthWidth", .7, .51, .97));
-// go.Shape.setFigureParameter("IBeamArrow", 1, new FigureParameter("ArrowBackSection"))
+go.Shape.setFigureParameter("IBeamArrow", 0, new FigureParameter("ConnectorHeight", .7, .51, .97));
 go.Shape.defineFigureGenerator("IBeamArrow", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // height of midsection
+  if (isNaN(param1)) param1 = .3;
+
+  var y1 = (.5 - param1 / 2) * h;
+  var y2 = (.5 + param1 / 2) * h;
+
   var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .7; // default value is 0 for parameter
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, param1 * h)); // 70
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, param1 * h)); // bottom horizontal line
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, y2));
   fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, 0));
-  // above value is .7
-  // below value is .3
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, (1 - param1) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, (1 - param1) * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1));
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
-  geo.spot1 = new go.Spot(0, .3);
-  var temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, tempPoint());  // ?? constant
+  geo.spot1 = new go.Spot(0, y1 / h);
+  var temp = getIntersection(.7, 1,
+    1, .5,
+    0, y2 / h,
+    1, y2 / h,
+    tempPoint());
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC
-// recreating the same thing above only using absolute values to figure out the size of the long side
-go.Shape.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ArrowLengthWidth", 40));
-// go.Shape.setFigureParameter("IBeamArrow2", 1, new FigureParameter("ArrowBackSection"))
+// IBeamArrow with absolutes instead of scaling
+go.Shape.setFigureParameter("IBeamArrow2", 0, new FigureParameter("ConnectorHeight", 40));
+go.Shape.setFigureParameter("IBeamArrow2", 1, new FigureParameter("BeamArrowHeight", 100));
 go.Shape.defineFigureGenerator("IBeamArrow2", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // height of midsection
+  if (isNaN(param1)) param1 = 40;
+  var param2 = shape ? shape.parameter2 : NaN; // height of beam and arrow
+  if (isNaN(param2)) param2 = 100;
+
+  var y1 = (h - param1) / 2;
+  var y2 = y1 + param1;
+  var y1outer = (h - param2) / 2;
+  var y2outer = y1outer + param2;
+  if (param1 > h || param2 > h) {
+    if (param2 > param1) {
+      param1 = param1 * h / param2; // use similar ratio
+      y1 = (h - param1) / 2;
+      y2 = y1 + param1;
+      y1outer = 0;
+      y2outer = h;
+    } else {
+      y1 = 0;
+      y2 = h;
+      y1outer = 0;
+      y2outer = h;
+    }
+  }
   var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = 40; // default value is 0 for parameter
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
-  var line1 = ((h - param1) / 2) + param1; // 100 - 40 = 60/2 = 30 + 40 = 70
-  var line2 = ((h - param1) / 2);
-  if (param1 >= h) {
-    // in attempts to leave the shape with the same proportions
-    var newParamValue = h / param1; // this will be the proportion we try to recreate
-    // h - newParamValue =
-    var newMiddle = h * newParamValue; // calculates how big the middle will be now
-    // Using the same formula above, we recalculate with the value for the newMiddle instead of Param1
-    line1 = ((h - newMiddle) / 2) + newMiddle;
-    line2 = ((h - newMiddle) / 2);
-  } else {
-    var line1 = ((h - param1) / 2) + param1;
-    var line2 = ((h - param1) / 2);
-  };
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, line1)); // bottom horizontal line
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, 0));
-  // above value is .7
-  // below value is .3
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
-  geo.spot1 = new go.Spot(0, .3);
-  var temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, tempPoint());  // ?? constant
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, y2outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y2outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y1outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, y1outer));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1outer).close());
+  geo.spot1 = new go.Spot(0, y1 / h);
+  var temp = getIntersection(.7, y2outer / h,
+    1, .5,
+    0, y2 / h,
+    1, y2 / h,
+    tempPoint());
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC
-// go.Shape.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", 0.25, 0.1, 0.65));
-// back point that cuts into the pointer
-go.Shape.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", .2, 0, .2));
+go.Shape.setFigureParameter("Pointer", 0, new FigureParameter("BackPoint", .1, 0, .2));
 go.Shape.defineFigureGenerator("Pointer", function(shape, w, h) {
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .1; // BackPoint Default Value
-  // var param1 shape ? shape.parameter1 : NaN;
-  // if (isNaN(param1)) param1 = .5;
+  var param1 = shape ? shape.parameter1 : NaN; // how much the back of the pointer comes in
+  if (isNaN(param1)) param1 = .1;
+
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, .5 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, param1 * w, .5 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0).close());
-  geo.spot1 = new go.Spot(.2, .35);
+  geo.spot1 = new go.Spot(param1, .35);
   var temp = getIntersection(.2, .65, 1, .65, 0, 1, 1, .5, tempPoint());  // ?? constant
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC - FigureParameter the steepness of the rounded edge
-// go.Shape.setFigureParameter("RoundedPointer", 0 new FigureParameter("RoundedEdged", 0, 0, 0));// ???
+go.Shape.setFigureParameter("RoundedPointer", 0, new FigureParameter("RoundedEdge", .3, 0, .5));
 go.Shape.defineFigureGenerator("RoundedPointer", function(shape, w, h) {
-  // var param1 = shape ? shape.parameter1 : NaN;
-  // if (isNaN(param1)) param1 = 5; // default value, this represents the roundness of the back arrow and how "steep" it is
+  var param1 = shape ? shape.parameter1 : NaN; // how much the curved back of the pointer comes in
+  if (isNaN(param1)) param1 = .3;
+
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .5 * w, .75 * h,
-      .5 * w, .25 * h).close());
-  geo.spot1 = new go.Spot(.4, .35);
-  var temp = getIntersection(.2, .65, 1, .65, 0, 1, 1, .5, tempPoint());  // ?? constant
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, param1 * w, .75 * h,
+      param1 * w, .25 * h).close());
+  geo.spot1 = new go.Spot(param1, .35);
+  var temp = getIntersection(0, .65, 1, .65, 0, 1, 1, .5, tempPoint());  // ?? constant
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC Adding soem parameters to this
-// add param to make long part adjustable
-go.Shape.setFigureParameter("SplitEndArrow", 0, new FigureParameter("LengthThickness", 0.7, 0.52, .9));
+go.Shape.setFigureParameter("SplitEndArrow", 0, new FigureParameter("TailHeight", 0.4, 0.01, .99));
 go.Shape.defineFigureGenerator("SplitEndArrow", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // % height of arrow tail
+  if (isNaN(param1)) param1 = .4;
+
+  var y1 = (.5 - param1 / 2) * h;
+  var y2 = (.5 + param1 / 2) * h;
+
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .7 // default value if user has not set one
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, param1 * h)); // line 1 need to add a param to this
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y2));
   fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, .5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, (1 - param1) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, (1 - param1) * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1));
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
   geo.spot1 = new go.Spot(.2, .3);
-  var temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, tempPoint());  // ?? constant
+  var temp = getIntersection(.7, 1,
+    1, .5,
+    0, y2 / h,
+    1, y2 / h,
+    tempPoint());
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC
-// the same thing as splitendarrow except with the ability to edit the line was absolute value
-go.Shape.setFigureParameter("SplitEndArrow2", 0, new FigureParameter("LengthThickness", 50));
+// SplitEndArrow with absolutes instead of scaling
+go.Shape.setFigureParameter("SplitEndArrow2", 0, new FigureParameter("TailThickness", 50));
 go.Shape.defineFigureGenerator("SplitEndArrow2", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN;  // height of arrow tail
+  if (isNaN(param1)) param1 = 50;
+
+  var y1 = (h - param1) / 2;
+  var y2 = y1 + param1;
+  if (param1 > h) {
+    y1 = 0;
+    y2 = h;
+  }
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = 50 // default value if user has not set one
-  if (param1 >= h) {
-    // in attempts to leave the shape with the same proportions
-    var newParamValue = h / param1; // this will be the proportion we try to recreate
-    // h - newParamValue =
-    var newMiddle = h * newParamValue; // calculates how big the middle will be now
-    // Using the same formula above, we recalculate with the value for the newMiddle instead of Param1
-    line1 = ((h - newMiddle) / 2) + newMiddle;
-    line2 = ((h - newMiddle) / 2);
-  } else {
-    var line1 = ((h - param1) / 2) + param1;
-    var line2 = ((h - param1) / 2);
-  };
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line1)); // line 1 need to add a param to this
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, line1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y2));
   fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, .5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, line2));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, line2));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, y1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, y1));
   fig.add(new go.PathSegment(go.PathSegment.Line, .7 * w, 0).close());
-  geo.spot1 = new go.Spot(.2, .3);
-  var temp = getIntersection(.7, 1, 1, .5, .7, .7, 1, .7, tempPoint());  // ?? constant
+  geo.spot1 = new go.Spot(.2, y1 / h);
+  var temp = getIntersection(.7, 1,
+    1, .5,
+    0, y2 / h,
+    1, y2 / h,
+    tempPoint());
   geo.spot2 = new go.Spot(temp.x, temp.y);
   freePoint(temp);
   return geo;
 });
 
-// JC
-// Adding perameter to allow user to edit the pointyness of this arrow
-// parameter would allow you to edit the pointness of the arrow if nesscary
-// this is kinda tedious not sure if any user would be interested in it
 go.Shape.setFigureParameter("SquareArrow", 0, new FigureParameter("ArrowPoint", .7, .2, .9));
 go.Shape.defineFigureGenerator("SquareArrow", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // pointiness of arrow, lower is more pointy
+  if (isNaN(param1)) param1 = .7;
+
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w, .5 * h, true);
   geo.add(fig);
-
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .7;
   fig.add(new go.PathSegment(go.PathSegment.Line, param1 * w, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, param1 * w, 0).close());
   geo.spot1 = go.Spot.TopLeft;
-  geo.spot2 = new go.Spot(.7, 1);
+  geo.spot2 = new go.Spot(param1, 1);
   return geo;
 });
 
@@ -2430,122 +2428,138 @@ go.Shape.defineFigureGenerator("Cube2", function(shape, w, h) {
 });
 
 go.Shape.defineFigureGenerator("Cylinder1", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN;  // half the height of the ellipse
+  if (isNaN(param1)) param1 = 5; // default value
+  param1 = Math.min(param1, h / 3);
+
   var geo = new go.Geometry();
   var cpxOffset = KAPPA * .5;
-  var cpyOffset = KAPPA * .1;
-  var fig = new go.PathFigure(0, .1 * h, true);
+  var fig = new go.PathFigure(0, param1, true);
   geo.add(fig);
-
   // The base (top)
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 0, 0, (.1 - cpyOffset) * h,
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 0, 0, KAPPA * param1,
     (.5 - cpxOffset) * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 1.0 * w, .1 * h, (.5 + cpxOffset) * w, 0,
-    1.0 * w, (.1 - cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w, .9 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 1.0 * w, param1, (.5 + cpxOffset) * w, 0,
+    1.0 * w, KAPPA * param1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w, h - param1));
   // Bottom curve
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 1.0 * h, 1.0 * w, (.9 + cpyOffset) * h,
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 1.0 * h, 1.0 * w, h - KAPPA * param1,
     (.5 + cpxOffset) * w, 1.0 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, .9 * h, (.5 - cpxOffset) * w, 1.0 * h,
-    0, (.9 + cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .1 * h));
-  var fig2 = new go.PathFigure(0, .1 * h, false);
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, h - param1, (.5 - cpxOffset) * w, 1.0 * h,
+    0, h - KAPPA * param1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1));
+
+  var fig2 = new go.PathFigure(w, param1, false);
   geo.add(fig2);
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, .2 * h, 0, (.1 + cpyOffset) * h,
-    (.5 - cpxOffset) * w, .2 * h));
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, 1.0 * w, .1 * h, (.5 + cpxOffset) * w, .2 * h,
-    1.0 * w, (.1 + cpyOffset) * h));
-  geo.spot1 = new go.Spot(0, .2);
-  geo.spot2 = new go.Spot(1, .9);
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 2 * param1, 1.0 * w, 2 * param1 - KAPPA * param1,
+    (.5 + cpxOffset) * w, 2 * param1));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, 0, param1, (.5 - cpxOffset) * w, 2 * param1,
+    0, 2 * param1 - KAPPA * param1));
+
+  geo.spot1 = new go.Spot(0, 0, 0, 2 * param1);
+  geo.spot2 = new go.Spot(1, 1);
   return geo;
 });
 
 go.Shape.defineFigureGenerator("Cylinder2", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN;  // half the height of the ellipse
+  if (isNaN(param1)) param1 = 5; // default value
+  param1 = Math.min(param1, h / 3);
+
   var geo = new go.Geometry();
   var cpxOffset = KAPPA * .5;
-  var cpyOffset = KAPPA * .1
-  var fig = new go.PathFigure(0, .9 * h, true);
+  var fig = new go.PathFigure(0, h - param1, true);
   geo.add(fig);
-
   // The body, starting and ending bottom left
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .1 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 0, 0, (.1 - cpyOffset) * h,
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, 0, 0, KAPPA * param1,
     (.5 - cpxOffset) * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, .1 * h, (.5 + cpxOffset) * w, 0,
-    w, (.1 - cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w, .9 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, h, w, (.9 + cpyOffset) * h,
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, param1, (.5 + cpxOffset) * w, 0,
+    w, KAPPA * param1));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w, h - param1));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, h, w, h - KAPPA * param1,
     (.5 + cpxOffset) * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, .9 * h, (.5 - cpxOffset) * w, h,
-    0, (.9 + cpyOffset) * h));
-  var fig2 = new go.PathFigure(0, .9 * h, false);
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, h - param1, (.5 - cpxOffset) * w, h,
+    0, h - KAPPA * param1));
+
+  var fig2 = new go.PathFigure(0, h - param1, false);
   geo.add(fig2);
   // The base (bottom)
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, .8 * h, 0, (.9 - cpyOffset) * h,
-    (.5 - cpxOffset) * w, .8 * h));
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, w, .9 * h, (.5 + cpxOffset) * w, .8 * h,
-    w, (.9 - cpyOffset) * h));
-  geo.spot1 = new go.Spot(0, .1);
-  geo.spot2 = new go.Spot(1, .8);
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .5 * w, h - 2 * param1, 0, h - param1 - KAPPA * param1,
+    (.5 - cpxOffset) * w, h - 2 * param1));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, w, h - param1, (.5 + cpxOffset) * w, h - 2 * param1,
+    w, h - param1 - KAPPA * param1));
+
+  geo.spot1 = new go.Spot(0, 0);
+  geo.spot2 = new go.Spot(1, 1, 0, -2 * param1);
   return geo;
 });
 
 go.Shape.defineFigureGenerator("Cylinder3", function(shape, w, h) {
-  var geo = new go.Geometry();
-  var cpxOffset = KAPPA * .1;
-  var cpyOffset = KAPPA * .5;
-  var fig = new go.PathFigure(.1 * w, 0, true);
-  geo.add(fig);
+  var param1 = shape ? shape.parameter1 : NaN;  // half the width of the ellipse
+  if (isNaN(param1)) param1 = 5; // default value
+  param1 = Math.min(param1, w / 3);
 
+  var geo = new go.Geometry();
+  var cpyOffset = KAPPA * .5;
+  var fig = new go.PathFigure(param1, 0, true);
+  geo.add(fig);
   // The body, starting and ending top left
-  fig.add(new go.PathSegment(go.PathSegment.Line, .9 * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, .5 * h, (.9 + cpxOffset) * w, 0,
+  fig.add(new go.PathSegment(go.PathSegment.Line, w - param1, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, .5 * h, w - KAPPA * param1, 0,
     w, (.5 - cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .9 * w, h, w, (.5 + cpyOffset) * h,
-    (.9 + cpxOffset) * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .1 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, .5 * h, (.1 - cpxOffset) * w, h,
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, h, w, (.5 + cpyOffset) * h,
+    w - KAPPA * param1, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, param1, h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, .5 * h, KAPPA * param1, h,
     0, (.5 + cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .1 * w, 0, 0, (.5 - cpyOffset) * h,
-    (.1 - cpxOffset) * w, 0));
-  var fig2 = new go.PathFigure(.1 * w, 0, false);
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, param1, 0, 0, (.5 - cpyOffset) * h,
+    KAPPA * param1, 0));
+
+  var fig2 = new go.PathFigure(param1, 0, false);
   geo.add(fig2);
   // Cylinder line (left)
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .2 * w, .5 * h, (.1 + cpxOffset) * w, 0,
-    .2 * w, (.5 - cpyOffset) * h));
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .1 * w, h, .2 * w, (.5 + cpyOffset) * h,
-    (.1 + cpxOffset) * w, h));
-  geo.spot1 = new go.Spot(.2, 0);
-  geo.spot2 = new go.Spot(.9, 1);
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, 2 * param1, .5 * h, param1 + KAPPA * param1, 0,
+    2 * param1, (.5 - cpyOffset) * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, param1, h, 2 * param1, (.5 + cpyOffset) * h,
+    param1 + KAPPA * param1, h));
+
+  geo.spot1 = new go.Spot(0, 0, 2 * param1, 0);
+  geo.spot2 = new go.Spot(1, 1);
   return geo;
 });
 
 go.Shape.defineFigureGenerator("Cylinder4", function(shape, w, h) {
-  var geo = new go.Geometry();
-  var cpxOffset = KAPPA * .1;
-  var cpyOffset = KAPPA * .5;
-  var fig = new go.PathFigure(.9 * w, 0, true);
-  geo.add(fig);
+  var param1 = shape ? shape.parameter1 : NaN;  // half the width of the ellipse
+  if (isNaN(param1)) param1 = 5; // default value
+  param1 = Math.min(param1, w / 3);
 
+  var geo = new go.Geometry();
+  var cpyOffset = KAPPA * .5;
+  var fig = new go.PathFigure(w - param1, 0, true);
+  geo.add(fig);
   // The body, starting and ending top right
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, .5 * h, (.9 + cpxOffset) * w, 0,
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w, .5 * h, w - KAPPA * param1, 0,
     w, (.5 - cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .9 * w, h, w, (.5 + cpyOffset) * h,
-    (.9 + cpxOffset) * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .1 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, .5 * h, (.1 - cpxOffset) * w, h,
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, h, w, (.5 + cpyOffset) * h,
+    w - KAPPA * param1, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, param1, h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, .5 * h, KAPPA * param1, h,
     0, (.5 + cpyOffset) * h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, .1 * w, 0, 0, (.5 - cpyOffset) * h,
-    (.1 - cpxOffset) * w, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, .9 * w, 0));
-  var fig2 = new go.PathFigure(.9 * w, 0, false);
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, param1, 0, 0, (.5 - cpyOffset) * h,
+    KAPPA * param1, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w - param1, 0));
+
+  var fig2 = new go.PathFigure(w - param1, 0, false);
   geo.add(fig2);
   // Cylinder line (right)
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .8 * w, .5 * h, (.9 - cpxOffset) * w, 0,
-    .8 * w, (.5 - cpyOffset) * h));
-  fig2.add(new go.PathSegment(go.PathSegment.Bezier, .9 * w, h, .8 * w, (.5 + cpyOffset) * h,
-    (.9 - cpxOffset) * w, h));
-  geo.spot1 = new go.Spot(.1, 0);
-  geo.spot2 = new go.Spot(.8, 1);
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, w - 2 * param1, .5 * h, w - param1 - KAPPA * param1, 0,
+    w - 2 * param1, (.5 - cpyOffset) * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, h, w - 2 * param1, (.5 + cpyOffset) * h,
+    w - param1 - KAPPA * param1, h));
+
+  geo.spot1 = new go.Spot(0, 0);
+  geo.spot2 = new go.Spot(1, 1, -2 * param1, 0);
   return geo;
 });
 
@@ -2713,23 +2727,19 @@ go.Shape.defineFigureGenerator("Actor", function(shape, w, h) {
   return geo;
 });
 
-// JC
-// adding parameter to make top corner size adjustable
-// these are going to have to be adjusted
-go.Shape.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9)); // the cutout in the corner
+go.Shape.setFigureParameter("Card", 0, new FigureParameter("CornerCutoutSize", .2, .1, .9));
 go.Shape.defineFigureGenerator("Card", function(shape, w, h) {
+  var param1 = shape ? shape.parameter1 : NaN; // size of corner cutout
+  if (isNaN(param1)) param1 = .2;
+
   var geo = new go.Geometry();
-  var param1 = shape ? shape.parameter1 : NaN;
-  if (isNaN(param1)) param1 = .2; // Distance between left and inner rect
   var fig = new go.PathFigure(w, 0, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, w, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1 * h)); // .2 * h
-  fig.add(new go.PathSegment(go.PathSegment.Line, param1 * w, 0).close()); // creates the line segment
-  // then reconnects to the rest of the points
-  geo.spot1 = new go.Spot(0, .2);
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, param1 * w, 0).close());
+  geo.spot1 = new go.Spot(0, param1);
   geo.spot2 = go.Spot.BottomRight;
   return geo;
 });
@@ -2995,13 +3005,10 @@ go.Shape.defineFigureGenerator("ExternalProcess", function(shape, w, h) {
   return geo;
 });
 
-// JC - work on this parameter
-// go.Shape.setFigureParameter("File", 0, new FigureParameter(""))     // ???
 go.Shape.defineFigureGenerator("File", function(shape, w, h) {
   var geo = new go.Geometry();
   var fig = new go.PathFigure(0, 0, true); // starting point
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, .75 * w, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, .25 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, h));
@@ -3436,14 +3443,13 @@ go.Shape.defineFigureGenerator("Start", function(shape, w, h) {
 
   fig.add(new go.PathSegment(go.PathSegment.Arc, 270, 180, .75 * w, 0.5 * h, .25 * w, .5 * h));
   fig.add(new go.PathSegment(go.PathSegment.Arc, 90, 180, .25 * w, 0.5 * h, .25 * w, .5 * h));
-  var geo = new go.Geometry();
   var fig2 = new go.PathFigure(param1 * w, 0, false);
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, param1 * w, h));
   fig2.add(new go.PathSegment(go.PathSegment.Move, (1 - param1) * w, 0));
   fig2.add(new go.PathSegment(go.PathSegment.Line, (1 - param1) * w, h));
-  //??? geo.spot1 = new go.Spot(param1, 0);
-  //??? geo.spot2 = new go.Spot((1 - param1), 1);
+  geo.spot1 = new go.Spot(param1, 0);
+  geo.spot2 = new go.Spot((1 - param1), 1);
   return geo;
 });
 
@@ -5270,8 +5276,6 @@ go.Shape.defineFigureGenerator("Hand", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0.535 * w, h, 0.61 * w, 0.85 * h, 0.61 * w, h));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0.9 * h, 0.435 * w, h, 0, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0.5 * h));
-  geo.spot1 = new go.Spot(0, 0.6, 10, 0);
-  geo.spot2 = new go.Spot(1, 1);
   return geo;
 });
 
@@ -5323,8 +5327,6 @@ go.Shape.defineFigureGenerator("Pencil", function(shape, w, h) {
               .add(new go.PathSegment(go.PathSegment.Line, 0.1 * w, 0.2 * h).close()));
   });
 
-// JC
-// Building that kinda looks like a bank
 go.Shape.defineFigureGenerator("Building", function(shape, w, h) {
   var geo = new go.Geometry();
   var fig = new go.PathFigure(w * 1, h * 1, false);
@@ -5344,26 +5346,22 @@ go.Shape.defineFigureGenerator("Building", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, (1 - .046) * w, h * .45));
   fig.add(new go.PathSegment(go.PathSegment.Line, (1 - .046) * w, h * .85));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, h * .85).close());
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(.126 * w, .85 * h, false); // is filled in our not
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, .126 * w, .45 * h));
   fig2.add(new go.PathSegment(go.PathSegment.Line, .322 * w, .45 * h));
   fig2.add(new go.PathSegment(go.PathSegment.Line, .322 * w, .85 * h).close());
-  var geo2 = new go.Geometry();
   var fig3 = new go.PathFigure(.402 * w, .85 * h, false); // is filled in our not
   geo.add(fig3);
   fig3.add(new go.PathSegment(go.PathSegment.Line, .402 * w, .45 * h));
   fig3.add(new go.PathSegment(go.PathSegment.Line, .598 * w, .45 * h));
   fig3.add(new go.PathSegment(go.PathSegment.Line, .598 * w, .85 * h).close());
-  var geo2 = new go.Geometry();
   var fig4 = new go.PathFigure(.678 * w, .85 * h, false); // is filled in our not
   geo.add(fig4);
   fig4.add(new go.PathSegment(go.PathSegment.Line, .678 * w, .45 * h));
   fig4.add(new go.PathSegment(go.PathSegment.Line, .874 * w, .45 * h));
   fig4.add(new go.PathSegment(go.PathSegment.Line, .874 * w, .85 * h).close());
   // the top inner triangle
-  var geo3 = new go.Geometry();
   var fig5 = new go.PathFigure(.5 * w, .1 * h, false); // is filled in our not
   geo.add(fig5);
   fig5.add(new go.PathSegment(go.PathSegment.Line, (.046 + .15) * w, .30 * h));
@@ -5408,25 +5406,21 @@ go.Shape.defineFigureGenerator("5Bars", function(shape, w, h) {
   // space in between each bar is .2
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .184, h * 1)); // bottom left part
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .184, h * (1 - .184)).close());
-  var geo2 = new go.Geometry();
   var fig3 = new go.PathFigure(w * .204, h, true); // is filled in our not
   geo.add(fig3);
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .204, h * (1 - .184)));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .388, h * (1 - (.184 * 2))));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .388, h * 1).close());
-  var geo3 = new go.Geometry();
   var fig4 = new go.PathFigure(w * .408, h, true); // is filled in our not
   geo.add(fig4);
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .408, h * (1 - (.184 * 2))));
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .592, h * (1 - (.184 * 3))));
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .592, h * 1).close());
-  var geo4 = new go.Geometry();
   var fig5 = new go.PathFigure(w * .612, h, true); // is filled in our not
   geo.add(fig5);
   fig5.add(new go.PathSegment(go.PathSegment.Line, w * .612, h * (1 - (.184 * 3))));
   fig5.add(new go.PathSegment(go.PathSegment.Line, w * .796, h * (1 - (.184 * 4))));
   fig5.add(new go.PathSegment(go.PathSegment.Line, w * .796, h * 1).close());
-  var geo5 = new go.Geometry();
   var fig6 = new go.PathFigure(w * .816, h, true); // is filled in our not
   geo.add(fig6);
   fig6.add(new go.PathSegment(go.PathSegment.Line, w * .816, h * (1 - (.184 * 4))));
@@ -5435,7 +5429,6 @@ go.Shape.defineFigureGenerator("5Bars", function(shape, w, h) {
   return geo;
 });
 
-// desktop
 go.Shape.defineFigureGenerator("PC", function(shape, w, h) {
   var geo = new go.Geometry();
   var fig = new go.PathFigure(0, 0, true); // top right
@@ -5445,27 +5438,23 @@ go.Shape.defineFigureGenerator("PC", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .3, h * 1));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .3, 0).close());
   // Drive looking rectangle 1
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * .055, .07 * h, true); // is filled in our not
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .245, h * .07));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .245, h * .1));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .055, h * .1).close());
   // Drive looking rectangle 2
-  var geo3 = new go.Geometry();
   var fig3 = new go.PathFigure(w * .055, .13 * h, true); // is filled in our not
   geo.add(fig3);
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .245, h * .13));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .245, h * .16));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .055, h * .16).close());
   // Drive/cd rom looking rectangle 3
-  var geo3 = new go.Geometry();
   var fig4 = new go.PathFigure(w * .055, .18 * h, true); // is filled in our not
   geo.add(fig4);
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .245, h * .18));
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .245, h * .21));
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .055, h * .21).close());
-  var geo4 = new go.Geometry();
   var fig5 = new go.PathFigure(w * 1, 0, true); // is filled in our not
   geo.add(fig5);
   fig5.add(new go.PathSegment(go.PathSegment.Line, w * .4, 0));
@@ -5497,47 +5486,30 @@ go.Shape.defineFigureGenerator("Plane", function(shape, w, h) {
 
 go.Shape.defineFigureGenerator("Key", function(shape, w, h) {
   var geo = new go.Geometry();
-  var fig = new go.PathFigure(w * 1, h * .5, false);
+  var fig = new go.PathFigure(w * 1, h * .5, true);
   geo.add(fig);
-
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .9, 0.4 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .35, 0.4 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .35, 0.36 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .32, 0.36 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .275, 0.24 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .12, 0.24 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .08, 0.4 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .08, 0.5 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .08, 0.6 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .12, 0.76 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .275, 0.76 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .32, 0.64 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .35, 0.64 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .35, 0.60 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .41, 0.60 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .43, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .475, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .495, 0.60 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .52, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .56, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .6, 0.538 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .645, 0.538 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .69, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .73, 0.60 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .75, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .76, 0.60 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .80, 0.538 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .82, 0.58 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .84, 0.538 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .85, 0.558 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .86, 0.538 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .88, 0.538 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .9, 0.6 * h).close());
-  var geo2 = new go.Geometry();
-  var fig2 = new go.PathFigure(w * .18, h * .5, false);
-  geo.add(fig2);
-  fig2.add(new go.PathSegment(go.PathSegment.Arc, 0, 360, w * 0.15, w * 0.5, w * 0.03)); // small circle on far left
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .90, .40 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .50, .40 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .50, .35 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .45, .35 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .30, .20 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .15, .20 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .35 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .65 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .15, .80 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .30, .80 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .45, .65 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .50, .65 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .50, .6 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .60, .6 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .65, .55 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, .6 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .75, .55 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .80, .6 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .85, .575 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .9, 0.60 * h).close());
+  fig.add(new go.PathSegment(go.PathSegment.Move, 0.17 * w, 0.425 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Arc, 270, 360, 0.17 * w, 0.5 * h, 0.075 * w, 0.075 * h).close());
   return geo;
 });
 
@@ -5583,26 +5555,22 @@ go.Shape.defineFigureGenerator("FilmTape", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * (.08 + .056 * 15), h * 1));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 1, h * 1));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 1, h * 1));
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(0, 0, false); // is filled in our not
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * 1, h * 0));
   fig2.add(new go.PathSegment(go.PathSegment.Arc, 270, -180, w * 1, w * 0.3, w * 0.055)); // right semi circle
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * 1, h * 1));
   // Each of the little square boxes on the tape
-  var geo3 = new go.Geometry();
   var fig3 = new go.PathFigure(w * .11, h * .1, false); // is filled in our not
   geo.add(fig3);
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * (.11 + (.24133333 * 1) + (.028 * 0)), h * .1));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * (.11 + (.24133333 * 1) + (.028 * 0)), h * .8));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .11, h * .8).close());
-  var geo4 = new go.Geometry();
   var fig4 = new go.PathFigure(w * (.11 + (.24133333 * 1) + (.028 * 1)), h * .1, false); // is filled in our not
   geo.add(fig4);
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * (.11 + (.24133333 * 2) + (.028 * 1)), h * .1));
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * (.11 + (.24133333 * 2) + (.028 * 1)), h * .8));
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * (.11 + (.24133333 * 1) + (.028 * 1)), h * .8).close());
-  var geo5 = new go.Geometry();
   var fig5 = new go.PathFigure(w * (.11 + (.24133333 * 2) + (.028 * 2)), h * .1, false); // is filled in our not
   geo.add(fig5);
   fig5.add(new go.PathSegment(go.PathSegment.Line, w * (.11 + (.24133333 * 3) + (.028 * 2)), h * .1));
@@ -5627,19 +5595,16 @@ go.Shape.defineFigureGenerator("FloppyDisk", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, roundValue));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, roundValue, 0, 0, cpOffset, cpOffset, 0).close());
   // interior slightly  rectangle
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * .83, 0, false);
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .83, h * .3));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .17, h * .3));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .17, h * 0).close());
-  var geo3 = new go.Geometry();
   var fig3 = new go.PathFigure(w * .83, h * 1, false);
   geo.add(fig3);
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .83, h * .5));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .17, h * .5));
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .17, h * 1).close());
-  var geo4 = new go.Geometry();
   var fig4 = new go.PathFigure(w * .78, h * .05, false);
   geo.add(fig4);
   fig4.add(new go.PathSegment(go.PathSegment.Line, w * .66, h * .05));
@@ -5649,29 +5614,34 @@ go.Shape.defineFigureGenerator("FloppyDisk", function(shape, w, h) {
 });
 
 go.Shape.defineFigureGenerator("SpeechBubble", function(shape, w, h) {
-  var geo = new go.Geometry();
-  var param1 = 25;
+  var param1 = shape ? shape.parameter1 : NaN;
+  if (isNaN(param1) || param1 < 0) param1 = 15;  // default corner
+  param1 = Math.min(param1, w / 3);
+  param1 = Math.min(param1, h / 3);
+
   var cpOffset = param1 * KAPPA;
+  var bubbleH = h * .8; // leave some room at bottom for pointer
+
+  var geo = new go.Geometry();
   var fig = new go.PathFigure(param1, 0, true);
   geo.add(fig);
-
   fig.add(new go.PathSegment(go.PathSegment.Line, w - param1, 0));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, w, param1, w - cpOffset, 0, w, cpOffset));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w, (h * .60) - param1));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, (h * .60), w, (h * .60) - cpOffset, w - cpOffset, (h * .60)));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, (h * .60)));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, (h * .775)));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .55, (h * .60)));
-  fig.add(new go.PathSegment(go.PathSegment.Line, param1, (h * .60))); // ends at 25
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, (h * .60) - param1, cpOffset, (h * .60), 0, (h * .60) - cpOffset));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w, bubbleH - param1));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, bubbleH, w, bubbleH - cpOffset, w - cpOffset, bubbleH));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, bubbleH));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w * .55, bubbleH));
+  fig.add(new go.PathSegment(go.PathSegment.Line, param1, bubbleH));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, bubbleH - param1, cpOffset, bubbleH, 0, bubbleH - cpOffset));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, param1, 0, 0, cpOffset, cpOffset, 0).close());
   if (cpOffset > 1) {
     geo.spot1 = new go.Spot(0, 0, cpOffset, cpOffset);
-    geo.spot2 = new go.Spot(1, 1, -cpOffset, -cpOffset);
+    geo.spot2 = new go.Spot(1, .8, -cpOffset, -cpOffset);
   } else {
     geo.spot1 = go.Spot.TopLeft;
-    geo.spot2 = go.Spot.BottomRight;
+    geo.spot2 = new go.Spot(1, .8);
   }
   return geo;
 });
@@ -5689,7 +5659,6 @@ go.Shape.defineFigureGenerator("Repeat", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .65, h * 1));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .20, h * 1));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .20, h * .45).close());
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * 1, h * .55, true); // is filled in our not
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .75, h * 1));
@@ -5731,7 +5700,6 @@ go.Shape.defineFigureGenerator("Terminal", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 1, h * .10));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 1, h * .90));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 0, h * .90).close());
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * .10, h * .20, true); // is filled in our not
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .10, h * .25));
@@ -5740,7 +5708,6 @@ go.Shape.defineFigureGenerator("Terminal", function(shape, w, h) {
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .10, h * .37));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .275, h * .32));
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .275, h * .25).close());
-  var geo3 = new go.Geometry();
   var fig3 = new go.PathFigure(w * .28, h * .37, true); // is filled in our not
   geo.add(fig3);
   fig3.add(new go.PathSegment(go.PathSegment.Line, w * .45, h * .37));
@@ -5772,22 +5739,6 @@ go.Shape.defineFigureGenerator("Beaker", function(shape, w, h) {
     geo.spot1 = go.Spot.TopLeft;
     geo.spot2 = go.Spot.BottomRight;
   }
-  /*
-  var param1 = 15;
-var cpOffset = param1 * KAPPA;
-  var fig = new go.PathFigure(w * .62, h *.475, true);
-  geo.add(fig);
-
-  fig.add(new go.PathSegment(go.PathSegment.Line, w, h - param1));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, h, w, h - cpOffset, w - cpOffset, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, param1, h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, h - param1, cpOffset, h, 0, h - cpOffset));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .38, h * .475));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .38, h * .03));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .36, h * 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .64, h * 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .62, h * .03).close());
-  */
   return geo;
 });
 
@@ -5818,7 +5769,6 @@ go.Shape.defineFigureGenerator("Download", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * (1 - .8), h * (0)));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 0, h * (1 - third)).close());
   // arrow pointing down
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * .40, h * 0, true);
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .40, h * .44));
@@ -5885,7 +5835,6 @@ go.Shape.defineFigureGenerator("Upload", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * (1 - .66), h * (0)));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * (1 - .8), h * (0)));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * 0, h * (1 - third)).close());
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * .5, h * 0, true);
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .26, h * .25));
@@ -5917,8 +5866,6 @@ go.Shape.defineFigureGenerator("Drink", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .85, h * 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, h * 1));
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .30, h * 1).close());
-
-  var geo2 = new go.Geometry();
   var fig2 = new go.PathFigure(w * .235, h * .28, true);
   geo.add(fig2);
   fig2.add(new go.PathSegment(go.PathSegment.Line, w * .765, h * .28));
@@ -5958,19 +5905,6 @@ go.Shape.defineFigureGenerator("4Arrows", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, w * .35, h * .25).close());
   return geo;
 });
-
-/*
-go.Shape.defineFigureGenerator("CoffeeCup", function(shape, w, h) {
-      var geo = new go.Geometry();
-      var fig = new go.PathFigure(w * .2, h * 0, true);
-      geo.add(fig);
-
-    fig.add(new go.PathSegment(go.PathSegment.Line, w * .8, h * 0));
-        fig.add(new go.PathSegment(go.PathSegment.Line, w * .8, h * .05));
-
-      return geo;
-  });
-*/
 
 go.Shape.defineFigureGenerator("Connector", "Ellipse");
 go.Shape.defineFigureGenerator("Alternative", "TriangleUp");

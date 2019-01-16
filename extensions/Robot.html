@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,14 +37,13 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
         {
-          allowDrop: true,  // must be true to accept drops from the Palette
           nodeTemplate:
             $(go.Node, "Auto",
               {
                 click: nodeClicked,
                 doubleClick: nodeClicked,
                 contextMenu:
-                  $(go.Adornment, "Vertical",
+                  $("ContextMenu",
                     $("ContextMenuButton",
                       $(go.TextBlock, "Properties"),
                       { click: showProperties })
@@ -195,14 +194,9 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div style="width:100%; white-space:nowrap;">
-    <span style="display: inline-block; vertical-align: top; width:80px">
-      <div id="myPaletteDiv" style="border: solid 1px black; height: 400px"></div>
-    </span>
-
-    <span style="display: inline-block; vertical-align: top; width:80%">
-      <div id="myDiagramDiv" style="border: solid 1px black; height: 400px"></div>
-    </span>
+  <div style="width: 100%; display: flex; justify-content: space-between">
+    <div id="myPaletteDiv" style="width: 80px; height: 400px; margin-right: 2px; border: solid 1px black"></div>
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
   </div>
   <p>
   To simulate mouse events the buttons below use the <b>Robot</b> class that is defined in <a href="Robot.js">Robot.js</a>.

@@ -108,23 +108,21 @@
     diagram.div.style['font'] = textBlock.font;
 
     var paddingsize = 1;
-
-    var paddingsize = 1;
     textarea.style['position'] = 'absolute';
     textarea.style['zIndex'] = '100';
     textarea.style['font'] = 'inherit';
     textarea.style['fontSize'] = (textscale * 100) + '%';
-    textarea.style['lineHeight'] = ' normal';
+    textarea.style['lineHeight'] = 'normal';
     textarea.style['width'] = (textwidth) + 'px';
     textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
     textarea.style['top'] = ((top - (textheight / 2) | 0) - paddingsize) + 'px';
-    textarea.style['text'] = textBlock.textAlign;
-    textarea.style['margin'] = ' 0';
+    textarea.style['textAlign'] = textBlock.textAlign;
+    textarea.style['margin'] = '0';
     textarea.style['padding'] = paddingsize + 'px';
     textarea.style['border'] = '0';
     textarea.style['outline'] = 'none';
     textarea.style['whiteSpace'] = 'pre-wrap';
-    textarea.style['overflow'] = ' hidden'; // for proper IE wrap
+    textarea.style['overflow'] = 'hidden'; // for proper IE wrap
     textarea.rows = textBlock.lineCount;
     textarea.textScale = textscale; // attach a value to the textarea, for convenience
 

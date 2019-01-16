@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -53,23 +53,24 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
   // define the click behavior
   var click =
     function(e, obj) {
-      var url = obj._url;
-      if (typeof url === "function") url = url(obj.findTemplateBinder());
-      if (url) window.open(url, "_blank");
+      var u = obj._url;
+      if (typeof u === "function") u = u(obj.findTemplateBinder());
+      if (u) window.open(u, "_blank");
     };
 
   // define the tooltip
   var tooltip =
-    go.GraphObject.make(go.Adornment, "Auto",
-      go.GraphObject.make(go.Shape, { fill: "#EFEFCC" }),
-      go.GraphObject.make(go.TextBlock, { name: "TB", margin: 4 },
+    go.GraphObject.make("ToolTip",
+      go.GraphObject.make(go.TextBlock,
+        { name: "TB", margin: 4 },
         new go.Binding("text", "", function(obj) {
           // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
           obj = obj.part.adornedObject;
-          var url = obj._url;
-          if (typeof url === "function") url = url(obj.findTemplateBinder());
-          return url;
-        }).ofObject()),
+          var u = obj._url;
+          if (typeof u === "function") u = u(obj.findTemplateBinder());
+          return u;
+        }).ofObject()
+      ),
       new go.Binding("visible", "text", function(t) { return !!t; }).ofObject("TB")
     );
 
@@ -81,9 +82,9 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
                   "_url": url,
                   cursor: "pointer",
                   mouseEnter: function(e, obj) {
-                    var url = obj._url;
-                    if (typeof url === "function") url = url(obj.findTemplateBinder());
-                    if (url) obj.isUnderline = true;
+                    var u = obj._url;
+                    if (typeof u === "function") u = u(obj.findTemplateBinder());
+                    if (u) obj.isUnderline = true;
                   },
                   mouseLeave: function(e, obj) { obj.isUnderline = false; },
                   click: click,  // defined above
@@ -116,9 +117,9 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
         cursor: "pointer",
         mouseEnter: function(e, panel) {
           var tb = findTextBlock(panel);
-          var url = panel._url;
-          if (typeof url === "function") url = url(panel.findTemplateBinder());
-          if (tb !== null && url) tb.isUnderline = true;
+          var u = panel._url;
+          if (typeof u === "function") u = u(panel.findTemplateBinder());
+          if (tb !== null && u) tb.isUnderline = true;
         },
         mouseLeave: function(e, panel) {
           var tb = findTextBlock(panel);
