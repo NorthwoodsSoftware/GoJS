@@ -19,8 +19,10 @@
   // This is the actual HTML LightBox-style context menu, composed of buttons and a background:
   var cmLight = document.createElement("div");
   cmLight.id = "cmLight";
+  cmLight.className = "goCXforeground";
   var cmDark = document.createElement("div");
   cmDark.id = "cmDark";
+  cmDark.className = "goCXbackground";
   contextMenuDIV.appendChild(cmLight);
   contextMenuDIV.appendChild(cmDark);
 

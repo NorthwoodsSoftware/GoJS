@@ -57,7 +57,7 @@ export function init() {
       { background: 'rgba(99,99,99,0.2)' },
       new go.Binding('background', 'fill'),
       {
-        toolTip: $('ToolTip',
+        toolTip: $<go.Adornment>('ToolTip',
           $(go.TextBlock, new go.Binding('text', '', tooltipString).ofObject())
         )
       }
@@ -69,7 +69,7 @@ export function init() {
       { background: 'rgba(99,99,99,0.2)' },
       new go.Binding('background', 'fill'),
       {
-        toolTip: $('ToolTip',
+        toolTip: $<go.Adornment>('ToolTip',
           $(go.TextBlock, new go.Binding('text', '', tooltipString).ofObject())
         )
       }

@@ -148,7 +148,7 @@ var __extends = (this && this.__extends) || (function () {
                 if (this._centerGuidelineColor !== val) {
                     this._centerGuidelineColor = val;
                     this.guidelineVcenter.elements.first().stroke = this._centerGuidelineColor;
-                    this.guidelineVcenter.elements.first().stroke = this._centerGuidelineColor;
+                    this.guidelineHcenter.elements.first().stroke = this._centerGuidelineColor;
                 }
             },
             enumerable: true,
@@ -295,7 +295,7 @@ var __extends = (this && this.__extends) || (function () {
             // compares with parts within narrow vertical area
             var area = objBounds.copy();
             area.inflate(distance, marginOfError + 1);
-            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return p instanceof go.Part && !part.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary; }, true);
+            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary; }, true);
             var bestDiff = marginOfError;
             var bestObj = null; // TS 2.6 won't let this be go.Part | null
             var bestSpot = go.Spot.Default;
@@ -403,7 +403,7 @@ var __extends = (this && this.__extends) || (function () {
             // compares with parts within narrow vertical area
             var area = objBounds.copy();
             area.inflate(marginOfError + 1, distance);
-            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return p instanceof go.Part && !part.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary; }, true);
+            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary; }, true);
             var bestDiff = marginOfError;
             var bestObj = null; // TS 2.6 won't let this be go.Part | null
             var bestSpot = go.Spot.Default;

@@ -47,7 +47,14 @@ and that a Part cannot be an element of a Panel.
 But all Parts are Panels because the <a>Part</a> class inherits from <a>Panel</a> -- Parts are basically "top-level" Panels.
 Thus these examples make use of Parts as top-level objects whereas within a Node you would use a Panel instead of a Part.
 </p>
-
+<p>
+  Panels have no visual elements of their own, so to display their size the
+  <a>GraphObject.background</a> or <a>GraphObject.areaBackground</a> are often used.
+  Panels also have <a>Panel.padding</a> in addition to <a>GraphObject.margin</a>.
+  Unlike margin, backgrounds cover padding. Setting a padding when the Panel is constrained
+  in size will reduce the total area that it has to arrange its elements. Setting a margin
+  will not do this -- instead the Panel will expand in size.
+</p>
 
 <h2 id="PositionPanels">Position Panels</h2>
 <p>
@@ -675,6 +682,33 @@ If you use the opposite alignmentFocus as the alignment, the elements will be ju
   </pre>
   <script>goCode("focusSpotPanels2", 700, 250)</script>
 
+<h3 id="AligningSubElementsSpotPanels">Aligning to sub-elements with Spot Panels</h3>
+<p>
+  You may find it necessary to align an object nested inside a Spot panel with that panel's main element.
+  This is often the case when you want an element of a Spot panel to appear to have its own text label or other decorator.
+</p>
+<p>
+  To do this, you can use <a>Panel.alignmentFocusName</a>.
+  In the example below, a Spot panel contains a main element and another Panel. We want to align the corners of the main element
+  the shape within this panel, so we give it a name and set alignmentFocusName on the panel.
+</p>
+
+<pre class="lang-js" id="alignmentFocusName">
+  diagram.add(
+    $(go.Node, "Spot",
+      // Main shape
+      $(go.Shape, { strokeWidth: 4, fill: 'lime' }),
+      // Instead of aligning this Panel, we want to align the shape inside of it, to the corner of the main shape
+      $(go.Panel, "Horizontal",
+          { background: 'rgba(255,0,0,0.1)', alignmentFocusName: 'shape', alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomLeft },
+          $(go.TextBlock, "some\nlong label", { margin: 8 }),
+          $(go.Shape, "RoundedRectangle", { width: 20, height: 20, name: 'shape', strokeWidth: 0, fill: 'red' },
+          new go.Binding("fill", "color"))
+      )
+    )
+  );
+  </pre>
+  <script>goCode("alignmentFocusName", 600, 300)</script>
 
 <!-- begin new -->
 <h3 id="StretchingWithSpotPanels">Stretching with Spot Panels</h3>

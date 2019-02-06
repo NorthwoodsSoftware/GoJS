@@ -60,7 +60,7 @@ export function init() {
 
   // sets the qualities of the tooltip
   const tooltiptemplate =
-    $('ToolTip',
+    $<go.Adornment>('ToolTip',
       $(go.TextBlock,
         { margin: 3, editable: true },
         // converts data about the part into a string
@@ -109,7 +109,7 @@ export function init() {
     );
 
   myDiagram.nodeTemplate.contextMenu =
-    $('ContextMenu',
+    $<go.Adornment>('ContextMenu',
       $('ContextMenuButton',
         $(go.TextBlock, 'Rename', { margin: 3 }),
         { click: function (e: go.InputEvent, obj: go.GraphObject) { rename(obj); } }),

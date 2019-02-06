@@ -40,6 +40,9 @@ var __extends = (this && this.__extends) || (function () {
          */
         function LinkLabelOnPathDraggingTool() {
             var _this = _super.call(this) || this;
+            /**
+             * The label being dragged.
+             */
             _this.label = null;
             _this._originalIndex = 0;
             _this._originalFraction = 0.0;

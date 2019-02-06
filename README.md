@@ -18,7 +18,7 @@ GoJS, a JavaScript Library for HTML Diagrams
 
 GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams, including data visualizations, drawing tools, and graph editors. There are samples for [flowchart](https://gojs.net/latest/samples/flowchart.html), [org chart](https://gojs.net/latest/samples/orgChartEditor.html), [business process BPMN](https://gojs.net/latest/extensions/BPMN.html), [swimlanes](https://gojs.net/latest/samples/swimlanes.html), [timelines](https://gojs.net/latest/samples/timeline.html), [state charts](https://gojs.net/latest/samples/statechart.html), [kanban](https://gojs.net/latest/samples/kanban.html), [network](https://gojs.net/latest/samples/network.html), [mindmap](https://gojs.net/latest/samples/mindMap.html), [sankey](https://gojs.net/latest/samples/sankey.html), [family trees](https://gojs.net/latest/samples/familyTree.html) and [genogram charts](https://gojs.net/latest/samples/genogram.html), [fishbone diagrams](https://gojs.net/latest/extensions/Fishbone.html), [floor plans](https://gojs.net/latest/projects/floorplanner/FloorPlanner.html), [UML](https://gojs.net/latest/samples/umlClass.html), [decision trees](https://gojs.net/latest/samples/decisionTree.html), [pert charts](https://gojs.net/latest/samples/PERT.html), [Gantt](https://gojs.net/latest/samples/gantt.html), and [hundreds more](https://gojs.net/latest/samples/index.html). GoJS includes a number of built in layouts including tree layout, force directed, radial, and layered digraph layout, and a number of custom layout examples.
 
-GoJS is rendered with an HTML5 Canvas element (with export to SVG or image formats). GoJS can run in a web browser, or server side in [Node](https://nodejs.org/en/) or [Puppeteer](https://github.com/GoogleChrome/puppeteer). GoJS Diagrams are backed by Models, with saving and loading typically via JSON.
+GoJS is rendered with an HTML Canvas element (with export to SVG or image formats). GoJS can run in a web browser, or server side in [Node](https://nodejs.org/en/) or [Puppeteer](https://github.com/GoogleChrome/puppeteer). GoJS Diagrams are backed by Models, with saving and loading typically via JSON.
 
 [<img src="https://raw.githubusercontent.com/NorthwoodsSoftware/GoJS/master/.github/github-970x354.png">](https://gojs.net/latest/samples/index.html)
 
@@ -38,16 +38,17 @@ Graphs are constructed by creating one or more templates, with desired propertie
   function init() {
     var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    var myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
-                  {
-                    // enable undo & redo
-                    "undoManager.isEnabled": true
-                  });
+    var myDiagram =
+      $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+        { // enable undo & redo
+          "undoManager.isEnabled": true
+        });
 
     // define a simple Node template
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",  // the Shape will go around the TextBlock
-        $(go.Shape, "RoundedRectangle", { strokeWidth: 0, fill: "white" },
+        $(go.Shape, "RoundedRectangle",
+          { strokeWidth: 0, fill: "white" },  // default fill is white
           // Shape.fill is bound to Node.data.color
           new go.Binding("fill", "color")),
         $(go.TextBlock,
@@ -77,7 +78,8 @@ Graphs are constructed by creating one or more templates, with desired propertie
 </script>
 ```
 
-Creates this graph. The user can now click on nodes or links to select them, copy-and-paste them, drag them, delete them, scroll, pan, and zoom, with a mouse or with fingers.
+The above diagram and model code creates the following graph.
+The user can now click on nodes or links to select them, copy-and-paste them, drag them, delete them, scroll, pan, and zoom, with a mouse or with fingers.
 
 [<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](https://gojs.net/latest/samples/minimal.html)
 

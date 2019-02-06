@@ -57,7 +57,7 @@ export function init() {
 
   // node template helpers
   const sharedToolTip =
-    $('ToolTip',
+    $<go.Adornment>('ToolTip',
       { 'Border.figure': 'RoundedRectangle' },
       $(go.TextBlock, { margin: 2 },
         new go.Binding('text', '', function(d) { return d.category; })));
@@ -108,7 +108,8 @@ export function init() {
       $(go.Shape, 'Rectangle', portStyle(false),  // the only port
         { portId: '', alignment: new go.Spot(1, 0.5) }),
       { // if double-clicked, an input node will change its value, represented by the color.
-        doubleClick: function(e: go.InputEvent, obj: go.Node) {
+        doubleClick: function(e: go.InputEvent, obj: go.GraphObject) {
+          if (!(obj instanceof go.Node)) return;
           e.diagram.startTransaction('Toggle Input');
           const shp = obj.findObject('NODESHAPE') as go.Shape;
           shp.fill = (shp.fill === green) ? red : green;

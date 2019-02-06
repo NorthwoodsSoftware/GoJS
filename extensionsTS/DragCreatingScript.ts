@@ -38,6 +38,16 @@ export function init() {
         { stroke: 'brown' })
     ));
 
+  class CustomDragCreatingTool extends DragCreatingTool {
+    insertPart(bounds: go.Rect): go.Part | null {  // override DragCreatingTool.insertPart
+      if (this.archetypeNodeData === null) return null;
+      // use a different color each time
+      this.archetypeNodeData.color = go.Brush.randomColor();
+      // call the base method to do normal behavior and return its result
+      return DragCreatingTool.prototype.insertPart.call(this, bounds);
+    }
+  }
+
   // Add an instance of the custom tool defined in DragCreatingTool.js.
   // This needs to be inserted before the standard DragSelectingTool,
   // which is normally the third Tool in the ToolManager.mouseMoveTools list.
@@ -45,7 +55,7 @@ export function init() {
   // require a wait after the mouse down event.  Not waiting will allow the DragSelectingTool
   // and the PanningTool to be able to run instead of the DragCreatingTool, depending on the delay.
   myDiagram.toolManager.mouseMoveTools.insertAt(2,
-    $(DragCreatingTool,
+    $(CustomDragCreatingTool,
       {
         isEnabled: true,  // disabled by the checkbox
         delay: 0,  // always canStart(), so PanningTool never gets the chance to run
@@ -54,13 +64,7 @@ export function init() {
           $(go.Shape,
             { name: 'SHAPE', fill: null, stroke: 'cyan', strokeWidth: 2 })
         ),
-        archetypeNodeData: { color: 'white' }, // initial properties shared by all nodes
-        insertPart: function (bounds: go.Rect) {  // override DragCreatingTool.insertPart
-          // use a different color each time
-          this.archetypeNodeData.color = go.Brush.randomColor();
-          // call the base method to do normal behavior and return its result
-          return DragCreatingTool.prototype.insertPart.call(this, bounds);
-        }
+        archetypeNodeData: { color: 'white' } // initial properties shared by all nodes
       }));
 
   // Attach to the window for console manipulation

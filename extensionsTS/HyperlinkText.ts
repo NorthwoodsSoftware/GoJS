@@ -53,7 +53,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
 
   // define the click behavior
   const click =
-    (e: go.InputEvent, obj: go.TextBlock) => {
+    (e: go.InputEvent, obj: go.GraphObject) => {
       let u = (obj as any)._url;
       if (typeof u === 'function') u = u(obj.findTemplateBinder());
       if (u) window.open(u, '_blank');
@@ -61,7 +61,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
 
   // define the tooltip
   const tooltip =
-    go.GraphObject.make('ToolTip',
+    go.GraphObject.make<go.Adornment>('ToolTip',
       go.GraphObject.make(go.TextBlock,
         { name: 'TB', margin: 4 },
         new go.Binding('text', '', function(obj) {
@@ -82,12 +82,12 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
       {
         '_url': url,
         cursor: 'pointer',
-        mouseEnter: function(e: go.InputEvent, obj: go.TextBlock) {
+        mouseEnter: function(e: go.InputEvent, obj: go.GraphObject) {
           let u = (obj as any)._url;
           if (typeof u === 'function') u = u(obj.findTemplateBinder());
-          if (u) obj.isUnderline = true;
+          if (u && obj instanceof go.TextBlock) obj.isUnderline = true;
         },
-        mouseLeave: (e: go.InputEvent, obj: go.TextBlock) => { obj.isUnderline = false; },
+        mouseLeave: (e: go.InputEvent, obj: go.GraphObject) => { if (obj instanceof go.TextBlock) obj.isUnderline = false; },
         click: click,  // defined above
         toolTip: tooltip // shared by all HyperlinkText textblocks
       }
@@ -101,7 +101,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
     }
     return tb;
   } else {
-    const findTextBlock = function(obj: Object): go.TextBlock | null {
+    const findTextBlock = function(obj: go.GraphObject): go.TextBlock | null {
       if (obj instanceof go.TextBlock) return obj;
       if (obj instanceof go.Panel) {
         const it = obj.elements;
@@ -116,13 +116,13 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
       {
         '_url': url,
         cursor: 'pointer',
-        mouseEnter: (e: go.InputEvent, panel: go.Panel) => {
+        mouseEnter: (e: go.InputEvent, panel: go.GraphObject) => {
           const tb = findTextBlock(panel);
           let u = (panel as any)._url;
           if (typeof u === 'function') u = u(panel.findTemplateBinder());
           if (tb !== null && u) tb.isUnderline = true;
         },
-        mouseLeave: (e: go.InputEvent, panel: go.Panel) => {
+        mouseLeave: (e: go.InputEvent, panel: go.GraphObject) => {
           const tb = findTextBlock(panel);
           if (tb !== null) tb.isUnderline = false;
         },

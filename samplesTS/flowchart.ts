@@ -72,11 +72,11 @@ export function init() {
         toSpot: spot,  // declare where links may connect at this port
         toLinkable: input,  // declare whether the user may draw links to here
         cursor: "pointer",  // show a different cursor to indicate potential link point
-        mouseEnter: function(e: go.InputEvent, port: go.Shape) {
-          if (!e.diagram.isReadOnly) port.fill = "rgba(255,0,255,0.5)";
+        mouseEnter: function(e: go.InputEvent, port: go.GraphObject) {
+          if (!e.diagram.isReadOnly && port instanceof go.Shape) port.fill = "rgba(255,0,255,0.5)";
         },
-        mouseLeave: function(e: go.InputEvent, port: go.Shape) {
-          port.fill = "transparent";
+        mouseLeave: function(e: go.InputEvent, port: go.GraphObject) {
+          if (port instanceof go.Shape) port.fill = "transparent";
         }
       });
   }
@@ -215,8 +215,8 @@ export function init() {
         reshapable: true,
         resegmentable: true,
         // mouse-overs subtly highlight links:
-        mouseEnter: function(e: go.InputEvent, link: go.Link) { (link.findObject("HIGHLIGHT") as go.Shape).stroke = "rgba(30,144,255,0.2)"; },
-        mouseLeave: function(e: go.InputEvent, link: go.Link) { (link.findObject("HIGHLIGHT") as go.Shape).stroke = "transparent"; }
+        mouseEnter: function(e: go.InputEvent, link: go.GraphObject) { if (link instanceof go.Link) (link.findObject("HIGHLIGHT") as go.Shape).stroke = "rgba(30,144,255,0.2)"; },
+        mouseLeave: function(e: go.InputEvent, link: go.GraphObject) { if (link instanceof go.Link) (link.findObject("HIGHLIGHT") as go.Shape).stroke = "transparent"; }
       },
       new go.Binding("points").makeTwoWay(),
       $(go.Shape,  // the highlight shape, normally transparent

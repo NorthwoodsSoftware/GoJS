@@ -128,6 +128,7 @@
             textarea.style['overflow'] = 'hidden'; // for proper IE wrap
             textarea.rows = textBlock.lineCount;
             textarea.textScale = textscale; // attach a value to the textarea, for convenience
+            textarea.className = 'goTXarea';
             // Show:
             diagram.div.appendChild(textarea);
             // After adding, focus:

@@ -18,15 +18,15 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Holds references to all selected non-Link Parts and their offset & angles
    */
-  private initialInfo: go.Map<go.Part, PartInfo> | null = null;
+  public initialInfo: go.Map<go.Part, PartInfo> | null = null;
   /**
    * Initial angle when rotating as a whole
    */
-  private initialAngle: number = 0;
+  public initialAngle: number = 0;
   /**
    * Rotation point of selection
    */
-  private centerPoint: go.Point = new go.Point();
+  public centerPoint: go.Point = new go.Point();
 
   /**
    * Constructs a RotateMultipleTool and sets the name for the tool.

@@ -78,7 +78,6 @@
 
   <h3>GoJS 2.0</h3>
 
-
   <p>
     For 2.0, GoJS has been rewritten in TypeScript, with improvements to stability and documentation.
     All customers (with or without source code license) can take advantage of the TypeScript definitions <code>.d.ts</code> file,
@@ -103,6 +102,53 @@
   <p>
     We have added the ability to create your own Panels, with the new PanelLayout class. See an example <a href="/samples/panelLayout.html" target="_blank">here</a>.
   </p>
+
+
+  <h4>Changes for 2.0.1</h4>
+  <ul>
+    <li>
+      TypeScript declarations: we have created the <a>ObjectData</a> interface, defined as <code>{ [index: string]: any; }</code>,
+      to allow easier manipulation of data Objects, mostly in Models and change notification.
+      Many methods and properties now use <code>ObjectData</code> instead of <code>Object</code> in the <code>go.d.ts</code> file.
+      The compiled JavaScript is unchanged by these better type declarations.
+    </li>
+    <li>
+      We have added interface declarations for the "options" argument to
+      <a>Diagram.makeImage</a>, <a>Diagram.makeImageData</a>, and <a>Diagram.makeSvg</a>.
+      Also we have added more precise declarations replacing the <code>string</code> type for arguments to
+      <a>Diagram.addDiagramListener</a>, <a>Diagram.removeDiagramListener</a>, <a>Diagram.scroll</a>,
+      and for the properties
+      <a>Shape.strokeCap</a>, <a>Shape.strokeJoin</a>, and <a>TextBlock.textAlign</a>.
+      JavaScript calls to these methods are unchanged by these better type declarations.
+    </li>
+    <li>
+      We have improved the declarations for <a>GraphObject,make</a>.
+      You may find that you will need to cast the result of calling this function or pass a result type when the first argument is a string.  For example:
+      <code>$(go.Node, . . ., { contextMenu: $&lt;go.Adornment&gt;("ContextMenu", . . .) }, . . .</code>.
+      Also, you may find that event handlers need to have precise type declarations for the arguments.  For example:
+      <code>$(go.Node, . . ., { click: function(e: go.InputEvent, node: go.GraphObject) { . . .} }, . . .</code>.
+      JavaScript calls to this function are unchanged by the better type declarations for <a>GraphObject,make</a>.
+    </li>
+    <li>
+      The HTML Divs created for the default context menu now have CSS class names: 'goCXforeground' and 'goCXbackground'.
+      The HTML textarea for the TextEditingTool now has the CSS class name: 'goTXarea'.
+    </li>
+    <li>
+      When supplied with an argument, <a>CommandHandler.expandTree</a>, <a>CommandHandler.collapseTree</a>,
+      <a>CommandHandler.expandSubGraph</a>, and <a>CommandHandler.collapseSubGraph</a>
+      incorrectly operated on the <a>Diagram.selection</a> if the argument Part was already in an expanded/collapsed state.
+      This has been fixed not to do so.
+    </li>
+    <li>
+      Performance improvements with JumpOver/JumpGap Links.
+    </li>
+    <li>
+      Fixed a bug with inappropriate invalidation of link routes when a Group was moved.
+    </li>
+    <li>
+      Fixes for SVG rendering of Pattern brushes.
+    </li>
+  </ul>
 
 
   <h4>Changes for 2.0</h4>

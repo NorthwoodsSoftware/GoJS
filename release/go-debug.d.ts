@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.0
+ * Type definitions for GoJS v2.0.1
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11,6 +11,15 @@
 
 export as namespace go;
 
+/**
+ * The ObjectData type is the same as `{ [index: string]: any; }`.
+ * This is to ease writing `someDataObject.anyPropertyName`,
+ * when dealing with arbitrary JavaScript Objects used as model data.
+ * @category Type
+ */
+export interface ObjectData {
+    [index: string]: any;
+}
 /**
  * Undocumented
  * @unrestricted
@@ -203,9 +212,9 @@ export interface ISurface {
     width: number;
     height: number;
     ownerDocument: Document;
-    elementFinished: ((a: any, b: SVGElement) => void) | null;
-    init(width: number, height: number): void;
-    getBoundingClientRect(): any;
+    resize(pixelWidth: number, pixelHeight: number, width: number, height: number): boolean;
+    elementFinished: ((a: GraphObject, b: SVGElement) => void) | null;
+    getBoundingClientRect(): ClientRect | DOMRect;
     focus(): void;
     dispose(): void;
     style: CSSStyleDeclaration;
@@ -238,7 +247,7 @@ export interface IContext {
     clip(): void;
     closePath(): void;
     createLinearGradient(aX0: number, aY0: number, aX1: number, aY1: number): CanvasGradient | SGradient;
-    createPattern(image: HTMLCanvasElement | HTMLImageElement, repetition: string): CanvasPattern;
+    createPattern(image: HTMLCanvasElement | HTMLImageElement, repetition: string): CanvasPattern | string;
     createRadialGradient(aX0: number, aY0: number, aR0: number, aX1: number, aY1: number, aR1: number): CanvasGradient | SGradient;
     drawImage(src: HTMLCanvasElement | HTMLImageElement | HTMLVideoElement, sx: number, sy: number, sw?: number, sh?: number, dx?: number, dy?: number, dw?: number, dh?: number): void;
     fill(): void;
@@ -872,17 +881,17 @@ export class Set<T> implements Iterable<T> {
      * Set the unique hash ID for an object.
      * This should be called at the beginning of each constructor that does not inherit from another class.
      */
-    static uniqueHash(obj: any): void;
+    static uniqueHash(obj: ObjectData): void;
     /**
      * Undocumented.
      * Get the unique hash ID for an object, making it if necessary.
      */
-    static hashIdUnique(obj: any): number;
+    static hashIdUnique(obj: ObjectData): number;
     /**
      * Undocumented.
      * Get the unique hash ID for an object; may return undefined.
      */
-    static hashId(obj: any): number | undefined;
+    static hashId(obj: ObjectData): number | undefined;
 }
 /**
  * Undocumented
@@ -3322,6 +3331,10 @@ export class InputEvent {
     middle: boolean;
 }
 /**
+ * The signature for a function acting as a handler for InputEvents.
+ */
+export type InputEventHandler = (e: InputEvent, o: GraphObject, o2?: GraphObject) => void;
+/**
  * A DiagramEvent represents a more abstract event than an InputEvent.
  * They are raised on the Diagram class.
  * One can receive such events by registering a DiagramEvent listener on a Diagram
@@ -3494,6 +3507,56 @@ export class DiagramEvent {
      * This property defaults to null.
      */
     parameter: any;
+}
+/**
+ * The signature for a function acting as a handler for DiagramEvents.
+ */
+export type DiagramEventHandler = (e: DiagramEvent) => void;
+/**
+ * (Undocumented, internal interface)
+ */
+export type DiagramEventName = 'AnimationStarting' | 'AnimationFinished' | 'BackgroundSingleClicked' | 'BackgroundDoubleClicked' | 'BackgroundContextClicked' | 'ChangingSelection' | 'ChangedSelection' | 'ClipboardChanged' | 'ClipboardPasted' | 'DocumentBoundsChanged' | 'ExternalObjectsDropped' | 'GainedFocus' | 'InitialLayoutCompleted' | 'LayoutCompleted' | 'LinkDrawn' | 'LinkRelinked' | 'LinkReshaped' | 'LostFocus' | 'Modified' | 'ObjectSingleClicked' | 'ObjectDoubleClicked' | 'ObjectContextClicked' | 'PartCreated' | 'PartResized' | 'PartRotated' | 'SelectionMoved' | 'SelectionCopied' | 'SelectionDeleted' | 'SelectionDeleting' | 'SelectionGrouped' | 'SelectionUngrouped' | 'SubGraphCollapsed' | 'SubGraphExpanded' | 'TextEdited' | 'TreeCollapsed' | 'TreeExpanded' | 'ViewportBoundsChanged' | 'InvalidateDraw';
+/**
+ * (Undocumented, internal interface)
+ */
+export interface DiagramEventsInterface {
+    AnimationStarting?: DiagramEventHandler;
+    AnimationFinished?: DiagramEventHandler;
+    BackgroundSingleClicked?: DiagramEventHandler;
+    BackgroundDoubleClicked?: DiagramEventHandler;
+    BackgroundContextClicked?: DiagramEventHandler;
+    ChangingSelection?: DiagramEventHandler;
+    ChangedSelection?: DiagramEventHandler;
+    ClipboardChanged?: DiagramEventHandler;
+    ClipboardPasted?: DiagramEventHandler;
+    DocumentBoundsChanged?: DiagramEventHandler;
+    ExternalObjectsDropped?: DiagramEventHandler;
+    GainedFocus?: DiagramEventHandler;
+    InitialLayoutCompleted?: DiagramEventHandler;
+    LayoutCompleted?: DiagramEventHandler;
+    LinkDrawn?: DiagramEventHandler;
+    LinkRelinked?: DiagramEventHandler;
+    LinkReshaped?: DiagramEventHandler;
+    LostFocus?: DiagramEventHandler;
+    Modified?: DiagramEventHandler;
+    ObjectSingleClicked?: DiagramEventHandler;
+    ObjectDoubleClicked?: DiagramEventHandler;
+    ObjectContextClicked?: DiagramEventHandler;
+    PartCreated?: DiagramEventHandler;
+    PartResized?: DiagramEventHandler;
+    PartRotated?: DiagramEventHandler;
+    SelectionMoved?: DiagramEventHandler;
+    SelectionCopied?: DiagramEventHandler;
+    SelectionDeleted?: DiagramEventHandler;
+    SelectionDeleting?: DiagramEventHandler;
+    SelectionGrouped?: DiagramEventHandler;
+    SelectionUngrouped?: DiagramEventHandler;
+    SubGraphCollapsed?: DiagramEventHandler;
+    SubGraphExpanded?: DiagramEventHandler;
+    TextEdited?: DiagramEventHandler;
+    TreeCollapsed?: DiagramEventHandler;
+    TreeExpanded?: DiagramEventHandler;
+    ViewportBoundsChanged?: DiagramEventHandler;
 }
 /**
  * A ChangedEvent represents a change to an object, typically a GraphObject,
@@ -3714,7 +3777,7 @@ export class ChangedEvent {
      * (for ChangedEvent#Insert or ChangedEvent#Remove)
      * or the stage of the current transaction (for ChangedEvent#Transaction).
      */
-    propertyName: string | ((a: Object, b: any) => any);
+    propertyName: string | ((a: ObjectData, b: any) => any);
     /**
      * This read-only property is true when this ChangedEvent is of type ChangedEvent#Transaction and represents the end of a transactional change.
      * It is implemented as:
@@ -3732,7 +3795,7 @@ export class ChangedEvent {
      *
      * For ChangedEvent#Transaction changes, this may be the Transaction.
      */
-    object: Object | null;
+    object: ObjectData | null;
     /**
      * Gets or sets the previous or old value that the property had.
      * The default is null.
@@ -3760,6 +3823,10 @@ export class ChangedEvent {
      */
     newParam: any;
 }
+/**
+ * The signature for a function acting as a handler for ChangedEvents.
+ */
+export type ChangedEventHandler = (e: ChangedEvent) => void;
 /**
  * A Transaction holds a list of ChangedEvents collected during a transaction,
  * as the value of the read-only #changes property.
@@ -6091,7 +6158,7 @@ export class LinkingTool extends LinkingBaseTool {
      * Setting this property does not raise any events.
      * This property is ignored if the Diagram#model is not a GraphLinksModel.
      */
-    archetypeLinkData: Object | null;
+    archetypeLinkData: ObjectData | null;
     /**
      * Gets or sets an optional node data object representing a link label, that is copied by #insertLink
      * and added to the GraphLinksModel when creating a new Link.
@@ -6105,7 +6172,7 @@ export class LinkingTool extends LinkingBaseTool {
      * Setting this property does not raise any events.
      * This property is ignored if the Diagram#model is not a GraphLinksModel.
      */
-    archetypeLabelNodeData: Object | null;
+    archetypeLabelNodeData: ObjectData | null;
     /**
      * Gets or sets the direction in which new links may be drawn.
      * Possible values are LinkingTool#ForwardsOnly, LinkingTool#BackwardsOnly, or LinkingTool#Either.
@@ -7310,7 +7377,7 @@ export class ClickCreatingTool extends Tool {
      * The value must be non-null for this tool to be able to run.
      * Setting this property does not raise any events.
      */
-    archetypeNodeData: Object | null;
+    archetypeNodeData: ObjectData | null;
     /**
      * Gets or sets whether a double click rather than a single-click is required
      * to insert a new Part at the mouse-up point.
@@ -7759,7 +7826,7 @@ export class ContextMenuTool extends Tool {
     /**
      * Show an Adornment or HTMLInfo as a context menu.
      *
-     * This method is called by Tool#doContextClick and CommandHandler#showContextMenu.
+     * This method is called by the context click (Tool#doMouseDown) and CommandHandler#showContextMenu.
      * If you want to programmatically show a context menu for a particular GraphObject or for the
      * whole diagram, do not call this method, which only does one small piece of the process of
      * bringing up a context menu.
@@ -7818,6 +7885,14 @@ export class ContextMenuTool extends Tool {
      * set the contextmenu's `Part.data` to the same value.
      * The Adornment#adornedObject property is set to the GraphObject
      * for which the menu is being shown.
+     *
+     * The menu carries some default CSS styling and uses the following CSS classes:
+     *
+     * * `goCXforeground` for the DIV containing the buttons
+     * * `goCXbackground` for the darker DIV behind the context menu
+     * * `goCXul` for the HTML `ul` items
+     * * `goCXli` for the HTML `li` tag items
+     * * `goCXa` for the HTML `a` tag items
      *
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a>
@@ -8042,7 +8117,8 @@ export class TextEditingTool extends Tool {
      *
      * This method sets #currentTextEditor.
      * If TextBlock#textEditor is defined on the TextBlock it will use that as the value.
-     * By default, it uses the value of #defaultTextEditor, which is an {@HTMLInfo}.
+     * By default, it uses the value of #defaultTextEditor, which is an {@HTMLInfo}
+     * showing an HTML textarea, with the CSS class `goTXarea`.
      *
      * If the #currentTextEditor is an HTMLInfo, this method calls HTMLInfo#show on that instance.
      *
@@ -8161,6 +8237,22 @@ export class AnimationManager {
      * You do not normally need to create an instance of this class because one already exists as the Diagram#animationManager, which you can modify.
      */
     constructor();
+    /**
+     * Undocumented
+     */
+    prepareAutomaticAnimation(reason: string, settings?: {
+        reason?: string;
+    }): void;
+    /**
+     * Undocumented.
+     */
+    prepareAnimation(reason: string, settings?: {
+        reason?: string;
+    }): void;
+    /**
+     * Undocumented.
+     */
+    addToAnimation(obj: GraphObject, propname: string, start: any, end: any, cosmetic?: boolean): void;
     /**
      * Stops any running animation and updates the Diagram to its final state.
      *
@@ -9110,7 +9202,7 @@ export class Diagram {
      * @param {Object} props a plain JavaScript object with various property values to be set on this Diagram or on a part of this Diagram.
      * @since 1.5
      */
-    setProperties(props: Object): void;
+    setProperties(props: ObjectData): void;
     /**
      * Adds a Part to the Layer that matches the Part's Part#layerName,
      * or else the default layer, which is named with the empty string.
@@ -9119,6 +9211,7 @@ export class Diagram {
      * If you want nodes to be members of a Group, in addition to calling this method
      * call Group#addMembers or set each Part#containingGroup.
      * @param {Part} part
+     * @see #remove
      */
     add(part: Part): void;
     /**
@@ -9127,6 +9220,7 @@ export class Diagram {
      * Removing a Group will also remove all of its members.
      * Removing a Link will also remove all of its label Nodes, if it has any.
      * @param {Part} part
+     * @see #add
      */
     remove(part: Part): void;
     /**
@@ -9485,14 +9579,14 @@ export class Diagram {
     highlightCollection(coll: Iterable<Part> | Array<Part>): void;
     /**
      * Scrolling function used by primarily by #commandHandler's CommandHandler#doKeyDown.
-     * @param {string} unit A string representing the unit of the scroll operation. Can be 'pixel', 'line', 'page', or 'document'.
-     * @param {string} dir The direction of the scroll operation. Can be 'up', 'down', 'left', or 'right'.
+     * @param {string} unit A string representing the unit of the scroll operation. Can only be 'pixel', 'line', 'page', or 'document'.
+     * @param {string} dir The direction of the scroll operation. Can only be 'up', 'down', 'left', or 'right'.
      * @param {number=} dist An optional distance multiplier, for multiple pixels, lines, or pages. The default value is 1.
      *                       This argument is ignored when the unit is 'document'.
      * @see #scrollToRect
      * @see #centerRect
      */
-    scroll(unit: string, dir: string, dist?: number): void;
+    scroll(unit: ('pixel' | 'line' | 'page' | 'document'), dir: ('up' | 'down' | 'left' | 'right'), dist?: number): void;
     /**
      * Modifies the #position to show a given Rect of the Diagram by centering the
      * viewport on that Rect. Does nothing if the Rect is already in view.
@@ -10225,6 +10319,16 @@ export class Diagram {
      */
     model: Model;
     /**
+     * Gets or sets the license key.
+     * @since 2.0
+     */
+    static licenseKey: string;
+    /**
+     * Gets the current GoJS version.
+     * @since 2.0
+     */
+    static readonly version: string;
+    /**
      * Remove all of the Parts created from model data
      * and then create them again.
      * This must be called after modifying or replacing any of the template maps
@@ -10269,7 +10373,7 @@ export class Diagram {
      * @return {Part} an existing Part in this Diagram that was
      * created because its `Part.data` was the data in the Diagram's Model.
      */
-    findPartForData(data: Object): Part | null;
+    findPartForData(data: ObjectData): Part | null;
     /**
      * Look for a Node or Group  corresponding to a model's node data object.
      * @param {Object} nodedata a JavaScript object matched by reference identity;
@@ -10278,7 +10382,7 @@ export class Diagram {
      * created because its `Part.data` was the node data in the Diagram's Model.
      * This will be null if there is no such part or if it's just a Part or Link.
      */
-    findNodeForData(nodedata: Object): Node | null;
+    findNodeForData(nodedata: ObjectData): Node | null;
     /**
      * Look for a Link corresponding to a GraphLinksModel's link data object.
      * @param {Object} linkdata a JavaScript object matched by reference identity;
@@ -10286,7 +10390,7 @@ export class Diagram {
      * @return {Link} an existing Link in this Diagram that was
      * created because its `Part.data` was the link data in the Diagram's Model.
      */
-    findLinkForData(linkdata: Object): Link | null;
+    findLinkForData(linkdata: ObjectData): Link | null;
     /**
      * Search for Nodes or Groups by matching the Node data with example data holding values, RegExps, or predicates.
      *
@@ -10325,7 +10429,7 @@ export class Diagram {
      * @see #findLinksByExample
      * @since 1.5
      */
-    findNodesByExample(...examples: Array<Object>): Iterator<Node>;
+    findNodesByExample(...examples: Array<ObjectData>): Iterator<Node>;
     /**
      * Search for Links by matching the Link data with example data holding values, RegExps, or predicates.
      *
@@ -10337,7 +10441,7 @@ export class Diagram {
      * @see #findNodesByExample
      * @since 1.5
      */
-    findLinksByExample(...examples: Array<Object>): Iterator<Link>;
+    findLinksByExample(...examples: Array<ObjectData>): Iterator<Link>;
     /**
      * Gets or sets the default Node template used as the archetype
      * for node data that is added to the #model.
@@ -10788,23 +10892,27 @@ export class Diagram {
      * See the DiagramEvent documentation for a complete listing of diagram event names and their purposes.
      * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
      * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
+     * @see #removeDiagramListener
      */
-    addDiagramListener(name: string, listener: ((a: DiagramEvent) => void)): void;
+    addDiagramListener(name: DiagramEventName, listener: ((a: DiagramEvent) => void)): void;
     /**
      * Unregister a DiagramEvent handler.
      *
      * See the documentation for DiagramEvent for a complete listing of diagram event names and their purposes.
      * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
      * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
+     * @see #addDiagramListener
      */
-    removeDiagramListener(name: string, listener: ((a: DiagramEvent) => void)): void;
+    removeDiagramListener(name: DiagramEventName, listener: ((a: DiagramEvent) => void)): void;
     /**
      * Undocumented.
      * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
      * @param {Object=} obj an optional subject of the event.
      * @param {*=} param an optional parameter describing the change to the subject of the event.
+     * @see #addDiagramListener
+     * @see #removeDiagramListener
      */
-    raiseDiagramEvent(name: string, obj?: Object, param?: any): void;
+    raiseDiagramEvent(name: DiagramEventName, obj?: ObjectData, param?: any): void;
     /**
      * Gets or sets the Margin that describes the Diagram's autoScrollRegion. The default value is a Margin of 16 on all sides.
      * When the mouse drag point is within this region on the left or right sides,
@@ -10832,15 +10940,26 @@ export class Diagram {
      * See the <a href="../../samples/minimalSVG.html">Minimal SVG Download sample</a>,
      * which also demonstrates downloading an SVG file without involving a web server.
      *
-     * See #makeImageData for a complete explanation of possible parameters.
+     * See #makeImageData for an explanation of possible options that are shared by both methods.
+     * Additional SVG-specific options for this method:
+     *   - **elementFinished:**
+     *     A function with two arguments, GraphObject and SVGElement.
+     *     As the SVG elements are created representing each graph object, this function is called on them,
+     *     allowing you to modify the SVG as it is being built, to assign stylesheets, IDs, etc. Example:
+     *     ```js
+     *     elementFinished: function(graphObject, SVGElement) {
+     *       // set something on every SVG element that represents a GoJS TextBlock
+     *       if (graphObject instanceof go.TextBlock) SVGElement.setAttribute(...);
+     *     }
+     *     ```
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
-     * @param {any=} properties a JavaScript object detailing optional arguments for SVG creation.
+     * @param {any=} options a JavaScript object detailing optional arguments for SVG creation.
      * @return {SVGElement}
      * @see #makeImage
      */
-    makeSvg(properties?: any): SVGElement;
+    makeSvg(options?: SvgRendererOptions): SVGElement;
     /**
      * Add a renderer to the Diagram. This property is only used when building GoJS from source.
      *
@@ -10858,16 +10977,18 @@ export class Diagram {
      * sets its source to the returned string of #makeImageData,
      * and returns a reference to that Image.
      *
+     * See #makeImageData for a complete explanation of possible options.
+     *
      * By default this method returns a snapshot of the visible diagram, but optional arguments give more options.
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
-     * @param {any=} properties a JavaScript object detailing optional arguments for image creation, to be passed to #makeImageData.
+     * @param {any=} options a JavaScript object detailing optional arguments for image creation, to be passed to #makeImageData.
      * @return {HTMLImageElement | null} An HTML Image element, or null if a callback is specified, or null if there is no DOM.
      * @see #makeImageData
      * @see #makeSvg
      */
-    makeImage(properties?: any): HTMLImageElement | null;
+    makeImage(options?: ImageRendererOptions): HTMLImageElement | null;
     /**
      * Create a bitmap of the current Diagram encoded as a base64 string, or returned as an ImageData object.
      * This method uses the toDataURL method of the HTMLCanvasElement to create the data URL,
@@ -10887,8 +11008,8 @@ export class Diagram {
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
-     * @param {any=} properties a JavaScript object detailing optional arguments for image creation.
-     * Image creation arguments:
+     * @param {any=} options a JavaScript object detailing optional arguments for image creation.
+     * Rendering options for both images and SVG:
      *   - **size:**
      *     The size of the created image, as a Size, limited by the **maxSize** property.
      *     If no **scale** or **position** is specified then the diagram will be scaled to fit the given size.
@@ -10927,7 +11048,7 @@ export class Diagram {
      *     An HTML Document, defaulting to `window.document` (or the root object in other contexts)
      *     This may be useful to set if you intend your Image or SVG to be opened in a new window.
      *
-     * Additional Image-specific arguments:
+     * Additional image-specific arguments (not for SVG):
      *   - **type:**
      *     The optional MIME type of the image. Valid values are typically `"image/png"` and `"image/jpeg"`.
      *     Some browsers allow `"image/webp"`. The default value is `"image/png"`, and unrecognized values will defer to the default.
@@ -10939,8 +11060,8 @@ export class Diagram {
      *     The `"blob"` option requires that the **callback** property is also defined.
      *     The default value is `"string"`, and unrecognized values will return a string.
      *   - **callback:**
-     *     The function to call when an image is finished creation. It has one argument, which is of the **returnType**'s type.
-     *     If specified, use a callback instead of returning immediately. This can be useful if you need to wait for image assets to load.
+     *     The function to call when an image is finished creation. It has one argument, which is of the type specified by the value of the **returnType**.
+     *     If provided, call the callback when finished instead of returning immediately. This can be useful if you need to wait for image assets to load.
      *     This also respects the **callbackTimeout**.
      *     This argument is necessary if the **returnType** is `"blob"`, however a callback can be used with any **returnType**.
      *     See the <a href="../../samples/minimalBlob.html">Minimal Image Blob Download sample</a> for an example usage,
@@ -10952,23 +11073,10 @@ export class Diagram {
      *     The optional details to pass to the HTMLCanvasElement's toDataURL function.
      *     If the type is `"image/jpeg"` then this can be a number from `0` to `1`, inclusive, describing the desired jpeg quality.
      *
-     * Additional SVG-specific arguments:
-     *   - **elementFinished:**
-     *     A function with two arguments, GraphObject and SVGElement.
-     *     As the SVG elements are created representing each graph object, this function is called on them,
-     *     allowing you to modify the SVG as it is being built, to assign stylesheets, IDs, etc. Example:
-     *
-     *     ```js
-     *     elementFinished: function(graphObject, SVGElement) {
-     *       // set something on every SVG element that represents a GoJS TextBlock
-     *       if (graphObject instanceof go.TextBlock) SVGElement.setAttribute(...);
-     *     }
-     *     ```
      * @return {ImageData|string|null} An ImageData, or a base64-encoded string describing an image, or null if a callback is specified.
      * @see #makeImage
      */
-    makeImageData(properties?: any): HTMLImageElement | ImageData | string | null;
-    makeImageData2(properties: any, callbackFunc: any): HTMLImageElement | ImageData | string | null;
+    makeImageData(options?: ImageRendererOptions): HTMLImageElement | ImageData | string | null;
     /**
      * This static function declares that a class (constructor function) derives from another class --
      * **_but please note that most classes do not support inheritance_**.
@@ -11119,6 +11227,37 @@ export class DraggingOptions {
      * Resets the properties of a DraggingOptions instance.
      */
     reset(): void;
+}
+/**
+ * Used for the options arguments to Diagram.makeImage, Diagram.makeImageData, and Diagram.makeSvg.
+ */
+export interface DiagramRendererOptions {
+    size?: Size;
+    scale?: number;
+    maxSize?: Size;
+    position?: Point;
+    parts?: Iterable<Part>;
+    padding?: MarginLike;
+    background?: BrushLike;
+    showTemporary?: boolean;
+    showGrid?: boolean;
+    document?: HTMLDocument;
+}
+/**
+ * Used for the options argument to Diagram.makeSvg.
+ */
+export interface SvgRendererOptions extends DiagramRendererOptions {
+    elementFinished?: ((graphobj: GraphObject, svgelt: SVGElement) => void) | null;
+}
+/**
+ * Used for the options argument to Diagram.makeImage and Diagram.makeImageData.
+ */
+export interface ImageRendererOptions extends DiagramRendererOptions {
+    type?: string;
+    returnType?: string;
+    callback?: ((result: any) => void) | null;
+    callbackTimeout?: number;
+    details?: ObjectData;
 }
 /**
  * Palette extends the Diagram class to allow objects to be dragged and placed onto other Diagrams.
@@ -12028,7 +12167,7 @@ export class CommandHandler {
      * If you set this to an Object, be sure that GraphLinksModel#isGroupForNodeData is true for that object.
      * Setting this property does not raise any events.
      */
-    archetypeGroupData: Object;
+    archetypeGroupData: ObjectData;
     /**
      * Gets or sets the predicate that determines whether or not a node may become a member of a group.
      * This predicate is called in addition to any existing group's Group#memberValidation predicate.
@@ -12085,6 +12224,11 @@ export class CommandHandler {
      * @since 2.0
      */
     computeEffectiveCollection(parts: Iterable<Part>, options?: DraggingOptions): Map<Part, DraggingInfo>;
+}
+/**
+ */
+interface ConstructorType<T extends new (...args: Array<any>) => InstanceType<T>> {
+    new (...args: Array<any>): InstanceType<T>;
 }
 /**
  * This is the abstract base class for all graphical objects.
@@ -13041,6 +13185,10 @@ export abstract class GraphObject {
      *
      * The #alignmentFocus is often used along with this property to specify
      * where this object should be positioned in a Panel.
+     *
+     * A Spot#Default is equivalent to Spot.Center in Spot, Auto, Horizontal, and Vertical panels.
+     * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
+     *
      * @see #alignmentFocus
      * @see Panel#defaultAlignment
      */
@@ -13085,6 +13233,8 @@ export abstract class GraphObject {
      * When you want a link label Node to be positioned by its location spot rather than by this alignmentFocus spot,
      * you can set this property to Spot#None, only on Nodes.
      * @see Panel#alignmentFocusName
+     *
+     * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
      *
      * WARNING: Since 2.0, for Spot Panels, the offsetX/offsetY of #alignmentFocus has been reversed.
      * The offsetX/Y now describes offset distance from the alignmentFocus point to the alignment point, rather than the opposite.
@@ -13941,7 +14091,7 @@ export abstract class GraphObject {
      * @param {Object} props a plain JavaScript object with various property values to be set on this GraphObject.
      * @since 1.5
      */
-    setProperties(props: Object): void;
+    setProperties(props: ObjectData): void;
     /**
      * This static function builds an object given its class and additional arguments
      * providing initial properties or GraphObjects that become Panel elements.
@@ -14079,7 +14229,22 @@ export abstract class GraphObject {
      * or a string that is used as the value of a commonly set property.
      * @return {Object}
      */
-    static make<T>(type: (new () => T) | string, ...initializers: Array<any>): T;
+    static make<T extends GraphObject>(cls: string, ...initializers: Array<string | (Partial<GraphObject> & {
+        [p: string]: any;
+    }) | Binding | EnumValue | PanelLayout | Array<string | (Partial<GraphObject> & {
+        [p: string]: any;
+    }) | Binding | EnumValue | PanelLayout>>): T;
+    static make<CT extends ConstructorType<CT>>(cls: CT, ...initializers: Array<string | (Partial<InstanceType<CT>> & {
+        [p: string]: any;
+    } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
+        Changed?: ChangedEventHandler;
+        ModelChanged?: ChangedEventHandler;
+    } : {})) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition) : never) | Binding | EnumValue | PanelLayout | Array<string | (Partial<InstanceType<CT>> & {
+        [p: string]: any;
+    } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
+        Changed?: ChangedEventHandler;
+        ModelChanged?: ChangedEventHandler;
+    } : {})) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition) : never) | Binding | EnumValue | PanelLayout>>): InstanceType<CT>;
     /**
      * This static function defines a named function that GraphObject.make can use to build objects.
      * Once this is called one can use the name as the first argument for GraphObject.make.
@@ -14098,7 +14263,7 @@ export abstract class GraphObject {
      * @param {function(Array.<*>):Object} func that takes an Array of `GraphObject.make` arguments and returns a new object
      * @since 1.5
      */
-    static defineBuilder(name: string, func: ((a: Array<any>) => Object)): void;
+    static defineBuilder(name: string, func: ((a: Array<any>) => ObjectData)): void;
     /**
      * This static function returns the first argument from the arguments array passed
      * to a GraphObject.defineBuilder function by GraphObject.make.
@@ -14593,6 +14758,9 @@ export abstract class PanelLayout {
  *
  * Panels have no visual components of their own unless a GraphObject#background or GraphObject#areaBackground is specified
  * or separators are specified either as defaults for the whole Table Panel or on individual RowColumnDefinitions.
+ * Panels can specify #padding, to make the Panel larger including its background. Setting a padding
+ * when the Panel is constrained in size will reduce the total area that it has to arrange its elements. Setting a #margin
+ * will not do this -- instead the Panel will expand in size.
  *
  * In addition to the GraphObject properties on elements that are only used by certain types of panels,
  * several Panel properties only apply to specific Panel types.
@@ -14685,8 +14853,14 @@ export class Panel extends GraphObject {
      */
     readonly elements: Iterator<GraphObject>;
     /**
-     * Gets or sets the space between this Panel's border and its content, depending on the type of panel.
+     * Gets or sets the space between this Panel's border and its content.
      * Unlike GraphObject#margin, padding expands the area inside of the Panel's border.
+     * If this Panel's size is unconstrained, this will increase the size of the panel.
+     * If this Panel's size is constrained, this will decrease the total area
+     * for the Panel elements to arrange themselves.
+     *
+     * Unlike margin, increases in size due to padding are visually covered by the
+     * GraphObject#background and GraphObject#areaBackground.
      *
      * Padding cannot contain negative numbers.
      * The default value is a Margin of zero.
@@ -14707,7 +14881,7 @@ export class Panel extends GraphObject {
      */
     defaultStretch: EnumValue;
     /**
-     * Gets or sets the additional padding for rows and columns in a Table Panel.
+     * For Table Panels: Gets or sets the additional padding for rows and columns.
      * Padding is applied both before and after a row or column's contents.
      * @see RowColumnDefinition#separatorPadding
      * @see #defaultColumnSeparatorStrokeWidth
@@ -14716,10 +14890,11 @@ export class Panel extends GraphObject {
      */
     defaultSeparatorPadding: MarginLike;
     /**
-     * Gets or sets the default stroke (color) for rows in a Table Panel
+     * For Table Panels: Gets or sets the default stroke (color) for rows
      * provided a given row has a nonzero RowColumnDefinition#separatorStrokeWidth.
      * RowColumnDefinition#separatorStroke can override this default value.
      * The default value is null -- no line is drawn.
+     * @TablePanel
      * @see #defaultRowSeparatorStrokeWidth
      * @see #defaultRowSeparatorDashArray
      * @see RowColumnDefinition#separatorStroke
@@ -14728,7 +14903,7 @@ export class Panel extends GraphObject {
      */
     defaultRowSeparatorStroke: BrushLike;
     /**
-     * Gets or sets the default stroke width for a row's separator in a Table Panel.
+     * For Table Panels: Gets or sets the default stroke width for a row's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
      * The default value is 1.  Any new value must be a real, non-negative number.
      * @see RowColumnDefinition#separatorStrokeWidth
@@ -14737,7 +14912,7 @@ export class Panel extends GraphObject {
      */
     defaultRowSeparatorStrokeWidth: number;
     /**
-     * Gets or sets the default dash array for a row's separator in a Table Panel.
+     * For Table Panels: Gets or sets the default dash array for a row's separator.
      * RowColumnDefinition#separatorDashArray can override this default value.
      *
      * Must be an array of positive numbers and zeroes,
@@ -14754,7 +14929,7 @@ export class Panel extends GraphObject {
      */
     defaultRowSeparatorDashArray: Array<number> | null;
     /**
-     * Gets or sets the default stroke (color) for columns in a Table Panel
+     * For Table Panels: Gets or sets the default stroke (color) for columns
      * provided a given column has a nonzero RowColumnDefinition#separatorStrokeWidth.
      * RowColumnDefinition#separatorDashArray can override this default value.
      * The default value is null -- no line is drawn.
@@ -14766,7 +14941,7 @@ export class Panel extends GraphObject {
      */
     defaultColumnSeparatorStroke: BrushLike;
     /**
-     * Gets or sets the default stroke width for a column's separator in a Table Panel.
+     * For Table Panels: Gets or sets the default stroke width for a column's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
      * The default value is 1.  Any new value must be a real, non-negative number.
      * @see RowColumnDefinition#separatorStrokeWidth
@@ -14775,7 +14950,7 @@ export class Panel extends GraphObject {
      */
     defaultColumnSeparatorStrokeWidth: number;
     /**
-     * Gets or sets the default dash array for a column's separator in a Table Panel.
+     * For Table Panels: Gets or sets the default dash array for a column's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
      *
      * Must be an array of positive numbers and zeroes,
@@ -14792,51 +14967,51 @@ export class Panel extends GraphObject {
      */
     defaultColumnSeparatorDashArray: Array<number> | null;
     /**
-     * Gets or sets how a Viewbox panel will resize its content.
+     * For Viewbox Panels: Gets or sets how the panel will resize its content.
      *
      * Possible values are GraphObject#Uniform and GraphObject#UniformToFill.
      * The default is GraphObject#Uniform.
      */
     viewboxStretch: EnumValue;
     /**
-     * Gets or sets the distance between lines in a Grid panel.
+     * For Grid Panels: Gets or sets the distance between lines.
      * The units are in local coordinates.
      * The default is 10x10.  Any new width or height must be a positive real number.
      */
     gridCellSize: Size;
     /**
-     * Gets or sets an origin point for the grid cells in a Grid panel.
+     * For Grid Panels: Gets or sets an origin point for the grid cells.
      * The units are in local coordinates.
      * The default is (0,0).  Any new value must use real numbers.
      */
     gridOrigin: Point;
     /**
-     * Gets or sets the minimum value represented on a Graduated panel.
+     * For Graduated Panels: Gets or sets the minimum value represented.
      * Must be less than #graduatedMax. The default is 0.
      * @since 1.7
      */
     graduatedMin: number;
     /**
-     * Gets or sets the maximum value represented on a Graduated panel.
+     * For Graduated Panels: Gets or sets the maximum value represented.
      * Must be greater than #graduatedMin. The default is 100.
      * @since 1.7
      */
     graduatedMax: number;
     /**
-     * This read-only property returns the range of values represented by a Graduated panel.
+     * For Graduated Panels: This read-only property returns the range of values represented by the Panel.
      *
      * For example, a #graduatedMin of 25 and #graduatedMax of 75 would return 50.
      * @since 1.7
      */
     readonly graduatedRange: number;
     /**
-     * Gets or sets the difference between two consecutive values marked by ticks.
+     * For Graduated Panels: Gets or sets the difference between two consecutive values marked by ticks.
      * Must be positive. The default is 10.
      * @since 1.7
      */
     graduatedTickUnit: number;
     /**
-     * Gets or sets the base value which is marked with a tick.
+     * For Graduated Panels: Gets or sets the base value which is marked with a tick.
      * The default is 0.
      * @since 1.7
      */
@@ -14893,12 +15068,12 @@ export class Panel extends GraphObject {
      */
     removeAt(idx: number): void;
     /**
-     * This read-only property returns the number of rows in this Panel if it is of #type Panel#Table.
+     * For Table Panels: This read-only property returns the number of rows.
      * This value is only valid after the Panel has been measured.
      */
     readonly rowCount: number;
     /**
-     * Gets the RowColumnDefinition for a particular row in this Table Panel.
+     * For Table Panels: Gets the RowColumnDefinition for a particular row.
      * If you ask for the definition of a row at or beyond the #rowCount,
      * it will automatically create one and return it.
      *
@@ -14909,19 +15084,19 @@ export class Panel extends GraphObject {
      */
     getRowDefinition(idx: number): RowColumnDefinition;
     /**
-     * Removes the RowColumnDefinition for a particular row in this Table Panel.
+     * For Table Panels: Removes the RowColumnDefinition for a particular row.
      *
      * If this Panel is not a Table Panel, this method does nothing.
      * @param {number} idx the non-negative zero-based integer row index.
      */
     removeRowDefinition(idx: number): void;
     /**
-     * This read-only property returns the number of columns in this Panel if it is of #type Panel#Table.
+     * For Table Panels: This read-only property returns the number of columns.
      * This value is only valid after the Panel has been measured.
      */
     readonly columnCount: number;
     /**
-     * Gets the RowColumnDefinition for a particular column in this Table Panel.
+     * For Table Panels: Gets the RowColumnDefinition for a particular column.
      * If you ask for the definition of a column at or beyond the #columnCount,
      * it will automatically create one and return it.
      *
@@ -14932,23 +15107,21 @@ export class Panel extends GraphObject {
      */
     getColumnDefinition(idx: number): RowColumnDefinition;
     /**
-     * Removes the RowColumnDefinition for a particular row in this Table Panel.
+     * For Table Panels: Removes the RowColumnDefinition for a particular row.
      *
      * If this Panel is not a Table Panel, this method does nothing.
      * @param {number} idx the non-negative zero-based integer row index.
      */
     removeColumnDefinition(idx: number): void;
     /**
-     * Gets or sets how this Panel's rows deal with extra space
-     * if the Panel is of #type Panel#Table.
+     * For Table Panels: Gets or sets how this Panel's rows deal with extra space.
      * Valid values are RowColumnDefinition#ProportionalExtra and RowColumnDefinition#None.
      * The default is RowColumnDefinition#ProportionalExtra.
      * @see RowColumnDefinition#sizing
      */
     rowSizing: EnumValue;
     /**
-     * Gets or sets how this Panel's columns deal with extra space
-     * if the Panel is of #type Panel#Table.
+     * For Table Panels: Gets or sets how this Panel's columns deal with extra space.
      * Valid values are RowColumnDefinition#ProportionalExtra and RowColumnDefinition#None.
      * The default is RowColumnDefinition#ProportionalExtra.
      * @see RowColumnDefinition#sizing
@@ -14956,23 +15129,22 @@ export class Panel extends GraphObject {
      */
     columnSizing: EnumValue;
     /**
-     * Gets or sets the first row that this Panel of #type Panel#Table displays.
+     * For Table Panels: Gets or sets the first row that this Panel displays.
      * The default value is 0.
      * @see #leftIndex
      */
     topIndex: number;
     /**
-     * Gets or sets the first column that this Panel of #type Panel#Table displays.
+     * For Table Panels: Gets or sets the first column that this Panel displays.
      * The default value is 0.
      * @see #topIndex
      */
     leftIndex: number;
     /**
-     * Returns the row at a given y-coordinate in local coordinates.
+     * For Table Panels: Returns the row at a given y-coordinate in local coordinates.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
      * a Point in local coordinates.
      *
-     * If this Panel is not a Table Panel, this method returns -1.
      * @param {number} y
      * @return {number} a zero-based integer
      * @see #findColumnForLocalX
@@ -14980,11 +15152,10 @@ export class Panel extends GraphObject {
      */
     findRowForLocalY(y: number): number;
     /**
-     * Returns the cell at a given x-coordinate in local coordinates.
+     * For Table Panels: Returns the cell at a given x-coordinate in local coordinates.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
      * a Point in local coordinates.
      *
-     * If this Panel is not a Table Panel, this method returns -1.
      * @param {number} x
      * @return {number} a zero-based integer
      * @see #findRowForLocalY
@@ -14992,8 +15163,7 @@ export class Panel extends GraphObject {
      */
     findColumnForLocalX(x: number): number;
     /**
-     * Returns the point that corresponds with a value along this Graduated Panel.
-     * The point will be in the panel's coordinates.
+     * For Graduated Panels: Returns the point that corresponds with a value, in the panel's coordinates.
      *
      * If the value provided is not within the #graduatedMin and #graduatedMax,
      * it will be constrained to within those values.
@@ -15007,7 +15177,7 @@ export class Panel extends GraphObject {
      */
     graduatedPointForValue(val: number, result?: Point): Point;
     /**
-     * Returns the value that corresponds with a Point near this Graduated Panel.
+     * For Graduated Panels: Returns the value that corresponds with the given Point.
      * The Point must be in the panel's coordinates.
      * The value returned will be in the Graduated Panel's range.
      *
@@ -15166,7 +15336,7 @@ export class Panel extends GraphObject {
      * @return {Panel} or null if not found
      * @since 1.6
      */
-    findItemPanelForData(data: Object): Panel | null;
+    findItemPanelForData(data: ObjectData): Panel | null;
     /**
      * Gets or sets the default Panel template used as the archetype
      * for item data that are in #itemArray.
@@ -15209,14 +15379,14 @@ export class Panel extends GraphObject {
      */
     itemCategoryProperty: string | ((a: any) => string);
     /**
-     * Gets or sets whether this Panel's main element clips instead of fills.
+     * For Spot Panels: Gets or sets whether this Panel's main element clips instead of fills.
      * The main element will not paint its stroke, if it has any.
-     * Only works with Spot panels, and assumes that the main element is a Shape.
+     * This assumes that the main element is a Shape.
      * @since 1.7
      */
     isClipping: boolean;
     /**
-     * For Horizontal and Vertical panels, gets or sets whether this Panel arranges its contents from the
+     * For Horizontal and Vertical Panels: gets or sets whether this Panel arranges its contents from the
      * typical side (left and top, respectively), or the opposite side (right and bottom, respectively).
      *
      * The default value is false.
@@ -15242,7 +15412,7 @@ export class Panel extends GraphObject {
      */
     isEnabled: boolean;
     /**
-     * For Panels which are elements of Spot Panels, this gets or sets the name
+     * For Panels which are elements of Spot Panels: Gets or sets the name
      * of this Panel's element that should be used as the alignment object instead of this Panel.
      *
      * This allows Spot Panels to align objects that are nested in the element tree of its own elements.
@@ -15823,14 +15993,14 @@ export class Shape extends GraphObject {
      *
      * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linecap">Stroke Line Cap (w3.org)</a>.
      */
-    strokeCap: string;
+    strokeCap: ('butt' | 'round' | 'square');
     /**
      * Gets or sets the type of corner that will be drawn for a stroke at the intersection of two straight segments of the geometry.
      * The value must be one of "miter", "bevel", or "round". The default is "miter".
      *
      * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linejoin">Stroke Line Join (w3.org)</a>.
      */
-    strokeJoin: string;
+    strokeJoin: ('miter' | 'bevel' | 'round');
     /**
      * Gets or sets the style for the stroke's mitre limit ratio.
      * The value must be a real number greater than or equal to one.
@@ -16239,7 +16409,7 @@ export class TextBlock extends GraphObject {
     text: string;
     /**
      * Gets or sets the alignment location in the TextBlock's given space.
-     * The possible values are `"start"`, `"end"`, `"left"`, `"right"`, and `"center"`.
+     * The only possible values are `"start"`, `"end"`, `"left"`, `"right"`, and `"center"`.
      * Any other value is invalid.
      *
      * This property is most pertinent when the TextBlock has multiple lines of text,
@@ -16250,7 +16420,7 @@ export class TextBlock extends GraphObject {
      * The default is `"start"`.
      * @see #verticalAlignment
      */
-    textAlign: string;
+    textAlign: ('start' | 'end' | 'left' | 'right' | 'center');
     /**
      * Gets or sets how the TextBlock is displayed: Either normally or with a Horizontal or Vertical flip or both.
      *
@@ -16313,8 +16483,9 @@ export class TextBlock extends GraphObject {
      * Gets or sets how text that is too long to display should be handled.
      *
      * Possible values are TextBlock#OverflowClip and TextBlock#OverflowEllipsis.
-     * For OverflowEllipsis to work, you must also set #wrap to TextBlock#None
-     * or limit the number of lines with #maxLines.
+     * For OverflowEllipsis to work, you must constrain the available size of the TextBlock in some way,
+     * such as setting #wrap to TextBlock#None,
+     * or limiting the number of lines with #maxLines or a height constraint.
      *
      * The default value is TextBlock#OverflowClip.
      * @see #wrap
@@ -20642,7 +20813,7 @@ export class LayoutVertex {
      * Setting this data property will also set the #bounds and #focus properties.
      * @since 1.6
      */
-    data: Object | null;
+    data: ObjectData | null;
     /**
      * Gets or sets the Node associated with this vertex, if any.
      * The value may be null if this vertex is a "dummy" vertex,
@@ -20847,7 +21018,7 @@ export class LayoutEdge {
      * For virtualized layouts working on model data instead of a Link.
      * @since 1.6
      */
-    data: Object | null;
+    data: ObjectData | null;
     /**
      * Gets or sets the Link associated with this edge, if any.
      * The value may be null if this edge is a "dummy" edge,
@@ -21159,7 +21330,7 @@ export class Model {
      * instead, create instances of a subclass such as GraphLinksModel or TreeModel.
      * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Parts.
      */
-    constructor(nodedataarray?: Array<Object>);
+    constructor(nodedataarray?: Array<ObjectData>);
     /**
      * Copies properties from this model to the given model, which must be of the same class.
      * This is called by #copy.
@@ -21299,11 +21470,11 @@ export class Model {
      * All of the top-level properties in the JSON, such as #nodeKeyProperty, must be the same as for this model.
      *
      * This conducts a transaction.
-     * @param {string|Object} s a String in JSON format containing modifications to be performed to the model,
+     * @param {string|ObjectData} s a String in JSON format containing modifications to be performed to the model,
      *    or a JavaScript Object parsed from such a string
      * @since 1.6
      */
-    applyIncrementalJson(s: string | Object): void;
+    applyIncrementalJson(s: string | ObjectData): void;
     /**
      * This static function parses a string in JSON format that was written by Model#toJson,
      * and then constructs, initializes, and returns a model with that information.
@@ -21320,11 +21491,11 @@ export class Model {
      * var modelAsText = ...;  // fetch the model in textual format from a database
      * myDiagram.model = go.Model.fromJson(modelAsText);
      * ```
-     * @param {string|Object} s a String in JSON format containing all of the persistent properties of the model, or an Object already read from JSON text.
+     * @param {string|ObjectData} s a String in JSON format containing all of the persistent properties of the model, or an Object already read from JSON text.
      * @param {Model=} model an optional model to be modified; if not supplied, it constructs and returns a new model whose name is specified by the "class" property.
      * @return {Model} the supplied or created model loaded with data from the given string.
      */
-    static fromJson(s: string | Object, model?: Model): Model;
+    static fromJson(s: string | ObjectData, model?: Model): Model;
     /**
      * Gets or sets the name of this model.
      * The initial name is an empty string.
@@ -21372,9 +21543,7 @@ export class Model {
      * that you explicitly set properties on this object just before calling #toJson.
      * When loading a model, call Model.fromJson and explicitly get the properties that you want to set on a Diagram.
      */
-    modelData: {
-        [index: string]: any;
-    };
+    modelData: ObjectData;
     /**
      * Register an event handler that is called when there is a ChangedEvent.
      *
@@ -21403,14 +21572,14 @@ export class Model {
      * Call this method to notify that the model or its objects have changed.
      * This constructs a ChangedEvent and calls all Changed listeners.
      * @param {EnumValue} change specifies the general nature of the change; typically the value is ChangedEvent#Property.
-     * @param {string|function(Object,?=):?} propertyname names the property that was modified, or a function that takes an Object and returns the property value.
+     * @param {string|function(ObjectData,?=):?} propertyname names the property that was modified, or a function that takes an Object and returns the property value.
      * @param {Object} obj the object that was modified, typically a GraphObject, Diagram, or a Model.
      * @param {*} oldval the previous or older value.
      * @param {*} newval the next or newer value.
      * @param {*=} oldparam an optional value that helps describe the older value.
      * @param {*=} newparam an optional value that helps describe the newer value.
      */
-    raiseChangedEvent(change: EnumValue, propertyname: string | ((obj: Object, val: any) => any), obj: Object, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
+    raiseChangedEvent(change: EnumValue, propertyname: string | ((obj: ObjectData, val: any) => any), obj: ObjectData, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
     /**
      * Call this method to notify about a data property having changed value.
      * This constructs a ChangedEvent and calls all Changed listeners.
@@ -21418,13 +21587,13 @@ export class Model {
      * You should call this method only if the property value actually changed.
      * This method is called by #setDataProperty.
      * @param {Object} data the data object whose property changed value.
-     * @param {string|function(Object,?=):?} propertyname the name of the property, or a function that takes an Object and returns the property value.
+     * @param {string|function(ObjectData,?=):?} propertyname the name of the property, or a function that takes an Object and returns the property value.
      * @param {*} oldval the previous or old value for the property.
      * @param {*} newval the next or new value for the property.
      * @param {*=} oldparam an optional value additionally describing the old value.
      * @param {*=} newparam an optional value additionally describing the new value.
      */
-    raiseDataChanged(data: Object, propertyname: string | ((obj: Object, val: any) => any), oldval: any, newval: any, oldparam?: any, newparam?: any): void;
+    raiseDataChanged(data: ObjectData, propertyname: string | ((obj: ObjectData, val: any) => any), oldval: any, newval: any, oldparam?: any, newparam?: any): void;
     /**
      * Gets or sets the UndoManager for this Model.
      *
@@ -21505,7 +21674,7 @@ export class Model {
      *   update all bindings on the target Part or item Panel
      *   otherwise update only those bindings using this source property name.
      */
-    updateTargetBindings(data: Object, srcpropname?: string): void;
+    updateTargetBindings(data: ObjectData, srcpropname?: string): void;
     /**
      * Gets or sets the name of the data property that returns a unique id number or string for each node data object.
      * The value may also be a function taking two arguments, where the first argument will be a node data object.
@@ -21521,7 +21690,7 @@ export class Model {
      * immediately after creating the model, including when it is created by Model.fromJson.
      * @see #getKeyForNodeData
      */
-    nodeKeyProperty: string | ((a: Object, b?: Key) => Key);
+    nodeKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
     /**
      * Given a node data object return its unique key: a number or a string.
      * This returns undefined if there is no key value.
@@ -21533,7 +21702,7 @@ export class Model {
      * @see #setKeyForNodeData
      * @see #findNodeDataForKey
      */
-    getKeyForNodeData(nodedata: Object): Key;
+    getKeyForNodeData(nodedata: ObjectData): Key;
     /**
      * Change the unique key of a given node data that is already in this model.
      * The new key value must be unique -- i.e. not in use by another node data object.
@@ -21550,7 +21719,7 @@ export class Model {
      * @see #getKeyForNodeData
      * @since 1.1
      */
-    setKeyForNodeData(nodedata: Object, key: Key): void;
+    setKeyForNodeData(nodedata: ObjectData, key: Key): void;
     /**
      * Gets or sets a function that returns a unique id number or string for a node data object.
      * This function is called by #makeNodeDataKeyUnique
@@ -21575,7 +21744,7 @@ export class Model {
      * If a node data object is already in the model and you want to change its key value,
      * call #setKeyForNodeData with a new and unique key.
      */
-    makeUniqueKeyFunction: ((a: Model, b: Object) => Key) | null;
+    makeUniqueKeyFunction: ((a: Model, b: ObjectData) => Key) | null;
     /**
      * Decide if a given node data object is in this model, using reference equality.
      *
@@ -21586,7 +21755,7 @@ export class Model {
      * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
      * @return {boolean} true if it is a node data object in this model; false otherwise.
      */
-    containsNodeData(nodedata: Object): boolean;
+    containsNodeData(nodedata: ObjectData): boolean;
     /**
      * Given a number or string, find the node data object in this model
      * that uses the given value as its unique key.
@@ -21596,7 +21765,7 @@ export class Model {
      * @see #containsNodeData
      * @see #getKeyForNodeData
      */
-    findNodeDataForKey(key: Key): Object | null;
+    findNodeDataForKey(key: Key): ObjectData | null;
     /**
      * Gets or sets the array of node data objects that correspond to Nodes,
      * Groups, or non-Link Parts in the Diagram.
@@ -21617,7 +21786,7 @@ export class Model {
      * that there are any new nodes or that any nodes have been deleted.
      * Instead you should call #addNodeData or #removeNodeData.
      */
-    nodeDataArray: Array<Object>;
+    nodeDataArray: Array<ObjectData>;
     /**
      * This method is called when a node data object is added to the model to make sure that
      * #getKeyForNodeData returns a unique key value.
@@ -21634,7 +21803,7 @@ export class Model {
      * call #setKeyForNodeData and give it a new unique key value.
      * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
      */
-    makeNodeDataKeyUnique(nodedata: Object): void;
+    makeNodeDataKeyUnique(nodedata: ObjectData): void;
     /**
      * When you want to add a node or group to the diagram,
      * call this method with a new data object.
@@ -21646,13 +21815,13 @@ export class Model {
      * To add or remove an object or value from an item array, call #insertArrayItem or #removeArrayItem.
      * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
      */
-    addNodeData(nodedata: Object): void;
+    addNodeData(nodedata: ObjectData): void;
     /**
      * Add to this model all of the node data held in an Array or in an Iterable of node data objects.
      * @param {Iterable.<Object>|Array.<Object>} coll a collection of node data objects to add to the #nodeDataArray
      * @since 1.3
      */
-    addNodeDataCollection(coll: Iterable<Object> | Array<Object>): void;
+    addNodeDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
     /**
      * When you want to remove a node or group from the diagram,
      * call this method with an existing data object.
@@ -21674,13 +21843,13 @@ export class Model {
      * To add or remove an object or value from an item array, call #insertArrayItem or #removeArrayItem.
      * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
      */
-    removeNodeData(nodedata: Object): void;
+    removeNodeData(nodedata: ObjectData): void;
     /**
      * Remove from this model all of the node data held in an Array or in an Iterable of node data objects.
      * @param {Iterable.<Object>|Array.<Object>} coll a collection of node data objects to remove from the #nodeDataArray
      * @since 1.3
      */
-    removeNodeDataCollection(coll: Iterable<Object> | Array<Object>): void;
+    removeNodeDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
     /**
      * Take an Array of node data objects and update #nodeDataArray without replacing
      * the Array and without replacing any existing node data objects that are identified by key.
@@ -21692,7 +21861,7 @@ export class Model {
      * this calls #removeNodeData to remove the existing node from the model.
      * @param arr
      */
-    mergeNodeDataArray(arr: Array<Object>): void;
+    mergeNodeDataArray(arr: Array<ObjectData>): void;
     /**
      * Gets or sets a function that makes a copy of a node data object.
      *
@@ -21708,7 +21877,7 @@ export class Model {
      * and that Array needs to be copied rather than shared.
      * Often the objects that are in the Array also need to be copied.
      */
-    copyNodeDataFunction: ((a: Object, b: Model) => Object) | null;
+    copyNodeDataFunction: ((a: ObjectData, b: Model) => ObjectData) | null;
     /**
      * Gets or sets whether the default behavior for #copyNodeData or GraphLinksModel#copyLinkData
      * makes copies of property values that are Arrays.
@@ -21795,7 +21964,7 @@ export class Model {
      * @return {Object}
      * @see #addNodeData
      */
-    copyNodeData(nodedata: Object): Object | null;
+    copyNodeData(nodedata: ObjectData): ObjectData | null;
     /**
      * (Undocumented)
      * This function (if not null) is called towards the end of Diagram#copyParts
@@ -21805,7 +21974,7 @@ export class Model {
      * The second argument to the function is this Model, the destination model for the copied parts.
      * The third argument to the function is the source Model, of the original data objects.
      */
-    afterCopyFunction: ((a: Map<any, any>, b: Model, c: Model) => void) | null;
+    afterCopyFunction: ((a: Map<ObjectData, ObjectData>, b: Model, c: Model) => void) | null;
     /**
      * Change the value of some property of a node data, a link data, an item data, or the Model#modelData,
      * given a string naming the property and the new value,
@@ -21832,7 +22001,7 @@ export class Model {
      * @param {*} val the new value for the property.
      * @see #set
      */
-    setDataProperty(data: Object, propname: string, val: any): void;
+    setDataProperty(data: ObjectData, propname: string, val: any): void;
     /**
      * A synonym for #setDataProperty
      * @param {Object} data a JavaScript object typically the value of a Panel#data and represented by a Node, Link, Group, simple Part,
@@ -21842,7 +22011,7 @@ export class Model {
      * @see #setDataProperty
      * @since 1.8
      */
-    set(data: Object, propname: string, val: any): void;
+    set(data: ObjectData, propname: string, val: any): void;
     /**
      * This is similar to <code>Object.assign</code>,
      * but safely calls #setDataProperty for each property other than a key property.
@@ -21851,7 +22020,7 @@ export class Model {
      * @param data a data object
      * @param props an Object holding various properties whose values are to be assigned to the DATA object
      */
-    assignAllDataProperties(data: Object, props: Object): void;
+    assignAllDataProperties(data: ObjectData, props: ObjectData): void;
     /**
      * Add an item at the end of a data array that may be data bound by a Panel as its Panel#itemArray,
      * in a manner that can be undone/redone and that automatically updates any bindings.
@@ -21913,7 +22082,7 @@ export class Model {
      * @see #getCategoryForNodeData
      * @see #setCategoryForNodeData
      */
-    nodeCategoryProperty: string | ((a: Object, b?: string) => string);
+    nodeCategoryProperty: string | ((a: ObjectData, b?: string) => string);
     /**
      * Find the category of a given node data, a string naming the node template
      * or group template or part template
@@ -21923,7 +22092,7 @@ export class Model {
      * @see #nodeCategoryProperty
      * @see #setCategoryForNodeData
      */
-    getCategoryForNodeData(nodedata: Object): string;
+    getCategoryForNodeData(nodedata: ObjectData): string;
     /**
      * Change the category of a given node data, a string naming the node template
      * or group template or part template
@@ -21944,7 +22113,7 @@ export class Model {
      * @see #nodeCategoryProperty
      * @see #getCategoryForNodeData
      */
-    setCategoryForNodeData(nodedata: Object, cat: string): void;
+    setCategoryForNodeData(nodedata: ObjectData, cat: string): void;
 }
 /**
  * A Binding describes how to automatically set a property on a GraphObject
@@ -22482,7 +22651,7 @@ export class GraphLinksModel extends Model {
      * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
      * @param {Array.<Object>=} linkdataarray an optional Array containing JavaScript objects to be represented by Links.
      */
-    constructor(nodedataarray?: Array<Object>, linkdataarray?: Array<Object>);
+    constructor(nodedataarray?: Array<ObjectData>, linkdataarray?: Array<ObjectData>);
     /**
      * Gets or sets a data object that will be copied and added to the model as a new node data each time there
      * is a link reference (either the "to" or the "from" of a link data) to a node key that does not yet exist in the model.
@@ -22493,7 +22662,7 @@ export class GraphLinksModel extends Model {
      * it will call Model#copyNodeData on this property value and Model#addNodeData on the result.
      * @since 1.1
      */
-    archetypeNodeData: Object | null;
+    archetypeNodeData: ObjectData | null;
     /**
      * Gets or sets the name of the data property that returns
      * the key of the node data that the link data is coming from.
@@ -22513,27 +22682,27 @@ export class GraphLinksModel extends Model {
      * @see #getFromKeyForLinkData
      * @see #setFromKeyForLinkData
      */
-    linkFromKeyProperty: string | ((a: Object, b?: Key) => Key);
+    linkFromKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
     /**
      * From a link data retrieve a value uniquely identifying the node data
      * from which this link is connected.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {string|number|undefined}  This may return undefined if
      * the link is not coming from any node.
      * @see #linkFromKeyProperty
      * @see #setFromKeyForLinkData
      */
-    getFromKeyForLinkData(linkdata: Object): Key;
+    getFromKeyForLinkData(linkdata: ObjectData): Key;
     /**
      * Change the node key that the given link data references as the
      * source of the link.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {string|number|undefined} key This may be undefined if
      * the link should no longer come from any node.
      * @see #linkFromKeyProperty
      * @see #getFromKeyForLinkData
      */
-    setFromKeyForLinkData(linkdata: Object, key: Key): void;
+    setFromKeyForLinkData(linkdata: ObjectData, key: Key): void;
     /**
      * Gets or sets the name of the data property that returns
      * the key of the node data that the link data is going to,
@@ -22553,27 +22722,27 @@ export class GraphLinksModel extends Model {
      * @see #getToKeyForLinkData
      * @see #setToKeyForLinkData
      */
-    linkToKeyProperty: string | ((a: Object, b?: Key) => Key);
+    linkToKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
     /**
      * From a link data retrieve a value uniquely identifying the node data
      * to which this link is connected.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {string|number|undefined}  This may return undefined if
      * the link is not going to any node.
      * @see #linkToKeyProperty
      * @see #setToKeyForLinkData
      */
-    getToKeyForLinkData(linkdata: Object): Key;
+    getToKeyForLinkData(linkdata: ObjectData): Key;
     /**
      * Change the node key that the given link data references as the
      * destination of the link.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {string|number|undefined} key This may be undefined if
      * the link should no longer go to any node.
      * @see #linkToKeyProperty
      * @see #getToKeyForLinkData
      */
-    setToKeyForLinkData(linkdata: Object, key: Key): void;
+    setToKeyForLinkData(linkdata: ObjectData, key: Key): void;
     /**
      * Gets or sets the name of the data property that returns
      * the optional parameter naming a "port" element on the node that the link data is connected from.
@@ -22593,27 +22762,27 @@ export class GraphLinksModel extends Model {
      * @see #getFromPortIdForLinkData
      * @see #setFromPortIdForLinkData
      */
-    linkFromPortIdProperty: string | ((a: Object, b?: string) => string);
+    linkFromPortIdProperty: string | ((a: ObjectData, b?: string) => string);
     /**
      * From a link data retrieve a value identifying the port object of the node
      * from which this link is connected.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {string}  This may return the empty string if
      * there is no particular port parameter information.
      * @see #linkFromPortIdProperty
      * @see #setFromPortIdForLinkData
      */
-    getFromPortIdForLinkData(linkdata: Object): string;
+    getFromPortIdForLinkData(linkdata: ObjectData): string;
     /**
      * Change the information that the given link data uses to identify the
      * particular "port" that the link is coming from.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {string} portname This may be the empty string if
      * the link should no longer be associated with any particular "port".
      * @see #linkFromPortIdProperty
      * @see #getFromPortIdForLinkData
      */
-    setFromPortIdForLinkData(linkdata: Object, portname: string): void;
+    setFromPortIdForLinkData(linkdata: ObjectData, portname: string): void;
     /**
      * Gets or sets the name of the data property that returns
      * the optional parameter naming a "port" element on the node that the link data is connected to.
@@ -22633,27 +22802,27 @@ export class GraphLinksModel extends Model {
      * @see #getToPortIdForLinkData
      * @see #setToPortIdForLinkData
      */
-    linkToPortIdProperty: string | ((a: Object, b?: string) => string);
+    linkToPortIdProperty: string | ((a: ObjectData, b?: string) => string);
     /**
      * From a link data retrieve a value identifying the port object of the node
      * to which this link is connected.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {string}  This may return the empty string if
      * there is no particular port parameter information.
      * @see #linkToPortIdProperty
      * @see #setToPortIdForLinkData
      */
-    getToPortIdForLinkData(linkdata: Object): string;
+    getToPortIdForLinkData(linkdata: ObjectData): string;
     /**
      * Change the information that the given link data uses to identify the
      * particular "port" that the link is going to.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {string} portname This may be the empty string if
      * the link should no longer be associated with any particular "port".
      * @see #linkToPortIdProperty
      * @see #getToPortIdForLinkData
      */
-    setToPortIdForLinkData(linkdata: Object, portname: string): void;
+    setToPortIdForLinkData(linkdata: ObjectData, portname: string): void;
     /**
      * Gets or sets the name of the data property that returns
      * an array of keys of node data that are labels on that link data.
@@ -22674,41 +22843,41 @@ export class GraphLinksModel extends Model {
      * @see #getLabelKeysForLinkData
      * @see #setLabelKeysForLinkData
      */
-    linkLabelKeysProperty: string | ((a: Object, b?: Array<Key>) => Array<Key>);
+    linkLabelKeysProperty: string | ((a: ObjectData, b?: Array<Key>) => Array<Key>);
     /**
      * Gets an Array of node key values that identify node data acting as labels on the given link data.
      *
      * This method only works if #linkLabelKeysProperty has been set to something other than an empty string.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {Array.<(string|number)>} an Array of node keys; an empty Array if the property was not present.
      * @see #linkLabelKeysProperty
      * @see #setLabelKeysForLinkData
      * @see #addLabelKeyForLinkData
      * @see #removeLabelKeyForLinkData
      */
-    getLabelKeysForLinkData(linkdata: Object): Array<Key>;
+    getLabelKeysForLinkData(linkdata: ObjectData): Array<Key>;
     /**
      * Replaces an Array of node key values that identify node data acting as labels on the given link data.
      *
      * This method only works if #linkLabelKeysProperty has been set to something other than an empty string.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {Array.<(string|number)>} arr an Array of node keys; an empty Array if the property was not present.
      * @see #linkLabelKeysProperty
      * @see #getLabelKeysForLinkData
      * @see #addLabelKeyForLinkData
      * @see #removeLabelKeyForLinkData
      */
-    setLabelKeysForLinkData(linkdata: Object, arr: Array<Key>): void;
+    setLabelKeysForLinkData(linkdata: ObjectData, arr: Array<Key>): void;
     /**
      * Adds a node key value that identifies a node data acting as a new label node on the given link data.
      *
      * This method only works if #linkLabelKeysProperty has been set to something other than an empty string.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {string|number} key a number or string that is the key of the new label node.
      * @see #removeLabelKeyForLinkData
      * @see #setLabelKeysForLinkData
      */
-    addLabelKeyForLinkData(linkdata: Object, key: Key): void;
+    addLabelKeyForLinkData(linkdata: ObjectData, key: Key): void;
     /**
      * Removes a node key value that identifies a node data acting as a former label node on the given link data.
      *
@@ -22716,17 +22885,17 @@ export class GraphLinksModel extends Model {
      * does not automatically remove any node data from the model.
      *
      * This method only works if #linkLabelKeysProperty has been set to something other than an empty string.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @param {string|number} key a number or string that is the key of the label node being removed from the link.
      * @see #addLabelKeyForLinkData
      * @see #setLabelKeysForLinkData
      */
-    removeLabelKeyForLinkData(linkdata: Object, key: Key): void;
+    removeLabelKeyForLinkData(linkdata: ObjectData, key: Key): void;
     /**
      * Gets or sets the array of link data objects that correspond to Links in the Diagram.
      * The initial value is an empty Array.
      */
-    linkDataArray: Array<Object>;
+    linkDataArray: Array<ObjectData>;
     /**
      * Gets or sets the name of the data property that returns a unique id number or string for each link data object.
      * The value may also be a function taking two arguments, where the first argument will be a link data object.
@@ -22745,7 +22914,7 @@ export class GraphLinksModel extends Model {
      * @see #getKeyForLinkData
      * @since 1.6
      */
-    linkKeyProperty: string | ((a: Object, b?: Key) => Key);
+    linkKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
     /**
      * Given a link data object return its unique key: a number or a string.
      * This returns undefined if there is no key value.
@@ -22753,14 +22922,14 @@ export class GraphLinksModel extends Model {
      * will not automatically assign unique key values for link data objects.
      *
      * It is possible to change the key for a link data object by calling #setKeyForLinkData.
-     * @param {Object} linkdata a JavaScript object represented by a link
+     * @param {ObjectData} linkdata a JavaScript object represented by a link
      * @return {string|number|undefined}
      * @see #linkKeyProperty
      * @see #setKeyForLinkData
      * @see #findLinkDataForKey
      * @since 1.6
      */
-    getKeyForLinkData(linkdata: Object): Key;
+    getKeyForLinkData(linkdata: ObjectData): Key;
     /**
      * Change the unique key of a given link data that is already in this model.
      * The new key value must be unique -- i.e. not in use by another link data object.
@@ -22770,13 +22939,13 @@ export class GraphLinksModel extends Model {
      * this method has no effect.
      * If this is called on a link data object that is not (yet) in this model,
      * this unconditionally modifies the property to the new key value.
-     * @param {Object} linkdata a JavaScript object represented by a link
+     * @param {ObjectData} linkdata a JavaScript object represented by a link
      * @param {string|number} key
      * @see #linkKeyProperty
      * @see #getKeyForLinkData
      * @since 1.6
      */
-    setKeyForLinkData(linkdata: Object, key: Key): void;
+    setKeyForLinkData(linkdata: ObjectData, key: Key): void;
     /**
      * Gets or sets a function that returns a unique id number or string for a link data object.
      * This function is called by #makeLinkDataKeyUnique
@@ -22796,7 +22965,7 @@ export class GraphLinksModel extends Model {
      * call #setKeyForLinkData with a new and unique key.
      * @since 1.6
      */
-    makeUniqueLinkKeyFunction: ((a: GraphLinksModel, b: Object) => Key) | null;
+    makeUniqueLinkKeyFunction: ((a: GraphLinksModel, b: ObjectData) => Key) | null;
     /**
      * Given a number or string, find the link data object in this model
      * that uses the given value as its unique key.
@@ -22805,13 +22974,13 @@ export class GraphLinksModel extends Model {
      * will not automatically assign unique key values for link data objects,
      * and thus this method will always return null.
      * @param {(string|number|undefined)} key a string or a number.
-     * @return {Object} null if the key is not present in the model,
+     * @return {ObjectData} null if the key is not present in the model,
      * or if the key is null or undefined or not a string or number.
      * @see #containsLinkData
      * @see #getKeyForLinkData
      * @since 1.6
      */
-    findLinkDataForKey(key: Key): Object | null;
+    findLinkDataForKey(key: Key): ObjectData | null;
     /**
      * This method is called when a link data object is added to the model to make sure that
      * #getKeyForLinkData returns a unique key value.
@@ -22826,10 +22995,10 @@ export class GraphLinksModel extends Model {
      *
      * If the link data object is already in the model and you want to change its key value,
      * call #setKeyForLinkData and give it a new unique key value.
-     * @param {Object} linkdata a JavaScript object represented by a link
+     * @param {ObjectData} linkdata a JavaScript object represented by a link
      * @since 1.6
      */
-    makeLinkDataKeyUnique(linkdata: Object): void;
+    makeLinkDataKeyUnique(linkdata: ObjectData): void;
     /**
      * Decide if a given link data object is in this model, using reference equality.
      *
@@ -22841,12 +23010,12 @@ export class GraphLinksModel extends Model {
      * they cannot be found using an index that this model would maintain.
      * However you may choose to provide such a property on the link data objects
      * and maintain your own index.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {boolean}
      * @see #addLinkData
      * @see #removeLinkData
      */
-    containsLinkData(linkdata: Object): boolean;
+    containsLinkData(linkdata: ObjectData): boolean;
     /**
      * When you want to add a link to the diagram, call this method with a new data object.
      * This will add that data to the #linkDataArray and
@@ -22857,16 +23026,16 @@ export class GraphLinksModel extends Model {
      * by calling #setFromKeyForLinkData and #setToKeyForLinkData.
      *
      * This operation does nothing if the link data is already part of this model's #linkDataArray.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @see #removeLinkData
      */
-    addLinkData(linkdata: Object): void;
+    addLinkData(linkdata: ObjectData): void;
     /**
      * Add to this model all of the link data held in an Array or in an Iterable of link data objects.
      * @param {Iterable.<Object>|Array.<Object>} coll a collection of link data objects to add to the #linkDataArray
      * @since 1.3
      */
-    addLinkDataCollection(coll: Iterable<Object> | Array<Object>): void;
+    addLinkDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
     /**
      * When you want to remove a link from the diagram, call this method with an existing link data object.
      * This will remove that data object from the #linkDataArray and
@@ -22880,16 +23049,16 @@ export class GraphLinksModel extends Model {
      * any associated label node data from the model.
      *
      * This operation does nothing if the link data is not present in the #linkDataArray.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @see #addLinkData
      */
-    removeLinkData(linkdata: Object): void;
+    removeLinkData(linkdata: ObjectData): void;
     /**
      * Remove from this model all of the link data held in an Array or in an Iterable of link data objects.
      * @param {Iterable.<Object>|Array.<Object>} coll a collection of link data objects to remove from the #linkDataArray
      * @since 1.3
      */
-    removeLinkDataCollection(coll: Iterable<Object> | Array<Object>): void;
+    removeLinkDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
     /**
      * Take an Array of link data objects and update #linkDataArray without replacing
      * the Array and without replacing any existing link data objects that are identified by key.
@@ -22902,7 +23071,7 @@ export class GraphLinksModel extends Model {
      * this calls #removeLinkData to remove the existing link from the model.
      * @param arr
      */
-    mergeLinkDataArray(arr: Array<Object>): void;
+    mergeLinkDataArray(arr: Array<ObjectData>): void;
     /**
      * Gets or sets a function that makes a copy of a link data object.
      *
@@ -22911,7 +23080,7 @@ export class GraphLinksModel extends Model {
      * This property value may be null in order to cause #copyLinkData to make a shallow copy of a JavaScript Object.
      * The default value is null.
      */
-    copyLinkDataFunction: ((a: Object, b: GraphLinksModel) => Object) | null;
+    copyLinkDataFunction: ((a: ObjectData, b: GraphLinksModel) => ObjectData) | null;
     /**
      * Make a copy of a link data object.
      * This uses the value of #copyLinkDataFunction to actually perform the copy,
@@ -22920,11 +23089,11 @@ export class GraphLinksModel extends Model {
      * This does not modify the model -- the returned data object is not added to this model.
      * This assumes that the data's constructor can be called with no arguments.
      * This also makes sure there is no reference to either the "from" or the "to" node of the original data.
-     * @param {Object} linkdata a JavaScript object represented by a link.
-     * @return {Object}
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
+     * @return {ObjectData}
      * @see #addLinkData
      */
-    copyLinkData(linkdata: Object): Object;
+    copyLinkData(linkdata: ObjectData): ObjectData;
     /**
      * Gets or sets the name of the boolean property on node data that indicates
      * whether the data should be represented as a group of nodes and links or as a simple node.
@@ -22942,17 +23111,17 @@ export class GraphLinksModel extends Model {
      * and if you want this property to be a function, you will need to assign this property to your desired function
      * immediately after creating the model, including when it is created by Model.fromJson.
      */
-    nodeIsGroupProperty: string | ((a: Object, b?: boolean) => boolean);
+    nodeIsGroupProperty: string | ((a: ObjectData, b?: boolean) => boolean);
     /**
      * See if the given node data should be represented as a group or as a simple node.
      *
      * This value must not change as long as the node data is part of the model.
      * At the current time there is no `setIsGroupForNodeData` method.
-     * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
+     * @param {ObjectData} nodedata a JavaScript object represented by a node, group, or non-link.
      * @return {boolean}
      * @see #nodeIsGroupProperty
      */
-    isGroupForNodeData(nodedata: Object): boolean;
+    isGroupForNodeData(nodedata: ObjectData): boolean;
     /**
      * Gets or sets the name of the property on node data that specifies
      * the string or number key of the group data that "owns" that node data.
@@ -22973,31 +23142,31 @@ export class GraphLinksModel extends Model {
      * @see #getGroupKeyForNodeData
      * @see #setGroupKeyForNodeData
      */
-    nodeGroupKeyProperty: string | ((a: Object, b?: Key) => Key);
+    nodeGroupKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
     /**
      * If there is a container group for the given node data, return the group's key.
-     * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
+     * @param {ObjectData} nodedata a JavaScript object represented by a node, group, or non-link.
      * @return {string|number|undefined}  This returns undefined if there is no containing group data.
      * @see #nodeGroupKeyProperty
      * @see #setGroupKeyForNodeData
      */
-    getGroupKeyForNodeData(nodedata: Object): Key;
+    getGroupKeyForNodeData(nodedata: ObjectData): Key;
     /**
      * Change the container group for the given node data, given a key for the new group.
-     * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
+     * @param {ObjectData} nodedata a JavaScript object represented by a node, group, or non-link.
      * @param {string|number|undefined} key This may be undefined if there should be no containing group data.
      * @see #nodeGroupKeyProperty
      * @see #getGroupKeyForNodeData
      */
-    setGroupKeyForNodeData(nodedata: Object, key: Key): void;
+    setGroupKeyForNodeData(nodedata: ObjectData, key: Key): void;
     /**
      * This override also makes sure any copied node data does not have a reference to the containing group.
      * @expose
-     * @param {Object} nodedata a JavaScript object represented by a node, group, or non-link.
-     * @return {Object}
+     * @param {ObjectData} nodedata a JavaScript object represented by a node, group, or non-link.
+     * @return {ObjectData}
      * @see Model#copyNodeData
      */
-    copyNodeData(nodedata: Object): Object | null;
+    copyNodeData(nodedata: ObjectData): ObjectData | null;
     /**
      * This override changes the value of some property of a node data, a link data, or an item data, given a string naming the property
      * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
@@ -23005,20 +23174,20 @@ export class GraphLinksModel extends Model {
      *
      * This gets the old value of the property; if the value is the same as the new value, no side-effects occur.
      * @expose
-     * @param {Object} data a JavaScript object typically the value of a Panel#data and represented by a Node, Link, Group, simple Part,
+     * @param {ObjectData} data a JavaScript object typically the value of a Panel#data and represented by a Node, Link, Group, simple Part,
      *                      or item in a Panel#itemArray; or this model's #modelData.
      * @param {string} propname a string that is not null or the empty string.
      * @param {*} val the new value for the property.
      * @see Model#setDataProperty
      */
-    setDataProperty(data: Object, propname: string, val: any): void;
+    setDataProperty(data: ObjectData, propname: string, val: any): void;
     /**
      * This override is similar to <code>Object.assign</code>,
      * but safely calls #setDataProperty for each property other than a key property.
      * @param data a data object
      * @param props an Object holding various properties whose values are to be assigned to the DATA object
      */
-    assignAllDataProperties(data: Object, props: Object): void;
+    assignAllDataProperties(data: ObjectData, props: ObjectData): void;
     /**
      * Gets or sets the name of the data property that returns a string naming that data's category,
      * The value may also be a function taking two arguments, where the first argument will be a link data object.
@@ -23037,16 +23206,16 @@ export class GraphLinksModel extends Model {
      * @see #getCategoryForLinkData
      * @see #setCategoryForLinkData
      */
-    linkCategoryProperty: string | ((a: Object, b?: string) => string);
+    linkCategoryProperty: string | ((a: ObjectData, b?: string) => string);
     /**
      * Find the category of a given link data, a string naming the link template
      * that the Diagram should use to represent the link data.
-     * @param {Object} linkdata a JavaScript object represented by a link.
+     * @param {ObjectData} linkdata a JavaScript object represented by a link.
      * @return {string}
      * @see #linkCategoryProperty
      * @see #setCategoryForLinkData
      */
-    getCategoryForLinkData(linkdata: Object): string;
+    getCategoryForLinkData(linkdata: ObjectData): string;
     /**
      * Change the category of a given link data, a string naming the link template
      * that the Diagram should use to represent the link data.
@@ -23062,7 +23231,7 @@ export class GraphLinksModel extends Model {
      * @see #linkCategoryProperty
      * @see #getCategoryForLinkData
      */
-    setCategoryForLinkData(linkdata: Object, cat: string): void;
+    setCategoryForLinkData(linkdata: ObjectData, cat: string): void;
 }
 /**
  * TreeModels support tree-structured graphs of nodes and links.
@@ -23102,7 +23271,7 @@ export class TreeModel extends Model {
      * for the Model#nodeDataArray property.
      * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
      */
-    constructor(nodedataarray?: Array<Object>);
+    constructor(nodedataarray?: Array<ObjectData>);
     /**
      * Gets or sets the name of the property on node data that specifies
      * the string or number key of the node data that acts as the "parent" for this "child" node data.
@@ -23120,7 +23289,7 @@ export class TreeModel extends Model {
      * @see #getParentKeyForNodeData
      * @see #setParentKeyForNodeData
      */
-    nodeParentKeyProperty: string | ((a: Object, b?: Key) => Key);
+    nodeParentKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
     /**
      * If there is a parent node for the given node data, return the parent's key.
      * @param {Object} nodedata a JavaScript object represented by a node.
@@ -23128,7 +23297,7 @@ export class TreeModel extends Model {
      * @see #nodeParentKeyProperty
      * @see #setParentKeyForNodeData
      */
-    getParentKeyForNodeData(nodedata: Object): Key;
+    getParentKeyForNodeData(nodedata: ObjectData): Key;
     /**
      * Change the parent node for the given node data, given a key for the new parent, or undefined if there should be no parent.
      * @param {Object} nodedata a JavaScript object represented by a node.
@@ -23136,7 +23305,7 @@ export class TreeModel extends Model {
      * @see #nodeParentKeyProperty
      * @see #getParentKeyForNodeData
      */
-    setParentKeyForNodeData(nodedata: Object, key: Key): void;
+    setParentKeyForNodeData(nodedata: ObjectData, key: Key): void;
     /**
      * Gets or sets the name of the data property that returns a string describing that node data's parent link's category.
      * The value may also be a function taking two arguments, where the first argument will be a node data object.
@@ -23155,7 +23324,7 @@ export class TreeModel extends Model {
      * @see #getParentLinkCategoryForNodeData
      * @see #setParentLinkCategoryForNodeData
      */
-    parentLinkCategoryProperty: string | ((a: Object, b?: string) => string);
+    parentLinkCategoryProperty: string | ((a: ObjectData, b?: string) => string);
     /**
      * Find the category for the parent link of a given child node data, a string naming the link template
      * that the Diagram should use to represent the link.
@@ -23164,7 +23333,7 @@ export class TreeModel extends Model {
      * @see #parentLinkCategoryProperty
      * @see #setParentLinkCategoryForNodeData
      */
-    getParentLinkCategoryForNodeData(childdata: Object): string;
+    getParentLinkCategoryForNodeData(childdata: ObjectData): string;
     /**
      * Change the category for the parent link of a given child node data, a string naming the link template
      * that the Diagram should use to represent the link.
@@ -23180,7 +23349,7 @@ export class TreeModel extends Model {
      * @see #parentLinkCategoryProperty
      * @see #getParentLinkCategoryForNodeData
      */
-    setParentLinkCategoryForNodeData(childdata: Object, cat: string): void;
+    setParentLinkCategoryForNodeData(childdata: ObjectData, cat: string): void;
     /**
      * This override also makes sure any copied node data does not have a reference to a parent node.
      * @expose
@@ -23188,7 +23357,7 @@ export class TreeModel extends Model {
      * @return {Object}
      * @see Model#copyNodeData
      */
-    copyNodeData(nodedata: Object): Object | null;
+    copyNodeData(nodedata: ObjectData): ObjectData | null;
     /**
      * This override changes the value of some property of a node data or an item data, given a string naming the property
      * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
@@ -23201,7 +23370,7 @@ export class TreeModel extends Model {
      * @param {*} val the new value for the property.
      * @see Model#setDataProperty
      */
-    setDataProperty(data: Object, propname: string, val: any): void;
+    setDataProperty(data: ObjectData, propname: string, val: any): void;
 }
 /**
  * This layout positions nodes in a circular arrangement.
@@ -23845,7 +24014,7 @@ export class ForceDirectedLayout extends Layout {
      * and returning a random number between zero (inclusive) and one (exclusive).
      * @since 1.5
      */
-    randomNumberGenerator: Object;
+    randomNumberGenerator: ObjectData;
     /**
      * Gets or sets the default value computed by #springStiffness.
      * The initial value is 0.05.
@@ -25835,5 +26004,6 @@ export class TreeEdge extends LayoutEdge {
      */
     relativePoint: Point;
 }
+
 
 

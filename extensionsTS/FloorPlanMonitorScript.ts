@@ -34,7 +34,7 @@ export function init() {
 
   // sets the qualities of the tooltip
   const tooltiptemplate =
-    $('ToolTip',
+    $<go.Adornment>('ToolTip',
       $(go.TextBlock,
         { margin: 3, editable: true },
         new go.Binding('text', '', tooltipTextConverter)));

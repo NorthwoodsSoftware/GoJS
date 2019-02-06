@@ -85,8 +85,10 @@
             }, new go.Binding('text').makeTwoWay())), 
             // four small named ports, one on each side:
             makePort('T', go.Spot.Top, false, true), makePort('L', go.Spot.Left, true, true), makePort('R', go.Spot.Right, true, true), makePort('B', go.Spot.Bottom, true, false), {
-                mouseEnter: function (e, node) { showSmallPorts(node, true); },
-                mouseLeave: function (e, node) { showSmallPorts(node, false); }
+                mouseEnter: function (e, node) { if (node instanceof go.Node)
+                    showSmallPorts(node, true); },
+                mouseLeave: function (e, node) { if (node instanceof go.Node)
+                    showSmallPorts(node, false); }
             });
         function showSmallPorts(node, show) {
             node.ports.each(function (port) {

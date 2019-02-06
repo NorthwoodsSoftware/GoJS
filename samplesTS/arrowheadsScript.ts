@@ -44,7 +44,7 @@ export function init() {
         locationSpot: go.Spot.Center,
         click: showArrowInfo,  // defined below
         toolTip:  // define a tooltip for each link that displays its information
-          $('ToolTip',
+          $<go.Adornment>('ToolTip',
             $(go.TextBlock, { margin: 4 },
               new go.Binding('text', '', infoString).ofObject())
           )
@@ -82,7 +82,7 @@ export function init() {
       {
         click: showArrowInfo,
         toolTip:  // define a tooltip for each link that displays its information
-          $('ToolTip',
+          $<go.Adornment>('ToolTip',
             $(go.TextBlock, { margin: 4 },
               new go.Binding('text', '', infoString).ofObject())
           )
@@ -129,7 +129,7 @@ export function infoString(obj: go.GraphObject) {
 }
 
 // a GraphObject.click event handler to show arrowhead information
-export function showArrowInfo(e: go.DiagramEvent, obj: go.GraphObject) {
+export function showArrowInfo(e: go.InputEvent, obj: go.GraphObject) {
   const msg = infoString(obj);
   if (msg) {
     const status = document.getElementById('myArrowheadInfo');

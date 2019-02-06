@@ -19,8 +19,10 @@ import * as go from '../release/go';
   // This is the actual HTML LightBox-style context menu, composed of buttons and a background:
   const cmLight = document.createElement('div');
   cmLight.id = 'cmLight';
+  cmLight.className = 'goCXforeground';
   const cmDark = document.createElement('div');
   cmDark.id = 'cmDark';
+  cmDark.className = 'goCXbackground';
   contextMenuDIV.appendChild(cmLight);
   contextMenuDIV.appendChild(cmDark);
 

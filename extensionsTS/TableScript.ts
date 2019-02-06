@@ -204,9 +204,10 @@ export function init() {
         computesBoundsAfterDrag: true,
         computesBoundsIncludingLocation: true,
         handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-        mouseDragEnter: (e: go.InputEvent, group: go.Group, prev: go.Group) => { group.isHighlighted = true; },
-        mouseDragLeave: (e: go.InputEvent, group: go.Group, next: go.Group) => { group.isHighlighted = false; },
-        mouseDrop: (e: go.DiagramEvent, group: go.Group) => {
+        mouseDragEnter: (e: go.InputEvent, group: go.GraphObject) => { if (group instanceof go.Group) group.isHighlighted = true; },
+        mouseDragLeave: (e: go.InputEvent, group: go.GraphObject) => { if (group instanceof go.Group) group.isHighlighted = false; },
+        mouseDrop: (e: go.InputEvent, group: go.GraphObject) => {
+          if (!(group instanceof go.Group)) return;
           // if any dropped part wasn't already a member of this group, we'll want to let the group's row
           // column allow themselves to be resized automatically, in case the row height or column width
           // had been set manually by the LaneResizingTool

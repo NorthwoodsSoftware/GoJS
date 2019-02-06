@@ -16,7 +16,10 @@ import * as go from '../release/go';
  * @category Tool Extension
  */
 export class PortShiftingTool extends go.Tool {
-  private port: go.GraphObject | null = null;
+  /**
+   * The port being shifted.
+   */
+  public port: go.GraphObject | null = null;
   private _originalAlignment: go.Spot = go.Spot.Default;
 
   /**

@@ -44,6 +44,9 @@ var __extends = (this && this.__extends) || (function () {
          */
         function NodeLabelDraggingTool() {
             var _this = _super.call(this) || this;
+            /**
+             * The label being dragged.
+             */
             _this.label = null;
             _this._offset = new go.Point(); // of the mouse relative to the center of the label object
             _this._originalAlignment = go.Spot.Default;

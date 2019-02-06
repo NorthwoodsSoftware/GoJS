@@ -7,6 +7,49 @@ import { RadialLayout } from './RadialLayout';
 
 let myDiagram: go.Diagram;
 
+class CustomRadialLayout extends RadialLayout {
+  rotateNode(node: go.Node, angle: number, sweep: number, radius: number) {
+    // rotate the nodes and make sure the text is not upside-down
+    node.angle = angle;
+    const label = node.findObject('TEXTBLOCK');
+    if (label !== null) {
+      label.angle = ((angle > 90 && angle < 270 || angle < -90) ? 180 : 0);
+    }
+  }
+
+  commitLayers() {
+    // optional: add circles in the background
+    // need to remove any old ones first
+    const diagram = this.diagram;
+    if (diagram === null) return;
+    const gridlayer = diagram.findLayer('Grid');
+    if (gridlayer === null) return;
+    const root = this.root;
+    if (root === null) return;
+    const circles = new go.Set<go.Part>();
+    gridlayer.parts.each(function(circle) {
+      if (circle.name === 'CIRCLE') circles.add(circle);
+    });
+    circles.each(function(circle) {
+      diagram.remove(circle);
+    });
+    // add circles centered at the root
+    const $$ = go.GraphObject.make;  // for conciseness in defining templates
+    for (let lay = 1; lay <= this.maxLayers; lay++) {
+      const radius = lay * this.layerThickness;
+      const circle =
+        $$(go.Part,
+          { name: 'CIRCLE', layerName: 'Grid' },
+          { locationSpot: go.Spot.Center, location: root.location },
+          $$(go.Shape, 'Circle',
+            { width: radius * 2, height: radius * 2 },
+            { fill: 'rgba(200,200,200,0.2)', stroke: null }));
+      diagram.add(circle);
+    }
+  }
+
+}
+
 export function init() {
   if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this
 
@@ -18,49 +61,13 @@ export function init() {
         initialAutoScale: go.Diagram.Uniform,
         padding: 10,
         isReadOnly: true,
-        layout: $(RadialLayout, {
-          maxLayers: 2,
-          rotateNode: function(node: go.Node, angle: number, sweep: number, radius: number) {
-            // rotate the nodes and make sure the text is not upside-down
-            node.angle = angle;
-            const label = node.findObject('TEXTBLOCK');
-            if (label !== null) {
-              label.angle = ((angle > 90 && angle < 270 || angle < -90) ? 180 : 0);
-            }
-          },
-          commitLayers: function() {
-            // optional: add circles in the background
-            // need to remove any old ones first
-            const diagram = this.diagram;
-            const gridlayer = diagram.findLayer('Grid');
-            const circles = new go.Set<go.GraphObject>();
-            gridlayer.parts.each(function(circle: go.Shape) {
-              if (circle.name === 'CIRCLE') circles.add(circle);
-            });
-            circles.each(function(circle) {
-              diagram.remove(circle);
-            });
-            // add circles centered at the root
-            const $$ = go.GraphObject.make;  // for conciseness in defining templates
-            for (let lay = 1; lay <= this.maxLayers; lay++) {
-              const radius = lay * this.layerThickness;
-              const circle =
-                $$(go.Part,
-                  { name: 'CIRCLE', layerName: 'Grid' },
-                  { locationSpot: go.Spot.Center, location: this.root.location },
-                  $$(go.Shape, 'Circle',
-                    { width: radius * 2, height: radius * 2 },
-                    { fill: 'rgba(200,200,200,0.2)', stroke: null }));
-              diagram.add(circle);
-            }
-          }
-        }),
+        layout: $(CustomRadialLayout, { maxLayers: 2 }),
         'animationManager.isEnabled': false
       });
 
   // shows when hovering over a node
   const commonToolTip =
-    $('ToolTip',
+    $<go.Adornment>('ToolTip',
       $(go.Panel, 'Vertical',
         { margin: 3 },
         $(go.TextBlock,  // bound to node data
@@ -172,8 +179,8 @@ function generateGraph() {
   nodeClicked(null, myDiagram.findNodeForData(someone));
 }
 
-function nodeClicked(e: go.InputEvent | null, root: go.Node | null) {
-  if (root === null) return;
+function nodeClicked(e: go.InputEvent | null, root: go.GraphObject| null) {
+  if (!(root instanceof go.Node)) return;
   const diagram = root.diagram;
   if (diagram === null) return;
   // all other nodes should be visible and use the default category

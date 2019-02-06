@@ -125,6 +125,7 @@ import * as go from '../release/go';
     textarea.style['overflow'] = 'hidden'; // for proper IE wrap
     textarea.rows = textBlock.lineCount;
     (textarea as any).textScale = textscale; // attach a value to the textarea, for convenience
+    textarea.className = 'goTXarea';
 
     // Show:
     diagram.div.appendChild(textarea);

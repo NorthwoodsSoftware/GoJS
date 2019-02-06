@@ -44,6 +44,9 @@ var __extends = (this && this.__extends) || (function () {
          */
         function PortShiftingTool() {
             var _this = _super.call(this) || this;
+            /**
+             * The port being shifted.
+             */
             _this.port = null;
             _this._originalAlignment = go.Spot.Default;
             _this.name = 'PortShifting';

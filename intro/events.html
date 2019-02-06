@@ -22,52 +22,201 @@ This page discusses the first two; see <a href="changedEvents.html">Changed Even
 <h2 id="DiagramEvents">Diagram Events</h2>
 <p>
 <a>DiagramEvent</a>s represent general user-initiated changes to a diagram.
-You can register diagram event handlers by calling <a>Diagram.addDiagramListener</a>.
+You can register one or more diagram event handlers by calling <a>Diagram.addDiagramListener</a>.
+You can also register a diagram event handler in <a>Diagram</a> initialization when calling <a>GraphObject,make</a>.
 Each kind of diagram event is distinguished by its name.
 </p>
 <p>
 Currently defined diagram event names include:
 </p>
 <ul>
-  <li>"<b>AnimationStarting</b>", an animation is about to start.</li>
-  <li>"<b>AnimationFinished</b>", an animation just completed.</li>
-  <li>"<b>BackgroundSingleClicked</b>", when a mouse left-button single-click happened in the background of the Diagram, not on a Part</li>
-  <li>"<b>BackgroundDoubleClicked</b>", when a mouse left-button double-click happened in the background of the Diagram, not on a Part</li>
-  <li>"<b>BackgroundContextClicked</b>", when a mouse right-button single-click happened in the background of the Diagram, not on a Part</li>
-  <li>"<b>ChangingSelection</b>", before the <a>Diagram.selection</a> collection changes</li>
-  <li>"<b>ChangedSelection</b>", after the <a>Diagram.selection</a> collection has changed</li>
-  <li>"<b>ClipboardChanged</b>", when <a>CommandHandler.copySelection</a> has changed the clipboard (but the Diagram is unmodified)</li>
-  <li>"<b>ClipboardPasted</b>", when <a>CommandHandler.pasteSelection</a> has copied Parts from the clipboard into the Diagram; the new Parts are held in the <a>Diagram.selection</a> collection</li>
-  <li>"<b>DocumentBoundsChanged</b>", when <a>Diagram.documentBounds</a> has changed value</li>
-  <li>"<b>ExternalObjectsDropped</b>", when the <a>DraggingTool</a> has copied Parts from another diagram into the Diagram; the new Parts are held in the <a>Diagram.selection</a> collection</li>
-  <li>"<b>GainedFocus</b>", the diagram has gained keyboard focus.</li>
-  <li>"<b>InitialLayoutCompleted</b>", when the first diagram layout has completed after a major change to the diagram</li>
-  <li>"<b>LayoutCompleted</b>", whenever a diagram layout has completed</li>
-  <li>"<b>LinkDrawn</b>", when the <a>LinkingTool</a> has finished creating a new Link, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>LinkRelinked</b>", when the <a>RelinkingTool</a> has finished reconnecting an existing Link, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>LinkReshaped</b>", when the <a>LinkReshapingTool</a> has finished rerouting a Link, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>LostFocus</b>", the diagram has lost keyboard focus ("blur").</li>
-  <li>"<b>Modified</b>", the <a>Diagram.isModified</a> property has been set to a new value; do not modify the Diagram or its Model in the event listener</li>
-  <li>"<b>PartCreated</b>", when the <a>ClickCreatingTool</a> has inserted a new Part, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>PartResized</b>", when the <a>ResizingTool</a> has resized a GraphObject, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>PartRotated</b>", when the <a>RotatingTool</a> has rotated a GraphObject, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>ObjectSingleClicked</b>", when a mouse left-button single-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>ObjectDoubleClicked</b>", when a mouse left-button double-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>ObjectContextClicked</b>", when a mouse right-button single-click happened on a GraphObject, which is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>SelectionMoved</b>", when the <a>DraggingTool</a> has moved some Parts; the moved Parts are held in the <a>Diagram.selection</a> collection</li>
-  <li>"<b>SelectionCopied</b>", when the <a>DraggingTool</a> has copied some Parts; the copied Parts are held in the <a>Diagram.selection</a> collection</li>
-  <li>"<b>SelectionDeleting</b>", before <a>CommandHandler.deleteSelection</a> deletes the <a>Diagram.selection</a> Parts</li>
-  <li>"<b>SelectionDeleted</b>", after <a>CommandHandler.deleteSelection</a> has deleted the <a>Diagram.selection</a>, which is now empty</li>
-  <li>"<b>SelectionGrouped</b>", after <a>CommandHandler.groupSelection</a> has create a new Group from the <a>Diagram.selection</a>, which now holds the new Group</li>
-  <li>"<b>SelectionUngrouped</b>", after <a>CommandHandler.ungroupSelection</a> has removed the selected Group and kept the member Parts as the new <a>Diagram.selection</a></li>
-  <li>"<b>SubGraphCollapsed</b>", when <a>CommandHandler.collapseSubGraph</a> has collapsed selected Groups, making their member Parts not visible</li>
-  <li>"<b>SubGraphExpanded</b>", when <a>CommandHandler.expandSubGraph</a> has expanded selected Groups, making their member Parts visible</li>
-  <li>"<b>TextEdited</b>", when the <a>TextEditingTool</a> has completed in-place text editing; the modified TextBlock is the <a>DiagramEvent.subject</a></li>
-  <li>"<b>TreeCollapsed</b>", when <a>CommandHandler.collapseTree</a> has collapsed selected Nodes with subtrees, making the subtree nodes and links not visible</li>
-  <li>"<b>TreeExpanded</b>", when <a>CommandHandler.expandTree</a> has expanded selected Nodes with subtrees, making the subtree nodes and links visible</li>
-  <li>"<b>ViewportBoundsChanged</b>", when <a>Diagram.viewportBounds</a> has changed value</li>
+  <li id="AnimationStarting" onclick="window.location.hash = '#AnimationStarting'">
+    "<b>AnimationStarting</b>", an animation is about to start;
+    do not modify the diagram or its model in the event listener.
+  </li>
+  <li id="AnimationFinished" onclick="window.location.hash = '#AnimationFinished'">
+    "<b>AnimationFinished</b>", an animation just completed;
+    do not modify the diagram or its model in the event listener.
+  </li>
+  <li id="BackgroundSingleClicked" onclick="window.location.hash = '#BackgroundSingleClicked'">
+    "<b>BackgroundSingleClicked</b>", when a mouse left-button single-click happened in the background of the Diagram, not on a Part;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="BackgroundDoubleClicked" onclick="window.location.hash = '#BackgroundDoubleClicked'">
+    "<b>BackgroundDoubleClicked</b>", when a mouse left-button double-click happened in the background of the Diagram, not on a Part;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="BackgroundContextClicked" onclick="window.location.hash = '#BackgroundContextClicked'">
+    "<b>BackgroundContextClicked</b>", when a mouse right-button single-click happened in the background of the Diagram, not on a Part;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="ChangingSelection" onclick="window.location.hash = '#ChangingSelection'">
+    "<b>ChangingSelection</b>", an operation is about to change the <a>Diagram.selection</a> collection,
+    which is also the value of the <a>DiagramEvent.subject</a>;
+    do not make any changes to the selection or the diagram or the model in the event listener;
+    note that just setting <a>Part.isSelected</a> will not raise this event, but tools and commands will.
+  </li>
+  <li id="ChangedSelection" onclick="window.location.hash = '#ChangedSelection'">
+    "<b>ChangedSelection</b>", an operation has just changed the <a>Diagram.selection</a> collection,
+    which is also the value of the <a>DiagramEvent.subject</a>;
+    do not make any changes to the selection or the diagram or the model in the event listener;
+    note that just setting <a>Part.isSelected</a> will not raise this event, but tools and commands will.
+  </li>
+  <li id="ClipboardChanged" onclick="window.location.hash = '#ClipboardChanged'">
+    "<b>ClipboardChanged</b>", Parts have been copied to the clipboard by <a>CommandHandler.copySelection</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Parts;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="ClipboardPasted" onclick="window.location.hash = '#ClipboardPasted'">
+    "<b>ClipboardPasted</b>", Parts have been copied from the clipboard into the Diagram by <a>CommandHandler.pasteSelection</a>;
+    the <a>DiagramEvent.subject</a> is the <a>Diagram.selection</a>,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="DocumentBoundsChanged" onclick="window.location.hash = '#DocumentBoundsChanged'">
+    "<b>DocumentBoundsChanged</b>", the area of the diagram's Parts, <a>Diagram.documentBounds</a>, has changed;
+    the <a>DiagramEvent.parameter</a> is the old Rect.
+  </li>
+  <li id="ExternalObjectsDropped" onclick="window.location.hash = '#ExternalObjectsDropped'">
+    "<b>ExternalObjectsDropped</b>", Parts have been copied into the Diagram by drag-and-drop from outside of the Diagram;
+    the <a>DiagramEvent.subject</a> is the set of Parts that were dropped (which is also the <a>Diagram.selection</a>),
+    the <a>DiagramEvent.parameter</a> is the source Diagram,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="GainedFocus" onclick="window.location.hash = '#GainedFocus'">
+    "<b>GainedFocus</b>", the diagram has gained keyboard focus, such as after a call to <a>Diagram.focus</a>.
+  </li>
+  <li id="InitialLayoutCompleted" onclick="window.location.hash = '#InitialLayoutCompleted'">
+    "<b>InitialLayoutCompleted</b>", the whole diagram layout has updated for the first time since a major change to the Diagram,
+    such as replacing the Model;
+    if you make any changes, you do not need to perform a transaction.
+  </li>
+  <li id="LayoutCompleted" onclick="window.location.hash = '#LayoutCompleted'">
+    "<b>LayoutCompleted</b>", the whole diagram layout has just been updated;
+    if you make any changes, you do not need to perform a transaction.
+  </li>
+  <li id="LinkDrawn" onclick="window.location.hash = '#LinkDrawn'">
+    "<b>LinkDrawn</b>", the user has just created a new Link using <a>LinkingTool</a>;
+    the <a>DiagramEvent.subject</a> is the new Link,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction..
+  </li>
+  <li id="LinkRelinked" onclick="window.location.hash = '#LinkRelinked'">
+    "<b>LinkRelinked</b>", the user has just reconnected an existing Link using <a>RelinkingTool</a> or <a>DraggingTool</a>;
+    the <a>DiagramEvent.subject</a> is the modified Link,
+    the <a>DiagramEvent.parameter</a> is the GraphObject port that the link was disconnected from,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction..
+  </li>
+  <li id="LinkReshaped" onclick="window.location.hash = '#LinkReshaped'">
+    "<b>LinkReshaped</b>", the user has just rerouted an existing Link using <a>LinkReshapingTool</a>;
+    the <a>DiagramEvent.subject</a> is the modified Link,
+    the <a>DiagramEvent.parameter</a> is the List of Points of the link's original route,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction..
+  </li>
+  <li id="LostFocus" onclick="window.location.hash = '#LostFocus'">
+    "<b>LostFocus</b>", the diagram has lost keyboard focus ("blur").
+  </li>
+  <li id="Modified" onclick="window.location.hash = '#Modified'">
+    "<b>Modified</b>", the <a>Diagram.isModified</a> property has been set to a new value --
+    useful for marking a window as having been modified since the last save;
+    do not modify the Diagram or its Model in the event listener.
+  </li>
+  <li id="ObjectSingleClicked" onclick="window.location.hash = '#ObjectSingleClicked'">
+    "<b>ObjectSingleClicked</b>", a click that occurred on a GraphObject;
+    the <a>DiagramEvent.subject</a> is the GraphObject;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="ObjectDoubleClicked" onclick="window.location.hash = '#ObjectDoubleClicked'">
+    "<b>ObjectDoubleClicked</b>", a double-click that occurred on a GraphObject;
+    the <a>DiagramEvent.subject</a> is the GraphObject;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="ObjectContextClicked" onclick="window.location.hash = '#ObjectContextClicked'">
+    "<b>ObjectContextClicked</b>", a context-click that occurred on a GraphObject;
+    the <a>DiagramEvent.subject</a> is the GraphObject;
+    if you make any changes, start and commit your own transaction.
+  </li>
+  <li id="PartCreated" onclick="window.location.hash = '#PartCreated'">
+    "<b>PartCreated</b>", the user inserted a new Part by <a>ClickCreatingTool</a>;
+    the <a>DiagramEvent.subject</a> is the new Part,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="PartResized" onclick="window.location.hash = '#PartResized'">
+    "<b>PartResized</b>", the user has changed the size of a GraphObject by <a>ResizingTool</a>;
+    the <a>DiagramEvent.subject</a> is the GraphObject,
+    the <a>DiagramEvent.parameter</a> is the original Size,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="PartRotated" onclick="window.location.hash = '#PartRotated'">
+    "<b>PartRotated</b>", the user has changed the angle of a GraphObject by <a>RotatingTool</a>;
+    the <a>DiagramEvent.subject</a> is the GraphObject,
+    the <a>DiagramEvent.parameter</a> is the original angle in degrees,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SelectionMoved" onclick="window.location.hash = '#SelectionMoved'">
+    "<b>SelectionMoved</b>", the user has moved selected Parts by <a>DraggingTool</a>;
+    the <a>DiagramEvent.subject</a> is a Set of the moved Parts,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SelectionCopied" onclick="window.location.hash = '#SelectionCopied'">
+    "<b>SelectionCopied</b>", the user has copied selected Parts by <a>DraggingTool</a>;
+    the <a>DiagramEvent.subject</a> is Set of the newly copied Parts,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SelectionDeleting" onclick="window.location.hash = '#SelectionDeleting'">
+    "<b>SelectionDeleting</b>", the user is about to delete selected Parts by <a>CommandHandler.deleteSelection</a>;
+    the <a>DiagramEvent.subject</a> is the <a>Diagram.selection</a> collection of Parts to be deleted,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SelectionDeleted" onclick="window.location.hash = '#SelectionDeleted'">
+    "<b>SelectionDeleted</b>", the user has deleted selected Parts by <a>CommandHandler.deleteSelection</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Parts that were deleted,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SelectionGrouped" onclick="window.location.hash = '#SelectionGrouped'">
+    "<b>SelectionGrouped</b>", the user has made a new Group out of the selected Parts by <a>CommandHandler.groupSelection</a>;
+    the <a>DiagramEvent.subject</a> is the new Group,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SelectionUngrouped" onclick="window.location.hash = '#SelectionUngrouped'">
+    "<b>SelectionUngrouped</b>", the user has removed a selected Group but kept its members by <a>CommandHandler.ungroupSelection</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Groups that were ungrouped,
+    the <a>DiagramEvent.parameter</a> is the collection of former member Parts that were ungrouped,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SubGraphCollapsed" onclick="window.location.hash = '#SubGraphCollapsed'">
+    "<b>SubGraphCollapsed</b>", the user has collapsed selected Groups by <a>CommandHandler.collapseSubGraph</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Groups that were collapsed,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="SubGraphExpanded" onclick="window.location.hash = '#SubGraphExpanded'">
+    "<b>SubGraphExpanded</b>", the user has expanded selected Groups by <a>CommandHandler.expandSubGraph</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Groups that were expanded,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="TextEdited" onclick="window.location.hash = '#TextEdited'">
+    "<b>TextEdited</b>", the user has changed the string value of a TextBlock by <a>TextEditingTool</a>;
+    the <a>DiagramEvent.subject</a> is the edited TextBlock,
+    the <a>DiagramEvent.parameter</a> is the original string,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="TreeCollapsed" onclick="window.location.hash = '#TreeCollapsed'">
+    "<b>TreeCollapsed</b>", the user has collapsed selected Nodes with subtrees by <a>CommandHandler.collapseTree</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Nodes that were collapsed,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="TreeExpanded" onclick="window.location.hash = '#TreeExpanded'">
+    "<b>TreeExpanded</b>", the user has expanded selected Nodes with subtrees by <a>CommandHandler.expandTree</a>;
+    the <a>DiagramEvent.subject</a> is the collection of Nodes that were expanded,
+    and this is called within a transaction, so that you do not have to start and commit your own transaction.
+  </li>
+  <li id="ViewportBoundsChanged" onclick="window.location.hash = '#ViewportBoundsChanged'">
+    "<b>ViewportBoundsChanged</b>", the visible area of the Diagram, <a>Diagram.viewportBounds</a>, has changed;
+    the <a>DiagramEvent.subject</a> is an object whose "scale" property is the old <a>Diagram.scale</a> value,
+    whose "position" property is the old <a>Diagram.position</a> value,
+    and whose "bounds" property is the old <a>Diagram.viewportBounds</a> value;
+    the <a>DiagramEvent.parameter</a> is also the old viewportBounds Rect.
+    Do not modify the Diagram position or scale (i.e. the viewport bounds) in the listener.
+  </li>
 </ul>
-For more details, please read the documentation for <a>DiagramEvent</a>.
 
 <p>
 DiagramEvents do not necessarily correspond to mouse events or keyboard events or touch events.

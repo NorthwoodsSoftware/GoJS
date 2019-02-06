@@ -37,7 +37,7 @@ import * as go from '../release/go';
  */
 export class DragCreatingTool extends go.Tool {
   private _box: go.Part;
-  private _archetypeNodeData: Object | null = null;
+  private _archetypeNodeData: go.ObjectData | null = null;
   private _delay: number = 175;
 
   /**
@@ -91,8 +91,8 @@ export class DragCreatingTool extends go.Tool {
    * The value must be non-null for this tool to be able to run.
    * Setting this property does not raise any events.
    */
-  get archetypeNodeData(): Object | null { return this._archetypeNodeData; }
-  set archetypeNodeData(val: Object | null) { this._archetypeNodeData = val; }
+  get archetypeNodeData(): go.ObjectData | null { return this._archetypeNodeData; }
+  set archetypeNodeData(val: go.ObjectData | null) { this._archetypeNodeData = val; }
 
   /**
    * This tool can run when there has been a mouse-drag, far enough away not to be a click,

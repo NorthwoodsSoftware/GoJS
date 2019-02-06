@@ -43,7 +43,7 @@ export class Robot {
    * @hidden @internal
    * Transfer property settings from a JavaScript Object to an {@link InputEvent}.
    */
-  public initializeEvent(e: go.InputEvent, props?: Object): void {
+  public initializeEvent(e: go.InputEvent, props?: go.ObjectData): void {
     if (!props) return;
     for (const p in props) {
       if (p !== 'sourceDiagram') (e as any)[p] = (props as any)[p];
@@ -57,7 +57,7 @@ export class Robot {
    * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
    * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
    */
-  public mouseDown(x: number, y: number, time?: number, eventprops?: Object): void {
+  public mouseDown(x: number, y: number, time?: number, eventprops?: go.ObjectData): void {
     if (typeof x !== 'number' || typeof y !== 'number') throw new Error('Robot.mouseDown first two args must be X,Y numbers');
     if (time === undefined) time = 0;
 
@@ -84,7 +84,7 @@ export class Robot {
    * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
    * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
    */
-  public mouseMove(x: number, y: number, time?: number, eventprops?: Object): void {
+  public mouseMove(x: number, y: number, time?: number, eventprops?: go.ObjectData): void {
     if (typeof x !== 'number' || typeof y !== 'number') throw new Error('Robot.mouseMove first two args must be X,Y numbers');
     if (time === undefined) time = 0;
 
@@ -109,7 +109,7 @@ export class Robot {
    * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
    * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
    */
-  public mouseUp(x: number, y: number, time?: number, eventprops?: Object): void {
+  public mouseUp(x: number, y: number, time?: number, eventprops?: go.ObjectData): void {
     if (typeof x !== 'number' || typeof y !== 'number') throw new Error('Robot.mouseUp first two args must be X,Y numbers');
     if (time === undefined) time = 0;
 
@@ -136,7 +136,7 @@ export class Robot {
    * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
    * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
    */
-  public mouseWheel(delta: number, time?: number, eventprops?: Object): void {
+  public mouseWheel(delta: number, time?: number, eventprops?: go.ObjectData): void {
     if (typeof delta !== 'number') throw new Error('Robot.mouseWheel first arg must be DELTA number');
     if (time === undefined) time = 0;
 
@@ -158,7 +158,7 @@ export class Robot {
    * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
    * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
    */
-  public keyDown(keyorcode: string | number, time?: number, eventprops?: Object): void {
+  public keyDown(keyorcode: string | number, time?: number, eventprops?: go.ObjectData): void {
     if (typeof keyorcode !== 'string' && typeof keyorcode !== 'number') throw new Error('Robot.keyDown first arg must be a string or a number');
     if (time === undefined) time = 0;
 
@@ -185,7 +185,7 @@ export class Robot {
    * @param {number=} time the timestamp of the simulated event, in milliseconds; default zero
    * @param {Object=} eventprops an optional argument providing properties for the InputEvent.
    */
-  public keyUp(keyorcode: string | number, time?: number, eventprops?: Object): void {
+  public keyUp(keyorcode: string | number, time?: number, eventprops?: go.ObjectData): void {
     if (typeof keyorcode !== 'string' && typeof keyorcode !== 'number') throw new Error('Robot.keyUp first arg must be a string or a number');
     if (time === undefined) time = 0;
 

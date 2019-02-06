@@ -59,7 +59,7 @@ import * as go from '../release/go';
 export class Inspector {
   private _div: HTMLDivElement;
   private _diagram: go.Diagram;
-  private _inspectedObject: Object | null = null;
+  private _inspectedObject: go.ObjectData | null = null;
   // Inspector options defaults:
   private _inspectSelection: boolean = true;
   private _includesOwnProperties: boolean = true;
@@ -144,7 +144,7 @@ export class Inspector {
    *
    * To set the inspected object, call {@link #inspectObject}.
    */
-  get inspectedObject(): Object | null { return this._inspectedObject; }
+  get inspectedObject(): go.ObjectData | null { return this._inspectedObject; }
 
   /**
    * Gets or sets whether the Inspector automatically inspects the associated Diagram's selection.
@@ -186,8 +186,8 @@ export class Inspector {
    *
    * The default value is an empty object.
    */
-  get properties(): Object { return this._properties; }
-  set properties(val: Object) {
+  get properties(): go.ObjectData { return this._properties; }
+  set properties(val: go.ObjectData) {
     if (val !== this._properties) {
       this._properties = val;
       this.inspectObject();
@@ -292,9 +292,9 @@ export class Inspector {
    * @param {Object=} object an optional argument, used when {@link #inspectSelection} is false to
    *   set {@link #inspectedObject} and show and edit that object's properties.
    */
-  public inspectObject(object?: Object | null): void {
-    let inspectedObject: Object | null = null;
-    let inspectedObjects: go.Set<Object> | null = null;
+  public inspectObject(object?: go.ObjectData | null): void {
+    let inspectedObject: go.ObjectData | null = null;
+    let inspectedObjects: go.Set<go.ObjectData> | null = null;
     if (object === null) return;
     if (object === undefined) {
       if (this._inspectSelection) {
@@ -310,7 +310,7 @@ export class Inspector {
       inspectedObject = object;
     }
     if (!inspectedObjects && inspectedObject) {
-      inspectedObjects = new go.Set<Object>();
+      inspectedObjects = new go.Set<go.ObjectData>();
       inspectedObjects.add(inspectedObject);
     }
     if (!inspectedObjects || inspectedObjects.count < 1) { // if nothing is selected
@@ -472,7 +472,7 @@ export class Inspector {
    * @param {Object} inspectedObject the data object
    * @return {boolean} whether a particular property should be shown in this Inspector
    */
-  public canShowProperty(propertyName: string, propertyDesc: Object, inspectedObject: Object): boolean {
+  public canShowProperty(propertyName: string, propertyDesc: go.ObjectData, inspectedObject: go.ObjectData): boolean {
     const prop = propertyDesc as any;
     if (prop.show === false) return false;
     // if "show" is a predicate, make sure it passes or do not show this property
@@ -490,7 +490,7 @@ export class Inspector {
    * @param {Object} inspectedObject the data object
    * @return {boolean} whether a particular property should be shown in this Inspector
    */
-  public canEditProperty(propertyName: string, propertyDesc: Object, inspectedObject: Object | null): boolean {
+  public canEditProperty(propertyName: string, propertyDesc: go.ObjectData, inspectedObject: go.ObjectData | null): boolean {
     if (this._diagram.isReadOnly || this._diagram.isModelReadOnly) return false;
     if (inspectedObject === null) return false;
     // assume property values that are functions of Objects cannot be edited

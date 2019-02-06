@@ -1,6 +1,19 @@
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -15,6 +28,49 @@
     var go = require("../release/go");
     var RadialLayout_1 = require("./RadialLayout");
     var myDiagram;
+    var CustomRadialLayout = /** @class */ (function (_super) {
+        __extends(CustomRadialLayout, _super);
+        function CustomRadialLayout() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        CustomRadialLayout.prototype.rotateNode = function (node, angle, sweep, radius) {
+            // rotate the nodes and make sure the text is not upside-down
+            node.angle = angle;
+            var label = node.findObject('TEXTBLOCK');
+            if (label !== null) {
+                label.angle = ((angle > 90 && angle < 270 || angle < -90) ? 180 : 0);
+            }
+        };
+        CustomRadialLayout.prototype.commitLayers = function () {
+            // optional: add circles in the background
+            // need to remove any old ones first
+            var diagram = this.diagram;
+            if (diagram === null)
+                return;
+            var gridlayer = diagram.findLayer('Grid');
+            if (gridlayer === null)
+                return;
+            var root = this.root;
+            if (root === null)
+                return;
+            var circles = new go.Set();
+            gridlayer.parts.each(function (circle) {
+                if (circle.name === 'CIRCLE')
+                    circles.add(circle);
+            });
+            circles.each(function (circle) {
+                diagram.remove(circle);
+            });
+            // add circles centered at the root
+            var $$ = go.GraphObject.make; // for conciseness in defining templates
+            for (var lay = 1; lay <= this.maxLayers; lay++) {
+                var radius = lay * this.layerThickness;
+                var circle = $$(go.Part, { name: 'CIRCLE', layerName: 'Grid' }, { locationSpot: go.Spot.Center, location: root.location }, $$(go.Shape, 'Circle', { width: radius * 2, height: radius * 2 }, { fill: 'rgba(200,200,200,0.2)', stroke: null }));
+                diagram.add(circle);
+            }
+        };
+        return CustomRadialLayout;
+    }(RadialLayout_1.RadialLayout));
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -25,38 +81,7 @@
                 initialAutoScale: go.Diagram.Uniform,
                 padding: 10,
                 isReadOnly: true,
-                layout: $(RadialLayout_1.RadialLayout, {
-                    maxLayers: 2,
-                    rotateNode: function (node, angle, sweep, radius) {
-                        // rotate the nodes and make sure the text is not upside-down
-                        node.angle = angle;
-                        var label = node.findObject('TEXTBLOCK');
-                        if (label !== null) {
-                            label.angle = ((angle > 90 && angle < 270 || angle < -90) ? 180 : 0);
-                        }
-                    },
-                    commitLayers: function () {
-                        // optional: add circles in the background
-                        // need to remove any old ones first
-                        var diagram = this.diagram;
-                        var gridlayer = diagram.findLayer('Grid');
-                        var circles = new go.Set();
-                        gridlayer.parts.each(function (circle) {
-                            if (circle.name === 'CIRCLE')
-                                circles.add(circle);
-                        });
-                        circles.each(function (circle) {
-                            diagram.remove(circle);
-                        });
-                        // add circles centered at the root
-                        var $$ = go.GraphObject.make; // for conciseness in defining templates
-                        for (var lay = 1; lay <= this.maxLayers; lay++) {
-                            var radius = lay * this.layerThickness;
-                            var circle = $$(go.Part, { name: 'CIRCLE', layerName: 'Grid' }, { locationSpot: go.Spot.Center, location: this.root.location }, $$(go.Shape, 'Circle', { width: radius * 2, height: radius * 2 }, { fill: 'rgba(200,200,200,0.2)', stroke: null }));
-                            diagram.add(circle);
-                        }
-                    }
-                }),
+                layout: $(CustomRadialLayout, { maxLayers: 2 }),
                 'animationManager.isEnabled': false
             });
         // shows when hovering over a node
@@ -136,7 +161,7 @@
         nodeClicked(null, myDiagram.findNodeForData(someone));
     }
     function nodeClicked(e, root) {
-        if (root === null)
+        if (!(root instanceof go.Node))
             return;
         var diagram = root.diagram;
         if (diagram === null)

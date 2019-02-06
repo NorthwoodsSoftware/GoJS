@@ -45,7 +45,7 @@ export function init() {
               click: nodeClicked,
               doubleClick: nodeClicked,
               contextMenu:
-                $('ContextMenu',
+                $<go.Adornment>('ContextMenu',
                   $('ContextMenuButton',
                     $(go.TextBlock, 'Properties'),
                     { click: showProperties })

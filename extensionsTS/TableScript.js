@@ -173,9 +173,13 @@ var __extends = (this && this.__extends) || (function () {
                 computesBoundsAfterDrag: true,
                 computesBoundsIncludingLocation: true,
                 handlesDragDropForMembers: true,
-                mouseDragEnter: function (e, group, prev) { group.isHighlighted = true; },
-                mouseDragLeave: function (e, group, next) { group.isHighlighted = false; },
+                mouseDragEnter: function (e, group) { if (group instanceof go.Group)
+                    group.isHighlighted = true; },
+                mouseDragLeave: function (e, group) { if (group instanceof go.Group)
+                    group.isHighlighted = false; },
                 mouseDrop: function (e, group) {
+                    if (!(group instanceof go.Group))
+                        return;
                     // if any dropped part wasn't already a member of this group, we'll want to let the group's row
                     // column allow themselves to be resized automatically, in case the row height or column width
                     // had been set manually by the LaneResizingTool

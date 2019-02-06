@@ -16,7 +16,10 @@ import * as go from '../release/go';
  * @category Tool Extension
  */
 export class NodeLabelDraggingTool extends go.Tool {
-  private label: go.GraphObject | null = null;
+  /**
+   * The label being dragged.
+   */
+  public label: go.GraphObject | null = null;
   private _offset: go.Point = new go.Point();  // of the mouse relative to the center of the label object
   private _originalAlignment: go.Spot = go.Spot.Default;
   private _originalCenter: go.Point = new go.Point();

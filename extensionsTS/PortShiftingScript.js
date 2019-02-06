@@ -98,6 +98,8 @@
         $(go.Shape, 'Rectangle', portStyle(false), // the only port
         { portId: '', alignment: new go.Spot(1, 0.5) }), {
             doubleClick: function (e, obj) {
+                if (!(obj instanceof go.Node))
+                    return;
                 e.diagram.startTransaction('Toggle Input');
                 var shp = obj.findObject('NODESHAPE');
                 shp.fill = (shp.fill === green) ? red : green;

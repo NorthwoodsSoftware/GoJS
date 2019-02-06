@@ -24,7 +24,7 @@ import * as go from '../release/go';
 export class FreehandDrawingTool extends go.Tool {
   // this is the Shape that is shown during a drawing operation
   private _temporaryShape: go.GraphObject = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
-  private _archetypePartData: Object = {}; // the data to copy for a new polyline Part
+  private _archetypePartData: go.ObjectData = {}; // the data to copy for a new polyline Part
   private _isBackgroundOnly: boolean = true; // affects canStart()
 
   // the Shape has to be inside a temporary Part that is used during the drawing operation
@@ -57,8 +57,8 @@ export class FreehandDrawingTool extends go.Tool {
    * Gets or sets the node data object that is copied and added to the model
    * when the freehand drawing operation completes.
    */
-  get archetypePartData(): Object { return this._archetypePartData; }
-  set archetypePartData(val: Object) { this._archetypePartData = val; }
+  get archetypePartData(): go.ObjectData { return this._archetypePartData; }
+  set archetypePartData(val: go.ObjectData) { this._archetypePartData = val; }
 
   /**
    * Gets or sets whether this tool can only run if the user starts in the diagram's background

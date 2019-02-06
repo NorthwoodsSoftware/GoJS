@@ -22,7 +22,7 @@ export class PolygonDrawingTool extends go.Tool {
   private _isPolygon: boolean = true;
   private _hasArcs: boolean = false;
   private _isOrthoOnly: boolean = false;
-  private _archetypePartData: Object = {}; // the data to copy for a new polygon Part
+  private _archetypePartData: go.ObjectData= {}; // the data to copy for a new polygon Part
 
   // this is the Shape that is shown during a drawing operation
   private _temporaryShape: go.Shape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
@@ -65,8 +65,8 @@ export class PolygonDrawingTool extends go.Tool {
    * Gets or sets the node data object that is copied and added to the model
    * when the drawing operation completes.
    */
-  get archetypePartData(): Object { return this._archetypePartData; }
-  set archetypePartData(val: Object) { this._archetypePartData = val; }
+  get archetypePartData(): go.ObjectData { return this._archetypePartData; }
+  set archetypePartData(val: go.ObjectData) { this._archetypePartData = val; }
 
   /**
    * Gets or sets the Shape that is used to hold the line as it is being drawn.

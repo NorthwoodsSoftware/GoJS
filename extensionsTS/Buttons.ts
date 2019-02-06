@@ -39,10 +39,12 @@ go.GraphObject.defineBuilder('Button', (args: any): go.Panel => {
     go.GraphObject.make(go.Panel, 'Auto',
       {
         isActionable: true,  // needed so that the ActionTool intercepts mouse events
-        enabledChanged: (btn: go.Panel, enabled: boolean): void => {
-          const shape = btn.findObject('ButtonBorder') as go.Shape;
-          if (shape !== null) {
-            shape.fill = enabled ? (btn as any)['_buttonFillNormal'] : (btn as any)['_buttonFillDisabled'];
+        enabledChanged: (btn: go.GraphObject, enabled: boolean): void => {
+          if (btn instanceof go.Panel) {
+            const shape = btn.findObject('ButtonBorder') as go.Shape;
+            if (shape !== null) {
+              shape.fill = enabled ? (btn as any)['_buttonFillNormal'] : (btn as any)['_buttonFillDisabled'];
+            }
           }
         },
         cursor: 'pointer',

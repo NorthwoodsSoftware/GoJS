@@ -81,10 +81,11 @@
                     var u = obj._url;
                     if (typeof u === 'function')
                         u = u(obj.findTemplateBinder());
-                    if (u)
+                    if (u && obj instanceof go.TextBlock)
                         obj.isUnderline = true;
                 },
-                mouseLeave: function (e, obj) { obj.isUnderline = false; },
+                mouseLeave: function (e, obj) { if (obj instanceof go.TextBlock)
+                    obj.isUnderline = false; },
                 click: click,
                 toolTip: tooltip // shared by all HyperlinkText textblocks
             });

@@ -12,7 +12,10 @@ import * as go from '../release/go';
  * @category Tool Extension
  */
 export class LinkLabelOnPathDraggingTool extends go.Tool {
-  private label: go.GraphObject | null = null;
+  /**
+   * The label being dragged.
+   */
+  public label: go.GraphObject | null = null;
   private _originalIndex: number = 0;
   private _originalFraction: number = 0.0;
 

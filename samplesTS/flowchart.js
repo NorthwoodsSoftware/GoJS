@@ -79,11 +79,12 @@
                 toLinkable: input,
                 cursor: "pointer",
                 mouseEnter: function (e, port) {
-                    if (!e.diagram.isReadOnly)
+                    if (!e.diagram.isReadOnly && port instanceof go.Shape)
                         port.fill = "rgba(255,0,255,0.5)";
                 },
                 mouseLeave: function (e, port) {
-                    port.fill = "transparent";
+                    if (port instanceof go.Shape)
+                        port.fill = "transparent";
                 }
             });
         }
@@ -162,8 +163,10 @@
                 reshapable: true,
                 resegmentable: true,
                 // mouse-overs subtly highlight links:
-                mouseEnter: function (e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-                mouseLeave: function (e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; }
+                mouseEnter: function (e, link) { if (link instanceof go.Link)
+                    link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+                mouseLeave: function (e, link) { if (link instanceof go.Link)
+                    link.findObject("HIGHLIGHT").stroke = "transparent"; }
             }, new go.Binding("points").makeTwoWay(), $(go.Shape, // the highlight shape, normally transparent
             { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }), $(go.Shape, // the link path shape
             { isPanelMain: true, stroke: "gray", strokeWidth: 2 }), $(go.Shape, // the arrowhead

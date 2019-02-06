@@ -41,9 +41,11 @@
         var button = /** @type {Panel} */ (go.GraphObject.make(go.Panel, 'Auto', {
             isActionable: true,
             enabledChanged: function (btn, enabled) {
-                var shape = btn.findObject('ButtonBorder');
-                if (shape !== null) {
-                    shape.fill = enabled ? btn['_buttonFillNormal'] : btn['_buttonFillDisabled'];
+                if (btn instanceof go.Panel) {
+                    var shape = btn.findObject('ButtonBorder');
+                    if (shape !== null) {
+                        shape.fill = enabled ? btn['_buttonFillNormal'] : btn['_buttonFillDisabled'];
+                    }
                 }
             },
             cursor: 'pointer',

@@ -99,8 +99,8 @@ export function init() {
       makePort('R', go.Spot.Right, true, true),
       makePort('B', go.Spot.Bottom, true, false),
       { // handle mouse enter/leave events to show/hide the ports
-        mouseEnter: (e: go.InputEvent, node: go.Node) => { showSmallPorts(node, true); },
-        mouseLeave: (e: go.InputEvent, node: go.Node) => { showSmallPorts(node, false); }
+        mouseEnter: (e: go.InputEvent, node: go.GraphObject) => { if (node instanceof go.Node) showSmallPorts(node, true); },
+        mouseLeave: (e: go.InputEvent, node: go.GraphObject) => { if (node instanceof go.Node) showSmallPorts(node, false); }
       }
     );
 

@@ -128,7 +128,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     if (this._centerGuidelineColor !== val) {
       this._centerGuidelineColor = val;
       (this.guidelineVcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
-      (this.guidelineVcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
+      (this.guidelineHcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
     }
   }
 
@@ -271,7 +271,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     area.inflate(distance, marginOfError + 1);
     const otherObjs = this.diagram.findObjectsIn(area,
       (obj) => obj.part as go.Part,
-      (p) => p instanceof go.Part && !part.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary,
+      (p) => p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary,
       true) as go.Set<go.Part>;
 
     let bestDiff: number = marginOfError;
@@ -383,7 +383,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     area.inflate(marginOfError + 1, distance);
     const otherObjs = this.diagram.findObjectsIn(area,
       (obj) => obj.part as go.Part,
-      (p) => p instanceof go.Part && !part.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary,
+      (p) => p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary,
       true) as go.Set<go.Part>;
 
     let bestDiff: number = marginOfError;

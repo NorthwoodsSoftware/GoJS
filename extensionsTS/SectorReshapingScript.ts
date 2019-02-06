@@ -20,7 +20,7 @@ export function init() {
   // install the SectorReshapingTool as a mouse-down tool
   myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool());
 
-  function makeSector(data: Object) {  // Geometry converter for the node's "LAMP" Shape
+  function makeSector(data: go.ObjectData) {  // Geometry converter for the node's "LAMP" Shape
     const radius = SectorReshapingTool.getRadius(data);
     const angle = SectorReshapingTool.getAngle(data);
     const sweep = SectorReshapingTool.getSweep(data);

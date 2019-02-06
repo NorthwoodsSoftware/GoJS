@@ -207,23 +207,23 @@ export class SectorReshapingTool extends go.Tool {
 
   // static functions for getting data
   /** @hidden @internal */
-  public static getRadius(data: Object): number {
-    let radius = (data as any)['radius'];
+  public static getRadius(data: go.ObjectData): number {
+    let radius = data['radius'];
     if (!(typeof radius === 'number') || isNaN(radius) || radius <= 0) radius = 50;
     return radius;
   }
 
   /** @hidden @internal */
-  public static getAngle(data: Object): number {
-    let angle = (data as any)['angle'];
+  public static getAngle(data: go.ObjectData): number {
+    let angle = data['angle'];
     if (!(typeof angle === 'number') || isNaN(angle)) angle = 0;
     else angle = angle % 360;
     return angle;
   }
 
   /** @hidden @internal */
-  public static getSweep(data: Object): number {
-    let sweep = (data as any)['sweep'];
+  public static getSweep(data: go.ObjectData): number {
+    let sweep = data['sweep'];
     if (!(typeof sweep === 'number') || isNaN(sweep)) sweep = 360;
     return sweep;
   }
