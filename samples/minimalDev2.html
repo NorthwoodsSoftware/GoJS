@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minimal GoJS Sample</title>
+<meta name="description" content="An almost minimal diagram using a very simple node template and the default link template." />
+<!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="../release/go.js"></script>
+
+<script id="code">
+  function init() {
+    var $ = go.GraphObject.make; // for conciseness in defining templates
+
+// a collection of colors
+var colors = {
+  blue: "#00B5CB",
+  orange: "#F47321",
+  green: "#7cba59",
+  gray: "#888",
+  lightgray: "#ccc",
+  white: "#F5F5F5",
+  red: "#e56767"
+};
+
+// The first Diagram showcases what the Nodes might look like "in action"
+var myDiagram = $(go.Diagram, "myDiagramDiv", {
+  initialContentAlignment: go.Spot.Center,
+  initialAutoScale: go.Diagram.Uniform, // zoom to fit
+  "undoManager.isEnabled": false,
+  allowVerticalScroll: false,
+  autoScrollRegion: 0,
+  "panningTool.isEnabled": false,
+  "dragSelectingTool.isEnabled": false,
+  "animationManager.isEnabled": false,
+  layout: $(go.LayeredDigraphLayout, { /* rightwards is default direction */})
+});
+
+// "icons" is defined in icons.js
+
+// A data binding conversion function. Given an icon name, return a Geometry.
+// This assumes that all icons want to be filled.
+// This caches the Geometry, because the Geometry may be shared by multiple Shapes.
+function geoFunc(geoname) {
+  return go.Geometry.parse('M0 0 L 35 35', true);
+  /*
+  var geo = icons[geoname];
+  if (geo === undefined) geo = "heart"; // use this for an unknown icon name
+  if (typeof geo === "string") {
+    geo = icons[geoname] = go.Geometry.parse(geo, true); // fill each geometry
+  }
+  return geo;*/
+}
+
+myDiagram.nodeTemplate = $(
+  go.Node,
+  "Vertical",
+  {
+    locationSpot: go.Spot.Center
+  },
+  $(
+    // Nested Panel
+    go.Panel,
+    "Auto",
+    $(
+      go.Shape,
+      "Circle",
+      {
+        portId: "",
+        fill: "lightcoral",
+        strokeWidth: 4,
+        stroke: colors["gray"],
+        width: 60,
+        height: 60,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides
+      },
+      new go.Binding("fill", "color")
+    ),
+    $(
+      go.Shape,
+      { margin: 3, fill: colors["white"], strokeWidth: 0 },
+      new go.Binding("geometry", "geo", geoFunc)
+    ),
+    // Each node has a tooltip that reveals the name of its icon
+    {
+      toolTip: $(
+        go.Adornment,
+        "Auto",
+        $(go.Shape, {
+          fill: "LightYellow",
+          stroke: colors["gray"],
+          strokeWidth: 2
+        }),
+        $(
+          go.TextBlock,
+          {
+            margin: 8,
+            stroke: colors["gray"],
+            font: "bold 16px sans-serif"
+          },
+          new go.Binding("text", "geo")
+        )
+      )
+    }
+  ),
+  $(
+    go.TextBlock,
+    { margin: 4, stroke: colors["gray"], font: "bold 14px sans-serif" },
+    new go.Binding("text", "label")
+  ),
+  $(
+    go.TextBlock,
+    { margin: 0, stroke: colors["gray"], font: "11px sans-serif" },
+    new go.Binding("text", "type")
+  )
+);
+
+// Define a Link template that routes orthogonally, with no arrowhead
+myDiagram.linkTemplate = $(
+  go.Link,
+  {
+    routing: go.Link.Orthogonal,
+    corner: 5,
+    toShortLength: -2,
+    fromShortLength: -2
+  },
+  $(go.Shape, { strokeWidth: 5, stroke: colors["gray"] })
+); // the link shape
+
+// Create the model data that will be represented by Nodes and Links
+myDiagram.model = new go.GraphLinksModel(
+  [
+    {
+      key: "cclprdsgsvip2.carnival.com",
+      geo: "feed",
+      label: "cclprdsgsvip2.carnival.com",
+      type: "Load Balancer",
+      color: "lightgreen"
+    },
+    {
+      key: "placeholder1",
+      geo: "tree",
+      label: "Placeholder",
+      type: "Switch",
+      color: "lightgrey"
+    },
+    {
+      key: "cclprdsgs1",
+      geo: "drive",
+      label: "cclprdsgs1",
+      type: "Web Server",
+      group: "Production Web Servers",
+      color: "lightgreen"
+    },
+    {
+      key: "cclprdsgs2",
+      geo: "drive",
+      label: "cclprdsgs2",
+      type: "Web Server",
+      group: "Production Web Servers",
+      color: "lightgreen"
+    },
+    {
+      key: "cclprdsgs3",
+      geo: "drive",
+      label: "cclprdsgs3",
+      type: "Web Server",
+      group: "Production Web Servers"
+    },
+    {
+      key: "cclprdsgs4",
+      geo: "drive",
+      label: "cclprdsgs4",
+      type: "Web Server",
+      group: "Production Web Servers",
+      color: "lightgreen"
+    },
+    { key: "Production Web Servers", isGroup: true },
+    {
+      key: "cclprdsgs1",
+      geo: "drive",
+      label: "cclbcpsgs1",
+      type: "Web Server",
+      group: "BCP Web Servers",
+      color: "lightgreen"
+    },
+    {
+      key: "cclprdsgs2",
+      geo: "drive",
+      label: "cclbcpsgs2",
+      type: "Web Server",
+      group: "BCP Web Servers",
+      color: "lightgreen"
+    },
+    {
+      key: "cclprdsgs3",
+      geo: "drive",
+      label: "cclbcpsgs3",
+      type: "Web Server",
+      group: "BCP Web Servers"
+    },
+    {
+      key: "cclprdsgs4",
+      geo: "drive",
+      label: "cclbcpsgs4",
+      type: "Web Server",
+      group: "BCP Web Servers"
+    },
+    { key: "BCP Web Servers", isGroup: true },
+    {
+      key: "cclprdgstdb1l1",
+      geo: "fire",
+      label: "cclprdgstdb1l1",
+      type: "Domains DB"
+    },
+    {
+      key: "UACS1",
+      geo: "fire",
+      label: "UACS1",
+      type: "Mainframe",
+      color: "orange"
+    }
+  ],
+  [
+    { from: "cclprdsgsvip2.carnival.com", to: "placeholder1" },
+    { from: "placeholder1", to: "Production Web Servers" },
+    { from: "placeholder1", to: "BCP Web Servers" },
+    { from: "Production Web Servers", to: "cclprdgstdb1l1" },
+    { from: "Production Web Servers", to: "UACS1" },
+    { from: "BCP Web Servers", to: "cclprdgstdb1l1" },
+    { from: "BCP Web Servers", to: "UACS1" }
+  ]
+);
+
+myDiagram.isReadOnly = true;
+myDiagram.allowSelect = false;
+
+
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+
+</div>
+</body>
+</html>

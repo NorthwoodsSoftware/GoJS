@@ -6,7 +6,7 @@
 /**
 * @constructor
 * @extends CommandHandler
-* @class 
+* @class
 * This CommandHandler class uses localStorage as the repository for the clipboard,
 * rather than an in-memory global variable.
 * It requires that the {@link Diagram#model} be serializable and deserializable using {@link Model#toJson} and {@link Model.fromJson}.
@@ -81,7 +81,7 @@ LocalStorageCommandHandler.prototype.pasteFromClipboard = function() {
       // recover the model from the clipboard rendering
       clipdiag.model = go.Model.fromJson(clipstr);
       // copy all the CLIPDIAG Parts into this Diagram
-      const all = new go.List().addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
+      var all = new go.List().addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
       var copymap = this.diagram.copyParts(all, this.diagram, false);
       // return a Set of the copied Parts
       return new go.Set(go.Part).addAll(copymap.iteratorValues);
