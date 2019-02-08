@@ -2,320 +2,182 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Canvases</title>
-<meta name="description" content="GoJS nodes containing charts rendered by different chart libraries." />
+<title>Various Charts in GoJS Nodes</title>
+<meta name="description" content="A diagram where each node contains a chart rendered by Chart.js." />
 <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
-<style type="text/css">
-  #optionsBox {
-    z-index: 300;
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    border: 1px solid #444;
-    background-color: #F5F5F5;
-    /*display: none;*/
-    box-shadow: 0 0 10px rgba( 0, 0, 0, .4 );
-    font-size: 12px;
-    font-family: sans-serif;
-    font-weight:bold;
-  }
-
-  #optionsBox ul {
-    list-style: none;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-  }
-
-  #optionsBox li {
-    position: relative;
-    min-width: 60px;
-  }
-  #optionsBox li:hover { background: #444; }
-
-  #optionsBox a {
-    color: #444;
-    display: inline-block;
-    padding: 6px;
-    text-decoration: none;
-  }
-  #optionsBox li:hover a { color: #EEE; }
-</style>
-
-<script src="assets/d3.js"></script>
-
-<!-- jQuery needed for peity -->
-<script src="../assets/js/jquery.min.js"></script>
-<script src="assets/peity.js"></script>
-
-<!-- All of these needed for WebGL demo -->
-<script src="assets/webGL/webgl-utils.js"></script>
-<script src="assets/webGL/webgl-debug.js"></script>
-<script src="assets/webGL/log.js"></script>
-<script src="assets/webGL/matrix4x4.js"></script>
-<script src="assets/webGL/OESVertexArrayObject.js"></script>
-<script src="assets/webGL/demo.js"></script>
-<script src="assets/webGL/angeles.js"></script>
-
 <script src="../release/go.js"></script>
 <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
 <script id="code">
-var myDiagram = null;
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
-function init() {
-  if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
 
-  // Internet Explorer 9 and 10 (and many mobile platforms) do not support WebGL,
-  // and in unsupported browsers no WebGL node will be displayed.
-  var gl = null;
-  canvas = document.createElement("canvas");
-  try { gl = canvas.getContext("webgl"); }
-  catch (x) { gl = null; }
-  if (gl == null) {
-      try { gl = canvas.getContext("experimental-webgl"); }
-      catch (x) { gl = null; }
-  }
-  if (gl) {
-    // Run the main() function in angeles.js, for WebGL:
-    main();
-  }
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        {
+          layout: $(go.TreeLayout)
+        });
 
-  // Make canvas pie and line graphs with Peity.js:
-  $("#peitypie").peity("pie", { diameter: 64 })
-  $("#peityline").peity("line", { width: 150, height: 32 })
-  // Get a reference to the newly created canvases
-  var pieCanvas = $(".peity")[0];
-  var lineCanvas = $(".peity")[1];
+    myDiagram.nodeTemplate =
+      $(go.Node, "Vertical",
+        $(go.Panel, "Auto",
+          $(go.Shape, { fill: "transparent" },
+            new go.Binding("stroke", "color")),
+          $(go.Picture,
+            { width: 300, height: 150, portId: "" },
+            new go.Binding("element", "datasets", makeLineChart))
+        ),
+        $(go.TextBlock,
+          { margin: 8 },
+          new go.Binding("text"))
+      );
 
-  // Note that we do not use $ here as an alias for go.GraphObject.make because we are using $ for jQuery
-  var GO = go.GraphObject.make;
+    // This Binding conversion function creates a Canvas element for a Picture
+    // that has a rendering of a line chart drawn by Chart.js.
+    function makeLineChart(datasets, picture) {
+      var canvases = document.getElementById("myCanvases");
 
-  myDiagram = GO(go.Diagram, "myDiagramDiv",
-                 {
-                   "undoManager.isEnabled": true  // enable undo & redo
-                 });
+      canv = document.createElement("canvas");
+      canv.width = canv.style.width = "600px";
+      canv.height = canv.style.height = "300px";
 
-  // Regular Nodes represent items to be put onto racks.
-  // Nodes are currently resizable, but if that is not desired, just set resizable to false.
+      // apparently Chart.js expects the Canvas to be in a DIV
+      var div = document.createElement("div");
+      div.style.position = "absolute";
+      div.appendChild(canv);
+      // add the DIV/Canvas to the DOM, temporarily
+      canvases.appendChild(div);
 
-  myDiagram.nodeTemplateMap.add("d3-stack-chart",
-    GO(go.Node, "Vertical",
-        GO(go.Picture, { name: "PIC", element: makeChart(10) }, new go.Binding("element", "elem")),
-        GO(go.TextBlock, "Stack Chart from d3.js (random data)")
-    ));
-
-  myDiagram.nodeTemplateMap.add("peity-pie-chart",
-    GO(go.Node, "Vertical",
-        GO(go.Picture, { name: "PIC", element: pieCanvas }, new go.Binding("element", "elem")),
-        GO(go.TextBlock, "Pie Chart from Peity.js")
-    ));
-
-  myDiagram.nodeTemplateMap.add("peity-line-chart",
-    GO(go.Node, "Vertical",
-        GO(go.Picture, { name: "PIC", element: lineCanvas }, new go.Binding("element", "elem")),
-        GO(go.TextBlock, "Line Chart from Peity.js")
-    ));
-
-  if (gl) {
-    myDiagram.nodeTemplateMap.add("webGL-node",
-      GO(go.Node, "Vertical",
-        GO(go.Picture,
-          { element: webGLCanvas, width: 200, height: 200 }),
-        GO(go.TextBlock, "WebGL node")
-        ));
-  }
-
-  // For the d3 stack charts we create a new random chart every time
-  myDiagram.addDiagramListener("ExternalObjectsDropped", function(event) {
-    // event.subject is the myDiagram.selection, the collection of just dropped Parts
-    event.subject.each(function(node) {
-      var picture = node.findObject("PIC");
-      if (picture !== null) {
-        switch (node.category) {
-          case "d3-stack-chart":
-            if (picture !== null) picture.element = makeChart();
-            break;
-          case "peity-pie-chart":
-            if (picture !== null) picture.element = makePie("pie");
-            break;
-          case "peity-line-chart":
-            if (picture !== null) picture.element = makePie("line");
-            break;
+      var config = {  // Chart.js configuration, including the DATASETS data from the model data
+        type: "line",
+        data: {
+          labels: ["January", "February", "March", "April", "May", "June", "July"],
+          datasets: datasets
+        },
+        options: {
+          animation: {
+            onComplete: function() {
+              var canvases = document.getElementById("myCanvases");
+              if (canvases) {  // remove the Canvas that was in the DOM for rendering
+                canvases.removeChild(div);
+              }
+            }
+          }
         }
-      }
+      };
+
+      new Chart(canv, config);
+
+      return canv;
+    }
+
+    myDiagram.model = $(go.GraphLinksModel,
+    {
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray:
+        [
+          { key: 1, text: "Alpha",
+            datasets: [{
+              label: "Random data",
+              borderColor: "black",
+              data: makeRandomPoints(8, 10)
+            }]
+          },
+          { key: 2, text: "Beta",
+            datasets: [{
+              label: "First dataset",
+              fill: false,
+              backgroundColor: "red",
+              borderColor: "red",
+              data: makeRandomPoints(8)
+            }, {
+              label: "Second dataset",
+              fill: false,
+              backgroundColor: "blue",
+              borderColor: "blue",
+              data: makeRandomPoints(8)
+            }]
+          },
+          { key: 3, text: "Gamma", color: "green",
+            datasets: [{
+              label: "some data",
+              fill: false,
+              backgroundColor: "green",
+              borderColor: "green",
+              data: makeRandomPoints()
+            }]
+          }
+        ],
+      linkDataArray: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 }
+        ]
     });
-  });
-
-
-  // initialize the Palette
-  myPalette = GO(go.Palette, "myPaletteDiv",
-                 {
-                   // limit the standard Palette.layout, a GridLayout, to one column
-                   "layout.wrappingColumn": 1,
-                   // don't allow scrolling/panning
-                   allowHorizontalScroll: false,
-                   allowVerticalScroll: false,
-                   // share the templates with the main Diagram
-                   nodeTemplateMap: myDiagram.nodeTemplateMap,
-                   // show everything smaller than normal
-                   initialScale: 0.5
-                 });
-
-  // specify the contents of the Palette
-  var nodes = [
-    { category: "d3-stack-chart"},
-    { category: "peity-pie-chart"},
-    { category: "peity-line-chart"}
-  ];
-  if (gl) nodes.push({ category: "webGL-node"});
-  myPalette.model.nodeDataArray = nodes;
-
-  document.getElementById("canvasDivButton").addEventListener("click", function(){
-    var c = document.getElementById("canvases");
-    c.style.display = (c.style.display === "none") ? "block" : "none";
-  }, false);
-}
-
-/*
-Charts made using d3.js - d3js.org and plain HTML canvases
-Original demo from: http://exposedata.com/canvas/stacked.html
-*/
-function makeChart(num) {
-  data_xy = [];
-  var sets = num || (Math.random()*10+1) | 0;
-  for (var i = 0; i < sets; i++) {
-    data_xy.push([]);
-    for (var j = 0; j < 120; j++) {
-      var e = data_xy[i];
-      e.push({
-        x: j,
-        y: Math.random()
-      });
-    }
   }
 
-  // use d3.layout to add y0 offsets
-  var data_stacked = d3.layout.stack().offset("silhouette")(data_xy);
-  var scale = d3.scale.category10();
-
-  // set up canvas
-  var canvas = document.createElement("canvas"); // document.getElementById("mycan");
-  var ctx = canvas.getContext("2d");
-  var w = 300;
-  var h = 100;
-  var my = d3.max(data_stacked, function(d) {
-          return d3.max(d, function(d) {
-              return d.y0 + d.y;
-          });
-      });
-  canvas.width = w;
-  canvas.height = h;
-  // For easier viewing in the DOM:
-  canvas.style.margin = "8px"
-  canvas.style.border = "1px solid gray";
-
-  // render data to canvas
-  var l = data_stacked.length;
-  for (var i = 0; i < l; i++) {
-    var row = data_stacked[i];
-    var ll = row.length;
-    ctx.fillStyle = scale(i);
-    for (var j = 0; j < ll; j++) {
-      var d = row[j];
-      ctx.fillRect(5*d.x, h-(d.y+d.y0)*h/my, 4, h*d.y/my);
+  function makeRandomPoints(num, range) {
+    if (!num) num = 20;
+    if (!range) range = 100;
+    var pts = [];
+    for (var i = 0; i < num; i++) {
+      pts.push(Math.random() * range);
     }
+    return pts;
   }
 
-  document.getElementById("canvases").appendChild(canvas);
-  return canvas;
-}
-
-
-/*
-Charts made using d3.js - d3js.org and plain HTML canvases
-Original demo from: http://exposedata.com/canvas/stacked.html
-*/
-function makePie(type) {
-  numPeityCharts++;
-  var span = document.createElement("span");
-  var id = "peity" + numPeityCharts;
-  span.id = id;
-
-  if (type === "pie") {
-    var slices = (Math.random()*4+2 | 0);
-    var spantext = "";
-    for (var i = 0; i < slices; i++) {
-      spantext += (Math.random()*15+1 | 0);
-      if (i !== slices-1) spantext += ","
-    }
-  } else {
-    var points = (Math.random()*8+4 | 0);
-    var spantext = "";
-    for (var i = 0; i < points; i++) {
-      spantext += (Math.random()*25-10 | 0);
-      if (i !== points-1) spantext += ","
-    }
+  function addNode() {
+    myDiagram.model.commit(function(m) {
+      var firstnode = myDiagram.nodes.first();
+      var color = go.Brush.darken(go.Brush.randomColor());
+      var data = {
+        text: "Node " + (myDiagram.nodes.count+1),
+        color: color,
+        datasets: [{
+            label: "some data",
+            fill: false,
+            backgroundColor: color,
+            borderColor: color,
+            data: makeRandomPoints()
+          }]
+      };
+      m.addNodeData(data);
+      if (firstnode) {
+        m.addLinkData({ from: firstnode.key, to: m.getKeyForNodeData(data) });
+        // new node starts off at same location as the parent node
+        var newnode = myDiagram.findNodeForData(data);
+        if (newnode) newnode.location = firstnode.location;
+      }
+    }, "added chart node");
   }
-
-  span.textContent = spantext;
-  document.getElementById("canvases").appendChild(span);
-
-  if (type === "pie") {
-    $("#" + id).peity("pie", { diameter: 64 });
-  } else {
-    $("#" + id).peity("line", { width: 150, height: 32 });
-  }
-
-  return $(".peity")[numPeityCharts];
-}
-
-var numPeityCharts = 1; // count starts from zero
-
 </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="myPaletteDiv" style="width: 130px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
-    <div id="myDiagramDiv" style="flex-grow: 1; height: 500px; border: solid 1px black"></div>
-  </div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <button onclick="addNode()">Add Chart</button>
   <p>
-    This sample shows how HTML Canvas Elements, such as those created from other libraries,
-    can be used inside of GoJS as <a>Picture</a>s.
-    The ability of Picture to use other Canvas elements allows you to use any Canvas
-    graphing or charting library in conjunction with GoJS.
+    This app demonstrates using a popular charting library, <a href="https://chartjs.org">Chart.js</a>,
+    for rendering charts within nodes.
   </p>
   <p>
-    All of the Nodes in this sample consist of a single <a>Picture</a>,
-    and that Picture's <a>Picture.element</a> property is set to a HTML Canvas Element
-    that has its image generated from a (non-GoJS) Canvas visualization library or WebGL demo.
-  </p>
-
-  <p>
-    The WebGL demo is from the
-    <a href="https://www.khronos.org/webgl/wiki/Demo_Repository">WebGL Demo Repository</a>.
-    The WebGL node is animated by calling myDiagram.redraw() every animation frame.
+    The data for each chart is stored on the node data in the model.  In this case the <code>datasets</code>
+    property value has the same properties that are expected by the Chart.js configuration, but you could
+    organize the data however you want.
   </p>
   <p>
-    <a href="http://handhelds.freshmeat.net/projects/sanogles">Original demo</a> by Jetro Lauha<br>
-    WebGL port by Kenneth Waters
+    The <code>makeLineChart</code> conversion function is used by a <a>Binding</a> on <a>Picture.element</a>
+    to generate a Canvas element that can be shown in the node.  Most of the implementation of that function
+    is specific to Chart.js.  The rendering requires the Canvas to be in the HTML DOM.  To avoid accumulating
+    resources, the configuration of the chart defines an <code>onComplete</code> event handler to
+    remove the Canvas element from the DOM.  That allows any future removal of the Node from the Diagram not
+    to leave an unused Canvas element behind.
   </p>
-  <p>
-    Internet Explorer 9 and 10 (and many mobile platforms) do not support WebGL,
-    and in unsupported browsers no WebGL node will be displayed.
-  </p>
-  <p>
-    The data behind the nodes is randomly generated.
-  </p>
-  <button id="canvasDivButton">Show Canvases</button>
-  <div id="canvases" style="border: 1px solid black; display: none;">
-    <!-- The Peity JavaScript library creates canvas elements from spans dynamically -->
-    <span id="peitypie">4, 7</span>
-    <span id="peityline">5,3,2,-1,-3,-2,2,3,5,2</span>
-    <canvas id="webGL" width="640" height="480"> </canvas>
-  </div>
+  <!-- myCanvases is used by makeLineChart, but need not be seen by the user -->
+  <div id="myCanvases" style="position:absolute; top:0px; left:0px; width:0px; height:0px; opacity:0"></div>
 </div>
 </body>
 </html>

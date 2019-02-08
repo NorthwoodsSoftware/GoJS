@@ -121,9 +121,15 @@ Panel.addPanelLayout('Graduated', new PanelLayoutGraduated());
 */
 
 export const go = {
-  // not classes:
-  'licenseKey': 'key',
-  'version': 'VERSION',
+  get licenseKey() {
+    return Diagram.licenseKey;
+  },
+  set licenseKey (licx) {
+    Diagram.licenseKey = licx;
+  },
+  get version() {
+    return Diagram.version;
+  },
 
   'Group': Group,
   'EnumValue': EnumValue,

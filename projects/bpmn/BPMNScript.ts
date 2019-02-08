@@ -162,7 +162,7 @@ export function init() {
 
   // define the appearance of tooltips, shared by various templates
   const tooltiptemplate =
-    $('ToolTip',
+    $<go.Adornment>('ToolTip',
       $(go.TextBlock,
         { margin: 3, editable: true },
         new go.Binding('text', '', function (data) {
@@ -233,7 +233,7 @@ export function init() {
   // ------------------------------------------  Activity Node Boundary Events   ----------------------------------------------
 
   const boundaryEventMenu =  // context menu for each boundaryEvent on Activity node
-    $('ContextMenu',
+    $<go.Adornment>('ContextMenu',
       $('ContextMenuButton',
         $(go.TextBlock, 'Remove event'),
         // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
@@ -295,7 +295,7 @@ export function init() {
   // ------------------------------------------  Activity Node contextMenu   ----------------------------------------------
 
   const activityNodeMenu =
-    $('ContextMenu',
+    $<go.Adornment>('ContextMenu',
       $('ContextMenuButton',
         $(go.TextBlock, 'Add Email Event', { margin: 3 }),
         { click: function (e: go.InputEvent, obj: go.GraphObject) { addActivityNodeBoundaryEvent(2, 5); } }),
@@ -791,8 +791,8 @@ export function init() {
           return !(part instanceof go.Group) ||
                  (part.category !== 'Pool' && part.category !== 'Lane');
         },
-        mouseDrop: function (e: go.InputEvent, grp: go.Group) {
-          if (grp.diagram === null) return;
+        mouseDrop: function (e: go.InputEvent, grp: go.GraphObject) {
+          if (!(grp instanceof go.Group) || grp.diagram === null) return;
           const ok = grp.addMembers(grp.diagram.selection, true);
           if (!ok) grp.diagram.currentTool.doCancel();
         },
@@ -859,7 +859,7 @@ export function init() {
   }
 
   const laneEventMenu =  // context menu for each lane
-    $('ContextMenu',
+    $<go.Adornment>('ContextMenu',
       $('ContextMenuButton',
         $(go.TextBlock, 'Add Lane'),
         // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
@@ -909,10 +909,10 @@ export function init() {
         computesBoundsIncludingLinks: false,  // to reduce occurrences of links going briefly outside the lane
         computesBoundsIncludingLocation: true,  // to support empty space at top-left corner of lane
         handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-        mouseDrop: function (e: go.InputEvent, grp: go.Group) {  // dropping a copy of some Nodes and Links onto this Group adds them to this Group
+        mouseDrop: function (e: go.InputEvent, grp: go.GraphObject) {  // dropping a copy of some Nodes and Links onto this Group adds them to this Group
           // don't allow drag-and-dropping a mix of regular Nodes and Groups
           if (!e.diagram.selection.any((n) => (n instanceof go.Group && n.category !== 'subprocess') || n.category === 'privateProcess')) {
-            if (grp.diagram === null) return;
+            if (!(grp instanceof go.Group) || grp.diagram === null) return;
             const ok = grp.addMembers(grp.diagram.selection, true);
             if (ok) {
               updateCrossLaneLinks(grp);
@@ -1064,7 +1064,7 @@ export function init() {
     $(go.Link,
       {
         contextMenu:
-        $('ContextMenu',
+        $<go.Adornment>('ContextMenu',
           $('ContextMenuButton',
             $(go.TextBlock, 'Default Flow'),
             // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
@@ -1231,7 +1231,7 @@ export function init() {
   // ------------------------------------------  Palette   ----------------------------------------------
 
   // Make sure the pipes are ordered by their key in the palette inventory
-  function keyCompare(a: go.Node, b: go.Node) {
+  function keyCompare(a: go.Part, b: go.Part) {
     const at = a.data.key;
     const bt = b.data.key;
     if (at < bt) return -1;

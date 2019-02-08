@@ -1,3 +1,4 @@
+/* Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved. */
 /**
  * Be sure to add any new samples to this list, to assets/js/goSamples.js, and to samples/all.html.
  */
@@ -810,10 +811,10 @@ arr.push([
 
 arr.push([
   "canvases",
-  "Canvases",
-  "Shows how HTML Canvas Elements, such as those created from other libraries, can be used inside of GoJS as Pictures.",
+  "Charts in Nodes",
+  "Shows how to render a data-driven chart within each Node using the Chart.js library.",
   "canvases",
-  ["palette", "html", "frameworks"]
+  ["charts", "palette", "html", "frameworks"]
 ]);
 
 arr.push([

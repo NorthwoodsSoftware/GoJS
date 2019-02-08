@@ -105,10 +105,6 @@ ToolManager.prototype.initializeStandardTools = function(this: ToolManager): voi
   this._replaceStandardTool('ClickSelecting', new ClickSelectingTool(), this.mouseUpTools);
 };
 
-Diagram.prototype.initializeStandardRenderers = function(this: Diagram): void {
-  this.addRenderer('SVG', new SVGSurface(this, root.document));
-};
-
 Panel.definePanelLayout('Position', new PanelLayoutPosition());
 Panel.definePanelLayout('Horizontal', new PanelLayoutHorizontal());
 Panel.definePanelLayout('Vertical', new PanelLayoutVertical());
@@ -127,9 +123,15 @@ Diagram.addPartManager(TreeModel.type, TreePartManager);
 
 
 export const go = {
-  // not classes:
-  'licenseKey': 'key',
-  'version': 'VERSION',
+  get licenseKey() {
+    return Diagram.licenseKey;
+  },
+  set licenseKey (licx) {
+    Diagram.licenseKey = licx;
+  },
+  get version() {
+    return Diagram.version;
+  },
 
   'Group': Group,
   'EnumValue': EnumValue,
