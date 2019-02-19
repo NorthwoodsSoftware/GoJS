@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.2 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.2<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.3 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.3<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class UndoManager</h1>
@@ -104,18 +104,21 @@
 			</section>
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
-					<p>UndoManager observes and records model and diagram changes in transactions and
+					<p>An UndoManager observes and records model and diagram changes in transactions and
 						supports undo/redo operations.
-						You will need to set the <a href="UndoManager.html#isEnabled">isEnabled</a> property to true
-					in order for users to perform an undo or a redo.</p>
+						You will need to set the <a href="UndoManager.html#isEnabled">isEnabled</a> property to true in order for
+					the UndoManager to record changes and for users to perform an undo or a redo.</p>
 					<p>Typically an operation will call <a href="UndoManager.html#startTransaction">startTransaction</a>,
-						make some changes to the <a href="Model.html">Model</a> or <a href="Diagram.html">Diagram</a>,
+						make some changes to the <a href="Model.html">Model</a> and/or <a href="Diagram.html">Diagram</a>,
 						and then call <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
 						Any <a href="ChangedEvent.html">ChangedEvent</a>s that occur will be recorded in a
 						<a href="Transaction.html">Transaction</a> object.
 						If for some reason you do not wish to complete the transaction
 						successfully, you can call <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> instead
 					of <a href="UndoManager.html#commitTransaction">commitTransaction</a>.</p>
+					<p>For convenience the <a href="Diagram.html#commit">Diagram.commit</a> and <a href="Model.html#commit">Model.commit</a> methods
+						execute a function within a transaction and then perform a commit,
+					or else a rollback upon an error.</p>
 					<p>The <a href="UndoManager.html#history">history</a> property is a list of <a href="Transaction.html">Transaction</a>s.
 						<a href="UndoManager.html#commitTransaction">commitTransaction</a> will add the <a href="UndoManager.html#currentTransaction">currentTransaction</a>
 						to the <a href="UndoManager.html#history">history</a> list.
@@ -149,10 +152,15 @@
 						<li><a href="UndoManager.html#history">history</a> holds only complete top-level transactions.</li>
 						<li><a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</li>
 						<li><a href="UndoManager.html#historyIndex">historyIndex</a> indicates which <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> is the next to be &quot;undone&quot;;
-						this is decremented by each undo and incremented by a redo.</li>
+						this is decremented by each undo and incremented by each redo.</li>
 						<li><a href="UndoManager.html#transactionToUndo">transactionToUndo</a> and <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> indicate which <a href="Transaction.html">Transaction</a> may be undone or redone next, if any.</li>
 						<li><a href="UndoManager.html#models">models</a> returns an iterator over all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</li>
 					</ul>
+					<p>A transaction may not be ongoing when replacing a <a href="Diagram.html#model">Diagram.model</a>,
+						because it would not make sense to be replacing the UndoManager (the <a href="Model.html#undoManager">Model.undoManager</a>)
+					while changes are being recorded.</p>
+					<p>Replacing a <a href="Diagram.html#model">Diagram.model</a> copies certain properties from the old UndoManager to the new one,
+					including <a href="UndoManager.html#isEnabled">isEnabled</a> and <a href="UndoManager.html#maxHistoryLength">maxHistoryLength</a>.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -332,9 +340,13 @@
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the maximum number of transactions that this undo manager will remember.
 									When a transaction is committed and the number exceeds this value,
-									the UndoManager will discard the oldest transaction(s).
+									the UndoManager will discard the oldest transaction(s) in order to meet this limit.
 									The initial value is 999.
-								A negative value is treated as if there were no limit.</p>
+									Any new value must be an integer.
+									A negative value is treated as if there were no limit.
+									A zero value will not remember any Transactions in the <a href="UndoManager.html#history">history</a>,
+									but will allow commits and rollbacks to occur normally,
+								including raising &quot;Transaction&quot; type <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
 								<p>This property is useful in helping limit the memory consumption of typical applications.
 									But this does not limit the number of <a href="ChangedEvent.html">ChangedEvent</a>s that are recorded,
 									because there may be an unlimited number of those within each <a href="Transaction.html">Transaction</a>.

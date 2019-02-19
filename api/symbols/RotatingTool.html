@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.2 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.2<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.3 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.3<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class RotatingTool</h1>
@@ -141,6 +141,17 @@
 					A successful rotation will result in a &quot;PartRotated&quot; <a href="DiagramEvent.html">DiagramEvent</a> and a &quot;Rotating&quot; transaction.</p>
 					<p><p class="boxread">
 						For customizing the RotatingTool, see <a href="../../intro/tools.html#RotatingTool">Introduction to the RotatingTool</a>.</p>
+						<p>If you want to programmatically start a user&#39;s rotating of the <a href="Part.html#rotateObject">Part.rotateObject</a> of an existing selected node,
+						you can set the <a href="RotatingTool.html#handle">handle</a> property to the rotate handle and then start and activate the tool.</p>
+						<pre><code class="hljs js">  <span class="hljs-keyword">var</span> node = ...;
+  myDiagram.select(node);
+  <span class="hljs-keyword">var</span> adorn = node.findAdornment(<span class="hljs-string">"Rotating"</span>);
+  <span class="hljs-keyword">var</span> tool = myDiagram.toolManager.rotatingTool;
+  <span class="hljs-comment">// specify the rotation handle of the "Rotating" Adornment of the selected node</span>
+  tool.handle = adorn.elt(<span class="hljs-number">0</span>);
+  myDiagram.currentTool = tool;  <span class="hljs-comment">// starts the RotatingTool</span>
+  tool.doActivate();             <span class="hljs-comment">// activates the RotatingTool</span>
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -157,7 +168,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RotatingTool.html#adornedObject" class="tsd-kind-icon">adorned<wbr>Object</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="RotatingTool.html#handle" class="tsd-kind-icon">handle</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RotatingTool.html#handle" class="tsd-kind-icon">handle</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RotatingTool.html#handleAngle" class="tsd-kind-icon">handle<wbr>Angle</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RotatingTool.html#handleArchetype" class="tsd-kind-icon">handle<wbr>Archetype</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RotatingTool.html#handleDistance" class="tsd-kind-icon">handle<wbr>Distance</a></li>
@@ -225,10 +236,9 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
 					<a name="handle" class="tsd-anchor"></a>
 					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
 						handle
 					<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
 					<ul class="tsd-descriptions">
@@ -237,6 +247,8 @@
 								<p>This read-only property returns the <a href="GraphObject.html">GraphObject</a> that is the tool handle being dragged by the user.
 									This will be contained by an <a href="Adornment.html">Adornment</a> whose category is &quot;RotatingTool&quot;.
 								Its <a href="Adornment.html#adornedObject">Adornment.adornedObject</a> is the same as the <a href="RotatingTool.html#adornedObject">adornedObject</a>.</p>
+								<p>This property is also settable, but should only be set either within an override of <a href="RotatingTool.html#doActivate">doActivate</a>
+								or prior to calling <a href="RotatingTool.html#doActivate">doActivate</a>.</p>
 							</div>
 						</li>
 					</ul>
@@ -490,6 +502,12 @@
 							<div class="tsd-comment tsd-typography">
 								<p>Capture the mouse, remember the original <a href="GraphObject.html#angle">GraphObject.angle</a>,
 								and start a transaction.</p>
+								<p>Normally when this method is called the value of <a href="RotatingTool.html#handle">handle</a> will be null,
+									resulting in a call to <a href="Tool.html#findToolHandleAt">Tool.findToolHandleAt</a> to find a &quot;Rotating&quot; tool handle,
+									which is then remembered as the value of <a href="RotatingTool.html#handle">handle</a>.
+									If when this method is called the value of <a href="RotatingTool.html#handle">handle</a> is already set,
+									then there is no need to call <a href="Tool.html#findToolHandleAt">Tool.findToolHandleAt</a>,
+								because the programmer has already set up which rotate handle they want the user to be rotating.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -525,7 +543,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Stop the current transaction and release the mouse.</p>
+								<p>Stop the current transaction, forget the <a href="RotatingTool.html#handle">handle</a> and <a href="RotatingTool.html#adornedObject">adornedObject</a>, and release the mouse.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -652,7 +670,7 @@
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="RotatingTool.html#adornedObject" class="tsd-kind-icon">adorned<wbr>Object</a>
 							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="RotatingTool.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">

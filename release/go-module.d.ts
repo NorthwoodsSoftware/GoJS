@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.2
+ * Type definitions for GoJS v2.0.3
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -3906,19 +3906,23 @@ export class Transaction {
     isComplete: boolean;
 }
 /**
- * UndoManager observes and records model and diagram changes in transactions and
+ * An UndoManager observes and records model and diagram changes in transactions and
  * supports undo/redo operations.
- * You will need to set the #isEnabled property to true
- * in order for users to perform an undo or a redo.
+ * You will need to set the #isEnabled property to true in order for
+ * the UndoManager to record changes and for users to perform an undo or a redo.
  *
  * Typically an operation will call #startTransaction,
- * make some changes to the Model or Diagram,
+ * make some changes to the Model and/or Diagram,
  * and then call #commitTransaction.
  * Any ChangedEvents that occur will be recorded in a
  * Transaction object.
  * If for some reason you do not wish to complete the transaction
  * successfully, you can call #rollbackTransaction instead
  * of #commitTransaction.
+ *
+ * For convenience the Diagram#commit and Model#commit methods
+ * execute a function within a transaction and then perform a commit,
+ * or else a rollback upon an error.
  *
  * The #history property is a list of Transactions.
  * #commitTransaction will add the #currentTransaction
@@ -3956,9 +3960,16 @@ export class Transaction {
  *   - #history holds only complete top-level transactions.
  *   - #isUndoingRedoing is true during a call to #undo or #redo.
  *   - #historyIndex indicates which Transaction in the #history is the next to be "undone";
- *     this is decremented by each undo and incremented by a redo.
+ *     this is decremented by each undo and incremented by each redo.
  *   - #transactionToUndo and #transactionToRedo indicate which Transaction may be undone or redone next, if any.
  *   - #models returns an iterator over all of the Models that this UndoManager is handling.
+ *
+ * A transaction may not be ongoing when replacing a Diagram#model,
+ * because it would not make sense to be replacing the UndoManager (the Model#undoManager)
+ * while changes are being recorded.
+ *
+ * Replacing a Diagram#model copies certain properties from the old UndoManager to the new one,
+ * including #isEnabled and #maxHistoryLength.
  * @unrestricted
  * @category Model
  */
@@ -3976,6 +3987,14 @@ export class UndoManager {
      * You should not call this method during a transaction.
      */
     clear(): void;
+    /**
+     * @expose
+     * Undocumented.
+     * Copy persistent properties from an old UndoManager to this new one.
+     * This is called by the Diagram#model property setter.
+     * @param old
+     */
+    copyProperties(old: UndoManager): void;
     /**
      * Make sure this UndoManager knows about a Model for which
      * it may receive ChangedEvents when the given Model is changed.
@@ -4164,9 +4183,13 @@ export class UndoManager {
     /**
      * Gets or sets the maximum number of transactions that this undo manager will remember.
      * When a transaction is committed and the number exceeds this value,
-     * the UndoManager will discard the oldest transaction(s).
+     * the UndoManager will discard the oldest transaction(s) in order to meet this limit.
      * The initial value is 999.
+     * Any new value must be an integer.
      * A negative value is treated as if there were no limit.
+     * A zero value will not remember any Transactions in the #history,
+     * but will allow commits and rollbacks to occur normally,
+     * including raising "Transaction" type ChangedEvents.
      *
      * This property is useful in helping limit the memory consumption of typical applications.
      * But this does not limit the number of ChangedEvents that are recorded,
@@ -5381,13 +5404,15 @@ export class ToolManager extends Tool {
  * If the drag is successful, it raises the "SelectionMoved" or "SelectionCopied" DiagramEvent
  * and produces a "Move" or a "Copy" transaction.
  *
- * If you want to programmatically start a new user mouse-gesture to drag a particular existing node,
- * you can set the #currentPart property and then start and activate the tool.
+ * If you want to programmatically start a new user's dragging of a particular existing node,
+ * you can make sure that node is selected, set the #currentPart property, and then start and activate the tool.
  * ```js
+ *   var node = ...;
+ *   myDiagram.select(node);        // in this case the only selected node
  *   var tool = myDiagram.toolManager.draggingTool;
- *   tool.currentPart = ...;
- *   myDiagram.currentTool = tool;
- *   tool.doActivate();
+ *   tool.currentPart = node;       // the DraggingTool will not call standardMouseSelect
+ *   myDiagram.currentTool = tool;  // starts the DraggingTool
+ *   tool.doActivate();             // activates the DraggingTool
  * ```
  * @extends Tool
  * @unrestricted
@@ -5527,6 +5552,7 @@ export class DraggingTool extends Tool {
     dragsTree: boolean;
     /**
      * Gets the Part found at the mouse point.
+     * This is normally set by a call to #standardMouseSelect.
      */
     currentPart: Part | null;
     /**
@@ -5598,6 +5624,13 @@ export class DraggingTool extends Tool {
      * This starts a "Drag" transaction.
      * Depending on what happens, the transaction may be finished as a "Move" or a "Copy"
      * transaction, or it may be rolled-back if the tool is cancelled.
+     *
+     * Normally when this method is called the value of #currentPart will be null,
+     * in which case this will call Tool#standardMouseSelect which will set #currentPart.
+     * But if when this method is called the value of #currentPart has already been set
+     * because the programmer wants the user to start dragging that Part,
+     * then this method will not need to call Tool#standardMouseSelect because
+     * the Part(s) to be selected and dragged have already been determined by the caller.
      */
     doActivate(): void;
     /**
@@ -6102,7 +6135,7 @@ export abstract class LinkingBaseTool extends Tool {
  * A successful linking will result in a "LinkDrawn" DiagramEvent and a "Linking" transaction.
  *
  * If you want to programmatically start a new user mouse-gesture to draw a new link
- * from a given GraphObject that may be a "port" or may be within
+ * from a given GraphObject that either is a "port" or may be within
  * the visual tree of a "port", set the #startObject property
  * to let #findLinkablePort find the real "port" element.
  * Then start and activate this tool:
@@ -6314,6 +6347,17 @@ export class LinkingTool extends LinkingBaseTool {
  *
  * This tool conducts a transaction while the tool is active.
  * A successful relinking will result in a "LinkRelinked" DiagramEvent and a "Relinking" transaction.
+ *
+ * If you want to programmatically start a new user's relinking of a Link,
+ * you can set the #handle property to the specific "RelinkFrom" or "RelinkTo" handle and
+ * then start and activate the tool.
+ * ```js
+ *   var tool = myDiagram.toolManager.relinkingTool;
+ *   tool.originalLink = ...;   // specify which Link to have the user reconnect
+ *   tool.isForwards = true;    // specify which end of the Link to reconnect
+ *   myDiagram.currentTool = tool;  // starts the RelinkingTool
+ *   tool.doActivate();             // activates the RelinkingTool
+ * ```
  * @extends LinkingBaseTool
  * @unrestricted
  * @category Tool
@@ -6373,11 +6417,14 @@ export class RelinkingTool extends LinkingBaseTool {
      */
     toHandleArchetype: GraphObject | null;
     /**
-     * This read-only property returns the GraphObject that is the tool handle being dragged by the user.
+     * Returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "RelinkFrom" or "RelinkTo".
      * Its Adornment#adornedPart is the same as the #originalLink.
+     *
+     * This property is also settable, but should only be set either within an override of #doActivate
+     * or prior to calling #doActivate.
      */
-    readonly handle: GraphObject | null;
+    handle: GraphObject | null;
     /**
      * This tool can run when the diagram allows relinking, the model is modifiable,
      * and there is a relink handle at the mouse-down point.
@@ -6393,9 +6440,19 @@ export class RelinkingTool extends LinkingBaseTool {
      * looking for either the "RelinkFrom" adornment or the "RelinkTo" adornment,
      * saving the result in #handle.
      *
+     * Normally when this method is called the value of LinkingBaseTool#originalLink and #handle will be null,
+     * resulting in a call to Tool#findToolHandleAt to find a "RelinkFrom" or "RelinkTo" tool handle,
+     * which is then remembered as the value of #handle.
+     * If when this method is called the value of #handle is already set,
+     * then there is no need to call Tool#findToolHandleAt,
+     * because the programmer has already set up which relinking handle they want the user to be relinking.
+     * Finding a handle is not necessary if LinkingBaseTool#originalLink and
+     * #isForwards have been set before calling this method.
+     *
      * This starts a transaction, captures the mouse, and sets the cursor.
      *
-     * The value of #isForwards is set depending on the category of the relink handle found.
+     * If LinkingBaseTool#originalLink or #handle was not set beforehand,
+     * the value of #isForwards is set depending on the category of the relink handle found.
      * The LinkingBaseTool#originalLink property and various
      * "Original..." port and node properties are set too.
      * The temporary nodes and temporary link are also initialized.
@@ -6476,6 +6533,7 @@ export class RelinkingTool extends LinkingBaseTool {
  * that includes some number of reshape handles.
  * This tool conducts a transaction while the tool is active.
  * A successful reshaping will result in a "LinkReshaped" DiagramEvent and a "LinkReshaping" transaction.
+ *
  * <p class="boxread">
  * For a general discussion of link routing, see:
  * <a href="../../intro/links.html">Introduction to Links</a>,
@@ -6591,11 +6649,12 @@ export class LinkReshapingTool extends Tool {
      */
     midHandleArchetype: GraphObject | null;
     /**
-     * This read-only property returns the GraphObject that is the tool handle being dragged by the user.
+     * Returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "LinkReshaping".
      * Its Adornment#adornedPart is the same as the #adornedLink.
+     * This is normally set by #doActivate, remembering the result of the call to Tool#findToolHandleAt.
      */
-    readonly handle: GraphObject | null;
+    handle: GraphObject | null;
     /**
      * This read-only property returns the Link that is being routed manually.
      */
@@ -6722,6 +6781,19 @@ export class LinkReshapingTool extends Tool {
  * <p class="boxread">
  * For a general discussion of the sizing of objects, see: <a href="../../intro/sizing.html">Introduction to the sizing of GraphObjects</a>.
  * For customizing the ResizingTool, see <a href="../../intro/tools.html#ResizingTool">Introduction to the ResizingTool</a>.
+ *
+ * If you want to programmatically start a user's resizing of the Part#resizeObject of an existing selected node,
+ * you can set the #handle property to the specific resize handle and then start and activate the tool.
+ * ```js
+ *   var node = ...;
+ *   myDiagram.select(node);
+ *   var adorn = node.findAdornment("Resizing");
+ *   var tool = myDiagram.toolManager.resizingTool;
+ *   // specify which resize handle of the "Resizing" Adornment of the selected node
+ *   tool.handle = adorn.elt(...);
+ *   myDiagram.currentTool = tool;  // starts the ResizingTool
+ *   tool.doActivate();             // activates the ResizingTool
+ * ```
  * @extends Tool
  * @unrestricted
  * @category Tool
@@ -6788,11 +6860,15 @@ export class ResizingTool extends Tool {
      */
     handleArchetype: GraphObject | null;
     /**
-     * This read-only property returns the GraphObject that is the tool handle being dragged by the user.
+     * Returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "ResizingTool".
      * Its Adornment#adornedObject is the same as the #adornedObject.
+     * This is normally set by #doActivate, remembering the result of the call to Tool#findToolHandleAt.
+     *
+     * This property is also settable, but should only be set either within an override of #doActivate
+     * or prior to calling #doActivate.
      */
-    readonly handle: GraphObject | null;
+    handle: GraphObject | null;
     /**
      * Gets the GraphObject that is being resized.
      * This may be the same object as the selected Part or it may be contained within that Part.
@@ -6818,11 +6894,16 @@ export class ResizingTool extends Tool {
      * save the results of calling #computeMinSize, #computeMaxSize, and #computeCellSize,
      * capture the mouse, and start a transaction.
      *
-     * If the call to Tool#findToolHandleAt finds no "Resizing" tool handle, this method returns without activating this tool.
+     * Normally when this method is called the value of #handle will be null,
+     * resulting in a call to Tool#findToolHandleAt to find a "Resizing" tool handle,
+     * which is then remembered as the value of #handle.
+     * If when this method is called the value of #handle is already set,
+     * then there is no need to call Tool#findToolHandleAt,
+     * because the programmer has already set up which resize handle they want the user to be resizing.
      */
     doActivate(): void;
     /**
-     * Stop the current transaction and release the mouse.
+     * Stop the current transaction, forget the #handle and #adornedObject, and release the mouse.
      */
     doDeactivate(): void;
     /**
@@ -7020,6 +7101,19 @@ export class ResizingTool extends Tool {
  * A successful rotation will result in a "PartRotated" DiagramEvent and a "Rotating" transaction.
  * <p class="boxread">
  * For customizing the RotatingTool, see <a href="../../intro/tools.html#RotatingTool">Introduction to the RotatingTool</a>.
+ *
+ * If you want to programmatically start a user's rotating of the Part#rotateObject of an existing selected node,
+ * you can set the #handle property to the rotate handle and then start and activate the tool.
+ * ```js
+ *   var node = ...;
+ *   myDiagram.select(node);
+ *   var adorn = node.findAdornment("Rotating");
+ *   var tool = myDiagram.toolManager.rotatingTool;
+ *   // specify the rotation handle of the "Rotating" Adornment of the selected node
+ *   tool.handle = adorn.elt(0);
+ *   myDiagram.currentTool = tool;  // starts the RotatingTool
+ *   tool.doActivate();             // activates the RotatingTool
+ * ```
  * @extends Tool
  * @unrestricted
  * @category Tool
@@ -7068,8 +7162,11 @@ export class RotatingTool extends Tool {
      * This read-only property returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "RotatingTool".
      * Its Adornment#adornedObject is the same as the #adornedObject.
+     *
+     * This property is also settable, but should only be set either within an override of #doActivate
+     * or prior to calling #doActivate.
      */
-    readonly handle: GraphObject | null;
+    handle: GraphObject | null;
     /**
      * Gets the GraphObject that is being rotated.
      * This may be the same object as the selected Part or it may be contained within that Part.
@@ -7093,6 +7190,13 @@ export class RotatingTool extends Tool {
     /**
      * Capture the mouse, remember the original GraphObject#angle,
      * and start a transaction.
+     *
+     * Normally when this method is called the value of #handle will be null,
+     * resulting in a call to Tool#findToolHandleAt to find a "Rotating" tool handle,
+     * which is then remembered as the value of #handle.
+     * If when this method is called the value of #handle is already set,
+     * then there is no need to call Tool#findToolHandleAt,
+     * because the programmer has already set up which rotate handle they want the user to be rotating.
      */
     doActivate(): void;
     /**
@@ -7105,7 +7209,7 @@ export class RotatingTool extends Tool {
      */
     computeRotationPoint(obj: GraphObject): Point;
     /**
-     * Stop the current transaction and release the mouse.
+     * Stop the current transaction, forget the #handle and #adornedObject, and release the mouse.
      */
     doDeactivate(): void;
     /**
@@ -7226,6 +7330,9 @@ export class RotatingTool extends Tool {
  * An example customization of this tool is shown in the <a href="../../extensions/TreeMap.html">Tree Map</a> sample,
  * where the Tool#standardMouseSelect method is overridden to permit the user to cycle through
  * the chain of containing groups, changing the selection on each click to the next containing group.
+ *
+ * If you want to programmatically select a Part, you can set Part#isSelected or call Diagram#select.
+ * If you want to know which Part is at a particular point, you can call Diagram#findPartAt.
  * @extends Tool
  * @unrestricted
  * @category Tool
@@ -7326,6 +7433,8 @@ export class ActionTool extends Tool {
  *
  * This tool does not utilize any Adornments or tool handles.
  * This tool does conduct a transaction when inserting the new node.
+ *
+ * If you want to programmatically create a Part, you can call #insertPart.
  * @extends Tool
  * @unrestricted
  * @category Tool
@@ -7423,6 +7532,9 @@ export class ClickCreatingTool extends Tool {
  * <a href="../../extensions/RealtimeDragSelecting.html">Realtime Drag Selecting Tool</a>,
  * <a href="../../extensions/DragCreating.html">Drag Creating Tool</a>, and
  * <a href="../../extensions/DragZooming.html">Drag Zooming Tool</a>.
+ *
+ * If you want to programmatically select some Parts in a rectangular area,
+ * you can call #selectInRect.
  * @extends Tool
  * @unrestricted
  * @category Tool
@@ -7545,6 +7657,9 @@ export class DragSelectingTool extends Tool {
  *
  * This tool does not utilize any Adornments or tool handles.
  * This tool does not modify the model or conduct any transaction.
+ *
+ * If you want to programmatically "pan" the diagram, you can just set Diagram#position
+ * or call methods such as Diagram#scroll, Diagram#scrollToRect, or Diagram#centerRect.
  * @extends Tool
  * @unrestricted
  * @category Tool
@@ -8240,13 +8355,16 @@ export class AnimationManager {
     /**
      * Undocumented
      */
-    prepareAutomaticAnimation(reason: string, settings?: {
-        reason?: string;
+    prepareAutomaticAnimation(reason: string, options?: {
+        onChange?: () => void;
+        onComplete?: () => void;
+        easing?: (a: number, b: number, c: number, d: number) => number;
+        duration?: number;
     }): void;
     /**
      * Undocumented.
      */
-    prepareAnimation(reason: string, settings?: {
+    prepareAnimation(reason: string, options?: {
         reason?: string;
     }): void;
     /**
@@ -10314,6 +10432,9 @@ export class Diagram {
      * Replacing or re-setting the model will re-initialize the Diagram, taking in to account
      * #initialPosition, #initialScale, #initialAutoScale, and #initialContentAlignment.
      * It will also set #isModified to false.
+     *
+     * The default behavior when replacing the model is to copy a few UndoManager properties to the
+     * new UndoManager, including UndoManager#isEnabled and UndoManager#maxHistoryLength.
      *
      * It is an error to replace the Diagram.model while a transaction is in progress.
      */
@@ -14239,12 +14360,12 @@ export abstract class GraphObject {
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition) : never) | Binding | EnumValue | PanelLayout | Array<string | (Partial<InstanceType<CT>> & {
+    } : {})) | (InstanceType<CT> extends GraphObject ? Binding : never) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition | PanelLayout) : never) | (InstanceType<CT> extends RowColumnDefinition ? Binding : never) | (InstanceType<CT> extends Geometry ? PathFigure : never) | (InstanceType<CT> extends PathFigure ? PathSegment : never) | EnumValue | Array<string | (Partial<InstanceType<CT>> & {
         [p: string]: any;
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition) : never) | Binding | EnumValue | PanelLayout>>): InstanceType<CT>;
+    } : {})) | (InstanceType<CT> extends GraphObject ? Binding : never) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition | PanelLayout) : never) | (InstanceType<CT> extends RowColumnDefinition ? Binding : never) | (InstanceType<CT> extends Geometry ? PathFigure : never) | (InstanceType<CT> extends PathFigure ? PathSegment : never) | EnumValue>>): InstanceType<CT>;
     /**
      * This static function defines a named function that GraphObject.make can use to build objects.
      * Once this is called one can use the name as the first argument for GraphObject.make.

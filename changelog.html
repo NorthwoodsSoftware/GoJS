@@ -104,13 +104,34 @@
   </p>
 
 
+  <h4>Changes for 2.0.3</h4>
+  <ul>
+    <li>
+      Improved data binding of tooltips and context menus for item panels to avoid temporarily setting <a>Panel.data</a> incorrectly.
+    </li>
+    <li>
+      Enhanced the meaning of <a>UndoManager.maxHistoryLength</a> so that a value of zero causes no <a>Transaction</a>s to be
+      remembered in the <a>UndoManager.history</a> but allows commits and rollbacks to occur normally.
+    </li>
+    <li>
+      Fixed a bug from 2.0.1 with <a>Diagram.makeSVG</a> incorrectly re-using SVG elements.
+    </li>
+    <li>
+      Fixed a bug from 2.0.0 with <a>Diagram.makeSVG</a> when drawing dashed paths.
+    </li>
+    <li>
+      Deployment fixes for electron apps.
+    </li>
+  </ul>
+
+
   <h4>Changes for 2.0.2</h4>
   <ul>
     <li>
       Updated the <a href="samples/canvases.html">Charts in Nodes sample</a> to use <a href="https://chartjs.org">Chart.js</a>.
     </li>
     <li>
-      Deployment fixes.
+      Deployment fixes. This release should resolve <em>"Cannot use 'in' operator to search for 'go' in undefined"</em> errors in some browser contexts.
     </li>
   </ul>
 
@@ -166,7 +187,7 @@
   <ul>
     <li>
       <b>Build GoJS from TypeScript Source:</b>
-    <p>
+      <p>
         GoJS can be compiled from the TypeScript source files.
         Dynamically building GoJS this way allows unused modules/code to be removed.
         See the new Intro page on <a href="intro/source.html">Building GoJS from TypeScript sources</a>
@@ -209,29 +230,29 @@
       <p>See the note about <a>Diagram.viewSize</a> below.</p>
     </li>
     <li>
-        <b>Reworked part-moving and added a new class: <a>DraggingOptions</a>:</b>
-        <p>
-          <a>DraggingOptions</a> holds properties for Part-moving operations, and
-          <a>DraggingInfo</a> holds relative positions of dragged objects, for use in snapping and cancellation.
-          The <a>DraggingTool</a> has an instance of the DraggingOptions class, and
-          setting properties like <a>DraggingTool.isGridSnapEnabled</a> modifies this instance.
-          If the Diagram has no DraggingTool associated with it, it falls back to the default properties of the class.
-          You can create your own to pass to part-moving methods.
-          Typically you do not need to create an instance of this class.
-        </p>
-        <p>
-          Moving parts has been reworked. <a>Diagram.moveParts</a>, <a>Diagram.computeMove</a>, and
-          <a>CommandHandler.computeEffectiveCollection</a> now accept
-          an additional argument for a <a>DraggingOptions</a> instance.
-          This allows fine-grained control over programmatic moving of nodes.
-          Typically, these options are supplied by the <a>DraggingTool.dragOptions</a> instance.
-        </p>
-        <p>
-          <a>DraggingTool.computeMove</a> functionality has been moved to <a>Diagram.computeMove</a>,
-          and <a>DraggingTool.computeEffectiveCollection</a> functionality has been moved to <a>CommandHandler.computeEffectiveCollection</a>.
-          These methods remain on their original class for compatibility when overriding,
-          but the main functionality has been moved to the Diagram class for tree-shaking reasons.
-        </p>
+      <b>Reworked part-moving and added a new class: <a>DraggingOptions</a>:</b>
+      <p>
+        <a>DraggingOptions</a> holds properties for Part-moving operations, and
+        <a>DraggingInfo</a> holds relative positions of dragged objects, for use in snapping and cancellation.
+        The <a>DraggingTool</a> has an instance of the DraggingOptions class, and
+        setting properties like <a>DraggingTool.isGridSnapEnabled</a> modifies this instance.
+        If the Diagram has no DraggingTool associated with it, it falls back to the default properties of the class.
+        You can create your own to pass to part-moving methods.
+        Typically you do not need to create an instance of this class.
+      </p>
+      <p>
+        Moving parts has been reworked. <a>Diagram.moveParts</a>, <a>Diagram.computeMove</a>, and
+        <a>CommandHandler.computeEffectiveCollection</a> now accept
+        an additional argument for a <a>DraggingOptions</a> instance.
+        This allows fine-grained control over programmatic moving of nodes.
+        Typically, these options are supplied by the <a>DraggingTool.dragOptions</a> instance.
+      </p>
+      <p>
+        <a>DraggingTool.computeMove</a> functionality has been moved to <a>Diagram.computeMove</a>,
+        and <a>DraggingTool.computeEffectiveCollection</a> functionality has been moved to <a>CommandHandler.computeEffectiveCollection</a>.
+        These methods remain on their original class for compatibility when overriding,
+        but the main functionality has been moved to the Diagram class for tree-shaking reasons.
+      </p>
     </li>
     <li>
       <b>Diagram and Layer:</b>
@@ -419,39 +440,39 @@
       </ul>
     </li>
     <li>
-        <b>Samples and Extensions:</b>
-        <ul>
-          <li>
-            Many samples have been translated into TypeScript, in the <code>samplesTS</code> folder in the kit.
-          </li>
-          <li>
-            Added <a href="samples/panelLayout.html">PanelLayout</a>, demonstrating <a>Panel,definePanelLayout</a>.
-          </li>
-          <li>
-            Added <a href="extensionsTS/PackedLayout.html">extensionsTS/PackedLayout</a>,
-            which demonstrates a custom layout for packing nodes closely into a rectangular or elliptical area.
-            (Source is TS only)
-          </li>
-          <li>
-            Added <a href="samples/wordcloud.html">Wordcloud</a>, which demonstrates a wordcloud using a PackedLayout.
-          </li>
-          <li>
-            Added <a href="samplesTS/minimalModule.html">samplesTS/minimalModule</a>,
-            which demonstrates using GoJS as an ES6 module.
-            (Source is TS only)
-          </li>
-          <li>
-            Added <a href="extensionsTS/OverviewResizing.html">OverviewResizing</a>,
-            which demonstrates the OverviewResizingTool, used for resizing an <a>Overview.box</a>.
-            This has replaced functionality that used to be built-in.
-            It is defined in both the "extension" and "extensionsTS" folders.
-          </li>
-          <li>
-            Added <a href="extensionsTS/ZoomSlider.html">extensionsTS/ZoomSlider</a>,
-            which demonstrates an HTML slider that can zoom in/out of a GoJS diagram.
-          </li>
-        </ul>
-      </li>
+      <b>Samples and Extensions:</b>
+      <ul>
+        <li>
+          Many samples have been translated into TypeScript, in the <code>samplesTS</code> folder in the kit.
+        </li>
+        <li>
+          Added <a href="samples/panelLayout.html">PanelLayout</a>, demonstrating <a>Panel,definePanelLayout</a>.
+        </li>
+        <li>
+          Added <a href="extensionsTS/PackedLayout.html">extensionsTS/PackedLayout</a>,
+          which demonstrates a custom layout for packing nodes closely into a rectangular or elliptical area.
+          (Source is TS only)
+        </li>
+        <li>
+          Added <a href="samples/wordcloud.html">Wordcloud</a>, which demonstrates a wordcloud using a PackedLayout.
+        </li>
+        <li>
+          Added <a href="samplesTS/minimalModule.html">samplesTS/minimalModule</a>,
+          which demonstrates using GoJS as an ES6 module.
+          (Source is TS only)
+        </li>
+        <li>
+          Added <a href="extensionsTS/OverviewResizing.html">OverviewResizing</a>,
+          which demonstrates the OverviewResizingTool, used for resizing an <a>Overview.box</a>.
+          This has replaced functionality that used to be built-in.
+          It is defined in both the "extension" and "extensionsTS" folders.
+        </li>
+        <li>
+          Added <a href="extensionsTS/ZoomSlider.html">extensionsTS/ZoomSlider</a>,
+          which demonstrates an HTML slider that can zoom in/out of a GoJS diagram.
+        </li>
+      </ul>
+    </li>
   </ul>
 
   <h4>Incompatible 2.0 changes and removals</h4>

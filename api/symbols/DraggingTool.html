@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.2 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.2<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.3 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.3<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class DraggingTool</h1>
@@ -197,12 +197,14 @@
 					<p>This tool does not utilize any <a href="Adornment.html">Adornment</a>s or tool handles.
 						If the drag is successful, it raises the &quot;SelectionMoved&quot; or &quot;SelectionCopied&quot; <a href="DiagramEvent.html">DiagramEvent</a>
 					and produces a &quot;Move&quot; or a &quot;Copy&quot; transaction.</p>
-					<p>If you want to programmatically start a new user mouse-gesture to drag a particular existing node,
-					you can set the <a href="DraggingTool.html#currentPart">currentPart</a> property and then start and activate the tool.</p>
-					<pre><code class="hljs js">  <span class="hljs-keyword">var</span> tool = myDiagram.toolManager.draggingTool;
-  tool.currentPart = ...;
-  myDiagram.currentTool = tool;
-  tool.doActivate();
+					<p>If you want to programmatically start a new user&#39;s dragging of a particular existing node,
+					you can make sure that node is selected, set the <a href="DraggingTool.html#currentPart">currentPart</a> property, and then start and activate the tool.</p>
+					<pre><code class="hljs js">  <span class="hljs-keyword">var</span> node = ...;
+  myDiagram.select(node);        <span class="hljs-comment">// in this case the only selected node</span>
+  <span class="hljs-keyword">var</span> tool = myDiagram.toolManager.draggingTool;
+  tool.currentPart = node;       <span class="hljs-comment">// the DraggingTool will not call standardMouseSelect</span>
+  myDiagram.currentTool = tool;  <span class="hljs-comment">// starts the DraggingTool</span>
+  tool.doActivate();             <span class="hljs-comment">// activates the DraggingTool</span>
 </code></pre>
 				</div>
 			</section>
@@ -329,7 +331,8 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets the <a href="Part.html">Part</a> found at the mouse point.</p>
+								<p>Gets the <a href="Part.html">Part</a> found at the mouse point.
+								This is normally set by a call to <a href="DraggingTool.html#standardMouseSelect">standardMouseSelect</a>.</p>
 							</div>
 						</li>
 					</ul>
@@ -732,6 +735,12 @@
 								<p>This starts a &quot;Drag&quot; transaction.
 									Depending on what happens, the transaction may be finished as a &quot;Move&quot; or a &quot;Copy&quot;
 								transaction, or it may be rolled-back if the tool is cancelled.</p>
+								<p>Normally when this method is called the value of <a href="DraggingTool.html#currentPart">currentPart</a> will be null,
+									in which case this will call <a href="Tool.html#standardMouseSelect">Tool.standardMouseSelect</a> which will set <a href="DraggingTool.html#currentPart">currentPart</a>.
+									But if when this method is called the value of <a href="DraggingTool.html#currentPart">currentPart</a> has already been set
+									because the programmer wants the user to start dragging that Part,
+									then this method will not need to call <a href="Tool.html#standardMouseSelect">Tool.standardMouseSelect</a> because
+								the Part(s) to be selected and dragged have already been determined by the caller.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>

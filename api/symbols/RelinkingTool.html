@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.2 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.2<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.3 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.3<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class RelinkingTool</h1>
@@ -125,6 +125,15 @@
 						shown when a link is selected.</p>
 						<p>This tool conducts a transaction while the tool is active.
 						A successful relinking will result in a &quot;LinkRelinked&quot; <a href="DiagramEvent.html">DiagramEvent</a> and a &quot;Relinking&quot; transaction.</p>
+						<p>If you want to programmatically start a new user&#39;s relinking of a <a href="Link.html">Link</a>,
+							you can set the <a href="RelinkingTool.html#handle">handle</a> property to the specific &quot;RelinkFrom&quot; or &quot;RelinkTo&quot; handle and
+						then start and activate the tool.</p>
+						<pre><code class="hljs js">  <span class="hljs-keyword">var</span> tool = myDiagram.toolManager.relinkingTool;
+  tool.originalLink = ...;   <span class="hljs-comment">// specify which Link to have the user reconnect</span>
+  tool.isForwards = <span class="hljs-literal">true</span>;    <span class="hljs-comment">// specify which end of the Link to reconnect</span>
+  myDiagram.currentTool = tool;  <span class="hljs-comment">// starts the RelinkingTool</span>
+  tool.doActivate();             <span class="hljs-comment">// activates the RelinkingTool</span>
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -141,7 +150,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RelinkingTool.html#fromHandleArchetype" class="tsd-kind-icon">from<wbr>Handle<wbr>Archetype</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="RelinkingTool.html#handle" class="tsd-kind-icon">handle</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RelinkingTool.html#handle" class="tsd-kind-icon">handle</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="RelinkingTool.html#toHandleArchetype" class="tsd-kind-icon">to<wbr>Handle<wbr>Archetype</a></li>
 							</ul>
 						</section>
@@ -211,18 +220,19 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
 					<a name="handle" class="tsd-anchor"></a>
 					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
 						handle
 					<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the <a href="GraphObject.html">GraphObject</a> that is the tool handle being dragged by the user.
+								<p>Returns the <a href="GraphObject.html">GraphObject</a> that is the tool handle being dragged by the user.
 									This will be contained by an <a href="Adornment.html">Adornment</a> whose category is &quot;RelinkFrom&quot; or &quot;RelinkTo&quot;.
 								Its <a href="Adornment.html#adornedPart">Adornment.adornedPart</a> is the same as the <a href="LinkingBaseTool.html#originalLink">originalLink</a>.</p>
+								<p>This property is also settable, but should only be set either within an override of <a href="RelinkingTool.html#doActivate">doActivate</a>
+								or prior to calling <a href="RelinkingTool.html#doActivate">doActivate</a>.</p>
 							</div>
 						</li>
 					</ul>
@@ -328,8 +338,17 @@
 								<p>Find the relink handle by calling <a href="Tool.html#findToolHandleAt">Tool.findToolHandleAt</a>
 									looking for either the &quot;RelinkFrom&quot; adornment or the &quot;RelinkTo&quot; adornment,
 								saving the result in <a href="RelinkingTool.html#handle">handle</a>.</p>
+								<p>Normally when this method is called the value of <a href="LinkingBaseTool.html#originalLink">LinkingBaseTool.originalLink</a> and <a href="RelinkingTool.html#handle">handle</a> will be null,
+									resulting in a call to <a href="Tool.html#findToolHandleAt">Tool.findToolHandleAt</a> to find a &quot;RelinkFrom&quot; or &quot;RelinkTo&quot; tool handle,
+									which is then remembered as the value of <a href="RelinkingTool.html#handle">handle</a>.
+									If when this method is called the value of <a href="RelinkingTool.html#handle">handle</a> is already set,
+									then there is no need to call <a href="Tool.html#findToolHandleAt">Tool.findToolHandleAt</a>,
+									because the programmer has already set up which relinking handle they want the user to be relinking.
+									Finding a handle is not necessary if <a href="LinkingBaseTool.html#originalLink">LinkingBaseTool.originalLink</a> and
+								<a href="LinkingBaseTool.html#isForwards">isForwards</a> have been set before calling this method.</p>
 								<p>This starts a transaction, captures the mouse, and sets the cursor.</p>
-								<p>The value of <a href="LinkingBaseTool.html#isForwards">isForwards</a> is set depending on the category of the relink handle found.
+								<p>If <a href="LinkingBaseTool.html#originalLink">LinkingBaseTool.originalLink</a> or <a href="RelinkingTool.html#handle">handle</a> was not set beforehand,
+									the value of <a href="LinkingBaseTool.html#isForwards">isForwards</a> is set depending on the category of the relink handle found.
 									The <a href="LinkingBaseTool.html#originalLink">LinkingBaseTool.originalLink</a> property and various
 									&quot;Original...&quot; port and node properties are set too.
 								The temporary nodes and temporary link are also initialized.</p>
@@ -526,7 +545,7 @@
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="RelinkingTool.html#fromHandleArchetype" class="tsd-kind-icon">from<wbr>Handle<wbr>Archetype</a>
 							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="RelinkingTool.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
