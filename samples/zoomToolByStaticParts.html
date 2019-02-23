@@ -1,0 +1,585 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoom tool by static parts</title>
+<meta name="description" content="Zoom tool by static parts." />
+<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<style type="text/css">
+#sample canvas {
+  border: 0px;
+  outline: none;
+}
+</style>
+<script src="../release/go.js"></script>
+<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, 'diagramDomId',  // create a Diagram for the DIV HTML element
+        {
+          allowCopy: false,
+          allowHorizontalScroll: true,
+          allowSelect: true,
+          allowVerticalScroll: true,
+          allowZoom: true,
+          // autoScale: go.Diagram.Uniform,
+          // autoScale: go.Diagram.UniformToFill,
+          contentAlignment: go.Spot.TopCenter,
+          initialAutoScale: go.Diagram.UniformToFill,
+          initialContentAlignment: go.Spot.TopCenter,
+          isReadOnly: false,
+          layout: go.GraphObject.make(go.TreeLayout, {
+            angle: 90,
+            arrangement: go.TreeLayout.ArrangementVertical,
+            treeStyle: go.TreeLayout.StyleLayered,
+            layerStyle: go.TreeLayout.LayerUniform
+          }),
+          validCycle: go.Diagram.CycleNotDirected
+        });
+
+    // Define nodeSelectionHandler
+    function nodeSelectionHandler(node) {
+      if (node.data.key) {
+        // node.data.mouseSelected = (node.data.mouseSelected == undefined ? 0 : node.data.mouseSelected) + (node.isSelected ? 10 : -10);
+        myDiagram.model.commit(function(m) {
+          m.set(
+            node.data,
+            'mouseSelected',
+            (node.data.mouseSelected == undefined ? 0 : node.data.mouseSelected) + (node.isSelected ? 10 : -10)
+          );
+        }, 'selectionChanged'+node.data.key);
+      }
+    }
+    
+    myDiagram.contextMenu = go.GraphObject.make(
+      'ContextMenu',
+      go.GraphObject.make(
+        'ContextMenuButton',
+        go.GraphObject.make(
+          go.TextBlock,
+          { margin: 6, alignment: go.Spot.Left },
+          '⇊  Run All'
+        ),
+        {
+          click: function(e, obj) {
+            console.log(obj);
+          }
+        }
+      )
+    );
+    
+    myDiagram.nodeTemplate = go.GraphObject.make(
+      go.Node,
+      'Spot',
+      {
+        contextMenu: go.GraphObject.make(
+          'ContextMenu',
+          go.GraphObject.make(
+            'ContextMenuButton',
+            go.GraphObject.make(
+              go.TextBlock,
+              { margin: 6, alignment: go.Spot.Left },
+              '→  Run this'
+            ),
+            {
+              click: function(e, obj) {
+                console.log(obj);
+              }
+            }
+          ),
+          go.GraphObject.make(
+            'ContextMenuButton',
+            go.GraphObject.make(
+              go.TextBlock,
+              { margin: 6, alignment: go.Spot.Left },
+              '↘  Run to this'
+            ),
+            {
+              click: function(e, obj) {
+                console.log(obj);
+              }
+            }
+          ),
+          go.GraphObject.make(
+            'ContextMenuButton',
+            go.GraphObject.make(
+              go.TextBlock,
+              { margin: 6, alignment: go.Spot.Left },
+              '↙  Run from this'
+            ),
+            {
+              click: function(e, obj) {
+                console.log(obj);
+              }
+            }
+          )
+        ),
+        // fromLinkableDuplicates: false,
+        selectionAdorned: false,
+        selectionChanged: nodeSelectionHandler
+        // toLinkableDuplicates: false
+      },
+      go.GraphObject.make(
+        go.Panel,
+        'Auto',
+        go.GraphObject.make(
+          go.Shape,
+          'RoundedRectangle',
+          {
+            fill: 'rgba(255, 255, 255, 0.5)',
+            stroke: 'rgba(215, 57, 37, 0.5)',
+            strokeWidth: 1
+          },
+          new go.Binding('fill', 'mouseSelected', (v, n) => {
+            return (v == undefined ? 0 : v) >= 1 || n.isSelected
+              ? 'rgb(255, 255, 255)'
+              : 'rgba(255, 255, 255, 0.5)';
+          }),
+          new go.Binding('stroke', 'mouseSelected', (v, n) => {
+            return (v == undefined ? 0 : v) >= 10 || n.isSelected
+              ? 'rgb(215, 57, 37)'
+              : 'rgba(215, 57, 37, 0.5)';
+          }),
+          // new go.Binding("strokeWidth", "mouseSelected", (v, n) => {
+          //   return (v == undefined ? 0 : v) >= 10 || n.isSelected ? 2 : 1;
+          // }),
+        ),
+        go.GraphObject.make(
+          go.Panel,
+          'Horizontal',
+          go.GraphObject.make(
+            go.Picture,
+            { maxSize: new go.Size(16, 16), width: 16 },
+            new go.Binding('source', 'type', (v, n) => {
+              return 'images/zoomToolByStaticParts/'+v+'.svg';
+            })
+          ),
+          go.GraphObject.make(
+            go.TextBlock,
+            { margin: 6, editable: true },
+            // new go.Binding("text")
+            new go.Binding('text').makeTwoWay()
+          ),
+          go.GraphObject.make(
+            go.Picture,
+            { maxSize: new go.Size(16, 16), width: 16 },
+            new go.Binding('source', 'status', (v, n) => {
+              return 'images/zoomToolByStaticParts/'+v+'.svg';
+            })
+          )
+        )
+      ),
+      // output port
+      go.GraphObject.make(
+        go.Panel,
+        'Auto',
+        {
+          alignment: go.Spot.Bottom,
+          portId: 'from',
+          fromLinkable: true,
+          cursor: 'pointer'
+          // fromLinkableDuplicates: false
+        },
+        go.GraphObject.make(go.Shape, 'Circle', {
+          width: 6,
+          height: 6,
+          fill: 'white',
+          stroke: 'gray'
+        })
+      ),
+      // input port
+      go.GraphObject.make(
+        go.Panel,
+        'Auto',
+        {
+          alignment: go.Spot.Top,
+          portId: 'to',
+          toLinkable: true
+          // toLinkableDuplicates: false
+        },
+        go.GraphObject.make(go.Shape, 'Circle', {
+          width: 6,
+          height: 6,
+          fill: 'white',
+          stroke: 'gray'
+        })
+      ),
+      {
+        mouseEnter: (e, node) => {
+          if (node.data.key) {
+            myDiagram.model.commit(function(m) {
+              m.set(
+                node.data,
+                'mouseSelected',
+                (node.data.mouseSelected == undefined ? 0 : node.data.mouseSelected) + 1
+              );
+            }, 'mouseEnter'+node.data.key);
+          }
+        },
+        mouseLeave: (e, node) => {
+          if (node.data.key) {
+            myDiagram.model.commit(function(m) {
+              m.set(
+                node.data,
+                'mouseSelected',
+                (node.data.mouseSelected == undefined ? 0 : node.data.mouseSelected) - 1
+              );
+            }, 'mouseLeave'+node.data.key);
+          }
+        }
+      }
+    );
+    
+    myDiagram.linkTemplate = go.GraphObject.make(
+      go.Link,
+      {
+        curve: go.Link.Bezier,
+        fromEndSegmentLength: 30,
+        // relinkableFrom: false,
+        // relinkableTo: false,
+        toEndSegmentLength: 30
+      },
+      go.GraphObject.make(go.Shape, { stroke: '#787878', strokeWidth: 1 }),
+      go.GraphObject.make(go.Shape, {
+        toArrow: 'Standard',
+        fill: '#787878',
+        stroke: null,
+        strokeWidth: 1
+      })
+    );
+    
+    palette = go.GraphObject.make(go.Palette, 'paletteDomId', {
+      allowCopy: true,
+      allowHorizontalScroll: true,
+      allowSelect: true,
+      allowVerticalScroll: true,
+      allowZoom: false,
+      // autoScale: go.Diagram.Uniform,
+      autoScale: go.Diagram.UniformToFill,
+      contentAlignment: go.Spot.TopCenter,
+      initialContentAlignment: go.Spot.TopCenter,
+
+      nodeTemplate: go.GraphObject.make(
+        go.Node,
+        'Spot',
+        {
+          selectionAdorned: false,
+          selectionChanged: nodeSelectionHandler
+        },
+        // the main body consists of a Rectangle surrounding the text
+        go.GraphObject.make(
+          go.Panel,
+          'Auto',
+          go.GraphObject.make(go.Shape, 'RoundedRectangle', {
+            fill: 'rgba(255, 255, 255, 0.5)',
+            stroke: 'rgba(215, 57, 37, 0.5)',
+            strokeWidth: 1
+          }),
+          go.GraphObject.make(
+            go.Panel,
+            'Horizontal',
+            go.GraphObject.make(
+              go.Picture,
+              { maxSize: new go.Size(16, 16), width: 16 },
+              new go.Binding('source', 'type', (v, n) => {
+                return 'images/zoomToolByStaticParts/'+v+'.svg';
+              })
+            ),
+            go.GraphObject.make(
+              go.TextBlock,
+              { margin: 6, editable: true },
+              new go.Binding("text")
+              //new go.Binding('text').makeTwoWay()
+            ),
+            go.GraphObject.make(
+              go.Picture,
+              { maxSize: new go.Size(16, 16), width: 16 },
+              new go.Binding('source', 'status', (v, n) => {
+                return 'images/zoomToolByStaticParts/'+v+'.svg';
+              })
+            )
+          )
+        )
+      ),
+      model: new go.GraphLinksModel([
+        {
+          text: 'insert sql',
+          mouseSelected: -10,
+          type: 'insert'
+        },
+        {
+          text: 'delete sql',
+          mouseSelected: -10,
+          type: 'delete'
+        }
+      ])
+    });
+    
+    overview = go.GraphObject.make(go.Overview, 'overviewDomId', {
+      observed: myDiagram,
+      contentAlignment: go.Spot.Center
+    });
+    
+    myDiagram.toolManager.linkingTool.isValidLink = function(fn, fp, tn, tp) {
+      return (
+        myDiagram.toolManager.linkingTool.isValidCycle(fn, tn) &&
+        myDiagram.model.linkDataArray.find(function(ele) {
+          return ele.from == fn.data.key && ele.to == tn.data.key;
+        }) == undefined
+      );
+    };
+    
+    myDiagram.model = new go.GraphLinksModel([
+                {
+                  key: '1',
+                  text: 'clear target table',
+                  mouseSelected: 0,
+                  type: 'delete',
+                  status: 'Success'
+                },
+                {
+                  key: '2',
+                  text: 'clear target table 1',
+                  mouseSelected: 0,
+                  type: 'delete',
+                  status: 'Info'
+                },
+                {
+                  key: '3',
+                  text: 'clear target table 2',
+                  mouseSelected: 0,
+                  type: 'delete',
+                  status: 'Warning'
+                },
+                {
+                  key: '4',
+                  text: 'prepare data to target table 1',
+                  mouseSelected: 0,
+                  type: 'insert',
+                  status: 'Error'
+                },
+                {
+                  key: '5',
+                  text: 'prepare data to target table 2',
+                  mouseSelected: 0,
+                  type: 'insert'
+                },
+                {
+                  key: '6',
+                  text: 'generate result data to target table',
+                  mouseSelected: 0,
+                  type: 'insert'
+                }
+              ], [
+                { from: '1', to: '2' },
+                { from: '1', to: '3' },
+                { from: '2', to: '4' },
+                { from: '3', to: '5' },
+                { from: '4', to: '6' },
+                { from: '5', to: '6' }
+              ]);
+            
+    //https://gojs.net/latest/intro/legends.html#StaticParts
+    myDiagram.add(
+      go.GraphObject.make(
+        go.Part,
+        {
+          layerName: 'Tool',
+          _viewPosition: () => {
+            return new go.Point(
+              myDiagram.div.offsetWidth - 40,
+              myDiagram.div.offsetHeight - 160
+            );
+          }
+        },
+        go.GraphObject.make(
+          'Button',
+          {
+            desiredSize: new go.Size(25, 25),
+            click: function() {
+              myDiagram.layout.invalidateLayout();
+            }
+          },
+          go.GraphObject.make(go.TextBlock, '㊣')
+        )
+      )
+    );
+    myDiagram.add(
+      go.GraphObject.make(
+        go.Part,
+        {
+          layerName: 'Tool',
+          _viewPosition: function() {
+            return new go.Point(
+              myDiagram.div.offsetWidth - 40,
+              myDiagram.div.offsetHeight - 130
+            );
+          }
+        },
+        go.GraphObject.make(
+          'Button',
+          {
+            desiredSize: new go.Size(25, 25),
+            click: function() {
+              myDiagram.zoomToFit();
+            }
+          },
+          go.GraphObject.make(go.TextBlock, '▣')
+        )
+      )
+    );
+    myDiagram.add(
+      go.GraphObject.make(
+        go.Part,
+        {
+          layerName: 'Tool', // Grid -> Background -> XXX -> Foreground -> Adornment -> Tool
+          _viewPosition: function() {
+            return new go.Point(
+              myDiagram.div.offsetWidth - 40,
+              myDiagram.div.offsetHeight - 100
+            );
+          }
+        },
+        go.GraphObject.make(
+          'Button',
+          {
+            desiredSize: new go.Size(25, 25),
+            click: function() {
+              myDiagram.commandHandler.increaseZoom();
+            }
+          },
+          go.GraphObject.make(go.TextBlock, '+')
+        )
+      )
+    );
+    myDiagram.add(
+      go.GraphObject.make(
+        go.Part,
+        {
+          layerName: 'Tool',
+          _viewPosition: function() {
+            return new go.Point(
+              myDiagram.div.offsetWidth - 40,
+              myDiagram.div.offsetHeight - 70
+            );
+          }
+        },
+        go.GraphObject.make(
+          'Button',
+          {
+            desiredSize: new go.Size(25, 25),
+            click: function() {
+              myDiagram.commandHandler.decreaseZoom();
+            }
+          },
+          go.GraphObject.make(go.TextBlock, '-')
+        )
+      )
+    );
+    myDiagram.add(
+      go.GraphObject.make(
+        go.Part,
+        {
+          layerName: 'Tool',
+          _viewPosition: () => {
+            return new go.Point(
+              myDiagram.div.offsetWidth - 40,
+              myDiagram.div.offsetHeight - 40
+            );
+          }
+        },
+        go.GraphObject.make(
+          'Button',
+          {
+            desiredSize: new go.Size(25, 25),
+            click: () => {
+              myDiagram.makeImageData({
+                background: 'white',
+                returnType: 'blob',
+                scale: 1,
+                callback: blob => {
+                  let url = window.URL.createObjectURL(blob);
+                  let filename = 'sql.png';
+
+                  var a = document.createElement('a');
+                  a.style = 'display: none';
+                  a.href = url;
+                  a.download = filename;
+
+                  // IE 11
+                  if (window.navigator.msSaveBlob !== undefined) {
+                    window.navigator.msSaveBlob(blob, filename);
+                    return;
+                  }
+
+                  document.body.appendChild(a);
+                  requestAnimationFrame(function() {
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                  });
+                }
+              });
+            }
+          },
+          go.GraphObject.make(go.TextBlock, '↓')
+        )
+      )
+    );
+    myDiagram.addDiagramListener('ViewportBoundsChanged', function(e) {
+      e.diagram.commit(function(dia) {
+        dia.parts.each(function(part) {
+          if (part._viewPosition) {
+            part.position = dia.transformViewToDoc(part._viewPosition());
+            part.scale = 1 / dia.scale;
+          }
+        });
+      }, 'fix Parts');
+    });
+    
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="border: solid 1px black; width:100%; height:400px; display: flex; flex-flow: row">
+  	<div style="display: flex; flex-flow: column; width: 128px">
+        <div id="paletteDomId" style="background-color: #f0f2f5; flex: auto"></div>
+        <div style="height: 1px"></div>
+        <div id="overviewDomId" style="background-color: #f0f2f5; height: 128px"></div>
+    </div>
+    <div style="width: 1px"></div>
+    <div id="diagramDomId" style="background-color: #f0f2f5; flex: auto"></div>
+  </div>
+  <p>
+    This sample demonstrates zoom tool by static parts, the scenario for create a machine learning model.
+  </p>
+  <p>Features:</p>
+  <ul>
+    <li>use static parts without extension <a href="https://gojs.net/latest/extensions/ZoomSlider.html">ZoomSlider</a></li>
+    <li>㊣: reLayout, when click this button will relayout the diagram with draged some node before</li>
+    <li>▣: <a href="https://gojs.net/latest/api/symbols/CommandHandler.html#zoomToFit">CommandHandler.zoomToFit</a></li>
+    <li>+: <a href="https://gojs.net/latest/api/symbols/CommandHandler.html#increaseZoom">CommandHandler.increaseZoom</a></li>
+    <li>-: <a href="https://gojs.net/latest/api/symbols/CommandHandler.html#decreaseZoom">CommandHandler.decreaseZoom</a></li>
+    <li>↓: @<a href="https://gojs.net/latest/samples/minimalBlob.html">Minimal Image Blob and Download</a></li>
+  </ul>
+  <p>Others:</p>
+  <ul>
+    <li>delete with command</li>
+    <li>diagram context menu and node context menu</li>
+    <li>node mouse over state and selected state</li>
+    <li>palette and overview</li>
+    <li>node type icon and state icon</li>
+  </ul>
+  <p>
+    Contributed by <a href="https://github.com/ShaneKing">Shane King</a>.
+  </p>
+</div>
+</body>
+</html>
