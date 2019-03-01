@@ -174,7 +174,7 @@ export class BPMNRelinkingTool extends go.RelinkingTool {
   }
 
   /**
-   * Override {@link LinkingTool#insertLink} to do some extra BPMN-specific processing.
+   * Override {@link RelinkingTool#reconnectLink} to do some extra BPMN-specific processing.
    */
   public reconnectLink(existinglink: go.Link, newnode: go.Node | null, newport: go.GraphObject | null, toend: boolean): boolean {
     const diagram = existinglink.diagram;
@@ -205,11 +205,6 @@ export class BPMNRelinkingTool extends go.RelinkingTool {
           // Recreate the link if the category changed, since it is a different class
           if (existinglink.category !== 'msg') {
             recreateLinkData(data, 'msg');
-          }
-        } else {
-          // Recreate the link if the category changed, since it is a different class
-          if (existinglink.category !== '') {
-            recreateLinkData(data, '');
           }
         }
 

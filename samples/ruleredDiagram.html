@@ -1,195 +1,196 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Diagram with Rulers</title>
-<meta name="description" content="A diagram with Graduated panels at the edges acting as rulers" />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+  <meta charset="UTF-8">
+  <title>Diagram with Rulers</title>
+  <meta name="description" content="A diagram with Graduated panels at the edges acting as rulers" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          "undoManager.isEnabled": true,  // enable undo & redo
-          scrollMode: go.Diagram.InfiniteScroll,  // allow the diagram to be scrolled beyond content
-          padding: 0,  // scales should be allowed right up against the edges of the viewport
-          "grid.visible": true
-        });
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        $(go.Shape, "RoundedRectangle",
-        { strokeWidth: 0, portId: "", fromLinkable: true, toLinkable: true },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          { margin: 8 },
-          new go.Binding("text", "key"))
-      );
-
-    myDiagram.model = new go.GraphLinksModel(
-    [
-      { key: "Alpha", color: "lightblue" },
-      { key: "Beta", color: "orange" },
-      { key: "Gamma", color: "lightgreen" },
-      { key: "Delta", color: "pink" }
-    ],
-    [
-      { from: "Alpha", to: "Beta" },
-      { from: "Alpha", to: "Gamma" },
-      { from: "Beta", to: "Beta" },
-      { from: "Gamma", to: "Delta" },
-      { from: "Delta", to: "Alpha" }
-    ]);
-
-    // Keep references to the scales and indicators to easily update them
-    var gradScaleHoriz =
-      $(go.Node, "Graduated",
-        {
-          graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
-          isInDocumentBounds: false, isAnimated: false
-        },
-        $(go.Shape, { geometryString: "M0 0 H400" }),
-        $(go.Shape, { geometryString: "M0 0 V3", interval: 1 }),
-        $(go.Shape, { geometryString: "M0 0 V15", interval: 5 }),
-        $(go.TextBlock,
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
           {
-            font: "10px sans-serif",
-            interval: 5,
-            alignmentFocus: go.Spot.TopLeft,
-            segmentOffset: new go.Point(0, 7)
-          }
-        )
-      );
+            "undoManager.isEnabled": true,  // enable undo & redo
+            scrollMode: go.Diagram.InfiniteScroll,  // allow the diagram to be scrolled beyond content
+            padding: 0,  // scales should be allowed right up against the edges of the viewport
+            "grid.visible": true
+          });
 
-    var gradScaleVert =
-      $(go.Node, "Graduated",
-        {
-          graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
-          isInDocumentBounds: false, isAnimated: false
-        },
-        $(go.Shape, { geometryString: "M0 0 V400" }),
-        $(go.Shape, { geometryString: "M0 0 V3", interval: 1, alignmentFocus: go.Spot.Bottom }),
-        $(go.Shape, { geometryString: "M0 0 V15", interval: 5, alignmentFocus: go.Spot.Bottom }),
-        $(go.TextBlock,
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          $(go.Shape, "RoundedRectangle",
+            { strokeWidth: 0, portId: "", fromLinkable: true, toLinkable: true },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 8 },
+            new go.Binding("text", "key"))
+        );
+
+      myDiagram.model = new go.GraphLinksModel(
+        [
+          { key: "Alpha", color: "lightblue" },
+          { key: "Beta", color: "orange" },
+          { key: "Gamma", color: "lightgreen" },
+          { key: "Delta", color: "pink" }
+        ],
+        [
+          { from: "Alpha", to: "Beta" },
+          { from: "Alpha", to: "Gamma" },
+          { from: "Beta", to: "Beta" },
+          { from: "Gamma", to: "Delta" },
+          { from: "Delta", to: "Alpha" }
+        ]);
+
+      // Keep references to the scales and indicators to easily update them
+      var gradScaleHoriz =
+        $(go.Node, "Graduated",
           {
-            font: "10px sans-serif",
-            segmentOrientation: go.Link.OrientOpposite,
-            interval: 5,
-            alignmentFocus: go.Spot.BottomLeft,
-            segmentOffset: new go.Point(0, -7)
-          }
-        )
-      );
+            graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
+            isInDocumentBounds: false, isAnimated: false
+          },
+          $(go.Shape, { geometryString: "M0 0 H400" }),
+          $(go.Shape, { geometryString: "M0 0 V3", interval: 1 }),
+          $(go.Shape, { geometryString: "M0 0 V15", interval: 5 }),
+          $(go.TextBlock,
+            {
+              font: "10px sans-serif",
+              interval: 5,
+              alignmentFocus: go.Spot.TopLeft,
+              segmentOffset: new go.Point(0, 7)
+            }
+          )
+        );
 
-    // These indicators are globally defined so they can be accessed by the div's mouseevents
-    gradIndicatorHoriz =
-      $(go.Node,
-        {
-          pickable: false, layerName: "Foreground", visible: false,
-          isInDocumentBounds: false, isAnimated: false,
-          locationSpot: go.Spot.Top
-        },
-        $(go.Shape, { geometryString: "M0 0 V15", strokeWidth: 2, stroke: "red" })
-      );
+      var gradScaleVert =
+        $(go.Node, "Graduated",
+          {
+            graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
+            isInDocumentBounds: false, isAnimated: false
+          },
+          $(go.Shape, { geometryString: "M0 0 V400" }),
+          $(go.Shape, { geometryString: "M0 0 V3", interval: 1, alignmentFocus: go.Spot.Bottom }),
+          $(go.Shape, { geometryString: "M0 0 V15", interval: 5, alignmentFocus: go.Spot.Bottom }),
+          $(go.TextBlock,
+            {
+              font: "10px sans-serif",
+              segmentOrientation: go.Link.OrientOpposite,
+              interval: 5,
+              alignmentFocus: go.Spot.BottomLeft,
+              segmentOffset: new go.Point(0, -7)
+            }
+          )
+        );
 
-    gradIndicatorVert =
-      $(go.Node,
-        {
-          pickable: false, layerName: "Foreground", visible: false,
-          isInDocumentBounds: false, isAnimated: false,
-          locationSpot: go.Spot.Left
-        },
-        $(go.Shape, { geometryString: "M0 0 H15", strokeWidth: 2, stroke: "red" })
-      );
+      // These indicators are globally defined so they can be accessed by the div's mouseevents
+      gradIndicatorHoriz =
+        $(go.Node,
+          {
+            pickable: false, layerName: "Foreground", visible: false,
+            isInDocumentBounds: false, isAnimated: false,
+            locationSpot: go.Spot.Top
+          },
+          $(go.Shape, { geometryString: "M0 0 V15", strokeWidth: 2, stroke: "red" })
+        );
 
-    // Add listeners to keep the scales/indicators in sync with the viewport
-    myDiagram.addDiagramListener("InitialLayoutCompleted", setupScalesAndIndicators);
-    myDiagram.addDiagramListener("ViewportBoundsChanged", updateScales);
-    myDiagram.addDiagramListener("ViewportBoundsChanged", updateIndicators);
-    // Override mousemove Tools such that doMouseMove will keep indicators in sync
-    myDiagram.toolManager.doMouseMove = function() {
-      go.ToolManager.prototype.doMouseMove.call(this);
-      updateIndicators();
+      gradIndicatorVert =
+        $(go.Node,
+          {
+            pickable: false, layerName: "Foreground", visible: false,
+            isInDocumentBounds: false, isAnimated: false,
+            locationSpot: go.Spot.Left
+          },
+          $(go.Shape, { geometryString: "M0 0 H15", strokeWidth: 2, stroke: "red" })
+        );
+
+      // Add listeners to keep the scales/indicators in sync with the viewport
+      myDiagram.addDiagramListener("InitialLayoutCompleted", setupScalesAndIndicators);
+      myDiagram.addDiagramListener("ViewportBoundsChanged", updateScales);
+      myDiagram.addDiagramListener("ViewportBoundsChanged", updateIndicators);
+      // Override mousemove Tools such that doMouseMove will keep indicators in sync
+      myDiagram.toolManager.doMouseMove = function() {
+        go.ToolManager.prototype.doMouseMove.call(this);
+        updateIndicators();
+      }
+      myDiagram.toolManager.linkingTool.doMouseMove = function() {
+        go.LinkingTool.prototype.doMouseMove.call(this);
+        updateIndicators();
+      }
+      myDiagram.toolManager.draggingTool.doMouseMove = function() {
+        go.DraggingTool.prototype.doMouseMove.call(this);
+        updateIndicators();
+      }
+      myDiagram.toolManager.dragSelectingTool.doMouseMove = function() {
+        go.DragSelectingTool.prototype.doMouseMove.call(this);
+        updateIndicators();
+      }
+      // No need to override PanningTool since the ViewportBoundsChanged listener will fire
+
+      function setupScalesAndIndicators() {
+        var vb = myDiagram.viewportBounds;
+        myDiagram.startTransaction("add scales");
+        updateScales();
+        // Add each node to the diagram
+        myDiagram.add(gradScaleHoriz);
+        myDiagram.add(gradScaleVert);
+        myDiagram.add(gradIndicatorHoriz);
+        myDiagram.add(gradIndicatorVert);
+        myDiagram.commitTransaction("add scales");
+      }
+
+      function updateScales() {
+        var vb = myDiagram.viewportBounds;
+        myDiagram.startTransaction("update scales");
+        // Update properties of horizontal scale to reflect viewport
+        gradScaleHoriz.location = new go.Point(vb.x, vb.y);
+        gradScaleHoriz.graduatedMin = vb.x;
+        gradScaleHoriz.graduatedMax = vb.right;
+        gradScaleHoriz.scale = 1 / myDiagram.scale;
+        // Update properties of vertical scale to reflect viewport
+        gradScaleVert.location = new go.Point(vb.x, vb.y);
+        gradScaleVert.graduatedMin = vb.y;
+        gradScaleVert.graduatedMax = vb.bottom;
+        gradScaleVert.scale = 1 / myDiagram.scale;
+        myDiagram.commitTransaction("update scales");
+      }
+
+      function updateIndicators() {
+        var vb = myDiagram.viewportBounds;
+        var mouseCoords = myDiagram.lastInput.documentPoint;
+        myDiagram.startTransaction("update indicators");
+        // Keep the indicators in line with the mouse as viewport changes or mouse moves
+        gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
+        gradIndicatorHoriz.scale = 1 / myDiagram.scale;
+        gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
+        gradIndicatorVert.scale = 1 / myDiagram.scale;
+        myDiagram.commitTransaction("update indicators");
+      }
     }
-    myDiagram.toolManager.linkingTool.doMouseMove = function() {
-      go.LinkingTool.prototype.doMouseMove.call(this);
-      updateIndicators();
-    }
-    myDiagram.toolManager.draggingTool.doMouseMove = function() {
-      go.DraggingTool.prototype.doMouseMove.call(this);
-      updateIndicators();
-    }
-    myDiagram.toolManager.dragSelectingTool.doMouseMove = function() {
-      go.DragSelectingTool.prototype.doMouseMove.call(this);
-      updateIndicators();
-    }
-    // No need to override PanningTool since the ViewportBoundsChanged listener will fire
 
-    function setupScalesAndIndicators() {
-      var vb = myDiagram.viewportBounds;
-      myDiagram.startTransaction("add scales");
-      updateScales();
-      // Add each node to the diagram
-      myDiagram.add(gradScaleHoriz);
-      myDiagram.add(gradScaleVert);
-      myDiagram.add(gradIndicatorHoriz);
-      myDiagram.add(gradIndicatorVert);
-      myDiagram.commitTransaction("add scales");
+    // Show indicators on mouseover of the diagram div
+    function showIndicators() {
+      myDiagram.startTransaction("show indicators");
+      gradIndicatorHoriz.visible = true;
+      gradIndicatorVert.visible = true;
+      myDiagram.commitTransaction("show indicators");
     }
 
-    function updateScales() {
-      var vb = myDiagram.viewportBounds;
-      myDiagram.startTransaction("update scales");
-      // Update properties of horizontal scale to reflect viewport
-      gradScaleHoriz.location = new go.Point(vb.x, vb.y);
-      gradScaleHoriz.graduatedMin = vb.x;
-      gradScaleHoriz.graduatedMax = vb.right;
-      gradScaleHoriz.scale = 1 / myDiagram.scale;
-      // Update properties of vertical scale to reflect viewport
-      gradScaleVert.location = new go.Point(vb.x, vb.y);
-      gradScaleVert.graduatedMin = vb.y;
-      gradScaleVert.graduatedMax = vb.bottom;
-      gradScaleVert.scale = 1 / myDiagram.scale;
-      myDiagram.commitTransaction("update scales");
+    // Hide indicators on mouseout of the diagram div
+    function hideIndicators() {
+      myDiagram.startTransaction("hide indicators");
+      gradIndicatorHoriz.visible = false;
+      gradIndicatorVert.visible = false;
+      myDiagram.commitTransaction("hide indicators");
     }
 
-    function updateIndicators() {
-      var vb = myDiagram.viewportBounds;
-      var mouseCoords = myDiagram.lastInput.documentPoint;
-      myDiagram.startTransaction("update indicators");
-      // Keep the indicators in line with the mouse as viewport changes or mouse moves
-      gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
-      gradIndicatorHoriz.scale = 1 / myDiagram.scale;
-      gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
-      gradIndicatorVert.scale = 1 / myDiagram.scale;
-      myDiagram.commitTransaction("update indicators");
-    }
-  }
-
-  // Show indicators on mouseover of the diagram div
-  function showIndicators() {
-    myDiagram.startTransaction("show indicators");
-    gradIndicatorHoriz.visible = true;
-    gradIndicatorVert.visible = true;
-    myDiagram.commitTransaction("show indicators");
-  }
-
-  // Hide indicators on mouseout of the diagram div
-  function hideIndicators() {
-    myDiagram.startTransaction("hide indicators");
-    gradIndicatorHoriz.visible = false;
-    gradIndicatorVert.visible = false;
-    myDiagram.commitTransaction("hide indicators");
-  }
-
-</script>
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

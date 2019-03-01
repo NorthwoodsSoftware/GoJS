@@ -1,9 +1,10 @@
 /*
- * Type definitions for GoJS v2.0.3
+ * Type definitions for GoJS v2.0.4
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
  * Copyright (C) 1998-2019 by Northwoods Software Corporation.
+ * This requires TypeScript v2.8 or later.
  */
 
 
@@ -3331,10 +3332,6 @@ export class InputEvent {
     middle: boolean;
 }
 /**
- * The signature for a function acting as a handler for InputEvents.
- */
-export type InputEventHandler = (e: InputEvent, o: GraphObject, o2?: GraphObject) => void;
-/**
  * A DiagramEvent represents a more abstract event than an InputEvent.
  * They are raised on the Diagram class.
  * One can receive such events by registering a DiagramEvent listener on a Diagram
@@ -3619,21 +3616,22 @@ export interface DiagramEventsInterface {
  *     (setting Model#nodeDataArray or calling Model#addNodeData or Model#removeNodeData)
  *   - **"nodeKey"**, after changing a node data's unique key (Model#setKeyForNodeData)
  *   - **"nodeCategory"**, after changing a node data's category (Model#setCategoryForNodeData)
- *   - **"linkFromKey"**, after changing a link data's "from" node key (GraphLinksModel#setFromKeyForLinkData)
- *   - **"linkToKey"**, after changing a link data's "to" node key (GraphLinksModel#setToKeyForLinkData)
- *   - **"linkFromPortId"**, after changing a link data's "from" port (GraphLinksModel#setFromPortIdForLinkData)
- *   - **"linkToPortId"**, after changing a link data's "to" port (GraphLinksModel#setToPortIdForLinkData)
- *   - **"linkLabelKeys"**, after replacing, inserting into, or removing from a link data's array of keys to label nodes
- *     (calling GraphLinksModel#setLabelKeysForLinkData, GraphLinksModel#addLabelKeyForLinkData,
- *     or GraphLinksModel#removeLabelKeyForLinkData)
  *   - **"linkDataArray"**, after the model's GraphLinksModel#linkDataArray is replaced, inserted into or removed from
  *     (setting GraphLinksModel#linkDataArray or calling GraphLinksModel#addLinkData
  *     or GraphLinksModel#removeLinkData)
- *   - **"nodeGroupKey"**, after changing a node data's key for a containing group data (GraphLinksModel#setGroupKeyForNodeData)
+ *   - **"linkKey"**, after changing a link data's unique key (GraphLinksModel#setKeyForLinkData)
  *   - **"linkCategory"**, after changing a link data's category (GraphLinksModel#setCategoryForLinkData)
+ *   - **"linkFromKey"**, after changing a link data's "from" node key (GraphLinksModel#setFromKeyForLinkData)
+ *   - **"linkToKey"**, after changing a link data's "to" node key (GraphLinksModel#setToKeyForLinkData)
+ *   - **"linkFromPortId"**, after changing a link data's "from" port identifier string (GraphLinksModel#setFromPortIdForLinkData)
+ *   - **"linkToPortId"**, after changing a link data's "to" port identifier string (GraphLinksModel#setToPortIdForLinkData)
+ *   - **"linkLabelKeys"**, after replacing, inserting into, or removing from a link data's array of keys to label nodes
+ *     (calling GraphLinksModel#setLabelKeysForLinkData, GraphLinksModel#addLabelKeyForLinkData,
+ *     or GraphLinksModel#removeLabelKeyForLinkData)
+ *   - **"nodeGroupKey"**, after changing a node data's key for a containing group data (GraphLinksModel#setGroupKeyForNodeData)
  *   - **"nodeParentKey"**, after changing a node data's "parent" node key (TreeModel#setParentKeyForNodeData)
  *   - **"parentLinkCategory"**, after changing a node data's "parent" link's category(TreeModel#setParentLinkCategoryForNodeData)
- *   - **"SourceChanged"**, for internal implementation use only
+ *   - other names are for internal implementation use only, only on Transaction ChangedEvents
  *
  * The value of ChangedEvent#propertyName indicates the actual name of the property that was modified.
  * ChangedEvent#modelChange is a non-empty string only when there is a known structural change to the model,
@@ -3766,6 +3764,7 @@ export class ChangedEvent {
      * The default is an empty string, which indicates that this is just
      * a regular change to some object's state, probably its property.
      * For a list of possible model change names, see the documentation for ChangedEvent.
+     * The names are compared in a case-sensitive manner.
      */
     modelChange: string;
     /**
@@ -6094,7 +6093,7 @@ export abstract class LinkingBaseTool extends Tool {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    linkValidation: ((a: Node, b: GraphObject, c: Node, d: GraphObject, e: Link) => boolean) | null;
+    linkValidation: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
     /**
      * Gets or sets a function that is called as the tool targets the nearest valid port.
      * The first two arguments specify the port by providing the Node that it is in
@@ -6112,7 +6111,7 @@ export abstract class LinkingBaseTool extends Tool {
      * nor may it change the validity of any potential link connection.
      * @since 1.2
      */
-    portTargeted: ((a: Node, b: GraphObject, c: Node, d: GraphObject, e: boolean) => void) | null;
+    portTargeted: ((node: Node, port: GraphObject, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void) | null;
 }
 /**
  * The LinkingTool lets a user draw a new Link between two ports,
@@ -8294,7 +8293,7 @@ export class TextEditingTool extends Tool {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    textValidation: ((a: TextBlock, b: string, c: string) => boolean) | null;
+    textValidation: ((aTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
     /**
      * Gets or sets whether to select (highlight) the editable text when the TextEditingTool is activated.
      * The default is true.
@@ -8365,12 +8364,15 @@ export class AnimationManager {
      * Undocumented.
      */
     prepareAnimation(reason: string, options?: {
-        reason?: string;
+        onChange?: () => void;
+        onComplete?: () => void;
+        easing?: (a: number, b: number, c: number, d: number) => number;
+        duration?: number;
     }): void;
     /**
      * Undocumented.
      */
-    addToAnimation(obj: GraphObject, propname: string, start: any, end: any, cosmetic?: boolean): void;
+    addToAnimation(obj: GraphObject, propname: string, start: any, end: any, cosmetic?: boolean, remainsVisible?: boolean): void;
     /**
      * Stops any running animation and updates the Diagram to its final state.
      *
@@ -9486,14 +9488,14 @@ export class Diagram {
      * @see #removeModelChangedListener
      * @since 1.6
      */
-    addModelChangedListener(listener: ((a: ChangedEvent) => void)): void;
+    addModelChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Unregister a ChangedEvent handler from this Diagram's Diagram#model.
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #addModelChangedListener
      * @since 1.6
      */
-    removeModelChangedListener(listener: ((a: ChangedEvent) => void)): void;
+    removeModelChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Register an event handler that is called when there is a ChangedEvent because this Diagram
      * or one of its Parts has changed, but not because the Model or any model data has changed.
@@ -9506,13 +9508,13 @@ export class Diagram {
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #removeChangedListener
      */
-    addChangedListener(listener: ((a: ChangedEvent) => void)): void;
+    addChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Unregister a ChangedEvent handler.
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #addChangedListener
      */
-    removeChangedListener(listener: ((a: ChangedEvent) => void)): void;
+    removeChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * This read-only property returns the AnimationManager for this Diagram.
      * @since 1.4
@@ -10057,7 +10059,7 @@ export class Diagram {
      * @see #contextClick
      * @see GraphObject#click
      */
-    click: ((a: InputEvent) => void) | null;
+    click: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user double-primary-clicks
      * on the background of the Diagram.
@@ -10077,7 +10079,7 @@ export class Diagram {
      * @see #contextClick
      * @see GraphObject#doubleClick
      */
-    doubleClick: ((a: InputEvent) => void) | null;
+    doubleClick: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user single-secondary-clicks
      * on the background of the Diagram.
@@ -10097,7 +10099,7 @@ export class Diagram {
      * @see #doubleClick
      * @see GraphObject#contextClick
      */
-    contextClick: ((a: InputEvent) => void) | null;
+    contextClick: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user moves the mouse in
      * the background of the Diagram without holding down any buttons,
@@ -10114,7 +10116,7 @@ export class Diagram {
      * @see #mouseHover
      * @see GraphObject#mouseOver
      */
-    mouseOver: ((a: InputEvent) => void) | null;
+    mouseOver: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user holds the mouse stationary in
      * the background of the Diagram without holding down any buttons,
@@ -10130,7 +10132,7 @@ export class Diagram {
      * @see GraphObject#mouseHover
      * @see ToolManager#doMouseHover
      */
-    mouseHover: ((a: InputEvent) => void) | null;
+    mouseHover: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user holds the mouse stationary in
      * the background of the Diagram while holding down a button,
@@ -10145,7 +10147,7 @@ export class Diagram {
      * @see GraphObject#mouseHold
      * @seev ToolManager#doMouseHover
      */
-    mouseHold: ((a: InputEvent) => void) | null;
+    mouseHold: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user is dragging the selection in
      * the background of the Diagram during a DraggingTool drag-and-drop,
@@ -10175,7 +10177,7 @@ export class Diagram {
      * @see GraphObject#mouseDragEnter
      * @see GraphObject#mouseDragLeave
      */
-    mouseDragOver: ((a: InputEvent) => void) | null;
+    mouseDragOver: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the user drops the selection in
      * the background of the Diagram at the end of a DraggingTool drag-and-drop,
@@ -10194,7 +10196,7 @@ export class Diagram {
      * @see #mouseDragOver
      * @see GraphObject#mouseDrop
      */
-    mouseDrop: ((a: InputEvent) => void) | null;
+    mouseDrop: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets whether drag-and-drop events may be bubbled up to the diagram if not handled by a part.
      * The default value is false -- each Node or Link that in the diagram needs to define
@@ -10229,7 +10231,7 @@ export class Diagram {
      * @see GraphObject#mouseEnter
      * @since 2.0
      */
-    mouseEnter: ((a: InputEvent) => void) | null;
+    mouseEnter: ((e: InputEvent) => void) | null;
     /**
      * Gets or sets the function to execute when the mouse leaves the Diagram.
      *
@@ -10242,7 +10244,7 @@ export class Diagram {
      * @see GraphObject#mouseLeave
      * @since 2.0
      */
-    mouseLeave: ((a: InputEvent) => void) | null;
+    mouseLeave: ((e: InputEvent) => void) | null;
     /**
      * This Adornment or HTMLInfo is shown when the mouse stays motionless in the background.
      * The default value is null, which means no tooltip is shown.
@@ -10752,12 +10754,12 @@ export class Diagram {
      * The function, if supplied, must not have any side-effects.
      * @since 1.5
      */
-    positionComputation: ((a: Diagram, b: Point) => Point) | null;
+    positionComputation: ((thisDiagram: Diagram, newPosition: Point) => Point) | null;
     /**
      * Gets or sets the function used to determine valid scale values for this Diagram.
      * @since 1.5
      */
-    scaleComputation: ((a: Diagram, b: number) => number) | null;
+    scaleComputation: ((thisDiagram: Diagram, newScale: number) => number) | null;
     /**
      * This read-only property returns the bounds of the diagram's contents, in document coordinates.
      *
@@ -11015,7 +11017,7 @@ export class Diagram {
      * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
      * @see #removeDiagramListener
      */
-    addDiagramListener(name: DiagramEventName, listener: ((a: DiagramEvent) => void)): void;
+    addDiagramListener(name: DiagramEventName, listener: ((e: DiagramEvent) => void)): void;
     /**
      * Unregister a DiagramEvent handler.
      *
@@ -11024,7 +11026,7 @@ export class Diagram {
      * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
      * @see #addDiagramListener
      */
-    removeDiagramListener(name: DiagramEventName, listener: ((a: DiagramEvent) => void)): void;
+    removeDiagramListener(name: DiagramEventName, listener: ((e: DiagramEvent) => void)): void;
     /**
      * Undocumented.
      * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
@@ -12300,7 +12302,7 @@ export class CommandHandler {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    memberValidation: ((a: Group, b: Part) => boolean) | null;
+    memberValidation: ((aGroup: Group, somePart: Part) => boolean) | null;
     /**
      * Deprecated in favor of Diagram#defaultScale.
      *
@@ -12347,10 +12349,16 @@ export class CommandHandler {
     computeEffectiveCollection(parts: Iterable<Part>, options?: DraggingOptions): Map<Part, DraggingInfo>;
 }
 /**
+ * A type that describes a constructor.  Used in the declaration of GraphObject.make.
  */
-interface ConstructorType<T extends new (...args: Array<any>) => InstanceType<T>> {
+export interface ConstructorType<T extends new (...args: Array<any>) => InstanceType<T>> {
     new (...args: Array<any>): InstanceType<T>;
 }
+/**
+ * A type that declares which types may be passed as arguments, depending on the type of instance being built.
+ * Used in the declaration of GraphObject.make.
+ */
+export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> extends C ? E : never);
 /**
  * This is the abstract base class for all graphical objects.
  * Classes inheriting from GraphObject include:
@@ -12790,7 +12798,7 @@ export abstract class GraphObject {
      * @see Panel#isEnabled
      * @since 1.7
      */
-    enabledChanged: ((a: GraphObject, b: boolean) => void) | null;
+    enabledChanged: ((thisObj: GraphObject, enabled: boolean) => void) | null;
     /**
      * Gets or sets the orientation of a GraphObject that is in a Link or Panel#Graduated.
      * This controls the automatic rotation of the object by the Link Panel or Graduated Panel.
@@ -12871,7 +12879,15 @@ export abstract class GraphObject {
      * such as GraphObject#None, GraphObject#Fill, GraphObject#Horizontal, or GraphObject#Vertical.
      * The default value is GraphObject#Default, which allows the Panel to decide how to treat this object, depending on the type of Panel.
      *
-     * Objects with an angle that are stretched may look incorrect unless the angle is a multiple of 90.
+     * Objects with an #angle that are stretched may look incorrect unless the angle is a multiple of 90.
+     *
+     * Stretch will have have different effects based upon the Panel containing this object. Elements of:
+     * - Auto panels will not stretch, except the main element growing to fill the panel or being made uniform
+     * - Horizontal panels will only stretch vertically
+     * - Vertical panels will only stretch horizontally
+     * - Spot panels will stretch to the size of the main element
+     * - Table panels will stretch to the size of their cell, defined by their row and column, which is usually determined by other GraphObjects in that cell that are not stretching
+     * - Grid panels, Link panels, and Graduated panels will not stretch
      * @see Panel#defaultStretch
      * @see #desiredSize
      * @see #minSize
@@ -12879,7 +12895,6 @@ export abstract class GraphObject {
      * @see #measuredBounds
      * @see #actualBounds
      * @see #scale
-     * @see #angle
      * @see Picture#imageStretch
      */
     stretch: EnumValue;
@@ -13179,14 +13194,15 @@ export abstract class GraphObject {
      * You cannot modify the width or height of the value of this property --
      * if you want to change the desiredSize you must set this property to a different Size.
      *
+     * Getting or setting #width or #height is equivalent to getting or setting the
+     * width or height of this property.
+     *
      * The size does not include any transformation due to #scale or #angle,
      * nor any pen thickness due to Shape#strokeWidth if this is a Shape.
      * If there is a containing Panel the Panel will determine the actual size.
      * If the desiredSize is greater than the allowed size that the GraphObject's Panel determines,
-     * then the GraphObject may be visually clipped.
-     *
-     * Getting or setting #width or #height is equivalent to getting or setting the
-     * width or height of this property.
+     * then the GraphObject may be visually clipped. If the desiredSize does not meet the constraints
+     * of #minSize and #maxSize, the GraphObject will be resized to meet them.
      * @see #minSize
      * @see #maxSize
      * @see #naturalBounds
@@ -13652,7 +13668,7 @@ export abstract class GraphObject {
      * @see #contextClick
      * @see Diagram#click
      */
-    click: ((a: InputEvent, b: GraphObject) => void) | null;
+    click: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user double-primary-clicks on this object.
      * This typically involves a mouse-down/up/down/up in rapid succession
@@ -13698,7 +13714,7 @@ export abstract class GraphObject {
      * @see #contextClick
      * @see Diagram#doubleClick
      */
-    doubleClick: ((a: InputEvent, b: GraphObject) => void) | null;
+    doubleClick: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user single-secondary-clicks on this object.
      * This typically involves a mouse-down followed by a prompt mouse-up
@@ -13730,7 +13746,7 @@ export abstract class GraphObject {
      * @see #doubleClick
      * @see Diagram#contextClick
      */
-    contextClick: ((a: InputEvent, b: GraphObject) => void) | null;
+    contextClick: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * into this object without holding down any buttons.
@@ -13802,7 +13818,7 @@ export abstract class GraphObject {
      * @see #mouseHover
      * @see #mouseDragEnter
      */
-    mouseEnter: ((a: InputEvent, b: GraphObject, c: GraphObject) => void) | null;
+    mouseEnter: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * out of this object without holding down any buttons.
@@ -13843,7 +13859,7 @@ export abstract class GraphObject {
      * @see #mouseHover
      * @see #mouseDragLeave
      */
-    mouseLeave: ((a: InputEvent, b: GraphObject, c: GraphObject) => void) | null;
+    mouseLeave: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * over this object without holding down any buttons.
@@ -13866,7 +13882,7 @@ export abstract class GraphObject {
      * @see #mouseEnter
      * @see #mouseLeave
      */
-    mouseOver: ((a: InputEvent, b: GraphObject) => void) | null;
+    mouseOver: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user holds the mouse still for a while
      * over this object without holding down any buttons.
@@ -13895,7 +13911,7 @@ export abstract class GraphObject {
      * @see #mouseEnter
      * @see #mouseLeave
      */
-    mouseHover: ((a: InputEvent, b: GraphObject) => void) | null;
+    mouseHover: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user holds the mouse still for a while
      * over this object while holding down a button.
@@ -13924,7 +13940,7 @@ export abstract class GraphObject {
      * @see #mouseDragLeave
      * @see #mouseHover
      */
-    mouseHold: ((a: InputEvent, b: GraphObject) => void) | null;
+    mouseHold: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * into this stationary object during a DraggingTool drag;
@@ -13955,7 +13971,7 @@ export abstract class GraphObject {
      * @see #mouseEnter
      * @see Group#handlesDragDropForMembers
      */
-    mouseDragEnter: ((a: InputEvent, b: GraphObject, c: GraphObject) => void) | null;
+    mouseDragEnter: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * out of this stationary object during a DraggingTool drag;
@@ -13986,7 +14002,7 @@ export abstract class GraphObject {
      * @see #mouseLeave
      * @see Group#handlesDragDropForMembers
      */
-    mouseDragLeave: ((a: InputEvent, b: GraphObject, c: GraphObject) => void) | null;
+    mouseDragLeave: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when a user drops the selection on this object
      * at the end of a DraggingTool drag;
@@ -14008,7 +14024,7 @@ export abstract class GraphObject {
      * @see #mouseHold
      * @see Group#handlesDragDropForMembers
      */
-    mouseDrop: ((a: InputEvent, b: GraphObject) => void) | null;
+    mouseDrop: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute on a mouse-down event when this GraphObject's #isActionable
      * is set to true.
@@ -14024,7 +14040,7 @@ export abstract class GraphObject {
      * @see #actionUp
      * @see #actionCancel
      */
-    actionDown: ((a: InputEvent, b: GraphObject) => void) | null;
+    actionDown: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute on a mouse-move event when this GraphObject's #isActionable
      * is set to true.
@@ -14040,7 +14056,7 @@ export abstract class GraphObject {
      * @see #actionUp
      * @see #actionCancel
      */
-    actionMove: ((a: InputEvent, b: GraphObject) => void) | null;
+    actionMove: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute on a mouse-up event when this GraphObject's #isActionable
      * is set to true.
@@ -14059,7 +14075,7 @@ export abstract class GraphObject {
      * @see #actionMove
      * @see #actionCancel
      */
-    actionUp: ((a: InputEvent, b: GraphObject) => void) | null;
+    actionUp: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * Gets or sets the function to execute when the ActionTool is cancelled and this GraphObject's #isActionable
      * is set to true.
@@ -14075,7 +14091,7 @@ export abstract class GraphObject {
      * @see #actionMove
      * @see #actionUp
      */
-    actionCancel: ((a: InputEvent, b: GraphObject) => void) | null;
+    actionCancel: ((e: InputEvent, thisObj: GraphObject) => void) | null;
     /**
      * This Adornment or HTMLInfo is shown when the mouse hovers over this object.
      * The default value is null, which means no tooltip is shown.
@@ -14350,22 +14366,35 @@ export abstract class GraphObject {
      * or a string that is used as the value of a commonly set property.
      * @return {Object}
      */
-    static make<T extends GraphObject>(cls: string, ...initializers: Array<string | (Partial<GraphObject> & {
+    static make<T extends Adornment>(// for specific named builders
+    cls: ('ToolTip' | 'ContextMenu'), ...initializers: Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | PanelLayout | Array<string | (Partial<GraphObject> & {
+    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | PanelLayout>>): T;
+    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout>>): T;
+    static make<T extends Panel>(// for specific named Panel builders
+    cls: ('Button' | 'TreeExpanderButton' | 'SubGraphExpanderButton' | 'ContextMenuButton' | 'PanelExpanderButton' | 'CheckBoxButton' | 'CheckBox'), ...initializers: Array<string | (Partial<GraphObject> & {
+        [p: string]: any;
+    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
+        [p: string]: any;
+    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout>>): T;
+    static make<T extends GraphObject>(cls: string, // for named Panel builders
+    ...initializers: Array<string | (Partial<GraphObject> & {
+        [p: string]: any;
+    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
+        [p: string]: any;
+    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout>>): T;
     static make<CT extends ConstructorType<CT>>(cls: CT, ...initializers: Array<string | (Partial<InstanceType<CT>> & {
         [p: string]: any;
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | (InstanceType<CT> extends GraphObject ? Binding : never) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition | PanelLayout) : never) | (InstanceType<CT> extends RowColumnDefinition ? Binding : never) | (InstanceType<CT> extends Geometry ? PathFigure : never) | (InstanceType<CT> extends PathFigure ? PathSegment : never) | EnumValue | Array<string | (Partial<InstanceType<CT>> & {
+    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue | HTMLDivElement | Array<string | (Partial<InstanceType<CT>> & {
         [p: string]: any;
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | (InstanceType<CT> extends GraphObject ? Binding : never) | (InstanceType<CT> extends Panel ? (GraphObject | RowColumnDefinition | PanelLayout) : never) | (InstanceType<CT> extends RowColumnDefinition ? Binding : never) | (InstanceType<CT> extends Geometry ? PathFigure : never) | (InstanceType<CT> extends PathFigure ? PathSegment : never) | EnumValue>>): InstanceType<CT>;
+    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue>>): InstanceType<CT>;
     /**
      * This static function defines a named function that GraphObject.make can use to build objects.
      * Once this is called one can use the name as the first argument for GraphObject.make.
@@ -16653,7 +16682,7 @@ export class TextBlock extends GraphObject {
      * Gets or sets the function to call if a text edit made with the TextEditingTool is invalid.
      * The default is null.
      */
-    errorFunction: ((a: TextEditingTool, b: string, c: string) => void) | null;
+    errorFunction: ((tool: TextEditingTool, oldString: string, newString: string) => void) | null;
     /**
      * Gets or sets how frequently this text should be drawn within a "Graduated" Panel,
      * in multiples of the Panel#graduatedTickUnit.
@@ -16704,7 +16733,7 @@ export class TextBlock extends GraphObject {
      * The default value is null -- no function is called.
      * @since 1.7
      */
-    textEdited: ((a: TextBlock, b: string, c: string) => void) | null;
+    textEdited: ((thisTextBlock: TextBlock, oldString: string, newString: string) => void) | null;
     /**
      * Undocumented
      */
@@ -17262,7 +17291,7 @@ export class Part extends Panel {
      * By default this property is null -- no function is called.
      * @see #layerName
      */
-    layerChanged: ((a: Part, b: Layer, c: Layer) => void) | null;
+    layerChanged: ((thisPart: Part, oldLayer: Layer | null, newLayer: Layer | null) => void) | null;
     /**
      * Gets or sets the Z-ordering position of this Part within its Layer.
      *
@@ -17778,7 +17807,7 @@ export class Part extends Panel {
      * @see #isHighlighted
      * @since 1.7
      */
-    highlightedChanged: ((a: Part) => void) | null;
+    highlightedChanged: ((thisPart: Part) => void) | null;
     /**
      * Gets or sets the name of the GraphObject that should get a selection handle
      * when this part is selected.
@@ -17829,7 +17858,7 @@ export class Part extends Panel {
      * @see #selectionAdorned
      * @see #selectionAdornmentTemplate
      */
-    selectionChanged: ((a: Part) => void) | null;
+    selectionChanged: ((thisPart: Part) => void) | null;
     /**
      * Gets or sets the adornment template used to create a resize handle Adornment for this part.
      * This is used by the ResizingTool, ToolManager#resizingTool.
@@ -17948,7 +17977,7 @@ export class Part extends Panel {
      *
      * The initial value is null -- no function is called.
      */
-    containingGroupChanged: ((a: Part, b: Group, c: Group) => void) | null;
+    containingGroupChanged: ((thisPart: Part, oldGroup: Group | null, newGroup: Group | null) => void) | null;
     /**
      * Return how deep this part is in the hierarchy of nested Groups.
      * For parts that have no #containingGroup this returns zero.
@@ -18085,7 +18114,7 @@ export class Part extends Panel {
      * @see #maxLocation
      * @see #minLocation
      */
-    dragComputation: ((a: Part, b: Point, c: Point) => Point) | null;
+    dragComputation: ((thisPart: Part, newLoc: Point, snappedLoc: Point) => Point) | null;
     /**
      * Gets or sets the X and Y offset of this part's shadow. This is only relevant if #isShadowed is true.
      * The initial value is (6, 6).
@@ -18540,7 +18569,7 @@ export class Node extends Part {
      *
      * The default value is null -- no function is called.
      */
-    linkConnected: ((a: Node, b: Link, c: GraphObject) => void) | null;
+    linkConnected: ((thisNode: Node, newLink: Link, thisPort: GraphObject) => void) | null;
     /**
      * Gets or sets the function that is called after a Link has been disconnected from this Node.
      * It is typically used to modify the appearance of the node.
@@ -18555,7 +18584,7 @@ export class Node extends Part {
      *
      * The default value is null -- no function is called.
      */
-    linkDisconnected: ((a: Node, b: Link, c: GraphObject) => void) | null;
+    linkDisconnected: ((thisNode: Node, oldLink: Link, thisPort: GraphObject) => void) | null;
     /**
      * Gets or sets a predicate that determines whether or not a Link may be connected with this node.
      * If this is non-null, the predicate is called in addition to the predicate that is LinkingBaseTool#linkValidation
@@ -18573,7 +18602,7 @@ export class Node extends Part {
      * The function, if supplied, must not have any side-effects.
      * @since 1.3
      */
-    linkValidation: ((a: Node, b: GraphObject, c: Node, d: GraphObject, e: Link) => boolean) | null;
+    linkValidation: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
     /**
      * This read-only property is true when this Node is a label node for a Link.
      *
@@ -18846,7 +18875,7 @@ export class Node extends Part {
      *
      * The default value is null -- no function is called.
      */
-    treeExpandedChanged: ((a: Node) => void) | null;
+    treeExpandedChanged: ((thisNode: Node) => void) | null;
     /**
      * Gets whether this node has no tree children.
      *
@@ -19038,7 +19067,7 @@ export class Group extends Node {
      *
      * The default value is null -- no function is called.
      */
-    memberAdded: ((a: Group, b: Part) => void) | null;
+    memberAdded: ((thisGroup: Group, newPart: Part) => void) | null;
     /**
      * Gets or sets the function that is called after a member Part has been removed from this Group.
      * It is typically used to modify the appearance of the group.
@@ -19050,7 +19079,7 @@ export class Group extends Node {
      *
      * The default value is null -- no function is called.
      */
-    memberRemoved: ((a: Group, b: Part) => void) | null;
+    memberRemoved: ((thisGroup: Group, oldPart: Part) => void) | null;
     /**
      * Gets or sets the predicate that determines whether or not a Part may become a member of this group.
      * If this is non-null, the predicate is called in addition to any CommandHandler#memberValidation predicate.
@@ -19061,7 +19090,7 @@ export class Group extends Node {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    memberValidation: ((a: Group, b: Part) => boolean) | null;
+    memberValidation: ((thisGroup: Group, part: Part) => boolean) | null;
     /**
      * See if the given collection of Parts contains non-Links all for which
      * CommandHandler#isValidMember returns true.
@@ -19198,7 +19227,7 @@ export class Group extends Node {
      *
      * The default value is null -- no function is called.
      */
-    subGraphExpandedChanged: ((a: Group) => void) | null;
+    subGraphExpandedChanged: ((thisGroup: Group) => void) | null;
     /**
      * Move this Group and all of its member parts, recursively.
      * @param {Point} newpos a new Point in document coordinates.
@@ -19568,7 +19597,7 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    fromPortChanged: ((a: Link, b: GraphObject, c: GraphObject) => void) | null;
+    fromPortChanged: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
     /**
      * Gets or sets the Node that this link goes to.
      * The #toPortId specifies which port the link goes to.
@@ -19601,7 +19630,7 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    toPortChanged: ((a: Link, b: GraphObject, c: GraphObject) => void) | null;
+    toPortChanged: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
     /**
      * Gets or sets where this link should connect at the #fromPort.
      * The default value is Spot#Default, meaning that the value
@@ -21490,10 +21519,6 @@ export class Model {
      */
     computeJsonDifference(newmodel: Model, classname?: string): string;
     /**
-     * Undocumented
-     */
-    computeJSONDifference(newmodel: Model, classname?: string): string;
-    /**
      * Produce a JSON-format string representing the changes in the most recent Transaction.
      * This writes out JSON for a model, but recording only changes in the given Transaction,
      * with the addition of the "incremental" property to mark it as different from a complete model.
@@ -21678,7 +21703,7 @@ export class Model {
      * @see #removeChangedListener
      * @see Diagram#addModelChangedListener
      */
-    addChangedListener(listener: ((a: ChangedEvent) => void)): void;
+    addChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Unregister an event handler listener.
      *
@@ -21688,7 +21713,7 @@ export class Model {
      * @see #addChangedListener
      * @see Diagram#removeModelChangedListener
      */
-    removeChangedListener(listener: ((a: ChangedEvent) => void)): void;
+    removeChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Call this method to notify that the model or its objects have changed.
      * This constructs a ChangedEvent and calls all Changed listeners.
@@ -21865,7 +21890,7 @@ export class Model {
      * If a node data object is already in the model and you want to change its key value,
      * call #setKeyForNodeData with a new and unique key.
      */
-    makeUniqueKeyFunction: ((a: Model, b: ObjectData) => Key) | null;
+    makeUniqueKeyFunction: ((model: Model, data: ObjectData) => Key) | null;
     /**
      * Decide if a given node data object is in this model, using reference equality.
      *
@@ -21972,6 +21997,7 @@ export class Model {
      */
     removeNodeDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
     /**
+     * (Undocumented)
      * Take an Array of node data objects and update #nodeDataArray without replacing
      * the Array and without replacing any existing node data objects that are identified by key.
      * <p>
@@ -21998,7 +22024,7 @@ export class Model {
      * and that Array needs to be copied rather than shared.
      * Often the objects that are in the Array also need to be copied.
      */
-    copyNodeDataFunction: ((a: ObjectData, b: Model) => ObjectData) | null;
+    copyNodeDataFunction: ((data: ObjectData, model: Model) => ObjectData) | null;
     /**
      * Gets or sets whether the default behavior for #copyNodeData or GraphLinksModel#copyLinkData
      * makes copies of property values that are Arrays.
@@ -22095,7 +22121,7 @@ export class Model {
      * The second argument to the function is this Model, the destination model for the copied parts.
      * The third argument to the function is the source Model, of the original data objects.
      */
-    afterCopyFunction: ((a: Map<ObjectData, ObjectData>, b: Model, c: Model) => void) | null;
+    afterCopyFunction: ((map: Map<ObjectData, ObjectData>, destModel: Model, srcModel: Model) => void) | null;
     /**
      * Change the value of some property of a node data, a link data, an item data, or the Model#modelData,
      * given a string naming the property and the new value,
@@ -22474,7 +22500,7 @@ export class Binding {
      * @param {function(*,*)|null=} conv A side-effect-free function converting the data property value to the value to set the target property.
      *   If the function is null or not supplied, no conversion takes place.
      */
-    constructor(targetprop?: string, sourceprop?: string, conv?: ((a: any, b: any) => void) | null);
+    constructor(targetprop?: string, sourceprop?: string, conv?: ((val: any, targetObj: any) => void) | null);
     /**
      * Create a copy of this Binding, with the same property values.
      * @expose
@@ -22512,7 +22538,7 @@ export class Binding {
      * @param {EnumValue} defval the default enumerated value to return if it fails to parse the given string.
      * @return {function(string):EnumValue} a function that takes a string and returns an enumerated value.
      */
-    static parseEnum(ctor: any, defval: EnumValue): ((a: string) => EnumValue);
+    static parseEnum(ctor: any, defval: EnumValue): ((name: string) => EnumValue);
     /**
      * This static function can be used to convert an object to a string,
      * looking for commonly defined data properties, such as "text", "name", "key", or "id".
@@ -22581,7 +22607,7 @@ export class Binding {
      * If the #targetProperty is the empty string, the function should
      * set a property on the second argument, which will be the target GraphObject.
      */
-    converter: ((a: any, b: any) => void) | null;
+    converter: ((val: any, targetObj: any) => void) | null;
     /**
      * Gets or sets a converter function to apply to the GraphObject property value
      * in order to produce the value to set to a data property.
@@ -22604,7 +22630,7 @@ export class Binding {
      * If the #sourceProperty is the empty string, the function should
      * modify the second argument, which will be the source data object.
      */
-    backConverter: ((a: any, b: any, c: any) => void) | null;
+    backConverter: ((val: any, srcData: any, model: any) => void) | null;
     /**
      * Gets or sets the directions and frequency in which the binding may be evaluated.
      * The default value is Binding#OneWay.
@@ -22633,7 +22659,7 @@ export class Binding {
      * @param {function(*,*,*) | null=} backconv
      * @return {Binding} this two-way Binding.
      */
-    makeTwoWay(backconv?: ((a: any, b: any, c: any) => void) | null): Binding;
+    makeTwoWay(backconv?: ((val: any, srcData: any, model: any) => void) | null): Binding;
     /**
      * Modify this Binding to set its #sourceName property so as to identify
      * a GraphObject in the visual tree of the bound Panel as the data source,
@@ -23181,6 +23207,7 @@ export class GraphLinksModel extends Model {
      */
     removeLinkDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
     /**
+     * (Undocumented)
      * Take an Array of link data objects and update #linkDataArray without replacing
      * the Array and without replacing any existing link data objects that are identified by key.
      * This depends on #linkKeyProperty being a non-empty string.
@@ -26125,7 +26152,6 @@ export class TreeEdge extends LayoutEdge {
      */
     relativePoint: Point;
 }
-
 
 
 

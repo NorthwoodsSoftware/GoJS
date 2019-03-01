@@ -416,7 +416,6 @@ export class GoCloudStorage {
      */
     public create(path?: string, saveBefore: boolean = false) {
         const storage = this;
-        const diagrams = storage.managedDiagrams;
         function makeNewDiagram(d: go.Diagram) {
             if (storage.defaultModel) d.model = go.Model.fromJson(JSON.parse(storage.defaultModel));
             else d.model = new go.GraphLinksModel();
@@ -552,7 +551,6 @@ export class GoCloudStorage {
      * Loads all models in a saved file to their respective diagrams
      */
     protected loadFromFileContents(fileContents: string) {
-        const storage = this;
         const models = JSON.parse(fileContents);
         for (const divId in models) {
             const model = models[divId];

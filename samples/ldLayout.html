@@ -1,176 +1,179 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Layered Digraph Layout</title>
+  <meta charset="UTF-8">
+  <title>Layered Digraph Layout</title>
   <meta name="description" content="Interactive demonstration of hierarchical layout features by the LayeredDigraphLayout class." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
-        {
-          initialAutoScale: go.Diagram.UniformToFill,
-          layout: $(go.LayeredDigraphLayout)
-          // other Layout properties are set by the layout function, defined below
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
+          {
+            initialAutoScale: go.Diagram.UniformToFill,
+            layout: $(go.LayeredDigraphLayout)
+            // other Layout properties are set by the layout function, defined below
+          });
+
+      // define the Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Spot",
+          { locationSpot: go.Spot.Center },
+          $(go.Shape, "Rectangle",
+            {
+              fill: "lightgray",  // the initial value, but data binding may provide different value
+              stroke: null,
+              desiredSize: new go.Size(30, 30)
+            },
+            new go.Binding("fill", "fill")),
+          $(go.TextBlock,
+            new go.Binding("text", "text"))
+        );
+
+      // define the Link template to be minimal
+      myDiagram.linkTemplate =
+        $(go.Link,
+          { selectable: false },
+          $(go.Shape,
+            { strokeWidth: 3, stroke: "#333" }));
+
+      // generate a tree with the default values
+      rebuildGraph();
+    }
+
+    function rebuildGraph() {
+      var minNodes = document.getElementById("minNodes").value;
+      minNodes = parseInt(minNodes, 10);
+
+      var maxNodes = document.getElementById("maxNodes").value;
+      maxNodes = parseInt(maxNodes, 10);
+
+      generateDigraph(minNodes, maxNodes);
+    }
+
+    function generateDigraph(minNodes, maxNodes) {
+      myDiagram.startTransaction("generateDigraph");
+      // replace the diagram's model's nodeDataArray
+      generateNodes(minNodes, maxNodes);
+      // replace the diagram's model's linkDataArray
+      generateLinks();
+      // force a diagram layout
+      layout();
+      myDiagram.commitTransaction("generateDigraph");
+    }
+
+    // Creates a random number of randomly colored nodes.
+    function generateNodes(minNodes, maxNodes) {
+      var nodeArray = [];
+      // get the values from the fields and create a random number of nodes within the range
+      var min = parseInt(minNodes, 10);
+      var max = parseInt(maxNodes, 10);
+      if (isNaN(min)) min = 0;
+      if (isNaN(max) || max < min) max = min;
+      var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
+      var i;
+      for (i = 0; i < numNodes; i++) {
+        nodeArray.push({
+          key: i,
+          text: i.toString(),
+          fill: go.Brush.randomColor()
         });
-
-    // define the Node template
-    myDiagram.nodeTemplate =
-      $(go.Node, "Spot",
-        { locationSpot: go.Spot.Center },
-        $(go.Shape, "Rectangle",
-          { fill: "lightgray",  // the initial value, but data binding may provide different value
-            stroke: null,
-            desiredSize: new go.Size(30, 30) },
-          new go.Binding("fill", "fill")),
-        $(go.TextBlock,
-          new go.Binding("text", "text"))
-      );
-
-    // define the Link template to be minimal
-    myDiagram.linkTemplate =
-      $(go.Link,
-        { selectable: false },
-        $(go.Shape,
-          { strokeWidth: 3, stroke: "#333" }));
-
-    // generate a tree with the default values
-    rebuildGraph();
-  }
-
-  function rebuildGraph() {
-    var minNodes = document.getElementById("minNodes").value;
-    minNodes = parseInt(minNodes, 10);
-
-    var maxNodes = document.getElementById("maxNodes").value;
-    maxNodes = parseInt(maxNodes, 10);
-
-    generateDigraph(minNodes, maxNodes);
-  }
-
-  function generateDigraph(minNodes, maxNodes) {
-    myDiagram.startTransaction("generateDigraph");
-    // replace the diagram's model's nodeDataArray
-    generateNodes(minNodes, maxNodes);
-    // replace the diagram's model's linkDataArray
-    generateLinks();
-    // force a diagram layout
-    layout();
-    myDiagram.commitTransaction("generateDigraph");
-  }
-
-  // Creates a random number of randomly colored nodes.
-  function generateNodes(minNodes, maxNodes) {
-    var nodeArray = [];
-    // get the values from the fields and create a random number of nodes within the range
-    var min = parseInt(minNodes, 10);
-    var max = parseInt(maxNodes, 10);
-    if (isNaN(min)) min = 0;
-    if (isNaN(max) || max < min) max = min;
-    var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
-    var i;
-    for (i = 0; i < numNodes; i++) {
-      nodeArray.push({
-        key: i,
-        text: i.toString(),
-        fill: go.Brush.randomColor()
-      });
-    }
-
-    // randomize the node data
-    for (i = 0; i < nodeArray.length; i++) {
-      var swap = Math.floor(Math.random() * nodeArray.length);
-      var temp = nodeArray[swap];
-      nodeArray[swap] = nodeArray[i];
-      nodeArray[i] = temp;
-    }
-
-    // set the nodeDataArray to this array of objects
-    myDiagram.model.nodeDataArray = nodeArray;
-  }
-
-  // Create some link data
-  function generateLinks() {
-    if (myDiagram.nodes.count < 2) return;
-    var linkArray = [];
-    var nit = myDiagram.nodes;
-    var nodes = new go.List(/*go.Node*/);
-    nodes.addAll(nit);
-    for (var i = 0; i < nodes.count - 1; i++) {
-      var from = nodes.get(i);
-      var numto = Math.floor(1 + (Math.random() * 3) / 2);
-      for (var j = 0; j < numto; j++) {
-        var idx = Math.floor(i + 5 + Math.random() * 10);
-        if (idx >= nodes.count) idx = i + (Math.random() * (nodes.count - i)) | 0;
-        var to = nodes.get(idx);
-        linkArray.push({ from: from.data.key, to: to.data.key });
       }
+
+      // randomize the node data
+      for (i = 0; i < nodeArray.length; i++) {
+        var swap = Math.floor(Math.random() * nodeArray.length);
+        var temp = nodeArray[swap];
+        nodeArray[swap] = nodeArray[i];
+        nodeArray[i] = temp;
+      }
+
+      // set the nodeDataArray to this array of objects
+      myDiagram.model.nodeDataArray = nodeArray;
     }
-    myDiagram.model.linkDataArray = linkArray;
-  }
 
-  function layout() {
-    myDiagram.startTransaction("change Layout");
-    var lay = myDiagram.layout;
-
-    var direction = getRadioValue("direction");
-    direction = parseFloat(direction, 10);
-    lay.direction = direction;
-
-    var layerSpacing = document.getElementById("layerSpacing").value;
-    layerSpacing = parseFloat(layerSpacing, 10);
-    lay.layerSpacing = layerSpacing;
-
-    var columnSpacing = document.getElementById("columnSpacing").value;
-    columnSpacing = parseFloat(columnSpacing, 10);
-    lay.columnSpacing = columnSpacing;
-
-    var cycleRemove = getRadioValue("cycleRemove");
-    if (cycleRemove === "CycleDepthFirst") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
-    else if (cycleRemove === "CycleGreedy") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleGreedy;
-
-    var layering = getRadioValue("layering");
-    if (layering === "LayerOptimalLinkLength") lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
-    else if (layering === "LayerLongestPathSource") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSource;
-    else if (layering === "LayerLongestPathSink") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSink;
-
-    var initialize = getRadioValue("initialize");
-    if (initialize === "InitDepthFirstOut") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstOut;
-    else if (initialize === "InitDepthFirstIn") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
-    else if (initialize === "InitNaive") lay.initializeOption = go.LayeredDigraphLayout.InitNaive;
-
-    var aggressive = getRadioValue("aggressive");
-    if (aggressive === "AggressiveLess") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveLess;
-    else if (aggressive === "AggressiveNone") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
-    else if (aggressive === "AggressiveMore") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveMore;
-
-    //TODO implement pack option
-    var pack = document.getElementsByName("pack");
-    var packing = 0;
-    for (var i = 0; i < pack.length; i++) {
-      if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
+    // Create some link data
+    function generateLinks() {
+      if (myDiagram.nodes.count < 2) return;
+      var linkArray = [];
+      var nit = myDiagram.nodes;
+      var nodes = new go.List(/*go.Node*/);
+      nodes.addAll(nit);
+      for (var i = 0; i < nodes.count - 1; i++) {
+        var from = nodes.get(i);
+        var numto = Math.floor(1 + (Math.random() * 3) / 2);
+        for (var j = 0; j < numto; j++) {
+          var idx = Math.floor(i + 5 + Math.random() * 10);
+          if (idx >= nodes.count) idx = i + (Math.random() * (nodes.count - i)) | 0;
+          var to = nodes.get(idx);
+          linkArray.push({ from: from.data.key, to: to.data.key });
+        }
+      }
+      myDiagram.model.linkDataArray = linkArray;
     }
-    lay.packOption = packing;
 
-    var setsPortSpots = document.getElementById("setsPortSpots");
-    lay.setsPortSpots = setsPortSpots.checked;
+    function layout() {
+      myDiagram.startTransaction("change Layout");
+      var lay = myDiagram.layout;
 
-    myDiagram.commitTransaction("change Layout");
-  }
+      var direction = getRadioValue("direction");
+      direction = parseFloat(direction, 10);
+      lay.direction = direction;
 
-  function getRadioValue(name) {
-    var radio = document.getElementsByName(name);
-    for (var i = 0; i < radio.length; i++)
-      if (radio[i].checked) return radio[i].value;
-  }
-</script>
+      var layerSpacing = document.getElementById("layerSpacing").value;
+      layerSpacing = parseFloat(layerSpacing, 10);
+      lay.layerSpacing = layerSpacing;
+
+      var columnSpacing = document.getElementById("columnSpacing").value;
+      columnSpacing = parseFloat(columnSpacing, 10);
+      lay.columnSpacing = columnSpacing;
+
+      var cycleRemove = getRadioValue("cycleRemove");
+      if (cycleRemove === "CycleDepthFirst") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
+      else if (cycleRemove === "CycleGreedy") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleGreedy;
+
+      var layering = getRadioValue("layering");
+      if (layering === "LayerOptimalLinkLength") lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
+      else if (layering === "LayerLongestPathSource") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSource;
+      else if (layering === "LayerLongestPathSink") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSink;
+
+      var initialize = getRadioValue("initialize");
+      if (initialize === "InitDepthFirstOut") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstOut;
+      else if (initialize === "InitDepthFirstIn") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
+      else if (initialize === "InitNaive") lay.initializeOption = go.LayeredDigraphLayout.InitNaive;
+
+      var aggressive = getRadioValue("aggressive");
+      if (aggressive === "AggressiveLess") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveLess;
+      else if (aggressive === "AggressiveNone") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
+      else if (aggressive === "AggressiveMore") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveMore;
+
+      //TODO implement pack option
+      var pack = document.getElementsByName("pack");
+      var packing = 0;
+      for (var i = 0; i < pack.length; i++) {
+        if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
+      }
+      lay.packOption = packing;
+
+      var setsPortSpots = document.getElementById("setsPortSpots");
+      lay.setsPortSpots = setsPortSpots.checked;
+
+      myDiagram.commitTransaction("change Layout");
+    }
+
+    function getRadioValue(name) {
+      var radio = document.getElementsByName(name);
+      for (var i = 0; i < radio.length; i++)
+        if (radio[i].checked) return radio[i].value;
+    }
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GoJS Wordcloud</title>
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
+  <title>GoJS Wordcloud</title>
+  <meta name="description" content="Given a collection of words and their frequencies or importance, generate a diagram of those words scale by their frequency or importance and then packed together." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+
   <script src="assets/require.js"></script>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
@@ -14,7 +16,7 @@
     var PackedLayout;
 
     function init() {
-      require(["../extensionsTS/PackedLayout"], function (app) {
+      require(["../extensionsTS/PackedLayout"], function(app) {
         if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
         PackedLayout = app.PackedLayout;
@@ -108,7 +110,7 @@
       var it = frequencies.iterator;
       var freqArr = [];
       while (it.next()) {
-        freqArr.push({word: it.key, freq: it.value})
+        freqArr.push({ word: it.key, freq: it.value })
       }
 
       // sort the frequency array in descending order
@@ -129,17 +131,17 @@
         }
         // scale node size logarithmically with frequency
         var scale = 2 * Math.log(freqArr[i].freq) + 1;
-        nodes.push({text: freqArr[i].word, scale: scale});
+        nodes.push({ text: freqArr[i].word, scale: scale });
       }
 
       // randomize order if checkbox is checked
       if (document.getElementById('randomizePositions').checked) {
         var j, x, i;
         for (i = nodes.length - 1; i > 0; i--) {
-            j = Math.floor(Math.random() * (i + 1));
-            x = nodes[i];
-            nodes[i] = nodes[j];
-            nodes[j] = x;
+          j = Math.floor(Math.random() * (i + 1));
+          x = nodes[i];
+          nodes[i] = nodes[j];
+          nodes[j] = x;
         }
       }
 

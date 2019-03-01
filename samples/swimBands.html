@@ -1,158 +1,159 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Layer Bands using a Background Part</title>
-<meta name="description" content="Showing bands for the layers in a diagram." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
+  <meta charset="UTF-8">
+  <title>Layer Bands using a Background Part</title>
+  <meta name="description" content="Showing bands for the layers in a diagram." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-  // this controls whether the layout is horizontal and the layer bands are vertical, or vice-versa:
-  var HORIZONTAL = true;  // this constant parameter can only be set here, not dynamically
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
 
-  // Perform a TreeLayout where commitLayers is overridden to modify the background Part whose key is "_BANDS".
-  function BandedTreeLayout() {
-    go.TreeLayout.call(this);
-    this.layerStyle = go.TreeLayout.LayerUniform;  // needed for straight layers
-  }
-  go.Diagram.inherit(BandedTreeLayout, go.TreeLayout);
+    // this controls whether the layout is horizontal and the layer bands are vertical, or vice-versa:
+    var HORIZONTAL = true;  // this constant parameter can only be set here, not dynamically
 
-  BandedTreeLayout.prototype.commitLayers = function(layerRects, offset) {
-    // update the background object holding the visual "bands"
-    var bands = this.diagram.findPartForKey("_BANDS");
-    if (bands) {
-      var model = this.diagram.model;
-      bands.location = this.arrangementOrigin.copy().add(offset);
-
-      // make each band visible or not, depending on whether there is a layer for it
-      for (var it = bands.elements; it.next(); ) {
-        var idx = it.key;
-        var elt = it.value;  // the item panel representing a band
-        elt.visible = idx < layerRects.length;
-      }
-
-      // set the bounds of each band via data binding of the "bounds" property
-      var arr = bands.data.itemArray;
-      for (var i = 0; i < layerRects.length; i++) {
-        var itemdata = arr[i];
-        if (itemdata) {
-          model.setDataProperty(itemdata, "bounds", layerRects[i]);
-        }
-      }
+    // Perform a TreeLayout where commitLayers is overridden to modify the background Part whose key is "_BANDS".
+    function BandedTreeLayout() {
+      go.TreeLayout.call(this);
+      this.layerStyle = go.TreeLayout.LayerUniform;  // needed for straight layers
     }
-  };
-  // end BandedTreeLayout
+    go.Diagram.inherit(BandedTreeLayout, go.TreeLayout);
 
+    BandedTreeLayout.prototype.commitLayers = function(layerRects, offset) {
+      // update the background object holding the visual "bands"
+      var bands = this.diagram.findPartForKey("_BANDS");
+      if (bands) {
+        var model = this.diagram.model;
+        bands.location = this.arrangementOrigin.copy().add(offset);
 
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
-
-    myDiagram = $(go.Diagram, "myDiagramDiv",
-                  {
-                    layout: $(BandedTreeLayout,  // custom layout is defined above
-                              {
-                                angle: HORIZONTAL ? 0 : 90,
-                                arrangement: HORIZONTAL ? go.TreeLayout.ArrangementVertical : go.TreeLayout.ArrangementHorizontal
-                              }),
-                    "undoManager.isEnabled": true
-                  });
-
-    myDiagram.nodeTemplate =
-      $(go.Node, go.Panel.Auto,
-        $(go.Shape, "Rectangle",
-          { fill: "white" }),
-        $(go.TextBlock, { margin: 5 },
-          new go.Binding("text", "key")));
-
-    // There should be at most a single object of this category.
-    // This Part will be modified by BandedTreeLayout.commitLayers to display visual "bands"
-    // where each "layer" is a layer of the tree.
-    // This template is parameterized at load time by the HORIZONTAL parameter.
-    // You also have the option of showing rectangles for the layer bands or
-    // of showing separator lines between the layers, but not both at the same time,
-    // by commenting in/out the indicated code.
-    myDiagram.nodeTemplateMap.add("Bands",
-      $(go.Part, "Position",
-        new go.Binding("itemArray"),
-        {
-          isLayoutPositioned: false,  // but still in document bounds
-          locationSpot: new go.Spot(0, 0, HORIZONTAL ? 0 : 16, HORIZONTAL ? 16 : 0),  // account for header height
-          layerName: "Background",
-          pickable: false,
-          selectable: false,
-          itemTemplate:
-            $(go.Panel, HORIZONTAL ? "Vertical" : "Horizontal",
-              new go.Binding("position", "bounds", function(b) { return b.position; }),
-              $(go.TextBlock,
-                {
-                  angle: HORIZONTAL ? 0 : 270,
-                  textAlign: "center",
-                  wrap: go.TextBlock.None,
-                  font: "bold 11pt sans-serif",
-                  background: $(go.Brush, "Linear", { 0: "aqua", 1: go.Brush.darken("aqua") })
-                },
-                new go.Binding("text"),
-                // always bind "width" because the angle does the rotation
-                new go.Binding("width", "bounds", function(r) { return HORIZONTAL ? r.width : r.height; })
-              ),
-              // option 1: rectangular bands:
-              $(go.Shape,
-                { stroke: null, strokeWidth: 0 },
-                new go.Binding("desiredSize", "bounds", function(r) { return r.size; }),
-                new go.Binding("fill", "itemIndex", function(i) { return i % 2 == 0 ? "whitesmoke" : go.Brush.darken("whitesmoke"); }).ofObject())
-              // option 2: separator lines:
-              //(HORIZONTAL
-              //  ? $(go.Shape, "LineV",
-              //      { stroke: "gray", alignment: go.Spot.TopLeft, width: 1 },
-              //      new go.Binding("height", "bounds", function(r) { return r.height; }),
-              //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
-              //  : $(go.Shape, "LineH",
-              //      { stroke: "gray", alignment: go.Spot.TopLeft, height: 1 },
-              //      new go.Binding("width", "bounds", function(r) { return r.width; }),
-              //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
-              //)
-            )
+        // make each band visible or not, depending on whether there is a layer for it
+        for (var it = bands.elements; it.next();) {
+          var idx = it.key;
+          var elt = it.value;  // the item panel representing a band
+          elt.visible = idx < layerRects.length;
         }
-      ));
 
-    myDiagram.linkTemplate =
-      $(go.Link,
-        $(go.Shape));  // simple black line, no arrowhead needed
+        // set the bounds of each band via data binding of the "bounds" property
+        var arr = bands.data.itemArray;
+        for (var i = 0; i < layerRects.length; i++) {
+          var itemdata = arr[i];
+          if (itemdata) {
+            model.setDataProperty(itemdata, "bounds", layerRects[i]);
+          }
+        }
+      }
+    };
+    // end BandedTreeLayout
 
-    // define the tree node data
-    var nodearray = [
-      { // this is the information needed for the headers of the bands
-        key: "_BANDS",
-        category: "Bands",
-        itemArray: [
-          { text: "Zero" },
-          { text: "One" },
-          { text: "Two" },
-          { text: "Three" },
-          { text: "Four" },
-          { text: "Five" }
-        ]
-      },
-      // these are the regular nodes in the TreeModel
-      { key: "root" },
-      { key: "oneB", parent: "root" },
-      { key: "twoA", parent: "oneB" },
-      { key: "twoC", parent: "root" },
-      { key: "threeC", parent: "twoC" },
-      { key: "threeD", parent: "twoC" },
-      { key: "fourB", parent: "threeD" },
-      { key: "fourC", parent: "twoC" },
-      { key: "fourD", parent: "fourB" },
-      { key: "twoD", parent: "root" }
-    ];
 
-    myDiagram.model = new go.TreeModel(nodearray);
-  }
-</script>
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
+
+      myDiagram = $(go.Diagram, "myDiagramDiv",
+        {
+          layout: $(BandedTreeLayout,  // custom layout is defined above
+            {
+              angle: HORIZONTAL ? 0 : 90,
+              arrangement: HORIZONTAL ? go.TreeLayout.ArrangementVertical : go.TreeLayout.ArrangementHorizontal
+            }),
+          "undoManager.isEnabled": true
+        });
+
+      myDiagram.nodeTemplate =
+        $(go.Node, go.Panel.Auto,
+          $(go.Shape, "Rectangle",
+            { fill: "white" }),
+          $(go.TextBlock, { margin: 5 },
+            new go.Binding("text", "key")));
+
+      // There should be at most a single object of this category.
+      // This Part will be modified by BandedTreeLayout.commitLayers to display visual "bands"
+      // where each "layer" is a layer of the tree.
+      // This template is parameterized at load time by the HORIZONTAL parameter.
+      // You also have the option of showing rectangles for the layer bands or
+      // of showing separator lines between the layers, but not both at the same time,
+      // by commenting in/out the indicated code.
+      myDiagram.nodeTemplateMap.add("Bands",
+        $(go.Part, "Position",
+          new go.Binding("itemArray"),
+          {
+            isLayoutPositioned: false,  // but still in document bounds
+            locationSpot: new go.Spot(0, 0, HORIZONTAL ? 0 : 16, HORIZONTAL ? 16 : 0),  // account for header height
+            layerName: "Background",
+            pickable: false,
+            selectable: false,
+            itemTemplate:
+              $(go.Panel, HORIZONTAL ? "Vertical" : "Horizontal",
+                new go.Binding("position", "bounds", function(b) { return b.position; }),
+                $(go.TextBlock,
+                  {
+                    angle: HORIZONTAL ? 0 : 270,
+                    textAlign: "center",
+                    wrap: go.TextBlock.None,
+                    font: "bold 11pt sans-serif",
+                    background: $(go.Brush, "Linear", { 0: "aqua", 1: go.Brush.darken("aqua") })
+                  },
+                  new go.Binding("text"),
+                  // always bind "width" because the angle does the rotation
+                  new go.Binding("width", "bounds", function(r) { return HORIZONTAL ? r.width : r.height; })
+                ),
+                // option 1: rectangular bands:
+                $(go.Shape,
+                  { stroke: null, strokeWidth: 0 },
+                  new go.Binding("desiredSize", "bounds", function(r) { return r.size; }),
+                  new go.Binding("fill", "itemIndex", function(i) { return i % 2 == 0 ? "whitesmoke" : go.Brush.darken("whitesmoke"); }).ofObject())
+                // option 2: separator lines:
+                //(HORIZONTAL
+                //  ? $(go.Shape, "LineV",
+                //      { stroke: "gray", alignment: go.Spot.TopLeft, width: 1 },
+                //      new go.Binding("height", "bounds", function(r) { return r.height; }),
+                //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
+                //  : $(go.Shape, "LineH",
+                //      { stroke: "gray", alignment: go.Spot.TopLeft, height: 1 },
+                //      new go.Binding("width", "bounds", function(r) { return r.width; }),
+                //      new go.Binding("visible", "itemIndex", function(i) { return i > 0; }).ofObject())
+                //)
+              )
+          }
+        ));
+
+      myDiagram.linkTemplate =
+        $(go.Link,
+          $(go.Shape));  // simple black line, no arrowhead needed
+
+      // define the tree node data
+      var nodearray = [
+        { // this is the information needed for the headers of the bands
+          key: "_BANDS",
+          category: "Bands",
+          itemArray: [
+            { text: "Zero" },
+            { text: "One" },
+            { text: "Two" },
+            { text: "Three" },
+            { text: "Four" },
+            { text: "Five" }
+          ]
+        },
+        // these are the regular nodes in the TreeModel
+        { key: "root" },
+        { key: "oneB", parent: "root" },
+        { key: "twoA", parent: "oneB" },
+        { key: "twoC", parent: "root" },
+        { key: "threeC", parent: "twoC" },
+        { key: "threeD", parent: "twoC" },
+        { key: "fourB", parent: "threeD" },
+        { key: "fourC", parent: "twoC" },
+        { key: "fourD", parent: "fourB" },
+        { key: "twoD", parent: "root" }
+      ];
+
+      myDiagram.model = new go.TreeModel(nodearray);
+    }
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

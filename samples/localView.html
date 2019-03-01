@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Local View</title>
   <meta name="description" content="In one diagram show the whole tree and in a second diagram show a subset that is logically near a selected node." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <script src="../release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -22,7 +23,7 @@
             isReadOnly: true,  // don't allow user to change the diagram
             "animationManager.isEnabled": false,
             layout: $(go.TreeLayout,
-                      { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+              { angle: 90, sorting: go.TreeLayout.SortingAscending }),
             maxSelectionCount: 1,  // only one node may be selected at a time in each diagram
             // when the selection changes, update the myLocalDiagram view
             "ChangedSelection": showLocalOnFullClick
@@ -35,7 +36,7 @@
             contentAlignment: go.Spot.Center,
             isReadOnly: true,
             layout: $(go.TreeLayout,
-                      { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+              { angle: 90, sorting: go.TreeLayout.SortingAscending }),
             "LayoutCompleted": function(e) {
               var sel = e.diagram.selection.first();
               if (sel !== null) myLocalDiagram.scrollToRect(sel.actualBounds);
@@ -88,7 +89,7 @@
               stroke: null,
               desiredSize: new go.Size(400, 400)
             })
-          );
+        );
       myFullDiagram.add(highlighter);
 
       // Start by focusing the diagrams on the node at the top of the tree.
@@ -132,8 +133,8 @@
         }
         // create the model using the same node data as in myFullDiagram's model
         nearby.each(function(n) {
-            if (n instanceof go.Node) model.addNodeData(n.data);
-          });
+          if (n instanceof go.Node) model.addNodeData(n.data);
+        });
         myLocalDiagram.model = model;
         // select the node at the diagram's focus
         var selectedLocal = myLocalDiagram.findPartForKey(node.data.key);

@@ -1,32 +1,59 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>System Dynamics</title>
   <meta name="description" content="A simple implementation of a system dynamics editor." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <style>
-    button {}
-    .pointer_normal { font-weight: normal; background: #f0f0f0; }
-    .pointer_selected { font-weight: bold; background: yellow; }
-    .node_normal { font-weight: normal; background: #fff0f0; }
-    .node_selected { font-weight: bold; background: #ff8080; }
-    .link_normal { font-weight: normal; background: #f0fff0; }
-    .link_selected { font-weight: bold; background: #80ff80; }
+
+    button {
+    }
+
+    .pointer_normal {
+      font-weight: normal;
+      background: #f0f0f0;
+    }
+
+    .pointer_selected {
+      font-weight: bold;
+      background: yellow;
+    }
+
+    .node_normal {
+      font-weight: normal;
+      background: #fff0f0;
+    }
+
+    .node_selected {
+      font-weight: bold;
+      background: #ff8080;
+    }
+
+    .link_normal {
+      font-weight: normal;
+      background: #f0fff0;
+    }
+
+    .link_selected {
+      font-weight: bold;
+      background: #80ff80;
+    }
   </style>
   <script src="../release/go.js"></script>
   <script src="../extensions/Figures.js"></script>
   <script src="../extensions/NodeLabelDraggingTool.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     // SD is a global variable, to avoid polluting global namespace and to make the global
     // nature of the individual variables obvious.
     var SD = {
       mode: "pointer",   // Set to default mode.  Alternatives are "node" and "link", for
-                         // adding a new node or a new link respectively.
+      // adding a new node or a new link respectively.
       itemType: "pointer",    // Set when user clicks on a node or link button.
-      nodeCounter: {stock:0, cloud:0, variable:0, valve:0}
+      nodeCounter: { stock: 0, cloud: 0, variable: 0, valve: 0 }
     };
     var myDiagram;   // Declared as global
 
@@ -78,33 +105,33 @@
           }
         });
 
-        // install the NodeLabelDraggingTool as a "mouse move" tool
-        myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
+      // install the NodeLabelDraggingTool as a "mouse move" tool
+      myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
 
-        // when the document is modified, add a "*" to the title and enable the "Save" button
-        myDiagram.addDiagramListener("Modified", function(e) {
-          var button = document.getElementById("SaveButton");
-          if (button) button.disabled = !myDiagram.isModified;
-          var idx = document.title.indexOf("*");
-          if (myDiagram.isModified) {
-            if (idx < 0) document.title += "*";
-          } else {
-            if (idx >= 0) document.title = document.title.substr(0, idx);
-          }
-        });
+      // when the document is modified, add a "*" to the title and enable the "Save" button
+      myDiagram.addDiagramListener("Modified", function(e) {
+        var button = document.getElementById("SaveButton");
+        if (button) button.disabled = !myDiagram.isModified;
+        var idx = document.title.indexOf("*");
+        if (myDiagram.isModified) {
+          if (idx < 0) document.title += "*";
+        } else {
+          if (idx >= 0) document.title = document.title.substr(0, idx);
+        }
+      });
 
-        // generate unique label for valve on newly-created flow link
-        myDiagram.addDiagramListener("LinkDrawn", function(e) {
-            var link = e.subject;
-            if (link.category === "flow") {
-                myDiagram.startTransaction("updateNode");
-                SD.nodeCounter.valve += 1;
-                var newNodeId = "flow" + SD.nodeCounter.valve;
-                var labelNode = link.labelNodes.first();
-                myDiagram.model.setDataProperty(labelNode.data, "label", newNodeId);
-                myDiagram.commitTransaction("updateNode");
-            }
-        });
+      // generate unique label for valve on newly-created flow link
+      myDiagram.addDiagramListener("LinkDrawn", function(e) {
+        var link = e.subject;
+        if (link.category === "flow") {
+          myDiagram.startTransaction("updateNode");
+          SD.nodeCounter.valve += 1;
+          var newNodeId = "flow" + SD.nodeCounter.valve;
+          var labelNode = link.labelNodes.first();
+          myDiagram.model.setDataProperty(labelNode.data, "label", newNodeId);
+          myDiagram.commitTransaction("updateNode");
+        }
+      });
 
       buildTemplates();
 

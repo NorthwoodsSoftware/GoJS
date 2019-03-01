@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Record Mapper</title>
-<meta name="description" content="A diagram for displaying and editing the N to M relationships from one set of objects to another set of objects." />
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
+  <title>Record Mapper</title>
+  <meta name="description" content="A diagram for displaying and editing the N to M relationships from one set of objects to another set of objects." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+
   <script src="../release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -19,8 +20,8 @@
             validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
             // For this sample, automatically show the state of the diagram's model on the page
             "ModelChanged": function(e) {
-                if (e.isTransactionFinished) showModel();
-              },
+              if (e.isTransactionFinished) showModel();
+            },
             "undoManager.isEnabled": true
           });
 
@@ -37,16 +38,20 @@
             fromLinkable: true, toLinkable: true
           },
           $(go.Shape,
-            { width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4,
+            {
+              width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4,
               // but disallow drawing links from or to this shape:
-              fromLinkable: false, toLinkable: false },
+              fromLinkable: false, toLinkable: false
+            },
             new go.Binding("figure", "figure"),
             new go.Binding("fill", "color")),
           $(go.TextBlock,
-            { margin: new go.Margin(0, 5), column: 1, font: "bold 13px sans-serif",
+            {
+              margin: new go.Margin(0, 5), column: 1, font: "bold 13px sans-serif",
               alignment: go.Spot.Left,
               // and disallow drawing links from or to this text:
-              fromLinkable: false, toLinkable: false },
+              fromLinkable: false, toLinkable: false
+            },
             new go.Binding("text", "name")),
           $(go.TextBlock,
             { margin: new go.Margin(0, 5), column: 2, font: "13px sans-serif", alignment: go.Spot.Left },
@@ -95,7 +100,7 @@
         $(go.Link,
           {
             relinkableFrom: true, relinkableTo: true, // let user reconnect links
-            toShortLength: 4,  fromShortLength: 2
+            toShortLength: 4, fromShortLength: 2
           },
           $(go.Shape, { strokeWidth: 1.5 }),
           $(go.Shape, { toArrow: "Standard", stroke: null })
@@ -109,21 +114,25 @@
             linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
             nodeDataArray: [
-              { key: "Record1",
+              {
+                key: "Record1",
                 fields: [
                   { name: "field1", info: "", color: "#F7B84B", figure: "Ellipse" },
                   { name: "field2", info: "the second one", color: "#F25022", figure: "Ellipse" },
                   { name: "fieldThree", info: "3rd", color: "#00BCF2" }
                 ],
-                loc: "0 0" },
-              { key: "Record2",
+                loc: "0 0"
+              },
+              {
+                key: "Record2",
                 fields: [
-                  { name: "fieldA", info: "",       color: "#FFB900", figure: "Diamond" },
-                  { name: "fieldB", info: "",       color: "#F25022", figure: "Rectangle" },
-                  { name: "fieldC", info: "",       color: "#7FBA00", figure: "Diamond" },
-                  { name: "fieldD", info: "fourth", color: "#00BCF2",  figure: "Rectangle" }
+                  { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond" },
+                  { name: "fieldB", info: "", color: "#F25022", figure: "Rectangle" },
+                  { name: "fieldC", info: "", color: "#7FBA00", figure: "Diamond" },
+                  { name: "fieldD", info: "fourth", color: "#00BCF2", figure: "Rectangle" }
                 ],
-                loc: "280 0" }
+                loc: "280 0"
+              }
             ],
             linkDataArray: [
               { from: "Record1", fromPort: "field1", to: "Record2", toPort: "fieldA" },

@@ -1,33 +1,34 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Selectable Ports</title>
-<meta name="description" content="Support selecting ports within nodes." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+  <meta charset="UTF-8">
+  <title>Selectable Ports</title>
+  <meta name="description" content="Support selecting ports within nodes." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",
-        {
-          // For this sample, automatically show the state of the diagram's model on the page
-          "ModelChanged": function(e) {
-            if (e.isTransactionFinished) showModel();
-          },
-          "undoManager.isEnabled": true
-        });
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
 
-    var UnselectedBrush = "lightgray";  // item appearance, if not "selected"
-    var SelectedBrush = "dodgerblue";   // item appearance, if "selected"
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            // For this sample, automatically show the state of the diagram's model on the page
+            "ModelChanged": function(e) {
+              if (e.isTransactionFinished) showModel();
+            },
+            "undoManager.isEnabled": true
+          });
 
-    function makeItemTemplate(leftside) {
-      return $(go.Panel, "Auto",
+      var UnselectedBrush = "lightgray";  // item appearance, if not "selected"
+      var SelectedBrush = "dodgerblue";   // item appearance, if "selected"
+
+      function makeItemTemplate(leftside) {
+        return $(go.Panel, "Auto",
           { margin: new go.Margin(1, 0) },  // some space between ports
           $(go.Shape,
             {
@@ -66,130 +67,130 @@
               }
             })
         );
-    }
+      }
 
-    myDiagram.nodeTemplate =
-      $(go.Node, "Spot",
-        { selectionAdorned: false },
-        { locationSpot: go.Spot.Center, locationObjectName: "BODY" },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Panel, "Auto",
-          { name: "BODY" },
-          $(go.Shape, "RoundedRectangle",
-            { stroke: "gray", strokeWidth: 2, fill: "transparent" },
-            new go.Binding("stroke", "isSelected", function(b) { return b ? SelectedBrush : UnselectedBrush; }).ofObject()),
+      myDiagram.nodeTemplate =
+        $(go.Node, "Spot",
+          { selectionAdorned: false },
+          { locationSpot: go.Spot.Center, locationObjectName: "BODY" },
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto",
+            { name: "BODY" },
+            $(go.Shape, "RoundedRectangle",
+              { stroke: "gray", strokeWidth: 2, fill: "transparent" },
+              new go.Binding("stroke", "isSelected", function(b) { return b ? SelectedBrush : UnselectedBrush; }).ofObject()),
+            $(go.Panel, "Vertical",
+              { margin: 6 },
+              $(go.TextBlock,
+                new go.Binding("text", "name"),
+                { alignment: go.Spot.Left }),
+              $(go.Picture, "images/60x90.png",
+                { width: 30, height: 45, margin: new go.Margin(10, 10) })
+            )
+          ),
           $(go.Panel, "Vertical",
-            { margin: 6 },
-            $(go.TextBlock,
-              new go.Binding("text", "name"),
-              { alignment: go.Spot.Left }),
-            $(go.Picture, "images/60x90.png",
-              { width: 30, height: 45, margin: new go.Margin(10, 10) })
+            { name: "LEFTPORTS", alignment: new go.Spot(0, 0.5, 0, 7) },
+            new go.Binding("itemArray", "inservices"),
+            { itemTemplate: makeItemTemplate(true) }
+          ),
+          $(go.Panel, "Vertical",
+            { name: "RIGHTPORTS", alignment: new go.Spot(1, 0.5, 0, 7) },
+            new go.Binding("itemArray", "outservices"),
+            { itemTemplate: makeItemTemplate(false) }
           )
-        ),
-        $(go.Panel, "Vertical",
-          { name: "LEFTPORTS", alignment: new go.Spot(0, 0.5, 0, 7) },
-          new go.Binding("itemArray", "inservices"),
-          { itemTemplate: makeItemTemplate(true) }
-        ),
-        $(go.Panel, "Vertical",
-          { name: "RIGHTPORTS", alignment: new go.Spot(1, 0.5, 0, 7) },
-          new go.Binding("itemArray", "outservices"),
-          { itemTemplate: makeItemTemplate(false) }
-        )
-      );
+        );
 
-    myDiagram.linkTemplate =
-      $(go.Link,
-        { routing: go.Link.Orthogonal, corner: 10, toShortLength: -3 },
-        { relinkableFrom: true, relinkableTo: true, reshapable: true, resegmentable: true },
-        $(go.Shape, { stroke: "gray", strokeWidth: 2.5 })
-      );
+      myDiagram.linkTemplate =
+        $(go.Link,
+          { routing: go.Link.Orthogonal, corner: 10, toShortLength: -3 },
+          { relinkableFrom: true, relinkableTo: true, reshapable: true, resegmentable: true },
+          $(go.Shape, { stroke: "gray", strokeWidth: 2.5 })
+        );
 
-    function findAllSelectedItems() {
-      var items = [];
-      for (var nit = myDiagram.nodes; nit.next(); ) {
-        var node = nit.value;
-        //?? Maybe this should only return selected items that are within selected Nodes
-        //if (!node.isSelected) continue;
-        var table = node.findObject("LEFTPORTS");
-        if (table !== null) {
-          for (var iit = table.elements; iit.next(); ) {
-            var itempanel = iit.value;
-            var shape = itempanel.findObject("SHAPE");
-            if (shape !== null && shape.fill === SelectedBrush) items.push(itempanel);
+      function findAllSelectedItems() {
+        var items = [];
+        for (var nit = myDiagram.nodes; nit.next();) {
+          var node = nit.value;
+          //?? Maybe this should only return selected items that are within selected Nodes
+          //if (!node.isSelected) continue;
+          var table = node.findObject("LEFTPORTS");
+          if (table !== null) {
+            for (var iit = table.elements; iit.next();) {
+              var itempanel = iit.value;
+              var shape = itempanel.findObject("SHAPE");
+              if (shape !== null && shape.fill === SelectedBrush) items.push(itempanel);
+            }
+          }
+          table = node.findObject("RIGHTPORTS");
+          if (table !== null) {
+            for (var iit = table.elements; iit.next();) {
+              var itempanel = iit.value;
+              var shape = itempanel.findObject("SHAPE");
+              if (shape !== null && shape.fill === SelectedBrush) items.push(itempanel);
+            }
           }
         }
-        table = node.findObject("RIGHTPORTS");
-        if (table !== null) {
-          for (var iit = table.elements; iit.next(); ) {
-            var itempanel = iit.value;
-            var shape = itempanel.findObject("SHAPE");
-            if (shape !== null && shape.fill === SelectedBrush) items.push(itempanel);
-          }
-        }
+        return items;
       }
-      return items;
-    }
 
-    // Override the standard CommandHandler deleteSelection and canDeleteSelection behavior.
-    // If there are any selected items, delete them instead of deleting any selected nodes or links.
+      // Override the standard CommandHandler deleteSelection and canDeleteSelection behavior.
+      // If there are any selected items, delete them instead of deleting any selected nodes or links.
 
-    myDiagram.commandHandler.canDeleteSelection = function() {
-      // true if there are any selected deletable nodes or links,
-      // or if there are any selected items within nodes
-      return go.CommandHandler.prototype.canDeleteSelection.call(myDiagram.commandHandler) ||
-               findAllSelectedItems().length > 0;
-    };
+      myDiagram.commandHandler.canDeleteSelection = function() {
+        // true if there are any selected deletable nodes or links,
+        // or if there are any selected items within nodes
+        return go.CommandHandler.prototype.canDeleteSelection.call(myDiagram.commandHandler) ||
+          findAllSelectedItems().length > 0;
+      };
 
-    myDiagram.commandHandler.deleteSelection = function() {
-      var items = findAllSelectedItems();
-      if (items.length > 0) {  // if there are any selected items, delete them
-        myDiagram.startTransaction("delete items");
-        for (var i = 0; i < items.length; i++) {
-          var item = items[i];
-          var nodedata = item.part.data;
-          var itemdata = item.data;
-          // find the item array that the item data is in; try "inservices" first
-          var itemarray = nodedata.inservices;
-          var itemindex = itemarray.indexOf(itemdata);
-          if (itemindex < 0) {  // otherwise try "outservices"
-            itemarray = nodedata.outservices;
-            itemindex = itemarray.indexOf(itemdata);
+      myDiagram.commandHandler.deleteSelection = function() {
+        var items = findAllSelectedItems();
+        if (items.length > 0) {  // if there are any selected items, delete them
+          myDiagram.startTransaction("delete items");
+          for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var nodedata = item.part.data;
+            var itemdata = item.data;
+            // find the item array that the item data is in; try "inservices" first
+            var itemarray = nodedata.inservices;
+            var itemindex = itemarray.indexOf(itemdata);
+            if (itemindex < 0) {  // otherwise try "outservices"
+              itemarray = nodedata.outservices;
+              itemindex = itemarray.indexOf(itemdata);
+            }
+            if (itemindex >= 0) {
+              myDiagram.model.removeArrayItem(itemarray, itemindex);
+            }
           }
-          if (itemindex >= 0) {
-            myDiagram.model.removeArrayItem(itemarray, itemindex);
-          }
+          myDiagram.commitTransaction("delete items");
+        } else {  // otherwise just delete nodes and/or links, as usual
+          go.CommandHandler.prototype.deleteSelection.call(myDiagram.commandHandler);
         }
-        myDiagram.commitTransaction("delete items");
-      } else {  // otherwise just delete nodes and/or links, as usual
-        go.CommandHandler.prototype.deleteSelection.call(myDiagram.commandHandler);
-      }
-    };
+      };
 
-    myDiagram.model =
-      $(go.GraphLinksModel,
-        {
-          copiesArrays: true,
-          copiesArrayObjects: true,
-          linkFromPortIdProperty: "fromPort",
-          linkToPortIdProperty: "toPort",
-          nodeDataArray: [
+      myDiagram.model =
+        $(go.GraphLinksModel,
+          {
+            copiesArrays: true,
+            copiesArrayObjects: true,
+            linkFromPortIdProperty: "fromPort",
+            linkToPortIdProperty: "toPort",
+            nodeDataArray: [
               { key: 1, name: "Server", inservices: [{ name: "s1" }, { name: "s2" }], outservices: [{ name: "o1" }], loc: "0 0" },
               { key: 2, name: "Other", inservices: [{ name: "s1" }, { name: "s2" }], loc: "200 60" }
             ],
-          linkDataArray: [
+            linkDataArray: [
               { from: 1, fromPort: "o1", to: 2, toPort: "s2" }
             ]
-        });
+          });
 
-    showModel();
+      showModel();
 
-    function showModel() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      function showModel() {
+        document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      }
     }
-  }
-</script>
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

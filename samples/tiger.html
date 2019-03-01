@@ -1,16 +1,17 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SVG Tiger Drawing in GoJS</title>
-<meta name="description" content="Importing some SVG as GoJS Shapes." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
+  <meta charset="UTF-8">
+  <title>SVG Tiger Drawing in GoJS</title>
+  <meta name="description" content="Importing some SVG as GoJS Shapes." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-  var tigersvg = '\
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+
+    var tigersvg = '\
 <?xml version="1.0" encoding="UTF-8"?>\
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Basic//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-basic.dtd">\
 <svg version="1.1" baseProfile="basic" id="svg2" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="900px" height="900px" viewBox="0 0 900 900" xml:space="preserve">\
@@ -257,55 +258,55 @@
 </svg>\
 ';
 
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
-    // the whole SVG drawing will go into a single Panel
-    var tigerdrawing = new go.Panel();  // this Panel holds all of the Shapes for the drawing
-    var xmldoc = new DOMParser().parseFromString(tigersvg, "text/xml");
-    var paths = xmldoc.getElementsByTagName("path");
-    for (var i = 0; i < paths.length; i++) {
-      // represent each SVG path by a Shape of type Path with its own fill and stroke
-      var path = paths[i];
-      var shape = new go.Shape();
+      // the whole SVG drawing will go into a single Panel
+      var tigerdrawing = new go.Panel();  // this Panel holds all of the Shapes for the drawing
+      var xmldoc = new DOMParser().parseFromString(tigersvg, "text/xml");
+      var paths = xmldoc.getElementsByTagName("path");
+      for (var i = 0; i < paths.length; i++) {
+        // represent each SVG path by a Shape of type Path with its own fill and stroke
+        var path = paths[i];
+        var shape = new go.Shape();
 
-      var stroke = path.getAttribute("stroke");
-      if (typeof stroke === "string" && stroke !== "none") {
-        shape.stroke = stroke;
-      } else {
-        shape.stroke = null;
+        var stroke = path.getAttribute("stroke");
+        if (typeof stroke === "string" && stroke !== "none") {
+          shape.stroke = stroke;
+        } else {
+          shape.stroke = null;
+        }
+
+        var strokewidth = parseFloat(path.getAttribute("stroke-width"));
+        if (!isNaN(strokewidth)) shape.strokeWidth = strokewidth;
+
+        var id = path.getAttribute("id");
+        if (typeof id === "string") shape.name = id;
+
+        var fill = path.getAttribute("fill");
+        if (typeof fill === "string") {
+          shape.fill = (fill === "none") ? null : fill;
+        }
+
+        // convert the path data string into a go.Geometry
+        var data = path.getAttribute("d");
+        if (typeof data === "string") shape.geometry = go.Geometry.parse(data, true);
+
+        // collect these Shapes in the single Panel
+        tigerdrawing.add(shape);
       }
 
-      var strokewidth = parseFloat(path.getAttribute("stroke-width"));
-      if (!isNaN(strokewidth)) shape.strokeWidth = strokewidth;
+      // add the Panel as the only element in the Part
+      var tigerpart = new go.Part();  // doesn't need to be a Node for this sample
+      // the default position of the Panel drawing in the Part is (0,0)
+      tigerpart.add(tigerdrawing);
 
-      var id = path.getAttribute("id");
-      if (typeof id === "string") shape.name = id;
-
-      var fill = path.getAttribute("fill");
-      if (typeof fill === "string") {
-        shape.fill = (fill === "none") ? null : fill;
-      }
-
-      // convert the path data string into a go.Geometry
-      var data = path.getAttribute("d");
-      if (typeof data === "string") shape.geometry = go.Geometry.parse(data, true);
-
-      // collect these Shapes in the single Panel
-      tigerdrawing.add(shape);
+      // create the Diagram for the named DIV
+      var diagram = new go.Diagram("myDiagramDiv");
+      // just add this single Part to the Diagram
+      diagram.add(tigerpart);
     }
-
-    // add the Panel as the only element in the Part
-    var tigerpart = new go.Part();  // doesn't need to be a Node for this sample
-    // the default position of the Panel drawing in the Part is (0,0)
-    tigerpart.add(tigerdrawing);
-
-    // create the Diagram for the named DIV
-    var diagram = new go.Diagram("myDiagramDiv");
-    // just add this single Part to the Diagram
-    diagram.add(tigerpart);
-  }
-</script>
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

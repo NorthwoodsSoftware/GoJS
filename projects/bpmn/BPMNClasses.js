@@ -202,7 +202,7 @@ var __extends = (this && this.__extends) || (function () {
             return _this;
         }
         /**
-         * Override {@link LinkingTool#insertLink} to do some extra BPMN-specific processing.
+         * Override {@link RelinkingTool#reconnectLink} to do some extra BPMN-specific processing.
          */
         BPMNRelinkingTool.prototype.reconnectLink = function (existinglink, newnode, newport, toend) {
             var diagram = existinglink.diagram;
@@ -233,12 +233,6 @@ var __extends = (this && this.__extends) || (function () {
                         // Recreate the link if the category changed, since it is a different class
                         if (existinglink.category !== 'msg') {
                             recreateLinkData(data, 'msg');
-                        }
-                    }
-                    else {
-                        // Recreate the link if the category changed, since it is a different class
-                        if (existinglink.category !== '') {
-                            recreateLinkData(data, '');
                         }
                     }
                     // maybe make the label visible

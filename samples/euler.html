@@ -1,64 +1,30 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Euler Diagram</title>
   <meta name="description" content="A diagram showing nodes connected by different kinds of links with concentric circular backgrounds.  Clicking on a node opens a window to a Wikipedia page." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <script src="../release/go.js"></script>
   <script src="../extensions/HyperlinkText.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",
-        { isReadOnly: true, allowSelect: false, contentAlignment: go.Spot.Center });
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          { isReadOnly: true, allowSelect: false, contentAlignment: go.Spot.Center });
 
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        { locationSpot: go.Spot.Center },
-        new go.Binding("location", "loc", go.Point.parse),
-        $(go.Shape, "Ellipse",
-          { fill: "transparent" },
-          new go.Binding("stroke", "color"),
-          new go.Binding("strokeWidth", "width"),
-          new go.Binding("strokeDashArray", "dash")),
-        $("HyperlinkText",
-          function(node) { return "https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(node.data.text); },
-          function(node) { return node.data.text; },
-          { margin: 1, maxSize: new go.Size(80, 80), textAlign: "center" })
-      );
-
-    myDiagram.nodeTemplateMap.add("center",
-      $(go.Node, "Spot",
-        { locationSpot: go.Spot.Center },
-        new go.Binding("location", "loc", go.Point.parse),
-        $(go.Shape, "Circle",
-          {
-            fill: "rgba(128,128,128,0.1)", stroke: null,
-            width: 550, height: 550
-          }),
-        $(go.Shape, "Circle",
-          {
-            fill: "rgba(128,128,128,0.05)", stroke: null,
-            width: 400, height: 400
-          }),
-        $(go.Shape, "Circle",
-          {
-            fill: "rgba(128,128,128,0.033)", stroke: null,
-            width: 250, height: 250
-          }),
-        $(go.Panel, "Spot",
-          $(go.Shape, "Circle",
-            { isPanelMain: true, fill: "transparent", portId: "" },
-            new go.Binding("stroke", "hicolor"),
-            new go.Binding("strokeWidth", "hiwidth")),
-          $(go.Shape, "Circle",
-            { isPanelMain: true, fill: "transparent" },
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { locationSpot: go.Spot.Center },
+          new go.Binding("location", "loc", go.Point.parse),
+          $(go.Shape, "Ellipse",
+            { fill: "transparent" },
             new go.Binding("stroke", "color"),
             new go.Binding("strokeWidth", "width"),
             new go.Binding("strokeDashArray", "dash")),
@@ -66,47 +32,82 @@
             function(node) { return "https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(node.data.text); },
             function(node) { return node.data.text; },
             { margin: 1, maxSize: new go.Size(80, 80), textAlign: "center" })
-        )
-      ));
+        );
 
-    myDiagram.linkTemplate =
-      $(go.Link,
-        $(go.Shape,
-          new go.Binding("stroke", "color"),
-          new go.Binding("strokeWidth", "width"),
-          new go.Binding("strokeDashArray", "dash"))
-      );
+      myDiagram.nodeTemplateMap.add("center",
+        $(go.Node, "Spot",
+          { locationSpot: go.Spot.Center },
+          new go.Binding("location", "loc", go.Point.parse),
+          $(go.Shape, "Circle",
+            {
+              fill: "rgba(128,128,128,0.1)", stroke: null,
+              width: 550, height: 550
+            }),
+          $(go.Shape, "Circle",
+            {
+              fill: "rgba(128,128,128,0.05)", stroke: null,
+              width: 400, height: 400
+            }),
+          $(go.Shape, "Circle",
+            {
+              fill: "rgba(128,128,128,0.033)", stroke: null,
+              width: 250, height: 250
+            }),
+          $(go.Panel, "Spot",
+            $(go.Shape, "Circle",
+              { isPanelMain: true, fill: "transparent", portId: "" },
+              new go.Binding("stroke", "hicolor"),
+              new go.Binding("strokeWidth", "hiwidth")),
+            $(go.Shape, "Circle",
+              { isPanelMain: true, fill: "transparent" },
+              new go.Binding("stroke", "color"),
+              new go.Binding("strokeWidth", "width"),
+              new go.Binding("strokeDashArray", "dash")),
+            $("HyperlinkText",
+              function(node) { return "https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(node.data.text); },
+              function(node) { return node.data.text; },
+              { margin: 1, maxSize: new go.Size(80, 80), textAlign: "center" })
+          )
+        ));
 
-    var nodeDataArray = [
-      { key: 1, text: "Cognitive Procedural", loc: "300 300", category: "center" },
-      { key: 2, text: "Cognitive Problem Solving", loc: "600 300", category: "center", hicolor: "lightblue", hiwidth: 7 },
-      { key: 11, text: "Logical Reasoning", loc: "450 275" },
-      { key: 12, text: "Scaffolding", loc: "450 325" },
-      { key: 13, text: "Part Task Training", loc: "425 400" },
-      { key: 21, text: "Training Wheels", loc: "325 125" },
-      { key: 22, text: "Exploratory Learning", loc: "250 150" },
-      { key: 23, text: "Learner Control", loc: "650 150" },
-      { key: 31, text: "Overlearning", loc: "450 475" }
-    ];
-    var linkDataArray = [
-      { from: 1, to: 11, color: "gray" },
-      { from: 1, to: 12, color: "gray", dash: [3, 2] },
-      { from: 1, to: 13, color: "olive", width: 2 },
-      { from: 1, to: 21, color: "olive", width: 3 },
-      { from: 1, to: 22, color: "olive", width: 2 },
-      { from: 1, to: 23, color: "crimson", width: 2 },
-      { from: 1, to: 31 },
-      { from: 2, to: 11, color: "gray" },
-      { from: 2, to: 12, color: "olive", width: 2 },
-      { from: 2, to: 13, color: "gray", dash: [3, 2] },
-      { from: 2, to: 21, color: "crimson", width: 2 },
-      { from: 2, to: 22, color: "crimson", width: 2 },
-      { from: 2, to: 23, color: "black", width: 3 },
-      { from: 2, to: 31, color: "black", dash: [3, 2] }
-    ];
-    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  }
-</script>
+      myDiagram.linkTemplate =
+        $(go.Link,
+          $(go.Shape,
+            new go.Binding("stroke", "color"),
+            new go.Binding("strokeWidth", "width"),
+            new go.Binding("strokeDashArray", "dash"))
+        );
+
+      var nodeDataArray = [
+        { key: 1, text: "Cognitive Procedural", loc: "300 300", category: "center" },
+        { key: 2, text: "Cognitive Problem Solving", loc: "600 300", category: "center", hicolor: "lightblue", hiwidth: 7 },
+        { key: 11, text: "Logical Reasoning", loc: "450 275" },
+        { key: 12, text: "Scaffolding", loc: "450 325" },
+        { key: 13, text: "Part Task Training", loc: "425 400" },
+        { key: 21, text: "Training Wheels", loc: "325 125" },
+        { key: 22, text: "Exploratory Learning", loc: "250 150" },
+        { key: 23, text: "Learner Control", loc: "650 150" },
+        { key: 31, text: "Overlearning", loc: "450 475" }
+      ];
+      var linkDataArray = [
+        { from: 1, to: 11, color: "gray" },
+        { from: 1, to: 12, color: "gray", dash: [3, 2] },
+        { from: 1, to: 13, color: "olive", width: 2 },
+        { from: 1, to: 21, color: "olive", width: 3 },
+        { from: 1, to: 22, color: "olive", width: 2 },
+        { from: 1, to: 23, color: "crimson", width: 2 },
+        { from: 1, to: 31 },
+        { from: 2, to: 11, color: "gray" },
+        { from: 2, to: 12, color: "olive", width: 2 },
+        { from: 2, to: 13, color: "gray", dash: [3, 2] },
+        { from: 2, to: 21, color: "crimson", width: 2 },
+        { from: 2, to: 22, color: "crimson", width: 2 },
+        { from: 2, to: 23, color: "black", width: 3 },
+        { from: 2, to: 31, color: "black", dash: [3, 2] }
+      ];
+      myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    }
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

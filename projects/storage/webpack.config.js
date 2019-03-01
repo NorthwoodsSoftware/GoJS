@@ -32,6 +32,6 @@ module.exports = {
         ]
     },
     plugins: [ 
-        //new UglifyJSPlugin({ sourceMap: true }) 
+        ////new UglifyJSPlugin({ sourceMap: true }) 
     ]
 };

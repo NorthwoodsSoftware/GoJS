@@ -1,115 +1,118 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Comments</title>
-<meta name="description" content="A tree-structured diagram annotated with balloon comments, automatically laid out." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../extensions/Figures.js"></script>
-<script src="../extensions/BalloonLink.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+  <meta charset="UTF-8">
+  <title>Comments</title>
+  <meta name="description" content="A tree-structured diagram annotated with balloon comments, automatically laid out." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          layout: $(go.TreeLayout,
-                    { angle: 90,
-                      setsPortSpot: false,
-                      setsChildPortSpot: false
-                    }),
-          "undoManager.isEnabled": true,
-          // When a Node is deleted by the user, also delete all of its Comment Nodes.
-          // When a Comment Link is deleted, also delete the corresponding Comment Node.
-          "SelectionDeleting": function(e) {
-            var parts = e.subject;  // the collection of Parts to be deleted, the Diagram.selection
-            // iterate over a copy of this collection,
-            // because we may add to the collection by selecting more Parts
-            parts.copy().each(function(p) {
-              if (p instanceof go.Node) {
-                var node = p;
-                node.findNodesConnected().each(function(n) {
-                  // remove every Comment Node that is connected with this node
-                  if (n.category === "Comment") {
-                    n.isSelected = true;  // include in normal deletion process
+  <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
+  <script src="../extensions/BalloonLink.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+          {
+            layout: $(go.TreeLayout,
+              {
+                angle: 90,
+                setsPortSpot: false,
+                setsChildPortSpot: false
+              }),
+            "undoManager.isEnabled": true,
+            // When a Node is deleted by the user, also delete all of its Comment Nodes.
+            // When a Comment Link is deleted, also delete the corresponding Comment Node.
+            "SelectionDeleting": function(e) {
+              var parts = e.subject;  // the collection of Parts to be deleted, the Diagram.selection
+              // iterate over a copy of this collection,
+              // because we may add to the collection by selecting more Parts
+              parts.copy().each(function(p) {
+                if (p instanceof go.Node) {
+                  var node = p;
+                  node.findNodesConnected().each(function(n) {
+                    // remove every Comment Node that is connected with this node
+                    if (n.category === "Comment") {
+                      n.isSelected = true;  // include in normal deletion process
+                    }
+                  });
+                } else if (p instanceof go.Link && p.category === "Comment") {
+                  var comlink = p;  // a "Comment" Link
+                  var comnode = comlink.fromNode;
+                  // remove the Comment Node that is associated with this Comment Link,
+                  if (comnode.category === "Comment") {
+                    comnode.isSelected = true;  // include in normal deletion process
                   }
-                });
-              } else if (p instanceof go.Link && p.category === "Comment") {
-                var comlink = p;  // a "Comment" Link
-                var comnode = comlink.fromNode;
-                // remove the Comment Node that is associated with this Comment Link,
-                if (comnode.category === "Comment") {
-                  comnode.isSelected = true;  // include in normal deletion process
                 }
-              }
-            });
-          }
-        });
+              });
+            }
+          });
 
-    myDiagram.nodeTemplate =
-      $("Node", "Auto",
-        $("Shape", "CreateRequest",
-          { fill: "white" },
-          new go.Binding("fill", "color")),
-        $("TextBlock",
-          { margin: 4 },
-          new go.Binding("text", "key"))
-      );
+      myDiagram.nodeTemplate =
+        $("Node", "Auto",
+          $("Shape", "CreateRequest",
+            { fill: "white" },
+            new go.Binding("fill", "color")),
+          $("TextBlock",
+            { margin: 4 },
+            new go.Binding("text", "key"))
+        );
 
-    myDiagram.linkTemplate =
-      $("Link",
-        $("Shape",
-          { strokeWidth: 1.5 }),
-        $("Shape",
-          { toArrow: "Standard", stroke: null })
-      );
+      myDiagram.linkTemplate =
+        $("Link",
+          $("Shape",
+            { strokeWidth: 1.5 }),
+          $("Shape",
+            { toArrow: "Standard", stroke: null })
+        );
 
-    myDiagram.nodeTemplateMap.add("Comment",
-      $(go.Node,  // this needs to act as a rectangular shape for BalloonLink,
-        { background: "transparent" },  // which can be accomplished by setting the background.
-        $(go.TextBlock,
-          { stroke: "brown", margin: 3 },
-          new go.Binding("text"))
-      ));
+      myDiagram.nodeTemplateMap.add("Comment",
+        $(go.Node,  // this needs to act as a rectangular shape for BalloonLink,
+          { background: "transparent" },  // which can be accomplished by setting the background.
+          $(go.TextBlock,
+            { stroke: "brown", margin: 3 },
+            new go.Binding("text"))
+        ));
 
-    myDiagram.linkTemplateMap.add("Comment",
-      // if the BalloonLink class has been loaded from the Extensions directory, use it
-      $((typeof BalloonLink === "function" ? BalloonLink : go.Link),
-        $(go.Shape,  // the Shape.geometry will be computed to surround the comment node and
-                     // point all the way to the commented node
-          { stroke: "brown", strokeWidth: 1, fill: "lightyellow" })
-      ));
+      myDiagram.linkTemplateMap.add("Comment",
+        // if the BalloonLink class has been loaded from the Extensions directory, use it
+        $((typeof BalloonLink === "function" ? BalloonLink : go.Link),
+          $(go.Shape,  // the Shape.geometry will be computed to surround the comment node and
+            // point all the way to the commented node
+            { stroke: "brown", strokeWidth: 1, fill: "lightyellow" })
+        ));
 
-    myDiagram.model =
-      $(go.GraphLinksModel,
-        { nodeDataArray: [
-            { key: "Alpha", color: "orange" },
-            { key: "Beta", color: "lightgreen" },
-            { key: "Gamma", color: "lightgreen" },
-            { key: "Delta", color: "pink" },
-            { key: "A comment", text: "comment\nabout Alpha", category: "Comment" },
-            { key: "B comment", text: "comment\nabout Beta", category: "Comment" },
-            { key: "G comment", text: "comment about Gamma", category: "Comment" }
-          ],
-          linkDataArray: [
-            { from: "Alpha", to: "Beta" },
-            { from: "Alpha", to: "Gamma" },
-            { from: "Alpha", to: "Delta" },
-            { from: "A comment", to: "Alpha", category: "Comment" },
-            { from: "B comment", to: "Beta", category: "Comment" },
-            { from: "G comment", to: "Gamma", category: "Comment" }
-          ]
-        });
+      myDiagram.model =
+        $(go.GraphLinksModel,
+          {
+            nodeDataArray: [
+              { key: "Alpha", color: "orange" },
+              { key: "Beta", color: "lightgreen" },
+              { key: "Gamma", color: "lightgreen" },
+              { key: "Delta", color: "pink" },
+              { key: "A comment", text: "comment\nabout Alpha", category: "Comment" },
+              { key: "B comment", text: "comment\nabout Beta", category: "Comment" },
+              { key: "G comment", text: "comment about Gamma", category: "Comment" }
+            ],
+            linkDataArray: [
+              { from: "Alpha", to: "Beta" },
+              { from: "Alpha", to: "Gamma" },
+              { from: "Alpha", to: "Delta" },
+              { from: "A comment", to: "Alpha", category: "Comment" },
+              { from: "B comment", to: "Beta", category: "Comment" },
+              { from: "G comment", to: "Gamma", category: "Comment" }
+            ]
+          });
 
-    // show the model in JSON format
-    document.getElementById("savedModel").textContent = myDiagram.model.toJson();
-  }
-</script>
+      // show the model in JSON format
+      document.getElementById("savedModel").textContent = myDiagram.model.toJson();
+    }
+  </script>
 </head>
 <body onload="init()">
   <div id="sample">

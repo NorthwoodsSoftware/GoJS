@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gantt chart</title>
-<meta name="description" content="A Gantt chart that supports zooming into the timeline." />
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
+  <title>Gantt chart</title>
+  <meta name="description" content="A Gantt chart that supports zooming into the timeline." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+
   <script src="../release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -31,14 +32,14 @@
           $(go.Shape, "Rectangle",
             { height: 15 },
             new go.Binding("fill", "color"),
-            new go.Binding("width", "width", function (w) { return scaleWidth(w); })),
+            new go.Binding("width", "width", function(w) { return scaleWidth(w); })),
           $(go.TextBlock,
             { margin: 2, alignment: go.Spot.Left },
             new go.Binding("text", "key")),
           // using a function in the Binding allows the value to
           // change when Diagram.updateAllTargetBindings is called
           new go.Binding("location", "loc",
-                         function (l) { return new go.Point(scaleWidth(l.x), l.y); })
+            function(l) { return new go.Point(scaleWidth(l.x), l.y); })
         ));
 
       // create the template for the start node
@@ -59,10 +60,10 @@
             { height: 15, width: 15 }),
           // make the location of the end node (with location.x < 0) scalable
           new go.Binding("location", "loc",
-                         function(l) {
-                           if (l.x >= 0) return new go.Point(scaleWidth(l.x), l.y);
-                           else return l;
-                         })
+            function(l) {
+              if (l.x >= 0) return new go.Point(scaleWidth(l.x), l.y);
+              else return l;
+            })
         ));
 
       // create the link template
@@ -81,29 +82,29 @@
 
       // add the nodes and links to the model
       myDiagram.model = new go.GraphLinksModel(
-      [ // node data
-        { key: "a", color: "coral", width: 120, loc: new go.Point(scaleWidth(0), 40) },
-        { key: "b", color: "turquoise", width: 160, loc: new go.Point(scaleWidth(0), 60) },
-        { key: "c", color: "coral", width: 150, loc: new go.Point(scaleWidth(120), 80) },
-        { key: "d", color: "turquoise", width: 190, loc: new go.Point(scaleWidth(120), 100) },
-        { key: "e", color: "coral", width: 150, loc: new go.Point(scaleWidth(270), 120) },
-        { key: "f", color: "turquoise", width: 130, loc: new go.Point(scaleWidth(310), 140) },
-        { key: "g", color: "coral", width: 155, loc: new go.Point(scaleWidth(420), 160) },
-        { key: "begin", category: "start", loc: new go.Point(-15,20) },
-        { key: "end", category: "end", loc: new go.Point(scaleWidth(575), 180) }
-      ],
-      [ // link data
-        { from: "begin", to: "a" },
-        { from: "begin", to: "b" },
-        { from: "a", to: "c" },
-        { from: "a", to: "d" },
-        { from: "b", to: "e" },
-        { from: "c", to: "e" },
-        { from: "d", to: "f" },
-        { from: "e", to: "g" },
-        { from: "f", to: "end" },
-        { from: "g", to: "end" }
-      ]);
+        [ // node data
+          { key: "a", color: "coral", width: 120, loc: new go.Point(scaleWidth(0), 40) },
+          { key: "b", color: "turquoise", width: 160, loc: new go.Point(scaleWidth(0), 60) },
+          { key: "c", color: "coral", width: 150, loc: new go.Point(scaleWidth(120), 80) },
+          { key: "d", color: "turquoise", width: 190, loc: new go.Point(scaleWidth(120), 100) },
+          { key: "e", color: "coral", width: 150, loc: new go.Point(scaleWidth(270), 120) },
+          { key: "f", color: "turquoise", width: 130, loc: new go.Point(scaleWidth(310), 140) },
+          { key: "g", color: "coral", width: 155, loc: new go.Point(scaleWidth(420), 160) },
+          { key: "begin", category: "start", loc: new go.Point(-15, 20) },
+          { key: "end", category: "end", loc: new go.Point(scaleWidth(575), 180) }
+        ],
+        [ // link data
+          { from: "begin", to: "a" },
+          { from: "begin", to: "b" },
+          { from: "a", to: "c" },
+          { from: "a", to: "d" },
+          { from: "b", to: "e" },
+          { from: "c", to: "e" },
+          { from: "d", to: "f" },
+          { from: "e", to: "g" },
+          { from: "f", to: "end" },
+          { from: "g", to: "end" }
+        ]);
 
       // add a Graduated panel to show the dates, globally scoped
       dateScale =
@@ -120,7 +121,7 @@
               name: "labels",
               font: "10pt sans-serif",
               alignmentFocus: new go.Spot(0, 0, -3, -3),
-              graduatedFunction: function (v) {
+              graduatedFunction: function(v) {
                 var d = new Date(2017, 6, 23);
                 d.setDate(d.getDate() + v * 7);
                 // format date output to string

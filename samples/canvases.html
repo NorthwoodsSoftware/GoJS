@@ -1,159 +1,163 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Various Charts in GoJS Nodes</title>
-<meta name="description" content="A diagram where each node contains a chart rendered by Chart.js." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+  <meta charset="UTF-8">
+  <title>Various Charts in GoJS Nodes</title>
+  <meta name="description" content="A diagram where each node contains a chart rendered by Chart.js." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    var $ = go.GraphObject.make;
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",
-        {
-          layout: $(go.TreeLayout)
-        });
+      var $ = go.GraphObject.make;
 
-    myDiagram.nodeTemplate =
-      $(go.Node, "Vertical",
-        $(go.Panel, "Auto",
-          $(go.Shape, { fill: "transparent" },
-            new go.Binding("stroke", "color")),
-          $(go.Picture,
-            { width: 300, height: 150, portId: "" },
-            new go.Binding("element", "datasets", makeLineChart))
-        ),
-        $(go.TextBlock,
-          { margin: 8 },
-          new go.Binding("text"))
-      );
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            layout: $(go.TreeLayout)
+          });
 
-    // This Binding conversion function creates a Canvas element for a Picture
-    // that has a rendering of a line chart drawn by Chart.js.
-    function makeLineChart(datasets, picture) {
-      var canvases = document.getElementById("myCanvases");
+      myDiagram.nodeTemplate =
+        $(go.Node, "Vertical",
+          $(go.Panel, "Auto",
+            $(go.Shape, { fill: "transparent" },
+              new go.Binding("stroke", "color")),
+            $(go.Picture,
+              { width: 300, height: 150, portId: "" },
+              new go.Binding("element", "datasets", makeLineChart))
+          ),
+          $(go.TextBlock,
+            { margin: 8 },
+            new go.Binding("text"))
+        );
 
-      canv = document.createElement("canvas");
-      canv.width = canv.style.width = "600px";
-      canv.height = canv.style.height = "300px";
+      // This Binding conversion function creates a Canvas element for a Picture
+      // that has a rendering of a line chart drawn by Chart.js.
+      function makeLineChart(datasets, picture) {
+        var canvases = document.getElementById("myCanvases");
 
-      // apparently Chart.js expects the Canvas to be in a DIV
-      var div = document.createElement("div");
-      div.style.position = "absolute";
-      div.appendChild(canv);
-      // add the DIV/Canvas to the DOM, temporarily
-      canvases.appendChild(div);
+        canv = document.createElement("canvas");
+        canv.width = canv.style.width = "600px";
+        canv.height = canv.style.height = "300px";
 
-      var config = {  // Chart.js configuration, including the DATASETS data from the model data
-        type: "line",
-        data: {
-          labels: ["January", "February", "March", "April", "May", "June", "July"],
-          datasets: datasets
-        },
-        options: {
-          animation: {
-            onComplete: function() {
-              var canvases = document.getElementById("myCanvases");
-              if (canvases) {  // remove the Canvas that was in the DOM for rendering
-                canvases.removeChild(div);
+        // apparently Chart.js expects the Canvas to be in a DIV
+        var div = document.createElement("div");
+        div.style.position = "absolute";
+        div.appendChild(canv);
+        // add the DIV/Canvas to the DOM, temporarily
+        canvases.appendChild(div);
+
+        var config = {  // Chart.js configuration, including the DATASETS data from the model data
+          type: "line",
+          data: {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: datasets
+          },
+          options: {
+            animation: {
+              onComplete: function() {
+                var canvases = document.getElementById("myCanvases");
+                if (canvases) {  // remove the Canvas that was in the DOM for rendering
+                  canvases.removeChild(div);
+                }
               }
             }
           }
-        }
-      };
+        };
 
-      new Chart(canv, config);
+        new Chart(canv, config);
 
-      return canv;
+        return canv;
+      }
+
+      myDiagram.model = $(go.GraphLinksModel,
+        {
+          copiesArrays: true,
+          copiesArrayObjects: true,
+          nodeDataArray:
+            [
+              {
+                key: 1, text: "Alpha",
+                datasets: [{
+                  label: "Random data",
+                  borderColor: "black",
+                  data: makeRandomPoints(8, 10)
+                }]
+              },
+              {
+                key: 2, text: "Beta",
+                datasets: [{
+                  label: "First dataset",
+                  fill: false,
+                  backgroundColor: "red",
+                  borderColor: "red",
+                  data: makeRandomPoints(8)
+                }, {
+                  label: "Second dataset",
+                  fill: false,
+                  backgroundColor: "blue",
+                  borderColor: "blue",
+                  data: makeRandomPoints(8)
+                }]
+              },
+              {
+                key: 3, text: "Gamma", color: "green",
+                datasets: [{
+                  label: "some data",
+                  fill: false,
+                  backgroundColor: "green",
+                  borderColor: "green",
+                  data: makeRandomPoints()
+                }]
+              }
+            ],
+          linkDataArray: [
+            { from: 1, to: 2 },
+            { from: 1, to: 3 }
+          ]
+        });
     }
 
-    myDiagram.model = $(go.GraphLinksModel,
-    {
-      copiesArrays: true,
-      copiesArrayObjects: true,
-      nodeDataArray:
-        [
-          { key: 1, text: "Alpha",
-            datasets: [{
-              label: "Random data",
-              borderColor: "black",
-              data: makeRandomPoints(8, 10)
-            }]
-          },
-          { key: 2, text: "Beta",
-            datasets: [{
-              label: "First dataset",
-              fill: false,
-              backgroundColor: "red",
-              borderColor: "red",
-              data: makeRandomPoints(8)
-            }, {
-              label: "Second dataset",
-              fill: false,
-              backgroundColor: "blue",
-              borderColor: "blue",
-              data: makeRandomPoints(8)
-            }]
-          },
-          { key: 3, text: "Gamma", color: "green",
-            datasets: [{
-              label: "some data",
-              fill: false,
-              backgroundColor: "green",
-              borderColor: "green",
-              data: makeRandomPoints()
-            }]
-          }
-        ],
-      linkDataArray: [
-          { from: 1, to: 2 },
-          { from: 1, to: 3 }
-        ]
-    });
-  }
-
-  function makeRandomPoints(num, range) {
-    if (!num) num = 20;
-    if (!range) range = 100;
-    var pts = [];
-    for (var i = 0; i < num; i++) {
-      pts.push(Math.random() * range);
+    function makeRandomPoints(num, range) {
+      if (!num) num = 20;
+      if (!range) range = 100;
+      var pts = [];
+      for (var i = 0; i < num; i++) {
+        pts.push(Math.random() * range);
+      }
+      return pts;
     }
-    return pts;
-  }
 
-  function addNode() {
-    myDiagram.model.commit(function(m) {
-      var firstnode = myDiagram.nodes.first();
-      var color = go.Brush.darken(go.Brush.randomColor());
-      var data = {
-        text: "Node " + (myDiagram.nodes.count+1),
-        color: color,
-        datasets: [{
+    function addNode() {
+      myDiagram.model.commit(function(m) {
+        var firstnode = myDiagram.nodes.first();
+        var color = go.Brush.darken(go.Brush.randomColor());
+        var data = {
+          text: "Node " + (myDiagram.nodes.count + 1),
+          color: color,
+          datasets: [{
             label: "some data",
             fill: false,
             backgroundColor: color,
             borderColor: color,
             data: makeRandomPoints()
           }]
-      };
-      m.addNodeData(data);
-      if (firstnode) {
-        m.addLinkData({ from: firstnode.key, to: m.getKeyForNodeData(data) });
-        // new node starts off at same location as the parent node
-        var newnode = myDiagram.findNodeForData(data);
-        if (newnode) newnode.location = firstnode.location;
-      }
-    }, "added chart node");
-  }
-</script>
+        };
+        m.addNodeData(data);
+        if (firstnode) {
+          m.addLinkData({ from: firstnode.key, to: m.getKeyForNodeData(data) });
+          // new node starts off at same location as the parent node
+          var newnode = myDiagram.findNodeForData(data);
+          if (newnode) newnode.location = firstnode.location;
+        }
+      }, "added chart node");
+    }
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">

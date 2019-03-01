@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Navigation of Graphs</title>
   <meta name="description" content="Show the relationships of nodes and links and groups." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <script src="../release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -23,8 +24,9 @@
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           new go.Binding("location", "loc"),
-          {   locationSpot: go.Spot.Center,
-              toEndSegmentLength: 30, fromEndSegmentLength: 30
+          {
+            locationSpot: go.Spot.Center,
+            toEndSegmentLength: 30, fromEndSegmentLength: 30
           },
           $(go.Shape, "Rectangle",
             {
@@ -39,7 +41,7 @@
             toolTip:  //  define a tooltip for each node that displays its information
               $("ToolTip",
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" , getInfo))
+                  new go.Binding("text", "", getInfo))
               )
           }
         );
@@ -67,7 +69,7 @@
             toolTip:  //  define a tooltip for each link that displays its information
               $("ToolTip",
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" , getInfo))
+                  new go.Binding("text", "", getInfo))
               )
           }
         );
@@ -100,7 +102,7 @@
             {
               name: "GROUPTEXT",
               alignment: go.Spot.TopLeft,
-              alignmentFocus: new go.Spot(0,0,-4,-4),
+              alignmentFocus: new go.Spot(0, 0, -4, -4),
               font: "Bold 10pt Sans-Serif"
             },
             new go.Binding("text", "key")),
@@ -108,44 +110,44 @@
             toolTip:  //  define a tooltip for each group that displays its information
               $("ToolTip",
                 $(go.TextBlock, { margin: 4 },
-                  new go.Binding("text",  "" , getInfo))
+                  new go.Binding("text", "", getInfo))
               )
           }
         );
 
       // add nodes, including groups, and links to the model
       myDiagram.model = new go.GraphLinksModel(
-      [ // node data
-        { key: "A", loc: new go.Point(320, 100) },
-        { key: "B", loc: new go.Point(420, 200) },
-        { key: "C", group: "Psi", loc: new go.Point(250, 225) },
-        { key: "D", group: "Omega", loc: new go.Point(270, 325) },
-        { key: "E", group: "Phi", loc: new go.Point(120, 225) },
-        { key: "F", group: "Omega", loc: new go.Point(200, 350) },
-        { key: "G", loc: new go.Point(180, 450) },
-        { key: "Chi", isGroup: true },
-        { key: "Psi", isGroup: true, group: "Chi" },
-        { key: "Phi", isGroup: true, group: "Psi" },
-        { key: "Omega", isGroup: true, group: "Psi" }
-      ],
-      [  // link data
-        { from: "A", to: "B" },
-        { from: "A", to: "C" },
-        { from: "A", to: "C" },
-        { from: "B", to: "B" },
-        { from: "B", to: "C" },
-        { from: "B", to: "Omega" },
-        { from: "C", to: "A" },
-        { from: "C", to: "Psi" },
-        { from: "C", to: "D" },
-        { from: "D", to: "F" },
-        { from: "E", to: "F" },
-        { from: "F", to: "G" }
-      ]);
+        [ // node data
+          { key: "A", loc: new go.Point(320, 100) },
+          { key: "B", loc: new go.Point(420, 200) },
+          { key: "C", group: "Psi", loc: new go.Point(250, 225) },
+          { key: "D", group: "Omega", loc: new go.Point(270, 325) },
+          { key: "E", group: "Phi", loc: new go.Point(120, 225) },
+          { key: "F", group: "Omega", loc: new go.Point(200, 350) },
+          { key: "G", loc: new go.Point(180, 450) },
+          { key: "Chi", isGroup: true },
+          { key: "Psi", isGroup: true, group: "Chi" },
+          { key: "Phi", isGroup: true, group: "Psi" },
+          { key: "Omega", isGroup: true, group: "Psi" }
+        ],
+        [  // link data
+          { from: "A", to: "B" },
+          { from: "A", to: "C" },
+          { from: "A", to: "C" },
+          { from: "B", to: "B" },
+          { from: "B", to: "C" },
+          { from: "B", to: "Omega" },
+          { from: "C", to: "A" },
+          { from: "C", to: "Psi" },
+          { from: "C", to: "D" },
+          { from: "D", to: "F" },
+          { from: "E", to: "F" },
+          { from: "F", to: "G" }
+        ]);
 
       // whenever selection changes, run updateHighlights
       myDiagram.addDiagramListener("ChangedSelection",
-                                   function() { updateHighlights(getRadioButton()); } );
+        function() { updateHighlights(getRadioButton()); });
 
       myDiagram.select(myDiagram.findNodeForKey('C'));
     }
@@ -193,7 +195,7 @@
         var arw = link.findObject("ARWSHAPE");
         highlight(shp, arw, hl);
       });
-}
+    }
 
     // Functions for highlighting, called by updateHighlights.
     // x in each case is the selected object or the object being treated as such.
@@ -259,12 +261,12 @@
     function nodesReach(x, i) {
       if (x instanceof go.Link) {
         x.toNode.highlight = i;
-        nodesReach(x.toNode, i+1);
+        nodesReach(x.toNode, i + 1);
       } else {
         x.findNodesOutOf().each(function(node) {
           if (node.highlight === 0 || node.highlight > i) {
             node.highlight = i;
-            nodesReach(node, i+1);
+            nodesReach(node, i + 1);
           }
         });
       }
@@ -317,7 +319,7 @@
         myDiagram.nodes.each(function(node) {
           if (node.containingGroup === x) {
             node.highlight = i;
-            allMemberNodes(node, i+1);
+            allMemberNodes(node, i + 1);
           }
         });
       }
@@ -340,7 +342,7 @@
       childLinks(x, i);
       myDiagram.nodes.each(function(node) {
         if (node instanceof go.Group && node.containingGroup === x) {
-          allMemberLinks(node, i+1);
+          allMemberLinks(node, i + 1);
         }
       });
     }
@@ -379,39 +381,39 @@
         text += x.data.key;
         var toLst = nodesTo(x, 0); // display names of nodes going into this node
         if (toLst.count > 0) {
-          toLst.sort(function(a, b) {return a<b ? -1 : 1});
+          toLst.sort(function(a, b) { return a < b ? -1 : 1 });
           text += "\nNodes into: ";
           toLst.each(function(key) {
-            if (key !== text.substring(text.length-3, text.length-2)) {
-              text+= key + ", ";
+            if (key !== text.substring(text.length - 3, text.length - 2)) {
+              text += key + ", ";
             }
           });
-          text = text.substring(0, text.length-2);
+          text = text.substring(0, text.length - 2);
         }
         var frLst = nodesFrom(x, 0); // display names of nodes coming out of this node
         if (frLst.count > 0) {
-          frLst.sort(function(a, b) {return a<b ? -1 : 1});
+          frLst.sort(function(a, b) { return a < b ? -1 : 1 });
           text += "\nNodes out of: ";
           frLst.each(function(key) {
-            if (key !== text.substring(text.length-3, text.length-2)) {
-              text+= key + ", ";
+            if (key !== text.substring(text.length - 3, text.length - 2)) {
+              text += key + ", ";
             }
           });
-          text = text.substring(0, text.length-2);
+          text = text.substring(0, text.length - 2);
         }
         var grpC = containing(x, 0); // if the node is in a group, display its name
         if (grpC !== null) text += "\nContaining SubGraph: " + grpC.data.key;
         if (x instanceof go.Group) {
-            // if it"s a group, also display nodes and links contained in it
+          // if it"s a group, also display nodes and links contained in it
           text += "\nMember nodes: ";
           var children = childNodes(x, 0);
-          children.sort(function(a, b) {return a<b ? -1 : 1});
+          children.sort(function(a, b) { return a < b ? -1 : 1 });
           children.each(function(key) {
-            if (key !== text.substring(text.length-3, text.length-2)) {
+            if (key !== text.substring(text.length - 3, text.length - 2)) {
               text += key + ", ";
             }
           });
-          text = text.substring(0, text.length-2);
+          text = text.substring(0, text.length - 2);
 
           var linkChildren = childLinks(x, 0);
           if (linkChildren.count > 0) {
@@ -420,15 +422,15 @@
             linkChildren.each(function(link) {
               linkStrings.add(link.data.from + " --> " + link.data.to);
             });
-            linkStrings.sort(function(a, b) {return a<b ? -1 : 1});
+            linkStrings.sort(function(a, b) { return a < b ? -1 : 1 });
             linkStrings.each(function(str) {
               text += str + ", ";
             });
-            text = text.substring(0, text.length-2);
+            text = text.substring(0, text.length - 2);
           }
         }
       } else if (x instanceof go.Link) {
-          // if it"s a link, display its to and from nodes
+        // if it"s a link, display its to and from nodes
         text += "Link: " + x.data.from + " --> " + x.data.to +
           "\nNode To: " + x.data.to + "\nNode From: " + x.data.from;
         var grp = containing(x, 0); // and containing group, if it has one

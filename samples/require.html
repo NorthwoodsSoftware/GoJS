@@ -1,20 +1,21 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Minimal GoJS Sample using RequireJS</title>
-<meta name="description" content="How to 'require' the GoJS library as an anonymous Asynchronous Module Definition (AMD) module." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="assets/require.js"></script>
-<script id="code">
-  require.config({
-    // declare that the GoJS library is actually in a different directory
-    paths: { "go": "../release/go" }
-  });
+  <meta charset="UTF-8">
+  <title>Minimal GoJS Sample using RequireJS</title>
+  <meta name="description" content="How to 'require' the GoJS library as an anonymous Asynchronous Module Definition (AMD) module." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-  function init() {
-    require(["go"], function(go) {
+  <script src="assets/require.js"></script>
+  <script id="code">
+    require.config({
+      // declare that the GoJS library is actually in a different directory
+      paths: { "go": "../release/go" }
+    });
+
+    function init() {
+      require(["go"], function(go) {
         var $ = go.GraphObject.make;
 
         var myDiagram =
@@ -23,7 +24,7 @@
         // define a simple Node template
         myDiagram.nodeTemplate =
           $(go.Node, "Auto",  // the Shape will go around the TextBlock
-            $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
+            $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
               // Shape.fill is bound to Node.data.color
               new go.Binding("fill", "color")),
             $(go.TextBlock,
@@ -36,26 +37,26 @@
 
         // create the model data that will be represented by Nodes and Links
         myDiagram.model = new go.GraphLinksModel(
-        [
-          { key: "Alpha", color: "lightblue" },
-          { key: "Beta", color: "orange" },
-          { key: "Gamma", color: "lightgreen" },
-          { key: "Delta", color: "pink" }
-        ],
-        [
-          { from: "Alpha", to: "Beta" },
-          { from: "Alpha", to: "Gamma" },
-          { from: "Beta", to: "Beta" },
-          { from: "Gamma", to: "Delta" },
-          { from: "Delta", to: "Alpha" }
-        ]);
+          [
+            { key: "Alpha", color: "lightblue" },
+            { key: "Beta", color: "orange" },
+            { key: "Gamma", color: "lightgreen" },
+            { key: "Delta", color: "pink" }
+          ],
+          [
+            { from: "Alpha", to: "Beta" },
+            { from: "Alpha", to: "Gamma" },
+            { from: "Beta", to: "Beta" },
+            { from: "Gamma", to: "Delta" },
+            { from: "Delta", to: "Alpha" }
+          ]);
 
         require(["../assets/js/goSamples"], function() {  // only for the GoJS Samples framework -- you don't need to call this
-            if (window.goSamples) goSamples();
+          if (window.goSamples) goSamples();
         });
-    });
-  }
-</script>
+      });
+    }
+  </script>
 </head>
 <body onload="init()">
   <div id="sample">

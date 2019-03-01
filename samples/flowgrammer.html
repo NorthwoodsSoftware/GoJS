@@ -1,11 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Flowgrammer</title>
   <meta name="description" content="An editor for a flowchart-like diagram with a restricted syntax -- add nodes by dropping them onto existing nodes or links." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <style>
     /* Use a Flexbox to make the Palette/Overview/Diagram responsive and size things relatively */
     #myFlexDiv {
@@ -13,8 +14,8 @@
       display: flex;
       width: 100%;
       height: 700px;
-
     }
+
     #myPODiv {
       display: -webkit-flex;
       display: flex;
@@ -24,41 +25,50 @@
       #myFlexDiv {
         flex-flow: row;
       }
+
       #myPODiv {
         width: 105px;
         height: 100%;
         margin-right: 10px;
         flex-flow: column;
       }
+
       #myPaletteDiv {
         height: 75%;
       }
+
       #myOverviewDiv {
         margin-top: 3px;
         flex: 1;
       }
+
       #myDiagramDiv {
         flex: 1;
       }
     }
+
     @media (max-width: 767px) {
       #myFlexDiv {
         flex-flow: column;
         align-items: center;
       }
+
       #myPODiv {
         width: 90%;
         height: 105px;
         margin-bottom: 10px;
         flex-flow: row;
       }
+
       #myPaletteDiv {
         width: 75%;
       }
+
       #myOverviewDiv {
         margin-left: 3px;
         flex: 1;
       }
+
       #myDiagramDiv {
         width: 90%;
         flex: 1;
@@ -84,11 +94,11 @@
             maxSelectionCount: 1,
             allowCopy: false,
             "textEditingTool.starting": go.TextEditingTool.SingleClick,
-            "SelectionDeleting": function (e) {
+            "SelectionDeleting": function(e) {
               // assume maxSelectionCount === 1
               exciseNode(e.subject.first());  // defined below
             },
-            "SelectionDeleted": function (e) {
+            "SelectionDeleted": function(e) {
               deleteDisconnectedNodes(e.diagram);  // defined below
             },
             "undoManager.isEnabled": true
@@ -120,18 +130,18 @@
       // Define common properties and bindings for most kinds of nodes
       function nodeStyle() {
         return [new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-                {
-                  locationSpot: go.Spot.Center,
-                  toSpot: go.Spot.Top,
-                  fromSpot: go.Spot.NotTopSide,  // port properties on the node
-                  portSpreading: go.Node.SpreadingNone,
-                  layoutConditions: go.Part.LayoutAdded | go.Part.LayoutRemoved,
-                  // If a node from the pallette is dragged over this node, its outline will turn green
-                  mouseDragEnter: function(e, node) { node.isHighlighted = true; },
-                  mouseDragLeave: function(e, node) { node.isHighlighted = false; },
-                  // A node dropped onto this will draw a link from itself to this node
-                  mouseDrop: dropOntoNode
-                }];
+        {
+          locationSpot: go.Spot.Center,
+          toSpot: go.Spot.Top,
+          fromSpot: go.Spot.NotTopSide,  // port properties on the node
+          portSpreading: go.Node.SpreadingNone,
+          layoutConditions: go.Part.LayoutAdded | go.Part.LayoutRemoved,
+          // If a node from the pallette is dragged over this node, its outline will turn green
+          mouseDragEnter: function(e, node) { node.isHighlighted = true; },
+          mouseDragLeave: function(e, node) { node.isHighlighted = false; },
+          // A node dropped onto this will draw a link from itself to this node
+          mouseDrop: dropOntoNode
+        }];
       }
 
       function shapeStyle() {
@@ -248,8 +258,8 @@
             { toArrow: "standard", stroke: null, fill: "black" }),
           $(go.Panel,  // link label for conditionals, normally not visible
             { visible: false, name: "LABEL", segmentIndex: 1, segmentFraction: 0.5 },
-            new go.Binding("visible", "", function (link) { return link.fromNode.category === "Condition" && !!link.data.text; }).ofObject(),
-            new go.Binding("segmentOffset", "side", function (s) { return s === "Left" ? new go.Point(0, 14) : new go.Point(0, -14); }),
+            new go.Binding("visible", "", function(link) { return link.fromNode.category === "Condition" && !!link.data.text; }).ofObject(),
+            new go.Binding("segmentOffset", "side", function(s) { return s === "Left" ? new go.Point(0, 14) : new go.Point(0, -14); }),
             $(go.TextBlock,
               {
                 textAlign: "center",
@@ -261,7 +271,7 @@
           )
         );
 
-      myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+      myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
         var newnode = e.diagram.selection.first();
         if (newnode.linksConnected.count === 0) {
           // when the selection is dropped but not hooked up to the rest of the graph, delete it
@@ -314,7 +324,7 @@
 
       // add node data to the palette
       myPalette.model.nodeDataArray = [
-        { key: "if1",     category: "Condition", text: "if1"  },
+        { key: "if1", category: "Condition", text: "if1" },
         { key: "action1", category: "Action", text: "action1" },
         { key: "action2", category: "Action", text: "action2" },
         { key: "action3", category: "Action", text: "action3" },
@@ -438,7 +448,7 @@
     function findMerge(node) {
       var it = node.findLinksOutOf();
       if (it.count <= 1) return null;
-      node.diagram.nodes.each(function (n) { n._tag = 0; });
+      node.diagram.nodes.each(function(n) { n._tag = 0; });
       var i = 1;
       while (it.next()) {
         var n = walkDown(it.value.toNode, i);
@@ -464,7 +474,7 @@
 
     // Delete a Node if there are no Links coming into it, other than the "Start" Node.
     function deleteDisconnectedNodes(diagram) {
-      var nodesToDelete = diagram.nodes.filter(function (n) { return n.category !== "Start" && n.findLinksInto().count === 0; });
+      var nodesToDelete = diagram.nodes.filter(function(n) { return n.category !== "Start" && n.findLinksInto().count === 0; });
       if (nodesToDelete.count > 0) {
         diagram.removeParts(nodesToDelete, false);
         deleteDisconnectedNodes(diagram);

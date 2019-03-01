@@ -1,14 +1,15 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Logic Circuit</title>
-<meta name="description" content="A simple logic circuit editor and simulator." />
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
+  <title>Logic Circuit</title>
+  <meta name="description" content="A simple logic circuit editor and simulator." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+
   <script src="../release/go.js"></script>
   <script src="../extensions/Figures.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
 
     var red = "orangered";  // 0 or false
@@ -59,19 +60,19 @@
         $("ToolTip",
           { "Border.figure": "RoundedRectangle" },
           $(go.TextBlock, { margin: 2 },
-            new go.Binding("text",  "" , function(d) { return d.category; })));
+            new go.Binding("text", "", function(d) { return d.category; })));
 
       // define some common property settings
       function nodeStyle() {
         return [new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-                new go.Binding("isShadowed", "isSelected").ofObject(),
-                {
-                  selectionAdorned: false,
-                  shadowOffset: new go.Point(0, 0),
-                  shadowBlur: 15,
-                  shadowColor: "blue",
-                  toolTip: sharedToolTip
-                }];
+        new go.Binding("isShadowed", "isSelected").ofObject(),
+        {
+          selectionAdorned: false,
+          shadowOffset: new go.Point(0, 0),
+          shadowBlur: 15,
+          shadowColor: "blue",
+          toolTip: sharedToolTip
+        }];
       }
 
       function shapeStyle() {
@@ -105,13 +106,13 @@
           $(go.Shape, "Rectangle", portStyle(false),  // the only port
             { portId: "", alignment: new go.Spot(1, 0.5) }),
           { // if double-clicked, an input node will change its value, represented by the color.
-            doubleClick: function (e, obj) {
-                e.diagram.startTransaction("Toggle Input");
-                var shp = obj.findObject("NODESHAPE");
-                shp.fill = (shp.fill === green) ? red : green;
-                updateStates();
-                e.diagram.commitTransaction("Toggle Input");
-              }
+            doubleClick: function(e, obj) {
+              e.diagram.startTransaction("Toggle Input");
+              var shp = obj.findObject("NODESHAPE");
+              shp.fill = (shp.fill === green) ? red : green;
+              updateStates();
+              e.diagram.commitTransaction("Toggle Input");
+            }
           }
         );
 
@@ -242,24 +243,24 @@
       myDiagram.skipsUndoManager = true;
       // do all "input" nodes first
       myDiagram.nodes.each(function(node) {
-          if (node.category === "input") {
-            doInput(node);
-          }
-        });
+        if (node.category === "input") {
+          doInput(node);
+        }
+      });
       // now we can do all other kinds of nodes
       myDiagram.nodes.each(function(node) {
-          switch (node.category) {
-            case "and":       doAnd(node); break;
-            case "or":         doOr(node); break;
-            case "xor":       doXor(node); break;
-            case "not":       doNot(node); break;
-            case "nand":     doNand(node); break;
-            case "nor":       doNor(node); break;
-            case "xnor":     doXnor(node); break;
-            case "output": doOutput(node); break;
-            case "input": break;  // doInput already called, above
-          }
-        });
+        switch (node.category) {
+          case "and": doAnd(node); break;
+          case "or": doOr(node); break;
+          case "xor": doXor(node); break;
+          case "not": doNot(node); break;
+          case "nand": doNand(node); break;
+          case "nor": doNor(node); break;
+          case "xnor": doXnor(node); break;
+          case "output": doOutput(node); break;
+          case "input": break;  // doInput already called, above
+        }
+      });
       myDiagram.skipsUndoManager = oldskip;
     }
 

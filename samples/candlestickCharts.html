@@ -1,78 +1,84 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Candlestick or Range Charts</title>
-<meta name="description" content="GoJS nodes containing simple range charts." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+  <meta charset="UTF-8">
+  <title>Candlestick or Range Charts</title>
+  <meta name="description" content="GoJS nodes containing simple range charts." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv");
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-    // the template for each attribute in a node's array of item data
-    var itemTempl =
-      $(go.Panel, "TableRow",
-        $(go.TextBlock,
-          { column: 0 },
-          new go.Binding("text")),
-        $(go.Shape,
-          { column: 1, alignment: go.Spot.Left },
-          { fill: "slateblue", stroke: "darkblue" },
-          new go.Binding("geometry", "", produceRange)));
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv");
 
-    function produceRange(d) {
-      var h = 12;  // total height for the markers
-      var w = 3;  // half width for the median marker
-      // using constructors is more efficient than calling go.GraphObject.make:
-      return new go.Geometry()
-         .add(new go.PathFigure(d.min, h / 2, false)
-              .add(new go.PathSegment(go.PathSegment.Line, d.max, h / 2)))
-         .add(new go.PathFigure(d.min, 0, false)
-              .add(new go.PathSegment(go.PathSegment.Line, d.min, h)))
-         .add(new go.PathFigure(d.max, 0, false)
-              .add(new go.PathSegment(go.PathSegment.Line, d.max, h)))
-         .add(new go.PathFigure(d.val-w, 0)
-              .add(new go.PathSegment(go.PathSegment.Line, d.val+w, 0))
-              .add(new go.PathSegment(go.PathSegment.Line, d.val + w, h))
-              .add(new go.PathSegment(go.PathSegment.Line, d.val - w, h).close()));
-    }
+      // the template for each attribute in a node's array of item data
+      var itemTempl =
+        $(go.Panel, "TableRow",
+          $(go.TextBlock,
+            { column: 0 },
+            new go.Binding("text")),
+          $(go.Shape,
+            { column: 1, alignment: go.Spot.Left },
+            { fill: "slateblue", stroke: "darkblue" },
+            new go.Binding("geometry", "", produceRange)));
 
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        $(go.Shape,
-          { fill: "white" }),
-        $(go.Panel, "Table",
-          { margin: 6,
-            itemTemplate: itemTempl },
-          new go.Binding("itemArray", "items")));
-
-    var nodeDataArray = [
-      {
-        items: [ { text: "first", min: 10, val: 50, max: 60 },
-                 { text: "second", min: 20, val: 70, max: 90 },
-                 { text: "third", min: 40, val: 60, max: 110 },
-                 { text: "fourth", min: 50, val: 80, max: 130 } ]
+      function produceRange(d) {
+        var h = 12;  // total height for the markers
+        var w = 3;  // half width for the median marker
+        // using constructors is more efficient than calling go.GraphObject.make:
+        return new go.Geometry()
+          .add(new go.PathFigure(d.min, h / 2, false)
+            .add(new go.PathSegment(go.PathSegment.Line, d.max, h / 2)))
+          .add(new go.PathFigure(d.min, 0, false)
+            .add(new go.PathSegment(go.PathSegment.Line, d.min, h)))
+          .add(new go.PathFigure(d.max, 0, false)
+            .add(new go.PathSegment(go.PathSegment.Line, d.max, h)))
+          .add(new go.PathFigure(d.val - w, 0)
+            .add(new go.PathSegment(go.PathSegment.Line, d.val + w, 0))
+            .add(new go.PathSegment(go.PathSegment.Line, d.val + w, h))
+            .add(new go.PathSegment(go.PathSegment.Line, d.val - w, h).close()));
       }
-    ];
-    myDiagram.model = $(go.GraphLinksModel,
-      {
-        copiesArrays: true,
-        copiesArrayObjects: true,
-        nodeDataArray: nodeDataArray
-      });
-  }
-</script>
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          $(go.Shape,
+            { fill: "white" }),
+          $(go.Panel, "Table",
+            {
+              margin: 6,
+              itemTemplate: itemTempl
+            },
+            new go.Binding("itemArray", "items")));
+
+      var nodeDataArray = [
+        {
+          items: [{ text: "first", min: 10, val: 50, max: 60 },
+          { text: "second", min: 20, val: 70, max: 90 },
+          { text: "third", min: 40, val: 60, max: 110 },
+          { text: "fourth", min: 50, val: 80, max: 130 }]
+        }
+      ];
+      myDiagram.model = $(go.GraphLinksModel,
+        {
+          copiesArrays: true,
+          copiesArrayObjects: true,
+          nodeDataArray: nodeDataArray
+        });
+    }
+  </script>
 </head>
 <body onload="init()">
-<div id="sample">
-  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
-</div>
+  <div id="sample">
+    <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  </div>
+  <p>
+    For more sophisticated charts within nodes, see the <a href="canvases.html">Canvas Charts</a> sample.
+  </p>
 </body>
 </html>

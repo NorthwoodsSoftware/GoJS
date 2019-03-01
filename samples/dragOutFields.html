@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Dragging a Field from a Record onto an HTML Element</title>
   <meta name="description" content="Drag an item from a node out of the diagram and onto another HTML element." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <script src="../release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     // Custom DraggingTool for dragging fields instead of whole Parts.
     // FieldDraggingTool.fieldTemplate needs to be set to a template of the field that you want shown while dragging.
@@ -24,11 +25,11 @@
       var obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
       while (obj !== null && obj.type !== go.Panel.TableRow) obj = obj.panel;
       if (obj !== null && obj.type === go.Panel.TableRow &&
-          this.fieldTemplate !== null && this.temporaryPart === null) {
+        this.fieldTemplate !== null && this.temporaryPart === null) {
         var tempPart =
           go.GraphObject.make(go.Node, "Table",
-                              { layerName: "Tool", locationSpot: go.Spot.Center },
-                              this.fieldTemplate.copy());  // copy the template!
+            { layerName: "Tool", locationSpot: go.Spot.Center },
+            this.fieldTemplate.copy());  // copy the template!
         this.temporaryPart = tempPart;
         // assume OBJ is now a Panel representing a field, bound to field data
         // update the temporary Part via data binding
@@ -113,9 +114,11 @@
       var fieldTemplate =
         $(go.Panel, "TableRow",  // this Panel is a row in the containing Table
           new go.Binding("portId", "name"),  // this Panel is a "port"
-          { background: "transparent",  // so this port's background can be picked by the mouse
+          {
+            background: "transparent",  // so this port's background can be picked by the mouse
             fromSpot: go.Spot.Right,  // links only go from the right side to the left side
-            toSpot: go.Spot.Left },  // allow drawing links from or to this port
+            toSpot: go.Spot.Left
+          },  // allow drawing links from or to this port
           $(go.Shape,
             { width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 },
             new go.Binding("figure", "figure"),
@@ -134,9 +137,11 @@
       // This template represents a whole "record".
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          { movable: false,
+          {
+            movable: false,
             copyable: false,
-            deletable: false },
+            deletable: false
+          },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           // this rectangular shape surrounds the content of the node
           $(go.Shape,
@@ -174,23 +179,28 @@
 
       myDiagram.model =
         $(go.GraphLinksModel,
-          { linkFromPortIdProperty: "fromPort",
+          {
+            linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",
             copiesArrays: true,
             copiesArrayObjects: true,
             nodeDataArray: [
-              { key: "Record1",
+              {
+                key: "Record1",
                 fields: [
                   { name: "field1", info: "", color: "#F7B84B", figure: "Ellipse" },
                   { name: "field2", info: "the second one", color: "#F25022", figure: "Ellipse" },
                   { name: "fieldThree", info: "3rd", color: "#00BCF2" }
                 ],
-                loc: "0 0" },
-              { key: "Record2",
+                loc: "0 0"
+              },
+              {
+                key: "Record2",
                 fields: [
-                  { name: "fieldA", info: "",       color: "#FFB900", figure: "Diamond" }
+                  { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond" }
                 ],
-                loc: "250 0" }
+                loc: "250 0"
+              }
             ]
           });
     }

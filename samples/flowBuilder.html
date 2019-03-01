@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Flow Builder</title>
   <meta name="description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-  <meta charset="UTF-8">
+
   <script src="../release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -41,7 +42,7 @@
       });
 
       var graygrad = $(go.Brush, "Linear",
-                       { 0: "white", 0.1: "whitesmoke", 0.9: "whitesmoke", 1: "lightgray" });
+        { 0: "white", 0.1: "whitesmoke", 0.9: "whitesmoke", 1: "lightgray" });
 
       myDiagram.nodeTemplate =  // the default node template
         $(go.Node, "Spot",
@@ -54,8 +55,10 @@
               { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
               new go.Binding("fill", "isSelected", function(s) { return s ? "dodgerblue" : graygrad; }).ofObject()),
             $(go.TextBlock,
-              { stroke: "black", font: "12px sans-serif", editable: true,
-                margin: new go.Margin(3, 3+11, 3, 3+4), alignment: go.Spot.Left },
+              {
+                stroke: "black", font: "12px sans-serif", editable: true,
+                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left
+              },
               new go.Binding("text").makeTwoWay())
           ),
           // output port
@@ -100,8 +103,10 @@
               { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
               new go.Binding("fill", "isSelected", function(s) { return s ? "dodgerblue" : graygrad; }).ofObject()),
             $(go.TextBlock,
-              { stroke: "black", font: "12px sans-serif", editable: true,
-                margin: new go.Margin(3, 3+11, 3, 3+4), alignment: go.Spot.Left },
+              {
+                stroke: "black", font: "12px sans-serif", editable: true,
+                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left
+              },
               new go.Binding("text", "text"))
           ),
           // output port
@@ -125,8 +130,10 @@
               { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
               new go.Binding("fill", "isSelected", function(s) { return s ? "dodgerblue" : graygrad; }).ofObject()),
             $(go.TextBlock,
-              { stroke: "black", font: "12px sans-serif", editable: true,
-                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left },
+              {
+                stroke: "black", font: "12px sans-serif", editable: true,
+                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left
+              },
               new go.Binding("text", "text"))
           ),
           // input port
@@ -144,8 +151,10 @@
       // linking or relinking to this special node will cause the link to be deleted
       myDiagram.nodeTemplateMap.add("Recycle",
         $(go.Node, "Auto",
-          { portId: "to", toLinkable: true, deletable: false,
-            layerName: "Background", locationSpot: go.Spot.Center },
+          {
+            portId: "to", toLinkable: true, deletable: false,
+            layerName: "Background", locationSpot: go.Spot.Center
+          },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           { dragComputation: function(node, pt, gridpt) { return pt; } },
           { mouseDrop: function(e, obj) { myDiagram.commandHandler.deleteSelection(); } },
@@ -223,15 +232,17 @@
           { selectionAdorned: false, fromPortId: "from", toPortId: "to", relinkableTo: true },
           $(go.Shape,
             { stroke: "gray", strokeWidth: 2 },
-            { mouseEnter: function(e, obj) { obj.strokeWidth = 5; obj.stroke = "dodgerblue"; },
-              mouseLeave: function(e, obj) { obj.strokeWidth = 2; obj.stroke = "gray"; } })
+            {
+              mouseEnter: function(e, obj) { obj.strokeWidth = 5; obj.stroke = "dodgerblue"; },
+              mouseLeave: function(e, obj) { obj.strokeWidth = 2; obj.stroke = "gray"; }
+            })
         );
 
       function commonLinkingToolInit(tool) {
         // the temporary link drawn during a link drawing operation (LinkingTool) is thick and blue
         tool.temporaryLink =
-            $(go.Link, { layerName: "Tool" },
-              $(go.Shape, { stroke: "dodgerblue", strokeWidth: 5 }));
+          $(go.Link, { layerName: "Tool" },
+            $(go.Shape, { stroke: "dodgerblue", strokeWidth: 5 }));
 
         // change the standard proposed ports feedback from blue rectangles to transparent circles
         tool.temporaryFromPort.figure = "Circle";
@@ -275,15 +286,15 @@
           // look for Parts overlapping the node
           while (true) {
             var exist = myDiagram.findObjectsIn(node.actualBounds,
-                                                // only consider Parts
-                                                function(obj) { return obj.part; },
-                                                // ignore Links and the dropped node itself
-                                                function(part) { return part instanceof go.Node && part !== node; },
-                                                // check for any overlap, not complete containment
-                                                true).first();
+              // only consider Parts
+              function(obj) { return obj.part; },
+              // ignore Links and the dropped node itself
+              function(part) { return part instanceof go.Node && part !== node; },
+              // check for any overlap, not complete containment
+              true).first();
             if (exist === null) break;
             // try shifting down beyond the existing node to see if there's empty space
-            node.position = new go.Point(node.actualBounds.x, exist.actualBounds.bottom+10);
+            node.position = new go.Point(node.actualBounds.x, exist.actualBounds.bottom + 10);
           }
         });
       }

@@ -1,71 +1,72 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Parallel Route Links</title>
-<meta name="description" content="Custom non-Orthogonal non-Bezier Links that have parallel routings for multiple links connecting the same pair of ports." />
-<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
-<meta charset="UTF-8">
-<script src="../release/go.js"></script>
-<script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-<script src="ParallelRouteLink.js"></script>
-<script id="code">
-  function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+  <meta charset="UTF-8">
+  <title>Parallel Route Links</title>
+  <meta name="description" content="Custom non-Orthogonal non-Bezier Links that have parallel routings for multiple links connecting the same pair of ports." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-    var $ = go.GraphObject.make;
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="ParallelRouteLink.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
-    myDiagram =
-      $(go.Diagram, "myDiagramDiv",
+      var $ = go.GraphObject.make;
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
           {
             "undoManager.isEnabled": true
           });
 
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        new go.Binding("location", "loc", go.Point.parse),
-        $(go.Shape,
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          new go.Binding("location", "loc", go.Point.parse),
+          $(go.Shape,
+            {
+              portId: "",
+              fromLinkable: true, toLinkable: true,
+              fromLinkableDuplicates: true, toLinkableDuplicates: true,
+              cursor: "pointer"
+            },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 8 },
+            new go.Binding("text"))
+        );
+
+      myDiagram.linkTemplate =
+        $(ParallelRouteLink,
           {
-            portId: "",
-            fromLinkable: true, toLinkable: true,
-            fromLinkableDuplicates: true, toLinkableDuplicates: true,
-            cursor: "pointer"
+            relinkableFrom: true, relinkableTo: true,
+            reshapable: true //, resegmentable: true
           },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          { margin: 8 },
-          new go.Binding("text"))
-      );
+          $(go.Shape, { strokeWidth: 2 },
+            new go.Binding("stroke", "fromNode", function(node) { return node.port.fill; }).ofObject()),
+          $(go.Shape, { toArrow: "OpenTriangle", strokeWidth: 1.5 },
+            new go.Binding("stroke", "fromNode", function(node) { return node.port.fill; }).ofObject())
+        );
 
-    myDiagram.linkTemplate =
-      $(ParallelRouteLink,
-        {
-          relinkableFrom: true, relinkableTo: true,
-          reshapable: true //, resegmentable: true
-        },
-        $(go.Shape, { strokeWidth: 2 },
-          new go.Binding("stroke", "fromNode", function(node) { return node.port.fill; }).ofObject()),
-        $(go.Shape, { toArrow: "OpenTriangle", strokeWidth: 1.5 },
-          new go.Binding("stroke", "fromNode", function(node) { return node.port.fill; }).ofObject())
-      );
-
-    myDiagram.model = new go.GraphLinksModel(
-    [
-      { key: 1, text: "Alpha", color: "lightblue", loc: "0 0" },
-      { key: 2, text: "Beta", color: "orange", loc: "130 70" },
-      { key: 3, text: "Gamma", color: "lightgreen", loc: "0 130" }
-    ],
-    [
-      { from: 1, to: 2 },
-      { from: 2, to: 1 },
-      { from: 1, to: 3 },
-      { from: 1, to: 3 },
-      { from: 3, to: 1 },
-      { from: 1, to: 3 },
-      { from: 1, to: 3 }
-    ]);
-  }
-</script>
+      myDiagram.model = new go.GraphLinksModel(
+        [
+          { key: 1, text: "Alpha", color: "lightblue", loc: "0 0" },
+          { key: 2, text: "Beta", color: "orange", loc: "130 70" },
+          { key: 3, text: "Gamma", color: "lightgreen", loc: "0 130" }
+        ],
+        [
+          { from: 1, to: 2 },
+          { from: 2, to: 1 },
+          { from: 1, to: 3 },
+          { from: 1, to: 3 },
+          { from: 3, to: 1 },
+          { from: 1, to: 3 },
+          { from: 1, to: 3 }
+        ]);
+    }
+  </script>
 </head>
 <body onload="init()">
 <div id="sample">
