@@ -321,6 +321,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
     });
 
     if (bestObj !== null) {
+      const offsetX = objBounds.x - part.actualBounds.x;
+      const offsetY = objBounds.y - part.actualBounds.y;
       const bestBounds = bestObj.locationObject.getDocumentBounds();
       // line extends from x0 to x2
       const x0 = Math.min(objBounds.x, bestBounds.x) - 10;
@@ -330,7 +332,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
       if (bestSpot === go.Spot.Center) {
         if (snap) {
           // call Part.move in order to automatically move member Parts of Groups
-          part.move(new go.Point(objBounds.x, bestPoint.y - objBounds.height / 2));
+          part.move(new go.Point(objBounds.x - offsetX, bestPoint.y - objBounds.height / 2 - offsetY));
           this.invalidateLinks(part);
         }
         if (guideline) {
@@ -340,7 +342,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         }
       } else if (bestSpot === go.Spot.Top) {
         if (snap) {
-          part.move(new go.Point(objBounds.x, bestPoint.y));
+          part.move(new go.Point(objBounds.x - offsetX, bestPoint.y - offsetY));
           this.invalidateLinks(part);
         }
         if (guideline) {
@@ -350,7 +352,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         }
       } else if (bestSpot === go.Spot.Bottom) {
         if (snap) {
-          part.move(new go.Point(objBounds.x, bestPoint.y - objBounds.height));
+          part.move(new go.Point(objBounds.x - offsetX, bestPoint.y - objBounds.height - offsetY));
           this.invalidateLinks(part);
         }
         if (guideline) {
@@ -433,6 +435,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
     });
 
     if (bestObj !== null) {
+      const offsetX = objBounds.x - part.actualBounds.x;
+      const offsetY = objBounds.y - part.actualBounds.y;
       const bestBounds = bestObj.locationObject.getDocumentBounds();
       // line extends from y0 to y2
       const y0 = Math.min(objBounds.y, bestBounds.y) - 10;
@@ -442,7 +446,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
       if (bestSpot === go.Spot.Center) {
         if (snap) {
           // call Part.move in order to automatically move member Parts of Groups
-          part.move(new go.Point(bestPoint.x - objBounds.width / 2, objBounds.y));
+          part.move(new go.Point(bestPoint.x - objBounds.width / 2 - offsetX, objBounds.y - offsetY));
           this.invalidateLinks(part);
         }
         if (guideline) {
@@ -452,7 +456,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         }
       } else if (bestSpot === go.Spot.Left) {
         if (snap) {
-          part.move(new go.Point(bestPoint.x, objBounds.y));
+          part.move(new go.Point(bestPoint.x - offsetX, objBounds.y - offsetY));
           this.invalidateLinks(part);
         }
         if (guideline) {
@@ -462,7 +466,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         }
       } else if (bestSpot === go.Spot.Right) {
         if (snap) {
-          part.move(new go.Point(bestPoint.x - objBounds.width, objBounds.y));
+          part.move(new go.Point(bestPoint.x - objBounds.width - offsetX, objBounds.y - offsetY));
           this.invalidateLinks(part);
         }
         if (guideline) {

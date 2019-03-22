@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.4
+ * Type definitions for GoJS v2.0.5
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -4655,7 +4655,7 @@ export abstract class Tool {
      * function to find target objects. No value means that only objects in layers holding permanent objects.
      * @return {boolean} true if InputEvent#handled had been set to true on the Diagram#lastInput.
      */
-    standardMouseClick(navig?: ((a: GraphObject) => GraphObject) | null, pred?: ((a: GraphObject) => boolean) | null): boolean;
+    standardMouseClick<T extends GraphObject>(navig?: (a: GraphObject) => (T | null), pred?: (a: T) => boolean): boolean;
     /**
      * Implement the standard behavior for mouse enter, over, and leave events,
      * where the mouse is moving but no button is pressed.
@@ -8469,7 +8469,7 @@ export class Layer {
      * defaulting to a predicate that always returns true.
      * @return {GraphObject} The first GraphObject in the Z-order, or else null.
      */
-    findObjectAt(p: Point, navig?: ((a: GraphObject) => GraphObject) | null, pred?: ((a: GraphObject) => boolean) | null): GraphObject | null;
+    findObjectAt<T extends GraphObject>(p: Point, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null): (T | null);
     /**
      * Return a collection of the GraphObjects of this layer
      * at the given point in document coordinates.
@@ -8488,7 +8488,7 @@ export class Layer {
      * located at Point p, or else an empty collection.
      * If a List or Set was passed in, it is returned.
      */
-    findObjectsAt<T extends List<GraphObject> | Set<GraphObject> = Set<GraphObject>>(p: Point, navig?: ((a: GraphObject) => GraphObject) | null, pred?: ((a: GraphObject) => boolean) | null, coll?: T): T;
+    findObjectsAt<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(p: Point, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, coll?: S): S;
     /**
      * Returns a collection of all GraphObjects that are inside or that intersect
      * a given Rect in document coordinates.
@@ -8509,7 +8509,7 @@ export class Layer {
      * located in or near Rect r, or else an empty collection.
      * If a List or Set was passed in, it is returned.
      */
-    findObjectsIn<T extends List<GraphObject> | Set<GraphObject> = Set<GraphObject>>(r: Rect, navig?: ((a: GraphObject) => GraphObject) | null, pred?: ((a: GraphObject) => boolean) | null, partialInclusion?: boolean, coll?: T): T;
+    findObjectsIn<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(r: Rect, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, partialInclusion?: boolean, coll?: S): S;
     /**
      * Returns a collection of all GraphObjects that are within a certain distance
      * of a given point in document coordinates.
@@ -8531,7 +8531,7 @@ export class Layer {
      * located at Point p, or else an empty collection.
      * If a List or Set was passed in, it is returned.
      */
-    findObjectsNear<T extends List<GraphObject> | Set<GraphObject> = Set<GraphObject>>(p: Point, dist: number, navig?: ((a: GraphObject) => GraphObject) | null, pred?: ((a: GraphObject) => boolean) | null, partialInclusion?: boolean | T, coll?: T): T;
+    findObjectsNear<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(p: Point, dist: number, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, partialInclusion?: boolean | S, coll?: S): S;
     /**
      * This read-only property returns an iterator for this Layer's Parts.
      * The Parts can be Nodes, Links, Groups, Adornments, or simple Parts.
@@ -9068,7 +9068,7 @@ export class Diagram {
      * @see #findObjectsNear
      * @see #findPartAt
      */
-    findObjectAt(p: Point, navig?: ((a: GraphObject) => GraphObject | null) | null, pred?: ((a: GraphObject) => boolean) | null): GraphObject | null;
+    findObjectAt<T extends GraphObject>(p: Point, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null): (T | null);
     /**
      * This convenience function finds all Parts that are at a point in document coordinates
      * and that are not in temporary layers.
@@ -9083,7 +9083,7 @@ export class Diagram {
      * @see #findObjectsAt
      * @since 2.0
      */
-    findPartsAt<T extends List<Part> | Set<Part> = Set<Part>>(p: Point, selectable?: boolean, coll?: T): T;
+    findPartsAt<T extends Part, S extends List<T> | Set<T> = Set<T>>(p: Point, selectable?: boolean, coll?: S): S;
     /**
      * Return a collection of the GraphObjects at the given point in document coordinates.
      *
@@ -9114,7 +9114,7 @@ export class Diagram {
      * @see #findObjectsNear
      * @see #findPartsAt
      */
-    findObjectsAt<T extends List<GraphObject> | Set<GraphObject> = Set<GraphObject>>(p: Point, navig?: ((a: GraphObject) => GraphObject | null) | null, pred?: ((a: GraphObject) => boolean) | null, coll?: T): T;
+    findObjectsAt<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(p: Point, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, coll?: S): S;
     /**
      * This convenience function finds Parts that are inside or that intersect
      * a given Rect in document coordinates.
@@ -9133,7 +9133,7 @@ export class Diagram {
      * @see #findObjectsIn
      * @since 2.0
      */
-    findPartsIn<T extends List<Part> | Set<Part> = Set<Part>>(r: Rect, partialInclusion?: boolean, selectable?: boolean, coll?: T): T;
+    findPartsIn<T extends Part, S extends List<T> | Set<T> = Set<T>>(r: Rect, partialInclusion?: boolean, selectable?: boolean, coll?: S): S;
     /**
      * Returns a collection of all GraphObjects that are inside or that intersect
      * a given Rect in document coordinates.
@@ -9171,7 +9171,7 @@ export class Diagram {
      * @see #findObjectsNear
      * @see #findPartsIn
      */
-    findObjectsIn<T extends List<GraphObject> | Set<GraphObject> = Set<GraphObject>>(r: Rect, navig?: ((a: GraphObject) => GraphObject | null) | null, pred?: ((a: GraphObject) => boolean) | null, partialInclusion?: boolean, coll?: T): T;
+    findObjectsIn<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(r: Rect, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, partialInclusion?: boolean, coll?: S): S;
     /**
      * This convenience function finds Parts that are within a certain distance
      * of a given point in document coordinates.
@@ -9191,7 +9191,7 @@ export class Diagram {
      * @see #findObjectsNear
      * @since 2.0
      */
-    findPartsNear<T extends List<Part> | Set<Part> = Set<Part>>(p: Point, dist: number, partialInclusion?: boolean, selectable?: boolean, coll?: T): T;
+    findPartsNear<T extends Part, S extends List<T> | Set<T> = Set<T>>(p: Point, dist: number, partialInclusion?: boolean, selectable?: boolean, coll?: S): S;
     /**
      * Returns a collection of all GraphObjects that are within a certain distance
      * of a given point in document coordinates.
@@ -9233,7 +9233,7 @@ export class Diagram {
      * @see #findObjectsIn
      * @see #findPartsNear
      */
-    findObjectsNear<T extends List<GraphObject> | Set<GraphObject> = Set<GraphObject>>(p: Point, dist: number, navig?: ((a: GraphObject) => GraphObject | null) | null, pred?: ((a: GraphObject) => boolean) | null, partialInclusion?: boolean | T, coll?: T): T;
+    findObjectsNear<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(p: Point, dist: number, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, partialInclusion?: boolean | S, coll?: S): S;
     /**
      * Updates the diagram immediately, then resets initialization flags so that
      * actions taken in the argument function will be considered part of Diagram initialization,
@@ -11445,10 +11445,12 @@ export class Overview extends Diagram {
      * Gets or sets the rectangular Part that represents the
      * viewport of the #observed Diagram.
      * By default the part contains only a magenta Shape.
+     * The box's Part#selectionObject is what is resized by the Overview to the apparent size of the observed diagram's viewport.
      */
     box: Part;
     /**
      * Gets or sets whether this overview draws the temporary layers of the observed Diagram.
+     * The default value is true.
      * @since 1.2
      */
     drawsTemporaryLayers: boolean;
@@ -13309,27 +13311,6 @@ export abstract class GraphObject {
      * @see Panel#padding
      */
     margin: MarginLike;
-    /**********************************************************
-    Panel-specific properties:
-    ***********************************************************/
-    /**
-     * Gets or sets the alignment Spot of this GraphObject used in Panel layouts,
-     * to determine where in the area allocated by the panel this object should be placed.
-     *
-     * The default value is Spot#Default, which lets the Panel determine the Spot using
-     * Panel#defaultAlignment. If that property is also Spot#Default,
-     * then the alignment spot will be different depending on the Panel type.
-     *
-     * The #alignmentFocus is often used along with this property to specify
-     * where this object should be positioned in a Panel.
-     *
-     * A Spot#Default is equivalent to Spot.Center in Spot, Auto, Horizontal, and Vertical panels.
-     * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
-     *
-     * @see #alignmentFocus
-     * @see Panel#defaultAlignment
-     */
-    alignment: Spot;
     /**
      * Gets or sets the column of this GraphObject if it is in a Table Panel.
      * The value must be a small non-negative integer. The default is 0.
@@ -16055,15 +16036,6 @@ export class Shape extends GraphObject {
      */
     constructor();
     /**
-     * Returns the Rect in document coordinates for this object's bounds.
-     * If this GraphObject is a Part, the rect will be identical to its #actualBounds.
-     * @param {Rect=} result an optional Rect that is modified and returned.
-     * @return {Rect} in document coordinates.
-     * @see #getDocumentPoint
-     * @since 2.0
-     */
-    getDocumentBounds(result?: Rect): Rect;
-    /**
      * Gets or sets the Shape's Geometry that defines the Shape's figure.
      * Setting a geometry is not necessary if a #figure is specified,
      * as that will construct a geometry instead.
@@ -16368,7 +16340,7 @@ export class Shape extends GraphObject {
      *    or an existing figure generator name for which the new name will be a synonym.
      * @since 1.5
      */
-    static defineFigureGenerator(name: string, func: string | ((a: Shape, b: number, c: number) => Geometry)): void;
+    static defineFigureGenerator(name: string, func: string | ((shape: Shape, width: number, height: number) => Geometry)): void;
     /**
      * This static function returns a read-only Map of named arrowhead geometries.
      * The keys are arrowhead names.
@@ -16849,6 +16821,10 @@ export class Picture extends GraphObject {
      * See the final section of the <a href="../../intro/pictures.html">Introduction page on Pictures</a>.
      */
     source: string;
+    /**
+     * Undocumented
+     */
+    reloadSource(): void;
     /**
      * Gets or sets a function that returns a value for image.crossOrigin.
      *
@@ -24162,7 +24138,9 @@ export class ForceDirectedLayout extends Layout {
      * and returning a random number between zero (inclusive) and one (exclusive).
      * @since 1.5
      */
-    randomNumberGenerator: ObjectData;
+    randomNumberGenerator: ({
+        random: () => number;
+    } | null);
     /**
      * Gets or sets the default value computed by #springStiffness.
      * The initial value is 0.05.
