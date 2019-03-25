@@ -16,8 +16,14 @@
 <p>
 <b>GoJS</b> provides a mechanism for you to define context menus for any object or for the diagram background.
 </p>
+
+<p class="box" style="background-color: lightgoldenrodyellow;">
+  Note: GoJS context menus cannot render outside of Diagrams, because they are objects inside the Diagram and therefore drawn only on the Diagram.
+  If you need a context menu drawn partially or fully outside the Diagram, consider making an <a href="#HTMLContextMenus">HTML context menu</a>.
+</p>
+
 <p>
-A context menu is an <a>Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
+A GoJS context menu is an <a>Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
 an object that has its <a>GraphObject.contextMenu</a> set.
 The context menu is bound to the same data as the part itself.
 </p>
@@ -129,7 +135,7 @@ Try context clicking a node and invoking the "Change Color" command a few times.
 With the diagram context menu you will be able to "Undo" and/or "Redo", or you can use Control-Z and/or Control-Y.
 </p>
 
-<h3 id="Positioning">Positioning</h3>
+<h2 id="Positioning">Positioning</h2>
 <p>
 There are two ways to customize the positioning of the context menu relative to the adorned GraphObject.
 One way is to override <a>ContextMenuTool.positionContextMenu</a>.
@@ -185,14 +191,43 @@ The context menu will not to have a background, and thus will not display a shad
 It is possible to define custom context menus using HTML instead of Adornments using the <a>HTMLInfo</a> class.
 The <a href="../samples/customContextMenu.html">Custom Context Menu sample</a> and
 <a href="../samples/htmlLightBoxContextMenu.html">Lightbox Context Menu sample</a> show two such custom context menus.
-See <a href="HTMLInteraction.html">HTMLInteraction</a> for more discussion.
 </p>
 <p>
 HTML context menus require more effort to implement than using the default <b>GoJS</b> "ContextMenu" and "ContextMenuButton".
 However you would have the full power of HTML/CSS/JavaScript to show whatever you want.
+This includes creating context menus that can exist or float outside of the Diagram.
+</p>
+<p>
+  There are two primary considerations when authoring HTML and CSS for context menus.
+  The context menu should usually be a sibling Element of the Diagram, and should never be nested inside a Diagram DIV:
 </p>
 
-<h3 id="DefaultContextMenuForTouchEnabledDevices">Default Context Menu for Touch-enabled devices</h3>
+<pre class="lang-js">
+&lt;div style="position: relative;"&gt;
+  &lt;div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px;"&gt;&lt;/div&gt;
+  &lt;div id="contextMenu"&gt;
+    &lt;!-- ... context menu HTML --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<p>
+  And the ContextMenu may need a z-index set to ensure it is always on top. GoJS Diagrams have z-index of 2, and some tools a z-index of 100.
+</p>
+
+<pre class="lang-css">#contextMenu {
+  z-index: 1000;
+  ...
+}
+</pre>
+
+<p>
+  See the <a href="../samples/customContextMenu.html">Custom Context Menu sample</a> and
+  <a href="../samples/htmlLightBoxContextMenu.html">Lightbox Context Menu sample</a> for HTML examples.
+  See the <a href="HTMLInteraction.html">HTMLInteraction</a> page for more discussion on HTML in GoJS.
+</p>
+
+<h2 id="DefaultContextMenuForTouchEnabledDevices">Default Context Menu for Touch-enabled devices</h2>
 <p>
 Touch devices are presumed to have no keyboard ability, which makes actions like copying and pasting more difficult.
 Because of this, <b>GoJS</b> provides a built-in default context menu on touch devices, implemented in HTML.

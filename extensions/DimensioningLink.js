@@ -35,6 +35,21 @@ function DimensioningLink() {
 }
 go.Diagram.inherit(DimensioningLink, go.Link);
 
+/**
+* @ignore
+* Copies properties to a cloned DimensioningLink.
+* @this {DimensioningLink}
+* @param {DimensioningLink} copy
+* @override
+*/
+DimensioningLink.prototype.cloneProtected = function(copy) {
+  go.Link.prototype.cloneProtected.call(this, copy);
+  copy._direction = this._direction;
+  copy._extension = this._extension;
+  copy._inset = this._inset;
+  copy._gap = this._gap;
+}
+
 /*
 * The general angle at which the measurement should be made.
 * The default value is 0, meaning to go measure only along the X axis,

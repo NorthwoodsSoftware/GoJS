@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.5
+ * Type definitions for GoJS v2.0.6
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -13311,6 +13311,27 @@ export abstract class GraphObject {
      * @see Panel#padding
      */
     margin: MarginLike;
+    /**********************************************************
+    Panel-specific properties:
+    ***********************************************************/
+    /**
+     * Gets or sets the alignment Spot of this GraphObject used in Panel layouts,
+     * to determine where in the area allocated by the panel this object should be placed.
+     *
+     * The default value is Spot#Default, which lets the Panel determine the Spot using
+     * Panel#defaultAlignment. If that property is also Spot#Default,
+     * then the alignment spot will be different depending on the Panel type.
+     *
+     * The #alignmentFocus is often used along with this property to specify
+     * where this object should be positioned in a Panel.
+     *
+     * A Spot#Default is equivalent to Spot.Center in Spot, Auto, Horizontal, and Vertical panels.
+     * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
+     *
+     * @see #alignmentFocus
+     * @see Panel#defaultAlignment
+     */
+    alignment: Spot;
     /**
      * Gets or sets the column of this GraphObject if it is in a Table Panel.
      * The value must be a small non-negative integer. The default is 0.

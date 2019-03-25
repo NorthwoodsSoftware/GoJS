@@ -16,9 +16,21 @@
 function BalloonLink() {
   go.Link.call(this);
   this.layerName = "Background";
-  this.base = 10;
+  this._base = 10;
 }
 go.Diagram.inherit(BalloonLink, go.Link);
+
+/**
+* @ignore
+* Copies properties to a cloned BalloonLink.
+* @this {BalloonLink}
+* @param {BalloonLink} copy
+* @override
+*/
+BalloonLink.prototype.cloneProtected = function(copy) {
+  go.Link.prototype.cloneProtected.call(this, copy);
+  copy._base = this._base;
+}
 
 /*
 * The width of the base of the triangle at the center point of the Link.fromNode.

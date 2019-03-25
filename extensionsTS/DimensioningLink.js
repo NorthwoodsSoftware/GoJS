@@ -60,6 +60,16 @@ var __extends = (this && this.__extends) || (function () {
             _this.routing = go.Link.Orthogonal;
             return _this;
         }
+        /**
+         * Copies properties to a cloned DimensioningLink.
+         */
+        DimensioningLink.prototype.cloneProtected = function (copy) {
+            _super.prototype.cloneProtected.call(this, copy);
+            copy._direction = this._direction;
+            copy._extension = this._extension;
+            copy._inset = this._inset;
+            copy._gap = this._gap;
+        };
         Object.defineProperty(DimensioningLink.prototype, "direction", {
             /**
              * The general angle at which the measurement should be made.

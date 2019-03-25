@@ -24,6 +24,14 @@ export class BalloonLink extends go.Link {
   }
 
   /**
+   * Copies properties to a cloned BalloonLink.
+   */
+  public cloneProtected(copy: this): void {
+    super.cloneProtected(copy);
+    copy._base = this._base;
+  }
+
+  /**
    * Gets or sets width of the base of the triangle at the center point of the {@link Link#fromNode}.
    *
    * The default value is 10.

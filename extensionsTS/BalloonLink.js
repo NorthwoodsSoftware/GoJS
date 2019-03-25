@@ -45,6 +45,13 @@ var __extends = (this && this.__extends) || (function () {
             _this.layerName = 'Background';
             return _this;
         }
+        /**
+         * Copies properties to a cloned BalloonLink.
+         */
+        BalloonLink.prototype.cloneProtected = function (copy) {
+            _super.prototype.cloneProtected.call(this, copy);
+            copy._base = this._base;
+        };
         Object.defineProperty(BalloonLink.prototype, "base", {
             /**
              * Gets or sets width of the base of the triangle at the center point of the {@link Link#fromNode}.
