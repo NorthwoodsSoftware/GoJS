@@ -1394,6 +1394,14 @@ arr.push([
   ["collections", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "grid", "html"]
 ]);
 
+arr.push([
+  "../projects/floorplannerTS/floorplannerTSSample",
+  "Floor Planner (TypeScript)",
+  "An editor for users to create robust, detailed floor plans.",
+  "FloorPlannerTS",
+  ["collections", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "grid", "html"]
+]);
+
 // Previously unlisted samples
 arr.push([
   "minimalJSON",
