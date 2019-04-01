@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Replacing and Deleting Diagrams -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>Replacing Diagrams and Models</h1>
+
+<p>
+  Many applications will require the programmer to show different Diagrams on the same content area of the page. This is especially common in single-page webapps.
+  Often, you do not need to remove the Diagram, and create another one, to do this. Since the Diagram is analagous to a <em>view</em> in <em>model-view</em> architecture,
+  you can instead replace the <a>Diagram.model</a>, and perhaps other settings, like the Diagram.nodeTemplateMap or Diagram.layout.
+  Or you could build larger template maps that accomodate all Models you wish to present.
+</p>
+
+<p>
+  Below is an example of keeping a single Diagram, to be used as the view surface. It has a Model loaded,
+  and a button will load a different Model which uses different templates, and sets a different Layout.
+  This demonstrates re-use of the Diagram, which is often easier and more efficient than handling multiple Diagrams.
+  This is the normal way to show at most one diagram at a time.
+</p>
+
+<pre class="lang-js" id="first">
+    // A minimal Diagram
+    diagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3, font: '28px sans-serif' },  // some room around the text
+          new go.Binding("text", "key"))
+      );
+
+    // Node template that is only used by the second model
+    diagram.nodeTemplateMap.add("TypeTwo",
+    $(go.Node, "Horizontal",
+      $(go.Shape, "Circle", { width: 24, height: 24, strokeWidth: 0, portId: "" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 2, font: "Bold 15px sans-serif" },
+        new go.Binding("text", "key"))
+      )
+    );
+
+    // Another node template that is only used by the second model
+    diagram.nodeTemplateMap.add("AnotherType",
+      $(go.Node, "Auto",
+        $(go.Shape, "Rectangle", { strokeWidth: 1, fill: 'lightyellow' },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 12, font: "12px sans-serif" },
+          new go.Binding("text", "text"))
+      )
+    );
+
+    var firstModel = true;
+    loadModel();
+
+    // Toggle the Diagram's Model
+    var button1 = document.getElementById('button1');
+    button1.addEventListener('click', function() {
+      loadModel();
+    });
+
+    function loadModel() {
+      if (firstModel) { // load the first model
+        diagram.layout = new go.Layout(); // Simple layout
+        diagram.model = new go.GraphLinksModel(
+          [
+            { key: "Alpha", color: "lightblue" },
+            { key: "Beta", color: "lightblue" },
+            { key: "Gamma", color: "lightgreen" },
+            { key: "Delta", color: "lightgreen" }
+          ],
+          [
+            { from: "Alpha", to: "Beta" },
+            { from: "Gamma", to: "Delta" }
+          ]);
+      } else { // load the second model
+        diagram.layout = $(go.TreeLayout, { angle: 90 });
+
+        diagram.model = new go.GraphLinksModel(
+        [
+          { key: "One",   category: "TypeTwo", color: go.Brush.randomColor() },
+          { key: "Two",   category: "TypeTwo", color: go.Brush.randomColor() },
+          { key: "Three", category: "TypeTwo", color: go.Brush.randomColor() },
+          { key: "Four",  category: "TypeTwo", color: go.Brush.randomColor() },
+          { key: "Five",  category: "TypeTwo", color: go.Brush.randomColor() },
+          { key: "Six",   category: "TypeTwo", color: go.Brush.randomColor() },
+          { text: "Some comment", category: "AnotherType" }
+        ],
+        [
+          { from: "One", to: "Two" },
+          { from: "One", to: "Three" },
+          { from: "Three", to: "Four" },
+          { from: "Three", to: "Five" },
+          { from: "Four", to: "Six" }
+        ]);
+      }
+      firstModel = !firstModel;
+
+    }
+</pre>
+<div id="dia1"></div>
+<p><button id="button1">Toggle the Diagram's Model</button></p>
+<script>goCode("first", 500, 400, go.Diagram, "dia1")</script>
+
+<p>
+  Note that changing the Model destroys all state not kept in the Model, such as the currently selected Parts,
+  and if there are no data bindings for them, the positions of all Nodes as well, and so on.
+  These can be saved in the Model before switching, when they are relevant.
+</p>
+
+<h2>Two Diagrams re-using one DIV</h2>
+
+<p>
+  Sometimes users want to work on two or more Diagrams at once and keep all Diagram state.
+  If this is the case, you may wish to put two Diagrams on the page (as all samples with a Palette do),
+  or you may wish to put Diagrams into multiple "tabs" or some other mechanism,
+  like the <a href="../samples/planogram.html">Planogram sample does with its four Palettes</a>.
+</p>
+
+<p>
+  Alternatively, you may wish to display the two Diagrams in the same DIV, one at a time, by swapping them out.
+  You can swap the div by setting <a>Diagram.div</a> to <code>null</code> on the first Diagram,
+  and setting the Div on the second.
+</p>
+
+
+<pre class="lang-js" id="second">
+    // A very minimal Diagram
+    diagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "Circle",
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 3 },  // some room around the text
+          new go.Binding("text", "key"))
+      );
+
+    diagram.model = new go.GraphLinksModel([
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" }
+    ], [
+      { from: "Alpha", to: "Beta" },
+    ]);
+
+    var diagram2 = $(go.Diagram);
+
+    diagram2.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "Rectangle", { fill: 'lime' }),
+        $(go.TextBlock,
+          { margin: 5, font: '22px sans-serif' },
+          new go.Binding("text", "key"))
+      );
+
+    diagram2.model = new go.GraphLinksModel([
+      { key: "BigNode1" },
+      { key: "BigNode2" },
+      { key: "BigNode3" },
+    ], [ ]);
+
+    var currentDiagram = diagram;
+
+    // Toggle the Diagram within this DIV with this button
+    var button2 = document.getElementById('button2');
+    button2.addEventListener('click', function() {
+      // Set one Diagram.div to null, and the other Diagram.div to this div
+      if (currentDiagram === diagram) {
+        var div = diagram.div;
+        diagram.div = null;
+        diagram2.div = div;
+        currentDiagram = diagram2;
+      } else {
+        var div = diagram2.div;
+        diagram2.div = null;
+        diagram.div = div;
+        currentDiagram = diagram;
+      }
+
+
+    });
+</pre>
+<div id="dia2"></div>
+<button id="button2">Toggle Diagram within DIV</button>
+<script>goCode("second", 400, 400, go.Diagram, "dia2")</script>
+
+<p>
+  If you select a Node and move it, and toggle Diagrams back and forth, you will see that the selection and Node positioning persists.
+  Both Diagrams remain in memory, only the Div is swapped to use one or the other.
+</p>
+
+<h2>
+  Permanently deleting a Diagram
+</h2>
+
+<p>
+  You may wish to remove a Diagram and ensure it leaves no memory footprint.
+  To do this, if you have not created any other references to your Diagram or GraphObjects or Tools or Layouts within, you can write:
+</p>
+
+<pre>
+  myDiagram.div = null;
+  myDiagram = null; // Assumes this is the only reference to your Diagram
+</pre>
+
+<p>
+  If you have used Pictures, you should also clear the Picture cache, which GoJS creates to store a map of source URLs to Image elements:
+</p>
+
+<pre>
+  // Clear any Image references that GoJS is holding onto
+  go.Picture.clearCache();
+</pre>
+
+
+
+
+</div>
+</div>
+</body>
+</html>

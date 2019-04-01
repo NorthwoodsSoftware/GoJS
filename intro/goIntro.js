@@ -256,6 +256,7 @@ var myMenu = '\
       <li><a href="palette.html">Palette</a></li>\
       <li><a href="overview.html">Overview</a></li>\
       <li><a href="resizing.html">Resizing Diagrams</a></li>\
+      <li><a href="replacingDeleting.html">Replacing and Deleting</a></li>\
       <li><a href="buttons.html">Buttons</a></li>\
       <li><a href="templateMaps.html">Template Maps</a></li>\
       <li><a href="legends.html">Legends and Titles</a></li>\

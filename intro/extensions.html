@@ -160,7 +160,7 @@
 <h2 id="OverridingMethodsBySubclassingLayout">Overriding Methods by Subclassing a Layout</h2>
 <p>
   Layouts can be subclassed to create custom Layouts that inherit the properties and methods of an existing layout.
-  Subclassing in <b>GoJS</b> requires a few key steps:
+  Subclassing in traditional JavaScript for <b>GoJS</b> requires a few key steps:
 </p>
 
 <ul>
@@ -172,7 +172,6 @@
 <p>
   To create a new Layout, called <code>CascadeLayout</code>, we would start with the following scaffolding:
 </p>
-
 <pre class="lang-js">
   function CascadeLayout() {
     // Note the direct constructor call, no use of "prototype"
@@ -190,10 +189,30 @@
 </pre>
 
 <p>
+  Note that if you are writing in modern JavaScript (ECMAScript 6) or in TypeScript, you can use newer syntax for defining classes:
+</p>
+<pre class="lang-js">
+  export class CascadeLayout extends go.Layout {
+    // new data properties (fields) get declared and initialized here
+
+    constructor() {
+      super();
+      // other initializations can be done here
+    }
+
+    // optionally, define property getters and setters here
+
+    // override or define methods
+    public doLayout(coll) {
+      // Layout logic goes here.
+    }
+  }
+</pre>
+
+<p>
   Layouts commonly need additional properties that act as layout options.
   To add a "offset" property to <code>CascadeLayout</code>, we will use the convention that an underscore member is private, and will set a default value in the constructor:
 </p>
-
 <pre class="lang-js">
   function CascadeLayout() {
     go.Layout.call(this);
@@ -206,7 +225,6 @@
   Getters and setters allow us to do type checking and have side effects.
   This setter makes sure the offset value is a <code>go.Size</code> object and invalidates the layout only if the value has changed.
 </p>
-
 <pre class="lang-js">
   Object.defineProperty(CascadeLayout.prototype, "offset", {
     get: function() { return this._offset; },
@@ -223,12 +241,38 @@
 </pre>
 
 <p>
+  If you are writing in ECMAScript 6 or TypeScript, you can define property getters and setters.
+</p>
+<pre class="lang-js">
+  get offset() { return this._offset; }
+  set offset(val) {
+    if (!(val instanceof go.Size)) {
+      throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
+    }
+    if (!this._offset.equals(val)) {
+      this._offset = val;
+      this.invalidateLayout();
+    }
+  }
+</pre>
+
+<p>
+  If the layout might be used as the value of <a>Group.layout</a>,
+  you will need to make sure the instance that you set in the Group template can be copied correctly.
+</p>
+<pre class="lang-js">
+  CascadeLayout.prototype.cloneProtected = function(copy) {
+    go.Layout.prototype.cloneProtected.call(this, copy);
+    copy._offset = this._offset;
+  }
+</pre>
+
+<p>
   Lastly we'll define a <a>Layout.doLayout</a>, being sure to look at the documentation and accomodate all possible input, as doLayout has one argument that can either be a <a>Diagram</a>, or a <a>Group</a>, or an <a>Iterable</a> collection.
 </p>
 <p>
   All together, we can see the cascade layout in action:
 </p>
-
 <pre class="lang-js" id="example">
   /**
   * @constructor
@@ -241,6 +285,11 @@
     this._offset = new go.Size(12, 12);
   }
   go.Diagram.inherit(CascadeLayout, go.Layout);
+
+  CascadeLayout.prototype.cloneProtected = function(copy) {
+    go.Layout.prototype.cloneProtected.call(this, copy);
+    copy._offset = this._offset;
+  }
 
   Object.defineProperty(CascadeLayout.prototype, "offset", {
     get: function() { return this._offset; },

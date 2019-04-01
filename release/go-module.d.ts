@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.6
+ * Type definitions for GoJS v2.0.7
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8831,6 +8831,12 @@ export class Layer {
  *
  * A diagram raises various DiagramEvents when interesting things happen that may have affected the whole diagram.
  * See the documentation for DiagramEvent for a complete listing.
+ *
+ * When you need to display multiple Models, but not at the same time, you can do so by using only one Diagram and setting the #model to a different one.
+ * You can also have two Diagrams share a DIV by swapping the #div to `null` on one Diagram and setting it on the other.
+ * When permanently removing a Diagram,t o clear any memory used,
+ * set the #div to `null` and remove all references to the Diagram. These scenarios are discussed more on the
+ * <a href="../../intro/replacingDeleting.html">Replacing Diagrams and Models</a> intro page.
  * @unrestricted
  * @category Diagram
  */
@@ -9234,6 +9240,13 @@ export class Diagram {
      * @see #findPartsNear
      */
     findObjectsNear<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(p: Point, dist: number, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, partialInclusion?: boolean | S, coll?: S): S;
+    /**
+     * Undocumented
+     *
+     * Invalidates all non-layout diagram state and forces an immediate redraw.
+     * Because this can be very inefficent, to discourage its use, it remains an undocumented part of the API.
+     */
+    redraw(): void;
     /**
      * Updates the diagram immediately, then resets initialization flags so that
      * actions taken in the argument function will be considered part of Diagram initialization,
@@ -11346,10 +11359,6 @@ export class DraggingOptions {
      */
     groupsSnapMembers: boolean;
     constructor();
-    /**
-     * Resets the properties of a DraggingOptions instance.
-     */
-    reset(): void;
 }
 /**
  * Used for the options arguments to Diagram.makeImage, Diagram.makeImageData, and Diagram.makeSvg.
@@ -16847,6 +16856,10 @@ export class Picture extends GraphObject {
      */
     reloadSource(): void;
     /**
+     * Undocumented
+     */
+    redraw(): void;
+    /**
      * Gets or sets a function that returns a value for image.crossOrigin.
      *
      * The default value is null, which will not set a value for image.crossOrigin.
@@ -21611,6 +21624,8 @@ export class Model {
      *
      * This requires the "incremental" property to be present and to be a number, as specified by #toIncrementalJson.
      * All of the top-level properties in the JSON, such as #nodeKeyProperty, must be the same as for this model.
+     * Note that if the model is a GraphLinksModel, you will have to have set GraphLinksModel#linkKeyProperty
+     * to the name of a property, the same both in the Diagram#model as well as in the data that you pass to this method.
      *
      * This conducts a transaction.
      * @param {string|ObjectData} s a String in JSON format containing modifications to be performed to the model,
