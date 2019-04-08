@@ -12,7 +12,6 @@
 	<script src="FloorPlanner-Templates-Furniture.js"></script>
 	<script src="FloorPlanner-Templates-Walls.js"></script>
 	<script src="Floorplan.js"></script>
-	<script src="FloorplanPalette.js"></script>
 	<script src="FloorplanFilesystem.js"></script>
 	<script src="FloorplanUI.js"></script>
 	<script src="Floorplanner-Constants.js"></script>
@@ -195,7 +194,6 @@
 	<ul>
 		<li><a href="Floorplan.js">Floorplan.js</a> - A special kind of <a href="https://gojs.net/latest/api/symbols/Diagram.html">Diagram</a> with rules and listeners that help with floorplanning</li>
 		<li><a href="FloorplanFilesystem.js">FloorplanFilesystem.js</a> - A class to handle saving and loading floorplans (through localstorage). Linked to a Floorplan instance</li>
-		<li><a href="FloorplanPalette.js">FloorplanPalette.js</a>- A special kind of <a href="https://gojs.net/latest/api/symbols/Palette.html">Palette</a> linked with a specific instance of Floorplan</li>
 		<li><a href="Floorplanner-WallBuildingTool.js">WallBuildingTool.js</a> - For constructing new walls</li>
 		<li><a href="Floorplanner-WallReshapingTool.js">WallReshapingTool.js</a> - For reshaping walls from their endpoints</li>
 		<li><a href="FloorplanUI.js">FloorplanUI.js</a> - A class to handle GUI interaction as events on the Floorplan take place. Linked to a Floorplan instance</li>
@@ -242,9 +240,13 @@
 			var $ = go.GraphObject.make;
 			myOverview = $(go.Overview, "myOverviewDiv", { observed: myFloorplan, maxScale: 0.5 });
 
-			// Palettes - Node Data Arrays defined in Floorplanner-Constants.js
-			furniturePalette = new FloorplanPalette("furniturePaletteDiv", myFloorplan, FURNITURE_NODE_DATA_ARRAY);
-			wallPartsPalette = new FloorplanPalette("wallPartsPaletteDiv", myFloorplan, WALLPARTS_NODE_DATA_ARRAY);
+			furniturePalette = $(go.Palette, "furniturePaletteDiv");
+			furniturePalette.nodeTemplateMap = myFloorplan.nodeTemplateMap;
+			furniturePalette.model = new go.GraphLinksModel(FURNITURE_NODE_DATA_ARRAY);
+			wallPartsPalette = $(go.Palette, "wallPartsPaletteDiv");
+			wallPartsPalette.nodeTemplateMap = myFloorplan.nodeTemplateMap;
+			wallPartsPalette.model = new go.GraphLinksModel(WALLPARTS_NODE_DATA_ARRAY);
+
 			// enable hotkeys
 			var body = document.getElementById('body');
 			body.addEventListener("keydown", function (e) {

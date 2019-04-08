@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.7
+ * Type definitions for GoJS v2.0.8
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10666,7 +10666,14 @@ export class Diagram {
      * Setting this property does not notify about any changed event.
      * However you can listen with #addDiagramListener for a DiagramEvent
      * with the name "ViewportBoundsChanged".
+     *
      * The #viewportBounds x and y values are always the same as the Diagram's position values.
+     *
+     * If you set this property any replacement of the #model will result in a layout
+     * and a computation of new #documentBounds, which in turn may cause the diagram to be scrolled
+     * and zoomed, depending on various Diagram properties named "initial...".
+     * You may want to set #initialPosition instead of setting this property around the time
+     * that you are loading a model.
      */
     position: Point;
     /**
@@ -10674,6 +10681,9 @@ export class Diagram {
      * This value is relevant on initialization of a #model or if #delayInitialization is called.
      * Value must be of type Point in document coordinates.
      * The default is Point(NaN, NaN).
+     *
+     * Setting this property has the same effect as implementing
+     * an "InitialLayoutCompleted" DiagramEvent listener that sets #position.
      *
      * Setting this property does not notify about any changed event.
      * @see #initialDocumentSpot
@@ -10685,6 +10695,9 @@ export class Diagram {
      * Gets or sets the initial scale of this Diagram in the viewport, eventually setting the #scale.
      * This value is relevant on initialization of a #model or if #delayInitialization is called.
      * The default is NaN.
+     *
+     * Setting this property has the same effect as implementing
+     * an "InitialLayoutCompleted" DiagramEvent listener that sets #scale.
      * @since 1.1
      */
     initialScale: number;
@@ -10806,6 +10819,12 @@ export class Diagram {
      * Setting this property does not notify about any changed event.
      * However you can listen with #addDiagramListener for a DiagramEvent
      * with the name "ViewportBoundsChanged".
+     *
+     * If you set this property any replacement of the #model will result in a layout
+     * and a computation of new #documentBounds, which in turn may cause the diagram to be scrolled
+     * and zoomed, depending on various Diagram properties named "initial...".
+     * You may want to set #initialScale instead of setting this property around the time
+     * that you are loading a model.
      */
     scale: number;
     /**
@@ -10822,6 +10841,7 @@ export class Diagram {
     /**
      * Gets or sets the autoScale behavior of the Diagram, controlling whether or not the
      * Diagram's bounds automatically scale to fit the view.
+     *
      * The only accepted values are the constant properties of Diagram,
      * Diagram#None, Diagram#Uniform, or Diagram#UniformToFill.
      * Setting this will change the Diagram's Diagram#scale and Diagram#position, if appropriate.
@@ -10834,22 +10854,30 @@ export class Diagram {
      * the user will not be able to zoom, and setting #scale will do nothing.
      * If you only want to scale automatically on initialization, use #initialAutoScale.
      *
+     * Setting this property to Diagram#Uniform is basically the same as calling #zoomToFit
+     * all the time, or just disabling interactive zooming.
+     *
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
      * might be limited.
      */
     autoScale: EnumValue;
     /**
-     * Gets or sets the initialAutoScale of the Diagram.
+     * Gets or sets how the scale of the diagram is automatically
+     * set at the time of the "InitialLayoutCompleted" DiagramEvent, after the model has been replaced.
+     *
      * The only accepted values are listed as constant properties of Diagram,
      * such as Diagram#None, Diagram#Uniform, or Diagram#UniformToFill.
      * Setting this will change the Diagram's Diagram#scale and Diagram#position, if appropriate.
      *
-     * If you want to always automatically scale the Diagram, use #autoScale instead.
-     * If you want to set the scale to a value on initialization (for instance every time the model is replaced),
-     * use #initialScale.
+     * If you want to always automatically scale the Diagram, set #autoScale instead.
+     * If you want to set the scale to a specific value on initialization (each time the model is replaced),
+     * set #initialScale.
      *
      * The default value is Diagram#None -- the scale and position are not automatically adjusted
      * according to the area covered by the document.
+     *
+     * Setting this property to Diagram#Uniform is basically the same as calling #zoomToFit
+     * in an "InitialLayoutCompleted" DiagramEvent listener.
      *
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
      * might be limited.
@@ -10859,8 +10887,13 @@ export class Diagram {
      * Gets or sets the spot in the viewport that should be coincident with the
      * #initialDocumentSpot of the document when the document is first initialized.
      * The default value is Spot#TopLeft.
+     *
      * If you set this, often you will also want to set #initialDocumentSpot.
      * If you set #initialPosition, it will take precedence over this property.
+     *
+     * Setting this property and #initialDocumentSpot has the same effect as implementing
+     * an "InitialLayoutCompleted" DiagramEvent listener that calls #alignDocument.
+     *
      * @see #initialDocumentSpot
      * @see #initialContentAlignment
      */
@@ -10869,8 +10902,13 @@ export class Diagram {
      * Gets or sets the spot in the document's area that should be coincident with the
      * #initialViewportSpot of the viewport when the document is first initialized.
      * The default value is Spot#TopLeft.
+     *
      * If you set this, often you will also want to set #initialViewportSpot.
      * If you set #initialPosition, it will take precedence over this property.
+     *
+     * Setting this property and #initialViewportSpot has the same effect as implementing
+     * an "InitialLayoutCompleted" DiagramEvent listener that calls #alignDocument.
+     *
      * @see #initialViewportSpot
      * @see #initialPosition
      * @see #initialContentAlignment
@@ -10924,6 +10962,10 @@ export class Diagram {
      *
      * The default value is Spot#Default, which causes no automatic scrolling or positioning.
      * When the value is not Default, any value for #initialContentAlignment or #initialPosition is ignored.
+     *
+     * Setting this property has the same effect as implementing
+     * a "LayoutCompleted" DiagramEvent listener that scrolls the viewport to align the content.
+     *
      */
     contentAlignment: Spot;
     /**
@@ -10937,6 +10979,10 @@ export class Diagram {
      * If you want the content to be constantly aligned with a spot, use #contentAlignment instead.
      *
      * The default value is Spot#Default, which causes no automatic scrolling or positioning.
+     *
+     * Setting this property has the same effect as implementing
+     * an "InitialLayoutCompleted" DiagramEvent listener that scrolls the viewport to align the content.
+     *
      * @see #initialDocumentSpot
      * @see #initialViewportSpot
      */

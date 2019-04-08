@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.7 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.7<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.8 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.8<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Diagram</h1>
@@ -877,8 +877,8 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the autoScale behavior of the Diagram, controlling whether or not the
-									Diagram&#39;s bounds automatically scale to fit the view.
-									The only accepted values are the constant properties of Diagram,
+								Diagram&#39;s bounds automatically scale to fit the view.</p>
+								<p>The only accepted values are the constant properties of Diagram,
 									<a href="Diagram.html#static-None">Diagram.None</a>, <a href="Diagram.html#static-Uniform">Diagram.Uniform</a>, or <a href="Diagram.html#static-UniformToFill">Diagram.UniformToFill</a>.
 								Setting this will change the Diagram&#39;s <a href="Diagram.html#scale">Diagram.scale</a> and <a href="Diagram.html#position">Diagram.position</a>, if appropriate.</p>
 								<p>The default value is <a href="Diagram.html#static-None">Diagram.None</a> - the scale and position are not automatically adjusted
@@ -888,6 +888,8 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 										When autoScale is set to a non-<a href="Diagram.html#static-None">Diagram.None</a> value,
 										the user will not be able to zoom, and setting <a href="Diagram.html#scale">scale</a> will do nothing.
 									If you only want to scale automatically on initialization, use <a href="Diagram.html#initialAutoScale">initialAutoScale</a>.</p>
+									<p>Setting this property to <a href="Diagram.html#static-Uniform">Diagram.Uniform</a> is basically the same as calling <a href="Diagram.html#zoomToFit">zoomToFit</a>
+									all the time, or just disabling interactive zooming.</p>
 									<p>Note that depending on the values of <a href="Diagram.html#maxScale">maxScale</a> and <a href="Diagram.html#minScale">minScale</a>, the actual value for <a href="Diagram.html#scale">scale</a>
 									might be limited.</p>
 							</div>
@@ -972,6 +974,8 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 								<p>If you want the content to be aligned only initially, use <a href="Diagram.html#initialContentAlignment">initialContentAlignment</a> instead.</p>
 								<p>The default value is <a href="Spot.html#static-Default">Spot.Default</a>, which causes no automatic scrolling or positioning.
 								When the value is not Default, any value for <a href="Diagram.html#initialContentAlignment">initialContentAlignment</a> or <a href="Diagram.html#initialPosition">initialPosition</a> is ignored.</p>
+								<p>Setting this property has the same effect as implementing
+								a &quot;LayoutCompleted&quot; DiagramEvent listener that scrolls the viewport to align the content.</p>
 							</div>
 						</li>
 					</ul>
@@ -1445,15 +1449,18 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the initialAutoScale of the Diagram.
-									The only accepted values are listed as constant properties of Diagram,
+								<p>Gets or sets how the scale of the diagram is automatically
+								set at the time of the &quot;InitialLayoutCompleted&quot; DiagramEvent, after the model has been replaced.</p>
+								<p>The only accepted values are listed as constant properties of Diagram,
 									such as <a href="Diagram.html#static-None">Diagram.None</a>, <a href="Diagram.html#static-Uniform">Diagram.Uniform</a>, or <a href="Diagram.html#static-UniformToFill">Diagram.UniformToFill</a>.
 								Setting this will change the Diagram&#39;s <a href="Diagram.html#scale">Diagram.scale</a> and <a href="Diagram.html#position">Diagram.position</a>, if appropriate.</p>
-								<p>If you want to always automatically scale the Diagram, use <a href="Diagram.html#autoScale">autoScale</a> instead.
-									If you want to set the scale to a value on initialization (for instance every time the model is replaced),
-								use <a href="Diagram.html#initialScale">initialScale</a>.</p>
+								<p>If you want to always automatically scale the Diagram, set <a href="Diagram.html#autoScale">autoScale</a> instead.
+									If you want to set the scale to a specific value on initialization (each time the model is replaced),
+								set <a href="Diagram.html#initialScale">initialScale</a>.</p>
 								<p>The default value is <a href="Diagram.html#static-None">Diagram.None</a> -- the scale and position are not automatically adjusted
 								according to the area covered by the document.</p>
+								<p>Setting this property to <a href="Diagram.html#static-Uniform">Diagram.Uniform</a> is basically the same as calling <a href="Diagram.html#zoomToFit">zoomToFit</a>
+								in an &quot;InitialLayoutCompleted&quot; <a href="DiagramEvent.html">DiagramEvent</a> listener.</p>
 								<p>Note that depending on the values of <a href="Diagram.html#maxScale">maxScale</a> and <a href="Diagram.html#minScale">minScale</a>, the actual value for <a href="Diagram.html#scale">scale</a>
 								might be limited.</p>
 							</div>
@@ -1474,6 +1481,8 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 								<p>To initially align the document when the documentBounds are larger than the viewport, use <a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a> and <a href="Diagram.html#initialViewportSpot">initialViewportSpot</a>.</p>
 								<p>If you want the content to be constantly aligned with a spot, use <a href="Diagram.html#contentAlignment">contentAlignment</a> instead.</p>
 								<p>The default value is <a href="Spot.html#static-Default">Spot.Default</a>, which causes no automatic scrolling or positioning.</p>
+								<p>Setting this property has the same effect as implementing
+								an &quot;InitialLayoutCompleted&quot; DiagramEvent listener that scrolls the viewport to align the content.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
 									<dd><p><a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a>, <a href="Diagram.html#initialViewportSpot">initialViewportSpot</a></p>
@@ -1493,9 +1502,11 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the spot in the document&#39;s area that should be coincident with the
 									<a href="Diagram.html#initialViewportSpot">initialViewportSpot</a> of the viewport when the document is first initialized.
-									The default value is <a href="Spot.html#static-TopLeft">Spot.TopLeft</a>.
-									If you set this, often you will also want to set <a href="Diagram.html#initialViewportSpot">initialViewportSpot</a>.
+								The default value is <a href="Spot.html#static-TopLeft">Spot.TopLeft</a>.</p>
+								<p>If you set this, often you will also want to set <a href="Diagram.html#initialViewportSpot">initialViewportSpot</a>.
 								If you set <a href="Diagram.html#initialPosition">initialPosition</a>, it will take precedence over this property.</p>
+								<p>Setting this property and <a href="Diagram.html#initialViewportSpot">initialViewportSpot</a> has the same effect as implementing
+								an &quot;InitialLayoutCompleted&quot; DiagramEvent listener that calls <a href="Diagram.html#alignDocument">alignDocument</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
 									<dd><p><a href="Diagram.html#initialViewportSpot">initialViewportSpot</a>, <a href="Diagram.html#initialPosition">initialPosition</a>, <a href="Diagram.html#initialContentAlignment">initialContentAlignment</a></p>
@@ -1517,6 +1528,8 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 									This value is relevant on initialization of a <a href="Diagram.html#model">model</a> or if <a href="Diagram.html#delayInitialization">delayInitialization</a> is called.
 									Value must be of type Point in document coordinates.
 								The default is Point(NaN, NaN).</p>
+								<p>Setting this property has the same effect as implementing
+								an &quot;InitialLayoutCompleted&quot; DiagramEvent listener that sets <a href="Diagram.html#position">position</a>.</p>
 								<p>Setting this property does not notify about any changed event.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
@@ -1541,6 +1554,8 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 								<p>Gets or sets the initial scale of this Diagram in the viewport, eventually setting the <a href="Diagram.html#scale">scale</a>.
 									This value is relevant on initialization of a <a href="Diagram.html#model">model</a> or if <a href="Diagram.html#delayInitialization">delayInitialization</a> is called.
 								The default is NaN.</p>
+								<p>Setting this property has the same effect as implementing
+								an &quot;InitialLayoutCompleted&quot; DiagramEvent listener that sets <a href="Diagram.html#scale">scale</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>since</dt>
 									<dd><p>1.1</p>
@@ -1560,9 +1575,11 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the spot in the viewport that should be coincident with the
 									<a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a> of the document when the document is first initialized.
-									The default value is <a href="Spot.html#static-TopLeft">Spot.TopLeft</a>.
-									If you set this, often you will also want to set <a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a>.
+								The default value is <a href="Spot.html#static-TopLeft">Spot.TopLeft</a>.</p>
+								<p>If you set this, often you will also want to set <a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a>.
 								If you set <a href="Diagram.html#initialPosition">initialPosition</a>, it will take precedence over this property.</p>
+								<p>Setting this property and <a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a> has the same effect as implementing
+								an &quot;InitialLayoutCompleted&quot; DiagramEvent listener that calls <a href="Diagram.html#alignDocument">alignDocument</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
 									<dd><p><a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a>, <a href="Diagram.html#initialContentAlignment">initialContentAlignment</a></p>
@@ -2224,8 +2241,13 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 								<p>Scrolling and panning the Diagram modify the Diagram&#39;s position.</p>
 								<p>Setting this property does not notify about any changed event.
 									However you can listen with <a href="Diagram.html#addDiagramListener">addDiagramListener</a> for a <a href="DiagramEvent.html">DiagramEvent</a>
-									with the name &quot;ViewportBoundsChanged&quot;.
-								The <a href="Diagram.html#viewportBounds">viewportBounds</a> x and y values are always the same as the Diagram&#39;s position values.</p>
+								with the name &quot;ViewportBoundsChanged&quot;.</p>
+								<p>The <a href="Diagram.html#viewportBounds">viewportBounds</a> x and y values are always the same as the Diagram&#39;s position values.</p>
+								<p>If you set this property any replacement of the <a href="Diagram.html#model">model</a> will result in a layout
+									and a computation of new <a href="Diagram.html#documentBounds">documentBounds</a>, which in turn may cause the diagram to be scrolled
+									and zoomed, depending on various Diagram properties named &quot;initial...&quot;.
+									You may want to set <a href="Diagram.html#initialPosition">initialPosition</a> instead of setting this property around the time
+								that you are loading a model.</p>
 							</div>
 						</li>
 					</ul>
@@ -2275,6 +2297,11 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 								<p>Setting this property does not notify about any changed event.
 									However you can listen with <a href="Diagram.html#addDiagramListener">addDiagramListener</a> for a <a href="DiagramEvent.html">DiagramEvent</a>
 								with the name &quot;ViewportBoundsChanged&quot;.</p>
+								<p>If you set this property any replacement of the <a href="Diagram.html#model">model</a> will result in a layout
+									and a computation of new <a href="Diagram.html#documentBounds">documentBounds</a>, which in turn may cause the diagram to be scrolled
+									and zoomed, depending on various Diagram properties named &quot;initial...&quot;.
+									You may want to set <a href="Diagram.html#initialScale">initialScale</a> instead of setting this property around the time
+								that you are loading a model.</p>
 							</div>
 						</li>
 					</ul>

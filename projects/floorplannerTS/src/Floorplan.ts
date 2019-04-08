@@ -34,9 +34,9 @@ export class Floorplan extends go.Diagram {
     this._palettes = [];
 
     // Point Nodes, Dimension Links, Angle Nodes on the Floorplan (never in model data)
-    this._pointNodes = new go.Set(/*go.Node*/);
-    this._dimensionLinks = new go.Set(/*go.Link*/);
-    this._angleNodes = new go.Set(/*go.Node*/);
+    this._pointNodes = new go.Set<go.Node>();
+    this._dimensionLinks = new go.Set<go.Link>();
+    this._angleNodes = new go.Set<go.Node>();
 
     const $ = go.GraphObject.make;
 
@@ -3335,7 +3335,7 @@ function makeDimensionLink(opacity?: number, stroke?: string, strokeWidth?: numb
 }
 
 /*
-* Copyright (C) 1998-2018 by Northwoods Software Corporation
+* Copyright (C) 1998-2019 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - FURNITURE
@@ -3576,7 +3576,7 @@ function updateNodeTexture(obj: go.Shape, t: string) {
 }
 
 /*
-* Copyright (C) 1998-2018 by Northwoods Software Corporation
+* Copyright (C) 1998-2019 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - WALLS

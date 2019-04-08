@@ -11,11 +11,10 @@ import { Floorplan } from './Floorplan';
 
 export class FloorplanPalette extends go.Palette {
 
-  constructor(div: HTMLDivElement | string, floorplan: Floorplan, nodeDataArray: Array<any>) {
+  constructor(div: HTMLDivElement | string, floorplan: Floorplan/*, nodeDataArray: Array<any>*/) {
     super(div);
 
     const $ = go.GraphObject.make;
-    this.model = $(go.GraphLinksModel, { nodeDataArray: nodeDataArray });
     this.contentAlignment = go.Spot.Center;
     this.nodeTemplateMap = floorplan.nodeTemplateMap;
 

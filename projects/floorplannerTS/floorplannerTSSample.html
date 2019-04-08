@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Floorplanner (Typescript)</title>
 <meta name="description" content="" />
-<!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 
 <!-- Local JS -->
@@ -63,9 +63,13 @@
     palettes[0].div = null;
     palettes[1].div = null;
 
-    furniturePalette = new FloorplanPalette("ge-palette-0", myFloorplan, myFloorplan.makeDefaultFurniturePaletteNodeData());
+    // palettes[1] = wallPartsPalette;*/
+    furniturePalette = new FloorplanPalette("ge-palette-0", myFloorplan);
+    furniturePalette.model = new go.GraphLinksModel(myFloorplan.makeDefaultFurniturePaletteNodeData());
     palettes[0] = furniturePalette;
-    wallPartsPalette = new FloorplanPalette("ge-palette-1", myFloorplan, myFloorplan.makeDefaultWallpartsPaletteNodeData());
+
+    wallPartsPalette = new FloorplanPalette("ge-palette-1", myFloorplan);
+    wallPartsPalette.model = new go.GraphLinksModel(myFloorplan.makeDefaultWallpartsPaletteNodeData());
     palettes[1] = wallPartsPalette;
 
     // listen if the model of the Floorplan changes completely -- if so, there has been a load event, and we must update walls / rooms
