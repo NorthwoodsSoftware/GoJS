@@ -1643,7 +1643,7 @@ var __extends = (this && this.__extends) || (function () {
         /**
          * Nodes will be sorted in descending order; this value is used for {@link #sortOrder}.
          *
-         * Does nothing if {@link #sortMode} is set to {@link #None}.
+         * Does nothing if {@link #sortMode} is set to {@link PackedLayout.None}.
          * @constant
          */
         PackedLayout.Descending = 30;

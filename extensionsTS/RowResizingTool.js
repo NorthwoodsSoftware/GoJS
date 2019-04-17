@@ -89,7 +89,7 @@ var __extends = (this && this.__extends) || (function () {
         });
         Object.defineProperty(RowResizingTool.prototype, "adornedTable", {
             /**
-             * This read-only property returns the {@link Panel} of type {@link Panel#Table} whose rows are being resized.
+             * This read-only property returns the {@link Panel} of type {@link Panel.Table} whose rows are being resized.
              * This must be contained within the selected {@link Part}.
              */
             get: function () { return this._adornedTable; },
@@ -99,7 +99,7 @@ var __extends = (this && this.__extends) || (function () {
         /**
          * Show an {@link Adornment} with a resize handle at each row.
          * Don't show anything if {@link #tableName} doesn't identify a {@link Panel}
-         * that has a {@link Panel#type} of type {@link Panel#Table}.
+         * that has a {@link Panel#type} of type {@link Panel.Table}.
          */
         RowResizingTool.prototype.updateAdornments = function (part) {
             if (part === null || part instanceof go.Link)
@@ -204,7 +204,7 @@ var __extends = (this && this.__extends) || (function () {
             return (h !== null);
         };
         /**
-         * Find the {@link #handle}, ensure type {@link Panel#Table}, capture the mouse, and start a transaction.
+         * Find the {@link #handle}, ensure type {@link Panel.Table}, capture the mouse, and start a transaction.
          *
          * If the call to {@link Tool#findToolHandleAt} finds no "RowResizing" tool handle, this method returns without activating this tool.
          */

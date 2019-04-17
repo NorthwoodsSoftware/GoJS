@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.8
+ * Type definitions for GoJS v2.0.9
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -2265,18 +2265,18 @@ export class Spot {
      * Gets or sets the x value of the Spot, a fractional value between zero and one.
      *
      * The Spot(0,0) of a rectangle is at the top-left corner.
-     * This value is commonly available as Spot#TopLeft.
+     * This value is commonly available as Spot.TopLeft.
      * The Spot(0.5,1) would be at the middle of the bottom side.
-     * That value is commonly available as Spot#MiddleBottom.
+     * That value is commonly available as Spot.MiddleBottom.
      */
     x: number;
     /**
      * Gets or sets the y value of the Spot, a fractional value between zero and one.
      *
      * The Spot(0,1) of a rectangle is at the bottom-left corner.
-     * This value is commonly available as Spot#BottomLeft.
+     * This value is commonly available as Spot.BottomLeft.
      * The Spot(1,0.5) would be at the middle of the right side.
-     * That value is commonly available as Spot#MiddleRight.
+     * That value is commonly available as Spot.MiddleRight.
      */
     y: number;
     /**
@@ -2300,19 +2300,19 @@ export class Spot {
      */
     offsetY: number;
     /**
-     * True if this is a specific spot, not a side nor Spot#None.
+     * True if this is a specific spot, not a side nor Spot.None.
      * @return {boolean}
      */
     isSpot(): boolean;
     /**
-     * True if this is an unspecific special spot, such as Spot#None
+     * True if this is an unspecific special spot, such as Spot.None
      * or one of the sides.
      * @return {boolean}
      */
     isNoSpot(): boolean;
     /**
      * True if this is a special spot referring to one (or more) of the sides.
-     * This is false if the spot is Spot#None.
+     * This is false if the spot is Spot.None.
      * @return {boolean}
      */
     isSide(): boolean;
@@ -2385,42 +2385,42 @@ export class Spot {
      */
     static BottomRight: Spot;
     /**
-     * A synonym for Spot#TopCenter.
+     * A synonym for Spot.TopCenter.
      * @constant
      */
     static MiddleTop: Spot;
     /**
-     * A synonym for Spot#LeftCenter.
+     * A synonym for Spot.LeftCenter.
      * @constant
      */
     static MiddleLeft: Spot;
     /**
-     * A synonym for Spot#RightCenter.
+     * A synonym for Spot.RightCenter.
      * @constant
      */
     static MiddleRight: Spot;
     /**
-     * A synonym for Spot#BottomCenter.
+     * A synonym for Spot.BottomCenter.
      * @constant
      */
     static MiddleBottom: Spot;
     /**
-     * A synonym for Spot#TopCenter.
+     * A synonym for Spot.TopCenter.
      * @constant
      */
     static Top: Spot;
     /**
-     * A synonym for Spot#LeftCenter.
+     * A synonym for Spot.LeftCenter.
      * @constant
      */
     static Left: Spot;
     /**
-     * A synonym for Spot#RightCenter.
+     * A synonym for Spot.RightCenter.
      * @constant
      */
     static Right: Spot;
     /**
-     * A synonym for Spot#BottomCenter.
+     * A synonym for Spot.BottomCenter.
      * @constant
      */
     static Bottom: Spot;
@@ -2536,7 +2536,7 @@ export class Geometry {
      * @param {?=} type
      * Construct an empty Geometry.
      * The geometry type must be one of the following values:
-     * Geometry#Line, Geometry#Ellipse, Geometry#Rectangle, Geometry#Path.
+     * Geometry.Line, Geometry.Ellipse, Geometry.Rectangle, Geometry.Path.
      */
     constructor(type?: EnumValue);
     /**
@@ -2689,39 +2689,39 @@ export class Geometry {
     getFractionForPoint(pt: Point): number;
     /**
      * Gets or sets the type of the Geometry.
-     * The default type is Geometry#Path.
-     * Other permissible values are Geometry#Line, Geometry#Ellipse,
-     * or Geometry#Rectangle.
+     * The default type is Geometry.Path.
+     * Other permissible values are Geometry.Line, Geometry.Ellipse,
+     * or Geometry.Rectangle.
      */
     type: EnumValue;
     /**
      * Gets or sets the starting X coordinate of the Geometry if it is of type
-     * Line, Rectangle, or Ellipse.
+     * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
     startX: number;
     /**
      * Gets or sets the starting Y coordinate of the Geometry if it is of type
-     * Line, Rectangle, or Ellipse.
+     * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
     startY: number;
     /**
      * Gets or sets the ending X coordinate of the Geometry if it is of type
-     * Line, Rectangle, or Ellipse.
+     * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
     endX: number;
     /**
      * Gets or sets the ending Y coordinate of the Geometry if it is of type
-     * Line, Rectangle, or Ellipse.
+     * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
     endY: number;
     /**
      * Gets or sets the List of PathFigures
      * that describes the content of the
-     * path for Geometries of type Path.
+     * path for Geometries of type Geometry.Path|Path.
      */
     figures: List<PathFigure>;
     /**
@@ -2746,21 +2746,21 @@ export class Geometry {
     setSpots(f1x: number, f1y: number, f2x: number, f2y: number, o1x?: number, o1y?: number, o2x?: number, o2y?: number): Geometry;
     /**
      * Gets or sets the spot an "Auto" Panel will use for the top-left corner of any panel content
-     * when the Shape#spot1 value is Spot#Default.
-     * The default value is Spot#TopLeft, at the top-left point of the bounds of the Shape.
+     * when the Shape#spot1 value is Spot.Default.
+     * The default value is Spot.TopLeft, at the top-left point of the bounds of the Shape.
      */
     spot1: Spot;
     /**
      * Gets or sets the spot an "Auto" Panel will use for the bottom-right corner of any panel content
-     * when the Shape#spot2 value is Spot#Default.
-     * The default value is Spot#BottomRight, at the bottom-right point of the bounds of the Shape.
+     * when the Shape#spot2 value is Spot.Default.
+     * The default value is Spot.BottomRight, at the bottom-right point of the bounds of the Shape.
      */
     spot2: Spot;
     /**
      * Gets or sets the Shape#geometryStretch value the Shape should use by default
-     * when the Shape#geometryStretch value is GraphObject#None.
-     * The default value is GraphObject#Fill.
-     * Some figure generators return a Geometry with this property set to GraphObject#Uniform,
+     * when the Shape#geometryStretch value is GraphObject.None.
+     * The default value is GraphObject.Fill.
+     * Some figure generators return a Geometry with this property set to GraphObject.Uniform,
      * in order to preserve its aspect ratio when used by a Shape that may have different sizes.
      * @since 1.5
      */
@@ -2856,35 +2856,35 @@ export class PathSegment {
      * Constructs a segment that goes nowhere unless you specify some Points.
      *
      * The segment type must be one of the following values:
-     * PathSegment#Line, PathSegment#Bezier,
-     * PathSegment#QuadraticBezier, PathSegment#Arc, PathSegment#SvgArc.
+     * PathSegment.Line, PathSegment.Bezier,
+     * PathSegment.QuadraticBezier, PathSegment.Arc, PathSegment.SvgArc.
      * You will want to add a new instance of a PathSegment to the
      * PathFigure#segments list of a PathFigure.
-     * @param {EnumValue=} type if not supplied, the default PathSegment type is PathSegment#Line.
+     * @param {EnumValue=} type if not supplied, the default PathSegment type is PathSegment.Line.
      *   But if the type is supplied, one must also provide the endpoint X and Y values,
      *   either as arguments in this constructor or by setting the #endX and #endY properties.
      *   If the type is QuadraticBezier, the X1 and Y1 control point values must both be supplied.
      *   If the type is Bezier, X1, Y1, X2, and Y2 control point values must all be supplied.
      *
-     * If the type is Line it needs the following arguments:
+     * If the type is PathSegment.Line|Line it needs the following arguments:
      *
      * `(go.PathSegment.Line, ex, ey)`
      *   - **ex, ey** describe the end point
      *
-     * If the type is QuadraticBezier it needs the following arguments:
+     * If the type is PathSegment.QuadraticBezier|QuadraticBezier it needs the following arguments:
      *
      * `(go.PathSegment.QuadraticBezier, ex, ey, x1, y1)`
      *   - **ex, ey** describe the end point
      *   - **x1, y1** describe the only control point
      *
-     * If the type is Bezier it needs the following arguments:
+     * If the type is PathSegment.Bezier|Bezier it needs the following arguments:
      *
      * `(go.PathSegment.Bezier, ex, ey, x1, y1, x2, y2)`
      *   - **ex, ey** describe the end point
      *   - **x1, y1** describe the first control point
      *   - **x2, y2** describe the second control point
      *
-     * If the type is Arc it needs the following arguments:
+     * If the type is PathSegment.Arc|Arc it needs the following arguments:
      *
      * `(go.PathSegment.Arc, startAngle, sweepAngle, centerX, centerY, radiusX, radiusY)`
      *   - **startAngle** describes the start angle, in degrees
@@ -2892,7 +2892,7 @@ export class PathSegment {
      *   - **centerX, centerY** describe the center point
      *   - **radiusX, radiusY** describe the radiusX and radiusY
      *
-     * If the type is SvgArc it needs the following arguments:
+     * If the type is PathSegment.SvgArc|SvgArc it needs the following arguments:
      *
      * `(go.PathSegment.SvgArc, ex, ey, radiusX, radiusY, xAxisRotation, largeArcFlag, clockwiseFlag)`
      *
@@ -2969,71 +2969,71 @@ export class PathSegment {
     /**
      * Gets or sets the type of the PathSegment.
      * The value must be one of the following:
-     * PathSegment#Line, PathSegment#Bezier,
-     * PathSegment#QuadraticBezier, PathSegment#Arc,
-     * PathSegment#Move, PathSegment#Arc, and PathSegment#SvgArc.
+     * PathSegment.Line, PathSegment.Bezier,
+     * PathSegment.QuadraticBezier, PathSegment.Arc,
+     * PathSegment.Move, PathSegment.Arc, and PathSegment.SvgArc.
      */
     type: EnumValue;
     /**
-     * Gets or sets the X coordinate of the end point for all types of PathSegment except Arc.
+     * Gets or sets the X coordinate of the end point for all types of PathSegment except PathSegment.Arc|Arc.
      * The default value is zero.
      */
     endX: number;
     /**
-     * Gets or sets the Y coordinate of the end point for all types of PathSegment except Arc.
+     * Gets or sets the Y coordinate of the end point for all types of PathSegment except PathSegment.Arc|Arc.
      * The default value is zero.
      */
     endY: number;
     /**
      * Gets or sets the X value of the first control point for a PathSegment
-     * of type Bezier or QuadraticBezier.
+     * of type PathSegment.Bezier|Bezier or PathSegment.QuadraticBezier|QuadraticBezier.
      */
     point1X: number;
     /**
      * Gets or sets the Y value of the first control point for a PathSegment
-     * of type Bezier or QuadraticBezier.
+     * of type PathSegment.Bezier|Bezier or PathSegment.QuadraticBezier|QuadraticBezier.
      */
     point1Y: number;
     /**
      * Gets or sets the X value of the second control point for a PathSegment
-     * of type cubic Bezier.
+     * of type cubic PathSegment.Bezier|Bezier.
      */
     point2X: number;
     /**
      * Gets or sets the Y value of the second control point for a PathSegment
-     * of type cubic Bezier.
+     * of type cubic PathSegment.Bezier|Bezier.
      */
     point2Y: number;
     /**
-     * Gets or sets the center X value of the Arc for a PathSegment of type Arc.
+     * Gets or sets the center X value of the Arc for a PathSegment of type PathSegment.Arc|Arc.
      */
     centerX: number;
     /**
-     * Gets or sets the center Y value of the Arc for a PathSegment of type Arc.
+     * Gets or sets the center Y value of the Arc for a PathSegment of type PathSegment.Arc|Arc.
      */
     centerY: number;
     /**
-     * Gets or sets the X value of the radius for a PathSegment of type Arc or SvgArc.
+     * Gets or sets the X value of the radius for a PathSegment of type PathSegment.Arc|Arc or PathSegment.SvgArc|SvgArc.
      * Value must be a positive number.
      */
     radiusX: number;
     /**
-     * Gets or sets the Y value of the radius for a PathSegment of type Arc or SvgArc.
+     * Gets or sets the Y value of the radius for a PathSegment of type PathSegment.Arc|Arc or PathSegment.SvgArc|SvgArc.
      * Value must be a positive number.
      */
     radiusY: number;
     /**
-     * Gets or sets the starting angle for a PathSegment of type Arc.
+     * Gets or sets the starting angle for a PathSegment of type PathSegment.Arc|Arc.
      * Value must within the range: (0 <= value < 360).
      */
     startAngle: number;
     /**
-     * Gets or sets the length of angle in degrees, or amount of arc to "sweep" for a PathSegment of type Arc.
+     * Gets or sets the length of angle in degrees, or amount of arc to "sweep" for a PathSegment of type PathSegment.Arc|Arc.
      * Must be between -360 and 360, inclusive.
      */
     sweepAngle: number;
     /**
-     * Gets or sets the clockwise-flag for a PathSegment of type SvgArc.
+     * Gets or sets the clockwise-flag for a PathSegment of type PathSegment.SvgArc|SvgArc.
      * SVG Arcs specify a radius and an endpoint, and are always a portion of an ellipse.
      * The parameters allow for two potential ellipses and four potential arcs.
      * A clockwise-flag set to true will use one of the two possible positive-angle arcs,
@@ -3044,7 +3044,7 @@ export class PathSegment {
      */
     isClockwiseArc: boolean;
     /**
-     * Gets or sets the large-arc-flag for a PathSegment of type SvgArc.
+     * Gets or sets the large-arc-flag for a PathSegment of type PathSegment.SvgArc|SvgArc.
      * SVG Arcs specify a radius and an endpoint, and are always a portion of an ellipse.
      * The parameters allow for two potential ellipses and four potential arcs.
      * A large-arc-flag set to true will choose the larger of the two arc sweeps.
@@ -3054,7 +3054,7 @@ export class PathSegment {
      */
     isLargeArc: boolean;
     /**
-     * Gets or sets the X-axis rotation for a PathSegment of type SvgArc.
+     * Gets or sets the X-axis rotation for a PathSegment of type PathSegment.SvgArc|SvgArc.
      * X-axis rotation is used to rotate the ellipse that the arc is created from,
      * and must be between 0 and 360 degrees.
      * Default is 0.
@@ -3565,9 +3565,9 @@ export interface DiagramEventsInterface {
  * or Diagram#addModelChangedListener, and on the Diagram using Diagram#addChangedListener.
  *
  * There are four kinds of changes, represented by enumerated values:
- * ChangedEvent#Property (the most common), ChangedEvent#Insert and ChangedEvent#Remove
+ * ChangedEvent.Property (the most common), ChangedEvent.Insert and ChangedEvent.Remove
  * (to represent inserting or removing objects from collections),
- * and ChangedEvent#Transaction (to notify about beginning or ending transactions or undo or redo).
+ * and ChangedEvent.Transaction (to notify about beginning or ending transactions or undo or redo).
  *
  * The most common kind of ChangedEvent is a Property change.
  * The name of the property is given by #propertyName.
@@ -3752,9 +3752,9 @@ export class ChangedEvent {
     diagram: Diagram | null;
     /**
      * Gets or sets the nature of change that occurred.
-     * The default is ChangedEvent#Property.
-     * Other values are ChangedEvent#Insert, ChangedEvent#Remove,
-     * and ChangedEvent#Transaction.
+     * The default is ChangedEvent.Property.
+     * Other values are ChangedEvent.Insert, ChangedEvent.Remove,
+     * and ChangedEvent.Transaction.
      */
     change: EnumValue;
     /**
@@ -3771,14 +3771,14 @@ export class ChangedEvent {
      * Gets or sets the name of the property change.
      * The default is an empty string, which is not a valid property name.
      * This property can be useful even when the type of change is
-     * not ChangedEvent#Property, because it can help identify
+     * not ChangedEvent.Property, because it can help identify
      * the collection in the #object that was modified
-     * (for ChangedEvent#Insert or ChangedEvent#Remove)
-     * or the stage of the current transaction (for ChangedEvent#Transaction).
+     * (for ChangedEvent.Insert or ChangedEvent.Remove)
+     * or the stage of the current transaction (for ChangedEvent.Transaction).
      */
     propertyName: string | ((a: ObjectData, b: any) => any);
     /**
-     * This read-only property is true when this ChangedEvent is of type ChangedEvent#Transaction and represents the end of a transactional change.
+     * This read-only property is true when this ChangedEvent is of type ChangedEvent.Transaction and represents the end of a transactional change.
      * It is implemented as:
      * ```js
      * return (this.change === ChangedEvent.Transaction &&
@@ -3792,7 +3792,7 @@ export class ChangedEvent {
      * Gets or sets the Object that was modified.
      * The default is null.
      *
-     * For ChangedEvent#Transaction changes, this may be the Transaction.
+     * For ChangedEvent.Transaction changes, this may be the Transaction.
      */
     object: ObjectData | null;
     /**
@@ -4084,9 +4084,9 @@ export class UndoManager {
      *
      * This is called by CommandHandler#undo.
      *
-     * This will raise a "StartingUndo" ChangedEvent of type ChangedEvent#Transaction,
+     * This will raise a "StartingUndo" ChangedEvent of type ChangedEvent.Transaction,
      * perform the Transaction#undo on the #transactionToUndo, and then
-     * raise a "FinishedUndo" ChangedEvent of type ChangedEvent#Transaction.
+     * raise a "FinishedUndo" ChangedEvent of type ChangedEvent.Transaction.
      * The two ChangedEvents are to let model listeners know that an undo is about to take place
      * and that it just finished.
      * #isUndoingRedoing will temporarily be set to true during this operation.
@@ -4106,9 +4106,9 @@ export class UndoManager {
      *
      * This is called by CommandHandler#redo.
      *
-     * This will raise a "StartingRedo" ChangedEvent of type ChangedEvent#Transaction,
+     * This will raise a "StartingRedo" ChangedEvent of type ChangedEvent.Transaction,
      * perform the Transaction#redo on the #transactionToRedo, and then
-     * raise a "FinishedRedo" ChangedEvent of type ChangedEvent#Transaction.
+     * raise a "FinishedRedo" ChangedEvent of type ChangedEvent.Transaction.
      * The two ChangedEvents are to let model listeners know that a redo is about to take place
      * and that it just finished.
      * #isUndoingRedoing will temporarily be set to true during this operation.
@@ -4131,7 +4131,7 @@ export class UndoManager {
      * This predicate is called by #handleChanged to decide if a ChangedEvent
      * is not interesting enough to be remembered.
      *
-     * Transactional events (of change type ChangedEvent#Transaction) are always skipped.
+     * Transactional events (of change type ChangedEvent.Transaction) are always skipped.
      * Changed events for GraphObjects that are in Layer#isTemporary layers are also skipped.
      *
      * Sometimes changed events do not even get to #handleChanged because
@@ -4925,17 +4925,17 @@ export class ToolManager extends Tool {
      */
     static GestureNone: EnumValue;
     /**
-     * Gets or sets the ToolManager's mouse wheel behavior. Allowed values are ToolManager#WheelScroll and
-     * ToolManager#WheelZoom and ToolManager#WheelNone.
+     * Gets or sets the ToolManager's mouse wheel behavior. Allowed values are ToolManager.WheelScroll and
+     * ToolManager.WheelZoom and ToolManager.WheelNone.
      *
-     * The default value is ToolManager#WheelScroll.
+     * The default value is ToolManager.WheelScroll.
      */
     mouseWheelBehavior: EnumValue;
     /**
-     * Gets or sets the ToolManager's default gestureBehavior behavior. Allowed values are ToolManager#GestureZoom and
-     * ToolManager#GestureCancel and ToolManager#GestureNone.
+     * Gets or sets the ToolManager's default gestureBehavior behavior. Allowed values are ToolManager.GestureZoom and
+     * ToolManager.GestureCancel and ToolManager.GestureNone.
      *
-     * The default value is ToolManager#GestureZoom.
+     * The default value is ToolManager.GestureZoom.
      * @since 1.5
      */
     gestureBehavior: EnumValue;
@@ -5506,7 +5506,7 @@ export class DraggingTool extends Tool {
     /**
      * Gets or sets the Spot that specifies what point in the grid cell dragged parts snap to,
      * if the value of #isGridSnapEnabled is true.
-     * By default this property is Spot#TopLeft:
+     * By default this property is Spot.TopLeft:
      * node locations will snap exactly to the grid point.
      * Setting this property does not raise any events.
      *
@@ -6207,8 +6207,8 @@ export class LinkingTool extends LinkingBaseTool {
     archetypeLabelNodeData: ObjectData | null;
     /**
      * Gets or sets the direction in which new links may be drawn.
-     * Possible values are LinkingTool#ForwardsOnly, LinkingTool#BackwardsOnly, or LinkingTool#Either.
-     * This defaults to LinkingTool#Either.
+     * Possible values are LinkingTool.ForwardsOnly, LinkingTool.BackwardsOnly, or LinkingTool.Either.
+     * This defaults to LinkingTool.Either.
      * Setting this property does not raise any events.
      */
     direction: EnumValue;
@@ -6248,9 +6248,9 @@ export class LinkingTool extends LinkingBaseTool {
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @return {GraphObject}
-     * If the #direction is Either or ForwardsOnly,
+     * If the #direction is LinkingTool.Either or LinkingTool.ForwardsOnly,
      * this checks the element and its parent Node by calling LinkingBaseTool#isValidFrom.
-     * If the #direction is Either or BackwardsOnly,
+     * If the #direction is LinkingTool.Either or LinkingTool.BackwardsOnly,
      * this checks the element and its parent Node by calling LinkingBaseTool#isValidTo.
      * In either case finding a matching port will return that port and set LinkingBaseTool#isForwards appropriately.
      * Otherwise this will return null.
@@ -6762,7 +6762,7 @@ export class LinkReshapingTool extends Tool {
  * Override #computeCellSize to change this behavior.
  *
  * Pressing the Shift key or resizing a Shape with a Shape#geometryStretch of
- * GraphObject#Uniform or GraphObject#UniformToFill will maintain the aspect ratio during the resize.
+ * GraphObject.Uniform or GraphObject.UniformToFill will maintain the aspect ratio during the resize.
  * Override #computeReshape to change this behavior.
  *
  * This tool makes use of an Adornment, shown when the Part or Node is selected,
@@ -6954,7 +6954,7 @@ export class ResizingTool extends Tool {
     /**
      * Decide whether to allow arbitrary reshaping or whether to keep the same aspect ratio of the object being resized.
      * If the #adornedObject is a Shape,
-     * then if the Shape#geometryStretch is GraphObject#Uniform,
+     * then if the Shape#geometryStretch is GraphObject.Uniform,
      * this method will return false to restrict reshaping to maintain the object's current ratio of height to width.
      * Also, if the user is holding down the Shift key, this method will return false.
      *
@@ -8202,9 +8202,9 @@ export class TextEditingTool extends Tool {
     /**
      * Gets or sets how user gestures can start in-place editing of text.
      *
-     * Possible values are TextEditingTool#SingleClickSelected, TextEditingTool#SingleClick, and TextEditingTool#DoubleClick.
+     * Possible values are TextEditingTool.SingleClickSelected, TextEditingTool.SingleClick, and TextEditingTool.DoubleClick.
      *
-     * The default is TextEditingTool#SingleClickSelected
+     * The default is TextEditingTool.SingleClickSelected
      */
     starting: EnumValue;
     /**
@@ -8252,7 +8252,7 @@ export class TextEditingTool extends Tool {
      */
     doMouseUp(): void;
     /**
-     * This calls #acceptText with the reason TextEditingTool#MouseDown,
+     * This calls #acceptText with the reason TextEditingTool.MouseDown,
      * if this tool Tool#isActive.
      */
     doMouseDown(): void;
@@ -8261,8 +8261,8 @@ export class TextEditingTool extends Tool {
      *
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
-     * @param {EnumValue} reason The reason must be either TextEditingTool#LostFocus,
-     * TextEditingTool#MouseDown, TextEditingTool#Tab, or TextEditingTool#Enter.
+     * @param {EnumValue} reason The reason must be either TextEditingTool.LostFocus,
+     * TextEditingTool.MouseDown, TextEditingTool.Tab, or TextEditingTool.Enter.
      */
     acceptText(reason: EnumValue): void;
     /**
@@ -8303,17 +8303,17 @@ export class TextEditingTool extends Tool {
     /**
      * Gets or sets the state of the TextEditingTool.
      * The only accepted values are listed as constant properties of TextEditingTool, including:
-     *   - TextEditingTool#StateNone
-     *   - TextEditingTool#StateActive
-     *   - TextEditingTool#StateEditing
-     *   - TextEditingTool#StateValidating
-     *   - TextEditingTool#StateValidated
+     *   - TextEditingTool.StateNone
+     *   - TextEditingTool.StateActive
+     *   - TextEditingTool.StateEditing
+     *   - TextEditingTool.StateValidating
+     *   - TextEditingTool.StateValidated
      *
-     * The starting value value is TextEditingTool#StateNone,
-     * TextEditingTool#doActivate sets the value to TextEditingTool#StateActive.
-     * The default text editor receiving focus sets the value to TextEditingTool#StateEditing.
-     * TextEditingTool#acceptText sets the value to TextEditingTool#StateValidating.
-     * Once accepted and the tool begins the "TextEditing" transaction, the value is set to TextEditingTool#StateValidated.
+     * The starting value value is TextEditingTool.StateNone,
+     * TextEditingTool#doActivate sets the value to TextEditingTool.StateActive.
+     * The default text editor receiving focus sets the value to TextEditingTool.StateEditing.
+     * TextEditingTool#acceptText sets the value to TextEditingTool.StateValidating.
+     * Once accepted and the tool begins the "TextEditing" transaction, the value is set to TextEditingTool.StateValidated.
      * @since 1.7
      */
     state: EnumValue;
@@ -8964,6 +8964,16 @@ export class Diagram {
      */
     div: HTMLDivElement | null;
     /**
+     * Undocumented, but may be useful for change detection calls in Angular.
+     * @expose
+     */
+    addEventListener(DOMElement: Element | Window | Document, name: string, listener: any, capture: boolean): void;
+    /**
+     * Undocumented, but may be useful for change detection calls in Angular.
+     * @expose
+     */
+    removeEventListener(DOMElement: Element | Window | Document, name: string, listener: any, capture: boolean): void;
+    /**
      * Undocumented
      * @expose
      * @return {number}
@@ -9008,14 +9018,14 @@ export class Diagram {
     computePartsBounds(coll: Iterable<Part> | Array<Part>, includeLinks?: boolean): Rect;
     /**
      * Scales the Diagram to uniformly fit into the viewport. To have this done automatically,
-     * set the Diagram's #autoScale to Uniform.
+     * set the Diagram's #autoScale to Diagram.Uniform.
      */
     zoomToFit(): void;
     /**
      * Modifies the #scale and #position of the Diagram
      * so that the viewport displays a given document-coordinates rectangle.
      * @param {Rect} r rectangular bounds in document coordinates.
-     * @param {EnumValue=} scaling an optional value of either Uniform (the default) or UniformToFill.
+     * @param {EnumValue=} scaling an optional value of either Diagram.Uniform (the default) or Diagram.UniformToFill.
      * @since 1.1
      */
     zoomToRect(r: Rect, scaling?: EnumValue): void;
@@ -9795,6 +9805,9 @@ export class Diagram {
      * This value for Diagram#validCycle states that
      * any number of destination links may go out of a node, but at most one
      * source link may come into a node, and there are no directed cycles.
+     *
+     * This value assumes that the graph does not already have any cycles in it,
+     * or else the behavior may be indeterminate.
      * @constant
      */
     static CycleDestinationTree: EnumValue;
@@ -9802,6 +9815,9 @@ export class Diagram {
      * This value for Diagram#validCycle states that
      * any number of source links may come into a node, but at most one
      * destination link may go out of a node, and there are no directed cycles.
+     *
+     * This value assumes that the graph does not already have any cycles in it,
+     * or else the behavior may be indeterminate.
      * @constant
      */
     static CycleSourceTree: EnumValue;
@@ -9819,8 +9835,8 @@ export class Diagram {
     static InfiniteScroll: EnumValue;
     /**
      * Gets or sets what kinds of graphs this diagram allows the user to draw.
-     * By default this property is Diagram#CycleAll -- all kinds of cycles are permitted.
-     * Common values include Diagram#CycleDestinationTree and Diagram#CycleNotDirected.
+     * By default this property is Diagram.CycleAll -- all kinds of cycles are permitted.
+     * Common values include Diagram.CycleDestinationTree and Diagram.CycleNotDirected.
      */
     validCycle: EnumValue;
     /**
@@ -10702,7 +10718,7 @@ export class Diagram {
      */
     initialScale: number;
     /**
-     * Gets or sets a Panel of type Panel#Grid acting as the background grid
+     * Gets or sets a Panel of type Panel.Grid acting as the background grid
      * extending across the whole viewport of this diagram.
      */
     grid: Panel;
@@ -10729,7 +10745,7 @@ export class Diagram {
     /**
      * Gets or sets a fixed bounding rectangle to be returned by #documentBounds
      * and #computeBounds.
-     * By default this has Double.NaN values, meaning that #computeBounds
+     * By default this has NaN values, meaning that #computeBounds
      * will compute the union of all of the parts in the Diagram to determine the #documentBounds.
      * If all x/y/width/height values are real numbers, this value is used as the #documentBounds.
      */
@@ -10745,10 +10761,10 @@ export class Diagram {
     scrollMargin: MarginLike;
     /**
      * Gets or sets the scrollMode of the Diagram, allowing the user to either
-     * scroll to document bound borders with Diagram#DocumentScroll,
-     * or scroll endlessly with Diagram#InfiniteScroll.
+     * scroll to document bound borders with Diagram.DocumentScroll,
+     * or scroll endlessly with Diagram.InfiniteScroll.
      *
-     * The default value is Diagram#DocumentScroll.
+     * The default value is Diagram.DocumentScroll.
      * Changing this property value does not raise a Changed event.
      * @since 1.5
      */
@@ -10843,18 +10859,18 @@ export class Diagram {
      * Diagram's bounds automatically scale to fit the view.
      *
      * The only accepted values are the constant properties of Diagram,
-     * Diagram#None, Diagram#Uniform, or Diagram#UniformToFill.
+     * Diagram.None, Diagram.Uniform, or Diagram.UniformToFill.
      * Setting this will change the Diagram's Diagram#scale and Diagram#position, if appropriate.
      *
-     * The default value is Diagram#None - the scale and position are not automatically adjusted
+     * The default value is Diagram.None - the scale and position are not automatically adjusted
      * according to the area covered by the document.
      * When the value is not None, any value for #initialAutoScale or #initialScale is ignored.
      * <p class="box">
-     * When autoScale is set to a non-Diagram#None value,
+     * When autoScale is set to a non-Diagram.None value,
      * the user will not be able to zoom, and setting #scale will do nothing.
      * If you only want to scale automatically on initialization, use #initialAutoScale.
      *
-     * Setting this property to Diagram#Uniform is basically the same as calling #zoomToFit
+     * Setting this property to Diagram.Uniform is basically the same as calling #zoomToFit
      * all the time, or just disabling interactive zooming.
      *
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
@@ -10866,17 +10882,17 @@ export class Diagram {
      * set at the time of the "InitialLayoutCompleted" DiagramEvent, after the model has been replaced.
      *
      * The only accepted values are listed as constant properties of Diagram,
-     * such as Diagram#None, Diagram#Uniform, or Diagram#UniformToFill.
+     * such as Diagram.None, Diagram.Uniform, or Diagram.UniformToFill.
      * Setting this will change the Diagram's Diagram#scale and Diagram#position, if appropriate.
      *
      * If you want to always automatically scale the Diagram, set #autoScale instead.
      * If you want to set the scale to a specific value on initialization (each time the model is replaced),
      * set #initialScale.
      *
-     * The default value is Diagram#None -- the scale and position are not automatically adjusted
+     * The default value is Diagram.None -- the scale and position are not automatically adjusted
      * according to the area covered by the document.
      *
-     * Setting this property to Diagram#Uniform is basically the same as calling #zoomToFit
+     * Setting this property to Diagram.Uniform is basically the same as calling #zoomToFit
      * in an "InitialLayoutCompleted" DiagramEvent listener.
      *
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
@@ -10886,7 +10902,7 @@ export class Diagram {
     /**
      * Gets or sets the spot in the viewport that should be coincident with the
      * #initialDocumentSpot of the document when the document is first initialized.
-     * The default value is Spot#TopLeft.
+     * The default value is Spot.TopLeft.
      *
      * If you set this, often you will also want to set #initialDocumentSpot.
      * If you set #initialPosition, it will take precedence over this property.
@@ -10901,7 +10917,7 @@ export class Diagram {
     /**
      * Gets or sets the spot in the document's area that should be coincident with the
      * #initialViewportSpot of the viewport when the document is first initialized.
-     * The default value is Spot#TopLeft.
+     * The default value is Spot.TopLeft.
      *
      * If you set this, often you will also want to set #initialViewportSpot.
      * If you set #initialPosition, it will take precedence over this property.
@@ -10955,12 +10971,12 @@ export class Diagram {
      * Gets or sets the content alignment Spot of this Diagram, to be used in determining
      * how parts are positioned when the #viewportBounds width or height is smaller than the #documentBounds.
      *
-     * For instance a spot of Spot#Center would ensure that the Diagram's
+     * For instance a spot of Spot.Center would ensure that the Diagram's
      * contents are always centered in the viewport.
      *
      * If you want the content to be aligned only initially, use #initialContentAlignment instead.
      *
-     * The default value is Spot#Default, which causes no automatic scrolling or positioning.
+     * The default value is Spot.Default, which causes no automatic scrolling or positioning.
      * When the value is not Default, any value for #initialContentAlignment or #initialPosition is ignored.
      *
      * Setting this property has the same effect as implementing
@@ -10972,13 +10988,13 @@ export class Diagram {
      * Gets or sets the initial content alignment Spot of this Diagram, to be used in determining
      * how parts are positioned initially relative to the viewport, when the #viewportBounds width or height is smaller than the #documentBounds.
      *
-     * For instance a spot of Spot#Center would ensure that the Diagram's contents are initially centered in the viewport.
+     * For instance a spot of Spot.Center would ensure that the Diagram's contents are initially centered in the viewport.
      *
      * To initially align the document when the documentBounds are larger than the viewport, use #initialDocumentSpot and #initialViewportSpot.
      *
      * If you want the content to be constantly aligned with a spot, use #contentAlignment instead.
      *
-     * The default value is Spot#Default, which causes no automatic scrolling or positioning.
+     * The default value is Spot.Default, which causes no automatic scrolling or positioning.
      *
      * Setting this property has the same effect as implementing
      * an "InitialLayoutCompleted" DiagramEvent listener that scrolls the viewport to align the content.
@@ -11371,7 +11387,7 @@ export class DraggingOptions {
     gridSnapCellSize: Size;
     /**
      * Gets or sets the Spot that specifies what point in the grid cell dragged parts snap to,
-     * if the value of #isGridSnapEnabled is true. By default this property is Spot#TopLeft.
+     * if the value of #isGridSnapEnabled is true. By default this property is Spot.TopLeft.
      *
      * In typical DraggingTool operation this is set via DraggingTool#gridSnapCellSpot.
      */
@@ -12408,9 +12424,7 @@ export class CommandHandler {
 /**
  * A type that describes a constructor.  Used in the declaration of GraphObject.make.
  */
-export interface ConstructorType<T extends new (...args: Array<any>) => InstanceType<T>> {
-    new (...args: Array<any>): InstanceType<T>;
-}
+export type ConstructorType<T extends new (...args: Array<any>) => InstanceType<T>> = new (...args: Array<any>) => InstanceType<T>;
 /**
  * A type that declares which types may be passed as arguments, depending on the type of instance being built.
  * Used in the declaration of GraphObject.make.
@@ -12469,14 +12483,14 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  * <h3>GraphObject Size and Position within Panel</h3>
  * Several GraphObject properties guide the containing Panel for how to size and position the object within the panel.
  *   - The #alignment specifies where the object should be relative to some area of the panel.
- *     For example, an alignment value of Spot#BottomRight means that the GraphObject should be at the bottom-right corner of the panel.
+ *     For example, an alignment value of Spot.BottomRight means that the GraphObject should be at the bottom-right corner of the panel.
  *   - The #alignmentFocus specifies precisely which point of the GraphObject should be aligned at the #alignment spot.
- *   - The #column and #row properties are only used by Panel#Table panels, to indicate where the GraphObject should be.
- *   - The #columnSpan and #rowSpan properties tell the Panel#Table panel how large the GraphObject should be.
+ *   - The #column and #row properties are only used by Panel.Table panels, to indicate where the GraphObject should be.
+ *   - The #columnSpan and #rowSpan properties tell the Panel.Table panel how large the GraphObject should be.
  *   - The #isPanelMain property indicates to some kinds of Panels that the GraphObject is the "primary" object
  *     that other panel children should be measured with or positioned in.
  *   - The #margin property tells the containing Panel how much extra space to put around this GraphObject.
- *   - The #position property is used to determine the relative position of GraphObjects when they are elements of a Panel#Position panel.
+ *   - The #position property is used to determine the relative position of GraphObjects when they are elements of a Panel.Position panel.
  *
  * <p class="boxread">
  * See <a href="../../intro/panels.html">the Introduction page on Panels</a>
@@ -12857,18 +12871,18 @@ export abstract class GraphObject {
      */
     enabledChanged: ((thisObj: GraphObject, enabled: boolean) => void) | null;
     /**
-     * Gets or sets the orientation of a GraphObject that is in a Link or Panel#Graduated.
+     * Gets or sets the orientation of a GraphObject that is in a Link or Panel.Graduated.
      * This controls the automatic rotation of the object by the Link Panel or Graduated Panel.
      * The only accepted values are the Link "Orient..." values of Link
-     * and the default value: Link#None.
+     * and the default value: Link.None.
      *
-     * When the value is Link#None, the #angle of this object is unchanged as the link is routed.
-     * Setting this to a value of Link#OrientAlong will cause routing to set the #angle
+     * When the value is Link.None, the #angle of this object is unchanged as the link is routed.
+     * Setting this to a value of Link.OrientAlong will cause routing to set the #angle
      * to be the angle of the segment that this object is on.
      * Other values compute the angle somewhat differently.
-     * If the value is changed back to Link#None, the #angle of this object is set to zero.
+     * If the value is changed back to Link.None, the #angle of this object is set to zero.
      *
-     * Note that when this property is not Link#None, this property takes precedence
+     * Note that when this property is not Link.None, this property takes precedence
      * over any setting or binding of the #angle property.
      * Changes to the angle caused by orientation might not result in Changed events,
      * and any original value for the angle may be lost.
@@ -12909,7 +12923,7 @@ export abstract class GraphObject {
     segmentFraction: number;
     /**
      * Gets or sets the offset of a GraphObject that is in a Link from a point on a segment
-     * or in a Panel#Graduated from a point along the main element.
+     * or in a Panel.Graduated from a point along the main element.
      * The X component of the Point indicates the distance along the route,
      * with positive values going further toward the "to" end of the link or panel.
      * The Y component of the Point indicates the distance away from the route,
@@ -12933,8 +12947,8 @@ export abstract class GraphObject {
      * the area allotted by the containing Panel.
      *
      * The only accepted values are listed as constant properties of GraphObject,
-     * such as GraphObject#None, GraphObject#Fill, GraphObject#Horizontal, or GraphObject#Vertical.
-     * The default value is GraphObject#Default, which allows the Panel to decide how to treat this object, depending on the type of Panel.
+     * such as GraphObject.None, GraphObject.Fill, GraphObject.Horizontal, or GraphObject.Vertical.
+     * The default value is GraphObject.Default, which allows the Panel to decide how to treat this object, depending on the type of Panel.
      *
      * Objects with an #angle that are stretched may look incorrect unless the angle is a multiple of 90.
      *
@@ -13086,7 +13100,7 @@ export abstract class GraphObject {
     toLinkableSelfNode: boolean;
     /**
      * Gets or sets whether a GraphObject is the "main" object for some types of Panel.
-     * Panels that use a "main" object include Panel#Auto, Panel#Spot, and Panel#Link.
+     * Panels that use a "main" object include Panel.Auto, Panel.Spot, and Panel.Link.
      *
      * Panels that use a "main" object will use the first object that has this property set to true,
      * or else just the first object, if none have the property set.
@@ -13211,7 +13225,7 @@ export abstract class GraphObject {
      * by the Part in Diagram#documentBounds coordinates.
      *
      * If this GraphObject is not a top-level object (not a Part), then the actualBounds
-     * x and y values represent that GraphObject's position within its Panel. In a Panel of type Panel#Position
+     * x and y values represent that GraphObject's position within its Panel. In a Panel of type Panel.Position
      * this is identical to the GraphObject's #position, but in other cases it is dependent on
      * the unique workings of each Panel type. The actualBounds width and height
      * of a GraphObject are the final size after the #scale and #angle are applied.
@@ -13373,14 +13387,14 @@ export abstract class GraphObject {
      * Gets or sets the alignment Spot of this GraphObject used in Panel layouts,
      * to determine where in the area allocated by the panel this object should be placed.
      *
-     * The default value is Spot#Default, which lets the Panel determine the Spot using
-     * Panel#defaultAlignment. If that property is also Spot#Default,
+     * The default value is Spot.Default, which lets the Panel determine the Spot using
+     * Panel#defaultAlignment. If that property is also Spot.Default,
      * then the alignment spot will be different depending on the Panel type.
      *
      * The #alignmentFocus is often used along with this property to specify
      * where this object should be positioned in a Panel.
      *
-     * A Spot#Default is equivalent to Spot.Center in Spot, Auto, Horizontal, and Vertical panels.
+     * A Spot.Default is equivalent to Spot.Center in Spot, Auto, Horizontal, and Vertical panels.
      * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
      *
      * @see #alignmentFocus
@@ -13416,16 +13430,16 @@ export abstract class GraphObject {
      * in Spot and Fixed Panels.
      * Value must be of the Spot.
      *
-     * The default value is Spot#Default, which means that the Panel type can decide the effective alignment spot.
+     * The default value is Spot.Default, which means that the Panel type can decide the effective alignment spot.
      *
      * The #alignment is often used along with this property to specify
      * where this object should be positioned in a Panel.
      *
-     * For Panel#Graduated, the alignmentFocus spot determines the spot on a child element to be aligned with some
+     * For Panel.Graduated, the alignmentFocus spot determines the spot on a child element to be aligned with some
      * point along the main element.
      *
      * When you want a link label Node to be positioned by its location spot rather than by this alignmentFocus spot,
-     * you can set this property to Spot#None, only on Nodes.
+     * you can set this property to Spot.None, only on Nodes.
      * @see Panel#alignmentFocusName
      *
      * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
@@ -13466,10 +13480,10 @@ export abstract class GraphObject {
     portId: string;
     /**
      * Gets or sets where a link should connect to this port.
-     * The default value is Spot#None, meaning that the link routing
+     * The default value is Spot.None, meaning that the link routing
      * must consider the shape of the port and connect to the closest point.
      *
-     * The value of Link#toSpot, if not Spot#Default, takes precedence over the value at this port
+     * The value of Link#toSpot, if not Spot.Default, takes precedence over the value at this port
      * when determining the route of the link.
      * A number of the predefined Layouts automatically set Link#fromSpot and Link#toSpot,
      * thereby causing this property and #fromSpot on the port element to be ignored.
@@ -13489,7 +13503,7 @@ export abstract class GraphObject {
     toSpot: Spot;
     /**
      * Gets or sets the length of the last segment of a link going to this port.
-     * This value is used when the computed "to spot" is not Spot#None.
+     * This value is used when the computed "to spot" is not Spot.None.
      * The default value is 10.
      *
      * The value of Link#toEndSegmentLength, if not NaN, takes precedence over the value at this port
@@ -13571,10 +13585,10 @@ export abstract class GraphObject {
     toMaxLinks: number;
     /**
      * Gets or sets where a link should connect from this port.
-     * The default value is Spot#None, meaning that the link routing
+     * The default value is Spot.None, meaning that the link routing
      * must consider the shape of the port and connect at the closest point.
      *
-     * The value of Link#fromSpot, if not Spot#Default, takes precedence over the value at this port
+     * The value of Link#fromSpot, if not Spot.Default, takes precedence over the value at this port
      * when determining the route of the link.
      * A number of the predefined Layouts automatically set Link#fromSpot and Link#toSpot,
      * thereby causing this property and #toSpot on the port element to be ignored.
@@ -13594,7 +13608,7 @@ export abstract class GraphObject {
     fromSpot: Spot;
     /**
      * Gets or sets the length of the first segment of a link coming from this port.
-     * This value is used when the computed "from spot" is not Spot#None.
+     * This value is used when the computed "from spot" is not Spot.None.
      * The default value is 10.
      * This value also limits how short the Link#fromShortLength may be drawn.
      *
@@ -14517,9 +14531,9 @@ export type BrushLike = Brush | string | null;
 export class Brush {
     /**
      * Construct a Brush class that holds the given color information.
-     * @param {EnumValue|string=} type Optional, one of the values Brush#Solid, Brush#Linear, Brush#Radial, Brush#Pattern,
+     * @param {EnumValue|string=} type Optional, one of the values Brush.Solid, Brush.Linear, Brush.Radial, Brush.Pattern,
      * or a well-formed CSS string describing a solid color brush. No parameter
-     * defaults to a Brush#Solid with a color description of 'black'.
+     * defaults to a Brush.Solid with a color description of 'black'.
      */
     constructor(type?: EnumValue | string);
     /**
@@ -14529,7 +14543,7 @@ export class Brush {
     copy(): Brush;
     /**
      * Specify a particular color at a particular fraction of the distance.
-     * If the #type is Brush#Solid, change the type to Brush#Linear.
+     * If the #type is Brush.Solid, change the type to Brush.Linear.
      * You should have a color stop at 0 and a color stop at 1.
      * You should not have duplicate color stop values at the same fractional distance.
      * @param {number} loc A number between 0 and 1 (inclusive).
@@ -14539,8 +14553,8 @@ export class Brush {
     addColorStop(loc: number, color: string): Brush;
     /**
      * Gets or sets the type of brush.
-     * The default value is Brush#Solid.
-     * The value must be one of: Brush#Solid, Brush#Linear, Brush#Radial, Brush#Pattern.
+     * The default value is Brush.Solid.
+     * The value must be one of: Brush.Solid, Brush.Linear, Brush.Radial, Brush.Pattern.
      * If the new value is a linear or radial brush type,
      * and if the #start or #end spots are not specific spots,
      * they are changed to be specific spots, depending on the type of brush.
@@ -14555,13 +14569,13 @@ export class Brush {
     /**
      * Gets or sets the starting location for a linear or radial gradient.
      * A Spot value specifies a relative point in the object's GraphObject#naturalBounds.
-     * The default value is Spot#TopCenter for linear gradients and Spot#Center for radial gradients.
+     * The default value is Spot.TopCenter for linear gradients and Spot.Center for radial gradients.
      */
     start: Spot;
     /**
      * Gets or sets the ending location for a linear or radial gradient.
      * A Spot value specifies a relative point in the object's GraphObject#naturalBounds.
-     * The default value is Spot#BottomCenter for linear gradients and Spot#Center for radial gradients.
+     * The default value is Spot.BottomCenter for linear gradients and Spot.Center for radial gradients.
      */
     end: Spot;
     /**
@@ -14584,7 +14598,7 @@ export class Brush {
      */
     colorStops: Map<number, string> | null;
     /**
-     * Gets or sets the pattern of a brush of type Brush#Pattern.
+     * Gets or sets the pattern of a brush of type Brush.Pattern.
      */
     pattern: HTMLCanvasElement | HTMLImageElement | null;
     /**
@@ -14612,7 +14626,7 @@ export class Brush {
     /**
      * Modifies all colors within this Brush, lightening them by some fraction.
      * @param {number=} fraction Fraction to lighten the colors by. Defaults to 0.2, must be between 0 and 1 (inclusive).
-     * @param {EnumValue=} mode Color space to use for adjusting. Must be Brush#Lab or Brush#HSL, defaults to Brush#Lab.
+     * @param {EnumValue=} mode Color space to use for adjusting. Must be Brush.Lab or Brush.HSL, defaults to Brush.Lab.
      * @return {Brush} This Brush with modified color values.
      * @since 1.7
      */
@@ -14621,7 +14635,7 @@ export class Brush {
      * This static function takes a color and lightens it.
      * @param {string} color A valid CSS color string.
      * @param {number=} fraction Fraction to lighten the colors by. Defaults to 0.2, must be between 0 and 1 (inclusive).
-     * @param  {EnumValue=} mode Color space to use for adjusting. Must be Brush#Lab or Brush#HSL, defaults to Brush#Lab.
+     * @param  {EnumValue=} mode Color space to use for adjusting. Must be Brush.Lab or Brush.HSL, defaults to Brush.Lab.
      * @return {string} A CSS string for the lightened color in RGBA or HSLA.
      * @since 1.7
      */
@@ -14637,7 +14651,7 @@ export class Brush {
     /**
      * Modifies all colors within this Brush, darkening them by some fraction.
      * @param {number=} fraction Fraction to darken the colors by. Defaults to 0.2, must be between 0 and 1 (inclusive).
-     * @param {EnumValue=} mode Color space to use for adjusting. Must be Brush#Lab or Brush#HSL, defaults to Brush#Lab.
+     * @param {EnumValue=} mode Color space to use for adjusting. Must be Brush.Lab or Brush.HSL, defaults to Brush.Lab.
      * @return {Brush} This Brush with modified color values.
      * @since 1.7
      */
@@ -14646,7 +14660,7 @@ export class Brush {
      * This static function takes a color and darkens it.
      * @param {string} color A valid CSS color string
      * @param {number=} fraction Fraction to darken the color by. Defaults to 0.2, must be between 0 and 1 (inclusive).
-     * @param {EnumValue=} mode Color space to use for adjusting. Must be Brush#Lab or Brush#HSL, defaults to Brush#Lab.
+     * @param {EnumValue=} mode Color space to use for adjusting. Must be Brush.Lab or Brush.HSL, defaults to Brush.Lab.
      * @return {string} A CSS string for the darkened color in RGBA or HSLA.
      * @since 1.7
      */
@@ -14833,22 +14847,22 @@ export abstract class PanelLayout {
  *
  * Every Panel has a #type and establishes its own coordinate system. The type of a Panel
  * determines how it will size and arrange its elements:
- *   - Panel#Position is used to arrange elements based on their absolute positions within the Panel's local coordinate system.
- *   - Panel#Vertical and Panel#Horizontal are used to create linear "stacks" of elements.
- *   - Panel#Auto is used to size the main element to fit around other elements in the Panel.
- *   - Panel#Spot is used to arrange elements based on the Spot properties GraphObject#alignment
+ *   - Panel.Position is used to arrange elements based on their absolute positions within the Panel's local coordinate system.
+ *   - Panel.Vertical and Panel.Horizontal are used to create linear "stacks" of elements.
+ *   - Panel.Auto is used to size the main element to fit around other elements in the Panel.
+ *   - Panel.Spot is used to arrange elements based on the Spot properties GraphObject#alignment
  *     and GraphObject#alignmentFocus, relative to a main element of the panel.
  *     Spot panels can align relative to other elements by using Panel#alignmentFocusName.
- *   - Panel#Table is used to arrange elements into rows and columns, typically employing the different
+ *   - Panel.Table is used to arrange elements into rows and columns, typically employing the different
  *     elements' GraphObject#row, GraphObject#rowSpan, GraphObject#column,
  *     and GraphObject#columnSpan properties. This Panel type also makes use of RowColumnDefinition.
- *   - Panel#TableRow and Panel#TableColumn can only be used immediately within a Panel#Table Panel
+ *   - Panel.TableRow and Panel.TableColumn can only be used immediately within a Panel.Table Panel
  *     to organize a collection of elements as a row or as a column in a table.
- *   - Panel#Viewbox is used to automatically resize a single element to fit inside the panel's available area.
- *   - Panel#Grid is not used to house typical elements, but is used only to draw regular patterns of lines.
+ *   - Panel.Viewbox is used to automatically resize a single element to fit inside the panel's available area.
+ *   - Panel.Grid is not used to house typical elements, but is used only to draw regular patterns of lines.
  *     The elements must be Shapes used to describe the repeating lines.
- *   - Panel#Link is only used by Link parts and Link Adornments.
- *   - Panel#Graduated is used to draw regular tick marks and text along the main Shape element.
+ *   - Panel.Link is only used by Link parts and Link Adornments.
+ *   - Panel.Graduated is used to draw regular tick marks and text along the main Shape element.
  *
  * Using <a href="../../intro/buildingObjects.html">GraphObject.make</a>, the second argument can be used to declare the Panel type:
  * ```js
@@ -14869,31 +14883,31 @@ export abstract class PanelLayout {
  * <p class="boxread">
  * For an overview of most Panel types, please read the <a href="../../intro/panels.html">Introduction page on Panels</a>.
  *
- * Panel#Vertical and Panel#Horizontal panels are frequently used to position two or more GraphObjects
+ * Panel.Vertical and Panel.Horizontal panels are frequently used to position two or more GraphObjects
  * vertically above each other or horizontally next to each other.  Use the GraphObject#alignment or
  * GraphObject#stretch properties on the individual elements to control their position and size.
  * Set #isOpposite to true if you want the elements arranged from right-to-left in Horizontal Panels
  * or from bottom-to-top in Vertical Panels.
  *
- * Panel#Spot and Panel#Auto panels have a "main" element, signified by the Panel's first element
+ * Panel.Spot and Panel.Auto panels have a "main" element, signified by the Panel's first element
  * with GraphObject#isPanelMain set to true.  If there is no such element, it uses the first element as the "main" one.
  * Use the GraphObject#alignment property to position elements with respect to the main element.
  * Use the GraphObject#alignmentFocus property to further specify the position within Spot Panels.
  * "Spot" and "Auto" Panels should have two or more elements in them.
  *
- * In Panel#Table panels you will want to set the GraphObject#row and GraphObject#column
+ * In Panel.Table panels you will want to set the GraphObject#row and GraphObject#column
  * properties on each element.  The GraphObject#alignment and GraphObject#stretch properties are also
  * useful when an element's table cell is larger than that element.
  * <p class="boxrun">Please read the <a href="../../intro/tablePanels.html">Introduction page on Table Panels</a>
  * for more examples and explanation.
  *
- * Panel#TableRow and Panel#TableColumn panels can only be used as elements within a Panel#Table Panel.
+ * Panel.TableRow and Panel.TableColumn panels can only be used as elements within a Panel.Table Panel.
  * They are typically only used in item templates, e.g. for automatically creating rows in a Table Panel based on model data
  * provided in an #itemArray. You will still need to specify properties on the individual elements within a TableRow
  * or TableColumn as if they were immediate elements of the containing Table panel.
  * <p class="boxrun">For an example that uses TableRow Panels, see <a href="../../samples/records.html">Records sample</a>.
  *
- * Panel#Grid panels are often used for the Diagram's Diagram#grid.
+ * Panel.Grid panels are often used for the Diagram's Diagram#grid.
  * ```js
  * $(go.Diagram, "myDiagramDiv",
  *   { . . .
@@ -14928,7 +14942,7 @@ export abstract class PanelLayout {
  * <p class="boxrun">Please read the <a href="../../intro/grids.html">Introduction page on Grid Patterns</a>
  * for more examples and explanation.
  *
- * Panel#Graduated panels, like Spot and Auto Panels have a "main" element. The other elements within a Graduated Panel
+ * Panel.Graduated panels, like Spot and Auto Panels have a "main" element. The other elements within a Graduated Panel
  * are used to define ticks and labels to draw along the main shape's path.
  * ```js
  * $(go.Part, "Graduated",
@@ -14971,14 +14985,14 @@ export abstract class PanelLayout {
  *
  * In addition to the GraphObject properties on elements that are only used by certain types of panels,
  * several Panel properties only apply to specific Panel types.
- *   - Panels of #type Panel#Table use the #rowCount, #rowSizing, #columnCount,
+ *   - Panels of #type Panel.Table use the #rowCount, #rowSizing, #columnCount,
  *     #columnSizing, #leftIndex, #topIndex, and all of the "default" separator properties.
- *   - Panels of #type Panel#TableRow and Panel#TableColumn do not act like regular GraphObjects,
- *     instead they are only to be used immediately within a Panel#Table. They are pass-through containers
+ *   - Panels of #type Panel.TableRow and Panel.TableColumn do not act like regular GraphObjects,
+ *     instead they are only to be used immediately within a Panel.Table. They are pass-through containers
  *     that hold elements for their parent table, and ignore their own scale and angle.
- *   - Panels of #type Panel#Grid use the #gridCellSize and #gridOrigin properties.
- *   - Panels of #type Panel#Viewbox use the #viewboxStretch property.
- *   - Panels of #type Panel#Graduated use the #graduatedMin, #graduatedMax,
+ *   - Panels of #type Panel.Grid use the #gridCellSize and #gridOrigin properties.
+ *   - Panels of #type Panel.Viewbox use the #viewboxStretch property.
+ *   - Panels of #type Panel.Graduated use the #graduatedMin, #graduatedMax,
  *     #graduatedTickUnit, and #graduatedTickBase properties.
  *
  * <p class="boxread">
@@ -15018,11 +15032,11 @@ export abstract class PanelLayout {
  */
 export class Panel extends GraphObject {
     /**
-     * Constructs an empty Panel of the given #type. Default type is Panel#Position.
+     * Constructs an empty Panel of the given #type. Default type is Panel.Position.
      * The panel type must be one of the enumerated values defined on the Panel class, including:
-     * Panel#Position, Panel#Vertical, Panel#Horizontal, Panel#Table,
-     * Panel#Auto, Panel#Spot, or Panel#Viewbox.
-     * @param {EnumValue=} type If not supplied, the default Panel type is Panel#Position.
+     * Panel.Position, Panel.Vertical, Panel.Horizontal, Panel.Table,
+     * Panel.Auto, Panel.Spot, or Panel.Viewbox.
+     * @param {EnumValue=} type If not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
     /**
@@ -15033,20 +15047,20 @@ export class Panel extends GraphObject {
     /**
      * Gets or sets the type of the Panel, which controls how the Panel's elements are measured and arranged.
      * The only accepted values are listed as constant properties of Panel, including:
-     *   - Panel#Position
-     *   - Panel#Vertical
-     *   - Panel#Horizontal
-     *   - Panel#Auto
-     *   - Panel#Spot
-     *   - Panel#Table
-     *   - Panel#Viewbox
-     *   - Panel#Link (see also Links, which are all Panels of type Link)
-     *   - Panel#TableRow
-     *   - Panel#TableColumn
-     *   - Panel#Grid
-     *   - Panel#Graduated
+     *   - Panel.Position
+     *   - Panel.Vertical
+     *   - Panel.Horizontal
+     *   - Panel.Auto
+     *   - Panel.Spot
+     *   - Panel.Table
+     *   - Panel.Viewbox
+     *   - Panel.Link (see also Links, which are all Panels of type Link)
+     *   - Panel.TableRow
+     *   - Panel.TableColumn
+     *   - Panel.Grid
+     *   - Panel.Graduated
      *
-     * The default value is Panel#Position.
+     * The default value is Panel.Position.
      *
      * You must not modify this property once the Panel has been measured or the Panel has been added to another Panel.
      */
@@ -15076,19 +15090,19 @@ export class Panel extends GraphObject {
     padding: MarginLike;
     /**
      * Gets or sets the default alignment spot of this Panel, used as
-     * the alignment for an element when its GraphObject#alignment value is Spot#Default.
-     * The default value is Spot#Default, which is interpreted by the Panel in whatever manner seems reasonable,
+     * the alignment for an element when its GraphObject#alignment value is Spot.Default.
+     * The default value is Spot.Default, which is interpreted by the Panel in whatever manner seems reasonable,
      * depending on the Panel type.
      */
     defaultAlignment: Spot;
     /**
      * Gets or sets the default stretch of this Panel, used as
-     * the stretch for an element when its GraphObject#stretch value is GraphObject#Default.
-     * The default value is GraphObject#Default, which typically resolves to GraphObject#None.
+     * the stretch for an element when its GraphObject#stretch value is GraphObject.Default.
+     * The default value is GraphObject.Default, which typically resolves to GraphObject.None.
      */
     defaultStretch: EnumValue;
     /**
-     * For Table Panels: Gets or sets the additional padding for rows and columns.
+     * For Panel.Table|Table Panels: Gets or sets the additional padding for rows and columns.
      * Padding is applied both before and after a row or column's contents.
      * @see RowColumnDefinition#separatorPadding
      * @see #defaultColumnSeparatorStrokeWidth
@@ -15097,7 +15111,7 @@ export class Panel extends GraphObject {
      */
     defaultSeparatorPadding: MarginLike;
     /**
-     * For Table Panels: Gets or sets the default stroke (color) for rows
+     * For Panel.Table|Table Panels: Gets or sets the default stroke (color) for rows
      * provided a given row has a nonzero RowColumnDefinition#separatorStrokeWidth.
      * RowColumnDefinition#separatorStroke can override this default value.
      * The default value is null -- no line is drawn.
@@ -15110,7 +15124,7 @@ export class Panel extends GraphObject {
      */
     defaultRowSeparatorStroke: BrushLike;
     /**
-     * For Table Panels: Gets or sets the default stroke width for a row's separator.
+     * For Panel.Table|Table Panels: Gets or sets the default stroke width for a row's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
      * The default value is 1.  Any new value must be a real, non-negative number.
      * @see RowColumnDefinition#separatorStrokeWidth
@@ -15119,7 +15133,7 @@ export class Panel extends GraphObject {
      */
     defaultRowSeparatorStrokeWidth: number;
     /**
-     * For Table Panels: Gets or sets the default dash array for a row's separator.
+     * For Panel.Table|Table Panels: Gets or sets the default dash array for a row's separator.
      * RowColumnDefinition#separatorDashArray can override this default value.
      *
      * Must be an array of positive numbers and zeroes,
@@ -15136,7 +15150,7 @@ export class Panel extends GraphObject {
      */
     defaultRowSeparatorDashArray: Array<number> | null;
     /**
-     * For Table Panels: Gets or sets the default stroke (color) for columns
+     * For Panel.Table|Table Panels: Gets or sets the default stroke (color) for columns
      * provided a given column has a nonzero RowColumnDefinition#separatorStrokeWidth.
      * RowColumnDefinition#separatorDashArray can override this default value.
      * The default value is null -- no line is drawn.
@@ -15148,7 +15162,7 @@ export class Panel extends GraphObject {
      */
     defaultColumnSeparatorStroke: BrushLike;
     /**
-     * For Table Panels: Gets or sets the default stroke width for a column's separator.
+     * For Panel.Table|Table Panels: Gets or sets the default stroke width for a column's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
      * The default value is 1.  Any new value must be a real, non-negative number.
      * @see RowColumnDefinition#separatorStrokeWidth
@@ -15157,7 +15171,7 @@ export class Panel extends GraphObject {
      */
     defaultColumnSeparatorStrokeWidth: number;
     /**
-     * For Table Panels: Gets or sets the default dash array for a column's separator.
+     * For Panel.Table|Table Panels: Gets or sets the default dash array for a column's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
      *
      * Must be an array of positive numbers and zeroes,
@@ -15174,51 +15188,51 @@ export class Panel extends GraphObject {
      */
     defaultColumnSeparatorDashArray: Array<number> | null;
     /**
-     * For Viewbox Panels: Gets or sets how the panel will resize its content.
+     * For Panel.Viewbox|Viewbox Panels: Gets or sets how the panel will resize its content.
      *
-     * Possible values are GraphObject#Uniform and GraphObject#UniformToFill.
-     * The default is GraphObject#Uniform.
+     * Possible values are GraphObject.Uniform and GraphObject.UniformToFill.
+     * The default is GraphObject.Uniform.
      */
     viewboxStretch: EnumValue;
     /**
-     * For Grid Panels: Gets or sets the distance between lines.
+     * For Panel.Grid|Grid Panels: Gets or sets the distance between lines.
      * The units are in local coordinates.
      * The default is 10x10.  Any new width or height must be a positive real number.
      */
     gridCellSize: Size;
     /**
-     * For Grid Panels: Gets or sets an origin point for the grid cells.
+     * For Panel.Grid|Grid Panels: Gets or sets an origin point for the grid cells.
      * The units are in local coordinates.
      * The default is (0,0).  Any new value must use real numbers.
      */
     gridOrigin: Point;
     /**
-     * For Graduated Panels: Gets or sets the minimum value represented.
+     * For Panel.Graduated|Graduated Panels: Gets or sets the minimum value represented.
      * Must be less than #graduatedMax. The default is 0.
      * @since 1.7
      */
     graduatedMin: number;
     /**
-     * For Graduated Panels: Gets or sets the maximum value represented.
+     * For Panel.Graduated|Graduated Panels: Gets or sets the maximum value represented.
      * Must be greater than #graduatedMin. The default is 100.
      * @since 1.7
      */
     graduatedMax: number;
     /**
-     * For Graduated Panels: This read-only property returns the range of values represented by the Panel.
+     * For Panel.Graduated|Graduated Panels: This read-only property returns the range of values represented by the Panel.
      *
      * For example, a #graduatedMin of 25 and #graduatedMax of 75 would return 50.
      * @since 1.7
      */
     readonly graduatedRange: number;
     /**
-     * For Graduated Panels: Gets or sets the difference between two consecutive values marked by ticks.
+     * For Panel.Graduated|Graduated Panels: Gets or sets the difference between two consecutive values marked by ticks.
      * Must be positive. The default is 10.
      * @since 1.7
      */
     graduatedTickUnit: number;
     /**
-     * For Graduated Panels: Gets or sets the base value which is marked with a tick.
+     * For Panel.Graduated|Graduated Panels: Gets or sets the base value which is marked with a tick.
      * The default is 0.
      * @since 1.7
      */
@@ -15275,12 +15289,12 @@ export class Panel extends GraphObject {
      */
     removeAt(idx: number): void;
     /**
-     * For Table Panels: This read-only property returns the number of rows.
+     * For Panel.Table|Table Panels: This read-only property returns the number of rows.
      * This value is only valid after the Panel has been measured.
      */
     readonly rowCount: number;
     /**
-     * For Table Panels: Gets the RowColumnDefinition for a particular row.
+     * For Panel.Table|Table Panels: Gets the RowColumnDefinition for a particular row.
      * If you ask for the definition of a row at or beyond the #rowCount,
      * it will automatically create one and return it.
      *
@@ -15291,19 +15305,19 @@ export class Panel extends GraphObject {
      */
     getRowDefinition(idx: number): RowColumnDefinition;
     /**
-     * For Table Panels: Removes the RowColumnDefinition for a particular row.
+     * For Panel.Table|Table Panels: Removes the RowColumnDefinition for a particular row.
      *
      * If this Panel is not a Table Panel, this method does nothing.
      * @param {number} idx the non-negative zero-based integer row index.
      */
     removeRowDefinition(idx: number): void;
     /**
-     * For Table Panels: This read-only property returns the number of columns.
+     * For Panel.Table|Table Panels: This read-only property returns the number of columns.
      * This value is only valid after the Panel has been measured.
      */
     readonly columnCount: number;
     /**
-     * For Table Panels: Gets the RowColumnDefinition for a particular column.
+     * For Panel.Table|Table Panels: Gets the RowColumnDefinition for a particular column.
      * If you ask for the definition of a column at or beyond the #columnCount,
      * it will automatically create one and return it.
      *
@@ -15314,41 +15328,41 @@ export class Panel extends GraphObject {
      */
     getColumnDefinition(idx: number): RowColumnDefinition;
     /**
-     * For Table Panels: Removes the RowColumnDefinition for a particular row.
+     * For Panel.Table|Table Panels: Removes the RowColumnDefinition for a particular row.
      *
      * If this Panel is not a Table Panel, this method does nothing.
      * @param {number} idx the non-negative zero-based integer row index.
      */
     removeColumnDefinition(idx: number): void;
     /**
-     * For Table Panels: Gets or sets how this Panel's rows deal with extra space.
-     * Valid values are RowColumnDefinition#ProportionalExtra and RowColumnDefinition#None.
-     * The default is RowColumnDefinition#ProportionalExtra.
+     * For Panel.Table|Table Panels: Gets or sets how this Panel's rows deal with extra space.
+     * Valid values are RowColumnDefinition.ProportionalExtra and RowColumnDefinition.None.
+     * The default is RowColumnDefinition.ProportionalExtra.
      * @see RowColumnDefinition#sizing
      */
     rowSizing: EnumValue;
     /**
-     * For Table Panels: Gets or sets how this Panel's columns deal with extra space.
-     * Valid values are RowColumnDefinition#ProportionalExtra and RowColumnDefinition#None.
-     * The default is RowColumnDefinition#ProportionalExtra.
+     * For Panel.Table|Table Panels: Gets or sets how this Panel's columns deal with extra space.
+     * Valid values are RowColumnDefinition.ProportionalExtra and RowColumnDefinition.None.
+     * The default is RowColumnDefinition.ProportionalExtra.
      * @see RowColumnDefinition#sizing
      * @see #rowSizing
      */
     columnSizing: EnumValue;
     /**
-     * For Table Panels: Gets or sets the first row that this Panel displays.
+     * For Panel.Table|Table Panels: Gets or sets the first row that this Panel displays.
      * The default value is 0.
      * @see #leftIndex
      */
     topIndex: number;
     /**
-     * For Table Panels: Gets or sets the first column that this Panel displays.
+     * For Panel.Table|Table Panels: Gets or sets the first column that this Panel displays.
      * The default value is 0.
      * @see #topIndex
      */
     leftIndex: number;
     /**
-     * For Table Panels: Returns the row at a given y-coordinate in local coordinates.
+     * For Panel.Table|Table Panels: Returns the row at a given y-coordinate in local coordinates.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
      * a Point in local coordinates.
      *
@@ -15359,7 +15373,7 @@ export class Panel extends GraphObject {
      */
     findRowForLocalY(y: number): number;
     /**
-     * For Table Panels: Returns the cell at a given x-coordinate in local coordinates.
+     * For Panel.Table|Table Panels: Returns the cell at a given x-coordinate in local coordinates.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
      * a Point in local coordinates.
      *
@@ -15370,7 +15384,7 @@ export class Panel extends GraphObject {
      */
     findColumnForLocalX(x: number): number;
     /**
-     * For Graduated Panels: Returns the point that corresponds with a value, in the panel's coordinates.
+     * For Panel.Graduated|Graduated Panels: Returns the point that corresponds with a value, in the panel's coordinates.
      *
      * If the value provided is not within the #graduatedMin and #graduatedMax,
      * it will be constrained to within those values.
@@ -15384,7 +15398,7 @@ export class Panel extends GraphObject {
      */
     graduatedPointForValue(val: number, result?: Point): Point;
     /**
-     * For Graduated Panels: Returns the value that corresponds with the given Point.
+     * For Panel.Graduated|Graduated Panels: Returns the value that corresponds with the given Point.
      * The Point must be in the panel's coordinates.
      * The value returned will be in the Graduated Panel's range.
      *
@@ -15593,7 +15607,7 @@ export class Panel extends GraphObject {
      */
     isClipping: boolean;
     /**
-     * For Horizontal and Vertical Panels: gets or sets whether this Panel arranges its contents from the
+     * For Panel.Horizontal|Horizontal and Panel.Vertical|Vertical Panels: gets or sets whether this Panel arranges its contents from the
      * typical side (left and top, respectively), or the opposite side (right and bottom, respectively).
      *
      * The default value is false.
@@ -15714,7 +15728,7 @@ export class Panel extends GraphObject {
 }
 /**
  * The RowColumnDefinition class describes constraints on a row or a column
- * in a Panel of type Panel#Table.
+ * in a Panel of type Panel.Table.
  * It also provides information about the actual layout after the
  * Table Panel has been arranged.
  * @unrestricted
@@ -15727,7 +15741,7 @@ export class RowColumnDefinition {
      */
     constructor();
     /**
-     * The default #sizing, which resolves to RowColumnDefinition#None or else
+     * The default #sizing, which resolves to RowColumnDefinition.None or else
      * the Table Panel's rowSizing and columnSizing if present.
      * @constant
      */
@@ -15850,10 +15864,10 @@ export class RowColumnDefinition {
     /**
      * Gets or sets a default alignment for elements that are in this row or column.
      * The value must be a Spot.
-     * The default value is Spot#Default, so that this RowColumnDefinition
+     * The default value is Spot.Default, so that this RowColumnDefinition
      * does not supply any alignment information for the row or column.
      *
-     * When an element's GraphObject#alignment property is Spot#Default,
+     * When an element's GraphObject#alignment property is Spot.Default,
      * it gets the horizontal alignment from the element's column's RowColumnDefinition
      * and the vertical alignment from the element's row's RowColumnDefinition.
      * When that RowColumnDefinition#alignment property is also Default,
@@ -15865,11 +15879,11 @@ export class RowColumnDefinition {
     /**
      * Gets or sets the default stretch for elements that are in this row or column.
      * The only accepted values are listed as constant properties of GraphObject:
-     * GraphObject#None, GraphObject#Fill, GraphObject#Horizontal, GraphObject#Vertical, or GraphObject#Default.
-     * The default value is GraphObject#Default, so that this RowColumnDefinition
+     * GraphObject.None, GraphObject.Fill, GraphObject.Horizontal, GraphObject.Vertical, or GraphObject.Default.
+     * The default value is GraphObject.Default, so that this RowColumnDefinition
      * does not supply any stretch information for the row or column.
      *
-     * When an element's GraphObject#stretch property is GraphObject#Default,
+     * When an element's GraphObject#stretch property is GraphObject.Default,
      * it gets the horizontal stretch from the element's column's RowColumnDefinition
      * and the vertical stretch from the element's row's RowColumnDefinition.
      * When that RowColumnDefinition#stretch property is also Default,
@@ -15975,9 +15989,9 @@ export class RowColumnDefinition {
     coversSeparators: boolean;
     /**
      * Gets or sets how this row or column deals with a Table Panel's extra space.
-     * The value must be one of: RowColumnDefinition#None, RowColumnDefinition#ProportionalExtra,
-     * or RowColumnDefinition#Default.
-     * The default value is RowColumnDefinition#Default.
+     * The value must be one of: RowColumnDefinition.None, RowColumnDefinition.ProportionalExtra,
+     * or RowColumnDefinition.Default.
+     * The default value is RowColumnDefinition.Default.
      * @see Panel#columnSizing
      * @see Panel#rowSizing
      * @see #actual
@@ -16298,12 +16312,12 @@ export class Shape extends GraphObject {
     fromArrow: string;
     /**
      * Gets or sets the top-left Spot used by some Panels for determining where in the shape other objects may be placed.
-     * The value is normally Spot#Default, but you may want to set it to override the value that many #figures use.
+     * The value is normally Spot.Default, but you may want to set it to override the value that many #figures use.
      */
     spot1: Spot;
     /**
      * Gets or sets the bottom-right Spot used by some Panels for determining where in the shape other objects may be placed.
-     * The value is normally Spot#Default, but you may want to set it to override the value that many #figures use.
+     * The value is normally Spot.Default, but you may want to set it to override the value that many #figures use.
      */
     spot2: Spot;
     /**
@@ -16345,9 +16359,9 @@ export class Shape extends GraphObject {
     pathPattern: GraphObject | null;
     /**
      * Gets or sets how the shape's geometry is proportionally created given its computed size.
-     * Possible values are GraphObject#None, GraphObject#Fill, GraphObject#Uniform, and GraphObject#Default.
-     * The default is GraphObject#Default, which resolves to GraphObject#Fill for most figures, though
-     * some regular figures such as "Circle" and "Square" default to GraphObject#Uniform.
+     * Possible values are GraphObject.None, GraphObject.Fill, GraphObject.Uniform, and GraphObject.Default.
+     * The default is GraphObject.Default, which resolves to GraphObject.Fill for most figures, though
+     * some regular figures such as "Circle" and "Square" default to GraphObject.Uniform.
      */
     geometryStretch: EnumValue;
     /**
@@ -16407,7 +16421,7 @@ export class Shape extends GraphObject {
      *
      * The function must return a Geometry; you may want to set Geometry#spot1 and Geometry#spot2 on it
      * to indicate where content should be placed within the figure when using an "Auto" Panel.
-     * For some figures you may also want to set Geometry#defaultStretch to GraphObject#Uniform
+     * For some figures you may also want to set Geometry#defaultStretch to GraphObject.Uniform
      * in order to maintain the geometry's aspect ratio within the Shape.
      *
      * Generated figures must create a Geometry that is not larger than the supplied with and height. Doing so will signal an error.
@@ -16469,7 +16483,7 @@ export class Shape extends GraphObject {
  *
  * TextBlocks typically receive a natural size based on their text and font strings,
  * but often a width is given in order to cause the text to wrap at a certain place.
- * In order for wrapping to occur, the #wrap property must not be TextBlock#None.
+ * In order for wrapping to occur, the #wrap property must not be TextBlock.None.
  *
  * TextBlocks can be edited by users using the TextEditingTool.
  * The HTMLInfo that a given TextBlock uses as its text editor can be customized
@@ -16622,8 +16636,8 @@ export class TextBlock extends GraphObject {
     /**
      * Gets or sets how the TextBlock is displayed: Either normally or with a Horizontal or Vertical flip or both.
      *
-     * Possible values are GraphObject#None, GraphObject#FlipHorizontal, GraphObject#FlipVertical, or GraphObject#FlipBoth.
-     * The default is GraphObject#None.
+     * Possible values are GraphObject.None, GraphObject.FlipHorizontal, GraphObject.FlipVertical, or GraphObject.FlipBoth.
+     * The default is GraphObject.None.
      * @since 2.0
      */
     flip: EnumValue;
@@ -16631,7 +16645,7 @@ export class TextBlock extends GraphObject {
      * Gets or sets the vertical alignment Spot of this TextBlock, used when
      * the TextBlock has more available vertical space than it needs to draw all lines.
      *
-     * The default value is Spot#Top, which aligns the TextBlock to the top of its available space.
+     * The default value is Spot.Top, which aligns the TextBlock to the top of its available space.
      *
      * The #textAlign is often used along with this property to specify
      * where the should be positioned in its available space.
@@ -16670,22 +16684,22 @@ export class TextBlock extends GraphObject {
     /**
      * Gets or sets whether the text should be wrapped if it is too long to fit on one line.
      *
-     * Possible values are TextBlock#WrapDesiredSize, TextBlock#WrapFit, TextBlock#WrapBreakAll,
-     * and TextBlock#None.
+     * Possible values are TextBlock.WrapDesiredSize, TextBlock.WrapFit, TextBlock.WrapBreakAll,
+     * and TextBlock.None.
      *
-     * The default value is TextBlock#WrapDesiredSize.
+     * The default value is TextBlock.WrapDesiredSize.
      * @see #overflow
      */
     wrap: EnumValue;
     /**
      * Gets or sets how text that is too long to display should be handled.
      *
-     * Possible values are TextBlock#OverflowClip and TextBlock#OverflowEllipsis.
+     * Possible values are TextBlock.OverflowClip and TextBlock.OverflowEllipsis.
      * For OverflowEllipsis to work, you must constrain the available size of the TextBlock in some way,
-     * such as setting #wrap to TextBlock#None,
+     * such as setting #wrap to TextBlock.None,
      * or limiting the number of lines with #maxLines or a height constraint.
      *
-     * The default value is TextBlock#OverflowClip.
+     * The default value is TextBlock.OverflowClip.
      * @see #wrap
      * @since 1.4
      */
@@ -16935,17 +16949,17 @@ export class Picture extends GraphObject {
      * This property will never change the size of the Picture itself,
      * only the size of the image that is drawn in the Picture's #actualBounds.
      *
-     * Possible values are GraphObject#Fill, GraphObject#Uniform,
-     * GraphObject#UniformToFill, and GraphObject#None.
-     * The default is GraphObject#Fill.
+     * Possible values are GraphObject.Fill, GraphObject.Uniform,
+     * GraphObject.UniformToFill, and GraphObject.None.
+     * The default is GraphObject.Fill.
      * @see #imageAlignment
      */
     imageStretch: EnumValue;
     /**
      * Gets or sets how the Picture is displayed: Either normally or with a Horizontal or Vertical flip or both.
      *
-     * Possible values are GraphObject#None, GraphObject#FlipHorizontal, GraphObject#FlipVertical, or GraphObject#FlipBoth.
-     * The default is GraphObject#None.
+     * Possible values are GraphObject.None, GraphObject.FlipHorizontal, GraphObject.FlipVertical, or GraphObject.FlipBoth.
+     * The default is GraphObject.None.
      * @since 2.0
      */
     flip: EnumValue;
@@ -16955,7 +16969,7 @@ export class Picture extends GraphObject {
      * the #imageStretch property value is not go.GraphObject.Fill.
      *
      * This does not affect Picture coordinates or bounds, it only affects what is drawn within the given area.
-     * The default value is Spot#Center.
+     * The default value is Spot.Center.
      * @see #imageStretch
      * @since 1.7
      */
@@ -17053,7 +17067,7 @@ export class Picture extends GraphObject {
  * The "position" is always the point that is at the top-left corner of the area occupied by the part.
  * But the "location" may be different from the "position" if you want to think of the part as being "at" a different spot in the part.
  * For example, you might want the "location" to be at the center of a Picture that has a TextBlock title of arbitrary size.
- * In this case you would set the #locationSpot to be Spot#Center and the #locationObjectName
+ * In this case you would set the #locationSpot to be Spot.Center and the #locationObjectName
  * to be the name of the Picture element in your Part.
  *
  * A part may be selected or de-selected by setting its #isSelected property.
@@ -17128,10 +17142,10 @@ export class Picture extends GraphObject {
  * This automatic layout invalidation also occurs as parts change their visibility (GraphObject#visible)
  * or their size (GraphObject#actualBounds).
  * If you do want there to be a Diagram#layout but you do not want an automatic layout to happen
- * after removing parts (for example), you can set #layoutConditions not to include the Part#LayoutRemoved flag.
+ * after removing parts (for example), you can set #layoutConditions not to include the Part.LayoutRemoved flag.
  * In this particular case, you could set #layoutConditions to:
  * `go.Part.LayoutStandard & ~go.Part.LayoutRemoved`.
- * It may also reasonable for your application to set it to Part#LayoutNone.
+ * It may also reasonable for your application to set it to Part.LayoutNone.
  * Do not forget to consider applying the same conditions to links as well as to nodes and groups.
  *
  * If you want to save the locations/positions of the parts in a diagram, it is commonplace to
@@ -17159,7 +17173,7 @@ export class Picture extends GraphObject {
 export class Part extends Panel {
     /**
      * The constructor builds an empty Part.
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel#Position.
+     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
     /**
@@ -17883,7 +17897,7 @@ export class Part extends Panel {
      *
      * It is commonplace to make use of a Placeholder in an Adornment for a Node, Group, or simple Part.
      * The Placeholder represents the Adornment#adornedObject of the adorned Part.
-     * For Links, the Adornment must be of Panel#type Panel#Link.
+     * For Links, the Adornment must be of Panel#type Panel.Link.
      * @see #selectable
      * @see #selectionObjectName
      */
@@ -17919,7 +17933,7 @@ export class Part extends Panel {
      * Gets or sets the adornment template used to create a resize handle Adornment for this part.
      * This is used by the ResizingTool, ToolManager#resizingTool.
      *
-     * If an Adornment is supplied, it is normally a Panel#Spot panel that contains a Placeholder
+     * If an Adornment is supplied, it is normally a Panel.Spot panel that contains a Placeholder
      * with some number of resize handles at the four corners or at the four side midpoints.
      * @see #resizable
      * @see #resizeObjectName
@@ -18091,11 +18105,11 @@ export class Part extends Panel {
     findCommonContainingGroup(other: Part): Group | null;
     /**
      * Gets or sets flags that control when the Layout that is responsible for this Part is invalidated.
-     * The initial value is Part#LayoutStandard,
+     * The initial value is Part.LayoutStandard,
      * which causes the layout for this part to be invalidated when the part is added or removed or changes visibility or size.
      *
-     * Individual layout conditions include: Part#LayoutAdded, Part#LayoutRemoved,
-     * Part#LayoutShown, Part#LayoutHidden, and Part#LayoutNodeSized.
+     * Individual layout conditions include: Part.LayoutAdded, Part.LayoutRemoved,
+     * Part.LayoutShown, Part.LayoutHidden, and Part.LayoutNodeSized.
      *
      * This property is ignored when #isLayoutPositioned is false -- no operation on this Part
      * will by itself cause the responsible Layout to be invalidated.
@@ -18124,7 +18138,7 @@ export class Part extends Panel {
      * But note that if #isLayoutPositioned is false, or if it is in a temporary Layer,
      * or if it is not in a diagram or group, no layout is invalidated.
      * @param {number=} condition the reason that the layout should be invalidated;
-     * if this argument is not supplied, any value of #layoutConditions other than Part#LayoutNone
+     * if this argument is not supplied, any value of #layoutConditions other than Part.LayoutNone
      * will allow the layout to be invalidated.
      */
     invalidateLayout(condition?: number): void;
@@ -18245,7 +18259,7 @@ export class Part extends Panel {
  */
 export class Adornment extends Part {
     /**
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel#Position.
+     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
     /**
@@ -18435,7 +18449,7 @@ export class Adornment extends Part {
  * to update the appearance of the node.
  *
  * There is an option for link routing to try to avoid crossing over nodes:
- * Link#routing = Link#AvoidsNodes.
+ * Link#routing = Link.AvoidsNodes.
  * You can control whether such links should avoid or ignore a node by setting #avoidable.
  * Set #avoidableMargin to control the area beyond the GraphObject#actualBounds
  * where AvoidsNodes links should not go.
@@ -18461,7 +18475,7 @@ export class Node extends Part {
     /**
      * Constructs an empty Node.
      * The panel type must be one of the values permitted by Panel#type.
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel#Position.
+     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
     /**
@@ -18497,13 +18511,13 @@ export class Node extends Part {
     invalidateConnectedLinks(ignore?: Set<Part>): void;
     /**
      * Gets or sets how link points are computed when the port spot is a "side" spot.
-     * The default value is Node#SpreadingEvenly.
+     * The default value is Node.SpreadingEvenly.
      * @since 1.5
      */
     portSpreading: EnumValue;
     /**
      * Gets or sets whether this Node is to be avoided by Links
-     * whose Link#routing is Link#AvoidsNodes.
+     * whose Link#routing is Link.AvoidsNodes.
      *
      * The default value is true.
      */
@@ -19057,7 +19071,7 @@ export class Group extends Node {
     /**
      * Constructs an empty Group with no visual elements and no member parts;
      * normally a Group will have some visual elements surrounding a Placeholder.
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel#Position.
+     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
     /**
@@ -19539,7 +19553,7 @@ export class Link extends Part {
      * Used as a value for Link#adjusting,
      * to indicate that the link route computation should scale and rotate the intermediate points
      * so that the link's shape looks approximately the same;
-     * if the routing is orthogonal, this value is treated as if it were Link#End.
+     * if the routing is orthogonal, this value is treated as if it were Link.End.
      * @constant
      */
     static Scale: EnumValue;
@@ -19547,7 +19561,7 @@ export class Link extends Part {
      * Used as a value for Link#adjusting,
      * to indicate that the link route computation should linearly interpolate the intermediate points
      * so that the link's shape looks stretched;
-     * if the routing is orthogonal, this value is treated as if it were Link#End.
+     * if the routing is orthogonal, this value is treated as if it were Link.End.
      * @constant
      */
     static Stretch: EnumValue;
@@ -19585,7 +19599,7 @@ export class Link extends Part {
     static OrientOpposite: EnumValue;
     /**
      * This value for GraphObject#segmentOrientation results in
-     * the GraphObject turned to have the same angle as the route, just like Link#OrientAlong, but is never upside down:
+     * the GraphObject turned to have the same angle as the route, just like Link.OrientAlong, but is never upside down:
      * the GraphObject's angle always following the angle of the link's route
      * at the segment where the GraphObject is attached;
      * this is typically only used for TextBlocks or Panels that contain text.
@@ -19594,7 +19608,7 @@ export class Link extends Part {
     static OrientUpright: EnumValue;
     /**
      * This value for GraphObject#segmentOrientation results in
-     * the GraphObject turned clockwise to be perpendicular to the route, just like Link#OrientPlus90, but is never upside down:
+     * the GraphObject turned clockwise to be perpendicular to the route, just like Link.OrientPlus90, but is never upside down:
      * the GraphObject's angle always being 90 degrees more than the angle of the link's route
      * at the segment where the GraphObject is attached;
      * this is typically only used for TextBlocks or Panels that contain text.
@@ -19603,7 +19617,7 @@ export class Link extends Part {
     static OrientPlus90Upright: EnumValue;
     /**
      * This value for GraphObject#segmentOrientation results in
-     * the GraphObject turned counter-clockwise to be perpendicular to the route, just like Link#OrientMinus90, but is never upside down:
+     * the GraphObject turned counter-clockwise to be perpendicular to the route, just like Link.OrientMinus90, but is never upside down:
      * the GraphObject's angle always being 90 degrees less than the angle of the link's route
      * at the segment where the GraphObject is attached;
      * this is typically only used for TextBlocks or Panels that contain text.
@@ -19689,7 +19703,7 @@ export class Link extends Part {
     toPortChanged: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
     /**
      * Gets or sets where this link should connect at the #fromPort.
-     * The default value is Spot#Default, meaning that the value
+     * The default value is Spot.Default, meaning that the value
      * actually comes from the GraphObject#fromSpot property of the #fromPort.
      *
      * This property is set by some layouts, if ForceDirectedLayout#setsPortSpots or
@@ -19703,7 +19717,7 @@ export class Link extends Part {
      */
     fromSpot: Spot;
     /**
-     * Gets or sets the length of the first segment, when the computed "from spot" at the #fromPort is not Spot#None.
+     * Gets or sets the length of the first segment, when the computed "from spot" at the #fromPort is not Spot.None.
      * The default value is NaN, meaning that the value
      * actually comes from the GraphObject#fromEndSegmentLength property of the #fromPort.
      * This value also limits how short the #fromShortLength may be drawn.
@@ -19732,7 +19746,7 @@ export class Link extends Part {
     fromShortLength: number;
     /**
      * Gets or sets where this link should connect at the #toPort.
-     * The default value is Spot#Default, meaning that the value
+     * The default value is Spot.Default, meaning that the value
      * actually comes from the GraphObject#toSpot property of the #toPort.
      *
      * This property is set by some layouts, if ForceDirectedLayout#setsPortSpots or
@@ -19854,7 +19868,7 @@ export class Link extends Part {
     /**
      * Gets or sets whether the user may change the number of segments in this Link,
      * if the link has straight segments.
-     * This affects the behavior of the LinkReshapingTool when #curve is not Link#Bezier.
+     * This affects the behavior of the LinkReshapingTool when #curve is not Link.Bezier.
      *
      * The initial value is false.
      * @since 1.2
@@ -20134,7 +20148,7 @@ export class Link extends Part {
      * @expose
      * @param {boolean} from
      * @param {GraphObject=} port
-     * @return {Spot} must not be Spot#Default, but may be Spot#None
+     * @return {Spot} must not be Spot.Default, but may be Spot.None
      * @since 1.6
      */
     computeSpot(from: boolean, port?: GraphObject | null): Spot;
@@ -20164,7 +20178,7 @@ export class Link extends Part {
      * of the route should be orthogonal, such that each point shares a common X or a common Y value
      * with the immediately previous and next points.
      * This property is completely dependent on the #routing property.
-     * Values of Link#Orthogonal and Link#AvoidsNodes causes this property to be true.
+     * Values of Link.Orthogonal and Link.AvoidsNodes causes this property to be true.
      *
      * The points in the route might not actually form an orthogonal route, but when the route is computed
      * the intent is to maintain orthogonality.
@@ -20330,14 +20344,14 @@ export class Link extends Part {
     invalidateOtherJumpOvers(prevbounds: Rect): void;
     /**
      * Gets or sets how the route is computed, including whether it uses the points of its old route to determine the new route.
-     * The value must be one of None, End, Scale, or Stretch.
+     * The value must be one of Link.None|None, Link.End|End, Link.Scale|Scale, or Link.Stretch|Stretch.
      *
-     * The default value is None -- the route is completely recalculated each time.
+     * The default value is Link.None|None -- the route is completely recalculated each time.
      */
     adjusting: EnumValue;
     /**
      * Gets or sets how rounded the corners are for adjacent line segments when the #curve
-     * is None, JumpGap, or JumpOver and
+     * is Link.None|None, Link.JumpGap|JumpGap, or Link.JumpOver|JumpOver and
      * the two line segments are orthogonal to each other.
      *
      * The default value is zero -- there is no curve at a corner.
@@ -20345,19 +20359,19 @@ export class Link extends Part {
     corner: number;
     /**
      * Gets or sets the way the path is generated from the route's points.
-     * The value must be one of None, Bezier, JumpGap, or JumpOver.
+     * The value must be one of Link.None|None, Link.Bezier|Bezier, Link.JumpGap|JumpGap, or Link.JumpOver|JumpOver.
      *
-     * Setting this property to JumpOver or JumpGap requires the Diagram to do
+     * Setting this property to Link.JumpOver|JumpOver or Link.JumpGap|JumpGap requires the Diagram to do
      * considerable computation when calculating Link routes. Consider not using
      * a Jump... value with Diagrams that contain large numbers of Links
      * if you are targeting slow devices.
      *
-     * The default value is None -- each link segment is a straight line.
+     * The default value is Link.None|None -- each link segment is a straight line.
      * @see #computeCurve
      */
     curve: EnumValue;
     /**
-     * Gets or sets how far the control points are offset when the #curve is Bezier
+     * Gets or sets how far the control points are offset when the #curve is Link.Bezier|Bezier
      * or when there are multiple links between the same two ports.
      *
      * The default value is NaN -- the actual curviness is computed based on how many links connect the same pair of ports.
@@ -20366,22 +20380,22 @@ export class Link extends Part {
     curviness: number;
     /**
      * Gets or sets whether the link's path tries to avoid other nodes.
-     * The value must be one of Normal, Orthogonal, or AvoidsNodes.
+     * The value must be one of Link.Normal|Normal, Link.Orthogonal|Orthogonal, or Link.AvoidsNodes|AvoidsNodes.
      *
-     * Setting this property to AvoidsNodes requires the Diagram to do
+     * Setting this property to Link.AvoidsNodes|AvoidsNodes requires the Diagram to do
      * considerable computation when calculating Link routes. Consider not using
-     * the AvoidsNodes with Diagrams that contain large numbers of Nodes and Links
+     * the Link.AvoidsNodes|AvoidsNodes with Diagrams that contain large numbers of Nodes and Links
      * if you are targeting slow devices.
-     * When using AvoidsNodes, dragging performance can be improved by setting DraggingTool#isComplexRoutingRealtime to false.
+     * When using Link.AvoidsNodes|AvoidsNodes, dragging performance can be improved by setting DraggingTool#isComplexRoutingRealtime to false.
      *
-     * The default value is Normal -- the route is primarily a single straight segment,
+     * The default value is Link.Normal|Normal -- the route is primarily a single straight segment,
      * with possible short end segments when connecting with ports that have a "spot" value
      * as the #fromSpot or GraphObject#fromSpot or #toSpot or GraphObject#toSpot.
      */
     routing: EnumValue;
     /**
      * Gets or sets how far the control points are from the points of the route
-     * when #routing is Orthogonal and #curve is Bezier.
+     * when #routing is Link.Orthogonal|Orthogonal and #curve is Link.Bezier|Bezier.
      *
      * The default value is 0.5.
      * Values of this property typically fall in the range of 0.0 to 1.0.
@@ -20567,7 +20581,7 @@ export class Layout {
      * Gets or sets whether this layout depends on the Diagram#viewportBounds's size.
      * If set to true, the layout will invalidate when the Diagram's viewport changes size.
      * This only applies to diagram layouts, not to group layouts,
-     * and only when Diagram#autoScale is set to Diagram#None.
+     * and only when Diagram#autoScale is set to Diagram.None.
      * The default value is false.
      * Setting this property to true will invalidate this layout.
      */
@@ -21319,23 +21333,23 @@ export class GridLayout extends Layout {
      * Gets or sets whether the Part#location or the position should be used
      * to arrange each part.
      *
-     * The default value is GridLayout#Location -- the Part#locations will
+     * The default value is GridLayout.Location -- the Part#locations will
      * be aligned in a grid.
      */
     alignment: EnumValue;
     /**
      * Gets or sets how to arrange the parts.
-     * Must be GridLayout#LeftToRight or GridLayout#RightToLeft.
+     * Must be GridLayout.LeftToRight or GridLayout.RightToLeft.
      *
-     * The default value is GridLayout#LeftToRight.
+     * The default value is GridLayout.LeftToRight.
      */
     arrangement: EnumValue;
     /**
      * Gets or sets what order to place the parts.
-     * Must be GridLayout#Forward, GridLayout#Reverse,
-     * GridLayout#Ascending, or GridLayout#Descending.
+     * Must be GridLayout.Forward, GridLayout.Reverse,
+     * GridLayout.Ascending, or GridLayout.Descending.
      *
-     * The default value is GridLayout#Ascending.
+     * The default value is GridLayout.Ascending.
      */
     sorting: EnumValue;
     /**
@@ -21775,7 +21789,7 @@ export class Model {
     /**
      * Call this method to notify that the model or its objects have changed.
      * This constructs a ChangedEvent and calls all Changed listeners.
-     * @param {EnumValue} change specifies the general nature of the change; typically the value is ChangedEvent#Property.
+     * @param {EnumValue} change specifies the general nature of the change; typically the value is ChangedEvent.Property.
      * @param {string|function(ObjectData,?=):?} propertyname names the property that was modified, or a function that takes an Object and returns the property value.
      * @param {Object} obj the object that was modified, typically a GraphObject, Diagram, or a Model.
      * @param {*} oldval the previous or older value.
@@ -22230,7 +22244,7 @@ export class Model {
      * Add an item at the end of a data array that may be data bound by a Panel as its Panel#itemArray,
      * in a manner that can be undone/redone and that automatically updates any bindings.
      *
-     * This also calls #raiseChangedEvent to notify all listeners about the ChangedEvent#Insert.
+     * This also calls #raiseChangedEvent to notify all listeners about the ChangedEvent.Insert.
      *
      * If you want to add a new node or part to the diagram, call #addNodeData.
      * @param {Array.<*>} arr an Array that is the value of some Panel's Panel#itemArray.
@@ -22243,7 +22257,7 @@ export class Model {
      * Add an item to a data array that may be data bound by a Panel as its Panel#itemArray,
      * given a new data value and the index at which to insert the new value, in a manner that can be undone/redone and that automatically updates any bindings.
      *
-     * This also calls #raiseChangedEvent to notify all listeners about the ChangedEvent#Insert.
+     * This also calls #raiseChangedEvent to notify all listeners about the ChangedEvent.Insert.
      *
      * If you want to add a new node or part to the diagram, call #addNodeData.
      * @param {Array.<*>} arr an Array that is the value of some Panel's Panel#itemArray.
@@ -22256,7 +22270,7 @@ export class Model {
      * Remove an item from a data array that may be data bound by a Panel as its Panel#itemArray,
      * given the index at which to remove a data value, in a manner that can be undone/redone and that automatically updates any bindings.
      *
-     * This also calls #raiseChangedEvent to notify all listeners about the ChangedEvent#Remove.
+     * This also calls #raiseChangedEvent to notify all listeners about the ChangedEvent.Remove.
      *
      * If you want to remove a node from the diagram, call #removeNodeData.
      *
@@ -22388,7 +22402,7 @@ export class Model {
  * Conversion functions may be called frequently, so they should be fast and avoid allocating memory.
  * The order in which conversion functions are called is not specified and may vary.
  * <h4>OneWay and TwoWay Bindings</h4>
- * By default bindings are Binding#OneWay.
+ * By default bindings are Binding.OneWay.
  * OneWay bindings are evaluated when the Panel#data property is set
  * or when you call Panel#updateTargetBindings or Model#setDataProperty.
  * OneWay bindings only transfer values from the source to the target.
@@ -22422,7 +22436,7 @@ export class Model {
  *   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
  * ```
  * The call to Binding#makeTwoWay changes the Binding#mode
- * to be Binding#TwoWay and specifies the Binding#backConverter
+ * to be Binding.TwoWay and specifies the Binding#backConverter
  * function to be the Point.stringify static function.
  *
  * Because the Binding is on the whole node (`template`),
@@ -22591,7 +22605,7 @@ export class Binding {
      * If it is a legitimate enumerated value defined on the Link class, the conversion
      * function will return that value.
      * If the bound data's "dataPropName" property is not present or has an unrecognized value,
-     * the Link#routing property gets the default value, Link#Normal.
+     * the Link#routing property gets the default value, Link.Normal.
      * @param {function()} ctor the class constructor that defines the enumerated values that are being parsed.
      * @param {EnumValue} defval the default enumerated value to return if it fails to parse the given string.
      * @return {function(string):EnumValue} a function that takes a string and returns an enumerated value.
@@ -22691,8 +22705,8 @@ export class Binding {
     backConverter: ((val: any, srcData: any, model: any) => void) | null;
     /**
      * Gets or sets the directions and frequency in which the binding may be evaluated.
-     * The default value is Binding#OneWay.
-     * Binding#TwoWay is the other choice.
+     * The default value is Binding.OneWay.
+     * Binding.TwoWay is the other choice.
      *
      * Use OneWay bindings to initialize GraphObject properties based on model data,
      * or to modify GraphObject properties when the model data changes with a call to Model#setDataProperty.
@@ -22703,7 +22717,7 @@ export class Binding {
      */
     mode: EnumValue;
     /**
-     * Modify this Binding to set its #mode to be Binding#TwoWay, and
+     * Modify this Binding to set its #mode to be Binding.TwoWay, and
      * provide an optional conversion function to convert GraphObject property
      * values back to data values, as the value of #backConverter.
      *
@@ -23637,7 +23651,7 @@ export class CircularLayout extends Layout {
      * If #spacing is also NaN, the effective spacing will be 6.
      * If #spacing is a number, the effective radius will be > radius if and only if
      * the spacing between elements would otherwise be less than spacing.
-     * The specified value for #radius will be ignored if #arrangement === CircularLayout#Packed.
+     * The specified value for #radius will be ignored if #arrangement === CircularLayout.Packed.
      * This property must always be positive or NaN.
      */
     radius: number;
@@ -23673,33 +23687,33 @@ export class CircularLayout extends Layout {
     sweepAngle: number;
     /**
      * Gets or sets how the nodes are spaced.
-     * If #arrangement === CircularLayout#Packed,
+     * If #arrangement === CircularLayout.Packed,
      * the specified #radius will be ignored.
      *
-     * The default value is CircularLayout#ConstantSpacing.
+     * The default value is CircularLayout.ConstantSpacing.
      */
     arrangement: EnumValue;
     /**
      * Gets or sets whether the nodes are arranged clockwise or counterclockwise.
      *
-     * The default value is CircularLayout#Clockwise.
+     * The default value is CircularLayout.Clockwise.
      */
     direction: EnumValue;
     /**
      * Gets or sets if and how the nodes are sorted.
      *
-     * CircularLayout#Forwards indicates that the nodes are arranged in the order the layout gets them.
-     * CircularLayout#Reverse indicates that the nodes are arranged in the reverse order that the layout gets them.
-     * CircularLayout#Ascending and CircularLayout#Descending indicate that the nodes
+     * CircularLayout.Forwards indicates that the nodes are arranged in the order the layout gets them.
+     * CircularLayout.Reverse indicates that the nodes are arranged in the reverse order that the layout gets them.
+     * CircularLayout.Ascending and CircularLayout.Descending indicate that the nodes
      * will be sorted using the #comparer.
-     * CircularLayout#Optimized indicates that the nodes will be arranged to minimize link crossings.
+     * CircularLayout.Optimized indicates that the nodes will be arranged to minimize link crossings.
      *
-     * The default value is CircularLayout#Optimized.
+     * The default value is CircularLayout.Optimized.
      */
     sorting: EnumValue;
     /**
      * Gets or sets the comparer which sorts the data when #sorting is
-     * set to CircularLayout#Ascending or CircularLayout#Descending.
+     * set to CircularLayout.Ascending or CircularLayout.Descending.
      *
      * The default function compares the Part#text values of the vertexes' LayoutVertex#nodes.
      */
@@ -23725,7 +23739,7 @@ export class CircularLayout extends Layout {
      * Specifies how the diameter of nodes will be calculated.
      * When a node is not circular, it is not clear what its diameter is.
      *
-     * The default is CircularLayout#Pythagorean.
+     * The default is CircularLayout.Pythagorean.
      */
     nodeDiameterFormula: EnumValue;
     /**
@@ -24171,7 +24185,7 @@ export class ForceDirectedLayout extends Layout {
     arrangesToOrigin: boolean;
     /**
      * Gets or sets whether the fromSpot and the toSpot of every Link
-     * should be set to Spot#Default.
+     * should be set to Spot.Default.
      * The default value is true.
      */
     setsPortSpots: boolean;
@@ -24571,17 +24585,17 @@ export class LayeredDigraphLayout extends Layout {
     direction: number;
     /**
      * Gets or set which cycle removal option is used.
-     * The default value is LayeredDigraphLayout#CycleDepthFirst.
+     * The default value is LayeredDigraphLayout.CycleDepthFirst.
      */
     cycleRemoveOption: EnumValue;
     /**
      * Gets or sets which layering option is being used.
-     * The default value is LayeredDigraphLayout#LayerOptimalLinkLength.
+     * The default value is LayeredDigraphLayout.LayerOptimalLinkLength.
      */
     layeringOption: EnumValue;
     /**
      * Gets or sets which indices initialization option is being used.
-     * The default value is LayeredDigraphLayout#InitDepthFirstOut.
+     * The default value is LayeredDigraphLayout.InitDepthFirstOut.
      */
     initializeOption: EnumValue;
     /**
@@ -24591,12 +24605,12 @@ export class LayeredDigraphLayout extends Layout {
     iterations: number;
     /**
      * Gets or sets which aggressive option is being used to look for link crossings.
-     * The default value is LayeredDigraphLayout#AggressiveLess.
+     * The default value is LayeredDigraphLayout.AggressiveLess.
      */
     aggressiveOption: EnumValue;
     /**
      * Gets or sets the options used by the straighten and pack function,
-     * The default value is LayeredDigraphLayout#PackAll.
+     * The default value is LayeredDigraphLayout.PackAll.
      */
     packOption: number;
     /**
@@ -24734,8 +24748,8 @@ export class LayeredDigraphLayout extends Layout {
     static PackMedian: number;
     /**
      * Enable all options for the LayeredDigraphLayout#packOption property;
-     * See also LayeredDigraphLayout#PackExpand, LayeredDigraphLayout#PackStraighten,
-     * and LayeredDigraphLayout#PackMedian.
+     * See also LayeredDigraphLayout.PackExpand, LayeredDigraphLayout.PackStraighten,
+     * and LayeredDigraphLayout.PackMedian.
      * @constant
      */
     static PackAll: number;
@@ -24864,19 +24878,19 @@ export class LayeredDigraphEdge extends LayoutEdge {
  *   - #layerStyle: whether the children of one node are aligned with the children of a sibling node.
  *   - #setsPortSpot, #portSpot, #setsChildPortSpot, and #childPortSpot: this controls whether to set the Link#fromSpot and
  *     Link#toSpot to be sensible for the #angle.
- *   - #nodeIndent and #nodeIndentPastParent: if the #alignment is TreeLayout#AlignmentStart or TreeLayout#AlignmentEnd,
+ *   - #nodeIndent and #nodeIndentPastParent: if the #alignment is TreeLayout.AlignmentStart or TreeLayout.AlignmentEnd,
  *     control how much extra space the first child is given when positioned.
  *   - #breadthLimit, #rowSpacing: try to limit the total breadth of a subtree to a certain distance;
  *     when there are too many children or when they are too broad, this puts children into additional rows (or columns, depending on the angle)
  *     thereby limiting the breadth while increasing the depth of the tree.
  *
  * When you set one of the TreeLayout properties listed above, that property normally applies to all of the nodes in the tree.
- * What if you want #alignment to be TreeLayout#AlignmentCenterChildren for the root node but TreeLayout#AlignmentBus for the other nodes in the tree?
+ * What if you want #alignment to be TreeLayout.AlignmentCenterChildren for the root node but TreeLayout.AlignmentBus for the other nodes in the tree?
  * Or what if you want want #layerSpacing to be 50 for all layers except for the layer separating "leaf" nodes from their parent?
  *
  * One common solution is to set #treeStyle.
- * For the former scenario, you could set #treeStyle to TreeLayout#StyleRootOnly; the value of #alignment would only apply to the root node.
- * For the latter scenario, you could set it to TreeLayout#StyleLastParents;
+ * For the former scenario, you could set #treeStyle to TreeLayout.StyleRootOnly; the value of #alignment would only apply to the root node.
+ * For the latter scenario, you could set it to TreeLayout.StyleLastParents;
  * the value of #layerSpacing would apply to all nodes except those that have children but that do not have grandchildren.
  * How do you then set the alignment or layerSpacing for the other nodes?
  * By setting the TreeLayout properties whose names start with "alternate...".
@@ -24885,7 +24899,7 @@ export class LayeredDigraphEdge extends LayoutEdge {
  * These TreeLayout properties actually apply to the TreeVertex that the TreeLayout uses to represent a Node within the LayoutNetwork.
  * All of those TreeLayout properties are actually stored in #rootDefaults; all of the "alternate..." properties are stored in #alternateDefaults.
  * Depending on the value of #treeStyle, the actual TreeVertex properties for each Node are copied appropriately from either rootDefaults or alternateDefaults.
- * In the default case where treeStyle is TreeLayout#StyleLayered, the alternateDefaults are ignored.
+ * In the default case where treeStyle is TreeLayout.StyleLayered, the alternateDefaults are ignored.
  * (Note that treeStyle, and a few other properties such as #path and #arrangement, apply to the whole layout, not to an individual node/vertex.)
  *
  * The use of #treeStyle and "alternate..." TreeLayout properties will cover a lot of common needs for tree layout customization.
@@ -24960,7 +24974,7 @@ export class TreeLayout extends Layout {
      * modify a property or two to customize the layout at that node.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      *
-     * When the TreeVertex#alignment is TreeLayout#AlignmentBusBranching,
+     * When the TreeVertex#alignment is TreeLayout.AlignmentBusBranching,
      * this will modify the TreeVertex#angle appropriately depending on which
      * side of the bus the vertex is on.
      * @expose
@@ -24978,7 +24992,7 @@ export class TreeLayout extends Layout {
      * values of related tree nodes.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      *
-     * However, when TreeVertex#alignment is TreeLayout#AlignmentBusBranching,
+     * However, when TreeVertex#alignment is TreeLayout.AlignmentBusBranching,
      * changing the TreeVertex#sorting or
      * TreeVertex#comparer properties in this method will have no effect.
      *
@@ -25099,8 +25113,8 @@ export class TreeLayout extends Layout {
      *
      * Initially this will be an empty Set.
      *
-     * If the #path is either PathDestination or
-     * PathSource, this layout can easily
+     * If the #path is either TreeLayout.PathDestination|PathDestination or
+     * TreeLayout.PathSource|PathSource, this layout can easily
      * determine all of the tree roots by searching the whole network.
      * Otherwise, you should explicitly initialize this collection
      * with one or more TreeVertexes.
@@ -25109,26 +25123,26 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets how the tree should be constructed from the
      * TreeEdges connecting TreeVertexes.
-     * Must be TreeLayout#PathDestination or TreeLayout#PathSource or TreeLayout#PathDefault.
+     * Must be TreeLayout.PathDestination or TreeLayout.PathSource or TreeLayout.PathDefault.
      *
-     * The default value is TreeLayout#PathDefault,
+     * The default value is TreeLayout.PathDefault,
      * where the value of Diagram#isTreePathToChildren determines the effective value of this property.
      */
     path: EnumValue;
     /**
      * Gets or sets the Style for the resulting trees.
-     * Must be TreeLayout#StyleLayered, TreeLayout#StyleAlternating,
-     * TreeLayout#StyleLastParents, or TreeLayout#StyleRootOnly.
+     * Must be TreeLayout.StyleLayered, TreeLayout.StyleAlternating,
+     * TreeLayout.StyleLastParents, or TreeLayout.StyleRootOnly.
      *
-     * The default value is TreeLayout#StyleLayered.
+     * The default value is TreeLayout.StyleLayered.
      */
     treeStyle: EnumValue;
     /**
      * Gets or sets the manner in which the nodes are aligned in layers.
-     * Must be TreeLayout#LayerIndividual, TreeLayout#LayerSiblings,
-     * or TreeLayout#LayerUniform.
+     * Must be TreeLayout.LayerIndividual, TreeLayout.LayerSiblings,
+     * or TreeLayout.LayerUniform.
      *
-     * The default value is TreeLayout#LayerIndividual.
+     * The default value is TreeLayout.LayerIndividual.
      * @since 1.4
      */
     layerStyle: EnumValue;
@@ -25143,10 +25157,10 @@ export class TreeLayout extends Layout {
     comments: boolean;
     /**
      * Gets or sets how #arrangeTrees should lay out the separate trees.
-     * Must be TreeLayout#ArrangementVertical, TreeLayout#ArrangementHorizontal,
-     * or TreeLayout#ArrangementFixedRoots.
+     * Must be TreeLayout.ArrangementVertical, TreeLayout.ArrangementHorizontal,
+     * or TreeLayout.ArrangementFixedRoots.
      *
-     * The default value is TreeLayout#ArrangementVertical
+     * The default value is TreeLayout.ArrangementVertical
      */
     arrangement: EnumValue;
     /**
@@ -25154,7 +25168,7 @@ export class TreeLayout extends Layout {
      *
      * This defaults to the Size(10, 10).
      *
-     * This property is ignored if #arrangement is TreeLayout#ArrangementFixedRoots.
+     * This property is ignored if #arrangement is TreeLayout.ArrangementFixedRoots.
      */
     arrangementSpacing: Size;
     /**
@@ -25172,7 +25186,7 @@ export class TreeLayout extends Layout {
     rootDefaults: TreeVertex;
     /**
      * Gets or sets the object holding the default values for alternate layer TreeVertexes,
-     * used when the #treeStyle is StyleAlternating or StyleLastParents.
+     * used when the #treeStyle is TreeLayout.StyleAlternating|StyleAlternating or TreeLayout.StyleLastParents|StyleLastParents.
      *
      * See the list of inheritable properties in the documentation for #rootDefaults.
      * The other properties of this TreeVertex are ignored.
@@ -25180,10 +25194,10 @@ export class TreeLayout extends Layout {
     alternateDefaults: TreeVertex;
     /**
      * Gets or sets the default sorting policy for ordering the immediate children of a vertex.
-     * Must be TreeLayout#SortingForwards, TreeLayout#SortingReverse,
-     * TreeLayout#SortingAscending, or TreeLayout#SortingDescending.
+     * Must be TreeLayout.SortingForwards, TreeLayout.SortingReverse,
+     * TreeLayout.SortingAscending, or TreeLayout.SortingDescending.
      *
-     * The default value is TreeLayout#SortingForwards.
+     * The default value is TreeLayout.SortingForwards.
      *
      * This sets the #rootDefaults' property of the same name.
      * The sort order is determined by #comparer.
@@ -25226,7 +25240,7 @@ export class TreeLayout extends Layout {
      * Gets or sets the default alignment of parents relative to their children.
      * Must be a static constant of TreeLayout whose name starts with "Alignment".
      *
-     * The default value is TreeLayout#AlignmentCenterChildren.
+     * The default value is TreeLayout.AlignmentCenterChildren.
      *
      * This sets the #rootDefaults' property of the same name.
      */
@@ -25237,7 +25251,7 @@ export class TreeLayout extends Layout {
      * The default value is zero.  The value should be non-negative.
      *
      * This property is only sensible when the #alignment
-     * is AlignmentStart or AlignmentEnd.
+     * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
      * Having a positive value is useful if you want to reserve space
      * at the start of the row of children for some reason.
      * For example, if you want to pretend the parent node is infinitely deep,
@@ -25253,7 +25267,7 @@ export class TreeLayout extends Layout {
      * When the value is 1.0, the children will be indented past the breadth of the parent node.
      *
      * This property is only sensible when the #alignment
-     * is AlignmentStart or AlignmentEnd.
+     * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
      * This sets the #rootDefaults' property of the same name.
      */
     nodeIndentPastParent: number;
@@ -25294,9 +25308,9 @@ export class TreeLayout extends Layout {
     layerSpacingParentOverlap: number;
     /**
      * Gets or sets how closely to pack the child nodes of a subtree.
-     * Must be either TreeLayout#CompactionBlock or TreeLayout#CompactionNone.
+     * Must be either TreeLayout.CompactionBlock or TreeLayout.CompactionNone.
      *
-     * The default value is CompactionBlock.
+     * The default value is TreeLayout.CompactionBlock|CompactionBlock.
      *
      * This sets the #rootDefaults' property of the same name.
      */
@@ -25380,12 +25394,12 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the spot that this node's port gets as its FromSpot.
      *
-     * The default value is Spot#Default.
+     * The default value is Spot.Default.
      *
-     * A value of Spot#Default will cause the TreeLayout
+     * A value of Spot.Default will cause the TreeLayout
      * to assign a FromSpot based on the parent node's TreeVertex#angle.
      * If the value is other than NoSpot, it is just assigned.
-     * When #path is PathSource,
+     * When #path is TreeLayout.PathSource|PathSource,
      * the port's ToSpot is set instead of the FromSpot.
      * This sets the #rootDefaults' property of the same name.
      */
@@ -25404,22 +25418,22 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the spot that children nodes' ports get as their ToSpot.
      *
-     * The default value is Spot#Default.
+     * The default value is Spot.Default.
      *
-     * A value of Spot#Default will cause the TreeLayout
+     * A value of Spot.Default will cause the TreeLayout
      * to assign a ToSpot based on the parent node's TreeVertex#angle.
      * If the value is other than NoSpot, it is just assigned.
-     * When #path is PathSource,
+     * When #path is TreeLayout.PathSource|PathSource,
      * the port's FromSpot is set instead of the ToSpot.
      * This sets the #rootDefaults' property of the same name.
      */
     childPortSpot: Spot;
     /**
      * Gets or sets the alternate sorting policy for ordering the immediate children of a vertex.
-     * Must be TreeLayout#SortingForwards, TreeLayout#SortingReverse,
-     * TreeLayout#SortingAscending, or TreeLayout#SortingDescending.
+     * Must be TreeLayout.SortingForwards, TreeLayout.SortingReverse,
+     * TreeLayout.SortingAscending, or TreeLayout.SortingDescending.
      *
-     * The default value is SortingForwards.
+     * The default value is TreeLayout.SortingForwards|SortingForwards.
      *
      * This sets the #alternateDefaults' property of the same name.
      * The sort order is determined by #alternateComparer.
@@ -25448,7 +25462,7 @@ export class TreeLayout extends Layout {
      * Gets or sets the alternate alignment of parents relative to their children.
      * Must be a static constant of TreeLayout whose name starts with "Alignment".
      *
-     * The default value is TreeLayout#AlignmentCenterChildren.
+     * The default value is TreeLayout.AlignmentCenterChildren.
      *
      * This sets the #alternateDefaults' property of the same name.
      */
@@ -25459,7 +25473,7 @@ export class TreeLayout extends Layout {
      * The default value is zero.  The value should be non-negative.
      *
      * This property is only sensible when the #alignment
-     * is AlignmentStart or AlignmentEnd.
+     * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
      * Having a positive value is useful if you want to reserve space
      * at the start of the row of children for some reason.
      * For example, if you want to pretend the parent node is infinitely deep,
@@ -25475,7 +25489,7 @@ export class TreeLayout extends Layout {
      * When the value is 1.0, the children will be indented past the breadth of the parent node.
      *
      * This property is only sensible when the #alignment
-     * is AlignmentStart or AlignmentEnd.
+     * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
      */
     alternateNodeIndentPastParent: number;
     /**
@@ -25515,9 +25529,9 @@ export class TreeLayout extends Layout {
     alternateLayerSpacingParentOverlap: number;
     /**
      * Gets or sets how closely to pack the child nodes of a subtree.
-     * Must be either TreeLayout#CompactionBlock or TreeLayout#CompactionNone.
+     * Must be either TreeLayout.CompactionBlock or TreeLayout.CompactionNone.
      *
-     * The default value is TreeLayout#CompactionBlock.
+     * The default value is TreeLayout.CompactionBlock.
      *
      * This sets the #alternateDefaults' property of the same name.
      */
@@ -25601,12 +25615,12 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the alternate spot that this node's port gets as its FromSpot.
      *
-     * The default value is Spot#Default.
+     * The default value is Spot.Default.
      *
-     * A value of Spot#Default will cause the TreeLayout
+     * A value of Spot.Default will cause the TreeLayout
      * to assign a FromSpot based on the parent node's TreeVertex#angle.
      * If the value is other than NoSpot, it is just assigned.
-     * When #path is PathSource,
+     * When #path is TreeLayout.PathSource|PathSource,
      * the port's ToSpot is set instead of the FromSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
@@ -25624,20 +25638,20 @@ export class TreeLayout extends Layout {
     alternateSetsChildPortSpot: boolean;
     /**
      * Gets or sets the alternate spot that children nodes' ports get as their ToSpot
-     * The default value is Spot#Default.
+     * The default value is Spot.Default.
      *
-     * A value of Spot#Default will cause the TreeLayout
+     * A value of Spot.Default will cause the TreeLayout
      * to assign a ToSpot based on the parent node's TreeVertex#angle.
      *
      * If the value is other than NoSpot, it is just assigned.
-     * When #path is PathSource,
+     * When #path is TreeLayout.PathSource|PathSource,
      * the port's FromSpot is set instead of the ToSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
     alternateChildPortSpot: Spot;
     /**
      * This value for TreeLayout#path causes the value of Diagram#isTreePathToChildren
-     * to effectively choose either TreeLayout#PathDestination (if true) or TreeLayout#PathSource (if false).
+     * to effectively choose either TreeLayout.PathDestination (if true) or TreeLayout.PathSource (if false).
      * @constant
      */
     static PathDefault: EnumValue;
@@ -25721,7 +25735,7 @@ export class TreeLayout extends Layout {
      * this value is used for TreeLayout#alignment or TreeLayout#alternateAlignment.
      *
      * The children, if they are themselves parents, continue at the same inherited angle;
-     * use TreeLayout#AlignmentBusBranching if you want grandchildren to proceed growing in
+     * use TreeLayout.AlignmentBusBranching if you want grandchildren to proceed growing in
      * the different angle as determined by the side.
      *
      * A bus does not take TreeVertex#breadthLimit into account.
@@ -25729,13 +25743,13 @@ export class TreeLayout extends Layout {
      */
     static AlignmentBus: EnumValue;
     /**
-     * Like TreeLayout#AlignmentBus with the children arranged on both sides of an "aisle"
+     * Like TreeLayout.AlignmentBus with the children arranged on both sides of an "aisle"
      * with any last odd child placed at the end of the aisle,
      * but the children get an TreeVertex#angle that depends on which side of the aisle
      * they were placed;
      * this value is used for TreeLayout#alignment or TreeLayout#alternateAlignment.
      *
-     * This only works well when the TreeLayout#treeStyle is TreeLayout#StyleLayered.
+     * This only works well when the TreeLayout#treeStyle is TreeLayout.StyleLayered.
      *
      * A bus does not take TreeVertex#breadthLimit into account.
      * @constant
@@ -25978,7 +25992,7 @@ export class TreeVertex extends LayoutVertex {
     /**
      * Gets or sets whether and in what order the children should be sorted.
      *
-     * The default value is TreeLayout#SortingForwards.
+     * The default value is TreeLayout.SortingForwards.
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
@@ -26004,7 +26018,7 @@ export class TreeVertex extends LayoutVertex {
     /**
      * Gets or sets how this parent node should be aligned relative to its children.
      *
-     * The default value is TreeLayout#AlignmentCenterChildren.
+     * The default value is TreeLayout.AlignmentCenterChildren.
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
@@ -26016,7 +26030,7 @@ export class TreeVertex extends LayoutVertex {
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      * This property is only sensible when the #alignment is
-     * TreeLayout#AlignmentStart or TreeLayout#AlignmentEnd.
+     * TreeLayout.AlignmentStart or TreeLayout.AlignmentEnd.
      */
     nodeIndent: number;
     /**
@@ -26027,7 +26041,7 @@ export class TreeVertex extends LayoutVertex {
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      * This property is only sensible when the #alignment is
-     * TreeLayout#AlignmentStart or TreeLayout#AlignmentEnd.
+     * TreeLayout.AlignmentStart or TreeLayout.AlignmentEnd.
      */
     nodeIndentPastParent: number;
     /**
@@ -26063,7 +26077,7 @@ export class TreeVertex extends LayoutVertex {
     /**
      * Gets or sets how the children of this node should be packed together.
      *
-     * The default value is TreeLayout#CompactionBlock.
+     * The default value is TreeLayout.CompactionBlock.
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
@@ -26129,13 +26143,13 @@ export class TreeVertex extends LayoutVertex {
      * Gets or sets the spot that this node's port gets as its FromSpot,
      * if #setsPortSpot is true and the node has only a single port.
      *
-     * The default value is Spot#Default.
+     * The default value is Spot.Default.
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
-     * A value of Spot#Default will cause the TreeLayout
+     * A value of Spot.Default will cause the TreeLayout
      * to assign a FromSpot based on the parent node's TreeVertex#angle.
      * If the value is other than NoSpot, it is just assigned.
-     * When TreeLayout#path is TreeLayout#PathSource, the port's ToSpot is set instead of the FromSpot.
+     * When TreeLayout#path is TreeLayout.PathSource, the port's ToSpot is set instead of the FromSpot.
      */
     portSpot: Spot;
     /**
@@ -26152,13 +26166,13 @@ export class TreeVertex extends LayoutVertex {
      * Gets or sets the spot that children nodes' ports get as their ToSpot,
      * if #setsChildPortSpot is true and the node has only a single port.
      *
-     * The default value is Spot#Default.
+     * The default value is Spot.Default.
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
-     * A value of Spot#Default will cause the TreeLayout
+     * A value of Spot.Default will cause the TreeLayout
      * to assign a ToSpot based on the parent node's TreeVertex#angle.
      * If the value is other than NoSpot, it is just assigned.
-     * When TreeLayout#path is TreeLayout#PathSource, the port's FromSpot is set instead of the ToSpot.
+     * When TreeLayout#path is TreeLayout.PathSource, the port's FromSpot is set instead of the ToSpot.
      */
     childPortSpot: Spot;
     /**

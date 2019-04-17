@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.8 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.8<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.9 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.9<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Binding</h1>
@@ -113,24 +113,21 @@
 						when a template (a <a href="Part.html">Part</a>) is copied.
 					Bindings will be shared by all copies of the template&#39;s GraphObjects.</p>
 					<p>For example, your node data might be like:</p>
-					<pre><code class="hljs js">{ <span class="hljs-attr">key</span>: <span class="hljs-number">23</span>, <span class="hljs-attr">say</span>: <span class="hljs-string">"hello!"</span> }
-</code></pre>
+					<pre><code class="hljs js">{ <span class="hljs-attr">key</span>: <span class="hljs-number">23</span>, <span class="hljs-attr">say</span>: <span class="hljs-string">"hello!"</span> }</code></pre>
 					<p>Your simple node template might be like:</p>
 					<pre><code class="hljs js">  <span class="hljs-keyword">var</span> template = <span class="hljs-keyword">new</span> go.Node(go.Panel.Auto);
   <span class="hljs-comment">// . . . define the rest of the Node's visual tree . . .</span>
   <span class="hljs-keyword">var</span> txt = <span class="hljs-keyword">new</span> go.TextBlock();
   txt.bind(<span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"text"</span>, <span class="hljs-string">"say"</span>));
   template.add(txt);
-  myDiagram.nodeTemplate = template;
-</code></pre>
+  myDiagram.nodeTemplate = template;</code></pre>
 					<p>Using <a href="GraphObject.html#static-make">GraphObject.make</a> it might look like:</p>
 					<pre><code class="hljs js">  <span class="hljs-keyword">var</span> $ = go.GraphObject.make;
   myDiagram.nodeTemplate =
     $(go.Node, <span class="hljs-string">"Auto"</span>,
       . . .
       $(go.TextBlock, <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"text"</span>, <span class="hljs-string">"say"</span>))
-    )
-</code></pre>
+    )</code></pre>
 					<p>The data binding causes the <a href="TextBlock.html#text">TextBlock.text</a> property of
 						the TextBlock to be set to the value of the data&#39;s &quot;say&quot; property.
 						If the value of the &quot;say&quot; property of a particular data object is undefined,
@@ -143,28 +140,27 @@
 						Binding sources should not be (or depend in a conversion function on) the category of the data
 						if you might be modifying the category (e.g. by calling <a href="Model.html#setCategoryForNodeData">Model.setCategoryForNodeData</a>),
 					because then some bindings might be evaluated before or after the category has been changed.</p>
-					<p><h4>Conversions</h4>
-						Sometimes the data value needs to be modified or converted in order
-						to be used as the new value of a <a href="GraphObject.html">GraphObject</a> property.
-						The most common conversion functions are provided for you --
-						they convert a string to a geometric class:
-						<a href="Point.html#static-parse">Point.parse</a>, <a href="Size.html#static-parse">Size.parse</a>, <a href="Rect.html#static-parse">Rect.parse</a>,
-						<a href="Margin.html#static-parse">Margin.parse</a>, <a href="Spot.html#static-parse">Spot.parse</a>, and <a href="Geometry.html#static-parse">Geometry.parse</a>.
-					But you can easily define your own conversion function.</p>
+					<h4>Conversions</h4>
+					Sometimes the data value needs to be modified or converted in order
+					to be used as the new value of a <a href="GraphObject.html">GraphObject</a> property.
+					The most common conversion functions are provided for you --
+					they convert a string to a geometric class:
+					<a href="Point.html#static-parse">Point.parse</a>, <a href="Size.html#static-parse">Size.parse</a>, <a href="Rect.html#static-parse">Rect.parse</a>,
+					<a href="Margin.html#static-parse">Margin.parse</a>, <a href="Spot.html#static-parse">Spot.parse</a>, and <a href="Geometry.html#static-parse">Geometry.parse</a>.
+					But you can easily define your own conversion function.
 					<p>As an example of a conversion function, let&#39;s use a function that adds some
 					text prefixing the data property value:</p>
-					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"text"</span>, <span class="hljs-string">"say"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>) </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">"I say: "</span> + v; })
-</code></pre>
+					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"text"</span>, <span class="hljs-string">"say"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>) </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">"I say: "</span> + v; })</code></pre>
 					<p>Although simple conversions cover almost all binding cases, there are some infrequent uses
 						that are covered by &quot;Advanced Conversions&quot;, discussed below.
 						Conversion functions must not have any side-effects.
 						Conversion functions may be called frequently, so they should be fast and avoid allocating memory.
 					The order in which conversion functions are called is not specified and may vary.</p>
-					<p><h4>OneWay and TwoWay Bindings</h4>
-						By default bindings are <a href="Binding.html#static-OneWay">Binding.OneWay</a>.
-						OneWay bindings are evaluated when the <a href="Panel.html#data">Panel.data</a> property is set
-						or when you call <a href="Panel.html#updateTargetBindings">Panel.updateTargetBindings</a> or <a href="Model.html#setDataProperty">Model.setDataProperty</a>.
-					OneWay bindings only transfer values from the source to the target.</p>
+					<h4>OneWay and TwoWay Bindings</h4>
+					By default bindings are <a href="Binding.html#static-OneWay">Binding.OneWay</a>.
+					OneWay bindings are evaluated when the <a href="Panel.html#data">Panel.data</a> property is set
+					or when you call <a href="Panel.html#updateTargetBindings">Panel.updateTargetBindings</a> or <a href="Model.html#setDataProperty">Model.setDataProperty</a>.
+					OneWay bindings only transfer values from the source to the target.
 					<p>TwoWay bindings are evaluated in the source-to-target direction just as OneWay
 						bindings are evaluated.
 						However when the <a href="GraphObject.html">GraphObject</a> target property is set, the TwoWay
@@ -187,30 +183,27 @@
 					<p>It is common to want to update some data properties based on changes to the diagram.
 						For example, as the user changes the <a href="Part.html#location">Part.location</a> by dragging a Node,
 					you can automatically keep the node&#39;s model data in sync using a TwoWay binding.</p>
-					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"location"</span>, <span class="hljs-string">"loc"</span>, go.Point.parse).makeTwoWay(go.Point.stringify)
-</code></pre>
+					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"location"</span>, <span class="hljs-string">"loc"</span>, go.Point.parse).makeTwoWay(go.Point.stringify)</code></pre>
 					<p>The call to <a href="Binding.html#makeTwoWay">Binding.makeTwoWay</a> changes the <a href="Binding.html#mode">Binding.mode</a>
 						to be <a href="Binding.html#static-TwoWay">Binding.TwoWay</a> and specifies the <a href="Binding.html#backConverter">Binding.backConverter</a>
 					function to be the <a href="Point.html#static-stringify">Point.stringify</a> static function.</p>
 					<p>Because the Binding is on the whole node (<code>template</code>),
 						the target object is the whole <a href="Node.html">Node</a> and the target property is &quot;location&quot;.
 					The value of <code>data.loc</code> will be a string representation of the <code>Node.location</code> value.</p>
-					<p><h4>Binding Sources</h4>
-						The target of a Binding is always a property of a <a href="GraphObject.html">GraphObject</a> or a <a href="RowColumnDefinition.html">RowColumnDefinition</a>.
-						The source of a Binding is normally a property of a data object in the model.
-						But it is also possible to have the source of a Binding be the shared JavaScript object that is the value of <a href="Model.html#modelData">Model.modelData</a>.
-					You can specify such a binding by calling <a href="Binding.html#ofModel">Binding.ofModel</a>, meaning &quot;a binding of a source that is a property of the Model.modelData&quot;.</p>
+					<h4>Binding Sources</h4>
+					The target of a Binding is always a property of a <a href="GraphObject.html">GraphObject</a> or a <a href="RowColumnDefinition.html">RowColumnDefinition</a>.
+					The source of a Binding is normally a property of a data object in the model.
+					But it is also possible to have the source of a Binding be the shared JavaScript object that is the value of <a href="Model.html#modelData">Model.modelData</a>.
+					You can specify such a binding by calling <a href="Binding.html#ofModel">Binding.ofModel</a>, meaning "a binding of a source that is a property of the Model.modelData".
 					<p>As an example, you might want all Nodes to use the same color.
 						It would be possible but not natural to bind to a property on the node data object, because that property would have to be
 						duplicated on all of the node data objects in the model, and updating the property would mean calling <a href="Model.html#setDataProperty">Model.setDataProperty</a>
 						on each node data object with the same new value.  Furthermore if there happened to be no nodes at all in the model,
 						there would be no place to save the data.  Hence using the shared <a href="Model.html#modelData">Model.modelData</a> object
 					would be the sensible place for that shared information.</p>
-					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"stroke"</span>, <span class="hljs-string">"strokeColor"</span>).ofModel()
-</code></pre>
+					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"stroke"</span>, <span class="hljs-string">"strokeColor"</span>).ofModel()</code></pre>
 					<p>and to set or modify that color one would just call, within a transaction:</p>
-					<pre><code class="hljs js">  model.setDataProperty(model.modelData, <span class="hljs-string">"strokeColor"</span>, <span class="hljs-string">"red"</span>);
-</code></pre>
+					<pre><code class="hljs js">  model.setDataProperty(model.modelData, <span class="hljs-string">"strokeColor"</span>, <span class="hljs-string">"red"</span>);</code></pre>
 					<p>That would cause all nodes with that model data binding to be re-evaluated.
 						It is not commonplace to have a TwoWay Binding on &quot;ofModel&quot; Bindings, but that should work.
 					Converters also work with &quot;ofModel&quot; Bindings.</p>
@@ -223,21 +216,20 @@
 					<p>As a common kind of example of data binding between two properties of GraphObjects,
 						consider this Binding on a <a href="Shape.html">Shape</a> which changes the color of the <a href="Shape.html#stroke">Shape.stroke</a>
 					depending on whether the Node is selected (<a href="Part.html#isSelected">Part.isSelected</a>):</p>
-					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"stroke"</span>, <span class="hljs-string">"isSelected"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>) </span>{ <span class="hljs-keyword">return</span> s ? <span class="hljs-string">"dodgerblue"</span> : <span class="hljs-string">"gray"</span>; }).ofObject()
-</code></pre>
+					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"stroke"</span>, <span class="hljs-string">"isSelected"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>) </span>{ <span class="hljs-keyword">return</span> s ? <span class="hljs-string">"dodgerblue"</span> : <span class="hljs-string">"gray"</span>; }).ofObject()</code></pre>
 					<p>Note the call to <a href="Binding.html#ofObject">Binding.ofObject</a>, which tells the Binding that it should use as the source
 						a GraphObject with a particular name.  However that name argument is optional -- supplying no name
 						(or supplying an empty string) will cause the binding to operate with the root GraphObject.
 						In this case that would be the Node itself.
 						Now with this binding whenever the value of <a href="Part.html#isSelected">Part.isSelected</a> changes, this Shape&#39;s stroke changes color.
 					The conversion function is what changes the boolean &quot;isSelected&quot; value to a brush color specifier.</p>
-					<p><h4>Advanced Conversions</h4>
-						The binding functionality also has more advanced features for less common situations.
-						The source property name may be an empty string, to convert the object as a whole.
-						Conversion functions may take a second argument that takes the object that is bound.
-						For source-to-target conversions, the second argument will be the <a href="GraphObject.html">GraphObject</a> whose property is bound.
-						For target-to-source (back-)conversions, the second argument will be the source data object and
-					the third argument will be the <a href="Model.html">Model</a>.</p>
+					<h4>Advanced Conversions</h4>
+					The binding functionality also has more advanced features for less common situations.
+					The source property name may be an empty string, to convert the object as a whole.
+					Conversion functions may take a second argument that takes the object that is bound.
+					For source-to-target conversions, the second argument will be the <a href="GraphObject.html">GraphObject</a> whose property is bound.
+					For target-to-source (back-)conversions, the second argument will be the source data object and
+					the third argument will be the <a href="Model.html">Model</a>.
 					<p>Here&#39;s an example of a two-way data-binding using two custom conversion functions working with two separate data properties.
 					First we define the two conversion functions.</p>
 					<pre><code class="hljs js">  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toLocation</span>(<span class="hljs-params">data, node</span>) </span>{
@@ -248,12 +240,10 @@
     model.setDataProperty(data, <span class="hljs-string">"x"</span>, loc.x);
     model.setDataProperty(data, <span class="hljs-string">"y"</span>, loc.y);
   }
-
 </code></pre>
 					<p>Then to data-bind the default template&#39;s <a href="Part.html#location">Part.location</a> property
 					to two separate data properties, &quot;x&quot; and &quot;y&quot;:</p>
-					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"location"</span>, <span class="hljs-string">""</span>, toLocation).makeTwoWay(fromLocation)
-</code></pre>
+					<pre><code class="hljs js">  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"location"</span>, <span class="hljs-string">""</span>, toLocation).makeTwoWay(fromLocation)</code></pre>
 					<p>An empty string argument for the <em>sourceprop</em> parameter indicates
 						that the whole data object should be passed to the <code>toLocation</code> function,
 						rather than the value of some property of that data.
@@ -274,27 +264,30 @@
 						Hence to support undo and redo, in order to make the data changes we have to call
 						<a href="Model.html#setDataProperty">Model.setDataProperty</a> so that the <a href="UndoManager.html">UndoManager</a> can record the change,
 					including the previous value.</p>
-					<p><h4>Replacing Items in Arrays</h4>
-						However, although a TwoWay Binding cannot replace the node data object in the <a href="Model.html#nodeDataArray">Model.nodeDataArray</a>,
-						it is possible to replace an item in an <a href="Panel.html#itemArray">Panel.itemArray</a>.
-					So if your node data were:</p>
-					<pre><code class="hljs js">{ <span class="hljs-attr">key</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">items</span>: [<span class="hljs-string">"one"</span>, <span class="hljs-string">"two"</span>, <span class="hljs-string">"three"</span>] }
-</code></pre>
-					<p>And if your node template included something like:</p>
-					<pre><code class="hljs js">$(go.Panel, <span class="hljs-string">"Vertical"</span>,
-  <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"itemArray"</span>, <span class="hljs-string">"items"</span>),
-  {
-    <span class="hljs-attr">itemTemplate</span>: $(go.Panel,
-                    $(go.TextBlock, { <span class="hljs-attr">editable</span>: <span class="hljs-literal">true</span> },
-                      <span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">"text"</span>, <span class="hljs-string">""</span>).makeTwoWay())
-                  )
-  }
-)
-</code></pre>
-					<p>Then the user would be able to edit any of the <a href="TextBlock.html">TextBlock</a>s, causing the item Array to be modified,
-					for example resulting in this node data:</p>
-					<pre><code class="hljs js">{ <span class="hljs-attr">key</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">items</span>: [<span class="hljs-string">"one"</span>, <span class="hljs-string">"SOME NEW TEXT HERE"</span>, <span class="hljs-string">"three"</span>] }
-</code></pre>
+					<h4>Replacing Items in Arrays</h4>
+					However, although a TwoWay Binding cannot replace the node data object in the <a href="Model.html#nodeDataArray">Model.nodeDataArray</a>,
+					it is possible to replace an item in an <a href="Panel.html#itemArray">Panel.itemArray</a>.
+					So if your node data were:
+					```js
+					{ key: 1, items: ["one", "two", "three"] }
+					```
+					And if your node template included something like:
+					```js
+					$(go.Panel, "Vertical",
+					new go.Binding("itemArray", "items"),
+					{
+					itemTemplate: $(go.Panel,
+					$(go.TextBlock, { editable: true },
+					new go.Binding("text", "").makeTwoWay())
+					)
+					}
+					)
+					```
+					Then the user would be able to edit any of the <a href="TextBlock.html">TextBlock</a>s, causing the item Array to be modified,
+					for example resulting in this node data:
+					```js
+					{ key: 1, items: ["one", "SOME NEW TEXT HERE", "three"] }
+					```
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -679,8 +672,7 @@
 									a string into an enumerated value, given the class that the enumeration values
 								are defined on and a default value if the string cannot be parsed successfully.</p>
 								<p>The normal usage is to pass the result of this function as the conversion function of a <a href="Binding.html">Binding</a>.</p>
-								<pre><code class="hljs js">linktemplate.bind(<span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">'routing'</span>, <span class="hljs-string">'dataPropName'</span>, go.Binding.parseEnum(go.Link, go.Link.Normal)));
-</code></pre>
+								<pre><code class="hljs js">linktemplate.bind(<span class="hljs-keyword">new</span> go.Binding(<span class="hljs-string">'routing'</span>, <span class="hljs-string">'dataPropName'</span>, go.Binding.parseEnum(go.Link, go.Link.Normal)));</code></pre>
 								<p>This binding will try to parse the string that is the value of the bound data&#39;s &quot;dataPropName&quot; property.
 									If it is a legitimate enumerated value defined on the <a href="Link.html">Link</a> class, the conversion
 									function will return that value.

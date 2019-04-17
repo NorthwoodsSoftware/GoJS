@@ -37,7 +37,7 @@ export class TableLayout extends go.Layout {
   /**
    * Gets or sets the alignment to use by default for Parts in rows (vertically) and in columns (horizontally).
    *
-   * The default value is {@link Spot#Default}.
+   * The default value is {@link Spot.Default}.
    * Setting this property does not raise any events.
    */
   get defaultAlignment(): go.Spot { return this._defaultAlignment; }
@@ -46,7 +46,7 @@ export class TableLayout extends go.Layout {
   /**
    * Gets or sets whether Parts should be stretched in rows (vertically) and in columns (horizontally).
    *
-   * The default value is {@link GraphObject#Default}.
+   * The default value is {@link GraphObject.Default}.
    * Setting this property does not raise any events.
    */
   get defaultStretch(): go.EnumValue { return this._defaultStretch; }

@@ -64,7 +64,7 @@ var __extends = (this && this.__extends) || (function () {
             /**
              * Gets or sets the alignment to use by default for Parts in rows (vertically) and in columns (horizontally).
              *
-             * The default value is {@link Spot#Default}.
+             * The default value is {@link Spot.Default}.
              * Setting this property does not raise any events.
              */
             get: function () { return this._defaultAlignment; },
@@ -76,7 +76,7 @@ var __extends = (this && this.__extends) || (function () {
             /**
              * Gets or sets whether Parts should be stretched in rows (vertically) and in columns (horizontally).
              *
-             * The default value is {@link GraphObject#Default}.
+             * The default value is {@link GraphObject.Default}.
              * Setting this property does not raise any events.
              */
             get: function () { return this._defaultStretch; },

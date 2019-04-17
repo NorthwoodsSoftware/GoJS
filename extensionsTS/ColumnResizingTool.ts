@@ -59,7 +59,7 @@ export class ColumnResizingTool extends go.Tool {
   get handle(): go.GraphObject | null { return this._handle; }
 
   /**
-   * This read-only property returns the {@link Panel} of type {@link Panel#Table} whose columns are being resized.
+   * This read-only property returns the {@link Panel} of type {@link Panel.Table} whose columns are being resized.
    * This must be contained within the selected {@link Part}.
    */
   get adornedTable(): go.Panel | null { return this._adornedTable; }
@@ -67,7 +67,7 @@ export class ColumnResizingTool extends go.Tool {
   /**
    * Show an {@link Adornment} with a resize handle at each column.
    * Don't show anything if {@link #tableName} doesn't identify a {@link Panel}
-   * that has a {@link Panel#type} of type {@link Panel#Table}.
+   * that has a {@link Panel#type} of type {@link Panel.Table}.
    */
   public updateAdornments(part: go.Part): void {
     if (part === null || part instanceof go.Link) return;  // this tool never applies to Links
@@ -168,7 +168,7 @@ export class ColumnResizingTool extends go.Tool {
   }
 
   /**
-   * Find the {@link #handle}, ensure type {@link Panel#Table}, capture the mouse, and start a transaction.
+   * Find the {@link #handle}, ensure type {@link Panel.Table}, capture the mouse, and start a transaction.
    *
    * If the call to {@link Tool#findToolHandleAt} finds no "ColumnResizing" tool handle, this method returns without activating this tool.
    */

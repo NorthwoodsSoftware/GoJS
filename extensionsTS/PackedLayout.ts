@@ -453,7 +453,7 @@ export class PackedLayout extends go.Layout {
   /**
    * Nodes will be sorted in descending order; this value is used for {@link #sortOrder}.
    *
-   * Does nothing if {@link #sortMode} is set to {@link #None}.
+   * Does nothing if {@link #sortMode} is set to {@link PackedLayout.None}.
    * @constant
    */
   public static readonly Descending = 30;

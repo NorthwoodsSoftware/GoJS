@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.8 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.8<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.9 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.9<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class ChangedEvent</h1>
@@ -134,16 +134,16 @@
 					<p>When ending a transaction, there is first a ChangedEvent whose name is &quot;ComittingTransaction&quot;.
 						This is followed by one with either &quot;CommittedTransaction&quot; or &quot;RolledBackTransaction&quot;,
 						depending on how the transaction is ending.
-						The <a href="ChangedEvent.html#oldValue">oldValue</a> provides the transaction name and the <a href="ChangedEvent.html#object">object</a> is the <a href="ChangedEvent.html#static-Transaction">Transaction</a> being finished.
+						The <a href="ChangedEvent.html#oldValue">oldValue</a> provides the transaction name and the <a href="ChangedEvent.html#object">object</a> is the <a href="Transaction.html">Transaction</a> being finished.
 						(Note that the Transaction value may be null if no Transaction is available at that time,
 						perhaps because there were no changes made during the transaction.)
 						That Transaction can be scanned to look for ChangedEvents that you may wish to record in a database,
 					all within a single database transaction.</p>
 					<p>There are also Transaction ChangedEvents corresponding to &quot;StartingUndo&quot;, &quot;FinishedUndo&quot;,
 						&quot;StartingRedo&quot;, and &quot;FinishedRedo&quot;.
-					The <a href="ChangedEvent.html#object">object</a> property provides the <a href="ChangedEvent.html#static-Transaction">Transaction</a> that is about-to-be or just-was undone or redone.</p>
+					The <a href="ChangedEvent.html#object">object</a> property provides the <a href="Transaction.html">Transaction</a> that is about-to-be or just-was undone or redone.</p>
 					<p>Non-Transaction ChangedEvents are remembered by the <a href="UndoManager.html">UndoManager</a>, if <a href="UndoManager.html#isEnabled">UndoManager.isEnabled</a>,
-						and held in the <a href="UndoManager.html#history">UndoManager.history</a> as <a href="ChangedEvent.html#static-Transaction">Transaction</a>s which hold lists of ChangedEvents.
+						and held in the <a href="UndoManager.html#history">UndoManager.history</a> as <a href="Transaction.html">Transaction</a>s which hold lists of ChangedEvents.
 					That is why ChangedEvent implements <a href="ChangedEvent.html#undo">undo</a> and <a href="ChangedEvent.html#redo">redo</a> of the change that it remembers.</p>
 					<p>When the ChangedEvent represents a change to a <a href="Model.html">Model</a>, the value of <a href="ChangedEvent.html#model">model</a> is non-null
 						and the value of <a href="ChangedEvent.html#diagram">diagram</a> is meaningless.
@@ -302,8 +302,7 @@
 								<pre><code class="hljs js"><span class="hljs-keyword">return</span> (<span class="hljs-keyword">this</span>.change === ChangedEvent.Transaction &amp;&amp;
         (<span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"CommittedTransaction"</span> ||
          <span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"FinishedUndo"</span> ||
-         <span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"FinishedRedo"</span>));
-</code></pre>
+         <span class="hljs-keyword">this</span>.propertyName === <span class="hljs-string">"FinishedRedo"</span>));</code></pre>
 							</div>
 						</li>
 					</ul>
@@ -383,7 +382,7 @@
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the Object that was modified.
 								The default is null.</p>
-								<p>For <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a> changes, this may be the <a href="ChangedEvent.html#static-Transaction">Transaction</a>.</p>
+								<p>For <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a> changes, this may be the <a href="Transaction.html">Transaction</a>.</p>
 							</div>
 						</li>
 					</ul>
@@ -506,7 +505,7 @@
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Make a copy of this ChangedEvent.
-								ChangedEvents are copied when the <a href="UndoManager.html">UndoManager</a> adds to a <a href="ChangedEvent.html#static-Transaction">Transaction</a>.</p>
+								ChangedEvents are copied when the <a href="UndoManager.html">UndoManager</a> adds to a <a href="Transaction.html">Transaction</a>.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="ChangedEvent.html" class="tsd-signature-type">ChangedEvent</a></h4>
 						</li>
@@ -661,7 +660,7 @@
 					<div class="tsd-comment tsd-typography">
 						<p>For informational events, such as transactions and undo/redo operations,
 							and used as the value for <a href="ChangedEvent.html#change">ChangedEvent.change</a>.
-							The <a href="ChangedEvent.html#object">ChangedEvent.object</a> refers to the <a href="ChangedEvent.html#static-Transaction">Transaction</a> affected, if any.
+							The <a href="ChangedEvent.html#object">ChangedEvent.object</a> refers to the <a href="Transaction.html">Transaction</a> affected, if any.
 							The <a href="ChangedEvent.html#propertyName">ChangedEvent.propertyName</a> distinguishes the different transaction or undo or redo stages.
 						The <a href="ChangedEvent.html#oldValue">ChangedEvent.oldValue</a> may provide the transaction name, if available, as given to <a href="UndoManager.html#commitTransaction">UndoManager.commitTransaction</a>.</p>
 					</div>

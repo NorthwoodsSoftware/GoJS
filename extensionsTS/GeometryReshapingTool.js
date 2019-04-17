@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
      * This does not handle Links, whose routes should be reshaped by the LinkReshapingTool.
      * The {@link #reshapeObjectName} needs to identify the named {@link Shape} within the
      * selected {@link Part}.
-     * If the shape cannot be found or if its {@link Shape#geometry} is not of type {@link Geometry#Path},
+     * If the shape cannot be found or if its {@link Shape#geometry} is not of type {@link Geometry.Path},
      * this will not show any GeometryReshaping {@link Adornment}.
      * At the current time this tool does not support adding or removing {@link PathSegment}s to the Geometry.
      *
@@ -112,7 +112,7 @@ var __extends = (this && this.__extends) || (function () {
         /**
          * Show an {@link Adornment} with a reshape handle at each point of the geometry.
          * Don't show anything if {@link #reshapeObjectName} doesn't identify a {@link Shape}
-         * that has a {@link Shape#geometry} of type {@link Geometry#Path}.
+         * that has a {@link Shape#geometry} of type {@link Geometry.Path}.
          */
         GeometryReshapingTool.prototype.updateAdornments = function (part) {
             if (part === null || part instanceof go.Link)

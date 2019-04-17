@@ -103,6 +103,43 @@
     We have added the ability to create your own Panels, with the new PanelLayout class. See an example <a href="samples/panelLayout.html" target="_blank">here</a>.
   </p>
 
+
+  <h4>Changes for 2.0.9</h4>
+  <ul>
+    <li>
+      <a>Diagram.makeSVG</a> now accepts <code>callback</code> and <code>callbackTimeout</code> options. This makes it more like
+      <a>Diagram.makeImage</a> and <a>Diagram.makeImageData</a> (which have had these options since 2.0.0).
+      If a callback function is provided, the methods will instead return null
+      and SVG creation will wait until all Diagram Picture sources are loaded
+      before creating the SVG and invoking the callback.
+    </li>
+    <li>
+      Fixed a regression with <a>Diagram.makeSVG</a> where it would not draw Pictures that were not yet loaded, even if they had a valid size.
+    </li>
+    <li>
+      Fixed <a>GridLayout</a>s when used as a <a>Group.layout</a> and when <a>GridLayout.alignment</a> is <code>go.GridLayout.Position</code>,
+      to treat <a>GridLayout.wrappingWidth</a> as a width limit, regardless of the <a>Layout.arrangementOrigin</a>.
+      If you were forced to set <a>GridLayout.wrappingColumn</a> to a value just to be free of the treatment of the default value for <a>GridLayout.wrappingColumn</a>
+      (<code>NaN</code>) to indicate the width of the viewport, it is now possible to set <a>GridLayout.wrappingWidth</a> to respect a smaller value.
+    </li>
+    <li>
+      Fixed maintaining the selection state of selected Parts that change their category.
+    </li>
+    <li>
+      GoJS will step down the Canvas resolution during drawing operations like dragging and panning, which can lead to "fuzzy" shapes and text during these operations.
+      This is now only done when a slower frame rate is detected.
+    </li>
+    <li>
+      Drawing performance improvements, especially in well-connected graphs.
+    </li>
+    <li>
+      Fixed a bug with trackpad scrolling reversing at the end of scroll events.
+    </li>
+    <li>
+      Fixed a bug drawing grids on some Overviews.
+    </li>
+  </ul>
+
   <h4>Changes for 2.0.8</h4>
   <ul>
     <li>
@@ -149,10 +186,10 @@
       Fixed a bug with Link Shape Geometries not rendering when updated partially off-screen.
     </li>
     <li>
-        Fixed a bug with <a>InputEvent.clickCount</a>: Before, on touch devices, this count was incremented only on the end of the touch, and not the start.
-        This was discrepant from mouse click behavior, and would lead to problems when Tools queried the clickCount on touch/mouseDown,
-        when determining for instance if a particular InputEvent was a double-click. Now, the <a>InputEvent.clickCount</a> is reported consistently
-        on mouseDown/touchStart/pointerDown and the corresponding "up" events.
+      Fixed a bug with <a>InputEvent.clickCount</a>: Before, on touch devices, this count was incremented only on the end of the touch, and not the start.
+      This was discrepant from mouse click behavior, and would lead to problems when Tools queried the clickCount on touch/mouseDown,
+      when determining for instance if a particular InputEvent was a double-click. Now, the <a>InputEvent.clickCount</a> is reported consistently
+      on mouseDown/touchStart/pointerDown and the corresponding "up" events.
     </li>
     <li>
       GoJS previously would set the Canvas Context's imageSmoothingEnabled property to false.
@@ -592,8 +629,8 @@
         A number of figures have been improved and some figure parameters have been added or changed meaning.
         To use the old predefined figures, you can load or copy from the "extensions/Figures.js" file of an earlier version of GoJS.
       <p>
-          The static function <a>Shape,defineFigureGenerator</a> now has additionally checks for geometric validity.
-          To be valid, the generated Geometry bounds must be equal to or less than the supplied width and height.
+        The static function <a>Shape,defineFigureGenerator</a> now has additionally checks for geometric validity.
+        To be valid, the generated Geometry bounds must be equal to or less than the supplied width and height.
     </li>
     <li>
       <strong>List, Set, and Map constructors no longer take type arguments, but are generic in TypeScript</strong>
