@@ -3,13 +3,13 @@
 * All Rights Reserved.
 *
 * FLOOR PLANN UI CLASS
-* Handle GUI manipulation (showing/changing data, populating windows, etc) for Floorplanner.html  
+* Handle GUI manipulation (showing/changing data, populating windows, etc) for Floorplanner.html
 */
 
 /*
 * Floorplan UI Constructor
 * @param {Floorplan} floorplan A reference to a valid instance of Floorplan
-* @param {String} name The name of this FloorplanUI instance known to the DOM 
+* @param {String} name The name of this FloorplanUI instance known to the DOM
 * @param {String} The name of this UI's floorplan known to the DOM
 * @param {Object} state A JSON object with string ids for UI HTML elements. Format is as follows:
 	menuButtons: {
@@ -38,7 +38,7 @@
 		palettesWindow:{
 			id:
 			furnitureSearchInputId:
-			furniturePaletteId: 
+			furniturePaletteId:
 		}
 		overviewWindow: {
 			id:
@@ -46,7 +46,7 @@
 		optionsWindow: {
 			id:
 			gridSizeInputId:
-			unitsConversionFactorInputId: 
+			unitsConversionFactorInputId:
 			unitsFormId:
 			unitsFormName:
 			checkboxes: {
@@ -198,13 +198,14 @@ FloorplanUI.prototype.searchFurniture = function () {
 	var floorplan = this.floorplan;
 	var furniturePaletteId = ui.state.windows.palettesWindow.furniturePaletteId;
 	var str = document.getElementById(ui.state.windows.palettesWindow.furnitureSearchInputId).value;
-	var furniturePalette = null;
+	var furniturePalette = window.furniturePalette;
+	/*var furniturePalette = null;
 	for (var i = 0; i < floorplan.palettes.length; i++) {
 		var palette = floorplan.palettes[i];
 		if (palette.div.id == furniturePaletteId) {
 			furniturePalette = floorplan.palettes[i];
 		}
-	}
+	}*/
 	if (ui.furnitureData == null) ui.furnitureData = furniturePalette.model.nodeDataArray;
 	var items = furniturePalette.model.nodeDataArray.slice();
 	if (str !== null && str !== undefined && str !== "") {
@@ -336,7 +337,7 @@ FloorplanUI.prototype.setBehavior = function (string) {
 	floorplan.clearSelection();
 }
 
-/* 
+/*
 * Populating UI Windows from Floorplan data:
 * Update UI, Update Statistics, Fill Rows With Nodes, Set Selection Info, Set Color, Set Height, Set Width, Apply Selection Changes
 */
@@ -522,7 +523,7 @@ FloorplanUI.prototype.setSelectionInfo = function(node) {
 	else element.innerHTML += '<div class="row"><div class="col-2"><p id="' + selectionInfoWindow.heightLabelId + '" class="data">Height: <br/><input id ="' + selectionInfoWindow.heightInputId + '" class = "dimensionsInput" name = "height" value = "' + height
 		+ '"/><input id="heightUnits" class="' + state.unitsBoxClass + '" value=' + unitsAbbreviation + ' disabled/></p> ' + '</div><div class="col-2"><p class="data">Width: <br/><input id="' + selectionInfoWindow.widthInputId + '" class="dimensionsInput" value = "'
 		+ width + '"/><input id="widthUnits" class="' + state.unitsBoxClass + '" value="' + unitsAbbreviation + '" disabled/></p>' + '</p></div></div>';
-	
+
 	// do not allow height or width adjustment for group info
 	if (node.data.isGroup && node.category !== "WallGroup") {
 		document.getElementById(selectionInfoWindow.heightInputId).disabled = true;
@@ -608,7 +609,7 @@ FloorplanUI.prototype.setHeight = function () {
 		floorplan.skipsUndoManager = true;
 		floorplan.startTransaction("resize node");
 		if (!floorplan.isReadOnly) {
-			// Case: Furniture Nodes and Window Nodes; basic height adjustment 
+			// Case: Furniture Nodes and Window Nodes; basic height adjustment
 			if (node.category !== 'WallGroup' && node.category !== 'DoorNode') {
 				floorplan.model.setDataProperty(node.data, "height", value);
 			}
@@ -753,7 +754,7 @@ FloorplanUI.prototype.setWidth = function() {
 			floorplan.model.setDataProperty(node.data, "startpoint", newSpt);
 			floorplan.model.setDataProperty(node.data, "endpoint", newEpt);
 			floorplan.updateWall(node);
-		}		
+		}
 		// Case: Standard / Multi-Purpose Nodes; basic width ajustment
 		else floorplan.model.setDataProperty(node.data, "width", value);
 	}

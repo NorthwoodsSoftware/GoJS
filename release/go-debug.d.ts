@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.9
+ * Type definitions for GoJS v2.0.10
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16783,6 +16783,21 @@ export class TextBlock extends GraphObject {
      */
     graduatedSkip: ((val: number) => boolean) | null;
     /**
+     * Gets or sets the predicate that determines whether or not a user-edited string of text is valid.
+     * If this is non-null, the predicate is called in addition to any TextEditingTool#textValidation predicate.
+     * See TextEditingTool#isValidText for more details.
+     *
+     * ```js
+     * function(textBlock, oldString, newString)
+     * ```
+     *
+     * The default predicate is null, which is equivalent to simply returning true.
+     *
+     * The function, if supplied, must not have any side-effects, and must return true or false.
+     * @see TextEditingTool#textValidation
+     */
+    textValidation: ((thisTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
+    /**
      * Gets or sets the function that is called after the TextBlock's text has been edited by the TextEditingTool.
      *   - The first argument is a reference to this TextBlock.
      *   - The second argument is the previous text, before editing.
@@ -16880,7 +16895,7 @@ export class Picture extends GraphObject {
     constructor();
     /**
      * Undocumented
-     * @param {string=} url optional, clear only a specified URL from the image cache
+     * @param {string=} url optional, clear only a specified URL from the image cache. If relative urls are used as Picture sources, this must be in the same format.
      */
     static clearCache(url?: string): void;
     /**
