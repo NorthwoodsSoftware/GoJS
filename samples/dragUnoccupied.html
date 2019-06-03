@@ -20,11 +20,13 @@
         var diagram = node.diagram;
 
         // nested function used by Layer.findObjectsIn, below
-        // only consider Parts, and ignore the given Node and any Links
+        // only consider Parts, and ignore the given Node, any Links, and Group members
         function navig(obj) {
           var part = obj.part;
           if (part === node) return null;
           if (part instanceof go.Link) return null;
+          if (part.isMemberOf(node)) return null;
+          if (node.isMemberOf(part)) return null;
           return part;
         }
 
