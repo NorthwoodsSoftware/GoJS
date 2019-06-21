@@ -103,6 +103,31 @@
     We have added the ability to create your own Panels, with the new PanelLayout class. See an example <a href="samples/panelLayout.html" target="_blank">here</a>.
   </p>
 
+
+  <h4>Changes for 2.0.13</h4>
+  <ul>
+    <li>
+      When dragging over a different Diagram than the source, such as in a drag from a Palette,
+      the DraggingTool now checks the Diagram's cursor and only changes it to <code>"copy"</code>
+      if the <a>Diagram.currentCursor</a> value is <code>""</code> or <code>"auto"</code>.
+    </li>
+    <li>
+      Drawing fix for some objects disappearing when rotated, and the Diagram is scaled.
+    </li>
+    <li>
+      Optimized <a>Group.move</a> not to try moving member parts when the offset is zero.
+      This improves the stability of layouts that move groups, such as PoolLayout in some samples.
+    </li>
+    <li>
+      <strong style="color:red;">This bugfix potentially breaks old <code>elementFinished</code> code in Shape geometries with multiple figures.</strong>
+      Fix for <a>Diagram.makeSVG</a> <code>elementFinished</code> optional argument:
+      Shapes with multiple geometry figures would pass the final SVG <code>&lt;path&gt;</code> generated as the SVG element,
+      when they should be grouped together and pass an SVG <code>&lt;g&gt;</code> instead.
+      This is what TextBlock already does when there is more than one line of text.
+    </li>
+  </ul>
+
+
   <h4>Changes for 2.0.12</h4>
   <ul>
     <li>
@@ -112,7 +137,7 @@
       Fixed animation when expanding and collapsing during Diagram load.
     </li>
     <li>
-      Drawing fix for IE when drawing zero width or height geometries that have a stroke.
+      Fixed drawing in IE when drawing shapes with zero width or height geometries that have a stroke.
     </li>
     <li>
       The <a>DraggingTool</a> will no longer auto scroll the diagram if <a>Diagram.isReadOnly</a> is true or both <a>Diagram.allowMove</a> and <a>Diagram.allowCopy</a> are false.
@@ -123,12 +148,14 @@
     </li>
   </ul>
 
+
   <h4>Changes for 2.0.11</h4>
   <ul>
     <li>
-      Fixed a bug with <a>CommandHandler.standardMouseOver</a> mis-reporting the current object.
+      Fixed a bug with <a>CommandHandler.standardMouseOver</a> mis-reporting the current object, a regression from 2.0.10.
     </li>
   </ul>
+
 
   <h4>Changes for 2.0.10</h4>
   <ul>
@@ -138,12 +165,13 @@
     </li>
     <li>
       The <a>Diagram.model</a> setter and <a>Diagram.clear</a> now call <a>Diagram.clearSelection</a> and <a>Diagram.clearHighlighteds</a>.
+      This provides a more uniform protocol of selection events.
     </li>
     <li>
-      Fixed a bug that would prevent some <a>Picture.successFunction</a> from ever firing.
+      Fixed a bug that would prevent some <a>Picture.successFunction</a>s from ever firing.
     </li>
     <li>
-      Fixed a bug with bezier link routing in <a>LayeredDigraphLayout</a> when <a>LayeredDigraphLayout.setsPortSpots</a> was false
+      Fixed a bug with Bezier link routing in <a>LayeredDigraphLayout</a> when <a>LayeredDigraphLayout.setsPortSpots</a> was false
       and an end of the link was undirected.
     </li>
     <li>
@@ -151,17 +179,18 @@
     </li>
   </ul>
 
+
   <h4>Changes for 2.0.9</h4>
   <ul>
     <li>
-      <a>Diagram.makeSVG</a> now accepts <code>callback</code> and <code>callbackTimeout</code> options. This makes it more like
+      <a>Diagram.makeSvg</a> now accepts <code>callback</code> and <code>callbackTimeout</code> options. This makes it more like
       <a>Diagram.makeImage</a> and <a>Diagram.makeImageData</a> (which have had these options since 2.0.0).
       If a callback function is provided, the methods will instead return null
       and SVG creation will wait until all Diagram Picture sources are loaded
       before creating the SVG and invoking the callback.
     </li>
     <li>
-      Fixed a regression with <a>Diagram.makeSVG</a> where it would not draw Pictures that were not yet loaded, even if they had a valid size.
+      Fixed a regression with <a>Diagram.makeSvg</a> where it would not draw Pictures that were not yet loaded, even if they had a valid size.
     </li>
     <li>
       Fixed <a>GridLayout</a>s when used as a <a>Group.layout</a> and when <a>GridLayout.alignment</a> is <code>go.GridLayout.Position</code>,
@@ -183,9 +212,10 @@
       Fixed a bug with trackpad scrolling reversing at the end of scroll events.
     </li>
     <li>
-      Fixed a bug drawing grids on some Overviews.
+      Fixed a bug drawing grids on some <a>Overview</a>s.
     </li>
   </ul>
+
 
   <h4>Changes for 2.0.8</h4>
   <ul>
@@ -197,6 +227,7 @@
       were being evaluated on the copied new template rather than on the original Part.
     </li>
   </ul>
+
 
   <h4>Changes for 2.0.7</h4>
   <ul>
@@ -244,6 +275,7 @@
     </li>
   </ul>
 
+
   <h4>Changes for 2.0.6</h4>
   <ul>
     <li>Fixed a bug with the <code>go.d.ts</code> file where <a>GraphObject.alignment</a> was missing.</li>
@@ -251,6 +283,7 @@
       Added missing cloneProtected overrides for <a>BalloonLink</a> and <a>DimensioningLink</a> so data is properly copied.
     </li>
   </ul>
+
 
   <h4>Changes for 2.0.5</h4>
   <ul>
@@ -291,10 +324,10 @@
       remembered in the <a>UndoManager.history</a> but allows commits and rollbacks to occur normally.
     </li>
     <li>
-      Fixed a bug from 2.0.1 with <a>Diagram.makeSVG</a> incorrectly re-using SVG elements.
+      Fixed a bug from 2.0.1 with <a>Diagram.makeSvg</a> incorrectly re-using SVG elements.
     </li>
     <li>
-      Fixed a bug from 2.0.0 with <a>Diagram.makeSVG</a> when drawing dashed paths.
+      Fixed a bug from 2.0.0 with <a>Diagram.makeSvg</a> when drawing dashed paths.
     </li>
     <li>
       Deployment fixes for electron apps.

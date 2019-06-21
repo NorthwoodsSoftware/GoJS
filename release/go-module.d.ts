@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.12
+ * Type definitions for GoJS v2.0.13
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8231,7 +8231,7 @@ export class TextEditingTool extends Tool {
      *
      * This method sets #currentTextEditor.
      * If TextBlock#textEditor is defined on the TextBlock it will use that as the value.
-     * By default, it uses the value of #defaultTextEditor, which is an {@HTMLInfo}
+     * By default, it uses the value of #defaultTextEditor, which is an HTMLInfo
      * showing an HTML textarea, with the CSS class `goTXarea`.
      *
      * If the #currentTextEditor is an HTMLInfo, this method calls HTMLInfo#show on that instance.
