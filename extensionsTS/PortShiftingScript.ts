@@ -310,13 +310,13 @@ function doNor(node: go.Node) {
 function doXor(node: go.Node) {
   let truecount = 0;
   node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
-  const color = truecount % 2 === 0 ? green : red;
+  const color = truecount % 2 !== 0 ? green : red;
   setOutputLinks(node, color);
 }
 function doXnor(node: go.Node) {
   let truecount = 0;
   node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
-  const color = truecount % 2 !== 0 ? green : red;
+  const color = truecount % 2 === 0 ? green : red;
   setOutputLinks(node, color);
 }
 

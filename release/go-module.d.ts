@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.13
+ * Type definitions for GoJS v2.0.14
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11420,6 +11420,12 @@ export class DraggingOptions {
      * By default this property is false.
      */
     groupsSnapMembers: boolean;
+    /**
+     * Determines whether or not Groups will ensure their member Parts always move,
+     * even if those member parts have Part#copyable and Part#movable set to false.
+     * By default this property is true.
+     */
+    groupsAlwaysMove: boolean;
     constructor();
 }
 /**

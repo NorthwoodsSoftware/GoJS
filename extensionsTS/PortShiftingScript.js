@@ -230,14 +230,14 @@
         var truecount = 0;
         node.findLinksInto().each(function (link) { if (linkIsTrue(link))
             truecount++; });
-        var color = truecount % 2 === 0 ? green : red;
+        var color = truecount % 2 !== 0 ? green : red;
         setOutputLinks(node, color);
     }
     function doXnor(node) {
         var truecount = 0;
         node.findLinksInto().each(function (link) { if (linkIsTrue(link))
             truecount++; });
-        var color = truecount % 2 !== 0 ? green : red;
+        var color = truecount % 2 === 0 ? green : red;
         setOutputLinks(node, color);
     }
     function doOutput(node) {
