@@ -45,7 +45,7 @@ Object.defineProperty(WallReshapingTool.prototype, "handle", {
 // Get / set adorned shape (shape of the Wall Group being reshaped)
 Object.defineProperty(WallReshapingTool.prototype, "adornedShape", {
     get: function () { return this._adornedShape; },
-    set: function (val) { this._adornedShape = val;}
+    set: function (val) { this._adornedShape = val; }
 });
 
 // Get / set current angle
@@ -81,7 +81,7 @@ Object.defineProperty(WallReshapingTool.prototype, "returnData", {
 // Get / set the point to return the reshaping wall endpoint to if reshape is cancelled
 Object.defineProperty(WallReshapingTool.prototype, "returnPoint", {
     get: function () { return this._returnPoint; },
-    set: function (val) { this._returnPoint = val;}
+    set: function (val) { this._returnPoint = val; }
 });
 
 /*
@@ -174,6 +174,7 @@ WallReshapingTool.prototype.doActivate = function () {
     }
 
     diagram.isMouseCaptured = true;
+    this.calcAngleAndLengthFromHandle(diagram.firstInput.documentPoint);
     this.startTransaction(this.name);
     this.isActive = true;
 }
@@ -453,7 +454,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
     wallParts.iterator.each(function (part) { arr.push(part); });
     // remember the distance each wall part's location was from the stationary point; store these in a Map
     var distancesMap = new go.Map(/*"string", "number"*/);
-    var closestPart  = null; var closestDistance = Number.MAX_VALUE;
+    var closestPart = null; var closestDistance = Number.MAX_VALUE;
     for (var i = 0; i < arr.length; i++) {
         var part = arr[i];
         var distanceToStationaryPt = Math.sqrt(part.location.distanceSquaredPoint(stationaryPoint));
@@ -461,7 +462,7 @@ function reshapeWall(wall, stationaryPoint, movingPoint, newPoint, diagram, tool
         // distanceToMovingPt is determined by whichever endpoint of the wallpart is closest to movingPoint
         var endpoints = getWallPartEndpoints(part);
         var distanceToMovingPt = Math.min(Math.sqrt(endpoints[0].distanceSquaredPoint(movingPoint)),
-                                Math.sqrt(endpoints[1].distanceSquaredPoint(movingPoint)));
+            Math.sqrt(endpoints[1].distanceSquaredPoint(movingPoint)));
         // find and store the closest wallPart to the movingPt
         if (distanceToMovingPt < closestDistance) {
             closestDistance = distanceToMovingPt;
@@ -557,18 +558,20 @@ WallReshapingTool.prototype.checkPtLinedUp = function (pt, comparePtCoord, ptCoo
     function makeGuideLinePoint() {
         var $ = go.GraphObject.make;
         return $(go.Node, "Spot", { locationSpot: go.Spot.TopLeft, locationObjectName: "SHAPE", desiredSize: new go.Size(1, 1), },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, { stroke: null, strokeWidth: 1, name: "SHAPE", fill: "black", })
-      );}
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            $(go.Shape, { stroke: null, strokeWidth: 1, name: "SHAPE", fill: "black", })
+        );
+    }
 
     function makeGuideLineLink() {
         var $ = go.GraphObject.make;
         return $(go.Link,
-        $(go.Shape, { stroke: "black", strokeWidth: 2, name: 'SHAPE', },
-        new go.Binding("strokeWidth", "width"),
-        new go.Binding('stroke', 'stroke')
-        )
-    );}
+            $(go.Shape, { stroke: "black", strokeWidth: 2, name: 'SHAPE', },
+                new go.Binding("strokeWidth", "width"),
+                new go.Binding('stroke', 'stroke')
+            )
+        );
+    }
 
     var diagram = this.diagram;
     var errorMargin = Math.abs(comparePtCoord - ptCoord);
