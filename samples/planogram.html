@@ -155,7 +155,9 @@
       myDiagram.mouseDragOver = function(e) {
         if (!AllowTopLevel) {
           // but OK to drop a group anywhere
-          if (!e.diagram.selection.all(function(p) { return p instanceof go.Group; })) {
+          var tool = e.diagram.toolManager.draggingTool;
+          var map = tool.draggedParts || tool.copiedParts;  // this is a Map
+          if (!map.toKeySet().all(function(p) { return p instanceof go.Group; })) {
             e.diagram.currentCursor = "not-allowed";
           }
         }

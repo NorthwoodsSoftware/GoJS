@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.15
+ * Type definitions for GoJS v2.0.16
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -15485,6 +15485,13 @@ export class Panel extends GraphObject {
      */
     freezeBindings(): void;
     /**
+     * Undocumented.
+     * Make a deep copy of this Panel and allow it to be a template.
+     * This makes copies of Bindings, unlike the regular copy().
+     * @return {Panel}
+     */
+    copyTemplate(): Panel;
+    /**
      * Re-evaluate all data bindings on this panel,
      * in order to assign new property values to the GraphObjects in this visual tree
      * based on this object's #data property values.
@@ -15609,6 +15616,9 @@ export class Panel extends GraphObject {
      * For Spot Panels: Gets or sets whether this Panel's main element clips instead of fills.
      * The main element will not paint its stroke, if it has any.
      * This assumes that the main element is a Shape.
+     *
+     * When this property is `true`, the Spot panel will size itself to be the *intersection* of the main element bounds and
+     * all other elements' bounds, rather than the union of these bounds.
      * @since 1.7
      */
     isClipping: boolean;
