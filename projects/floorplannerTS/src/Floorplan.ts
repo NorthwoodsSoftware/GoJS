@@ -4113,12 +4113,12 @@ function makeDoorSelectionAdornment() {
       $(go.Placeholder)),
     $(go.Panel, 'Horizontal', { defaultStretch: go.GraphObject.Vertical },
       $('Button',
-        $(go.Picture, { source: 'icons/flipDoorOpeningLeft.png', column: 0, desiredSize: new go.Size(12, 12) },
+        $(go.Picture, { source: 'images/flipDoorOpeningLeft.png', column: 0, desiredSize: new go.Size(12, 12) },
           new go.Binding('source', '', function(obj) {
             if (obj.adornedPart === null) {
-              return 'icons/flipDoorOpeningRight.png';
+              return 'images/flipDoorOpeningRight.png';
             } else if (obj.adornedPart.data.swing === 'left') {
-              return 'icons/flipDoorOpeningRight.png'; } else { return 'icons/flipDoorOpeningLeft.png';
+              return 'images/flipDoorOpeningRight.png'; } else { return 'images/flipDoorOpeningLeft.png';
             }
           }).ofObject()
         ),

@@ -443,6 +443,45 @@ you can specify a <a>Diagram.scaleComputation</a> function. See the example belo
 If you want to be notified whenever the viewport bounds changes, you can register a "ViewportBoundsChanged" <a>DiagramEvent</a> listener.
 </p>
 
+
+<h2 id="ScrollMargin">Scroll margin</h2>
+<p>
+<a>Diagram.scrollMargin</a> allows the user to scroll into empty space at the edges of the viewport, when the document bounds (plus margin) is greater than the viewport bounds.
+This can be useful when users need extra space at the edges of a Diagram, for instance to have an area to create new nodes with the <a>ClickCreatingTool</a>.
+</p>
+
+<p><a>Diagram.padding</a> is added as if part of the document bounds, whereas <code>scrollMargin</code> makes sure you can scroll to empty space beyond the document bounds.
+  Because of this, <code>scrollMargin</code> does not create additional scrollable empty space if none is needed to scroll the margin distance beyond, such as when the document bounds are very small in the viewport.</p>
+
+<p>Below is a Diagram with <code>scrollMargin</code> set to <code>100</code>. As you drag to the boundary, you will find the additional space created by the margin.</p>
+
+<pre class="lang-js" id="scrollmargin" style="display: none;">
+  diagram.grid = $(go.Panel, "Grid",
+          $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
+          $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
+          $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5 }),
+          $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+        );
+  diagram.scrollMargin = 100;
+
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "RoundedRectangle",
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 3 },
+      new go.Binding("text", "key"))
+  );
+
+var nodes = [];
+for (var i = 0; i < 99; i++) {
+  nodes.push({ key: "Alpha", color: "lightblue" });
+}
+diagram.model = new go.GraphLinksModel(nodes,[]);
+
+</pre>
+<script>goCode("scrollmargin", 400, 400)</script>
+
 <h2 id="ScrollingModes">Scrolling modes</h2>
 <p>
 <a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>Diagram,DocumentScroll</a> (the default), or scroll endlessly with <a>Diagram,InfiniteScroll</a>.

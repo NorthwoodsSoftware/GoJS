@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 1998-2019 by Northwoods Software Corporation
+ * All Rights Reserved.
+*/
+
 import * as GoCloudStorage from './GoCloudStorage';
 import * as GoDropBox from './GoDropBox';
 import * as GoGoogleDrive from './GoGoogleDrive';

@@ -438,6 +438,30 @@ When both <a>Layout.isInitial</a> and <a>Layout.isOngoing</a> are false, you can
 calling <a>Layout.invalidateLayout</a> or by calling <a>Diagram.layoutDiagram</a> with a <code>true</code> argument.
 </p>
 <p>
+For example, in editors it is commonplace to have TwoWay Bindings on <a>Node.location</a> to save manually adjusted node locations.
+This means that saved models will have saved locations for all of the nodes.
+But if you create a new model without all of the node data objects having real locations,
+you will want a layout to be performed initially when the model is loaded.
+You can accomplish this by setting <a>Layout.isInitial</a> to false
+(and optionally <a>Layout.isOngoing</a> to false, if that is what you want when users add or remove nodes or links)
+and then implementing an "InitialLayoutCompleted" <a>DiagramEvent</a> listener that decides whether a layout is needed.
+The decision could be to look at a flag that you add to the <a>Model.modelData</a>.
+Or you could look at all of the nodes to make sure their locations have real values:
+</p>
+<pre class="lang-js">
+$(go.Diagram, . . .,
+  {
+    . . .,
+    layout: $(go.TreeLayout, { isInitial: false, isOngoing: false }, . . .),
+    "InitialLayoutCompleted": function(e) {
+      // if not all Nodes have real locations, force a layout to happen
+      if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
+        e.diagram.layoutDiagram(true);
+      }
+    }
+  })
+</pre>
+<p>
 But if you do not want a change to a particular Node or Link to cause an automatic layout, yet you do want that invalidation for other Nodes or Links,
 you can set the <a>Part.layoutConditions</a> property to the combination of <a>Part</a> "Layout..." flags that suits your needs.
 It is most common to not want a layout for the <a>Part,LayoutNodeSized</a> condition:

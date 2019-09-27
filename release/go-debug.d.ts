@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.16
+ * Type definitions for GoJS v2.0.17
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -2778,6 +2778,7 @@ export class Geometry {
  *
  * The Geometry#figures property is a list of PathFigures.
  *
+ * PathFigures are drawn with the Shape#stroke and other stroke properties.
  * Filled PathFigures are painted with the Shape#fill.
  *
  * A PathFigure must not be modified once its containing Geometry
@@ -2845,6 +2846,9 @@ export class PathFigure {
 /**
  * A PathSegment represents a straight line or curved segment of a path between
  * two or more points that are part of a PathFigure.
+ * The very first point is given by the PathFigure#startX and PathFigure#startY properties.
+ * After the first segment the beginning point of the next segment is the same as the end point of the previous segment.
+ * For most types of PathSegments the end point of the segment is given by #endX and #endY.
  *
  * A PathSegment must not be modified once its containing PathFigure's
  * Geometry has been assigned to a Shape.
@@ -2854,6 +2858,9 @@ export class PathFigure {
 export class PathSegment {
     /**
      * Constructs a segment that goes nowhere unless you specify some Points.
+     *
+     * The very first point of a path is specified in the containing PathFigure by
+     * its PathFigure#startX and PathFigure#startY properties.
      *
      * The segment type must be one of the following values:
      * PathSegment.Line, PathSegment.Bezier,
@@ -2902,6 +2909,12 @@ export class PathSegment {
      *   - **xAxisRotation** describes the #xAxisRotation (number in degrees)
      *   - **largeArcFlag** describes the #isLargeArc (true or false)
      *   - **clockwiseFlag** describes the #isClockwiseArc (true or false).
+     *
+     * If the type is PathSegment.Move|Move it needs the following arguments:
+     *
+     * `(go.PathSegment.Move, ex, ey)`
+     *   - **ex, ey** describe the next starting point
+     *
      * @param {number=} ex optional: the X coordinate of the end point, or the startAngle of an Arc.
      * @param {number=} ey optional: the Y coordinate of the end point, or the sweepAngle of an Arc.
      * @param {number=} x1 optional: the X coordinate of the first bezier control point, or the centerX of an Arc, or the radiusX of an SvgArc.
@@ -10751,7 +10764,7 @@ export class Diagram {
      */
     fixedBounds: Rect;
     /**
-     * Gets or sets a scrollable area that surrounds the document bounds, allowing the user to scroll into empty space.
+     * Gets or sets a scrollable area in document coordinates that surrounds the document bounds, allowing the user to scroll into empty space.
      *
      * The margin is only effective in each direction when the document bounds plus margin is greater than the viewport bounds.
      *
@@ -11005,7 +11018,7 @@ export class Diagram {
     initialContentAlignment: Spot;
     /**
      * Gets or sets the Margin that describes the Diagram's padding,
-     * which controls how much extra space there is around the area occupied by the document.
+     * which controls how much extra space in document coordinates there is around the area occupied by the document.
      * This keeps nodes from butting up against the side of the diagram (unless scrolled).
      *
      * The default value is a margin of 5, all around the edge of the document.
@@ -21011,10 +21024,11 @@ export class LayoutNetwork {
      * all edges that do not connect two different vertexes.
      * Afterwards, this original network may be empty or may contain all of the
      * singleton vertexes, each of which had no edges connecting it to any other vertexes.
+     * @param {boolean=} clean whether to delete artificial vertexes and edges, disconnected edges, and reflexive edges; default is true
      * @return {List.<LayoutNetwork>} a collection of LayoutNetworks,
      * sorted in order of decreasing vertex count.
      */
-    splitIntoSubNetworks(): List<LayoutNetwork>;
+    splitIntoSubNetworks(clean?: boolean): List<LayoutNetwork>;
     /**
      * Retrieve all of the Nodes and Links from the
      * LayoutVertexes and LayoutEdges that are in this network.
