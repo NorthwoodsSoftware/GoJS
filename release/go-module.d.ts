@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.17
+ * Type definitions for GoJS v2.0.18
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -931,6 +931,8 @@ export interface IMapIterator<K, T> {
     /** @hidden */
     next(): boolean;
     /** @hidden */
+    hasNext(): boolean;
+    /** @hidden */
     first(): KeyValuePair<K, T> | null;
     /** @hidden */
     reset(): void;
@@ -1025,7 +1027,7 @@ export class Map<K, V> {
      * @param {Iterable.<KeyValuePair.<K,V>>|Array.<KeyValuePair.<K,V>>=} coll an optional collection of keys/values to add, or an Array of { key: ..., value: ... } objects.
      * Note that the key/value pairs are objects with "key" and "value" properties, not Arrays of length 2.
      */
-    constructor(coll?: Iterator<KeyValuePair<K, V>> | Array<KeyValuePair<K, V>>);
+    constructor(coll?: Iterable<KeyValuePair<K, V>> | Array<KeyValuePair<K, V>> | Map<K, V>);
     /**
      * @return {string}
      */
@@ -1059,7 +1061,7 @@ export class Map<K, V> {
      * @param {Iterable.<KeyValuePair.<K,V>>|Array.<KeyValuePair.<K,V>>} coll the collection of keys/values to add, or an Array of { key: ..., value: ... } objects.
      * @return {Map.<K,V>} This modified Map.
      */
-    addAll(coll: Iterator<KeyValuePair<K, V>> | Array<KeyValuePair<K, V>>): Map<K, V>;
+    addAll(coll: Iterable<KeyValuePair<K, V>> | Array<KeyValuePair<K, V>> | Map<K, V>): Map<K, V>;
     /**
      * Returns the first key/value pair in the collection, or null if there is none.
      * @return {KeyValuePair.<K,V>} This returns null if there are no items in the collection.
@@ -11821,6 +11823,7 @@ export class CommandHandler {
      * This method must not have any side-effects.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
+     * @param {Point=} pos Point at which to center the newly pasted parts; if not present the parts would not be moved.
      * @return {boolean}
      * This returns true:
      * if the diagram is not Diagram#isReadOnly,
@@ -11829,7 +11832,7 @@ export class CommandHandler {
      * if the clipboard has parts in it.
      * @see #pasteSelection
      */
-    canPasteSelection(): boolean;
+    canPasteSelection(pos?: Point): boolean;
     /**
      * This command calls UndoManager#undo.
      * This is normally invoked by the `Ctrl-Z` keyboard shortcut.

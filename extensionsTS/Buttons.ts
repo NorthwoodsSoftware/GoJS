@@ -465,6 +465,7 @@ go.GraphObject.defineBuilder('PanelExpanderButton', (args: any): go.Panel => {
     if (elt !== null) {
       const pan = elt.findObject(eltname);
       if (pan !== null) {
+        e.handled = true;
         diagram.startTransaction('Collapse/Expand Panel');
         pan.visible = !pan.visible;
         diagram.commitTransaction('Collapse/Expand Panel');

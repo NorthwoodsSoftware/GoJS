@@ -428,6 +428,7 @@
             if (elt !== null) {
                 var pan = elt.findObject(eltname);
                 if (pan !== null) {
+                    e.handled = true;
                     diagram.startTransaction('Collapse/Expand Panel');
                     pan.visible = !pan.visible;
                     diagram.commitTransaction('Collapse/Expand Panel');
