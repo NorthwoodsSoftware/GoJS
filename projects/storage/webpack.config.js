@@ -18,7 +18,7 @@ module.exports = {
         libraryTarget: 'var',
         library: 'gcs'
     },
-    externals:[
+    externals: [
         {
             'gojs': 'go'
         }

@@ -92,11 +92,11 @@
             },
             $(go.Shape, "Rectangle",
               {
-                fill: "#AC193D", stroke: null, strokeWidth: 0,
-                minSize: new go.Size(56, 56)
+                fill: "#dbf6cb", stroke: null, strokeWidth: 0,
+                minSize: new go.Size(60, 60)
               }),
             $(go.TextBlock,
-              { margin: 10, textAlign: "center", font: "14px  Segoe UI,sans-serif", stroke: "white", editable: true },
+              { margin: 10, textAlign: "center", font: "bold 14px Segoe UI,sans-serif", stroke: "#484848", editable: true },
               new go.Binding("text", "name").makeTwoWay())
           ),  // end Auto Panel body
 
@@ -233,8 +233,8 @@
       myDiagram.contextMenu =
         $("ContextMenu",
           makeButton("Paste",
-            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); },
-            function(o) { return o.diagram.commandHandler.canPasteSelection(); }),
+            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); },
+            function(o) { return o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }),
           makeButton("Undo",
             function(e, obj) { e.diagram.commandHandler.undo(); },
             function(o) { return o.diagram.commandHandler.canUndo(); }),
@@ -356,7 +356,7 @@
           // create a new port data object
           var newportdata = {
             portId: name,
-            portColor: go.Brush.randomColor()
+            portColor: getPortColor()
             // if you add port data properties here, you should copy them in copyPortData above
           };
           // and add it to the Array of port data
@@ -415,10 +415,15 @@
     function changeColor(port) {
       myDiagram.startTransaction("colorPort");
       var data = port.data;
-      myDiagram.model.setDataProperty(data, "portColor", go.Brush.randomColor());
+      myDiagram.model.setDataProperty(data, "portColor", getPortColor());
       myDiagram.commitTransaction("colorPort");
     }
 
+    // Use some pastel colors for ports
+    function getPortColor() {
+      var portColors = ["#fae3d7", "#d6effc", "#ebe3fc", "#eaeef8", "#fadfe5", "#6cafdb", "#66d6d1"]
+      return portColors[Math.floor(Math.random() * portColors.length)];
+    }
 
     // Save the model to / load it from JSON text shown on the page itself, not in a database.
     function save() {
@@ -469,6 +474,7 @@
       <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
+
     <textarea id="mySavedModel" style="width:100%;height:250px">
 { "class": "go.GraphLinksModel",
   "copiesArrays": true,
@@ -476,26 +482,26 @@
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
   "nodeDataArray": [
-{"key":1, "name":"unit One", "loc":"101 204",
- "leftArray":[ {"portColor":"#425e5c", "portId":"left0"} ],
- "topArray":[ {"portColor":"#d488a2", "portId":"top0"} ],
- "bottomArray":[ {"portColor":"#316571", "portId":"bottom0"} ],
- "rightArray":[ {"portColor":"#923951", "portId":"right0"},{"portColor":"#ef3768", "portId":"right1"} ] },
-{"key":2, "name":"unit Two", "loc":"320 152",
- "leftArray":[ {"portColor":"#7d4bd6", "portId":"left0"},{"portColor":"#cc585c", "portId":"left1"},{"portColor":"#b1273a", "portId":"left2"} ],
- "topArray":[ {"portColor":"#14abef", "portId":"top0"} ],
- "bottomArray":[ {"portColor":"#dd45c7", "portId":"bottom0"},{"portColor":"#995aa6", "portId":"bottom1"},{"portColor":"#6b95cb", "portId":"bottom2"} ],
+{"key":1, "name":"Unit One", "loc":"101 204",
+ "leftArray":[ {"portColor":"#fae3d7", "portId":"left0"} ],
+ "topArray":[ {"portColor":"#d6effc", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#ebe3fc", "portId":"bottom0"} ],
+ "rightArray":[ {"portColor":"#eaeef8", "portId":"right0"},{"portColor":"#fadfe5", "portId":"right1"} ] },
+{"key":2, "name":"Unit Two", "loc":"320 152",
+ "leftArray":[ {"portColor":"#6cafdb", "portId":"left0"},{"portColor":"#66d6d1", "portId":"left1"},{"portColor":"#fae3d7", "portId":"left2"} ],
+ "topArray":[ {"portColor":"#d6effc", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#eaeef8", "portId":"bottom0"},{"portColor":"#eaeef8", "portId":"bottom1"},{"portColor":"#6cafdb", "portId":"bottom2"} ],
  "rightArray":[  ] },
-{"key":3, "name":"unit Three", "loc":"384 319",
- "leftArray":[ {"portColor":"#bd8f27", "portId":"left0"},{"portColor":"#c14617", "portId":"left1"},{"portColor":"#47fa60", "portId":"left2"} ],
- "topArray":[ {"portColor":"#d08154", "portId":"top0"} ],
+{"key":3, "name":"Unit Three", "loc":"384 319",
+ "leftArray":[ {"portColor":"#66d6d1", "portId":"left0"},{"portColor":"#fadfe5", "portId":"left1"},{"portColor":"#6cafdb", "portId":"left2"} ],
+ "topArray":[ {"portColor":"#66d6d1", "portId":"top0"} ],
  "bottomArray":[ {"portColor":"#6cafdb", "portId":"bottom0"} ],
  "rightArray":[  ] },
-{"key":4, "name":"unit Four", "loc":"138 351",
- "leftArray":[ {"portColor":"#491389", "portId":"left0"} ],
- "topArray":[ {"portColor":"#77ac1e", "portId":"top0"} ],
- "bottomArray":[ {"portColor":"#e9701b", "portId":"bottom0"} ],
- "rightArray":[ {"portColor":"#24d05e", "portId":"right0"},{"portColor":"#cfabaa", "portId":"right1"} ] }
+{"key":4, "name":"Unit Four", "loc":"138 351",
+ "leftArray":[ {"portColor":"#fae3d7", "portId":"left0"} ],
+ "topArray":[ {"portColor":"#6cafdb", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#6cafdb", "portId":"bottom0"} ],
+ "rightArray":[ {"portColor":"#6cafdb", "portId":"right0"},{"portColor":"#66d6d1", "portId":"right1"} ] }
  ],
   "linkDataArray": [
 {"from":4, "to":2, "fromPort":"top0", "toPort":"bottom0"},

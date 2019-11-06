@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS Highlighting -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="../out/go-dev.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>Highlighting</h1>
+<p>
+  It is common to make a Node (or a part of a Node or a Link) stand out by "highlighting" it in some way.
+  This happens with selection when a selection Adornment is shown.
+  However one frequently wants to highlight Parts independently of selection.
+  This can be done by changing the fill or stroke of a Shape, replacing a Picture source with another source, adding or removing a shadow, and so on.
+</p>
+
+
+<h2 id="HighlightingNodeUponMouseOver">Highlighting a Node upon Mouse Over</h2>
+<p>
+  The most general kind of highlighting is to change appearance when an action occurs, such as mousing over a node.
+  This can draw attention to interactive Nodes or Links or really any GraphObject, such as buttons.
+  This is why <a href="buttons.html">predefined buttons in GoJS</a> highlight on mouse-over.
+</p>
+<p>
+  To achieve this effect you just need to define <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers.
+</p>
+<pre class="lang-js" id="highlighting1">
+  function mouseEnter(e, obj) {
+    var shape = obj.findObject("SHAPE");
+    shape.fill = "#6DAB80";
+    shape.stroke = "#A6E6A1";
+    var text = obj.findObject("TEXT");
+    text.stroke = "white";
+  };
+
+  function mouseLeave(e, obj) {
+    var shape = obj.findObject("SHAPE");
+    // Return the Shape's fill and stroke to the defaults
+    shape.fill = obj.data.color;
+    shape.stroke = null;
+    // Return the TextBlock's stroke to its default
+    var text = obj.findObject("TEXT");
+    text.stroke = "black";
+  };
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      {
+        mouseEnter: mouseEnter,
+        mouseLeave: mouseLeave
+      },
+      $(go.Shape, "Rectangle",
+        { strokeWidth: 2, stroke: null, name: "SHAPE" },
+        new go.AnimationTrigger('stroke'),
+        new go.AnimationTrigger('fill'),
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 10, font: "bold 18px Verdana", name: "TEXT" },
+        new go.AnimationTrigger('stroke'),
+        new go.Binding("text", "key"))
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "#96D6D9" },
+    { key: "Beta",  color: "#96D6D9" },
+    { key: "Gamma", color: "#EFEBCA" },
+    { key: "Delta", color: "#EFEBCA" }
+  ],
+  [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ]);
+</pre>
+<script>goCode("highlighting1", 600, 150)</script>
+
+<p>Mouse-over nodes to see them highlight.</p>
+
+<p>
+  It is also commonplace to perform highlighting of stationary Parts during a drag, which is a different case of "mouse over".
+  This can be implemented in a manner similar to the mouseEnter/mouseLeave events by implementing
+  <a>GraphObject.mouseDragEnter</a> and <a>GraphObject.mouseDragLeave</a> event handlers.
+  Several samples demonstrate this: <a href="../samples/orgChartEditor.html">Org Chart Editor</a>,
+  <a href="../samples/planogram.html">Planogram</a>, <a href="../samples/regrouping.html">Regrouping</a>,
+  and <a href="../samples/seatingChart.html">Seating Chart</a>.
+</p>
+
+
+<h2 id="HighlightingNodesAndLinks">Highlighting Nodes and Links</h2>
+<p>
+  It is common to want to show Nodes or Links that are related to a particular Node.
+  Unlike the mouse-over scenarios, one may want to maintain the highlighting for many Parts
+  independent of any mouse state or selection state.
+</p>
+<p>
+  Here is an example of highlighting all of the nodes and links that come out of a node that the user clicks.
+  This example uses the <a>Part.isHighlighted</a> property and data binding of visual properties to that Part.isHighlighted property.
+</p>
+<pre class="lang-js" id="highlighting2">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { // when the user clicks on a Node, highlight all Links coming out of the node
+        // and all of the Nodes at the other ends of those Links.
+        click: function(e, node) {
+            // highlight all Links and Nodes coming out of a given Node
+            var diagram = node.diagram;
+            diagram.startTransaction("highlight");
+            // remove any previous highlighting
+            diagram.clearHighlighteds();
+            // for each Link coming out of the Node, set Link.isHighlighted
+            node.findLinksOutOf().each(function(l) { l.isHighlighted = true; });
+            // for each Node destination for the Node, set Node.isHighlighted
+            node.findNodesOutOf().each(function(n) { n.isHighlighted = true; });
+            diagram.commitTransaction("highlight");
+          }
+      },
+      $(go.Shape, "Rectangle",
+        { strokeWidth: 2, stroke: null },
+        new go.AnimationTrigger('stroke'),
+        new go.AnimationTrigger('fill'),
+        new go.Binding("fill", "color"),
+        // the Shape.stroke color depends on whether Node.isHighlighted is true
+        new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; })
+            .ofObject()),
+      $(go.TextBlock,
+        { margin: 10, font: "bold 18px Verdana" },
+        new go.Binding("text", "key"))
+    );
+
+  // define the Link template
+  diagram.linkTemplate =
+    $(go.Link,
+      { toShortLength: 4 },
+      $(go.Shape,
+        new go.AnimationTrigger('stroke'),
+        new go.AnimationTrigger('strokeWidth'),
+        // the Shape.stroke color depends on whether Link.isHighlighted is true
+        new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; })
+            .ofObject(),
+        // the Shape.strokeWidth depends on whether Link.isHighlighted is true
+        new go.Binding("strokeWidth", "isHighlighted", function(h) { return h ? 3 : 1; })
+            .ofObject()),
+      $(go.Shape,
+        { toArrow: "Standard", strokeWidth: 0 },
+        new go.AnimationTrigger('fill'),
+        // the Shape.fill color depends on whether Link.isHighlighted is true
+        new go.Binding("fill", "isHighlighted", function(h) { return h ? "red" : "black"; })
+            .ofObject())
+    );
+
+  // when the user clicks on the background of the Diagram, remove all highlighting
+  diagram.click = function(e) {
+    e.diagram.commit(function(d) { d.clearHighlighteds(); }, "no highlighteds");
+  };
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "#96D6D9" },
+      { key: "Beta",  color: "#96D6D9" },
+      { key: "Gamma", color: "#EFEBCA" },
+      { key: "Delta", color: "#EFEBCA" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Beta", to: "Beta" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+</pre>
+<script>goCode("highlighting2", 600, 200)</script>
+
+<p>
+  Click on a node to highlight outbound connected links and nodes.
+  Click in the diagram background to remove all highlights.
+  Note that the highlighting is independent of selection.
+</p>
+<p>
+  The use of data binding to modify the Shape properties allows you to avoid specifying names for each Shape
+  and writing code to find the Shape and modify its properties.
+</p>
+
+<p>
+  It is also commonplace to perform highlighting of stationary Parts during a drag, which is a different case of "mouse over".
+  This can be implemented in a manner similar to the mouseEnter/mouseLeave events by implementing
+  <a>GraphObject.mouseDragEnter</a> and <a>GraphObject.mouseDragLeave</a> event handlers.
+  Several samples demonstrate this: <a href="../samples/orgChartEditor.html">Org Chart Editor</a>,
+  <a href="../samples/planogram.html">Planogram</a>, <a href="../samples/regrouping.html">Regrouping</a>,
+  and <a href="../samples/seatingChart.html">Seating Chart</a>.
+</p>
+
+<h3 id="ChangingNodeSizeWhenHighlighting">Changing Node Size When Highlighting</h3>
+<p>
+  You may want to increase the size of a node or of an element in a node in order to highlight it.
+  For example you could have a Binding on <a>GraphObject.scale</a> or <a>Shape.strokeWidth</a>:
+</p>
+<pre class="lang-js">
+  $(go.Node, ...
+    $(go.Shape, ...,
+      new go.Binding("strokeWidth", "isHighlighted", function(h) { return h ? 5 : 1; })),
+    ...
+  )
+</pre>
+<p>
+  However, doing so will change the size of the object.  That is likely to invalidate the route of any links that are connected
+  with that node.  That might not matter in many apps, but in some cases the routes of some links may have been reshaped by the user.
+  Any recomputation of the route due to a connected node moving or changing size might lose that route.
+</p>
+
+<p>
+  If that is a consideration in your app, you might consider instead having each node hold an additional Shape that would provide
+  the highlighting when shown and that would be unseen otherwise.
+  But do not toggle the <a>GraphObject.visible</a> property, because that would cause the node to change size.
+  Instead toggle the <a>GraphObject.opacity</a> property between 0.0 and 1.0.
+</p>
+<pre class="lang-js" id="highlighting3">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      {
+        locationSpot: go.Spot.Center,
+        // when the user clicks on a Node, highlight all Links coming out of the node
+        // and all of the Nodes at the other ends of those Links.
+        click: function(e, node) {
+            var diagram = node.diagram;
+            diagram.startTransaction("highlight");
+            diagram.clearHighlighteds();
+            node.findLinksOutOf().each(function(l) { l.isHighlighted = true; });
+            node.findNodesOutOf().each(function(n) { n.isHighlighted = true; });
+            diagram.commitTransaction("highlight");
+          }
+      },
+      $(go.Panel, "Auto",
+        $(go.Shape, "Ellipse",
+          { strokeWidth: 2, portId: "" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 5, font: "bold 18px Verdana" },
+          new go.Binding("text", "key"))
+      ),
+      // the highlight shape, which is always a thick red ellipse
+      $(go.Shape, "Ellipse",
+        new go.AnimationTrigger('opacity'),
+        // this shape is the "border" of the Auto Panel, but is drawn in front of the
+        // regular Auto Panel holding the black-bordered ellipse and text
+        { isPanelMain: true, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight },
+        { strokeWidth: 6, stroke: "red", fill: null },
+        // only show this ellipse when Part.isHighlighted is true
+        new go.Binding("opacity", "isHighlighted", function(h) { return h ? 1.0 : 0.0; })
+            .ofObject())
+    );
+
+  // define the Link template
+  diagram.linkTemplate =
+    $(go.Link,
+      { toShortLength: 4, reshapable: true, resegmentable: true },
+      $(go.Shape,
+        new go.AnimationTrigger('stroke'),
+        new go.AnimationTrigger('strokeWidth'),
+        // when highlighted, draw as a thick red line
+        new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "black"; })
+            .ofObject(),
+        new go.Binding("strokeWidth", "isHighlighted", function(h) { return h ? 3 : 1; })
+            .ofObject()),
+      $(go.Shape,
+        { toArrow: "Standard", strokeWidth: 0 },
+        new go.AnimationTrigger('fill'),
+        new go.Binding("fill", "isHighlighted", function(h) { return h ? "red" : "black"; })
+            .ofObject())
+    );
+
+  // when the user clicks on the background of the Diagram, remove all highlighting
+  diagram.click = function(e) {
+    diagram.startTransaction("no highlighteds");
+    diagram.clearHighlighteds();
+    diagram.commitTransaction("no highlighteds");
+  };
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "#96D6D9" },
+      { key: "Beta",  color: "#96D6D9" },
+      { key: "Gamma", color: "#EFEBCA" },
+      { key: "Delta", color: "#EFEBCA" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Beta", to: "Beta" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+</pre>
+<script>goCode("highlighting3", 600, 200)</script>
+<p>
+  The highlight Shape is the outer ellipse that always has a thick red stroke.  It is normally hidden by having zero opacity,
+  but the Binding will change its opacity to one when <a>Part.isHighlighted</a> is true.
+</p>
+<p>
+  That highlight Shape is always shown in front of the panel of the colored ellipse and text by putting it afterwards in the list of the
+  panel's child elements.
+  However since the "Auto" Panel assumes the first element acts as the border, we need to set <a>GraphObject.isPanelMain</a>
+  to true on the highlight Shape so that it is the border for the inner panel.
+</p>
+
+</div>
+</div>
+</body>
+</html>

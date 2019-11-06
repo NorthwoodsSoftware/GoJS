@@ -3,6 +3,14 @@
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
+/*
+* This is an extension and not part of the main GoJS library.
+* Note that the API for this class may change with any version, even point releases.
+* If you intend to use an extension in production, you should copy the code to your own source directory.
+* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+*/
+
 /**
 * @constructor
 * @extends CommandHandler
@@ -92,9 +100,10 @@ LocalStorageCommandHandler.prototype.pasteFromClipboard = function() {
 
 /**
 * @this {LocalStorageCommandHandler}
+* @param {Point?} pos
 * @return {boolean}
 */
-LocalStorageCommandHandler.prototype.canPasteSelection = function() {
+LocalStorageCommandHandler.prototype.canPasteSelection = function(pos) {
   var diagram = this.diagram;
   if (diagram === null || diagram.isReadOnly || diagram.isModelReadOnly) return false;
   if (!diagram.allowInsert || !diagram.allowClipboard) return false;
@@ -106,6 +115,6 @@ LocalStorageCommandHandler.prototype.canPasteSelection = function() {
     return true;
   } catch (ex) {
     // fallback implementation
-    return go.CommandHandler.prototype.canPasteSelection();
+    return go.CommandHandler.prototype.canPasteSelection(pos);
   }
 };

@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.0.18 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.0.18<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class AnimationManager</h1>
@@ -105,14 +105,16 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<p>AnimationManager handles animations in a <a href="Diagram.html">Diagram</a>. Each Diagram has one, <a href="Diagram.html#animationManager">Diagram.animationManager</a>.
-					Layouts, Group expansion and Tree expansion automatically start animations.</p>
+						Setting the Model, performing a Layout, Group expansion and Tree expansion automatically start animations through
+						the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>. Animations can be manually started by creating <a href="Animation.html">Animation</a>s, which are associated with an
+					AnimationManager.</p>
 					<p>Animation is enabled by default, setting the <a href="AnimationManager.html#isEnabled">isEnabled</a> property to false will turn off animations for a Diagram.</p>
-					<p>When an animations begins it raises the &quot;AnimationStarting&quot; diagram event,
-					upon completion it raises the &quot;AnimationFinished&quot; diagram event.</p>
-					<p>Animation will stop if a new transaction is started, if an undo or redo is called,
+					<p>When the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a> begins it raises the <code>&quot;AnimationStarting&quot;</code> Diagram event,
+					upon completion it raises the <code>&quot;AnimationFinished&quot;</code> Diagram event.</p>
+					<p>The <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>, if running, will stop if a new transaction is started, if an undo or redo is called,
 						if a layout is invalidated, or if a model is replaced.
-						When an animation is stopped, the Diagram immediately finishes the animation and draws the final state.
-					Animations can be stopped programatically with the method <a href="AnimationManager.html#stopAnimation">AnimationManager.stopAnimation</a>.</p>
+						When an <a href="Animation.html">Animation</a> is stopped, the Diagram immediately finishes the animation and draws the final state.
+					Animations can be stopped programatically with the methods <a href="AnimationManager.html#stopAnimation">AnimationManager.stopAnimation</a> or <a href="Animation.html#stop">Animation.stop</a>.</p>
 					<dl class="tsd-comment-tags">
 						<dt>since</dt>
 						<dd><p>1.4</p>
@@ -133,7 +135,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="AnimationManager.html#activeAnimations" class="tsd-kind-icon">active<wbr>Animations</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="AnimationManager.html#animationReasons" class="tsd-kind-icon">animation<wbr>Reasons</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="AnimationManager.html#defaultAnimation" class="tsd-kind-icon">default<wbr>Animation</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationManager.html#duration" class="tsd-kind-icon">duration</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationManager.html#initialAnimationStyle" class="tsd-kind-icon">initial<wbr>Animation<wbr>Style</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="AnimationManager.html#isAnimating" class="tsd-kind-icon">is<wbr>Animating</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationManager.html#isEnabled" class="tsd-kind-icon">is<wbr>Enabled</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationManager.html#isInitial" class="tsd-kind-icon">is<wbr>Initial</a></li>
@@ -143,7 +149,17 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="AnimationManager.html#canStart" class="tsd-kind-icon">can<wbr>Start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="AnimationManager.html#static-defineAnimationEffect" class="tsd-kind-icon">define<wbr>Animation<wbr>Effect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="AnimationManager.html#stopAnimation" class="tsd-kind-icon">stop<wbr>Animation</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Constants</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="AnimationManager.html#static-AnimateLocations" class="tsd-kind-icon">Animate<wbr>Locations</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="AnimationManager.html#static-Default" class="tsd-kind-icon">Default</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="AnimationManager.html#static-None" class="tsd-kind-icon">None</a></li>
 							</ul>
 						</section>
 					</div>
@@ -171,6 +187,86 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="activeAnimations" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						active<wbr>Animations
+					<span class="tsd-signature-symbol">: </span><a href="Set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><a href="Animation.html" class="tsd-signature-type">Animation</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets the set of currently animating <a href="Animation.html">Animation</a>s being managed by this AnimationManager.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="animationReasons" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						animation<wbr>Reasons
+					<span class="tsd-signature-symbol">: </span><a href="Set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property returns a Set of reasons the default animation may start.
+								This set can be queried in <a href="AnimationManager.html#canStart">canStart</a> to turn off specific default animations.</p>
+								<p>These are the possible reasons GoJS will begin an animation:</p>
+								<pre><code class="hljs md">  Called by CommandHandler:
+<span class="hljs-code">    "Collapse SubGraph"</span>
+<span class="hljs-code">    "Expand SubGraph"</span>
+<span class="hljs-code">    "Collapse Tree"</span>
+<span class="hljs-code">    "Expand Tree"</span>
+<span class="hljs-code">    "Scroll To Part"</span>
+<span class="hljs-code">    "Zoom To Fit"</span>
+  Called by Diagram:
+<span class="hljs-code">    "Model"</span>
+<span class="hljs-code">    "Layout"</span>
+  Called by AnimationTriggers:
+<span class="hljs-code">    "Trigger"</span></code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="AnimationManager.html#canStart">canStart</a></p>
+									</dd>
+									<dt>since</dt>
+									<dd><p>2.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="defaultAnimation" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						default<wbr>Animation
+					<span class="tsd-signature-symbol">: </span><a href="Animation.html" class="tsd-signature-type">Animation</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property gets the <a href="Animation.html">Animation</a> that carries out default GoJS animations.
+									This animation is usually only referenced to modify default animation properties,
+								such as the <a href="Animation.html#easing">Animation.easing</a> or <a href="Animation.html#duration">Animation.duration</a>.</p>
+								<p>You should not add anything to or start the default animation, GoJS does so automatically, internally.
+									When the default animation begins it raises the <code>&quot;AnimationStarting&quot;</code> Diagram event,
+								upon completion it raises the <code>&quot;AnimationFinished&quot;</code> Diagram event.</p>
+								<p>See the <a href="../../intro/animation.html">Introduction Page on Animations</a> for more detail.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.1</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
 					<a name="duration" class="tsd-anchor"></a>
 					<h3>
@@ -179,10 +275,50 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the duration for animations, in milliseconds.</p>
-								<p>The default value is 600 milliseconds.
+								<p>Gets or sets the default duration, in milliseconds, used as the duration for animations that have their <a href="Animation.html#duration">Animation.duration</a> set to <code>NaN</code>.</p>
+								<p>Typically these values are short. The default value is 600 milliseconds.
 									The value must be a number greater than or equal to 1.
 								Setting this property does not raise any events.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Animation.html#duration">Animation.duration</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="initialAnimationStyle" class="tsd-anchor"></a>
+					<h3>
+						initial<wbr>Animation<wbr>Style
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the initial animation style that is set up by the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>.
+								This can be <a href="AnimationManager.html#static-Default">AnimationManager.Default</a>, <a href="AnimationManager.html#static-AnimateLocations">AnimationManager.AnimateLocations</a>, or <a href="AnimationManager.html#static-None">AnimationManager.None</a>.</p>
+								<ul>
+									<li>If set to <a href="AnimationManager.html#static-Default">AnimationManager.Default</a>, the initial animation will &quot;fade up&quot;
+									the Diagram&#39;s contents by animating the <a href="Diagram.html#position">Diagram.position</a> and <a href="Diagram.html#opacity">Diagram.opacity</a>.</li>
+									<li>If set to <a href="AnimationManager.html#static-AnimateLocations">AnimationManager.AnimateLocations</a>, the initial animation will animate Part locations from <code>(0, 0)</code> to their values, as GoJS 2.0 and prior do.</li>
+									<li>If set to <a href="AnimationManager.html#static-None">AnimationManager.None</a>, no initial animation will happen by default,
+									which this allows you to specify your own initial animation by defining a <code>&quot;InitialAnimationStarting&quot;</code> DiagramEvent listener with <a href="Diagram.html#addDiagramListener">Diagram.addDiagramListener</a>.</li>
+								</ul>
+								<p>An example custom initial animation, which zooms the Diagram into view:</p>
+								<pre><code class="hljs js">myDiagram.animationManager.initialAnimationStyle = go.AnimationManager.None;
+myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
+  <span class="hljs-keyword">var</span> animation = e.subject.defaultAnimation;
+  animation.easing = go.Animation.EaseOutExpo;
+  animation.duration = <span class="hljs-number">900</span>;
+  animation.add(e.diagram, <span class="hljs-string">'scale'</span>, <span class="hljs-number">0.1</span>, <span class="hljs-number">1</span>);
+  animation.add(e.diagram, <span class="hljs-string">'opacity'</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>);
+});</code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.1</p>
+									</dd>
+								</dl>
 							</div>
 						</li>
 					</ul>
@@ -261,22 +397,188 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canStart" class="tsd-anchor"></a>
+					<h3>
+						can<wbr>Start
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Start<span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This method is passed the reason the animation is to begin,
+									and must return true or false based on whether or not the animation is to be allowed.
+								Returning true means the animation will occur, returning false will stop the animation&#39;s setup.</p>
+								<p>By default, this method always returns true.</p>
+								<p>The reasons GoJS will begin an animation are collected in the set <a href="AnimationManager.html#animationReasons">animationReasons</a>,
+								and can be queried in this method to conditionally allow animations, for instance:</p>
+								<pre><code class="hljs js"><span class="hljs-comment">// disallow expand/collapse animations, but allow all others</span>
+myDiagram.animationManager.canStart = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">reason</span>) </span>{
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.animationReasons.contains(<span class="hljs-string">"Expand Tree"</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="AnimationManager.html#animationReasons">animationReasons</a></p>
+									</dd>
+									<dt>since</dt>
+									<dd><p>2.1</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>reason: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Reason for starting the animation</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="static-defineAnimationEffect" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						define<wbr>Animation<wbr>Effect
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">define<wbr>Animation<wbr>Effect<span class="tsd-signature-symbol">(</span>effectName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, animationFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">obj</span><span class="tsd-signature-symbol">: </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol"> | </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">startValue</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">endValue</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">easing</span><span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">currentTime</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">duration</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">animation</span><span class="tsd-signature-symbol">: </span><a href="Animation.html" class="tsd-signature-type">Animation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Defines a new named effect to be used in animation, along with a function that tells the AnimationManager how to modify that property.</p>
+								<p>Effect names do not need to reflect GraphObject properties, and you can define an effect with a function that modifies several properties for convenience.</p>
+								<p>For example, one could define an animation effect named <code>&quot;moveAndSpin&quot;</code> which modifies the object&#39;s <code>position</code> and <code>angle</code>.</p>
+								<p>Most commonly, an effect is defined with one GraphObject property in mind to be animated,
+									and the function uses the start and end values, an easing function, and the times to determine a new value for each tick of animation.
+								Here is an example for animating the fill of GraphObjects:</p>
+								<pre><code class="hljs js"><span class="hljs-comment">// This presumes the object to be animated is a Shape</span>
+go.AnimationManager.defineAnimationEffect(<span class="hljs-string">'fill'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj, startValue, endValue, easing, currentTime, duration, animation</span>) </span>{
+  <span class="hljs-keyword">var</span> hueValue = easing(currentTime, startValue, endValue - startValue, duration);
+  obj.fill = <span class="hljs-string">'hsl('</span> + hueValue + <span class="hljs-string">', 100%, 80%)'</span>;
+});</code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.1</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>effectName: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Named effect to animate</p>
+									</div>
+								</li>
+								<li>
+									<h5>animationFunction: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">obj</span><span class="tsd-signature-symbol">: </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol"> | </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">startValue</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">endValue</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">easing</span><span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">currentTime</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">duration</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">animation</span><span class="tsd-signature-symbol">: </span><a href="Animation.html" class="tsd-signature-type">Animation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function
+											that transforms the property values. It takes the animated object, start value, end value,
+										easing function (the <a href="Animation.html#easing">Animation.easing</a>), current time, duration, and animation state. It should modify one or more properties on the object.</p>
+									</div>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="stopAnimation" class="tsd-anchor"></a>
 					<h3>
 						stop<wbr>Animation
 					</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">stop<wbr>Animation<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Animation<span class="tsd-signature-symbol">(</span>stopsAllAnimations<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Stops any running animation and updates the Diagram to its final state.</p>
-								<p>If an animation was about to begin, it is cancelled.</p>
+								<p>Stops the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a> and updates the Diagram to its final state.</p>
+								<p>If the argument is true, this stops all running animations.
+								If an Animation was about to begin, it will be cancelled.</p>
+								<p>If the <a href="AnimationManager.html#defaultAnimation">AnimationManager.defaultAnimation</a> is running, this will raise the <code>&quot;AnimationFinished&quot;</code> Diagram event.</p>
 							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> stopsAllAnimations: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether to stop all animations, instead of just the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>. Default false.</p>
+									</div>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constants</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-AnimateLocations" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Animate<wbr>Locations
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Used as a value for <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a>.
+							This value will cause initial animations to capture Part locations and animate them from <code>(0, 0)</code> to those location values.
+							This was the default initial animation behavior in GoJS 2.0 and prior.
+						See <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a> for details and examples.</p>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>2.1</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Default" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Default
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Used as the default value for <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a>.
+							The default initial animation style will &quot;fade up&quot; and in the Diagram&#39;s contents by animating the <a href="Diagram.html#position">Diagram.position</a> and <a href="Diagram.html#opacity">Diagram.opacity</a>.
+							To make the default initial animation behave like GoJS 2.0, set <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a> to  <a href="AnimationManager.html#static-AnimateLocations">AnimationManager.AnimateLocations</a>.
+							To customize the default initial animation, set <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a> to  <a href="AnimationManager.html#static-None">AnimationManager.None</a>
+							and define a <code>&quot;InitialAnimationStarting&quot;</code> DiagramEvent listener with <a href="Diagram.html#addDiagramListener">Diagram.addDiagramListener</a>.
+						See <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a> for details and examples.</p>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>2.1</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-None" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						None
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Used as a value for <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a>.
+							This will turn off the initial animation, but also allows for customizing the initial animation by adding your own properties
+							if you define a <code>&quot;InitialAnimationStarting&quot;</code> listener with <a href="Diagram.html#addDiagramListener">Diagram.addDiagramListener</a>.
+						See <a href="AnimationManager.html#initialAnimationStyle">initialAnimationStyle</a> for details and examples.</p>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>2.1</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -298,8 +600,20 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="AnimationManager.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="AnimationManager.html#activeAnimations" class="tsd-kind-icon">active<wbr>Animations</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="AnimationManager.html#animationReasons" class="tsd-kind-icon">animation<wbr>Reasons</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="AnimationManager.html#defaultAnimation" class="tsd-kind-icon">default<wbr>Animation</a>
+							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="AnimationManager.html#duration" class="tsd-kind-icon">duration</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="AnimationManager.html#initialAnimationStyle" class="tsd-kind-icon">initial<wbr>Animation<wbr>Style</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="AnimationManager.html#isAnimating" class="tsd-kind-icon">is<wbr>Animating</a>
@@ -314,7 +628,22 @@
 								<a href="AnimationManager.html#isTicking" class="tsd-kind-icon">is<wbr>Ticking</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="AnimationManager.html#canStart" class="tsd-kind-icon">can<wbr>Start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationManager.html#static-defineAnimationEffect" class="tsd-kind-icon">define<wbr>Animation<wbr>Effect</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="AnimationManager.html#stopAnimation" class="tsd-kind-icon">stop<wbr>Animation</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationManager.html#static-AnimateLocations" class="tsd-kind-icon">Animate<wbr>Locations</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationManager.html#static-Default" class="tsd-kind-icon">Default</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationManager.html#static-None" class="tsd-kind-icon">None</a>
 							</li>
 						</ul>
 					</li>

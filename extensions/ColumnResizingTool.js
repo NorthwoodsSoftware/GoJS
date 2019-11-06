@@ -5,6 +5,14 @@
 
 // A custom Tool for resizing each column of a named Table Panel in a selected Part.
 
+/*
+* This is an extension and not part of the main GoJS library.
+* Note that the API for this class may change with any version, even point releases.
+* If you intend to use an extension in production, you should copy the code to your own source directory.
+* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+*/
+
 /**
 * @constructor
 * @extends Tool
@@ -39,7 +47,7 @@ go.Diagram.inherit(ColumnResizingTool, go.Tool);
 /*
 * A small GraphObject used as a resize handle for each column.
 * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
-* @name ColumnResizingTool#handleArchetype 
+* @name ColumnResizingTool#handleArchetype
 * @function.
 * @return {GraphObject}
 */

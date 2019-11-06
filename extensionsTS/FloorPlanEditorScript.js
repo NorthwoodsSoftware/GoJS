@@ -12,6 +12,13 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    /*
+    * This is an extension and not part of the main GoJS library.
+    * Note that the API for this class may change with any version, even point releases.
+    * If you intend to use an extension in production, you should copy the code to your own source directory.
+    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+    * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+    */
     var go = require("../release/go");
     var DrawCommandHandler_1 = require("./DrawCommandHandler");
     var GuidedDraggingTool_1 = require("./GuidedDraggingTool");
@@ -308,7 +315,7 @@
         enable('Redo', cmdhnd.canRedo());
         enable('Cut', cmdhnd.canCutSelection());
         enable('Copy', cmdhnd.canCopySelection());
-        enable('Paste', cmdhnd.canPasteSelection());
+        enable('Paste', cmdhnd.canPasteSelection(myDiagram.toolManager.contextMenuTool.mouseDownPoint));
         enable('Delete', cmdhnd.canDeleteSelection());
         enable('SelectAll', cmdhnd.canSelectAll());
         enable('AlignLeft', cmdhnd.canAlignSelection());
@@ -619,7 +626,7 @@
     exports.cutSelection = cutSelection;
     function copySelection() { myDiagram.commandHandler.copySelection(); }
     exports.copySelection = copySelection;
-    function pasteSelection() { myDiagram.commandHandler.pasteSelection(); }
+    function pasteSelection() { myDiagram.commandHandler.pasteSelection(myDiagram.toolManager.contextMenuTool.mouseDownPoint); }
     exports.pasteSelection = pasteSelection;
     function deleteSelection() { myDiagram.commandHandler.deleteSelection(); }
     exports.deleteSelection = deleteSelection;

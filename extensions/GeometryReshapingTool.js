@@ -3,12 +3,20 @@
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
+/*
+* This is an extension and not part of the main GoJS library.
+* Note that the API for this class may change with any version, even point releases.
+* If you intend to use an extension in production, you should copy the code to your own source directory.
+* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+*/
+
 /**
 * @constructor
 * @extends Tool
 * @class
 * This GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user
-* via the dragging of tool handles. 
+* via the dragging of tool handles.
 * This does not handle Links, whose routes should be reshaped by the LinkReshapingTool.
 * The {@link #reshapeObjectName} needs to identify the named {@link Shape} within the
 * selected {@link Part}.
@@ -47,7 +55,7 @@ go.Diagram.inherit(GeometryReshapingTool, go.Tool);
 /*
 * A small GraphObject used as a reshape handle for each segment.
 * The default GraphObject is a small blue diamond.
-* @name GeometryReshapingTool#handleArchetype 
+* @name GeometryReshapingTool#handleArchetype
 * @function.
 * @return {GraphObject}
 */

@@ -24,20 +24,26 @@
             "undoManager.isEnabled": true
           });
 
-      // define several shared Brushes
-      var bluegrad = $(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-      var greengrad = $(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
-      var redgrad = $(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
-      var yellowgrad = $(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-      var lightgrad = $(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+      var colors = {
+        'red': '#be4b15',
+        'green': '#52ce60',
+        'blue': '#6ea5f8',
+        'lightred': '#fd8852',
+        'lightblue': '#afd4fe',
+        'lightgreen': '#b9e986',
+        'pink': '#faadc1',
+        'purple': '#d689ff',
+        'orange': '#fdb400',
+      }
 
       // the template for each attribute in a node's array of item data
       var itemTempl =
         $(go.Panel, "Horizontal",
           $(go.Shape,
-            { desiredSize: new go.Size(10, 10) },
+            { desiredSize: new go.Size(15, 15), strokeJoin: "round", strokeWidth: 3, stroke: null, margin: 2 },
             new go.Binding("figure", "figure"),
-            new go.Binding("fill", "color")),
+            new go.Binding("fill", "color"),
+            new go.Binding("stroke", "color")),
           $(go.TextBlock,
             {
               stroke: "#333333",
@@ -56,6 +62,7 @@
             fromSpot: go.Spot.AllSides,
             toSpot: go.Spot.AllSides,
             isShadowed: true,
+            shadowOffset: new go.Point(3, 3),
             shadowColor: "#C5C1AA"
           },
           new go.Binding("location", "location").makeTwoWay(),
@@ -63,8 +70,8 @@
           // clear out any desiredSize set by the ResizingTool.
           new go.Binding("desiredSize", "visible", function(v) { return new go.Size(NaN, NaN); }).ofObject("LIST"),
           // define the node's outer shape, which will surround the Table
-          $(go.Shape, "Rectangle",
-            { fill: lightgrad, stroke: "#756875", strokeWidth: 3 }),
+          $(go.Shape, "RoundedRectangle",
+            { fill: 'white', stroke: "#eeeeee", strokeWidth: 3 }),
           $(go.Panel, "Table",
             { margin: 8, stretch: go.GraphObject.Fill },
             $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }),
@@ -72,7 +79,7 @@
             $(go.TextBlock,
               {
                 row: 0, alignment: go.Spot.Center,
-                margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
+                margin: new go.Margin(0, 24, 0, 2),  // leave room for Button
                 font: "bold 16px sans-serif"
               },
               new go.Binding("text", "key")),
@@ -133,32 +140,32 @@
       var nodeDataArray = [
         {
           key: "Products",
-          items: [{ name: "ProductID", iskey: true, figure: "Decision", color: yellowgrad },
-          { name: "ProductName", iskey: false, figure: "Cube1", color: bluegrad },
+          items: [{ name: "ProductID", iskey: true, figure: "Decision", color: colors.red },
+          { name: "ProductName", iskey: false, figure: "Hexagon", color: colors.blue },
           { name: "SupplierID", iskey: false, figure: "Decision", color: "purple" },
           { name: "CategoryID", iskey: false, figure: "Decision", color: "purple" }]
         },
         {
           key: "Suppliers",
-          items: [{ name: "SupplierID", iskey: true, figure: "Decision", color: yellowgrad },
-          { name: "CompanyName", iskey: false, figure: "Cube1", color: bluegrad },
-          { name: "ContactName", iskey: false, figure: "Cube1", color: bluegrad },
-          { name: "Address", iskey: false, figure: "Cube1", color: bluegrad }]
+          items: [{ name: "SupplierID", iskey: true, figure: "Decision", color: colors.red },
+          { name: "CompanyName", iskey: false, figure: "Hexagon", color: colors.blue },
+          { name: "ContactName", iskey: false, figure: "Hexagon", color: colors.blue },
+          { name: "Address", iskey: false, figure: "Hexagon", color: colors.blue }]
         },
         {
           key: "Categories",
-          items: [{ name: "CategoryID", iskey: true, figure: "Decision", color: yellowgrad },
-          { name: "CategoryName", iskey: false, figure: "Cube1", color: bluegrad },
-          { name: "Description", iskey: false, figure: "Cube1", color: bluegrad },
-          { name: "Picture", iskey: false, figure: "TriangleUp", color: redgrad }]
+          items: [{ name: "CategoryID", iskey: true, figure: "Decision", color: colors.red },
+          { name: "CategoryName", iskey: false, figure: "Hexagon", color: colors.blue },
+          { name: "Description", iskey: false, figure: "Hexagon", color: colors.blue },
+          { name: "Picture", iskey: false, figure: "TriangleUp", color: colors.pink }]
         },
         {
           key: "Order Details",
-          items: [{ name: "OrderID", iskey: true, figure: "Decision", color: yellowgrad },
-          { name: "ProductID", iskey: true, figure: "Decision", color: yellowgrad },
-          { name: "UnitPrice", iskey: false, figure: "MagneticData", color: greengrad },
-          { name: "Quantity", iskey: false, figure: "MagneticData", color: greengrad },
-          { name: "Discount", iskey: false, figure: "MagneticData", color: greengrad }]
+          items: [{ name: "OrderID", iskey: true, figure: "Decision", color: colors.red },
+          { name: "ProductID", iskey: true, figure: "Decision", color: colors.red },
+          { name: "UnitPrice", iskey: false, figure: "Circle", color: colors.green },
+          { name: "Quantity", iskey: false, figure: "Circle", color: colors.green },
+          { name: "Discount", iskey: false, figure: "Circle", color: colors.green }]
         },
       ];
       var linkDataArray = [

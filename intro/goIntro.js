@@ -142,7 +142,7 @@ function goIntro() {
   var footer = document.createElement("div");
   footer.className = "footer";
   var msg = "Copyright &copy; 1998-2019 by Northwoods Software Corporation.";
-  if (go && go.version) {
+  if (window.go && go.version) {
     msg = "GoJS&reg; version " + go.version + ". " + msg;
   }
   footer.innerHTML = msg;
@@ -215,6 +215,9 @@ var myMenu = '\
     <ul id="sections" class="classList nav navbar-nav">\
       <li><a href="index.html">Basics</a></li>\
       <li><a href="buildingObjects.html">Building Parts</a></li>\
+      <li><a href="usingModels.html">Using Models</a></li>\
+      <li><a href="dataBinding.html">Data Binding</a></li>\
+      <li><a href="react.html">GoJS with React</a></li>\
       <li><a href="textBlocks.html">TextBlocks</a></li>\
       <li><a href="shapes.html">Shapes</a></li>\
       <li><a href="pictures.html">Pictures</a></li>\
@@ -222,8 +225,6 @@ var myMenu = '\
       <li><a href="tablePanels.html">Table Panels</a></li>\
       <li><a href="brush.html">Brushes</a></li>\
       <li><a href="sizing.html">Sizing Objects</a></li>\
-      <li><a href="usingModels.html">Using Models</a></li>\
-      <li><a href="dataBinding.html">Data Binding</a></li>\
       <li><a href="itemArrays.html">Item Arrays</a></li>\
       <li><a href="changedEvents.html">Changed Events</a></li>\
       <li><a href="transactions.html">Transactions</a></li>\
@@ -244,6 +245,7 @@ var myMenu = '\
       <li><a href="sizedGroups.html">Sized Groups</a></li>\
       <li><a href="selection.html">Selection</a></li>\
       <li><a href="highlighting.html">Highlighting</a></li>\
+      <li><a href="animation.html">Animation</a></li>\
       <li><a href="toolTips.html">ToolTips</a></li>\
       <li><a href="contextmenus.html">Context Menus</a></li>\
       <li><a href="events.html">Diagram Events</a></li>\

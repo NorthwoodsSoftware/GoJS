@@ -95,30 +95,23 @@
           { routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10, reshapable: true, toShortLength: 7 },
           new go.Binding("points").makeTwoWay(),
           // mark each Shape to get the link geometry with isPanelMain: true
-          $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 5 }),
-          $(go.Shape, { isPanelMain: true, stroke: "gray", strokeWidth: 3 }),
-          $(go.Shape, { isPanelMain: true, stroke: "white", strokeWidth: 1, name: "PIPE", strokeDashArray: [10, 10] }),
-          $(go.Shape, { toArrow: "Triangle", fill: "black", stroke: null })
+          $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 7 }),
+          $(go.Shape, { isPanelMain: true, stroke: "gray", strokeWidth: 5 }),
+          $(go.Shape, { isPanelMain: true, stroke: "white", strokeWidth: 3, name: "PIPE", strokeDashArray: [10, 10] }),
+          $(go.Shape, { toArrow: "Triangle", scale: 1.3, fill: "gray", stroke: null })
         );
 
       load();
 
-      loop();  // animate some flow through the pipes
-    }
-
-    function loop() {
-      var diagram = myDiagram;
-      setTimeout(function() {
-        var oldskips = diagram.skipsUndoManager;
-        diagram.skipsUndoManager = true;
-        diagram.links.each(function(link) {
-          var shape = link.findObject("PIPE");
-          var off = shape.strokeDashOffset - 2;
-          shape.strokeDashOffset = (off <= 0) ? 20 : off;
-        });
-        diagram.skipsUndoManager = oldskips;
-        loop();
-      }, 100);
+      // Animate the flow in the pipes
+      var animation = new go.Animation();
+      animation.easing = go.Animation.EaseLinear;
+      myDiagram.links.each(function(link) {
+        animation.add(link.findObject("PIPE"), "strokeDashOffset", 20, 0)
+      });
+      // Run indefinitely
+      animation.runCount = Infinity;
+      animation.start();
     }
 
     function save() {
@@ -144,7 +137,7 @@
     <a>ResizingTool.isGridSnapEnabled</a>, and <a>RotatingTool.snapAngleMultiple</a> alongside <a>RotatingTool.snapAngleEpsilon</a>.
   </p>
   <p>
-    The diagram also uses the <b>loop</b> function to animate the links by adjusting the <a>Shape.strokeDashOffset</a> every 100 ms.
+    There is also a custom animation that modifies the <a>Shape.strokeDashOffset</a> for each link.
   </p>
   <div>
     <div>

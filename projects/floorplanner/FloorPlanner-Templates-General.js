@@ -155,7 +155,7 @@ function makeContextMenu() {
         // Paste Button
         $("ContextMenuButton",
             $(go.TextBlock, "Paste"),
-            { click: function (e, obj) { obj.part.diagram.commandHandler.pasteSelection(obj.part.diagram.lastInput.documentPoint) } }
+            { click: function (e, obj) { obj.part.diagram.commandHandler.pasteSelection(obj.part.diagram.toolManager.contextMenuTool.mouseDownPoint) } }
         ),
         // Show Selection Info Button (only available when selection count > 0)
         $("ContextMenuButton",

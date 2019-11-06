@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>State Chart</title>
@@ -8,25 +9,43 @@
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
   <script src="../release/go.js"></script>
-  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
+      // some constants that will be reused within templates
+      var roundedRectangleParams = {
+        parameter1: 2,  // set the rounded corner
+        spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight  // make content go all the way to inside edges of rounded corners
+      };
+
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
           {
+            "animationManager.initialAnimationStyle": go.AnimationManager.None,
+            "InitialAnimationStarting": function(e) {
+                var animation = e.subject.defaultAnimation;
+                animation.easing = go.Animation.EaseOutExpo;
+                animation.duration = 900;
+                animation.add(e.diagram, 'scale', 0.1, 1);
+                animation.add(e.diagram, 'opacity', 0, 1);
+            },
+
             // have mouse wheel events zoom in and out instead of scroll up and down
             "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
             // support double-click in background creating a new node
             "clickCreatingTool.archetypeNodeData": { text: "new node" },
             // enable undo & redo
-            "undoManager.isEnabled": true
+            "undoManager.isEnabled": true,
+            positionComputation: function (diagram, pt) {
+              return new go.Point(Math.floor(pt.x), Math.floor(pt.y));
+            }
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
+      myDiagram.addDiagramListener("Modified", function (e) {
         var button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
         var idx = document.title.indexOf("*");
@@ -40,12 +59,17 @@
       // define the Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
+          {
+            locationSpot: go.Spot.TopCenter,
+            isShadowed: true, shadowBlur: 1,
+            shadowOffset: new go.Point(0, 1),
+            shadowColor: "rgba(0, 0, 0, .14)"
+          },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           // define the node's outer shape, which will surround the TextBlock
-          $(go.Shape, "RoundedRectangle",
+          $(go.Shape, "RoundedRectangle", roundedRectangleParams,
             {
-              parameter1: 20,  // the corner has a large radius
-              fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }),
+              name: "SHAPE", fill: "#ffffff", strokeWidth: 0,
               stroke: null,
               portId: "",  // this Shape is the Node's port, not the whole Node
               fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
@@ -54,17 +78,19 @@
             }),
           $(go.TextBlock,
             {
-              font: "bold 11pt helvetica, bold arial, sans-serif",
+              font: "bold small-caps 11pt helvetica, bold arial, sans-serif", margin: 7, stroke: "rgba(0, 0, 0, .87)",
               editable: true  // editing the text automatically updates the model data
             },
             new go.Binding("text").makeTwoWay())
         );
 
+
       // unlike the normal selection Adornment, this one includes a Button
       myDiagram.nodeTemplate.selectionAdornmentTemplate =
         $(go.Adornment, "Spot",
           $(go.Panel, "Auto",
-            $(go.Shape, { fill: null, stroke: "blue", strokeWidth: 2 }),
+            $(go.Shape, "RoundedRectangle", roundedRectangleParams,
+            { fill: null, stroke: "#7986cb", strokeWidth: 3 }),
             $(go.Placeholder)  // a Placeholder sizes itself to the selected Node
           ),
           // the button to create a "next" node, at the top-right corner
@@ -76,6 +102,47 @@
             $(go.Shape, "PlusLine", { width: 6, height: 6 })
           ) // end button
         ); // end Adornment
+
+      myDiagram.nodeTemplateMap.add("Start",
+        $(go.Node, "Spot", { desiredSize: new go.Size(75, 75) },
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Shape, "Circle",
+            {
+              fill: "#52ce60", /* green */
+              stroke: null,
+              portId: "",
+              fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+              toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true,
+              cursor: "pointer"
+            }),
+          $(go.TextBlock, "Start",
+            {
+              font: "bold 16pt helvetica, bold arial, sans-serif",
+              stroke: "whitesmoke"
+            })
+        )
+      );
+
+      myDiagram.nodeTemplateMap.add("End",
+        $(go.Node, "Spot", { desiredSize: new go.Size(75, 75) },
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Shape, "Circle",
+            {
+              fill: "maroon",
+              stroke: null,
+              portId: "",
+              fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+              toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true,
+              cursor: "pointer"
+            }),
+          $(go.Shape, "Circle", { fill: null, desiredSize: new go.Size(65, 65), strokeWidth: 2, stroke: "whitesmoke" }),
+          $(go.TextBlock, "End",
+            {
+              font: "bold 16pt helvetica, bold arial, sans-serif",
+              stroke: "whitesmoke"
+            })
+        )
+      );
 
       // clicking the button inserts a new node to the right of the selected node,
       // and adds a link to that new node
@@ -119,21 +186,33 @@
       myDiagram.linkTemplate =
         $(go.Link,  // the whole link panel
           {
-            curve: go.Link.Bezier, adjusting: go.Link.Stretch,
+            curve: go.Link.Bezier,
+            adjusting: go.Link.Stretch,
             reshapable: true, relinkableFrom: true, relinkableTo: true,
             toShortLength: 3
           },
           new go.Binding("points").makeTwoWay(),
           new go.Binding("curviness"),
           $(go.Shape,  // the link shape
-            { strokeWidth: 1.5 }),
+            { strokeWidth: 1.5 },
+            new go.Binding('stroke', 'progress', function(progress) {
+              return progress ? "#52ce60" /* green */ : 'black';
+            }),
+            new go.Binding('strokeWidth', 'progress', function(progress) {
+              return progress ? 2.5 : 1.5;
+            })
+            ),
           $(go.Shape,  // the arrowhead
-            { toArrow: "standard", stroke: null }),
+            { toArrow: "standard", stroke: null },
+            new go.Binding('fill', 'progress', function(progress) {
+              return progress ? "#52ce60" /* green */ : 'black';
+            }),
+            ),
           $(go.Panel, "Auto",
             $(go.Shape,  // the label background, which becomes transparent around the edges
               {
                 fill: $(go.Brush, "Radial",
-                  { 0: "rgb(255, 255, 255)", 0.3: "rgb(255, 255, 255)", 1: "rgba(255, 255, 255, 0)" }),
+                  { 0: "rgb(245, 245, 245)", 0.7: "rgb(245, 245, 245)", 1: "rgba(245, 245, 245, 0)" }),
                 stroke: null
               }),
             $(go.TextBlock, "transition",  // the label text
@@ -161,67 +240,74 @@
     }
   </script>
 </head>
+
 <body onload="init()">
-<div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 400px"></div>
-  <p>
-    This sample creates state charts, and more specifically, finite-state machines.
-    A <em>finite-state machine</em> is a mathematical model of computation used to design
-    computer programs and sequential logic circuits.
-  </p>
-  <p>
-    The text is editable for both the nodes and the links.
-    The user can draw as many links from one node to another node as desired,
-    and the links can be reshaped or deleted when selected.
-    Double-clicking in the background of the diagram creates a new node.
-    The mouse wheel is set to zoom in and out instead of scroll.
-  </p>
-  <p>
-    This sample customizes the <a>Part.selectionAdornmentTemplate</a>
-    of the node to a template that contains a button
-    The button is positioned to be at the Top-Right corner of the node by
-    being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
-  </p>
-  <p>
-    The Button's <a>GraphObject.click</a> method creates a new node data,
-    adds it to the model, and creates a link from the original node data to the new node data.
-    All of this is done inside a transaction, so that it can be undone by the user
-    (Ctrl+Z and Ctrl+Y will undo and redo transactions). After the node is created,
-    <a>Diagram.scrollToRect</a> is called in case it is off-screen.
-  </p>
-  <div>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 460px; background: whitesmoke"></div>
+    <p>
+      This sample creates a state chart to story-board an online shopping experience.
+    </p>
+    <p>
+      The text is editable for both the nodes and the links.
+      The user can draw as many links from one node to another node as desired,
+      and the links can be reshaped or deleted when selected.
+      Double-clicking in the background of the diagram creates a new node.
+      The mouse wheel is set to zoom in and out instead of scroll.
+    </p>
+    <p>
+      This sample customizes the <a>Part.selectionAdornmentTemplate</a>
+      of the node to a template that contains a button
+      The button is positioned to be at the Top-Right corner of the node by
+      being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
+    </p>
+    <p>
+      The Button's <a>GraphObject.click</a> method creates a new node data,
+      adds it to the model, and creates a link from the original node data to the new node data.
+      All of this is done inside a transaction, so that it can be undone by the user
+      (Ctrl+Z and Ctrl+Y will undo and redo transactions). After the node is created,
+      <a>Diagram.scrollToRect</a> is called in case it is off-screen.
+    </p>
     <div>
-      <button id="SaveButton" onclick="save()">Save</button>
-      <button onclick="load()">Load</button>
-      Diagram Model saved in JSON format:
-    </div>
-    <textarea id="mySavedModel" style="width:100%;height:300px">
+      <div>
+        <button id="SaveButton" onclick="save()">Save</button>
+        <button onclick="load()">Load</button>
+        Diagram Model saved in JSON format:
+      </div>
+      <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeKeyProperty": "id",
   "nodeDataArray": [
-    { "id": 0, "loc": "120 120", "text": "Initial" },
-    { "id": 1, "loc": "330 120", "text": "First down" },
-    { "id": 2, "loc": "226 376", "text": "First up" },
-    { "id": 3, "loc": "60 276", "text": "Second down" },
-    { "id": 4, "loc": "226 226", "text": "Wait" }
+  {"id":-1, "loc":"155 -138", "category":"Start"},
+  {"id":0, "loc":"190 15", "text":"Shopping"},
+  {"id":1, "loc":"353 32", "text":"Browse Items"},
+  {"id":2, "loc":"353 166", "text":"Search Items"},
+  {"id":3, "loc":"512 12", "text":"View Item"},
+  {"id":4, "loc":"661 17", "text":"View Cart"},
+  {"id":5, "loc":"644 171", "text":"Update Cart"},
+  {"id":6, "loc":"800 96", "text":"Checkout"},
+  {"id":-2, "loc":"757 229", "category":"End"}
   ],
   "linkDataArray": [
-    { "from": 0, "to": 0, "text": "up or timer", "curviness": -20 },
-    { "from": 0, "to": 1, "text": "down", "curviness": 20 },
-    { "from": 1, "to": 0, "text": "up (moved)\nPOST", "curviness": 20 },
-    { "from": 1, "to": 1, "text": "down", "curviness": -20 },
-    { "from": 1, "to": 2, "text": "up (no move)" },
-    { "from": 1, "to": 4, "text": "timer" },
-    { "from": 2, "to": 0, "text": "timer\nPOST" },
-    { "from": 2, "to": 3, "text": "down" },
-    { "from": 3, "to": 0, "text": "up\nPOST\n(dblclick\nif no move)" },
-    { "from": 3, "to": 3, "text": "down or timer", "curviness": 20 },
-    { "from": 4, "to": 0, "text": "up\nPOST" },
-    { "from": 4, "to": 4, "text": "down" }
+    { "from": -1, "to": 0, "text": "Visit online store" },
+    { "from": 0, "to": 1,  "progress": "true", "text": "Browse" },
+    { "from": 0, "to": 2,  "progress": "true", "text": "Use search bar" },
+    { "from": 1, "to": 2,  "progress": "true", "text": "Use search bar" },
+    { "from": 2, "to": 3,  "progress": "true", "text": "Click item" },
+    { "from": 2, "to": 2,  "text": "Another search", "curviness": 20 },
+    { "from": 1, "to": 3,  "progress": "true", "text": "Click item" },
+    { "from": 3, "to": 0,  "text": "Not interested", "curviness": -100 },
+    { "from": 3, "to": 4,  "progress": "true", "text": "Add to cart" },
+    { "from": 4, "to": 0,  "text": "More shopping", "curviness": -150 },
+    { "from": 4, "to": 5,  "text": "Update needed", "curviness": -50 },
+    { "from": 5, "to": 4,  "text": "Update made" },
+    { "from": 4, "to": 6,  "progress": "true", "text": "Proceed" },
+    { "from": 6, "to": 5,  "text": "Update needed" },
+    { "from": 6, "to": -2, "progress": "true", "text": "Purchase made" }
   ]
 }
     </textarea>
+    </div>
   </div>
-</div>
 </body>
+
 </html>

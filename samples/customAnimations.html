@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Custom Animation Demo</title>
+  <meta name="description" content="Custom animation examples for GoJS." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+
+  <style>
+    .flex-container {
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: column;
+    }
+    .flex-container>div {
+      margin-bottom: 10px;
+    }
+  </style>
+
+
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+        {
+          "clickCreatingTool.archetypeNodeData": {
+            color: "palegreen",
+            key: "node"
+          },
+          "undoManager.isEnabled": true,
+          "animationManager.isInitial": false, // To use custom initial animation instead
+          "InitialLayoutCompleted": animateFadeIn // animate with this function
+        });
+
+
+      function animateFadeIn(e) {
+        var diagram = e.diagram;
+        var animation = new go.Animation();
+        animation.isViewportUnconstrained = true;
+        animation.easing = go.Animation.EaseOutExpo; // Looks better for a fade in animation
+        animation.duration = 900;
+        animation.add(diagram, 'position', diagram.position.copy().offset(0, diagram instanceof go.Palette ? 200 : -200), diagram.position);
+        animation.add(diagram, 'opacity', 0, 1);
+        animation.start();
+      }
+
+      // define a simple Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          {
+            contextClick: addNode,
+            locationSpot: go.Spot.Center
+          },
+          new go.Binding("location", "loc").makeTwoWay(),
+          $(go.Shape, "RoundedRectangle", {
+            strokeWidth: 2,
+            portId: "",  // this Shape is the Node's port, not the whole Node
+            fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+            toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true,
+            cursor: "pointer"
+          },
+            // Shape.fill is bound to Node.data.color
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 10, font: '14px sans-serif' },  // some room around the text
+            // TextBlock.text is bound to Node.data.key
+            new go.Binding("text", "key"))
+        );
+
+      // create the model data that will be represented by Nodes and Links
+      myDiagram.model = new go.GraphLinksModel(
+        [
+          { key: "Alpha", loc: new go.Point(0, 0), color: "lightblue" },
+          { key: "Beta", loc: new go.Point(150, 0), color: "orange" },
+          { key: "Gamma", loc: new go.Point(0, 150), color: "lightgreen" },
+          { key: "Delta", loc: new go.Point(150, 150), color: "pink" }
+        ],
+        [
+          // No links to start
+        ]);
+
+      // This animation can be used in LinkDrawn Diagram listeners to animate
+      // from a straight temporary link to a Bezier finished link
+      // Custom animation for the curviness of a bezier link
+      go.AnimationManager.defineAnimationEffect('curviness',
+        function (obj, startValue, endValue, easing, currentTime, duration, animationState) {
+          if (isNaN(startValue)) startValue = 0;
+          if (isNaN(endValue)) endValue = 20;
+          obj.curviness = easing(currentTime, startValue, endValue - startValue, duration);
+        }
+      );
+
+      // This animation can be used in LinkDrawn Diagram listeners to animate
+      // from a straight temporary link to an Orthogonal finished link
+      go.AnimationManager.defineAnimationEffect('orthogonalLinkanim',
+        function (link, initPoints, tempPoints, easing, currentTime, duration, animation) {
+          var animationState = animation.getTemporaryState(link);
+          if (animationState.initial === undefined) {
+            // On the first animaiton tick, save the initial points
+            animationState.initial = true;
+            var pts = link.points.copy();
+            tempPoints.points = pts;
+            animationState.startPt = pts.first();
+            animationState.toPt1 = pts.elt(2);
+            animationState.toPt2 = pts.elt(3);
+            animationState.endPt = pts.last();
+          }
+          var newpt1 = new go.Point(
+            easing(currentTime, animationState.startPt.x, animationState.toPt1.x - animationState.startPt.x, duration),
+            easing(currentTime, animationState.startPt.y, animationState.toPt1.y - animationState.startPt.y, duration));
+          var newpt2 = new go.Point(
+            easing(currentTime, animationState.endPt.x, -(animationState.endPt.x - animationState.toPt2.x), duration),
+            easing(currentTime, animationState.endPt.y, -(animationState.endPt.y - animationState.toPt2.y), duration));
+
+          // Setting the array of points will automatically call makeGeometry which will redraw the segments of the line
+          link.points = [animationState.startPt, tempPoints.points.elt(1),
+            newpt1, newpt2,
+          tempPoints.points.elt(4), animationState.endPt];
+        }
+      );
+
+      go.AnimationManager.defineAnimationEffect('corner',
+        function (obj, startValue, endValue, easing, currentTime, duration, animation) {
+          // If no corner set, default to 0 -> 20
+          startValue = startValue || 0;
+          endValue = endValue || 20;
+          obj.corner = easing(currentTime, startValue, endValue - startValue, duration);
+        }
+      );
+
+      myDiagram.addDiagramListener('LinkDrawn', function (e) {
+        var link = e.subject;
+        var animation = new go.Animation();
+        var linkChoice = document.getElementById("links").value
+        if (linkChoice == "bezier") {
+          link.curve = go.Link.Bezier;
+          animation.easing = elasticEase;
+          animation.add(link, "curviness", 0, link.curviness);
+          animation.duration = 500;
+        } else if (linkChoice == "orthogonal") {
+          // The orthogonal animation is two animations, chained together. One to modify the points,
+          // and then another to modify the link.corner value.
+
+          // Store the initial link.corner value,
+          // then set it to 0 so that in between animations it does not revert back to the original state
+          var initCorner = link.corner;
+          link.corner = 0;
+          // Store the original points to this object
+          var tempPoints = {};
+          animation.add(link, "orthogonalLinkanim", link.points, tempPoints);
+          animation.duration = 300;
+          // Chain animation after first one is completed
+          animation.finished = function () {
+            // Set points back to what they were before the animation
+            myDiagram.startTransaction("Fix Points");
+            link.points = tempPoints.points;
+            myDiagram.commitTransaction("Fix Points");
+            // Need to make a new animation object
+            var animation2 = new go.Animation()
+            animation2.add(link, "corner", 0, initCorner);
+            animation2.duration = 250;
+            animation2.start();
+          }
+          animation.start();
+
+
+          console.log(link.points.copy());
+          link.routing = go.Link.Orthogonal;
+          // NYI ortho animation
+          link.ensureBounds();
+          console.log(link.points.copy());
+        }
+        animation.start();
+      });
+
+
+      go.AnimationManager.defineAnimationEffect('bounceDelete',
+        function (obj, startValue, endValue, easing, currentTime, duration, animation) {
+          var animationState = animation.getTemporaryState(obj);
+          if (animationState.initial === undefined) {
+            // Set the initial positions as part of the animationState data
+            animationState.yPos = obj.location.y;
+            animationState.xPos = obj.location.x;
+            animationState.yVelo = 0;
+            animationState.xVelo = 0;
+            animationState.newTime = 0;
+            animationState.oldTime = 0;
+            animationState.initial = true;
+          }
+          obj.location = getPointBounceDelete(currentTime, obj, animationState, obj.diagram);
+        }
+      );
+
+      //Get the point the object should be at based upon the time and original point
+      function getPointBounceDelete(currentTime, obj, animationState, diagram) {
+        if (diagram === null) return new go.Point(animationState.xPos, animationState.yPos);
+        let height = obj.actualBounds.height;
+        animationState.newTime = currentTime;
+        // Animation uses a change in time in order to be more consistant
+        let delTime = (animationState.newTime - animationState.oldTime) / 3;
+        animationState.yVelo += .05 * delTime;
+        // Add a slight easing to the x movement at the beginning of the animation
+        if (currentTime < 200) {
+          animationState.xVelo = currentTime / 300;
+        }
+        // Adjust positions based on the velocities and the change in time
+        animationState.yPos += animationState.yVelo * delTime;
+        animationState.xPos += animationState.xVelo * delTime;
+        // Check to see if the Y position will be less than the bottom of the diagram, if so,
+        // change the direction and scale down the velocity and set the position to the bottom of the diagram
+        if (animationState.yPos > diagram.viewportBounds.height / 2 - height) {
+          animationState.yVelo = -.75 * animationState.yVelo;
+          animationState.yPos = diagram.viewportBounds.height / 2 - height;
+        }
+        let myPoint = new go.Point(animationState.xPos, animationState.yPos)
+        // Get the new old time for use in the next iteration
+        animationState.oldTime = animationState.newTime;
+        return myPoint;
+      }
+
+      myDiagram.addDiagramListener('SelectionDeleting', function (e) {
+        var deletionSelection = document.getElementById('deletion');
+        var animation = new go.Animation();
+        var diagram = e.diagram;
+        e.subject.each(function (p) {
+          // Because we are deleting this part, we cannot animate it, instead we must animate a temporary copy
+          // The animation handles this via addTemporaryPart, which must be passed a copy
+          var part = p.copy();
+          animation.addTemporaryPart(part, diagram);
+          var initPosition = part.position.copy()
+          part.locationSpot = go.Spot.Center;
+          part.position = initPosition;
+          switch (deletionSelection.value) {
+            case "spinOut":
+              animation.add(part, "angle", part.angle, part.angle + 1000);
+              animation.add(part, "scale", part.scale, 0.01);
+              break;
+            case "fadeOut":
+              animation.add(part, "opacity", part.opacity, 0);
+              break;
+            case "zoomOut":
+              animation.add(part, "scale", part.scale, 0.01);
+              break;
+            case "floatOut":
+              animation.add(part, "opacity", part.opacity, 0);
+              animation.add(part, "position", part.position, part.position.copy().add(new go.Point(0, -80)));
+              break;
+              case "bounceOut":
+              animation.add(part, "bounceDelete", part.location); // does't need an end value, bounceDelete determines one
+              animation.add(part, "scale", part.scale, 0.01);
+              animation.duration = 1500;
+              animation.isViewportUnconstrained = true;
+              break;
+            default:
+              // nothing animates
+              break;
+          }
+        });
+        animation.start();
+      });
+
+      myDiagram.addDiagramListener('ClipboardPasted', function (e) {
+        var creationSelection = document.getElementById('creation');
+        // For best performance, be sure to use only one Animation for the entire selection
+        // instead of creating one animation for each object in the selection
+        var animation = new go.Animation();
+        e.subject.each(function (part) {
+          addCreatedPart(part, animation, creationSelection.value)
+        });
+        animation.start();
+      });
+
+      myDiagram.addDiagramListener('PartCreated', function (e) { // From ClickCreatingTool
+        var creationSelection = document.getElementById('creation');
+        var animation = new go.Animation();
+        addCreatedPart(e.subject, animation, creationSelection.value)
+        animation.start();
+      });
+
+      function addCreatedPart(part, animation, creationSelection) {
+        switch (creationSelection) {
+          case "spinIn":
+            animation.add(part, "angle", part.angle + 1000, part.angle);
+            animation.add(part, "scale", 0.01, part.scale);
+            break;
+          case "fadeIn":
+            animation.add(part, "opacity", 0, part.opacity);
+            break;
+          case "zoomIn":
+            animation.add(part, "scale", 0.01, part.scale);
+            break;
+          case "floatIn":
+            animation.add(part, "opacity", 0, part.opacity);
+            animation.add(part, "location", part.location.copy().add(new go.Point(0, -80)), part.location);
+            break;
+          default:
+            // nothing animates
+            break;
+        }
+      }
+
+
+      document.getElementById('addNode').addEventListener('click', function (e) { addNode(); });
+
+
+      function addNode() {
+        var diagram = myDiagram;
+        var tempNodes = new go.List();
+        diagram.startTransaction("Add States");
+        diagram.nodes.each(function (node) {
+          if (node.isSelected) {
+            tempNodes.push(node);
+          }
+        })
+        var animation = new go.Animation();
+        // Set the easing to a custom easing function
+        animation.easing = elasticEase;
+        // Add a new node to the right of each node
+        tempNodes.each(function (part) {
+          // get the node data for which the user clicked the button
+          var fromNode = part;
+          var fromData = part.data;
+          // create a new "State" data object, positioned off to the right of the adorned Node
+          var toData = { key: "new" };
+          toData.color = "purple";
+          var p = fromNode.location.copy();
+          // Place the new node randomly somewhere along a circular 200px radius
+          var angle = Math.random() * Math.PI * 2;
+          p.x += Math.cos(angle) * 200;
+          p.y += Math.sin(angle) * 200;
+          toData.loc = p;
+          // add the new node data to the model
+          var model = diagram.model;
+          model.addNodeData(toData);
+
+          // create a link data from the old node data to the new node data
+          var linkdata = {
+            from: model.getKeyForNodeData(fromData),  // or just: fromData.key
+            to: model.getKeyForNodeData(toData),
+          };
+          // and add the link data to the model
+          model.addLinkData(linkdata);
+
+          var newnode = diagram.findNodeForData(toData);
+          // Animate each newly created node
+          animation.add(newnode, "position", part.location, newnode.location);
+        });
+
+        animation.start();
+        diagram.commitTransaction("Add States");
+      };
+
+      document.getElementById('reloadModel').addEventListener('click', function (e) {
+        myDiagram.model = go.Model.fromJSON(myDiagram.model.toJSON())
+      });
+
+      // Custom easing function used in some animations
+      function elasticEase(currentTime, startValue, byValue, duration) {
+        var ts = (currentTime /= duration) * currentTime;
+        var tc = ts * currentTime;
+        return startValue + byValue * (56 * tc * ts + -175 * ts * ts + 200 * tc + -100 * ts + 20 * currentTime);
+      }
+    }
+  </script>
+</head>
+
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 700px; height: 600px;"></div>
+
+    <div class="flex-container" style="width:700px">
+      <p style="margin-bottom: 0;">
+        This extension implements several custom animations within GoJS. It may be useful to copy some of them into your own project.
+      </p>
+      <ul>
+        <li>Double click in the Diagram background to create a node, or copy and paste nodes, to view creation animations.
+        <li>Delete a node to view deletion animations.
+        <li>Draw links to see new link creation animations.
+        <li>Select a node and press the + button to see a link-and-node creation animation.
+        <li>Reload the model to see the custom load animation
+      </ul>
+    </div>
+
+    <div class="flex-container">
+      <p><strong>Options:</strong></p>
+      <div>
+        Creation Animation
+        <select id="creation">
+          <option value="spinIn">Spin In</option>
+          <option value="fadeIn">Fade In</option>
+          <option value="floatIn">Float In</option>
+          <option value="zoomIn">Zoom In</option>
+          <option>--None--</option>
+        </select>
+      </div>
+      <div>
+        Deletion Animation
+        <select id="deletion">
+          <option value="spinOut">Spin Out</option>
+          <option value="fadeOut">Fade Out</option>
+          <option value="floatOut">Float Out</option>
+          <option value="zoomOut">Zoom Out</option>
+          <option value="bounceOut">Bounce Out</option>
+          <option>--None--</option>
+        </select>
+      </div>
+      <div>
+        Drawn Link Style
+        <select id="links">
+          <option value="bezier">Bezier Curve</option>
+          <option value="orthogonal">Orthogonal Curve</option>
+          <option>Linear (no animation)</option>
+        </select>
+      </div>
+    </div>
+    <button id="addNode">Add Node + Link from selected Node</button>
+    <button id="reloadModel">Reload model</button>
+  </div>
+</body>
+
+</html>

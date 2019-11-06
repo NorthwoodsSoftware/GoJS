@@ -593,14 +593,20 @@ export class Floorplan extends go.Diagram {
 
   /**
    * Change the units conversion factor for the Floorplan.
-   * @param unitsConversionFactorInput The input element that contains the units conversion factor for the Floorplan
+   * @param {HTMLInputElement} unitsConversionFactorInput The input element that contains the units conversion factor for the Floorplan
+   * @param {HTMLInputElement} gridSizeInput Optional. If provided, the grid will be updated too
    */
-  public changeUnitsConversionFactor(unitsConversionFactorInput: HTMLInputElement): void {
+  public changeUnitsConversionFactor(unitsConversionFactorInput: HTMLInputElement, gridSizeInput?: HTMLInputElement): void {
     const floorplan: Floorplan = this;
     const val: number = parseFloat(unitsConversionFactorInput.value);
     if (isNaN(val) || !val || val === undefined) return;
     floorplan.skipsUndoManager = true;
     floorplan.model.set(floorplan.model.modelData, 'unitsConversionFactor', val);
+
+    if (gridSizeInput) {
+      floorplan.changeGridSize(gridSizeInput);
+    }
+
     floorplan.skipsUndoManager = false;
   }
 
@@ -752,7 +758,7 @@ export class Floorplan extends go.Diagram {
 
         // with these 2 entries (walls / mitering sides), we now get a point that would definitely be in the room (if the area is still enclosed)
         // first, get the segments implied by mitering sides of the walls
-        let w1: go.Group | null = null; let w2: go.Group | null = null;  let s1: number | null = null; let s2: number | null = null;
+        let w1: go.Group | null = null; let w2: go.Group | null = null; let s1: number | null = null; let s2: number | null = null;
         if (e1 !== null && e2 !== null) {
           w1 = fp.findNodeForKey(e1[0]) as go.Group; s1 = e1[1];
           w2 = fp.findNodeForKey(e2[0]) as go.Group; s2 = e2[1];
@@ -895,7 +901,8 @@ export class Floorplan extends go.Diagram {
       if (floorImage === null || floorImage === undefined) {
         floorImage = 'images/textures/floor1.jpg';
       }
-      const roomData = { key: 'Room', category: 'RoomNode', name: 'Room Name',
+      const roomData = {
+        key: 'Room', category: 'RoomNode', name: 'Room Name',
         boundaryWalls: boundaryWalls, holes: holes, floorImage: floorImage, showLabel: true, showFlooringOptions: true
       };
       fp.model.addNodeData(roomData);
@@ -967,7 +974,7 @@ export class Floorplan extends go.Diagram {
      * @return {go.Set<Array<any>>}
      */
     function recursivelyFindPaths(wall: go.Group, path: Array<any> | null, possiblePaths: go.Set<Array<any>>,
-                                  seenWalls: go.Set<go.Group> | null, origWall: go.Group, prevPt: go.Point | null): go.Set<Array<any>> | null {
+      seenWalls: go.Set<go.Group> | null, origWall: go.Group, prevPt: go.Point | null): go.Set<Array<any>> | null {
 
       if (wall === null) {
         return null;
@@ -1287,10 +1294,10 @@ export class Floorplan extends go.Diagram {
     const offendingWalls: go.Set<go.Group> = new go.Set<go.Group>();
     walls.iterator.each(function(w: go.Group) {
       // if (!w.data.isDivider) {
-        const s: go.Point = w.data.startpoint; const e: go.Point = w.data.endpoint;
-        if (fp.isPointInPolygon(roomOuterBoundaryPts.toArray(), s) || fp.isPointInPolygon(roomOuterBoundaryPts.toArray(), e)) {
-          offendingWalls.add(w);
-        }
+      const s: go.Point = w.data.startpoint; const e: go.Point = w.data.endpoint;
+      if (fp.isPointInPolygon(roomOuterBoundaryPts.toArray(), s) || fp.isPointInPolygon(roomOuterBoundaryPts.toArray(), e)) {
+        offendingWalls.add(w);
+      }
       // }
     });
 
@@ -1309,7 +1316,7 @@ export class Floorplan extends go.Diagram {
      * @return {Array<any>} The internal cluster path
      */
     function recursivelyFindInteralClusterPath(wall: go.Group, iwalls: go.List<go.Group>,
-                                               ip: go.Point, seenIp: go.Set<string>, path: Array<any>, bw1: go.Group, bw2: go.Group): Array<any> {
+      ip: go.Point, seenIp: go.Set<string>, path: Array<any>, bw1: go.Group, bw2: go.Group): Array<any> {
 
       seenIp.add(go.Point.stringify(ip)); // remember we've handled this intersection point
 
@@ -2086,17 +2093,17 @@ export class Floorplan extends go.Diagram {
       }
       // else {
 
-        pts = [data.startpoint, data.endpoint, data.smpt1, data.smpt2, data.empt1, data.empt2];
-        geo = new go.Geometry()
-          .add(new go.PathFigure(data.startpoint.x, data.startpoint.y)
-            .add(new go.PathSegment(go.PathSegment.Line, data.smpt1.x, data.smpt1.y))
-            .add(new go.PathSegment(go.PathSegment.Line, data.empt1.x, data.empt1.y))
-            .add(new go.PathSegment(go.PathSegment.Line, data.endpoint.x, data.endpoint.y))
-            .add(new go.PathSegment(go.PathSegment.Line, data.empt2.x, data.empt2.y))
-            .add(new go.PathSegment(go.PathSegment.Line, data.smpt2.x, data.smpt2.y))
-            .add(new go.PathSegment(go.PathSegment.Line, data.startpoint.x, data.startpoint.y))
-          );
-     // }
+      pts = [data.startpoint, data.endpoint, data.smpt1, data.smpt2, data.empt1, data.empt2];
+      geo = new go.Geometry()
+        .add(new go.PathFigure(data.startpoint.x, data.startpoint.y)
+          .add(new go.PathSegment(go.PathSegment.Line, data.smpt1.x, data.smpt1.y))
+          .add(new go.PathSegment(go.PathSegment.Line, data.empt1.x, data.empt1.y))
+          .add(new go.PathSegment(go.PathSegment.Line, data.endpoint.x, data.endpoint.y))
+          .add(new go.PathSegment(go.PathSegment.Line, data.empt2.x, data.empt2.y))
+          .add(new go.PathSegment(go.PathSegment.Line, data.smpt2.x, data.smpt2.y))
+          .add(new go.PathSegment(go.PathSegment.Line, data.startpoint.x, data.startpoint.y))
+        );
+      // }
 
       geo.normalize();
       shape.geometry = geo;
@@ -2285,7 +2292,7 @@ export class Floorplan extends go.Diagram {
    * @param {number} strokeWidth The stroke width for the link. Optional. Default is 2.
    */
   public buildDimensionLink(wall: go.Group, index: number, point1: go.Point, point2: go.Point, angle: number,
-                            wallOffset: number, soloWallFlag: boolean, floorplan: Floorplan, miteringSide: number, opacity?: number, stroke?: string, strokeWidth?: number): void {
+    wallOffset: number, soloWallFlag: boolean, floorplan: Floorplan, miteringSide: number, opacity?: number, stroke?: string, strokeWidth?: number): void {
     point1 = floorplan.getAdjustedPoint(point1, wall, angle, wallOffset);
     point2 = floorplan.getAdjustedPoint(point2, wall, angle, wallOffset);
     if (opacity === undefined || opacity === null || isNaN(opacity)) {
@@ -2299,8 +2306,10 @@ export class Floorplan extends go.Diagram {
     }
     const data1 = { key: wall.data.key + 'PointNode' + miteringSide + index, category: 'PointNode', loc: go.Point.stringify(point1) };
     const data2 = { key: wall.data.key + 'PointNode' + miteringSide + (index + 1), category: 'PointNode', loc: go.Point.stringify(point2) };
-    const data3 = { key: wall.data.key + 'DimensionLink', category: 'DimensionLink', from: data1.key, to: data2.key,
-    angle: angle, wall: wall.data.key, soloWallFlag: soloWallFlag };
+    const data3 = {
+      key: wall.data.key + 'DimensionLink', category: 'DimensionLink', from: data1.key, to: data2.key,
+      angle: angle, wall: wall.data.key, soloWallFlag: soloWallFlag
+    };
     const pointNode1: go.Node = makePointNode();
     const pointNode2: go.Node = makePointNode();
     const link: go.Link = makeDimensionLink(opacity, stroke, strokeWidth);
@@ -2384,7 +2393,7 @@ export class Floorplan extends go.Diagram {
 
 
     // create array of selected wall endpoints and selected wallPart endpoints along the wall that represent measured stretches
-    walls.iterator.each(function (wall) {
+    walls.iterator.each(function(wall) {
 
       for (let i = 1; i < 3; i++) {
         const startpoint: go.Point = wall.data['smpt' + i];
@@ -2398,25 +2407,25 @@ export class Floorplan extends go.Diagram {
 
         // store all endpoints along with the part they correspond to (used later to either create DimensionLinks or simply adjust them)
         const wallPartEndpoints: Array<go.Point> = [];
-        wall.memberParts.iterator.each(function (wallPart) {
-            if (wallPart.isSelected) {
-                const endpoints = getWallPartEndpoints(wallPart);
-                const ep1: go.Point = endpoints[0];
-                const ep2: go.Point = endpoints[1];
-                const newEp1: go.Point = floorplan.rotateAndTranslatePoint(ep1, angle + 0, wall.data.thickness / 2);
-                const newEp2: go.Point = floorplan.rotateAndTranslatePoint(ep2, angle + 0, wall.data.thickness / 2);
-                // const newEp1: go.Point = ep1.projectOntoLineSegmentPoint(startpoint, endpoint);
-                // const newEp2: go.Point = ep2.projectOntoLineSegmentPoint(startpoint, endpoint);
+        wall.memberParts.iterator.each(function(wallPart) {
+          if (wallPart.isSelected) {
+            const endpoints = getWallPartEndpoints(wallPart);
+            const ep1: go.Point = endpoints[0];
+            const ep2: go.Point = endpoints[1];
+            const newEp1: go.Point = floorplan.rotateAndTranslatePoint(ep1, angle + 0, wall.data.thickness / 2);
+            const newEp2: go.Point = floorplan.rotateAndTranslatePoint(ep2, angle + 0, wall.data.thickness / 2);
+            // const newEp1: go.Point = ep1.projectOntoLineSegmentPoint(startpoint, endpoint);
+            // const newEp2: go.Point = ep2.projectOntoLineSegmentPoint(startpoint, endpoint);
 
-                wallPartEndpoints.push(ep1);
-                wallPartEndpoints.push(ep2);
-            }
+            wallPartEndpoints.push(ep1);
+            wallPartEndpoints.push(ep2);
+          }
         });
         // sort all wallPartEndpoints by x coordinate left to right/ up to down
-        wallPartEndpoints.sort(function (a, b) {
-            if ((a.x + a.y) > (b.x + b.y)) return 1;
-            if ((a.x + a.y) < (b.x + b.y)) return -1;
-            else return 0;
+        wallPartEndpoints.sort(function(a, b) {
+          if ((a.x + a.y) > (b.x + b.y)) return 1;
+          if ((a.x + a.y) < (b.x + b.y)) return -1;
+          else return 0;
         });
         wallPartEndpoints.unshift(firstWallPt);
         wallPartEndpoints.push(lastWallPt);
@@ -2425,60 +2434,60 @@ export class Floorplan extends go.Diagram {
         let k: number = 1; // k is a counter for the indices of PointNodes
         // build / edit dimension links for each stretch, defined by pairs of points in wallPartEndpoints
         for (let j: number = 0; j < wallPartEndpoints.length - 1; j++) {
-            let linkPoint1: go.Node | null = null; let linkPoint2: go.Node | null = null;
-            const itr = floorplan.pointNodes.iterator;
-            while (itr.next()) {
-              const node: go.Node = itr.value;
-              if (node.data.key === wall.data.key + 'PointNode' + k) {
-                linkPoint1 = node;
-              }
-              if (node.data.key === wall.data.key + 'PointNode' + (k + 1)) {
-                linkPoint2 = node;
-              }
+          let linkPoint1: go.Node | null = null; let linkPoint2: go.Node | null = null;
+          const itr = floorplan.pointNodes.iterator;
+          while (itr.next()) {
+            const node: go.Node = itr.value;
+            if (node.data.key === wall.data.key + 'PointNode' + k) {
+              linkPoint1 = node;
             }
+            if (node.data.key === wall.data.key + 'PointNode' + (k + 1)) {
+              linkPoint2 = node;
+            }
+          }
 
-            if (linkPoint1 !== null && linkPoint2 !== null) {
-                const newLoc1: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[j].copy(), wall, angle, 15);
-                const newLoc2: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[j + 1].copy(), wall, angle, 15);
-                linkPoint1.data.loc = go.Point.stringify(newLoc1);
-                linkPoint2.data.loc = go.Point.stringify(newLoc2);
-                linkPoint1.updateTargetBindings();
-                linkPoint2.updateTargetBindings();
-            } else {
-              floorplan.buildDimensionLink(wall, k, wallPartEndpoints[j].copy(), wallPartEndpoints[j + 1].copy(), angle, 15, false, floorplan, i, .5, 'gray', 1);
-            }
-            k += 2;
+          if (linkPoint1 !== null && linkPoint2 !== null) {
+            const newLoc1: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[j].copy(), wall, angle, 15);
+            const newLoc2: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[j + 1].copy(), wall, angle, 15);
+            linkPoint1.data.loc = go.Point.stringify(newLoc1);
+            linkPoint2.data.loc = go.Point.stringify(newLoc2);
+            linkPoint1.updateTargetBindings();
+            linkPoint2.updateTargetBindings();
+          } else {
+            floorplan.buildDimensionLink(wall, k, wallPartEndpoints[j].copy(), wallPartEndpoints[j + 1].copy(), angle, 15, false, floorplan, i, .5, 'gray', 1);
+          }
+          k += 2;
         }
         // total wall Dimension Link constructed of a kth and k+1st pointNode
         let totalWallDimensionLink = null;
-        floorplan.dimensionLinks.iterator.each(function (link) {
-            if (link.fromNode !== null && link.toNode !== null && (link.fromNode.data.key === wall.data.key + 'PointNode' + i + k) &&
-                (link.toNode.data.key === wall.data.key + 'PointNode' + i + (k + 1))) {
-                  totalWallDimensionLink = link;
-                }
+        floorplan.dimensionLinks.iterator.each(function(link) {
+          if (link.fromNode !== null && link.toNode !== null && (link.fromNode.data.key === wall.data.key + 'PointNode' + i + k) &&
+            (link.toNode.data.key === wall.data.key + 'PointNode' + i + (k + 1))) {
+            totalWallDimensionLink = link;
+          }
         });
         // if a total wall Dimension Link already exists, adjust its constituent point nodes
         if (totalWallDimensionLink !== null) {
-            let linkPoint1: go.Node | null = null; let linkPoint2: go.Node | null = null;
-            const itr = floorplan.pointNodes.iterator;
-            while (itr.next()) {
-              const node: go.Node = itr.value;
-              if (node.data.key === wall.data.key + 'PointNode' + k) {
-                linkPoint1 = node;
-              }
-              if (node.data.key === wall.data.key + 'PointNode' + (k + 1)) {
-                linkPoint2 = node;
-              }
+          let linkPoint1: go.Node | null = null; let linkPoint2: go.Node | null = null;
+          const itr = floorplan.pointNodes.iterator;
+          while (itr.next()) {
+            const node: go.Node = itr.value;
+            if (node.data.key === wall.data.key + 'PointNode' + k) {
+              linkPoint1 = node;
             }
+            if (node.data.key === wall.data.key + 'PointNode' + (k + 1)) {
+              linkPoint2 = node;
+            }
+          }
 
-            if (linkPoint1 !== null && linkPoint2 !== null) {
-              const newLoc1: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[0].copy(), wall, angle, 25);
-              const newLoc2: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[wallPartEndpoints.length - 1].copy(), wall, angle, 25);
-              linkPoint1.data.loc = go.Point.stringify(newLoc1);
-              linkPoint2.data.loc = go.Point.stringify(newLoc2);
-              linkPoint1.updateTargetBindings();
-              linkPoint2.updateTargetBindings();
-            }
+          if (linkPoint1 !== null && linkPoint2 !== null) {
+            const newLoc1: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[0].copy(), wall, angle, 25);
+            const newLoc2: go.Point = floorplan.getAdjustedPoint(wallPartEndpoints[wallPartEndpoints.length - 1].copy(), wall, angle, 25);
+            linkPoint1.data.loc = go.Point.stringify(newLoc1);
+            linkPoint2.data.loc = go.Point.stringify(newLoc2);
+            linkPoint1.updateTargetBindings();
+            linkPoint2.updateTargetBindings();
+          }
         } else {
           floorplan.buildDimensionLink(wall, k, wallPartEndpoints[0].copy(), wallPartEndpoints[wallPartEndpoints.length - 1].copy(), angle, 25, false, floorplan, i);
         }
@@ -3159,7 +3168,7 @@ function makeContextMenu() {
         click(e: go.InputEvent, obj: go.GraphObject) {
           const part = obj.part;
           if (part !== null && part.diagram !== null) {
-            part.diagram.commandHandler.pasteSelection(part.diagram.lastInput.documentPoint);
+            part.diagram.commandHandler.pasteSelection(part.diagram.toolManager.contextMenuTool.mouseDownPoint);
           }
         }
       }
@@ -3370,7 +3379,7 @@ function makeFurnitureResizeAdornmentTemplate() {
       /*,
       new go.Binding('fill', 'color'),
       new go.Binding('stroke', 'stroke')*/
-      );
+    );
   }
 
   return $(go.Adornment, 'Spot',
@@ -3480,7 +3489,7 @@ function makeDefaultNode() {
         const t: string = node.data.texture;
         return updateNodeTexture(obj, t);
       })
-      )
+    )
   );
 }
 
@@ -3800,24 +3809,24 @@ function makeTextureSelectionAdornment(textures: Array<string> | null) {
           $('Button', {
             desiredSize: new go.Size(30, 30),
             click: function(e: go.InputEvent, button: go.GraphObject) {
-                if (button.part === null || !(button instanceof go.Panel)) return;
-                const adorn: go.Adornment = button.part as go.Adornment;
-                const node: go.Node = adorn.adornedPart as go.Node;
-                const imagePicture = button.findObject('BUTTON_IMAGE') as go.Picture;
-                const imageSource = imagePicture.source;
-                if (node.category === 'RoomNode') {
-                  e.diagram.model.setDataProperty(node.data, 'floorImage', imageSource);
-                } else {
-                  e.diagram.model.setDataProperty(node.data, 'texture', imageSource);
-                }
+              if (button.part === null || !(button instanceof go.Panel)) return;
+              const adorn: go.Adornment = button.part as go.Adornment;
+              const node: go.Node = adorn.adornedPart as go.Node;
+              const imagePicture = button.findObject('BUTTON_IMAGE') as go.Picture;
+              const imageSource = imagePicture.source;
+              if (node.category === 'RoomNode') {
+                e.diagram.model.setDataProperty(node.data, 'floorImage', imageSource);
+              } else {
+                e.diagram.model.setDataProperty(node.data, 'texture', imageSource);
               }
-            },
+            }
+          },
             $(go.Picture, { name: 'BUTTON_IMAGE' }, new go.Binding('source', '', function(str: any, b: any) {
               if (typeof str !== 'string') return '';
               return './images/textures/' + str;
             }))
           )
-        },
+      },
         new go.Binding('visible', '', function(a: go.Adornment) {
           const node: go.Node = a.adornedPart as go.Node;
           if (node.diagram instanceof go.Palette) return false;
@@ -3837,7 +3846,7 @@ function makeTextureSelectionAdornment(textures: Array<string> | null) {
             return data.textures;
           }
         })
-        ) // end horizontal panel PANEL
+      ) // end horizontal panel PANEL
     ) // end BIGPANEL
 
   );
@@ -3898,7 +3907,7 @@ function makeRoomNode() {
       new go.Binding('alignment', 'labelAlignment'),
       $(go.Panel, 'Auto',
         new go.Binding('visible', 'showLabel'),
-        $(go.Shape, 'RoundedRectangle', { fill: 'beige', opacity: .5, stroke: null, strokeWidth: 3, name : 'ROOM_LABEL_SHAPE' },
+        $(go.Shape, 'RoundedRectangle', { fill: 'beige', opacity: .5, stroke: null, strokeWidth: 3, name: 'ROOM_LABEL_SHAPE' },
           new go.Binding('stroke', 'isSelected', function(is) {
             return is ? 'dodgerblue' : null;
           }).ofObject()
@@ -3991,7 +4000,9 @@ function getWallPartStretch(part: go.Part): any {
       const endpoints = getWallPartEndpoints(wallPart);
       for (let i = 0; i < endpoints.length; i++) {
         if (endpoints[i].x < part.location.x || (endpoints[i].y > part.location.y && endpoints[i].x === part.location.x)) {
-          leftOrAbove.add(endpoints[i]); } else { rightOrBelow.add(endpoints[i]);
+          leftOrAbove.add(endpoints[i]);
+        } else {
+          rightOrBelow.add(endpoints[i]);
         }
       }
     }
@@ -3999,13 +4010,17 @@ function getWallPartStretch(part: go.Part): any {
 
   // do the same with the startpoint and endpoint of the dragging part's wall
   if (parseFloat(startpoint.x.toFixed(2)) < parseFloat(part.location.x.toFixed(2)) ||
-      (startpoint.y > part.location.y && parseFloat(startpoint.x.toFixed(2)) === parseFloat(part.location.x.toFixed(2)))) {
-        leftOrAbove.add(startpoint); } else { rightOrBelow.add(startpoint);
-      }
+    (startpoint.y > part.location.y && parseFloat(startpoint.x.toFixed(2)) === parseFloat(part.location.x.toFixed(2)))) {
+    leftOrAbove.add(startpoint);
+  } else {
+    rightOrBelow.add(startpoint);
+  }
   if (parseFloat(endpoint.x.toFixed(2)) < parseFloat(part.location.x.toFixed(2)) ||
-      (endpoint.y > part.location.y && parseFloat(endpoint.x.toFixed(2)) === parseFloat(part.location.x.toFixed(2)))) {
-        leftOrAbove.add(endpoint); } else { rightOrBelow.add(endpoint);
-      }
+    (endpoint.y > part.location.y && parseFloat(endpoint.x.toFixed(2)) === parseFloat(part.location.x.toFixed(2)))) {
+    leftOrAbove.add(endpoint);
+  } else {
+    rightOrBelow.add(endpoint);
+  }
 
   // of each set, find the closest point to the dragging part
   let leftOrAbovePt; let closestDistLeftOrAbove = Number.MAX_VALUE;
@@ -4118,7 +4133,9 @@ function makeDoorSelectionAdornment() {
             if (obj.adornedPart === null) {
               return 'images/flipDoorOpeningRight.png';
             } else if (obj.adornedPart.data.swing === 'left') {
-              return 'images/flipDoorOpeningRight.png'; } else { return 'images/flipDoorOpeningLeft.png';
+              return 'images/flipDoorOpeningRight.png';
+            } else {
+              return 'images/flipDoorOpeningLeft.png';
             }
           }).ofObject()
         ),
@@ -4348,8 +4365,8 @@ const FURNITURE_NODE_DATA_ARRAY = [
     caption: 'Sink',
     type: 'Sink',
     geo: 'F1 M0 0 L40 0 40 40 0 40 0 0z M5 7.5 L18.5 7.5 M 21.5 7.5 L35 7.5 35 35 5 35 5 7.5 M 15 21.25 A 5 5 180 1 0 15 21.24' +
-    'M23 3.75 A 3 3 180 1 1 23 3.74 M21.5 6.25 L 21.5 12.5 18.5 12.5 18.5 6.25 M15 3.75 A 1 1 180 1 1 15 3.74' +
-    'M 10 4.25 L 10 3.25 13 3.25 M 13 4.25 L 10 4.25 M27 3.75 A 1 1 180 1 1 27 3.74 M 26.85 3.25 L 30 3.25 30 4.25 M 26.85 4.25 L 30 4.25',
+      'M23 3.75 A 3 3 180 1 1 23 3.74 M21.5 6.25 L 21.5 12.5 18.5 12.5 18.5 6.25 M15 3.75 A 1 1 180 1 1 15 3.74' +
+      'M 10 4.25 L 10 3.25 13 3.25 M 13 4.25 L 10 4.25 M27 3.75 A 1 1 180 1 1 27 3.74 M 26.85 3.25 L 30 3.25 30 4.25 M 26.85 4.25 L 30 4.25',
     width: 27,
     height: 27,
     notes: '',
@@ -4365,9 +4382,9 @@ const FURNITURE_NODE_DATA_ARRAY = [
     caption: 'Double Sink',
     type: 'Double Sink',
     geo: 'F1 M0 0 L75 0 75 40 0 40 0 0 M5 7.5 L35 7.5 35 35 5 35 5 7.5 M44 7.5 L70 7.5 70 35 40 35 40 9' +
-    'M15 21.25 A5 5 180 1 0 15 21.24 M50 21.25 A 5 5 180 1 0 50 21.24 M40.5 3.75 A3 3 180 1 1 40.5 3.74' +
-    'M40.5 3.75 L50.5 13.75 47.5 16.5 37.5 6.75 M32.5 3.75 A 1 1 180 1 1 32.5 3.74 M 27.5 4.25 L 27.5 3.25 30.5 3.25' +
-    'M 30.5 4.25 L 27.5 4.25 M44.5 3.75 A 1 1 180 1 1 44.5 3.74 M 44.35 3.25 L 47.5 3.25 47.5 4.25 M 44.35 4.25 L 47.5 4.25',
+      'M15 21.25 A5 5 180 1 0 15 21.24 M50 21.25 A 5 5 180 1 0 50 21.24 M40.5 3.75 A3 3 180 1 1 40.5 3.74' +
+      'M40.5 3.75 L50.5 13.75 47.5 16.5 37.5 6.75 M32.5 3.75 A 1 1 180 1 1 32.5 3.74 M 27.5 4.25 L 27.5 3.25 30.5 3.25' +
+      'M 30.5 4.25 L 27.5 4.25 M44.5 3.75 A 1 1 180 1 1 44.5 3.74 M 44.35 3.25 L 47.5 3.25 47.5 4.25 M 44.35 4.25 L 47.5 4.25',
     height: 27,
     width: 52,
     notes: '',
@@ -4428,7 +4445,7 @@ const FURNITURE_NODE_DATA_ARRAY = [
     caption: 'Staircase',
     type: 'Staircase',
     geo: 'F1 M0 0 L 0 100 250 100 250 0 0 0 M25 100 L 25 0 M 50 100 L 50 0 M 75 100 L 75 0' +
-    'M 100 100 L 100 0 M 125 100 L 125 0 M 150 100 L 150 0 M 175 100 L 175 0 M 200 100 L 200 0 M 225 100 L 225 0',
+      'M 100 100 L 100 0 M 125 100 L 125 0 M 150 100 L 150 0 M 175 100 L 175 0 M 200 100 L 200 0 M 225 100 L 225 0',
     width: 125,
     height: 50,
     notes: '',
@@ -4444,22 +4461,22 @@ const FURNITURE_NODE_DATA_ARRAY = [
     caption: 'Stove',
     type: 'Stove',
     geo: 'F1 M 0 0 L 0 100 100 100 100 0 0 0' +
-    // top left burner
-    'M 30 15 A 15 15 180 1 0 30.01 15' +
-    'M 30 20 A 10 10 180 1 0 30.01 20' +
-    'M 30 25 A 5 5 180 1 0 30.01 25' +
-    // top right burner
-    'M 70 15 A 15 15 180 1 0 70.01 15' +
-    'M 70 20 A 10 10 180 1 0 70.01 20' +
-    'M 70 25 A 5 5 180 1 0 70.01 25' +
-    // bottom left burner
-    'M 30 55 A 15 15 180 1 0 30.01 55' +
-    'M 30 60 A 10 10 180 1 0 30.01 60' +
-    'M 30 65 A 5 5 180 1 0 30.01 65' +
-    // bottom right burner
-    'M 70 55 A 15 15 180 1 0 70.01 55' +
-    'M 70 60 A 10 10 180 1 0 70.01 60' +
-    'M 70 65 A 5 5 180 1 0 70.01 65',
+      // top left burner
+      'M 30 15 A 15 15 180 1 0 30.01 15' +
+      'M 30 20 A 10 10 180 1 0 30.01 20' +
+      'M 30 25 A 5 5 180 1 0 30.01 25' +
+      // top right burner
+      'M 70 15 A 15 15 180 1 0 70.01 15' +
+      'M 70 20 A 10 10 180 1 0 70.01 20' +
+      'M 70 25 A 5 5 180 1 0 70.01 25' +
+      // bottom left burner
+      'M 30 55 A 15 15 180 1 0 30.01 55' +
+      'M 30 60 A 10 10 180 1 0 30.01 60' +
+      'M 30 65 A 5 5 180 1 0 30.01 65' +
+      // bottom right burner
+      'M 70 55 A 15 15 180 1 0 70.01 55' +
+      'M 70 60 A 10 10 180 1 0 70.01 60' +
+      'M 70 65 A 5 5 180 1 0 70.01 65',
     width: 75,
     height: 75,
     notes: '',
@@ -4475,7 +4492,7 @@ const FURNITURE_NODE_DATA_ARRAY = [
     caption: 'Dining Table',
     type: 'Dining Table',
     geo: 'F1 M 0 0 L 0 100 200 100 200 0 0 0 M 25 0 L 25 -10 75 -10 75 0 M 125 0 L 125 -10 175 -10 175 0' +
-    ' M 200 25 L 210 25 210 75 200 75 M 125 100 L 125 110 L 175 110 L 175 100 M 25 100 L 25 110 75 110 75 100 M 0 75 -10 75 -10 25 0 25',
+      ' M 200 25 L 210 25 210 75 200 75 M 125 100 L 125 110 L 175 110 L 175 100 M 25 100 L 25 110 75 110 75 100 M 0 75 -10 75 -10 25 0 25',
     width: 125,
     height: 62.5,
     notes: '',

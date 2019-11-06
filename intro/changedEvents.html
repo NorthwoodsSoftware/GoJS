@@ -240,6 +240,21 @@ The common pattern is to iterate over the ChangedEvents of the current Transacti
 in order to decide what to record in a database.
 </p>
 
+<p>
+It is also possible to send incremental updates to a database using <a>Model.toIncrementalJson</a> or <a>Model.toIncrementalData</a>,
+which iterate over the changes in a transaction and group them into a JSON-formatted string or an object representing any updates.
+</p>
+<pre class="lang-js">
+  diagram.addModelChangedListener(function(e) {
+    // ignore unimportant Transaction events
+    if (!evt.isTransactionFinished) return;
+    var json = e.model.toIncrementalJson(e);
+    var data = e.model.toIncrementalData(e);
+    ... send to server/database ...
+  });
+</pre>
+
+
 <h2 id="DiagramAndGraphObjectChanges">Diagram and GraphObject changes</h2>
 <p>
 Diagram ChangedEvents record state changes to <a>GraphObject</a>s or <a>RowColumnDefinition</a>s in a diagram,

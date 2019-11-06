@@ -1,0 +1,472 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>AnimationTrigger | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class AnimationTrigger</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">AnimationTrigger</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>An AnimationTrigger describes how to automatically animate a property on a <a href="GraphObject.html">GraphObject</a>
+						when it changes value.
+					The target property name is a string, and all name matching is case-sensitive.</p>
+					<p>Triggers will be shared by all copies of the template&#39;s GraphObjects.
+					You can include AnimationTriggers in your templates just like <a href="Binding.html">Binding</a>s are included:</p>
+					<pre><code class="hljs js">$(go.Panel, <span class="hljs-string">"Vertical"</span>,
+  <span class="hljs-comment">// This trigger uses the default value of AnimationTrigger.startCondition:</span>
+  <span class="hljs-comment">// If a transaction is ongoing and Panel.position is changed, this trigger will animate</span>
+  <span class="hljs-comment">// all changes to Panel.position at the end of the next transaction, in one bundled Animation.</span>
+  <span class="hljs-comment">// If no transaction is ongoing, then it will animate this value immediately.</span>
+  <span class="hljs-keyword">new</span> go.AnimationTrigger(<span class="hljs-string">"position"</span>),
+  {
+    <span class="hljs-comment">// ... Panel properties</span>
+  },
+  $(go.Shape,
+    <span class="hljs-comment">// Animate all changes to Shape.opacity immediately</span>
+    <span class="hljs-keyword">new</span> go.AnimationTrigger(<span class="hljs-string">"opacity"</span>, <span class="hljs-literal">null</span>, <span class="hljs-attr">startCondition</span>: go.AnimationTrigger.Immediate),
+    {
+     <span class="hljs-comment">// ... Shape properties</span>
+    }
+  )</code></pre>
+					<p>When the <a href="AnimationTrigger.html#startCondition">startCondition</a> is <a href="AnimationTrigger.html#static-Default">AnimationTrigger.Default</a>,
+						GoJS will attempt to <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a> or <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a> based on the state of the transaction.
+						If no transaction is ongoing, this trigger will treat the default as using <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a>.
+					Otherwise it will work as <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a>.</p>
+					<p>When the <a href="AnimationTrigger.html#startCondition">startCondition</a> is <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a>,
+						the AnimationManager will use the default animation to prepare a single Animation that begins when the current transaction has ended.
+					This animation may be canceled if a new transaction is started.</p>
+					<p>When the <a href="AnimationTrigger.html#startCondition">startCondition</a> is <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a>,
+						a new animation will be created for every instance of the property changed, and started immediately,
+						and run until completion. This may be useful for cosmetic changes, such as animating
+					the opacity or color of an object on mouseEnter or mouseLeave.</p>
+					<p>You can only specify properties that exist on the GraphObject, and are also registered with <a href="AnimationManager.html#static-defineAnimationEffect">AnimationManager.defineAnimationEffect</a>.
+					By default these properties are:</p>
+					<ul>
+						<li><code>&quot;position&quot;</code></li>
+						<li><code>&quot;location&quot;</code> (on Parts)</li>
+						<li><code>&quot;scale&quot;</code></li>
+						<li><code>&quot;opacity&quot;</code></li>
+						<li><code>&quot;angle&quot;</code></li>
+						<li><code>&quot;desiredSize&quot;</code></li>
+						<li><code>&quot;width&quot;</code></li>
+						<li><code>&quot;height&quot;</code></li>
+						<li><code>&quot;background&quot;</code></li>
+						<li><code>&quot;areaBackground&quot;</code></li>
+						<li><code>&quot;fill&quot;</code> (on Shapes)</li>
+						<li><code>&quot;strokeWidth&quot;</code> (on Shapes)</li>
+						<li><code>&quot;strokeDashOffset&quot;</code> (on Shapes)</li>
+						<li><code>&quot;stroke&quot;</code> (on Shapes, TextBlocks)</li>
+					</ul>
+					<p>Examples of defining additional animation properties are given in the <a href="../../intro/animation.html">Introduction Page on Animations</a>.</p>
+					<dl class="tsd-comment-tags">
+						<dt>since</dt>
+						<dd><p>2.1</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="AnimationTrigger.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationTrigger.html#animationSettings" class="tsd-kind-icon">animation<wbr>Settings</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationTrigger.html#propertyName" class="tsd-kind-icon">property<wbr>Name</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="AnimationTrigger.html#startCondition" class="tsd-kind-icon">start<wbr>Condition</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="AnimationTrigger.html#copy" class="tsd-kind-icon">copy</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Constants</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="AnimationTrigger.html#static-Bundled" class="tsd-kind-icon">Bundled</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="AnimationTrigger.html#static-Default" class="tsd-kind-icon">Default</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="AnimationTrigger.html#static-Immediate" class="tsd-kind-icon">Immediate</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Animation<wbr>Trigger<span class="tsd-signature-symbol">(</span>propertyName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, animationSettings<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span>, startCondition<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="AnimationTrigger.html" class="tsd-signature-type">AnimationTrigger</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This constructor creates an AnimationTrigger. These are typically constructed within Part templates. Using <a href="GraphObject.html#static-make">GraphObject.make</a> it might look like:</p>
+								<pre><code class="hljs js"> <span class="hljs-keyword">var</span> $ = go.GraphObject.make;
+
+   <span class="hljs-comment">// ...</span>
+   $(go.Shape,
+     <span class="hljs-comment">// Animate all changes to Shape.opacity immediately</span>
+     <span class="hljs-keyword">new</span> go.AnimationTrigger(<span class="hljs-string">"opacity"</span>, <span class="hljs-literal">null</span>, <span class="hljs-attr">startCondition</span>: go.AnimationTrigger.Immediate),
+     {
+      <span class="hljs-comment">// ...</span>
+     }
+   )</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>propertyName: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A string naming the target property to animate.
+										This should not be the empty string.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> animationSettings: <span class="tsd-signature-type">object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional Object describing properties to set on animations created by this AnimationTrigger.
+											See the <a href="AnimationTrigger.html#animationSettings">animationSettings</a> property for detail.
+										If set this also defaults the <a href="AnimationTrigger.html#startCondition">startCondition</a> to <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a>.</p>
+									</div>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> startCondition: <span class="tsd-signature-type">EnumValue</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional EnumValue to set the <a href="AnimationTrigger.html#startCondition">startCondition</a> property.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="AnimationTrigger.html" class="tsd-signature-type">AnimationTrigger</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="animationSettings" class="tsd-anchor"></a>
+					<h3>
+						animation<wbr>Settings
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the settings that this trigger should set on any <a href="Animation.html">Animation</a>s it creates
+									if the <a href="AnimationTrigger.html#startCondition">startCondition</a> is <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a>. Immediate triggers create a new Animation with each triggering,
+								and apply these settings to that Animation.</p>
+								<p>This can be set to an object with a subset of possible <a href="Animation.html">Animation</a> settings. The default value is <code>null</code>, which keeps default Animation settings.</p>
+								<p>Since a <a href="AnimationTrigger.html#startCondition">startCondition</a> of <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a> uses the default animation,
+								you must set the properties of <a href="AnimationManager.html#defaultAnimation">AnimationManager.defaultAnimation</a>, and not this property, to modify the animation settings.</p>
+								<p>To set default settings for <em>all</em> created Animations, you can modify the settings on <a href="AnimationManager.html">AnimationManager</a> instead, such as <a href="AnimationManager.html#duration">AnimationManager.duration</a>.</p>
+								<p>Possible properties to set in this object are:</p>
+								<ul>
+									<li><strong>duration</strong>: a <code>number</code>, corresponding to <a href="Animation.html#duration">Animation.duration</a>.</li>
+									<li><strong>finished</strong>: a <code>Function</code>, corresponding to <a href="Animation.html#finished">Animation.finished</a>.</li>
+									<li><strong>easing</strong>: an <code>EasingFunction</code>, corresponding to <a href="Animation.html#easing">Animation.easing</a>.</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="propertyName" class="tsd-anchor"></a>
+					<h3>
+						property<wbr>Name
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of the property to animate on the target <a href="GraphObject.html">GraphObject</a>.
+								The default value is set during constructor initalization.</p>
+								<p>You can only specify properties that exist on the GraphObject, and are also registered with <a href="AnimationManager.html#static-defineAnimationEffect">AnimationManager.defineAnimationEffect</a>.
+								By default these properties are the same as the list of possible Animation effects:</p>
+								<ul>
+									<li><code>&quot;position&quot;</code></li>
+									<li><code>&quot;location&quot;</code> (on Parts)</li>
+									<li><code>&quot;scale&quot;</code></li>
+									<li><code>&quot;opacity&quot;</code></li>
+									<li><code>&quot;angle&quot;</code></li>
+									<li><code>&quot;desiredSize&quot;</code></li>
+									<li><code>&quot;width&quot;</code></li>
+									<li><code>&quot;height&quot;</code></li>
+									<li><code>&quot;background&quot;</code></li>
+									<li><code>&quot;areaBackground&quot;</code></li>
+									<li><code>&quot;fill&quot;</code> (on Shapes)</li>
+									<li><code>&quot;strokeWidth&quot;</code> (on Shapes)</li>
+									<li><code>&quot;strokeDashOffset&quot;</code> (on Shapes)</li>
+									<li><code>&quot;stroke&quot;</code> (on Shapes, TextBlocks)</li>
+								</ul>
+								<p>Examples of defining additional properties by adding animation effects are given in the <a href="../../intro/animation.html">Introduction Page on Animations</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="startCondition" class="tsd-anchor"></a>
+					<h3>
+						start<wbr>Condition
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the starting condition for this trigger.</p>
+								<p>AnimationTriggers can invoke an animation immediately,
+									starting a new animation with each property of each GraphObject that has been modified,
+									or they can (more efficiently) be bundled together into the default animation (<a href="AnimationManager.html#defaultAnimation">AnimationManager.defaultAnimation</a>)
+								and begin only one animation, at the end of the next transaction.</p>
+								<p>It is useful for the startCondition to be <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a> when changing GraphObject properties
+									on <a href="GraphObject.html#mouseEnter">GraphObject.mouseEnter</a> or <a href="GraphObject.html#mouseLeave">GraphObject.mouseLeave</a>.
+									It is useful for the startCondition  to be <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a> when changing several GraphObject properties together,
+								such as when highlighting multiple parts, on selection changes, and during transactions.</p>
+								<p>These behaviors can be set with the values <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a> and <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a>, respectively.
+									The default value, <a href="AnimationTrigger.html#static-Default">AnimationTrigger.Default</a>, attempts to infer which is best:
+									It will start immediately if there is no ongoing transaction
+								or if <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a> is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="copy" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagVirtual">Virtual</span>
+						copy
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="AnimationTrigger.html" class="tsd-signature-type">AnimationTrigger</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Create a copy of this AnimationTrigger, with the same property values.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="AnimationTrigger.html" class="tsd-signature-type">AnimationTrigger</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constants</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Bundled" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Bundled
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Used as a value for <a href="AnimationTrigger.html#startCondition">startCondition</a>.
+							The AnimationManager will use the default animation to prepare a single Animation that begins when the current transaction has ended.
+						This animation may be canceled if a new transaction is started.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Default" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Default
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Used as a value for <a href="AnimationTrigger.html#startCondition">startCondition</a>.
+							GoJS will attempt to <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a> or <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a> based on the state of the transaction.
+							If no transaction is ongoing, this trigger will be treated as using <a href="AnimationTrigger.html#static-Immediate">AnimationTrigger.Immediate</a>,
+						otherwise it will work as <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-Immediate" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Immediate
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EnumValue</span>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Used as a value for <a href="AnimationTrigger.html#startCondition">startCondition</a>.
+							A new animation will be created for every instance of the property changed, and started immediately,
+							and run until completion. This may be useful for cosmetic changes, such as animating
+							the opacity or color of an object on mouseEnter or mouseLeave.
+						However, using <a href="AnimationTrigger.html#static-Bundled">AnimationTrigger.Bundled</a> may be more efficient, as it will create fewer</p>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="AnimationTrigger.html" class="tsd-kind-icon">Animation<wbr>Trigger</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="AnimationTrigger.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="AnimationTrigger.html#animationSettings" class="tsd-kind-icon">animation<wbr>Settings</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="AnimationTrigger.html#propertyName" class="tsd-kind-icon">property<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="AnimationTrigger.html#startCondition" class="tsd-kind-icon">start<wbr>Condition</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="AnimationTrigger.html#copy" class="tsd-kind-icon">copy</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationTrigger.html#static-Bundled" class="tsd-kind-icon">Bundled</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationTrigger.html#static-Default" class="tsd-kind-icon">Default</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="AnimationTrigger.html#static-Immediate" class="tsd-kind-icon">Immediate</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>

@@ -25,6 +25,13 @@ var __extends = (this && this.__extends) || (function () {
     /*
     *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
     */
+    /*
+    * This is an extension and not part of the main GoJS library.
+    * Note that the API for this class may change with any version, even point releases.
+    * If you intend to use an extension in production, you should copy the code to your own source directory.
+    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+    * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+    */
     var go = require("../release/go");
     var Quadtree_1 = require("./Quadtree");
     /**
@@ -1322,8 +1329,8 @@ var __extends = (this && this.__extends) || (function () {
          * @param force whether or not to force an update based on the quadtree even if none of the segments were deleted
          */
         PackedLayout.prototype.fixMissingMinMaxSegments = function (force) {
-            if (force === void 0) { force = false; }
             var _a;
+            if (force === void 0) { force = false; }
             if (!this._minXSegment || !this._maxXSegment || !this._minYSegment || !this._maxYSegment || force) {
                 _a = this._tree.findExtremeObjects(), this._minXSegment = _a[0], this._maxXSegment = _a[1], this._minYSegment = _a[2], this._maxYSegment = _a[3];
             }

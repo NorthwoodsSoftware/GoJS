@@ -1,0 +1,622 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS Animation -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>GoJS Animation</h1>
+<p>
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+</p>
+<p>
+  The <a>Diagram.animationManager</a> handles animations within a <a>Diagram</a>.
+  The <a>AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
+  Custom animations are possible by creating instances of <a>Animation</a> or <a>AnimationTrigger</a>.
+</p>
+
+<div class="box" style="background-color: lightgoldenrodyellow; padding: 10px;">
+  <p>This introduction page details the different classes used for GoJS animation.</p>
+  <p>To see more demonstrations of custom animations, visit the <a href="../samples/customAnimations.html">Custom Animations extension sample</a>.</p>
+</div>
+
+
+<h2 id="DefaultAnimations">Default Animations</h2>
+
+<p>
+  By default, the AnimationManager creates and runs several animations for its Diagram using a single
+  instance of Animation, the <a>AnimationManager.defaultAnimation</a>.
+  These animations occur on various commands, by the <a>Diagram.model</a> setter, and upon layouts.
+  Unlike other Animations, they will be stopped if a new transaction is started during animation.
+</p>
+<p>
+  GoJS will begin an animation automatically for these reasons:
+</p>
+
+<p>Invoked by <a>CommandHandler</a>:</p>
+<ul>
+  <li>"Collapse SubGraph" - Animates the collapsing nodes by "disappearing" them, animating their scales and positions into their group.
+  <li>"Expand SubGraph" - Expands groups by animating the scales and positions of nodes starting within the collapsed group.
+  <li>"Collapse Tree" - Animates the collapsing nodes by "disappearing" them, animating their scales and positions into the root node.
+  <li>"Expand Tree" - Expands subtrees by animating the scales and positions of descendant nodes starting within the collapsed root node.
+  <li>"Scroll To Part" - Animates the <a>Diagram.position</a> and may expand groups or expand subtrees to make the node visible.
+  <li>"Zoom To Fit" - Animates the <a>Diagram.position</a> and <a>Diagram.scale</a>.
+</ul>
+
+<p>Invoked by <a>Diagram</a>:</p>
+<ul>
+<li>"Model" - Animates all node positions when a new model is set.
+<li>"Layout" - Animates all changed node positions on a layout.
+</ul>
+
+
+<p>Invoked by <a>AnimationTrigger</a>s, if any are declared:</p>
+<ul>
+<li>"Trigger" - Animates the change of a defined <a>GraphObject</a> property.
+</ul>
+
+<p>
+The above quoted names are strings in the <a>AnimationManager.animationReasons</a> set.
+</p>
+
+<h3 id="DefaultAnimations">Default Initial Animation</h3>
+
+<p>
+  As of GoJS 2.1, the default initial animation fades the diagram upwards into view. Prior versions animated Part locations separately.
+  To control the initial animation behavior, there now exists <a>AnimationManager.initialAnimationStyle</a>, which is set to <a>AnimationManager,Default</a>
+  by default, but can be set to <a>AnimationManager,AnimateLocations</a> to use the animation style from GoJS 2.0.
+  You can also set this property to <a>AnimationManager,None</a> and define your own initial animation using the <code>"InitialAnimationStarting"</code> <a>DiagramEvent</a>.
+</p>
+
+<p>
+  Here is an example with buttons which set <a>AnimationManager.initialAnimationStyle</a> to the three different values, then reload the Diagram.
+  A fourth button illustrates how one might use the <code>"InitialAnimationStarting"</code> <a>DiagramEvent</a> to make a custom "zoom in" animation.
+</p>
+
+
+<pre id="animationStyles">
+    diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { strokeWidth: 0, fill: "lightblue" }),
+      $(go.TextBlock,
+        { margin: 8, font: "bold 14px sans-serif", stroke: '#333' },
+        new go.Binding("text", "key"))
+    );
+    diagram.model = new go.GraphLinksModel([{ key: 'Alpha' }, { key: 'Beta' }, { key: 'Delta' }, { key: 'Gamma' }]);
+
+    // only needed for this demonstration, this flag is used to stop
+    // the "InitialAnimationStarting" listener when other buttons are pressed
+    window.custom = false;
+
+    window.animateDefault = function() {
+      window.custom = false;
+      diagram.animationManager.initialAnimationStyle = go.AnimationManager.Default;
+      diagram.model = go.Model.fromJSON(diagram.model.toJSON());
+    }
+    window.animateLocations = function() {
+      window.custom = false;
+      diagram.animationManager.initialAnimationStyle = go.AnimationManager.AnimateLocations;
+      diagram.model = go.Model.fromJSON(diagram.model.toJSON());
+    }
+    window.animateNone = function() {
+      window.custom = false;
+      diagram.animationManager.initialAnimationStyle = go.AnimationManager.None;
+      diagram.model = go.Model.fromJSON(diagram.model.toJSON());
+    }
+    window.animateCustom = function() {
+      window.custom = true;
+      diagram.animationManager.initialAnimationStyle = go.AnimationManager.None;
+      // Customer listener zooms-in the Diagram on load:
+      diagram.addDiagramListener("InitialAnimationStarting", function(e) {
+        var animation = e.subject.defaultAnimation;
+        if (window.custom === false) {
+          // a different button was pressed, restore default values on the default animation:
+          animation.easing = go.Animation.EaseInOutQuad;
+          animation.duration = NaN;
+          return;
+        }
+        animation.easing = go.Animation.EaseOutExpo;
+        animation.duration = 1500;
+        animation.add(e.diagram, 'scale', 0.1, 1);
+        animation.add(e.diagram, 'opacity', 0, 1);
+      })
+      diagram.model = go.Model.fromJSON(diagram.model.toJSON());
+    }
+
+    </pre>
+    <script>goCode("animationStyles", 600, 200)</script>
+    <p>
+      <input id="Animate Colors" type="button" onclick="animateDefault()" value="animationStyle: Default" />
+      <input id="Animate Colors" type="button" onclick="animateLocations()" value="animationStyle: AnimateLocations" />
+      <input id="Animate Colors" type="button" onclick="animateNone()" value="animationStyle: None (does nothing!)" />
+      <input id="Animate Colors" type="button" onclick="animateCustom()" value="animationStyle: None + Custom Animation" />
+
+
+
+<h3 id="Limitations">Limitations of Default Animations</h3>
+
+<p>
+  The AnimationManager can be turned off by setting <a>AnimationManager.isEnabled</a> to <code>false</code>.
+  Specific default animations can be turned off or modified by overriding <a>AnimationManager.canStart</a>,
+  querying the reasons it is about to start (<a>AnimationManager.animationReasons</a>), and potentially returning <code>false</code>.
+</p>
+
+<p>
+  The default animation will be stopped if a new transaction begins during the animation.
+  The same is not true of other <a>Animation</a>s, which are not stopped by new transactions, and can continue indefinitely.
+</p>
+
+
+<h2 id="AnimatableProperties">Animatable Properties</h2>
+<p>
+  By default, <a>AnimationTriggers</a> and <a>Animation</a>s can animate these properties of GraphObjects:
+</p>
+<ul>
+  <li><code>position</code>
+  <li><code>location</code> (on Parts)
+  <li><code>scale</code>
+  <li><code>opacity</code>
+  <li><code>angle</code>
+  <li><code>desiredSize</code>
+  <li><code>width</code>
+  <li><code>height</code>
+  <li><code>background</code> (for solid string colors only)
+  <li><code>areaBackground</code> (for solid string colors only)
+  <li><code>fill</code> (on Shapes, for solid string colors only)
+  <li><code>strokeWidth</code> (on Shapes)
+  <li><code>strokeDashOffset</code> (on Shapes)
+  <li><code>stroke</code> (on Shapes, TextBlocks, for solid string colors only)
+</ul>
+
+<p>
+  Additionally <a>Animation</a>s (but not <a>AnimationTriggers</a>) can animate these properties of Diagram:
+</p>
+<ul>
+  <li><code>position</code>
+  <li><code>scale</code>
+  <li><code>opacity</code>
+</ul>
+
+<p>
+It is possible to animate other properties if they are defined by the programmer -- see the section "Custom Animation Effects" below.
+</p>
+
+<h2 id="AnimationTriggerClass">The AnimationTrigger Class</h2>
+
+<p class="box" style="background-color: lightgoldenrodyellow;">
+  <em>New in 2.1</em>
+</p>
+
+<p>
+  An <a>AnimationTrigger</a> is used to declare GraphObject properties to animate when their value has changed.
+  When a trigger is defined, changes to the target property will animate from the old value to the new value.
+  In templates, triggers are defined in a similar fashion to Bindings:
+</p>
+
+<pre class="lang-js">
+// In this shape definition, two triggers are defined on a Shape.
+// These will cause all changes to Shape.stroke and Shape.fill to animate
+// from their old values to their new values.
+$(go.Shape, "Rectangle",
+  { strokeWidth: 12, stroke: 'black', fill: 'white' },
+  new go.AnimationTrigger('stroke'),
+  new go.AnimationTrigger('fill')
+)
+</pre>
+
+<p>
+Here is an example, with an HTML button that sets the Shape's <code>stroke</code> and <code>fill</code> to new random values:
+</p>
+
+<pre id="animateTrigger1">
+diagram.nodeTemplate =
+  $(go.Node,
+    $(go.Shape, "Rectangle",
+      { strokeWidth: 12, stroke: 'black', fill: 'white' },
+      new go.AnimationTrigger('stroke'),
+      new go.AnimationTrigger('fill')
+    )
+  );
+
+diagram.model = new go.GraphLinksModel([{ key: 'Alpha' }]); // One node
+
+// attach this Diagram to the window to use a button
+window.animateTrigger1 = function() {
+  diagram.commit(function(diag) {
+    var node = diag.nodes.first();
+    node.elt(0).stroke = go.Brush.randomColor();
+    node.elt(0).fill = go.Brush.randomColor();
+  });
+}
+
+</pre>
+<script>goCode("animateTrigger1", 600, 200)</script>
+<p><input id="Animate Colors" type="button" onclick="animateTrigger1()" value="Animate Colors" />
+
+<p>
+  AnimationTriggers can invoke an animation immediately, starting a new animation with each property of each GraphObject that has been modified,
+  or they can (much more efficiently) be bundled together into the default
+  animation (<a>AnimationManager.defaultAnimation</a>) and begin at the end of the next transaction.
+  These behaviors can be set with <a>AnimationTrigger.startCondition</a> by the values
+  <a>AnimationTrigger,Immediate</a> and <a>AnimationTrigger,Bundled</a>, respectively.
+  The default value, <a>AnimationTrigger,Default</a>, attempts to infer which is best.
+  It will start immediately if there is no ongoing transaction or if <a>Diagram.skipsUndoManager</a> is true.
+</p>
+
+<p>
+  AnimationTriggers are only definable in templates, on GraphObjects, and cannot be used on RowColumnDefinitions or Diagrams.
+</p>
+
+<h2 id="AnimationClass">The Animation Class</h2>
+
+<p class="box" style="background-color: lightgoldenrodyellow">
+  <em>New in 2.1</em>
+</p>
+<p>
+  General animation of GraphObject and Diagram properties is possible by creating one or more instances of the <a>Animation</a> class.
+</p>
+
+<pre class="lang-js">
+var animation = new go.Animation();
+// Animate the node's angle from its current value to a random value between 0 and 150 degrees
+animation.add(node, "angle", node.angle, Math.random() * 150);
+animation.duration = 1000; // Animate over 1 second, instead of the default 600 milliseconds
+animation.start(); // starts the animation immediately
+</pre>
+
+<p>
+  <a>Animation.add</a> is used to specify which objects should animate, which properties, and their starting and ending values:
+</p>
+
+<pre class="lang-js">
+  animation.add(GraphObjectOrDiagram, "EffectName", StartingValue, EndingValue);
+</pre>
+
+<p>
+  Here's the above animation in an example, where each node is animated by an HTML button.
+  Note carefully that each node is added to the same animation. The same effect would be had with one animation per node,
+  but it is always more efficient to group the properties you are animating into a single animation, if possible
+  (for instance, it is possible if they are all going to start at the same time and have the same duration).
+</p>
+
+<pre id="animate1">
+// define a simple Node template
+diagram.nodeTemplate =
+  $(go.Node, "Spot",
+    { locationSpot: go.Spot.Center },
+    new go.Binding("angle"),
+    $(go.Shape, "Diamond", { strokeWidth: 0, width: 75, height: 75 },
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 8, font: 'bold 12pt sans-serif' },
+      new go.Binding("text", "key"))
+  );
+
+diagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", group: 'G1',  color: "lightgreen" },
+    { key: "Delta", group: 'G1',  color: "pink", angle: 45 }
+  ],
+  [
+    { from: "Alpha", to: "Beta" },
+    { from: "Gamma", to: "Delta" }
+  ]);
+
+window.animate1 = function() {
+  var animation = new go.Animation();
+  diagram.nodes.each(function(node) {
+    // Animate the node's angle from its current value to a random value between 0 and 150 degrees
+    animation.add(node, "angle", node.angle, Math.random() * 150);
+  });
+  animation.duration = 1000; // Animate over 1 second, instead of the default 600 milliseconds
+  animation.start(); // starts the animation immediately
+}
+</pre>
+<script>goCode("animate1", 600, 250)</script>
+<p><input id="Animate Nodes" type="button" onclick="animate1()" value="Animate Node Angles" />
+
+<p>
+  Animating the Diagram is possible by passing it as the object to be animated:
+</p>
+<pre class="lang-js">
+  animation.add(myDiagram, "position", myDiagram.position, myDiagram.position.copy().offset(200, 15));
+  ...
+  animation.add(myDiagram, "scale", myDiagram.scale, 0.2);
+</pre>
+
+<p>
+  Animations can also be reversed, as is common with animations that are intended to be cosmetic in nature, by setting <a>Animation.reversible</a> to true.
+  This doubles the effective duration of the Animation.
+</p>
+<p>
+  Below are several example Animations, all with <a>Animation.reversible</a> set to true. The first animates Nodes, the other three animate Diagram position and scale.
+</p>
+
+<pre id="animate2">
+    // define a simple Node template
+    diagram.nodeTemplate =
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("angle"),
+        $(go.Shape, "Diamond", { strokeWidth: 0, width: 75, height: 75 },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8, font: 'bold 12pt sans-serif' },
+          new go.Binding("text", "key"))
+      );
+
+    diagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", group: 'G1',  color: "lightgreen" },
+      { key: "Delta", group: 'G1',  color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Gamma", to: "Delta" }
+    ]);
+
+    function protectedAnimation(f) {  // return a button event handler to start an animation
+      return function() {
+        // Stop any currently running animations
+        diagram.animationManager.stopAnimation(true);
+
+        var animation = new go.Animation();
+        animation.reversible = true; // reverse the animation at the end, doubling its total time
+        f(animation);  // initialize the Animation
+        animation.start(); // start the animation immediately
+      };
+    }
+
+    window.animateAngleReverse =
+      protectedAnimation(function(animation) {
+        diagram.nodes.each(function(node) {
+          // Animate the node's angle from its current value a random value between 0 and 90
+          animation.add(node, "angle", node.angle, Math.random() * 90);
+        });
+      });
+
+    window.animateDiagramPosition =
+      protectedAnimation(function(animation) {
+        // shift the diagram contents towards the right and then back
+        animation.add(diagram, "position", diagram.position, diagram.position.copy().offset(200, 15));
+        animation.duration = 700;
+      });
+
+    window.animateZoomOut =
+      protectedAnimation(function(animation) {
+        animation.add(diagram, "scale", diagram.scale, 0.2);
+      });
+
+    window.animateZoomIn =
+      protectedAnimation(function(animation) {
+        animation.add(diagram, "scale", diagram.scale, 4);
+      });
+  </pre>
+  <script>goCode("animate2", 600, 250)</script>
+  <p>
+    <input id="AnimateAngleReverse" type="button" onclick="animateAngleReverse()" value="Animate Angles (reverse)" />
+    <input id="AnimateDiagramPosition" type="button" onclick="animateDiagramPosition()" value="Animate Diagram Position (reverse)" />
+    <input id="AnimateZoomOut" type="button" onclick="animateZoomOut()" value="Zoom Out (reverse)" />
+    <input id="AnimateZoomIn" type="button" onclick="animateZoomIn()" value="Zoom In (reverse)" />
+  </p>
+  <p>
+    Without the call to <a>AnimationManager.stopAnimation</a> to protect against rapid button clicks,
+    you would notice that if you clicked Zoom Out, and then during the animation clicked the same button again,
+    the Diagram's scale would not return to its initial value of 1.0.
+    This is because the Animation animates from the <em>current</em> Diagram scale value, to its final value, and back again,
+    but the current value is also what's being changed due to the ongoing animation.
+  </p>
+
+  <h3 id="CustomAnimationEffects">Custom Animation Effects</h3>
+
+  <p>
+    It is sometimes helpful to add custom ways to modify one or more properties during an animation.
+    You can register new animatable effects with <a>AnimationManager,defineAnimationEffect</a>.
+    The name passed is an arbitrary string, but often reflects a property of a GraphObject class.
+    The body of the function passed determines what property or properties are animated.
+  </p>
+  <p>
+
+  </p>
+  <p>
+    Here is an example, creating an <code>"fraction"</code> Animation effect to animate the value of <a>GraphObject.segmentFraction</a>,
+    which will give the appearance of a Link label moving along its path.
+  </p>
+<pre>
+// This presumes the object to be animated is a label within a Link
+go.AnimationManager.defineAnimationEffect('fraction',
+function(obj, startValue, endValue, easing, currentTime, duration, animation) {
+  obj.segmentFraction = easing(currentTime, startValue, endValue - startValue, duration);
+});
+</pre>
+
+<p>
+  After defining this, we can use it as a property name in an Animation.
+  The following example sets up an indefinite (<a>Animation.runCount</a> = <code>Infinity</code>) and reversible
+  animation, where each link is assigned a random duration to cycle the fill color and segmentFraction of its label.
+  This produces labels that appear to move along their path while pulsating colors. The setting of <a>Animation.reversible</a>
+  causes them to go backwards once finished, to start from their beginning again.
+</p>
+<pre>
+  function animateColorAndFraction() {
+    // create one Animation for each link, so that they have independent durations
+    myDiagram.links.each(function(node) {
+      var animation = new go.Animation()
+      animation.add(node.elt(1), "fill", node.elt(0).fill, go.Brush.randomColor());
+      animation.add(node.elt(1), "fraction", 0, 1);
+      animation.duration = 1000 + (Math.random()*2000);
+      animation.reversible = true; // Re-run backwards
+      animation.runCount = Infinity; // Animate forever
+      animation.start();
+    });
+  }
+</pre>
+
+<pre id="animate3" style="display: none;">
+  diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 8 },
+      new go.Binding("text", "key"))
+  );
+
+  diagram.linkTemplate =
+  $(go.Link,
+    $(go.Shape, { strokeWidth: 2 }),
+    // The label
+    $(go.Shape, "Circle", { segmentIndex: 0, width: 15, height: 15, fill: 'red', strokeWidth: 2 })
+  );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ],
+  [
+    { from: "Alpha", to: "Gamma" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ]);
+
+
+  // This presumes the object to be animated is a label within a Link
+  go.AnimationManager.defineAnimationEffect('fraction',
+  function(obj, startValue, endValue, easing, currentTime, duration, animation) {
+    obj.segmentFraction = easing(currentTime, startValue, endValue - startValue, duration);
+  });
+
+
+  window.animateColorAndFraction = function() {
+    // create one Animation for each link, so that they have independent durations
+    diagram.links.each(function(node) {
+      var animation = new go.Animation()
+      animation.add(node.elt(1), "fill", node.elt(0).fill, go.Brush.randomColor());
+      animation.add(node.elt(1), "fraction", 0, 1);
+      animation.duration = 1000 + (Math.random()*2000);
+      animation.reversible = true; // Re-run backwards
+      animation.runCount = Infinity; // Animate forever
+      animation.start();
+    });
+  }
+  </pre>
+  <script>goCode("animate3", 600, 200)</script>
+  <p><input id="animateColorAndFraction" type="button" onclick="animateColorAndFraction()" value="Animate Color and Segment Fraction" />
+
+  <p>Since <a>Animation.runCount</a> was set to <code>Infinity</code>, this Animation wil run indefinitely.</p>
+
+  <h3 id="AnimatingDeletion">Animating Deletion</h3>
+
+  <p>
+    Parts to be deleted can be animated, but since they will no longer exist in the Diagram after removal,
+    a copy must be added to the Animation so that there is an object to animate.
+    This can be done with <a>Animation.addTemporaryPart</a>.
+    The part can then have its deletion animated using <a>Animation.add</a>.
+    This temporary part will be the object that animates,
+    and will automatically appear when animation begins and be removed when animaton completes.
+    It is typical for deletion animations to shrink the mock Part, move it off-screen, reduce its opacity to zero,
+    or otherwise show it disappearing in some way.
+  </p>
+  <p>
+    In this example, each Part being deleted will be scaled to an imperceptible size (by animating scale to 0.01)
+    and spun around (by animating angle), to give the appearance of swirling away. There are other example
+    deletion (and creation) effects in the <a href="../samples/customAnimations.html">Custom Animations extension sample</a>.
+  </p>
+  <pre class="lang-js">
+myDiagram.addDiagramListener('SelectionDeleting', function(e) {
+  // the DiagramEvent.subject is the collection of Parts about to be deleted
+  e.subject.each(function(part) {
+    if (!(part instanceof go.Node)) return; // only animate Nodes
+    var animation = new go.Animation();
+    var deletePart = part.copy();
+    animation.add(deletePart, "scale", deletePart.scale, 0.01);
+    animation.add(deletePart, "angle", deletePart.angle, 360);
+    animation.addTemporaryPart(deletePart, myDiagram);
+    animation.start();
+  });
+});
+</pre>
+
+
+<pre id="animate4" style="display: none;">
+    // define a simple Node template
+    diagram.nodeTemplate =
+      $(go.Node, "Spot",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("angle"),
+        $(go.Shape, "Ellipse",
+          {
+            fill: "hsl(" + ((Math.random()*360)|0) + ", 100%, 80%)",
+            strokeWidth: 4, strokeDashArray: [8, 8],
+            width: 55, height: 55
+          }),
+        $(go.TextBlock,
+          new go.Binding("text", "key"))
+      );
+
+    diagram.model = new go.GraphLinksModel(
+      [
+        { key: "Alpha" },
+        { key: "Beta" },
+        { key: "Gamma" },
+        { key: "Delta" }
+      ],
+      [ ]);
+
+    diagram.addDiagramListener('SelectionDeleting', function(e) {
+      // the DiagramEvent.subject is the collection of Parts about to be deleted
+      e.subject.each(function(part) {
+        if (!(part instanceof go.Node)) return; // only animate Nodes
+        var animation = new go.Animation();
+        var deletePart = part.copy();
+        animation.add(deletePart, "scale", deletePart.scale, 0.01);
+        animation.add(deletePart, "angle", deletePart.angle, 360);
+        animation.addTemporaryPart(deletePart, diagram);
+        animation.start();
+      });
+    });
+
+    window.deleteNode = function() {
+      if (diagram.selection.count === 0) diagram.select(diagram.nodes.first());
+      diagram.commandHandler.deleteSelection();
+    }
+  </pre>
+  <script>goCode("animate4", 600, 200)</script>
+  <p><input type="button" onclick="deleteNode()" value="Delete a Node" />
+
+
+  <h3 id="AnimationExamples">Animation Examples</h3>
+
+  <p>
+    To see more examples of custom animations, visit the <a href="../samples/customAnimations.html">Custom Animations extension sample</a>.
+    It demonstrates a number of Node creation/deletion animations, linking animations, and more.
+    There are also several samples which contain animation:
+  </p>
+
+  <ul>
+    <li><a href="../samples/treeLoadAnimation.html" target="_blank">Tree Load Animation</a> - <strong>New Sample:</strong> recursive animation upon model load.</li>
+    <li><a href="../samples/flowchart.html" target="_blank">Flowchart</a> - In the Palette only, initial animation is disabled in favor of a custom fade-in animation.</li>
+    <li><a href="../samples/stateChart.html" target="_blank">State Chart</a> - Initial animation is disabled in favor of a custom zoom fade-in animation.</li>
+    <li><a href="../samples/dataVisualization.html" target="_blank">Data Visualization</a> - Nodes now move using an <a>AnimationTrigger</a>.</li>
+    <li><a href="../samples/kittenMonitor.html" target="_blank">Kitten Monitor</a> - Kittens now move using an <a>AnimationTrigger</a>.</li>
+    <li><a href="../samples/processFlow.html" target="_blank">Process Flow</a> - Custom animation defined to animate the Link's strokeDashArray.</li>
+    <li><a href="../samples/shopFloorMonitor.html" target="_blank">Shop Floor Monitor</a> - Link color changes now use an <a>AnimationTrigger</a>.</li>
+  </ul>
+
+</div>
+</div>
+</body>
+</html>

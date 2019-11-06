@@ -8,35 +8,41 @@
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
   <script src="../release/go.js"></script>
-  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="../assets/js/goSamples.js"></script>
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
-        $(go.Diagram, "myDiagramDiv",
-          {
-            "animationManager.isEnabled": false,
-          });
+        $(go.Diagram, "myDiagramDiv");
 
       // conversion functions for Bindings in the Node template:
 
       function nodeTypeImage(type) {
-        switch (type) {
-          case "S2": return "images/voice atm switch.jpg";
-          case "S3": return "images/server switch.jpg";
-          case "P1": return "images/general processor.jpg";
-          case "P2": return "images/storage array.jpg";
-          case "M4": return "images/iptv broadcast server.jpg";
-          case "M5": return "images/content engine.jpg";
-          case "I1": return "images/pc.jpg";
-          default: return "images/pc.jpg";
+        switch (type) {                                         // Image sizes
+          case "S2": return "images/voice atm switch.jpg";      // 55x55
+          case "S3": return "images/server switch.jpg";         // 55x55
+          case "P1": return "images/general processor.jpg";     // 60x85
+          case "P2": return "images/storage array.jpg";         // 55x80
+          case "M4": return "images/iptv broadcast server.jpg"; // 80x50
+          case "M5": return "images/content engine.jpg";        // 90x65
+          case "I1": return "images/pc.jpg";                    // 80x70
+          default: return "images/pc.jpg";                      // 80x70
         }
-        if (type.charAt(0) === "S") return
-        if (type.charAt(0) === "P") return "images/general processor.jpg";
-        if (type.charAt(0) === "M")
-          return "images/pc.jpg";
+      }
+
+      function nodeTypeSize(type) {
+        switch (type) {
+          case "S2": return new go.Size(55, 55);
+          case "S3": return new go.Size(55, 55);
+          case "P1": return new go.Size(60, 85);
+          case "P2": return new go.Size(55, 80);
+          case "M4": return new go.Size(80, 50);
+          case "M5": return new go.Size(90, 65);
+          case "I1": return new go.Size(80, 70);
+          default: return new go.Size(80, 70);
+        }
       }
 
       function nodeProblemConverter(msg) {
@@ -65,10 +71,12 @@
               { name: "ICON" },
               $(go.Shape,
                 { fill: null, stroke: null },
-                new go.Binding("background", "problem", nodeProblemConverter)),
+                new go.Binding("background", "problem", nodeProblemConverter),
+                new go.AnimationTrigger('background')),
               $(go.Picture,
                 { margin: 5 },
-                new go.Binding("source", "type", nodeTypeImage))
+                new go.Binding("source", "type", nodeTypeImage),
+                new go.Binding("desiredSize", "type", nodeTypeSize))
             ),  // end Auto Panel
             $(go.Shape, "Circle",
               {
@@ -81,7 +89,8 @@
                 alignment: go.Spot.TopRight, alignmentFocus: go.Spot.TopRight,
                 width: 12, height: 12, fill: "blue"
               },
-              new go.Binding("fill", "status", nodeStatusConverter))
+              new go.Binding("fill", "status", nodeStatusConverter),
+              new go.AnimationTrigger('fill'))
           ),  // end Spot Panel
           $(go.TextBlock,
             new go.Binding("text"))
@@ -100,7 +109,8 @@
           { corner: 3 },
           $(go.Shape,
             { strokeWidth: 2, stroke: "gray" },
-            new go.Binding("stroke", "problem", linkProblemConverter))
+            new go.Binding("stroke", "problem", linkProblemConverter),
+            new go.AnimationTrigger('stroke'))
         );
 
       load();
@@ -126,6 +136,7 @@
           model.updateTargetBindings(data);
         }
       }
+
       function loop() {
         setTimeout(function() { randomProblems(); loop(); }, 2000);
       }

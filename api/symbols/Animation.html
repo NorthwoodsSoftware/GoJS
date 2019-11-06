@@ -1,0 +1,672 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Animation | GoJS API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<!-- non-fixed navbar -->
+	<nav id="non-fixed-nav" class="navbar navbar-inverse navbar-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<div class="navheader-container">
+					<div class="navheader-collapse" data-toggle="collapse" data-target="#navbar">
+						<a id="toplogo" class="navbar-brand" href="../../index.html">GoJS</a>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../../index.html">Home</a></li>
+					<li><a href="../../learn/index.html">Learn</a></li>
+					<li><a href="../../samples/index.html">Samples</a></li>
+					<li><a href="../../intro/index.html">Intro</a></li>
+					<li><a href="../../api/index.html" target="api">API</a></li>
+					<li><a href="https://www.nwoods.com/components/evalform.htm">Register</a></li>
+					<li><a href="../../download.html">Download</a></li>
+					<li><a href="https://forum.nwoods.com/c/gojs">Forum</a></li>
+					<li><a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+					<li class="buy"><a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+					<li class="activate"><a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="tsd-page-header">
+		<div class="tsd-page-toolbar">
+			<div class="container-fluid plr15">
+				<div class="table-wrap">
+					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+						<div class="field">
+							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+							<input id="tsd-search-field" type="text" />
+						</div>
+						<ul class="results">
+							<li class="state loading">Preparing search index...</li>
+							<li class="state failure">The search index is not available</li>
+						</ul>
+						<a href="../index.html" class="title">GoJS API</a>
+					</div>
+					<div class="table-cell" id="tsd-widgets">
+						<div id="tsd-filter">
+							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+							<div class="tsd-filter-group">
+								<div class="tsd-select" id="tsd-filter-visibility">
+									<span class="tsd-select-label">All</span>
+									<ul class="tsd-select-list">
+										<li data-value="public">Public</li>
+										<li data-value="protected">Public/Protected</li>
+										<li data-value="private" class="selected">All</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tsd-page-title">
+			<div class="container-fluid plr15">
+				<div class="top-copyright">
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.0 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+				</div>
+				<div>
+					<h1>Class Animation</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="container-fluid container-main plr15">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Animation</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<p>Animations are used to animate <a href="GraphObject.html">GraphObject</a> and <a href="Diagram.html">Diagram</a> properties.</p>
+					<p>This class is useful for creating manual animations.
+						If you wish to animate particular properties on a GraphObject every time their value changes,
+					you may want to use <a href="AnimationTrigger.html">AnimationTrigger</a>s instead, which automatically create and start Animations.</p>
+					<p>The <a href="AnimationManager.html#defaultAnimation">AnimationManager.defaultAnimation</a> is an instance of this class, and carries out the
+						default animations in GoJS: Model load, layout, expand and collapse, and so on.
+					See the <a href="../../intro/animation.html">Introduction Page on Animations</a> for more detail on the different kinds of animations.</p>
+					<p>Manual animations are set up by creating an instance of this class, and calling <a href="Animation.html#add">add</a> at least once, then calling <a href="Animation.html#start">start</a>.
+						The method <a href="Animation.html#add">add</a> specifies which objects and which animation effects/properties to animate, plus start and end values for the property.
+					As objects are added to an Animation, the Animation infers which <a href="Diagram.html">Diagram</a> and <a href="AnimationManager.html">AnimationManager</a> is relevant.</p>
+					<p>Animations are started by calling <a href="Animation.html#start">start</a>, and stopped when the <a href="Animation.html#duration">duration</a> is reached, or when <a href="Animation.html#stop">stop</a> is called,
+					or stopped when <a href="AnimationManager.html#stopAnimation">AnimationManager.stopAnimation</a> is called with <code>true</code> as its argument.</p>
+					<p>Animations can continue indefinitely if <a href="Animation.html#runCount">runCount</a> is set to <code>Infinity</code>.
+						Animations can act upon temporary copies of an object that will get destroyed by calling <a href="Animation.html#addTemporaryPart">addTemporaryPart</a>.
+						This is useful when crafting cosmetic animations of parts that are about to be deleted:
+					Since the part will no longer exist, you can instead animate a temporary part disappearing.</p>
+					<p>A simple example usage is this:</p>
+					<pre><code class="hljs js"><span class="hljs-keyword">var</span> node = myDiagram.nodes.first();
+<span class="hljs-keyword">var</span> shape = part.findObject(<span class="hljs-string">"SHAPE"</span>); <span class="hljs-comment">// assumes this Node contains a go.Shape with .name = "SHAPE"</span>
+<span class="hljs-keyword">var</span> animation = <span class="hljs-keyword">new</span> go.Animation();
+<span class="hljs-comment">// Animate this Node from its current position  to (400, 500)</span>
+animation.add(node, <span class="hljs-string">"position"</span>, node.position, <span class="hljs-keyword">new</span> go.Point(<span class="hljs-number">400</span>, <span class="hljs-number">500</span>));
+<span class="hljs-comment">// Animate the fill of the Shape within the Node, from its current color to blue</span>
+animation.add(shape, <span class="hljs-string">"fill"</span>, shape.fill, <span class="hljs-string">"blue"</span>);
+<span class="hljs-comment">// Both of these effects will animate simultaneously when start() is called:</span>
+animation.start();</code></pre>
+					<p>See the <a href="../../intro/animation.html">Introduction Page on Animations</a> and the <a href="../../samples/customAnimations.html">Custom Animations sample</a>
+					for more example usage of the Animation class.</p>
+					<p>Unlike the <a href="AnimationManager.html#defaultAnimation">AnimationManager.defaultAnimation</a>, Animations can be started any time,
+					and do not stop automatically when a new transaction begins.</p>
+					<dl class="tsd-comment-tags">
+						<dt>since</dt>
+						<dd><p>2.1</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Animation.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Animation.html#duration" class="tsd-kind-icon">duration</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Animation.html#easing" class="tsd-kind-icon">easing</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Animation.html#finished" class="tsd-kind-icon">finished</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="Animation.html#isAnimating" class="tsd-kind-icon">is<wbr>Animating</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Animation.html#isViewportUnconstrained" class="tsd-kind-icon">is<wbr>Viewport<wbr>Unconstrained</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Animation.html#reversible" class="tsd-kind-icon">reversible</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Animation.html#runCount" class="tsd-kind-icon">run<wbr>Count</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Animation.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Animation.html#addTemporaryPart" class="tsd-kind-icon">add<wbr>Temporary<wbr>Part</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Animation.html#getTemporaryState" class="tsd-kind-icon">get<wbr>Temporary<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Animation.html#start" class="tsd-kind-icon">start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Animation.html#stop" class="tsd-kind-icon">stop</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Constants</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="Animation.html#static-EaseInExpo" class="tsd-kind-icon">Ease<wbr>InExpo</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="Animation.html#static-EaseInOutQuad" class="tsd-kind-icon">Ease<wbr>InOut<wbr>Quad</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="Animation.html#static-EaseInQuad" class="tsd-kind-icon">Ease<wbr>InQuad</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="Animation.html#static-EaseLinear" class="tsd-kind-icon">Ease<wbr>Linear</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="Animation.html#static-EaseOutExpo" class="tsd-kind-icon">Ease<wbr>Out<wbr>Expo</a></li>
+								<li class="tsd-kind-constant tsd-parent-kind-class tsd-is-static"><a href="Animation.html#static-EaseOutQuad" class="tsd-kind-icon">Ease<wbr>Out<wbr>Quad</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>
+						constructor
+					</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Animation<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Animation.html" class="tsd-signature-type">Animation</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>The constructor creates an Animation.
+									A single Animation can animate multiple objects via multiple calls to <a href="Animation.html#add">add</a>.
+								When you are ready to begin the animation, call <a href="Animation.html#start">start</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Animation.html" class="tsd-signature-type">Animation</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="duration" class="tsd-anchor"></a>
+					<h3>
+						duration
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the duration for animations, in milliseconds.</p>
+								<p>The default value is <code>NaN</code>, which means it inherits the default value from the <a href="AnimationManager.html#duration">AnimationManager.duration</a>,
+								which defaults to 600 milliseconds.</p>
+								<p>The value must be a number greater than or equal to 1, or <code>NaN</code>.
+								Setting this property does not raise any events.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="easing" class="tsd-anchor"></a>
+					<h3>
+						easing
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the easing function this Animation will use to modify default properties.</p>
+								<p>Pre-defined animatable values are processed by passing scalars into this easing function.</p>
+								<p>The default value is <a href="Animation.html#static-EaseInOutQuad">Animation.EaseInOutQuad</a>.</p>
+								<p>The value can be an arbitrary easing function, or one of the six provided:
+									<a href="Animation.html#static-EaseLinear">Animation.EaseLinear</a>, <a href="Animation.html#static-EaseInOutQuad">Animation.EaseInOutQuad</a>, <a href="Animation.html#static-EaseInQuad">Animation.EaseInQuad</a>,
+								<a href="Animation.html#static-EaseOutQuad">Animation.EaseOutQuad</a>, <a href="Animation.html#static-EaseInExpo">Animation.EaseInExpo</a>, <a href="Animation.html#static-EaseOutExpo">Animation.EaseOutExpo</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="finished" class="tsd-anchor"></a>
+					<h3>
+						finished
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">animation</span><span class="tsd-signature-symbol">: </span><a href="Animation.html" class="tsd-signature-type">Animation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the function to execute when the user Animation finishes.</p>
+								<p>By default this property is null.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="isAnimating" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
+						is<wbr>Animating
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This read-only property is true when the Animation is currently running.</p>
+								<p>This value cannot be set, but Animation can be stopped by calling <a href="Animation.html#stop">stop</a>.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="isViewportUnconstrained" class="tsd-anchor"></a>
+					<h3>
+						is<wbr>Viewport<wbr>Unconstrained
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether this Animation should allow an unconstrained viewport during the runtime of the animation.
+									This temporarily sets the <a href="Diagram.html#scrollMode">Diagram.scrollMode</a> to <a href="Diagram.html#static-InfiniteScroll">Diagram.InfiniteScroll</a>, and restores the value at the end of the animation.
+								This is done so that animating objects can move out of the viewport temporarily during the animation and not trigger scrollbars.</p>
+								<p>This may be useful to set for animations that have objects or the Diagram bounds animate from outside the viewport into the view.
+								The default value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="reversible" class="tsd-anchor"></a>
+					<h3>
+						reversible
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether this Animation will repeat its animation in reverse at the end of the duration. Default false.</p>
+								<p>A reversible Animation, if stopped early, will end at its original state.</p>
+								<p>Setting this to true doubles the effective <a href="Animation.html#duration">duration</a> of the Animation.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="runCount" class="tsd-anchor"></a>
+					<h3>
+						run<wbr>Count
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether this Animation should be repeat, and how many times. The default is 1, which means the animation does not repeat.</p>
+								<p>This can be set to any non-zero positive integer, or <code>Infinity</code>. Setting this to <code>Infinity</code> will repeat an animation forever.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="Animation.html#reversible">reversible</a></p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="add" class="tsd-anchor"></a>
+					<h3>
+						add
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a>, effectName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, startValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, endValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, cosmetic<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Add an object (GraphObject or Diagram) and effect name, with specified start and end values, to this Animation.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>obj: <a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>GraphObject or Diagram to animate.</p>
+									</div>
+								</li>
+								<li>
+									<h5>effectName: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Animation effect name, such as <code>&quot;scale&quot;</code> to change GraphObject.scale.
+										By default the supported properties are, for GraphObjects:</p>
+										<ul>
+											<li><code>&quot;position&quot;</code></li>
+											<li><code>&quot;location&quot;</code> (on Parts)</li>
+											<li><code>&quot;scale&quot;</code></li>
+											<li><code>&quot;opacity&quot;</code></li>
+											<li><code>&quot;angle&quot;</code></li>
+											<li><code>&quot;desiredSize&quot;</code></li>
+											<li><code>&quot;width&quot;</code></li>
+											<li><code>&quot;height&quot;</code></li>
+											<li><code>&quot;background&quot;</code></li>
+											<li><code>&quot;areaBackground&quot;</code></li>
+											<li><code>&quot;fill&quot;</code> (on Shapes)</li>
+											<li><code>&quot;strokeWidth&quot;</code> (on Shapes)</li>
+											<li><code>&quot;strokeDashOffset&quot;</code> (on Shapes)</li>
+											<li><code>&quot;stroke&quot;</code> (on Shapes, TextBlocks)</li>
+										</ul>
+										<p>For Diagrams:</p>
+										<ul>
+											<li><code>&quot;position&quot;</code></li>
+											<li><code>&quot;scale&quot;</code></li>
+											<li><code>&quot;opacity&quot;</code></li>
+										</ul>
+										<p>More properties can be supported by defining new effects with <a href="AnimationManager.html#static-defineAnimationEffect">AnimationManager.defineAnimationEffect</a>.</p>
+									</div>
+								</li>
+								<li>
+									<h5>startValue: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The starting value for the animated property. Often this is the current value of the property.</p>
+									</div>
+								</li>
+								<li>
+									<h5>endValue: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The ending value for the animated property. Even if the animation is just cosmetic, this must be a valid value for the property.
+											For instance, for <a href="GraphObject.html#scale">GraphObject.scale</a>, you cannot animate to 0, as this is an invalid scale value.
+										Instead you would animate to a very small (but still valid) value, such as 0.001.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> cosmetic: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Determines if the animation should revert the property value to the start value at the end of animation.
+											Default false. This is commonly used when animating opacity or scale of &quot;disappearing&quot; nodes during collapse.
+										Even though the node may appear to go to scale 0.001, the programmer usually wants the scale to be reflect its prior value, once hidden.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addTemporaryPart" class="tsd-anchor"></a>
+					<h3>
+						add<wbr>Temporary<wbr>Part
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Temporary<wbr>Part<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type">Part</a>, diagram<span class="tsd-signature-symbol">: </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>part: <a href="Part.html" class="tsd-signature-type">Part</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A part to add to the Diagram at the start of the animation and remove at the end.
+											This is typically either a copied Part already in the Diagram, to animate its deletion,
+										or a Part created programmatically to be used for some effect.</p>
+									</div>
+								</li>
+								<li>
+									<h5>diagram: <a href="Diagram.html" class="tsd-signature-type">Diagram</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The Diagram to add the temporary part to, and remove it from, at the start and end of animation, respectively.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getTemporaryState" class="tsd-anchor"></a>
+					<h3>
+						get<wbr>Temporary<wbr>State
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Temporary<wbr>State<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ObjectData.html" class="tsd-signature-type">ObjectData</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets the <a href="ObjectData.html">ObjectData</a> assocaited with this GraphObject or Diagram.
+								If no state exists, this creates and returns a new <a href="ObjectData.html">ObjectData</a>.</p>
+								<p>This can be used to store temporary information per animated object during the course of an animation.
+								This state is cleared at the end of an animation.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>obj: <a href="GraphObject.html" class="tsd-signature-type">GraphObject</a><span class="tsd-signature-symbol"> | </span><a href="Diagram.html" class="tsd-signature-type">Diagram</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="ObjectData.html" class="tsd-signature-type">ObjectData</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="start" class="tsd-anchor"></a>
+					<h3>
+						start
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Start this animation.</p>
+								<p>This adds the Animation to its <a href="AnimationManager.html">AnimationManager</a>&#39;s list of active animations.
+								The AnimationManager is inferred from the list of objects to be animted, by inspecting their Diagram.</p>
+								<p>This does nothing if there are no objects to animate.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="stop" class="tsd-anchor"></a>
+					<h3>
+						stop
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Stops a running Animation and updates the animating objects to their final state.</p>
+								<p>If an animation was about to begin, it is cancelled.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constants</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-EaseInExpo" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Ease<wbr>InExpo
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Built-in static function for computing interpolated values. Can be used as a value for <a href="Animation.html#easing">Animation.easing</a>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-EaseInOutQuad" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Ease<wbr>InOut<wbr>Quad
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Built-in static function for computing interpolated values. Can be used as a value for <a href="Animation.html#easing">Animation.easing</a>.
+						This is the default value for <a href="Animation.html#easing">Animation.easing</a>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-EaseInQuad" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Ease<wbr>InQuad
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Built-in static function for computing interpolated values. Can be used as a value for <a href="Animation.html#easing">Animation.easing</a>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-EaseLinear" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Ease<wbr>Linear
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Built-in static function for computing interpolated values. Can be used as a value for <a href="Animation.html#easing">Animation.easing</a>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-EaseOutExpo" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Ease<wbr>Out<wbr>Expo
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Built-in static function for computing interpolated values. Can be used as a value for <a href="Animation.html#easing">Animation.easing</a>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+					<a name="static-EaseOutQuad" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						Ease<wbr>Out<wbr>Quad
+					<span class="tsd-signature-symbol">: </span><a href="../index.html#EasingFunction" class="tsd-signature-type">EasingFunction</a>        </h3>
+					<div class="tsd-comment tsd-typography">
+						<p>Built-in static function for computing interpolated values. Can be used as a value for <a href="Animation.html#easing">Animation.easing</a>.</p>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../index.html"><em>GoJS <wbr>Class <wbr>Index</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="Animation.html" class="tsd-kind-icon">Animation</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="Animation.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Animation.html#duration" class="tsd-kind-icon">duration</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Animation.html#easing" class="tsd-kind-icon">easing</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Animation.html#finished" class="tsd-kind-icon">finished</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="Animation.html#isAnimating" class="tsd-kind-icon">is<wbr>Animating</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Animation.html#isViewportUnconstrained" class="tsd-kind-icon">is<wbr>Viewport<wbr>Unconstrained</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Animation.html#reversible" class="tsd-kind-icon">reversible</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="Animation.html#runCount" class="tsd-kind-icon">run<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Animation.html#add" class="tsd-kind-icon">add</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Animation.html#addTemporaryPart" class="tsd-kind-icon">add<wbr>Temporary<wbr>Part</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Animation.html#getTemporaryState" class="tsd-kind-icon">get<wbr>Temporary<wbr>State</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Animation.html#start" class="tsd-kind-icon">start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Animation.html#stop" class="tsd-kind-icon">stop</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="Animation.html#static-EaseInExpo" class="tsd-kind-icon">Ease<wbr>InExpo</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="Animation.html#static-EaseInOutQuad" class="tsd-kind-icon">Ease<wbr>InOut<wbr>Quad</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="Animation.html#static-EaseInQuad" class="tsd-kind-icon">Ease<wbr>InQuad</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="Animation.html#static-EaseLinear" class="tsd-kind-icon">Ease<wbr>Linear</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="Animation.html#static-EaseOutExpo" class="tsd-kind-icon">Ease<wbr>Out<wbr>Expo</a>
+							</li>
+							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
+								<a href="Animation.html#static-EaseOutQuad" class="tsd-kind-icon">Ease<wbr>Out<wbr>Quad</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<div class="container-fluid bottom-copyright plr15">
+	Copyright &copy; 1998-2019 by Northwoods Software Corporation.
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="../../assets/js/bootstrap.min.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-1506307-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 * Copyright (C) 1998-2019 by Northwoods Software Corporation
 * All Rights Reserved.
 *
-* Go Local Storage
+* Go Net Core (unfinished)
 */
 
 import { Promise } from 'es6-promise';
@@ -34,7 +34,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
      * @param {string} iconsRelativeDirectory The directory path relative to the page in which this instance of GoLocalStorage exists, in which
      * the storage service brand icons can be found. The default value is "../goCloudStorageIcons/".
      */
-    constructor(managedDiagrams: go.Diagram|Array<go.Diagram>, rootEndpoint: string, defaultModel?: string, iconsRelativeDirectory?: string) {
+    constructor(managedDiagrams: go.Diagram | Array<go.Diagram>, rootEndpoint: string, defaultModel?: string, iconsRelativeDirectory?: string) {
         super(managedDiagrams, defaultModel);
         this._rootEndpoint = rootEndpoint;
         this.ui.id = 'goNetCoreCustomFilepicker';
@@ -114,13 +114,13 @@ export class GoNetCore extends gcs.GoCloudStorage {
                     if (action !== 'Save') {
                         filesDiv.innerHTML +=
                             "<div class='fileOption'>" +
-                                '<input id=' + id + " type='radio' name='localStorageFile' />" +
-                                '<label id =' + id + '-label' + " for='" + name + "'>" + name + '</label>' +
+                            '<input id=' + id + " type='radio' name='localStorageFile' />" +
+                            '<label id =' + id + '-label' + " for='" + name + "'>" + name + '</label>' +
                             '</div>';
                     } else {
                         filesDiv.innerHTML +=
                             "<div class='fileOption'>" +
-                                '<label id =' + id + '-label' + " for='" + id + "'>" + name + '</label>' +
+                            '<label id =' + id + '-label' + " for='" + id + "'>" + name + '</label>' +
                             '</div>';
                     }
                 }
@@ -129,7 +129,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
             if (!hasCheckedAllFiles) {
                 const num: number = numAdditionalFiles + 50;
                 filesDiv.innerHTML += "<p>There may be more diagram files not shown. <a id='netCoreLoadMoreFiles'>Click here</a> to try loading more.</p>";
-                document.getElementById('netCoreLoadMoreFiles').onclick = function () {
+                document.getElementById('netCoreLoadMoreFiles').onclick = function() {
                     storage.showUI(action, num);
                 };
             }
@@ -154,7 +154,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
             const actionButton = document.createElement('button');
             actionButton.textContent = action;
             actionButton.id = 'actionButton';
-            actionButton.onclick = function () {
+            actionButton.onclick = function() {
                 storage.processUIResult(action);
             };
             submitDiv.appendChild(actionButton);
@@ -164,7 +164,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
             const cancelButton = document.createElement('button');
             cancelButton.id = 'cancelButton';
             cancelButton.textContent = 'Cancel';
-            cancelButton.onclick = function () {
+            cancelButton.onclick = function() {
                 storage.hideUI(true);
             };
             cancelDiv.appendChild(cancelButton);
@@ -241,7 +241,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
             if (path) {
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-                xhr.onreadystatechange = function () {
+                xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (xhr.status >= 200 && xhr.status < 300) {
                             resolve((JSON.parse(xhr.response)));
@@ -262,7 +262,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
         return new Promise(function(resolve, reject) {
             const xhr: XMLHttpRequest = new XMLHttpRequest();
             xhr.open('GET', storage.rootEndpoint, true);
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         resolve(JSON.parse(xhr.response));
@@ -281,10 +281,10 @@ export class GoNetCore extends gcs.GoCloudStorage {
     public checkFileExists(path: string) {
         const storage = this;
         const url: string = storage.rootEndpoint + path;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             const xhr: XMLHttpRequest = new XMLHttpRequest();
             xhr.open('GET', url, true);
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         resolve((true));
@@ -303,7 +303,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
      */
     public saveWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storage.showUI('Save'));
         });
     }
@@ -317,7 +317,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
      */
     public save(path?: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             // PUT -- update current entry
             if (storage.currentDiagramFile.id && !path) {
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
@@ -327,10 +327,10 @@ export class GoNetCore extends gcs.GoCloudStorage {
                         name: storage.currentDiagramFile.name,
                         file: storage.makeSaveFile()
                     };
-                    const savedFile: gcs.DiagramFile = {id: item.id, name: item.name, path: item.name};
+                    const savedFile: gcs.DiagramFile = { id: item.id, name: item.name, path: item.name };
                     xhr.open('PUT', storage.rootEndpoint + storage.currentDiagramFile.id, true);
                     xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-                    xhr.onreadystatechange = function () {
+                    xhr.onreadystatechange = function() {
                         if (xhr.readyState === 4) {
                             if (xhr.status > 200 && xhr.status < 300) {
                                 resolve(savedFile);
@@ -344,16 +344,16 @@ export class GoNetCore extends gcs.GoCloudStorage {
             } else {
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
                 const item = {
-                    name: (path !== null) ? path :  'New diagram',
+                    name: (path !== null) ? path : 'New diagram',
                     file: storage.makeSaveFile()
                 };
                 xhr.open('POST', storage.rootEndpoint, true);
                 xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-                xhr.onreadystatechange = function () {
+                xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (xhr.status > 200 && xhr.status < 300) {
                             const id = JSON.parse(xhr.response).id;
-                            const savedFile: gcs.DiagramFile = {id: id, name: item.name, path: item.name};
+                            const savedFile: gcs.DiagramFile = { id: id, name: item.name, path: item.name };
 
                             storage.currentDiagramFile = savedFile;
                             resolve(savedFile); // used if saveDiagram was called without UI
@@ -377,7 +377,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
      */
     public loadWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storage.showUI('Load'));
         }).catch(function(e: any) {
             throw Error(e);
@@ -391,11 +391,11 @@ export class GoNetCore extends gcs.GoCloudStorage {
      */
     public load(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) {
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
                 xhr.open('GET', storage.rootEndpoint + path, true);
-                xhr.onreadystatechange = function () {
+                xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (xhr.status >= 200 && xhr.status < 300) {
                             const respJSON = JSON.parse(xhr.response);
@@ -425,7 +425,7 @@ export class GoNetCore extends gcs.GoCloudStorage {
      */
     public removeWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storage.showUI('Delete'));
         });
     }
@@ -437,14 +437,14 @@ export class GoNetCore extends gcs.GoCloudStorage {
      */
     public remove(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) {
                 storage.getFile(path).then(function(resp: any) {
                     const deletedFile: gcs.DiagramFile = { name: resp.name, path: resp.name, id: path };
-                    if (storage.currentDiagramFile && resp.name === storage.currentDiagramFile.name) storage.currentDiagramFile = {name: null, path: null, id: null};
+                    if (storage.currentDiagramFile && resp.name === storage.currentDiagramFile.name) storage.currentDiagramFile = { name: null, path: null, id: null };
                     const xhr: XMLHttpRequest = new XMLHttpRequest();
                     xhr.open('DELETE', storage.rootEndpoint + path, true);
-                    xhr.onreadystatechange = function () {
+                    xhr.onreadystatechange = function() {
                         if (xhr.readyState === 4) {
                             if (xhr.status >= 200 && xhr.status < 300) {
                                 resolve(deletedFile); // used if deleteDiagram was called without UI

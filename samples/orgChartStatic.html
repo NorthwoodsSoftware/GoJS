@@ -14,18 +14,27 @@
       height: 100px;
       top: 10px;
       left: 10px;
-      background-color: aliceblue;
+      background-color: #f2f2f2;
       z-index: 300; /* make sure its in front */
-      border: solid 1px blue;
+      border: solid 1px #7986cb;
     }
   </style>
   <script src="../release/go.js"></script>
-  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" type="text/css">
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // some constants that will be reused within templates
+      var mt8 = new go.Margin(8, 0, 0, 0);
+      var mr8 = new go.Margin(0, 8, 0, 0);
+      var ml8 = new go.Margin(0, 0, 0, 8);
+      var roundedRectangleParams = {
+        parameter1: 2,  // set the rounded corner
+        spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight  // make content go all the way to inside edges of rounded corners
+      };
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // the DIV HTML element
@@ -34,13 +43,14 @@
             initialDocumentSpot: go.Spot.TopCenter,
             initialViewportSpot: go.Spot.TopCenter,
             // OR: Scroll to show a particular node, once the layout has determined where that node is
-            //"InitialLayoutCompleted": function(e) {
+            // "InitialLayoutCompleted": function(e) {
             //  var node = e.diagram.findNodeForKey(28);
             //  if (node !== null) e.diagram.commandHandler.scrollToPart(node);
-            //},
+            // },
             layout:
               $(go.TreeLayout,  // use a TreeLayout to position all of the nodes
                 {
+                  isOngoing: false,  // don't relayout when expanding/collapsing panels
                   treeStyle: go.TreeLayout.StyleLastParents,
                   // properties for most of the tree:
                   angle: 90,
@@ -48,9 +58,9 @@
                   // properties for the "last parents":
                   alternateAngle: 0,
                   alternateAlignment: go.TreeLayout.AlignmentStart,
-                  alternateNodeIndent: 20,
+                  alternateNodeIndent: 15,
                   alternateNodeIndentPastParent: 1,
-                  alternateNodeSpacing: 20,
+                  alternateNodeSpacing: 15,
                   alternateLayerSpacing: 40,
                   alternateLayerSpacingParentOverlap: 1,
                   alternatePortSpot: new go.Spot(0.001, 1, 20, 0),
@@ -58,71 +68,104 @@
                 })
           });
 
-      // define Converters to be used for Bindings
-      function theNationFlagConverter(nation) {
-        return "https://www.nwoods.com/go/Flags/" + nation.toLowerCase().replace(/\s/g, "-") + "-flag.Png";
+      // This function provides a common style for most of the TextBlocks.
+      // Some of these values may be overridden in a particular TextBlock.
+      function textStyle(field) {
+        return [
+          {
+            font: "12px Roboto, sans-serif", stroke: "rgba(0, 0, 0, .60)",
+            visible: false  // only show textblocks when there is corresponding data for them
+          },
+          new go.Binding("visible", field, function(val) { return val !== undefined; })
+        ];
       }
 
-      function theInfoTextConverter(info) {
-        var str = "";
-        if (info.title) str += "Title: " + info.title;
-        if (info.headOf) str += "\n\nHead of: " + info.headOf;
-        if (typeof info.boss === "number") {
-          var bossinfo = myDiagram.model.findNodeDataForKey(info.boss);
-          if (bossinfo !== null) {
-            str += "\n\nReporting to: " + bossinfo.name;
-          }
-        }
-        return str;
+      // define Converters to be used for Bindings
+      function theNationFlagConverter(nation) {
+        return "https://www.nwoods.com/images/emojiflags/" + nation + ".png";
       }
 
       // define the Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          // the outer shape for the node, surrounding the Table
-          $(go.Shape, "Rectangle",
-            { stroke: null, strokeWidth: 0 },
-            /* reddish if highlighted, blue otherwise */
-            new go.Binding("fill", "isHighlighted", function(h) { return h ? "#F44336" : "#A7E7FC"; }).ofObject()),
-          // a table to contain the different parts of the node
-          $(go.Panel, "Table",
-            { margin: 6, maxSize: new go.Size(200, NaN) },
-            // the two TextBlocks in column 0 both stretch in width
-            // but align on the left side
-            $(go.RowColumnDefinition,
+          {
+            locationSpot: go.Spot.TopCenter,
+            isShadowed: true, shadowBlur: 1,
+            shadowOffset: new go.Point(0, 1),
+            shadowColor: "rgba(0, 0, 0, .14)",
+            selectionAdornmentTemplate:  // selection adornment to match shape of nodes
+              $(go.Adornment, "Auto",
+                $(go.Shape, "RoundedRectangle", roundedRectangleParams,
+                  { fill: null, stroke: "#7986cb", strokeWidth: 3 }
+                ),
+                $(go.Placeholder)
+              )  // end Adornment
+          },
+          $(go.Shape, "RoundedRectangle", roundedRectangleParams,
+            { name: "SHAPE", fill: "#ffffff", strokeWidth: 0 },
+            // bluish if highlighted, white otherwise
+            new go.Binding("fill", "isHighlighted", function(h) { return h ? "#e8eaf6" : "#ffffff"; }).ofObject()
+          ),
+          $(go.Panel, "Vertical",
+            $(go.Panel, "Horizontal",
+              { margin: 8 },
+              $(go.Picture,  // flag image, only visible if a nation is specified
+                { margin: mr8, visible: false, desiredSize: new go.Size(50, 50) },
+                new go.Binding("source", "nation", theNationFlagConverter),
+                new go.Binding("visible", "nation", function(nat) { return nat !== undefined; }),
+              ),
+              $(go.Panel, "Table",
+                $(go.TextBlock,
+                  {
+                    row: 0, alignment: go.Spot.Left,
+                    font: "16px Roboto, sans-serif",
+                    stroke: "rgba(0, 0, 0, .87)",
+                    maxSize: new go.Size(160, NaN)
+                  },
+                  new go.Binding("text", "name")
+                ),
+                $(go.TextBlock, textStyle("title"),
+                  {
+                    row: 1, alignment: go.Spot.Left,
+                    maxSize: new go.Size(160, NaN)
+                  },
+                  new go.Binding("text", "title")
+                ),
+                $("PanelExpanderButton", "INFO",
+                  { row: 0, column: 1, rowSpan: 2, margin: ml8 }
+                )
+              ),
+            ),
+            $(go.Shape, "LineH",
               {
-                column: 0,
-                stretch: go.GraphObject.Horizontal,
-                alignment: go.Spot.Left
-              }),
-            // the name
-            $(go.TextBlock,
-              {
-                row: 0, column: 0,
-                maxSize: new go.Size(160, NaN), margin: 2,
-                font: "500 16px Roboto, sans-serif",
-                alignment: go.Spot.Top
+                stroke: "rgba(0, 0, 0, .60)", strokeWidth: 1,
+                height: 1, stretch: go.GraphObject.Horizontal
               },
-              new go.Binding("text", "name")),
-            // the country flag
-            $(go.Picture,
+              new go.Binding("visible").ofObject("INFO")  // only visible when info is expanded
+            ),
+            $(go.Panel, "Vertical",
               {
-                row: 0, column: 1, margin: 2,
-                imageStretch: go.GraphObject.Uniform,
-                alignment: go.Spot.TopRight
+                name: "INFO",  // identify to the PanelExpanderButton
+                stretch: go.GraphObject.Horizontal,  // take up whole available width
+                margin: 8,
+                defaultAlignment: go.Spot.Left,  // thus no need to specify alignment on each element
               },
-              // only set a desired size if a flag is also present:
-              new go.Binding("desiredSize", "nation", function() { return new go.Size(34, 26) }),
-              new go.Binding("source", "nation", theNationFlagConverter)),
-            // the additional textual information
-            $(go.TextBlock,
-              {
-                row: 1, column: 0, columnSpan: 2,
-                font: "12px Roboto, sans-serif"
-              },
-              new go.Binding("text", "", theInfoTextConverter))
-          )  // end Table Panel
-        );  // end Node
+              $(go.TextBlock, textStyle("headOf"),
+                new go.Binding("text", "headOf", function(head) { return "Head of: " + head; })
+              ),
+              $(go.TextBlock, textStyle("boss"),
+                new go.Binding("margin", "headOf", function(head) { return mt8; }), // some space above if there is also a headOf value
+                new go.Binding("text", "boss", function(boss) {
+                  var boss = myDiagram.model.findNodeDataForKey(boss);
+                  if (boss !== null) {
+                    return "Reporting to: " + boss.name;
+                  }
+                  return "";
+                })
+              )
+            )
+          )
+        );
 
       // define the Link template, a simple orthogonal line
       myDiagram.linkTemplate =
@@ -133,13 +176,13 @@
 
       // set up the nodeDataArray, describing each person/position
       var nodeDataArray = [
-        { key: 0, name: "Ban Ki-moon 반기문", nation: "South Korea", title: "Secretary-General of the United Nations", headOf: "Secretariat" },
+        { key: 0, name: "Ban Ki-moon 반기문", nation: "SouthKorea", title: "Secretary-General of the United Nations", headOf: "Secretariat" },
         { key: 1, boss: 0, name: "Patricia O'Brien", nation: "Ireland", title: "Under-Secretary-General for Legal Affairs and United Nations Legal Counsel", headOf: "Office of Legal Affairs" },
         { key: 3, boss: 1, name: "Peter Taksøe-Jensen", nation: "Denmark", title: "Assistant Secretary-General for Legal Affairs" },
         { key: 9, boss: 3, name: "Other Employees" },
         { key: 4, boss: 1, name: "Maria R. Vicien - Milburn", nation: "Argentina", title: "General Legal Division Director", headOf: "General Legal Division" },
         { key: 10, boss: 4, name: "Other Employees" },
-        { key: 5, boss: 1, name: "Václav Mikulka", nation: "Czech Republic", title: "Codification Division Director", headOf: "Codification Division" },
+        { key: 5, boss: 1, name: "Václav Mikulka", nation: "CzechRepublic", title: "Codification Division Director", headOf: "Codification Division" },
         { key: 11, boss: 5, name: "Other Employees" },
         { key: 6, boss: 1, name: "Sergei Tarassenko", nation: "Russia", title: "Division for Ocean Affairs and the Law of the Sea Director", headOf: "Division for Ocean Affairs and the Law of the Sea" },
         { key: 12, boss: 6, name: "Alexandre Tagore Medeiros de Albuquerque", nation: "Brazil", title: "Chairman of the Commission on the Limits of the Continental Shelf", headOf: "The Commission on the Limits of the Continental Shelf" },
@@ -151,11 +194,11 @@
         { key: 18, boss: 12, name: "Philip Alexander Symonds", nation: "Australia", title: "Chairman of the Committee on provision of scientific and technical advice to coastal States", headOf: "Committee on provision of scientific and technical advice to coastal States" },
         { key: 35, boss: 18, name: "Emmanuel Kalngui", nation: "Cameroon", title: "Vice Chairman of the Committee on provision of scientific and technical advice to coastal States" },
         { key: 36, boss: 18, name: "Sivaramakrishnan Rajan", nation: "India", title: "Vice Chairman of the Committee on provision of scientific and technical advice to coastal States" },
-        { key: 37, boss: 18, name: "Francis L. Charles", nation: "Trinidad and Tobago", title: "Member of the Committee on provision of scientific and technical advice to costal States" },
+        { key: 37, boss: 18, name: "Francis L. Charles", nation: "TrinidadAndTobago", title: "Member of the Committee on provision of scientific and technical advice to costal States" },
         { key: 38, boss: 18, name: "Mihai Silviu German", nation: "Romania", title: "Member of the Committee on provision of scientific and technical advice to costal States" },
         { key: 19, boss: 12, name: "Lawrence Folajimi Awosika", nation: "Nigeria", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
         { key: 20, boss: 12, name: "Harald Brekke", nation: "Norway", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
-        { key: 21, boss: 12, name: "Yong-Ahn Park", nation: "South Korea", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
+        { key: 21, boss: 12, name: "Yong-Ahn Park", nation: "SouthKorea", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
         { key: 22, boss: 12, name: "Abu Bakar Jaafar", nation: "Malaysia", title: "Chairman of the Editorial Committee", headOf: "Editorial Committee" },
         { key: 23, boss: 12, name: "Galo Carrera Hurtado", nation: "Mexico", title: "Chairman of the Training Committee", headOf: "Training Committee" },
         { key: 24, boss: 12, name: "Indurlall Fagoonee", nation: "Mauritius", title: "Member of the Commission on the Limits of the Continental Shelf" },
@@ -166,7 +209,7 @@
         { key: 7, boss: 1, name: "Renaud Sorieul", nation: "France", title: "International Trade Law Division Director", headOf: "International Trade Law Division" },
         { key: 13, boss: 7, name: "Other Employees" },
         { key: 8, boss: 1, name: "Annebeth Rosenboom", nation: "Netherlands", title: "Treaty Section Chief", headOf: "Treaty Section" },
-        { key: 14, boss: 8, name: "Bradford Smith", nation: "United States", title: "Substantive Legal Issues Head", headOf: "Substantive Legal Issues" },
+        { key: 14, boss: 8, name: "Bradford Smith", nation: "UnitedStates", title: "Substantive Legal Issues Head", headOf: "Substantive Legal Issues" },
         { key: 29, boss: 14, name: "Other Employees" },
         { key: 15, boss: 8, name: "Andrei Kolomoets", nation: "Russia", title: "Technical/Legal Issues Head", headOf: "Technical/Legal Issues" },
         { key: 30, boss: 15, name: "Other Employees" },
@@ -217,7 +260,7 @@
 </head>
 <body onload="init()">
 <div id="sample" style="position: relative;">
-  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
+  <div id="myDiagramDiv" style="background-color: #f2f2f2; border: solid 1px black; width: 100%; height: 700px"></div>
   <div id="myOverviewDiv"></div> <!-- Styled in a <style> tag at the top of the html page -->
   <p>
   This sample shows an organizational chart diagram and uses an in-laid GoJS <a>Overview</a> to aid the user in navigation.
@@ -237,6 +280,9 @@
     If you want to have some "assistant" nodes on the side, above the regular reports,
     see the <a href="orgChartAssistants.html">Org Chart Assistants</a> sample, which is a copy of this sample
     that uses a custom <a>TreeLayout</a> to position "assistants" that way.
+  </p>
+  <p>
+    Flag images are from <a href="https://openmoji.org/">OpenMoji</a> – the open-source emoji and icon project. License: CC BY-SA 4.0.
   </p>
 </div>
 </body>

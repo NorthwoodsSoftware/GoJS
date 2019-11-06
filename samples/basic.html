@@ -60,8 +60,8 @@
             function(e, obj) { e.diagram.commandHandler.copySelection(); },
             function(o) { return o.diagram.commandHandler.canCopySelection(); }),
           makeButton("Paste",
-            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); },
-            function(o) { return o.diagram.commandHandler.canPasteSelection(); }),
+            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); },
+            function(o) { return o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }),
           makeButton("Delete",
             function(e, obj) { e.diagram.commandHandler.deleteSelection(); },
             function(o) { return o.diagram.commandHandler.canDeleteSelection(); }),
@@ -173,6 +173,7 @@
           },
           $(go.TextBlock,
             {
+              //alignment: go.Spot.Right,
               font: "bold 19px sans-serif",
               isMultiline: false,  // don't allow newlines in text
               editable: true  // allow in-place editing by user
@@ -220,8 +221,8 @@
       myDiagram.contextMenu =
         $("ContextMenu",
           makeButton("Paste",
-            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.lastInput.documentPoint); },
-            function(o) { return o.diagram.commandHandler.canPasteSelection(); }),
+            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); },
+            function(o) { return o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }),
           makeButton("Undo",
             function(e, obj) { e.diagram.commandHandler.undo(); },
             function(o) { return o.diagram.commandHandler.canUndo(); }),

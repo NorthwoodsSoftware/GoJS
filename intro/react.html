@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS and React -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="goIntro.js"></script>
+</head>
+<body onload="goIntro()">
+<div id="container" class="container-fluid">
+<div id="content">
+
+<h1>Using GoJS with React</h1>
+<p class="box" style="background-color: lightgoldenrodyellow;">
+  Examples of most of the topics discussed on this page can be found in the <a href="https://github.com/NorthwoodsSoftware/gojs-react-basic" target="_blank">gojs-react-basic</a> project,
+  which serves as a simple starter project.
+</p>
+
+<p>
+  If you are new to GoJS, it may be helpful to first visit the <a href="../learn/index.html" target="_blank">Getting Started Tutorial</a>.
+</p>
+
+<p>
+  The easiest way to get a component set up for a GoJS Diagram is to use the <a href="https://github.com/NorthwoodsSoftware/gojs-react" target="_blank">gojs-react</a> package,
+  which exports React Components for GoJS Diagrams, Palettes, and Overviews.
+  The <a href="https://github.com/NorthwoodsSoftware/gojs-react-basic" target="_blank">gojs-react-basic</a> project demonstrates how to use these components.
+  More information about the package, including the various props it takes, can be found on the <a href="https://github.com/NorthwoodsSoftware/gojs-react" target="_blank">Github</a> or
+  <a href="https://npmjs.com/gojs-react" target="_blank">NPM</a> pages. Our examples will be using a <a>GraphLinksModel</a>, but any model can be used.
+</p>
+
+<h2 id="quickstart">Quick start with an existing React application</h2>
+<h4>Installation</h4>
+<p>
+  Start by installing GoJS and gojs-react: <code>npm install gojs gojs-react</code>.
+</p>
+<h4>Diagram styling</h4>
+<p>
+  Next, set up a CSS class for the GoJS diagram's div:
+</p>
+<pre class="lang-css">
+  /* App.css */
+  .diagram-component {
+    width: 400px;
+    height: 400px;
+    border: solid 1px black;
+    background-color: white;
+  }
+</pre>
+<h4>Rendering the component</h4>
+<p>
+  Finally, add an initDiagram function and a model change handler function, and add the ReactDiagram component inside your render method.
+</p>
+<pre class="lang-js">
+  // App.js
+  import React from 'react';
+
+  import * as go from 'gojs';
+  import { ReactDiagram } from 'gojs-react';
+
+  import './App.css';  // contains .diagram-component CSS
+
+  // ...
+
+  /**
+   * This function is responsible for setting up the diagram's initial properties and any templates.
+   */
+  function initDiagram() {
+    const $ = go.GraphObject.make;
+    const diagram =
+      $(go.Diagram,
+        {
+          'undoManager.isEnabled': true,  // enable undo & redo
+          'clickCreatingTool.archetypeNodeData': { text: 'new node', color: 'lightblue' },
+          model: $(go.GraphLinksModel,
+            {
+              linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+            })
+        });
+
+    // define a simple Node template
+    diagram.nodeTemplate =
+      $(go.Node, 'Auto',  // the Shape will go around the TextBlock
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Shape, 'RoundedRectangle',
+          { name: 'SHAPE', fill: 'white', strokeWidth: 0 },
+          // Shape.fill is bound to Node.data.color
+          new go.Binding('fill', 'color')),
+        $(go.TextBlock,
+          { margin: 8, editable: true },  // some room around the text
+          new go.Binding('text').makeTwoWay()
+        )
+      );
+
+    return diagram;
+  }
+
+  /**
+   * This function handles any changes to the GoJS model.
+   * It is here that you would make any updates to your React state, which is dicussed below.
+   */
+  function handleModelChange(changes) {
+    alert('GoJS model changed!');
+  }
+
+  // render function...
+  function App() {
+    return (
+      &lt;div&gt;
+        ...
+        &lt;ReactDiagram
+          initDiagram={initDiagram}
+          divClassName='diagram-component'
+          nodeDataArray={[
+            { key: 0, text: 'Alpha', color: 'lightblue', loc: '0 0' },
+            { key: 1, text: 'Beta', color: 'orange', loc: '150 0' },
+            { key: 2, text: 'Gamma', color: 'lightgreen', loc: '0 150' },
+            { key: 3, text: 'Delta', color: 'pink', loc: '150 150' }
+          ]}
+          linkDataArray={[
+            { key: -1, from: 0, to: 1 },
+            { key: -2, from: 0, to: 2 },
+            { key: -3, from: 1, to: 1 },
+            { key: -4, from: 2, to: 3 },
+            { key: -5, from: 3, to: 0 }
+          ]}
+          onModelChange={handleModelChange}
+        /&gt;
+        ...
+      &lt;/div&gt;
+    );
+  }
+</pre>
+<p>
+  That's it! You should now have a GoJS diagram rendering within your React application.
+  Try editing the text of a node or deleting a node, and you'll see an alert on the page.
+</p>
+
+<h2 id="stateful">Usage in a stateful React app</h2>
+<p>
+  Typically the data being passed to the ReactDiagram component will be used elsewhere in your app and will exist in React state.
+  For example, you may have some kind of inspector that can be used to modify node properties, and therefore the state should be lifted up and held by a parent component
+  of both the diagram and the inspector.
+</p>
+<p>
+  A basic setup can be seen in the <a href="https://github.com/NorthwoodsSoftware/gojs-react-basic" target="_blank">gojs-react-basic</a> project,
+  but we'll describe some of the methodology here.
+</p>
+<h4>Creating a wrapper component</h4>
+<p>
+  When handling state, it is often useful to write a wrapper component around the gojs-react components to pass the necessary props along and keep GoJS initialization out of the main app.
+  There are a few things that should be set up in the wrapper component:
+  <ul>
+    <li>a set of props coming in from the parent component which holds state and handlers</li>
+    <li>a ref to the ReactDiagram component so getDiagram() can be used</li>
+    <li>componentDidMount and componentWillUnmount methods to add/remove app-specific diagram listeners</li>
+    <li>an initDiagram method to be passed to the ReactDiagram component</li>
+  </ul>
+</p>
+<pre class="lang-js">
+  import * as go from 'gojs';
+  import { ReactDiagram } from 'gojs-react';
+  import * as React from 'react';
+
+  // props passed in from a parent component holding state, some of which will be passed to ReactDiagram
+  interface WrapperProps {
+    nodeDataArray: Array&lt;go.ObjectData&gt;;
+    linkDataArray: Array&lt;go.ObjectData&gt;;
+    modelData: go.ObjectData;
+    skipsDiagramUpdate: boolean;
+    onDiagramEvent: (e: go.DiagramEvent) => void;
+    onModelChange: (e: go.IncrementalData) => void;
+  }
+
+  export class DiagramWrapper extends React.Component&lt;WrapperProps, {}&gt; {
+    /**
+     * Ref to keep a reference to the component, which provides access to the GoJS diagram via getDiagram().
+     */
+    private diagramRef: React.RefObject&lt;ReactDiagram&gt;;
+
+    constructor(props: WrapperProps) {
+      super(props);
+      this.diagramRef = React.createRef();
+    }
+
+    /**
+     * Get the diagram reference and add any desired diagram listeners.
+     * Typically the same function will be used for each listener,
+     * with the function using a switch statement to handle the events.
+     * This is only necessary when you want to define additional app-specific diagram listeners.
+     */
+    public componentDidMount() {
+      if (!this.diagramRef.current) return;
+      const diagram = this.diagramRef.current.getDiagram();
+      if (diagram instanceof go.Diagram) {
+        diagram.addDiagramListener('ChangedSelection', this.props.onDiagramEvent);
+      }
+    }
+
+    /**
+     * Get the diagram reference and remove listeners that were added during mounting.
+     * This is only necessary when you have defined additional app-specific diagram listeners.
+     */
+    public componentWillUnmount() {
+      if (!this.diagramRef.current) return;
+      const diagram = this.diagramRef.current.getDiagram();
+      if (diagram instanceof go.Diagram) {
+        diagram.removeDiagramListener('ChangedSelection', this.props.onDiagramEvent);
+      }
+    }
+
+    /**
+     * Diagram initialization method, which is passed to the ReactDiagram component.
+     * This method is responsible for making the diagram and initializing the model, any templates,
+     * and maybe doing other initialization tasks like customizing tools.
+     * The model's data should not be set here, as the ReactDiagram component handles that via the other props.
+     */
+    private initDiagram(): go.Diagram {
+      const $ = go.GraphObject.make;
+      const diagram =
+        $(go.Diagram,
+          {
+            'undoManager.isEnabled': true,  // enable undo & redo
+            'clickCreatingTool.archetypeNodeData': { text: 'new node', color: 'lightblue' },
+            model: $(go.GraphLinksModel,
+              {
+                linkKeyProperty: 'key',  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+                // positive keys for nodes
+                makeUniqueKeyFunction: (m: go.Model, data: any) => {
+                  let k = data.key || 1;
+                  while (m.findNodeDataForKey(k)) k++;
+                  data.key = k;
+                  return k;
+                },
+                // negative keys for links
+                makeUniqueLinkKeyFunction: (m: go.GraphLinksModel, data: any) => {
+                  let k = data.key || -1;
+                  while (m.findLinkDataForKey(k)) k--;
+                  data.key = k;
+                  return k;
+                }
+              })
+          });
+
+      // define a simple Node template
+      diagram.nodeTemplate =
+        $(go.Node, 'Auto',  // the Shape will go around the TextBlock
+          new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Shape, 'RoundedRectangle',
+            {
+              name: 'SHAPE', fill: 'white', strokeWidth: 0,
+              // set the port properties:
+              portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer'
+            },
+            // Shape.fill is bound to Node.data.color
+            new go.Binding('fill', 'color')),
+          $(go.TextBlock,
+            { margin: 8, editable: true, font: '400 .875rem Roboto, sans-serif' },  // some room around the text
+            new go.Binding('text').makeTwoWay()
+          )
+        );
+
+      // relinking depends on modelData
+      diagram.linkTemplate =
+        $(go.Link,
+          new go.Binding('relinkableFrom', 'canRelink').ofModel(),
+          new go.Binding('relinkableTo', 'canRelink').ofModel(),
+          $(go.Shape),
+          $(go.Shape, { toArrow: 'Standard' })
+        );
+
+      return diagram;
+    }
+
+    public render() {
+      return (
+        &lt;ReactDiagram
+          ref={this.diagramRef}
+          divClassName='diagram-component'
+          initDiagram={this.initDiagram}
+          nodeDataArray={this.props.nodeDataArray}
+          linkDataArray={this.props.linkDataArray}
+          modelData={this.props.modelData}
+          onModelChange={this.props.onModelChange}
+          skipsDiagramUpdate={this.props.skipsDiagramUpdate}
+        /&gt;
+      );
+    }
+  }
+</pre>
+<h4>Using the wrapper component within the app</h4>
+<p>
+  The application should set up a few things to be passed to the wrapper described above:
+  <ul>
+    <li>state containing a nodeDataArray, linkDataArray, modelData object, and skipsDiagramUpdate flag</li>
+    <li>a handleDiagramEvent method for any app-specific DiagramEvents, such as 'ChangedSelection'</li>
+    <li>a handleModelChange method for updating state based on updates from the GoJS model</li>
+  </ul>
+</p>
+<pre class="lang-js">
+  import * as go from 'gojs';
+  import * as React from 'react';
+
+  import { DiagramWrapper } from './components/Diagram';
+
+  interface AppState {
+    // ...
+    nodeDataArray: Array&lt;go.ObjectData&gt;;
+    linkDataArray: Array&lt;go.ObjectData&gt;;
+    modelData: go.ObjectData;
+    selectedKey: number | null;
+    skipsDiagramUpdate: boolean;
+  }
+
+  class App extends React.Component&lt;{}, AppState&gt; {
+    constructor(props: object) {
+      super(props);
+      this.state = {
+        // ...
+        nodeDataArray: [
+          { key: 0, text: 'Alpha', color: 'lightblue', loc: '0 0' },
+          { key: 1, text: 'Beta', color: 'orange', loc: '150 0' },
+          { key: 2, text: 'Gamma', color: 'lightgreen', loc: '0 150' },
+          { key: 3, text: 'Delta', color: 'pink', loc: '150 150' }
+        ],
+        linkDataArray: [
+          { key: -1, from: 0, to: 1 },
+          { key: -2, from: 0, to: 2 },
+          { key: -3, from: 1, to: 1 },
+          { key: -4, from: 2, to: 3 },
+          { key: -5, from: 3, to: 0 }
+        ],
+        modelData: {
+          canRelink: true
+        },
+        selectedKey: null,
+        skipsDiagramUpdate: false
+      };
+      // bind handler methods
+      this.handleDiagramEvent = this.handleDiagramEvent.bind(this);
+      this.handleModelChange = this.handleModelChange.bind(this);
+      this.handleRelinkChange = this.handleRelinkChange.bind(this);
+    }
+
+    /**
+     * Handle any app-specific DiagramEvents, in this case just selection changes.
+     * On ChangedSelection, find the corresponding data and set the selectedKey state.
+     *
+     * This is not required, and is only needed when handling DiagramEvents from the GoJS diagram.
+     * @param e a GoJS DiagramEvent
+     */
+    public handleDiagramEvent(e: go.DiagramEvent) {
+      const name = e.name;
+      switch (name) {
+        case 'ChangedSelection': {
+          const sel = e.subject.first();
+          if (sel) {
+            this.setState({ selectedKey: sel.key });
+          } else {
+            this.setState({ selectedKey: null });
+          }
+          break;
+        }
+        default: break;
+      }
+    }
+
+    /**
+     * Handle GoJS model changes, which output an object of data changes via Model.toIncrementalData.
+     * This method should iterates over those changes and update state to keep in sync with the GoJS model.
+     * This can be done via setState in React or another preferred state management method.
+     * @param obj a JSON-formatted string
+     */
+    public handleModelChange(obj: go.IncrementalData) {
+      const insertedNodeKeys = obj.insertedNodeKeys;
+      const modifiedNodeData = obj.modifiedNodeData;
+      const removedNodeKeys = obj.removedNodeKeys;
+      const insertedLinkKeys = obj.insertedLinkKeys;
+      const modifiedLinkData = obj.modifiedLinkData;
+      const removedLinkKeys = obj.removedLinkKeys;
+      const modifiedModelData = obj.modelData;
+
+      console.log(obj);
+
+      // see gojs-react-basic for an example model change handler
+      // when setting state, be sure to set skipsDiagramUpdate: true since GoJS already has this update
+    }
+
+    /**
+     * Handle changes to the checkbox on whether to allow relinking.
+     * @param e a change event from the checkbox
+     */
+    public handleRelinkChange(e: any) {
+      const target = e.target;
+      const value = target.checked;
+      this.setState({ modelData: { canRelink: value }, skipsDiagramUpdate: false });
+    }
+
+    public render() {
+      let selKey;
+      if (this.state.selectedKey !== null) {
+        selKey = &lt;p&gt;Selected key: {this.state.selectedKey}&lt;/p&gt;;
+      }
+
+      return (
+        &lt;div&gt;
+          &lt;DiagramWrapper
+            nodeDataArray={this.state.nodeDataArray}
+            linkDataArray={this.state.linkDataArray}
+            modelData={this.state.modelData}
+            skipsDiagramUpdate={this.state.skipsDiagramUpdate}
+            onDiagramEvent={this.handleDiagramEvent}
+            onModelChange={this.handleModelChange}
+          /&gt;
+          &lt;label&gt;
+            Allow Relinking?
+            &lt;input
+              type='checkbox'
+              id='relink'
+              checked={this.state.modelData.canRelink}
+              onChange={this.handleRelinkChange} /&gt;
+          &lt;/label&gt;
+          {selKey}
+        &lt;/div&gt;
+      );
+    }
+  }
+</pre>
+<p>
+  These are the basics for setting up GoJS within a React application. See <a href="https://github.com/NorthwoodsSoftware/gojs-react-basic" target="_blank">gojs-react-basic</a>
+  for a working example and the <a href="https://github.com/NorthwoodsSoftware/gojs-react" target="_blank">gojs-react</a> Github page for further explanation of various props
+  passed to the components.
+</p>
+</div>
+</div>
+</body>
+</html>

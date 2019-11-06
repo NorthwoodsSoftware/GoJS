@@ -218,7 +218,7 @@ export class WallReshapingTool extends go.Tool {
 
     }
 
-    diagram.isMouseCaptured = true;
+    // diagram.isMouseCaptured = true;
     this.startTransaction(this.name);
     this.isActive = true;
   }
@@ -307,7 +307,7 @@ export class WallReshapingTool extends go.Tool {
         tool.isIntersecting = false;
         // if the wall we were previously intersecting is not touching the reshaping wall, forget it
         if (tool.wallIntersecting !== null && tool.wallIntersecting !== undefined &&
-            tool.wallIntersecting.data !== null && fp.getWallsIntersection(wall, tool.wallIntersecting) === null) {
+          tool.wallIntersecting.data !== null && fp.getWallsIntersection(wall, tool.wallIntersecting) === null) {
           tool.wallIntersecting = null;
         }
       }
@@ -335,9 +335,11 @@ export class WallReshapingTool extends go.Tool {
     const type = tool.handle.name;
     const stationaryPt: go.Point = (type === 'sPt') ? wall.data.endpoint : wall.data.startpoint;
     // dummy wall is used for intersection checks, since the reshaping wall has not had its data yet set
-    const dummyWallData: any = { key: 'wall', category: 'WallGroup', caption: 'Wall', type: 'Wall', startpoint: stationaryPt,
+    const dummyWallData: any = {
+      key: 'wall', category: 'WallGroup', caption: 'Wall', type: 'Wall', startpoint: stationaryPt,
       smpt1: stationaryPt, smpt2: stationaryPt, endpoint: proposedPt, empt1: proposedPt, empt2: proposedPt,
-      thickness: parseFloat(tool.diagram.model.modelData.wallThickness), isGroup: true, notes: '' };
+      thickness: parseFloat(tool.diagram.model.modelData.wallThickness), isGroup: true, notes: ''
+    };
     tool.diagram.model.addNodeData(dummyWallData);
     const dummyWall: go.Group = tool.diagram.findPartForKey(dummyWallData.key) as go.Group;
     const fp: Floorplan = tool.diagram as Floorplan;
@@ -636,9 +638,9 @@ export class WallReshapingTool extends go.Tool {
     const as: go.Point = wa.data.startpoint; const ae: go.Point = wa.data.endpoint;
     const bs: go.Point = wb.data.startpoint; const be: go.Point = wb.data.endpoint;
     if (tool.pointsApproximatelyEqual(as, bs) || tool.pointsApproximatelyEqual(as, be)
-        || tool.pointsApproximatelyEqual(ae, bs) || tool.pointsApproximatelyEqual(ae, be)) {
-          return true;
-        }
+      || tool.pointsApproximatelyEqual(ae, bs) || tool.pointsApproximatelyEqual(ae, be)) {
+      return true;
+    }
     return false;
   }
 
@@ -772,11 +774,11 @@ export class WallReshapingTool extends go.Tool {
     walls.iterator.each(function(wc: go.Group) {
       const ws: go.Point = wc.data.startpoint; const we: go.Point = wc.data.endpoint;
       if ((tool.pointsApproximatelyEqual(s, ws) && tool.pointsApproximatelyEqual(ip, we)) ||
-          (tool.pointsApproximatelyEqual(s, we) && tool.pointsApproximatelyEqual(ip, ws))) {
+        (tool.pointsApproximatelyEqual(s, we) && tool.pointsApproximatelyEqual(ip, ws))) {
         alreadyExists = true;
       }
       if ((tool.pointsApproximatelyEqual(ip, ws) && tool.pointsApproximatelyEqual(e, we)) ||
-          (tool.pointsApproximatelyEqual(ip, we) && tool.pointsApproximatelyEqual(e, ws))) {
+        (tool.pointsApproximatelyEqual(ip, we) && tool.pointsApproximatelyEqual(e, ws))) {
         alreadyExists = true;
       }
     });
@@ -802,7 +804,7 @@ export class WallReshapingTool extends go.Tool {
         const rw: go.Group = adorn.adornedPart as go.Group; // reshaping wall
 
         // go through rooms, find any whose boundary walls contain w (the wall that was split, soon to be removed)
-        rooms.iterator.each(function (r: go.Node) {
+        rooms.iterator.each(function(r: go.Node) {
           const bw: Array<any> = r.data.boundaryWalls;
           for (let i: number = 0; i < bw.length; i++) {
             const entry: any = bw[i];
@@ -813,7 +815,7 @@ export class WallReshapingTool extends go.Tool {
               let isConnectedToBounds: boolean = false;
               const nonIpEndpoint: go.Point = (tool.pointsApproximatelyEqual(rw.data.startpoint, ip)) ? rw.data.endpoint : rw.data.startpoint;
               const iw: go.List<go.Group> = tool.getAllWallsAtIntersection(nonIpEndpoint);
-              iw.iterator.each(function (ww: go.Group) {
+              iw.iterator.each(function(ww: go.Group) {
                 // if boundary walls contains ww and ww is not the reshaping wall, reshaping wall is connected to room boundary walls at non ip endpoint
                 for (let j = 0; j < bw.length; j++) {
                   const ee: any = bw[j];
@@ -1225,7 +1227,7 @@ export class WallReshapingTool extends go.Tool {
     wallParts.iterator.each(function(wp: go.Node) {
       const loc: go.Point = wp.location;
       // find the wall that has this loc in its geometry's boundaries
-      walls.iterator.each(function (w: go.Group) {
+      walls.iterator.each(function(w: go.Group) {
         if (fp.isPointInWall(w, loc)) {
           const newLoc: go.Point | null = fp.findClosestLocOnWall(w, wp);
           // if the wall part can fit on this wall, add it to the wall
@@ -1497,7 +1499,7 @@ export class WallReshapingTool extends go.Tool {
       }
       // only miter these 2 walls if they are both walls or if they are both room dividers. no mixing
       // if (wa.data.isDivider === wb.data.isDivider) {
-        tool.performMitering(wa, wb);
+      tool.performMitering(wa, wb);
       // }
     }
 
@@ -1553,7 +1555,7 @@ export class WallReshapingTool extends go.Tool {
         }
         // only miter these 2 walls if they are both walls or if they are both room dividers. no mixing
         // if (wa.data.isDivider === wb.data.isDivider) {
-          tool.performMitering(wa, wb);
+        tool.performMitering(wa, wb);
         // }
       }
 

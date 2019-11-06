@@ -5,6 +5,14 @@
 
 // A custom Tool for creating a new Node with custom size by dragging its outline in the background.
 
+/*
+* This is an extension and not part of the main GoJS library.
+* Note that the API for this class may change with any version, even point releases.
+* If you intend to use an extension in production, you should copy the code to your own source directory.
+* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+*/
+
 /**
 * @constructor
 * @extends Tool
@@ -187,6 +195,7 @@ DragCreatingTool.prototype.insertPart = function(bounds) {
   var arch = this.archetypeNodeData;
   if (arch === null) return null;
 
+  diagram.raiseDiagramEvent("ChangingSelection", diagram.selection);
   this.startTransaction(this.name);
   var part = null;
   if (arch !== null) {
@@ -200,13 +209,15 @@ DragCreatingTool.prototype.insertPart = function(bounds) {
     part.position = bounds.position;
     part.resizeObject.desiredSize = bounds.size;
     if (diagram.allowSelect) {
-      diagram.select(part);  // raises ChangingSelection/Finished
+      diagram.clearSelection();
+      part.isSelected = true;
     }
   }
 
   // set the TransactionResult before raising event, in case it changes the result or cancels the tool
   this.transactionResult = this.name;
   this.stopTransaction();
+  diagram.raiseDiagramEvent("ChangedSelection", diagram.selection);
   return part;
 };
 

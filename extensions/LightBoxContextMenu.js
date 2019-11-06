@@ -41,8 +41,8 @@
       isVisible: function(diagram) { return diagram.commandHandler.canDeleteSelection(); }
     }, {
       text: 'Paste',
-      command: function(diagram) { diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); },
-      isVisible: function(diagram) { return diagram.commandHandler.canPasteSelection(); }
+      command: function (diagram) { diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint); },
+      isVisible: function (diagram) { return diagram.commandHandler.canPasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint); }
     }, {
       text: 'Select All',
       command: function(diagram) { diagram.commandHandler.selectAll(); },

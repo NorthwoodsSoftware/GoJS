@@ -25,6 +25,13 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    /*
+    * This is an extension and not part of the main GoJS library.
+    * Note that the API for this class may change with any version, even point releases.
+    * If you intend to use an extension in production, you should copy the code to your own source directory.
+    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+    * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+    */
     var go = require("../release/go");
     /**
      * A custom {@link Layout} that lays out hierarchical data using nested rectangles.

@@ -2,6 +2,14 @@
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
+/*
+* This is an extension and not part of the main GoJS library.
+* Note that the API for this class may change with any version, even point releases.
+* If you intend to use an extension in production, you should copy the code to your own source directory.
+* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+*/
+
 import * as go from '../release/go';
 import { DrawCommandHandler } from './DrawCommandHandler';
 import { GuidedDraggingTool } from './GuidedDraggingTool';
@@ -371,7 +379,7 @@ export function enableAll() {
   enable('Redo', cmdhnd.canRedo());
   enable('Cut', cmdhnd.canCutSelection());
   enable('Copy', cmdhnd.canCopySelection());
-  enable('Paste', cmdhnd.canPasteSelection());
+  enable('Paste', cmdhnd.canPasteSelection(myDiagram.toolManager.contextMenuTool.mouseDownPoint));
   enable('Delete', cmdhnd.canDeleteSelection());
   enable('SelectAll', cmdhnd.canSelectAll());
   enable('AlignLeft', cmdhnd.canAlignSelection());
@@ -658,7 +666,7 @@ export function undo() { myDiagram.commandHandler.undo(); }
 export function redo() { myDiagram.commandHandler.redo(); }
 export function cutSelection() { myDiagram.commandHandler.cutSelection(); }
 export function copySelection() { myDiagram.commandHandler.copySelection(); }
-export function pasteSelection() { myDiagram.commandHandler.pasteSelection(); }
+export function pasteSelection() { myDiagram.commandHandler.pasteSelection(myDiagram.toolManager.contextMenuTool.mouseDownPoint); }
 export function deleteSelection() { myDiagram.commandHandler.deleteSelection(); }
 export function selectAll() { myDiagram.commandHandler.selectAll(); }
 export function alignLeft() { (myDiagram.commandHandler as DrawCommandHandler).alignLeft(); }

@@ -8,6 +8,7 @@
   <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
   <script src="../release/go.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
@@ -85,8 +86,8 @@
 
       function textStyle() {
         return {
-          font: "bold 11pt Helvetica, Arial, sans-serif",
-          stroke: "whitesmoke"
+          font: "bold 11pt Lato, Helvetica, Arial, sans-serif",
+          stroke: "#F8F8F8"
         }
       }
 
@@ -97,7 +98,7 @@
           // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
           $(go.Panel, "Auto",
             $(go.Shape, "Rectangle",
-              { fill: "#00A9C9", strokeWidth: 0 },
+              { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
               new go.Binding("figure", "figure")),
             $(go.TextBlock, textStyle(),
               {
@@ -120,7 +121,7 @@
           // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
           $(go.Panel, "Auto",
             $(go.Shape, "Diamond",
-              { fill: "#00A9C9", strokeWidth: 0 },
+              { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
               new go.Binding("figure", "figure")),
             $(go.TextBlock, textStyle(),
               {
@@ -140,9 +141,9 @@
 
       myDiagram.nodeTemplateMap.add("Start",
         $(go.Node, "Table", nodeStyle(),
-          $(go.Panel, "Auto",
+          $(go.Panel, "Spot",
             $(go.Shape, "Circle",
-              { minSize: new go.Size(40, 40), fill: "#79C900", strokeWidth: 0 }),
+              { desiredSize: new go.Size(70, 70), fill: "#282c34", stroke: "#09d3ac", strokeWidth: 3.5 }),
             $(go.TextBlock, "Start", textStyle(),
               new go.Binding("text"))
           ),
@@ -154,9 +155,9 @@
 
       myDiagram.nodeTemplateMap.add("End",
         $(go.Node, "Table", nodeStyle(),
-          $(go.Panel, "Auto",
+          $(go.Panel, "Spot",
             $(go.Shape, "Circle",
-              { minSize: new go.Size(40, 40), fill: "#DC3C00", strokeWidth: 0 }),
+              { desiredSize: new go.Size(60, 60), fill: "#282c34", stroke: "#DC3C00", strokeWidth: 3.5 }),
             $(go.TextBlock, "End", textStyle(),
               new go.Binding("text"))
           ),
@@ -188,16 +189,14 @@
       myDiagram.nodeTemplateMap.add("Comment",
         $(go.Node, "Auto", nodeStyle(),
           $(go.Shape, "File",
-            { fill: "#DEE0A3", strokeWidth: 0 }),
+            { fill: "#282c34", stroke: "#DEE0A3", strokeWidth: 3 }),
           $(go.TextBlock, textStyle(),
             {
-              margin: 5,
+              margin: 8,
               maxSize: new go.Size(200, NaN),
               wrap: go.TextBlock.WrapFit,
               textAlign: "center",
-              editable: true,
-              font: "bold 12pt Helvetica, Arial, sans-serif",
-              stroke: '#454545'
+              editable: true
             },
             new go.Binding("text").makeTwoWay())
           // no ports, because no links are allowed to connect with a comment
@@ -261,6 +260,10 @@
       myPalette =
         $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
           {
+            // Instead of the default animation, use a custom fade-down
+            "animationManager.initialAnimationStyle": go.AnimationManager.None,
+            "InitialAnimationStarting": animateFadeDown, // Instead, animate with this function
+
             nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
             model: new go.GraphLinksModel([  // specify the contents of the Palette
               { category: "Start", text: "Start" },
@@ -270,6 +273,20 @@
               { category: "Comment", text: "Comment" }
             ])
           });
+
+      // This is a re-implementation of the default animation, except it fades in from downwards, instead of upwards.
+      function animateFadeDown(e) {
+        var diagram = e.diagram;
+        var animation = new go.Animation();
+        animation.isViewportUnconstrained = true; // So Diagram positioning rules let the animation start off-screen
+        animation.easing = go.Animation.EaseOutExpo;
+        animation.duration = 900;
+        // Fade "down", in other words, fade in from above
+        animation.add(diagram, 'position', diagram.position.copy().offset(0, 200), diagram.position);
+        animation.add(diagram, 'opacity', 0, 1);
+        animation.start();
+      }
+
     } // end init
 
 
@@ -306,8 +323,8 @@
 <body onload="init()">
 <div id="sample">
   <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
-    <div id="myDiagramDiv" style="flex-grow: 1; height: 750px; border: solid 1px black"></div>
+    <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: #282c34;"></div>
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 750px; background-color: #282c34;"></div>
   </div>
   <p>
   The FlowChart sample demonstrates several key features of GoJS,

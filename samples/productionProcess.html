@@ -24,6 +24,18 @@
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
 
+      var colors = {
+        'red': '#be4b15',
+        'green': '#52ce60',
+        'blue': '#6ea5f8',
+        'lightred': '#fd8852',
+        'lightblue': '#afd4fe',
+        'lightgreen': '#b9e986',
+        'pink': '#faadc1',
+        'purple': '#d689ff',
+        'orange': '#fdb400',
+      }
+
       // Icons derived from SVG paths designed by freepik: http://www.freepik.com/
       var icons = {};
       icons.natgas =
@@ -136,9 +148,9 @@
               name: 'icon',
               width: 1, height: 1,
               stroke: null, strokeWidth: 0,
-              fill: "#41BFEC"/* blue*/
+              fill: colors.blue
             },
-              new go.Binding("fill", "color"),
+              new go.Binding("fill", "color", function(c) { return colors[c]; }),
               new go.Binding("width", "iconWidth"),
               new go.Binding("height", "iconHeight"),
               new go.Binding("geometry", "icon", geoFunc)),
@@ -148,15 +160,15 @@
               margin: new go.Margin(-1, 0, 0, 0),
               portId: "",
               stroke: null, strokeWidth: 0,
-              fill: "#41BFEC"/* blue*/
+              fill: colors.blue
             },
-              new go.Binding("fill", "color"),
+              new go.Binding("fill", "color", function(c) { return colors[c]; }),
               new go.Binding("width", "portWidth"),
               new go.Binding("height", "portHeight"))
           ),
 
           $(go.TextBlock, {
-            font: "14px Lato, sans-serif",
+            font: "Bold 14px Lato, sans-serif",
             textAlign: "center",
             margin: 3,
             maxSize: new go.Size(100, NaN),
@@ -192,8 +204,8 @@
 
           new go.Binding("points").makeTwoWay(),
           // mark each Shape to get the link geometry with isPanelMain: true
-          $(go.Shape, { isPanelMain: true, stroke: "#41BFEC"/* blue*/, strokeWidth: 10 },
-            new go.Binding("stroke", "color")),
+          $(go.Shape, { isPanelMain: true, stroke: colors.lightblue, strokeWidth: 10 },
+            new go.Binding("stroke", "color", function(c) { return colors[c]; })),
           $(go.Shape, { isPanelMain: true, stroke: "white", strokeWidth: 3, name: "PIPE", strokeDashArray: [20, 40] })
         );
 
@@ -292,7 +304,7 @@
   "imgsrc":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Gasblok.jpg/256px-Gasblok.jpg"
 },
 {
-  "key":5, "pos":"130 -50", "icon":"pyrolysis", "iconWidth": 40, "iconHeight": 40,  "color":"#FFBC00",
+  "key":5, "pos":"130 -50", "icon":"pyrolysis", "iconWidth": 40, "iconHeight": 40,  "color":"orange",
   "text":"Pyrolysis (Cracking)",
   "description": "Liquefied petroleum gases (LPGs) are transformed into Ethylene, propylene, benzene, and other by-products.",
   "caption":"Pyrolysis plant",
@@ -300,7 +312,7 @@
 },
 
 {
-  "key":6, "pos":"330 -140", "icon":"polymerization", "iconWidth": 40, "iconHeight": 40,  "portHeight": 12, "color":"#E63538",
+  "key":6, "pos":"330 -140", "icon":"polymerization", "iconWidth": 40, "iconHeight": 40,  "portHeight": 12, "color":"red",
   "text":"Basic Polymers",
   "description": "Ethylene and propylene (monomers) are processed into end products using various methods (polymerization).",
   "caption":"Plastics engineering-Polymer products",
@@ -308,21 +320,21 @@
 },
 
 {
-  "key":7, "pos":"330 -55", "icon":"polymerization", "iconWidth": 40, "iconHeight": 40,  "portHeight": 12, "color":"#1F8235",
+  "key":7, "pos":"330 -55", "icon":"polymerization", "iconWidth": 40, "iconHeight": 40,  "portHeight": 12, "color":"green",
   "text":"Plastics",
   "description": "Polymerization produces PET, glycols, alcohols, expandable polystyrene, acrylates, BOPP-films and geosynthetics.",
   "caption":"Lego Color Bricks",
   "imgsrc":"https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Lego_Color_Bricks.jpg/256px-Lego_Color_Bricks.jpg"
 },
 {
-  "key":8, "pos":"330 40", "icon":"polymerization", "iconWidth": 40, "iconHeight": 40, "portHeight": 12, "color":"#5D9F31",
+  "key":8, "pos":"330 40", "icon":"polymerization", "iconWidth": 40, "iconHeight": 40, "portHeight": 12, "color":"lightgreen",
   "text":"Synthetic Rubbers",
   "description": "Polymerization produces commodity and specialty rubbers and thermoplastic elastomers.",
   "caption":"Sheet of synthetic rubber coming off the rolling mill at the plant of Goodrich",
   "imgsrc":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Sheet_of_synthetic_rubber_coming_off_the_rolling_mill_at_the_plant_of_Goodrich.jpg/512px-Sheet_of_synthetic_rubber_coming_off_the_rolling_mill_at_the_plant_of_Goodrich.jpg"
 },
 {
-  "key":9, "pos":"330 115", "color":"#FFBC00", "portHeight": 22,
+  "key":9, "pos":"330 115", "color":"orange", "portHeight": 22,
   "text":"Intermediates",
   "description": "Produced Ethylene, Propylene, Butenes, Benzene, and other by-products.",
   "caption":"Propylene Containers",
@@ -330,7 +342,7 @@
 },
 {
   "key":10, "pos":"330 205", "icon":"finishedgas", "iconWidth": 30, "iconHeight": 30, "portHeight": 15,
-  "text":"LPG, Naphtha, MTBE",
+  "text":"LPG, Naphtha,\nMTBE",
   "description": "Propane, butane, and other general purpose fuels and byproducts.",
   "caption":"Liquid Petroleum Gas Truck",
   "imgsrc":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/LPG_Truck.jpg/256px-LPG_Truck.jpg"
@@ -353,10 +365,10 @@
 {"from":3, "to":11, "fromSpot":"bottom" },
 {"from":4, "to":10, "fromSpot":"bottom" },
 
-{"from":5, "to":6, "fromSpot":"rightsingle", "color":"#FFBC00" },
-{"from":5, "to":7, "fromSpot":"rightsingle", "color":"#FFBC00" },
-{"from":5, "to":8, "fromSpot":"rightsingle", "color":"#FFBC00" },
-{"from":5, "to":9, "fromSpot":"rightsingle", "color":"#FFBC00" }
+{"from":5, "to":6, "fromSpot":"rightsingle", "color":"orange" },
+{"from":5, "to":7, "fromSpot":"rightsingle", "color":"orange" },
+{"from":5, "to":8, "fromSpot":"rightsingle", "color":"orange" },
+{"from":5, "to":9, "fromSpot":"rightsingle", "color":"orange" }
  ]}
     </textarea>
   </div>

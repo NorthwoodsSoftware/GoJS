@@ -22,8 +22,8 @@
             nodeSelectionAdornmentTemplate:
               $(go.Adornment, "Auto",
                 { layerName: "Grid" },  // the predefined layer that is behind everything else
-                $(go.Shape, "Circle", { fill: "yellow", stroke: null }),
-                $(go.Placeholder)
+                $(go.Shape, "Circle", { fill: "#c1cee3", stroke: null }),
+                $(go.Placeholder, { margin: 2 })
               ),
             layout:  // use a custom layout, defined below
               $(GenogramLayout, { direction: 90, layerSpacing: 30, columnSpacing: 10 })
@@ -32,19 +32,19 @@
       // determine the color for each attribute shape
       function attrFill(a) {
         switch (a) {
-          case "A": return "green";
-          case "B": return "orange";
-          case "C": return "red";
-          case "D": return "cyan";
-          case "E": return "gold";
-          case "F": return "pink";
-          case "G": return "blue";
-          case "H": return "brown";
-          case "I": return "purple";
-          case "J": return "chartreuse";
-          case "K": return "lightgray";
-          case "L": return "magenta";
-          case "S": return "red";
+          case "A": return "#00af54"; // green
+          case "B": return "#f27935"; // orange
+          case "C": return "#d4071c"; // red
+          case "D": return "#70bdc2"; // cyan
+          case "E": return "#fcf384"; // gold
+          case "F": return "#e69aaf"; // pink
+          case "G": return "#08488f"; // blue
+          case "H": return "#866310"; // brown
+          case "I": return "#9270c2"; // purple
+          case "J": return "#a3cf62"; // chartreuse
+          case "K": return "#91a4c2"; // lightgray bluish
+          case "L": return "#af70c2"; // magenta
+          case "S": return "#d4071c"; // red
           default: return "transparent";
         }
       }
@@ -105,11 +105,11 @@
       // named by the category value in the node data object
       myDiagram.nodeTemplateMap.add("M",  // male
         $(go.Node, "Vertical",
-          { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
+          { locationSpot: go.Spot.Center, locationObjectName: "ICON", selectionObjectName: "ICON" },
           $(go.Panel,
             { name: "ICON" },
             $(go.Shape, "Square",
-              { width: 40, height: 40, strokeWidth: 2, fill: "white", portId: "" }),
+              { width: 40, height: 40, strokeWidth: 2, fill: "white", stroke: "#919191", portId: "" }),
             $(go.Panel,
               { // for each attribute show a Shape at a particular place in the overall square
                 itemTemplate:
@@ -131,11 +131,11 @@
 
       myDiagram.nodeTemplateMap.add("F",  // female
         $(go.Node, "Vertical",
-          { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
+          { locationSpot: go.Spot.Center, locationObjectName: "ICON", selectionObjectName: "ICON" },
           $(go.Panel,
             { name: "ICON" },
             $(go.Shape, "Circle",
-              { width: 40, height: 40, strokeWidth: 2, fill: "white", portId: "" }),
+              { width: 40, height: 40, strokeWidth: 2, fill: "white", stroke: "#a1a1a1", portId: "" }),
             $(go.Panel,
               { // for each attribute show a Shape at a particular place in the overall circle
                 itemTemplate:
@@ -163,17 +163,17 @@
       myDiagram.linkTemplate =  // for parent-child relationships
         $(go.Link,
           {
-            routing: go.Link.Orthogonal, curviness: 15,
+            routing: go.Link.Orthogonal, corner: 5,
             layerName: "Background", selectable: false,
             fromSpot: go.Spot.Bottom, toSpot: go.Spot.Top
           },
-          $(go.Shape, { strokeWidth: 2 })
+          $(go.Shape, { stroke: "#424242", strokeWidth: 2 })
         );
 
       myDiagram.linkTemplateMap.add("Marriage",  // for marriage relationships
         $(go.Link,
           { selectable: false },
-          $(go.Shape, { strokeWidth: 2, stroke: "blue" })
+          $(go.Shape, { strokeWidth: 2.5, stroke: "#5d8cc1" /* blue */ })
         ));
 
 
@@ -582,7 +582,7 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <div id="myDiagramDiv" style="background-color: #F8F8F8; border: solid 1px black; width:100%; height:600px;"></div>
   <p>A <em>genogram</em> or <em>pedigree chart</em> is an extended family tree diagram that displays information about each person or each relationship.</p>
   <p>
     There are functions that convert an attribute value into a brush color or Shape geometry,

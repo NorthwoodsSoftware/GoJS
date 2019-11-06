@@ -9,6 +9,7 @@
  * in case we use tag filtering.
  */
 var tags = [
+  "animation",
   "tables",
   "itemarrays",
   "collections",
@@ -104,11 +105,19 @@ arr.push([
 ]);
 
 arr.push([
-  "shapes",
-  "Shapes",
-  "Showcases all pre-defined GoJS figures. You can define your own named Shape figures.",
-  "shapes",
-  ["featured", "gridlayout", "geometries"]
+  "genogram",
+  "Genogram",
+  "A genogram or pedigree chart is an extended family tree diagram that show information about each person or each relationship.",
+  "genogram",
+  ["itemarrays", "collections", "layereddigraphlayout", "customlayout", "geometries"]
+]);
+
+arr.push([
+  "entityRelationship",
+  "Entity Relationship",
+  "An entity relationship diagram, showcasing data binding with item arrays.",
+  "entityRelationship",
+  ["tables", "itemarrays", "forcedirectedlayout", "buttons"]
 ]);
 
 arr.push([
@@ -126,6 +135,14 @@ arr.push([
   "Sankey diagrams show the amount of flow between nodes by the width of the links.",
   "sankey",
   ["links", "layereddigraphlayout", "customlayout"]
+]);
+
+arr.push([
+  "customAnimations",
+  "Custom Animations",
+  "Shows how to create several custom Node animations.",
+  "customAnimations",
+  ["animation"]
 ]);
 
 arr.push([
@@ -153,11 +170,11 @@ arr.push([
 ]);
 
 arr.push([
-  "entityRelationship",
-  "Entity Relationship",
-  "An entity relationship diagram, showcasing data binding with item arrays.",
-  "entityRelationship",
-  ["tables", "itemarrays", "forcedirectedlayout", "buttons"]
+  "shapes",
+  "Shapes",
+  "Showcases all pre-defined GoJS figures. You can define your own named Shape figures.",
+  "shapes",
+  ["featured", "gridlayout", "geometries"]
 ]);
 
 arr.push([
@@ -343,13 +360,7 @@ arr.push([
   ["tables", "itemarrays", "treelayout", "buttons"]
 ]);
 
-arr.push([
-  "genogram",
-  "Genogram",
-  "A genogram or pedigree chart is an extended family tree diagram that show information about each person or each relationship.",
-  "genogram",
-  ["itemarrays", "collections", "layereddigraphlayout", "customlayout", "geometries"]
-]);
+
 
 // Graph Links
 arr.push([
@@ -626,7 +637,7 @@ arr.push([
   "Process Flow",
   "Tanks, valves, and pipes, with animated flow in the pipes.",
   "processFlow",
-  ["geometries", "grid", "process", "monitoring"]
+  ["geometries", "grid", "process", "monitoring", "animation"]
 ]);
 
 arr.push([
@@ -724,7 +735,7 @@ arr.push([
   "Bar Charts",
   "Simple bar charts or histograms within nodes.",
   "barCharts",
-  ["tables", "itemarrays", "tooltips", "charts" ]
+  ["tables", "itemarrays", "tooltips", "charts"]
 ]);
 
 arr.push([
@@ -822,7 +833,7 @@ arr.push([
   "Data Visualization",
   "A data-visualization demonstration that showcases GoJS interacting with other elements on the page.",
   "dataVisualization",
-  ["tooltips", "html"]
+  ["tooltips", "html", "animation"]
 ]);
 
 // Other
@@ -863,7 +874,7 @@ arr.push([
   "Timeline",
   "A simple timeline with events arranged along a line.",
   "timeline",
-  ["tables", "itemarrays", "links", "customlayout", "grid"]
+  ["tables", "itemarrays", "links", "customlayout"]
 ]);
 
 arr.push([
@@ -879,7 +890,7 @@ arr.push([
   "Shop Floor Monitor",
   "Shows the continuously updating state of a number of stations on an imaginary shop floor.",
   "shopFloorMonitor",
-  ["monitoring"]
+  ["monitoring", "animation"]
 ]);
 
 arr.push([
@@ -887,7 +898,7 @@ arr.push([
   "Kitten Monitor",
   "A monitoring diagram where the nodes (kittens) move about a house, with tooltips for each kitten.",
   "kittenMonitor",
-  ["tooltips", "monitoring"]
+  ["tooltips", "monitoring", "animation"]
 ]);
 
 arr.push([
@@ -962,6 +973,14 @@ arr.push([
   "A word cloud visualization using the PackedLayout extension.",
   "wordcloud",
   ["links", "treelayout", "geometries"]
+]);
+
+arr.push([
+  "svgDataUrl",
+  "SVG Data URL",
+  "In makeSVG, replace image sources with Base64",
+  "svgDataUrl",
+  ["svg"]
 ]);
 
 arr.push([
@@ -1367,31 +1386,7 @@ arr.push([
   "BPMN Editor",
   "The start of a Business Process Model and Notation editor.",
   "BPMN",
-  ["tables", "itemarrays", "collections", "customlayout", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "grid", "html", "frameworks"]
-]);
-
-arr.push([
-  "../extensions/FloorPlanEditor",
-  "Floor Plan Editor",
-  "An editor for users to position, resize, and rotate furniture in a room.",
-  "FloorPlanEditor",
-  ["collections", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "grid", "html"]
-]);
-
-arr.push([
-  "../extensions/FloorPlanMonitor",
-  "Floor Plan Monitor",
-  "A tool to open plans made in Floor Pan Editor and watch simulated alerts.",
-  "FloorPlanMonitor",
-  ["groups", "tooltips", "overview", "extensions", "geometries", "monitoring", "html"]
-]);
-
-arr.push([
-  "../projects/floorplanner/FloorPlanner",
-  "Floor Planner",
-  "An editor for users to create robust, detailed floor plans.",
-  "FloorPlanner",
-  ["collections", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "grid", "html"]
+  ["tables", "itemarrays", "collections", "customlayout", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "html", "frameworks"]
 ]);
 
 arr.push([
@@ -1675,3 +1670,18 @@ arr.push([
   [""]
 ]);
 
+arr.push([
+  "treeLoadAnimation",
+  "Tree Load Animation",
+  "Shows how to create a custom Diagram loading animation.",
+  "treeLoadAnimation",
+  ["animation"]
+]);
+
+arr.push([
+  "customAnimations",
+  "Custom Animations",
+  "Shows how to create several custom Node animations.",
+  "customAnimations",
+  ["animation"]
+]);

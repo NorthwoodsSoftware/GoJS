@@ -5,12 +5,11 @@
 /*
 *  Removable modules are commented out in this file with "!!" in the comment.
 *  This index demonstrates building a minimal library from source. There is a maximal example in the same directory.
-*
 */
 
 /* tslint:disable:ordered-imports */
 import { EnumValue } from '../../srcTS/enumValue';
-import { Map, Set, List, EmptyIterator } from '../../srcTS/collections';
+import { Map, Set, List } from '../../srcTS/collections';
 import { Point } from '../../srcTS/point';
 import { Size } from '../../srcTS/size';
 import { Rect } from '../../srcTS/rect';
@@ -20,16 +19,12 @@ import { PathSegment, PathFigure, Geometry } from '../../srcTS/geometry';
 import { DiagramEvent, InputEvent } from '../../srcTS/inputEvent';
 import { ChangedEvent } from '../../srcTS/changedEvent';
 import { Binding, Model } from '../../srcTS/model';
-import { GraphLinksModel } from '../../srcTS/graphLinksModel';
-import { TreeModel } from '../../srcTS/treeModel';
 import { UndoManager, Transaction } from '../../srcTS/undoManager';
 import { Tool } from '../../srcTS/tool';
 import { ToolManager } from '../../srcTS/toolManager';
 import { AnimationManager } from '../../srcTS/animationManager';
 import { Layer } from '../../srcTS/layer';
-import { Diagram, DraggingInfo } from '../../srcTS/diagram';
-import { Palette } from '../../srcTS/palette';
-import { Overview } from '../../srcTS/overview';
+import { Diagram } from '../../srcTS/diagram';
 import { Brush } from '../../srcTS/brush';
 import { GraphObject } from '../../srcTS/graphObject';
 import { Panel } from '../../srcTS/panel';
@@ -42,8 +37,14 @@ import { Node } from '../../srcTS/parts';
 import { Link } from '../../srcTS/parts';
 import { Group, Placeholder } from '../../srcTS/parts';
 import { LayoutEdge, LayoutVertex, LayoutNetwork, Layout } from '../../srcTS/layout';
-import { PartManager } from '../../srcTS/partManager';
-import { HTMLInfo } from '../../srcTS/htmlInfo';
+
+
+// Already imported in Panel
+// import { PanelLayoutPosition } from '../../srcTS/panelLayoutPosition';
+// import { PanelLayoutVertical } from '../../srcTS/panelLayoutVertical';
+// import { PanelLayoutAuto } from '../../srcTS/panelLayoutAuto';
+// import { PanelLayoutLink } from '../../srcTS/panelLayoutLink';
+// import { PanelLayoutGrid } from '../../srcTS/panelLayoutGrid';
 
 /* !!
 import { root } from '../../srcTS/root';
@@ -83,23 +84,23 @@ ToolManager.prototype.initializeStandardTools = function(this: ToolManager): voi
   // so that they are added to the list in the correct order.
 
   // mouse-down tools:
-  this._replaceStandardTool('Action', new ActionTool(), this.mouseDownTools);
-  this._replaceStandardTool('Relinking', new RelinkingTool(), this.mouseDownTools);
-  this._replaceStandardTool('LinkReshaping', new LinkReshapingTool(), this.mouseDownTools);
-  this._replaceStandardTool('Resizing', new ResizingTool(), this.mouseDownTools);
-  this._replaceStandardTool('Rotating', new RotatingTool(), this.mouseDownTools);
+  this.replaceStandardTool('Action', new ActionTool(), this.mouseDownTools);
+  this.replaceStandardTool('Relinking', new RelinkingTool(), this.mouseDownTools);
+  this.replaceStandardTool('LinkReshaping', new LinkReshapingTool(), this.mouseDownTools);
+  this.replaceStandardTool('Resizing', new ResizingTool(), this.mouseDownTools);
+  this.replaceStandardTool('Rotating', new RotatingTool(), this.mouseDownTools);
 
   // mouse-move tools:
-  this._replaceStandardTool('Linking', new LinkingTool(), this.mouseMoveTools);
-  this._replaceStandardTool('Dragging', new DraggingTool(), this.mouseMoveTools);
-  this._replaceStandardTool('DragSelecting', new DragSelectingTool(), this.mouseMoveTools);
-  this._replaceStandardTool('Panning', new PanningTool(), this.mouseMoveTools);
+  this.replaceStandardTool('Linking', new LinkingTool(), this.mouseMoveTools);
+  this.replaceStandardTool('Dragging', new DraggingTool(), this.mouseMoveTools);
+  this.replaceStandardTool('DragSelecting', new DragSelectingTool(), this.mouseMoveTools);
+  this.replaceStandardTool('Panning', new PanningTool(), this.mouseMoveTools);
 
   // mouse-up tools:
-  this._replaceStandardTool('ContextMenu', new ContextMenuTool(), this.mouseUpTools);
-  this._replaceStandardTool('TextEditing', new TextEditingTool(), this.mouseUpTools);
-  this._replaceStandardTool('ClickCreating', new ClickCreatingTool(), this.mouseUpTools);
-  this._replaceStandardTool('ClickSelecting', new ClickSelectingTool(), this.mouseUpTools);
+  this.replaceStandardTool('ContextMenu', new ContextMenuTool(), this.mouseUpTools);
+  this.replaceStandardTool('TextEditing', new TextEditingTool(), this.mouseUpTools);
+  this.replaceStandardTool('ClickCreating', new ClickCreatingTool(), this.mouseUpTools);
+  this.replaceStandardTool('ClickSelecting', new ClickSelectingTool(), this.mouseUpTools);
 };
 
 Diagram.prototype.initializeStandardRenderers = function(this: Diagram): void {

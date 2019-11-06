@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Treeload animation GoJS Sample</title>
+  <meta name="description" content="Loading a tree with custom GoJS animation." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+      var $ = go.GraphObject.make;
+      var animationDiagram = null;
+      // Sliders for customizing the links and duration of the animation
+      var durationSlider = document.getElementById("duration");
+      var durationOutput = document.getElementById("durationDisplay");
+      durationOutput.innerHTML = durationSlider.value;
+      durationSlider.oninput = function () {
+        durationOutput.innerHTML = this.value;
+      }
+      var cornerSlider = document.getElementById("corner");
+      var cornerOutput = document.getElementById("cornerDisplay");
+      cornerOutput.innerHTML = cornerSlider.value;
+      cornerSlider.oninput = function () {
+        cornerOutput.innerHTML = this.value;
+      }
+      var curvatureSlider = document.getElementById("curvature");
+      var curvatureOutput = document.getElementById("curvatureDisplay");
+      curvatureOutput.innerHTML = curvatureSlider.value;
+      curvatureSlider.oninput = function () {
+        curvatureOutput.innerHTML = this.value;
+      }
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv", {
+          // We want no default animation when the diagram loads
+          "animationManager.isInitial": false,
+          autoScale: go.Diagram.Uniform,
+          // Disable the diagram during the animation so that the links cannot be moved, which would call compute points
+          // The Diagram is reset to enabled when the animation is finished
+          isEnabled: false,
+          layout: $(go.ForceDirectedLayout, {
+            defaultSpringLength: 20,      // forces nodes closer together (default: 50)
+            defaultSpringStiffness: 0.20, // forces nodes closer together (default: 0.05)
+            isOngoing: false,
+            isRealtime: false
+          })
+        });
+
+      myDiagram.nodeTemplate =
+        $(go.Node, {
+          locationSpot: go.Spot.Center,
+          resizable: true,
+          rotatable: true,
+          opacity: 0
+        }, "Auto",
+          new go.Binding("location"),
+          new go.Binding("desiredSize"),
+          $(go.Shape, "RoundedRectangle", {
+            fill: "lightBlue"
+          }),
+          $(go.TextBlock, new go.Binding("text", "key")));
+
+      myDiagram.linkTemplate =
+        $(go.Link, {
+          opacity: 0
+        },
+          $(go.Shape),
+          $(go.Shape, {
+            toArrow: "Standard"
+          })
+        );
+      var treeArr = [{
+        key: 0
+      }];
+      // Generate a tree
+      var childCount = 0;
+      var currParent = 0;
+      for (var i = 1; i < 100; i++) {
+        var newNode = {
+          key: i,
+          parent: treeArr[currParent].key
+        }
+        treeArr.push(newNode);
+        childCount++;
+        // How many Children the node will have
+        if (childCount > 3) {
+          childCount = 0;
+          currParent++;
+        }
+      }
+      myDiagram.model = new go.TreeModel(treeArr);
+
+      var queue = [myDiagram.nodes.first()];
+      // Start with the root node visible
+      myDiagram.commit(function() {
+        myDiagram.nodes.first().opacity = 1;
+      }, null);
+      // Begin
+      animateLinks(queue);
+
+      // Given an array of nodes, recursively animate their outgoing links and connected nodes, layer by layer.
+      // All the nodes in a layer will be stored and therefore animated before the function moves onto the next layer
+      function animateLinks(q) {
+        var newQueue = [];
+        var originalValues = new go.List();
+        // One animation per layer, which will contain all links in the layer
+        var animation = new go.Animation();
+        animation.duration = Number(durationSlider.value);
+        animation.easing = go.Animation.EaseLinear;
+        // Each time the function is called, the queue represents the entire layer, iterate through it removing each one
+        while (q.length > 0) {
+          var tempNode = q.shift();
+          // Add animation for all links that stem from the given node
+          tempNode.linksConnected.each(function (link) {
+            if (link.fromNode === tempNode) {
+              myDiagram.startTransaction("animate link");
+              originalValues.push({
+                link: link,
+                makeGeometry: link.makeGeometry,
+                oldPoints: link.points,
+                geometry: link.elt(0).geometry.copy()
+              });
+              // If there is an arrow, record the initial segment index and orientation to reset at the end, then animate the scale with the link
+              if (link.elements.count > 1) {
+                originalValues.last().oldSegIndex = [];
+                originalValues.last().oldSegOrientation = link.elt(1).segmentOrientation;
+                for (var i = 1; i < link.elements.count; i++) {
+                  // Calculate waiting time for the element depending on how far it is along the link
+                  if (link.geometry.figures.length === 0 || link.elt(i).segmentFraction < 0) {
+                    offsetTime = link.elt(i).segmentFraction * animation.duration;
+                  }
+                  else {
+                    offsetTime = link.elt(i).segmentIndex / link.points.count * animation.duration
+                  }
+                  // Start scale animations after an offset
+                  animation.add(link.elt(i), "customScale", 0.01, { endValue: link.elt(1).scale, offsetTime: offsetTime });
+                  originalValues.last().oldSegIndex.push(link.elt(i).segmentIndex);
+                }
+              }
+              animation.add(link, "opacity", 0.01, 1)
+              // Node should fade in while the link is moving
+              animation.add(link.toNode, "opacity", 0, 1);
+              // linear links have no geometry, and are treated differently
+              if (link.geometry.figures.length === 0) {
+                animation.add(link, "linearLinkAnim", link.geometry, myDiagram.layout)
+              } else {
+                animation.add(link, "segmentLinkAnim", link.geometry, myDiagram.layout)
+              }
+              // New queue to store the next layer
+              newQueue.push(link.toNode);
+              myDiagram.commitTransaction("animate link")
+            }
+          });
+        }
+        q = newQueue;
+        // Exit if the next layer is empty, meaning there are no more links to animate
+        if (q.length === 0) {
+          myDiagram.isEnabled = true;
+          return;
+        }
+
+        // Chain animatons for each layer
+        animation.finished = function () {
+          myDiagram.startTransaction("change link");
+          originalValues.each(function (newVal) {
+            var link = newVal.link;
+            if (link.elements.count > 1) {
+              // Set original values of each part of the link back to what they were
+              link.elt(1).segmentOrientation = newVal.oldSegOrientation;
+              for (var i = 1; i < link.elements.count; i++) {
+                link.elt(i).segmentIndex = newVal.oldSegIndex[i - 1];
+              }
+            }
+            // Set the changed properties of the link back to what they were before the animation.
+            link.elt(0).geometry = newVal.geometry;
+            link.makeGeometry = newVal.makeGeometry;
+            // Setting the points back to what they were will call the default makeGeometry
+            link.points = newVal.oldPoints;
+          });
+          animateLinks(q);
+          myDiagram.commitTransaction("change link");
+        }
+        animation.start();
+      }
+
+      // Functions called by buttons that reset the layout and reanimate the links
+      document.getElementById('orth').addEventListener('click', orthog);
+
+      function orthog() {
+        myDiagram.startTransaction("change links");
+        myDiagram.linkTemplate =
+          $(go.Link, {
+            opacity: 0, // links start out invisible
+            routing: go.Link.Orthogonal,
+            corner: Number(cornerSlider.value),
+          },
+            $(go.Shape),
+            $(go.Shape, {
+              toArrow: "Standard",
+              scale: 1
+            })
+          );
+        myDiagram.layout.doLayout(myDiagram);
+        // Root node should start visible
+        myDiagram.nodes.first().opacity = 1;
+        myDiagram.commitTransaction("change links");
+        // Begin to recursively animate links
+        animateLinks([myDiagram.nodes.first()]);
+      }
+
+      document.getElementById('bez').addEventListener('click', bezierLinks);
+
+      function bezierLinks() {
+        myDiagram.startTransaction("change links");
+        myDiagram.linkTemplate =
+          $(go.Link, {
+            opacity: 0, // links start out invisible
+            curve: go.Link.Bezier,
+            curviness: Number(curvatureSlider.value),
+          },
+            $(go.Shape),
+            $(go.Shape, {
+              toArrow: "Standard"
+            }),
+          );
+        myDiagram.layout.doLayout(myDiagram);
+        // Root node should start visible
+        myDiagram.nodes.first().opacity = 1;
+        myDiagram.commitTransaction("change links");
+        // Begin to recursively animate links
+        animateLinks([myDiagram.nodes.first()]);
+      }
+
+      document.getElementById('linear').addEventListener('click', linearLinks);
+
+      function linearLinks() {
+        myDiagram.startTransaction("change links");
+        myDiagram.linkTemplate =
+          $(go.Link, {
+            opacity: 0, // links start out invisible
+          },
+            $(go.Shape),
+            $(go.Shape, {
+              toArrow: "Standard"
+            })
+          );
+        myDiagram.layout.doLayout(myDiagram);
+        // Root node should start visible
+        myDiagram.nodes.first().opacity = 1;
+        myDiagram.commitTransaction("change links");
+        // Begin to recursively animate links
+        animateLinks([myDiagram.nodes.first()]);
+      }
+    }
+
+    // Animation for changing the scale after a delay, endObj must contain the end scale but also the delay (offsetTime)
+    go.AnimationManager.defineAnimationEffect('customScale', function (part, startValue, endObj, easing, currentTime, duration, animation) {
+      if (endObj.offsetTime < currentTime) {
+        part.scale = easing(currentTime - endObj.offsetTime, startValue, (endObj.endValue - startValue), duration - endObj.offsetTime);
+      }
+      else {
+        part.scale = startValue;
+      }
+    })
+
+    // General animation for links that are made up of path segments, linear links do not have this, so therefore must use a special case
+    go.AnimationManager.defineAnimationEffect('segmentLinkAnim',
+      function (link, geometry, layout, easing, currentTime, duration, animation) {
+        var animationState = animation.getTemporaryState(link);
+        animationState.currentTime = currentTime;
+        if (animationState.initial === undefined) {
+          // Only do these things once
+          animationState.points = [];
+          // The shapes geometry requres an offset from the links bounds so that it will line up properly
+          animationState.offsetX = link.elt(0).actualBounds.x;
+          animationState.offsetY = link.elt(0).actualBounds.y;
+
+          // Points that when added to the list of points will be used to create the bounds of the link, therefore they are the corner points of the original bounds
+          var boundX = link.actualBounds.x;
+          var boundY = link.actualBounds.y;
+          animationState.boundPoint1 = new go.Point(boundX, boundY);
+          animationState.boundPoint2 = new go.Point(boundX + link.actualBounds.width, boundY + link.actualBounds.height);
+
+          //Points used to hold the initial points of a quadratic bezier
+          animationState.point1 = null;
+          animationState.startValue = new go.Point(geometry.figures.first().startX, geometry.figures.first().startY);
+          animationState.endValue = null;
+
+          //Point from the link which will be used to create the new points that the arrow will follow along on
+          animationState.initPoint = link.points.elt(0).copy();
+          // Assuming the second shape is the arrow which will follow
+          if (link.elements.count > 1) {
+            // Change the segment index so that it will follow the segment which is being created
+            link.elt(1).segmentIndex = 2;
+            // Set this to none so that the angle can be manually set
+            link.elt(1).segmentOrientation = go.Link.None;
+          }
+          animationState.origPoints = link.points.copy();
+          // Shift all other objects segment indexes over so that they maintain their positions as the first four points are being used to animate the arrow
+          for (var i = 2; i < link.elements.count; i++) {
+            if (link.elt(i).segmentIndex < link.points.count) {
+              link.elt(i).segmentIndex += 4;
+            }
+          }
+
+          animationState.currX = 0;
+          animationState.currY = 0;
+          animationState.delX = 0;
+          animationState.delY = 0;
+
+          // Add these to the animationState so they can be used in the custom make geometry
+          animationState.totalDuration = duration;
+          animationState.easing = easing;
+
+          //Set the links makeGeometry to the custom one, passing in the objects that it will use each time it is called
+          link.makeGeometry = segmentMakeGeometry(animationState, geometry.copy(), link);
+
+          // Calculate the duration for all beziers since they all are the same length in the given link
+          var totalSegmentLength = 0;
+          var prevValueX = animationState.startValue.x;
+          var prevValueY = animationState.startValue.y;
+          var bezSegments = 0;
+          // find the total length of all the linear segments
+          geometry.figures.first().segments.each(function (sgmt) {
+            if (sgmt.type === go.PathSegment.QuadraticBezier) {
+              bezSegments++;
+            } else {
+              var length = Math.max(Math.abs(prevValueX - sgmt.endX), Math.abs(prevValueY - sgmt.endY));
+              totalSegmentLength += length;
+            }
+            prevValueX = sgmt.endX;
+            prevValueY = sgmt.endY;
+          })
+          // The duration for the Bezier corners on an orthogonal link is calculated by taking a fraction of the total duration based on how long the bezier corners are,
+          // Then that is divided by how many corners there are to get the average time needed for each segment
+          animationState.bezierDuration = duration * Math.abs(geometry.flattenedTotalLength - Math.abs(
+            totalSegmentLength)) /
+            (bezSegments * geometry.flattenedTotalLength);
+
+          animationState.changedSegments = new go.List();
+          animationState.firstItr = true;
+          animationState.currSegment = 0;
+          animationState.elaDuration = 0;
+          animationState.duration = 0;
+          animationState.initial = true;
+        }
+
+        animationState.hasTicked = false;
+
+        /*
+          Create a new set of points for the bounds, arrows, and labels.
+          There are a total of eight points which are used to make two bezier curves. The first one to generate the bounds of the link along
+          with the position of the arrowhead, and the second one to be used to hold the position of all the labels. The link uses the start and end points of
+          each four point bezier to calculate its bounds along with the geometries, so the start and end of the first one are the corners of the actual bounds
+          of the link at the beginning of the animation.
+        */
+        var tempPoints = new go.List();
+        // Add points for the first bezier, bound point 1 and 2 are used to create the actual bounds of the link
+        tempPoints.push(animationState.boundPoint1);
+        var newPoint = new go.Point(animationState.initPoint.x + animationState.currX,
+                                    animationState.initPoint.y + animationState.currY);
+        tempPoints.push(newPoint);
+        tempPoints.push(newPoint);
+        tempPoints.push(animationState.boundPoint2);
+
+        // Add points from the original bezier which will be used to hold the position of the objects
+        animationState.origPoints.each(function (point) {
+          tempPoints.push(point);
+        });
+        // Changing the points will cause GoJS to call the modified makeGeometry which will remake the geometry
+        link.points = tempPoints;
+        if (link.elements.count > 1) {
+          // Set angle of the arrow using the most recent points
+          var newAngle = Math.atan2(animationState.delY, animationState.delX);
+          link.elt(1).angle = newAngle * 180 / Math.PI;
+        }
+      }
+    );
+
+    go.AnimationManager.defineAnimationEffect('linearLinkAnim',
+      function (link, geometry, endValue, easing, currentTime, duration, animation) {
+        var animationState = animation.getTemporaryState(link);
+        animationState.currentTime = currentTime
+        if (animationState.initial === undefined) {
+          // Put properties on the animationState so it can be referenced by the modified makeGeometry function
+          animationState.duration = duration;
+          animationState.easing = easing;
+          animationState.initial = true;
+          link.makeGeometry = linearMakeGeometry(animationState, geometry.copy(), link);
+          // Changing the points will cause GoJS to call the modified makeGeometry
+          link.points = link.points.copy();
+        }
+        if (link.elements.count !== 1) {
+          link.elt(1).segmentFraction = 1 - easing(currentTime, 0, 1, duration)
+        }
+      }
+    );
+    // Function returns points to draw a cubic bezier
+    function sliceCubicBezier(currentTime, p1, p2, p3, p4, segment, duration, offsetX, offsetY) {
+      var t = currentTime / duration;
+      var u = 1 - t;
+      /*
+        This function takes the original points of the link's bezier curve and returns four different points that will draw a segment of the curve
+        The algorithm consists of four equations which use the start t to the end t, where t represents the point of the curve going from 0 to 1 which
+        in this case is related to the time, however the t0 is always 0 which simplifies the equations. The first point should always stay the same
+        because the segment of the curve drawn will always start at the fromNode
+      */
+      newp2 = addPoints(scalarMult(p1, u), scalarMult(p2, t));
+      newp3 = scalarMult(p1, u * u).add(scalarMult(p2, 2 * t * u)).add(scalarMult(p3, t * t));
+      newp4 = scalarMult(p1, u * u * u).add(scalarMult(p2, 3 * t * u * u)).add(scalarMult(p3, 3 * t * t * u)).add(
+        scalarMult(p4, t * t * t));
+      segment.point1X = newp2.x + offsetX;
+      segment.point1Y = newp2.y + offsetY;
+      segment.point2X = newp3.x + offsetX;
+      segment.point2Y = newp3.y + offsetY;
+      segment.endX = newp4.x + offsetX;
+      segment.endY = newp4.y + offsetY;
+    }
+    // Uses same algorithm just for a quadratic bezier
+    function sliceQuadBezier(currentTime, p1, p2, p3, segment, duration, offsetX, offsetY) {
+      var t = currentTime / duration;
+      var u = 1 - t;
+      // Same concept as the cubic algorithm minus a point
+      newp2 = addPoints(scalarMult(p1, u), scalarMult(p2, t));
+      newp3 = scalarMult(p1, u * u).add(scalarMult(p2, 2 * t * u)).add(scalarMult(p3, t * t));
+      segment.point1X = newp2.x + offsetX;
+      segment.point1Y = newp2.y + offsetY;
+      segment.endX = newp3.x + offsetX;
+      segment.endY = newp3.y + + offsetY;
+    }
+
+    function scalarMult(point, factor) {
+      return new go.Point(point.x * factor, point.y * factor);
+    }
+
+    function addPoints(a, b) {
+      return new go.Point().add(a).add(b);
+    }
+
+    // Geometry for basic linear case
+    function linearMakeGeometry(animationState, geometry, link) {
+      var startValue = new go.Point(geometry.startX, geometry.startY);
+      var endValue = new go.Point(geometry.endX, geometry.endY);
+
+      function tempMakeGeometry() {
+        var currX = animationState.easing(animationState.currentTime, startValue.x, (endValue.x - startValue.x),
+          animationState.duration);
+        var currY = animationState.easing(animationState.currentTime, startValue.y, (endValue.y - startValue.y),
+          animationState.duration);
+        var tempGeo = link.elt(0).geometry.copy();
+        tempGeo.endX = currX;
+        tempGeo.endY = currY;
+        return tempGeo;
+      }
+      return tempMakeGeometry;
+    }
+    /*
+      This custom makeGeometry slowly builds the geometry of the link, animating a segment then adding it to the geometry until all of the segments
+      have been iterated through. Orthogonal links are made up of linear path segments and quadratic bezier corners which have to be treated
+      differently. The current point that the animation is on is then returned so the arrowhead can be drawn.
+    */
+    function segmentMakeGeometry(animationState, geometry, link) {
+      var startValX = geometry.figures.first().startX + animationState.offsetX;
+      var startValY = geometry.figures.first().startY + animationState.offsetY;
+      var prevptX = 0;
+      var prevptY = 0;
+      var currptX = 0;
+      var currptY = 0;
+
+      function tempMakeGeometry() {
+
+        animationState.newGeometry = geometry.copy();
+
+        // Offset the position values so it is in the right spot relative to the document coordinates
+        animationState.newGeometry.figures.first().startX += animationState.offsetX;
+        animationState.newGeometry.figures.first().startY += animationState.offsetY;
+        if (animationState.currSegment > geometry.figures.first().segments.length - 1) {
+          return animationState.newGeometry;
+        }
+        var shouldPop = true;
+        var scaledTime = animationState.currentTime - animationState.elaDuration;
+        /*
+          Because multiple segments are being modified in order in this animation and each one has a separate duration, the time used in the
+				  easing functions must be at or below the duration. Usually the animation would stop if the current time exceeded the duration but
+				  because it is continuing to animate other segments after, the time has to be brought within the duration of the current segment being modified
+        */
+        var usedTime = scaledTime;
+        if (scaledTime > animationState.duration) {
+          usedTime = animationState.duration;
+        }
+        // Segment can only be modified once before it becomes frozen, which means that a copy must be made and modified
+        var currSegment = geometry.figures.first().segments.elt(animationState.currSegment).copy();
+        // Corner / Quadratic Bezier case
+        if (currSegment.type === go.PathSegment.QuadraticBezier) {
+          // Only do once per segment
+          if (animationState.firstItr === true) {
+            // Set the initial points of the curve which are used to calculate the peice of the bezier at a given time within the duration
+            animationState.point1 = new go.Point(currSegment.point1X, currSegment.point1Y);
+            animationState.endValue = new go.Point(currSegment.endX, currSegment.endY);
+            animationState.duration = animationState.bezierDuration;
+            animationState.firstItr = false;
+            // Check to see if the scaled time is less than the duration on the first iteration
+            if (scaledTime > animationState.duration) {
+              usedTime = animationState.duration;
+            }
+          }
+          sliceQuadBezier(usedTime, animationState.startValue, animationState.point1, animationState.endValue,
+            currSegment, animationState.duration, animationState.offsetX, animationState.offsetY);
+        } else if (currSegment.type === go.PathSegment.Bezier) {
+          if (animationState.firstItr === true) {
+            animationState.points = [];
+
+            animationState.points.push(
+              new go.Point(geometry.figures.first().startX, geometry.figures.first().startY));
+            animationState.points.push(new go.Point(geometry.figures.first().segments.first().point1X, geometry.figures.first().segments.first().point1Y));
+            animationState.points.push(new go.Point(geometry.figures.first().segments.first().point2X, geometry.figures.first().segments.first().point2Y));
+            animationState.points.push(new go.Point(geometry.figures.first().segments.first().endX, geometry.figures.first().segments.first().endY));
+            animationState.duration = animationState.totalDuration;
+            animationState.firstItr = false;
+            if (scaledTime > animationState.duration) {
+              usedTime = animationState.duration;
+            }
+          }
+          var tempGeo = geometry.copy();
+
+          // Function which modifies the segment to make a portion of the bezier curve depending on the time relative to the duration
+          sliceCubicBezier(usedTime, animationState.points[0], animationState.points[1],
+            animationState.points[2],
+            animationState.points[3],
+            currSegment, animationState.duration, animationState.offsetX,
+            animationState.offsetY);
+        }
+        // Line segment case
+        else {
+          // Only do once per segment
+          if (animationState.firstItr === true) {
+            animationState.endValue = new go.Point(currSegment.endX, currSegment.endY);
+            // Calculate duration based on the total duration and the size of this segment compared to the entire link
+            animationState.duration =
+              animationState.totalDuration * Math.max(Math.abs(animationState.startValue.x - animationState.endValue.x),
+              Math.abs(animationState.startValue.y - animationState.endValue.y)) / geometry.flattenedTotalLength;
+            animationState.firstItr = false;
+            // Check to see if the scaled time is less than the duration on the first iteration
+            if (scaledTime > animationState.duration) {
+              usedTime = animationState.duration;
+            }
+          }
+          // Lines uses the given easing function to get their end values
+          var currX = animationState.easing(usedTime, animationState.startValue.x, animationState.endValue.x -
+            animationState.startValue.x, animationState.duration);
+          var currY = animationState.easing(usedTime, animationState.startValue.y, animationState.endValue.y -
+            animationState.startValue.y, animationState.duration);
+          currSegment.endX = currX + animationState.offsetX;
+          currSegment.endY = currY + animationState.offsetY;
+        }
+        animationState.changedSegments.push(currSegment);
+        // List will freeze after being changed once so a copy is made and used every tick
+        animationState.newGeometry.figures.first().segments = animationState.changedSegments.copy();
+        if (scaledTime > animationState.duration) {
+          var tempList = new go.List();
+          animationState.startValue = animationState.endValue;
+          animationState.elaDuration += scaledTime;
+          // Reset first Iteration so that the correct points will be set and used throughout that given part of the animation
+          animationState.firstItr = true;
+          animationState.currSegment++;
+          currptX = currSegment.endX - startValX;
+          currptY = currSegment.endY - startValY;
+          // Do not remove the segment the last time in order to build up the geometry
+          shouldPop = false;
+        }
+        currptX = currSegment.endX - startValX;
+        currptY = currSegment.endY - startValY;
+        animationState.currX = currptX;
+        animationState.currY = currptY;
+        // Only set the delta X and Ys every tick as the makeGeometry is called multiple times within a tick
+        if (!animationState.hasTicked) {
+          animationState.delX = currptX - prevptX;
+          animationState.delY = currptY - prevptY;
+          animationState.hasTicked = true;
+        }
+        prevptY = currptY;
+        prevptX = currptX;
+
+        // Remove last segment from the changedSegments list because it will be added the next time makeGeometry is called
+        if (shouldPop) {
+          animationState.changedSegments.pop();
+        }
+        return animationState.newGeometry;
+      }
+      return tempMakeGeometry;
+    }
+  </script>
+</head>
+
+<body onload="init()">
+  <div id="sample">
+    <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+           This also adds a border to help see the edges of the viewport. -->
+    <div id="myDiagramDiv" style="border: solid 1px black; width:800px; height:800px"></div>
+    <button id="orth">Load Orthogonal Links</button>
+    <button id="bez">Load Bezier Links</button>
+    <button id="linear">Load Linear Links</button><br> Duration: <input type="range" min="100" max="3000" value="500"
+      class="slider" id="duration">
+    <span id="durationDisplay"></span><br> Corner: <input type="range" min="0" max="100" value="0" class="slider"
+      id="corner">
+    <span id="cornerDisplay"></span><br> Curvature: <input type="range" min="-50" max="50" value="40" class="slider"
+      id="curvature">
+    <span id="curvatureDisplay"></span><br>
+
+
+    <p>
+      This sample demonstrates defining custom animation effects with <a>AnimationManager,defineAnimationEffect</a>,
+      and chaining animations to recursively animate a tree.
+    </p>
+  </div>
+
+</body>
+
+</html>

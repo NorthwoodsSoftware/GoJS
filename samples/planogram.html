@@ -64,6 +64,7 @@
             mouseDragEnter: function(e, node) {
               e.handled = true;
               node.findObject("SHAPE").fill = "red";
+              e.diagram.currentCursor = "not-allowed";
               highlightGroup(node.containingGroup, false);
             },
             mouseDragLeave: function(e, node) {
@@ -97,16 +98,11 @@
       // Groups provide feedback when the user drags nodes onto them.
 
       function highlightGroup(grp, show) {
-        if (!grp) return;
-        if (show) {  // check that the drop may really happen into the Group
-          var tool = grp.diagram.toolManager.draggingTool;
-          var map = tool.draggedParts || tool.copiedParts;  // this is a Map
-          if (grp.canAddMembers(map.toKeySet())) {
-            grp.isHighlighted = true;
-            return;
-          }
-        }
-        grp.isHighlighted = false;
+        if (!grp) return false;
+        // check that the drop may really happen into the Group
+        var tool = grp.diagram.toolManager.draggingTool;
+        grp.isHighlighted = show && grp.canAddMembers(tool.draggingParts);
+        return grp.isHighlighted;
       }
 
       var groupFill = "rgba(128,128,128,0.2)";
@@ -125,7 +121,9 @@
           // always save/load the point that is the top-left corner of the node, not the location
           new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
           { // what to do when a drag-over or a drag-drop occurs on a Group
-            mouseDragEnter: function(e, grp, prev) { highlightGroup(grp, true); },
+            mouseDragEnter: function(e, grp, prev) {
+              if (!highlightGroup(grp, true)) e.diagram.currentCursor = "not-allowed"; else e.diagram.currentCursor = "";
+            },
             mouseDragLeave: function(e, grp, next) { highlightGroup(grp, false); },
             mouseDrop: function(e, grp) {
               var ok = grp.addMembers(grp.diagram.selection, true);
@@ -154,11 +152,14 @@
       // what to do when a drag-drop occurs in the Diagram's background
       myDiagram.mouseDragOver = function(e) {
         if (!AllowTopLevel) {
-          // but OK to drop a group anywhere
+          // OK to drop a group anywhere or any Node that is a member of a dragged Group
           var tool = e.diagram.toolManager.draggingTool;
-          var map = tool.draggedParts || tool.copiedParts;  // this is a Map
-          if (!map.toKeySet().all(function(p) { return p instanceof go.Group; })) {
+          if (!tool.draggingParts.all(function(p) {
+            return p instanceof go.Group || (!p.isTopLevel && tool.draggingParts.contains(p.containingGroup));
+          })) {
             e.diagram.currentCursor = "not-allowed";
+          } else {
+            e.diagram.currentCursor = "";
           }
         }
       };
@@ -171,8 +172,11 @@
             e.diagram.currentTool.doCancel();
           }
         } else {
-          // disallow dropping any regular nodes onto the background, but allow dropping "racks"
-          if (!e.diagram.selection.all(function(p) { return p instanceof go.Group; })) {
+          // disallow dropping any regular nodes onto the background, but allow dropping "racks",
+          // including any selected member nodes
+          if (!e.diagram.selection.all(function(p) {
+            return p instanceof go.Group || (!p.isTopLevel && p.containingGroup.isSelected);
+          })) {
             e.diagram.currentTool.doCancel();
           }
         }

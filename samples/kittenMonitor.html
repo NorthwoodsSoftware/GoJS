@@ -33,6 +33,7 @@
       myDiagram.add(
         $(go.Part,  // this Part is not bound to any model data
           {
+            width: 840, height: 570,
             layerName: "Background", position: new go.Point(0, 0),
             selectable: false, pickable: false
           },
@@ -43,6 +44,7 @@
       myDiagram.nodeTemplate =
         $(go.Node,
           new go.Binding("location", "loc"),  // specified by data
+          new go.AnimationTrigger("position", { duration: 2000 }),
           { locationSpot: go.Spot.Center },   // at center of node
           $(go.Shape, "Circle",
             { width: 15, height: 15, strokeWidth: 3 },
@@ -79,8 +81,8 @@
         for (var i = 0; i < arr.length; i++) {
           var data = arr[i];
           var pt = data.loc;
-          var x = pt.x + 20 * Math.random() - 10;
-          var y = pt.y + 20 * Math.random() - 10;
+          var x = pt.x + 25 * Math.random() - 10;
+          var y = pt.y + 25 * Math.random() - 10;
           // make sure the kittens stay inside the house
           var b = picture.actualBounds;
           if (x < b.x || x > b.right) x = pt.x;

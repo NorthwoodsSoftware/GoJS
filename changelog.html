@@ -76,6 +76,130 @@
 
   <hr>
 
+  <h2>GoJS 2.1</h2>
+
+  <h3>New Animation Capabilities</h3>
+
+  <p>GoJS 2.1 contains a number of new features to animate different components of your Diagram.</p>
+
+  <div style="margin-top: 30px; margin-bottom: 30px;">
+    <img src="assets/images/changelog/2.1nodeAnimation.gif" style="width: 150px;">
+
+    <img src="assets/images/changelog/2.1linkAnimation.gif" style="margin-left: 100px; width: 200px;">
+  </div>
+
+  <p>
+    See the <a href="intro/animation.html" target="_blank">Intro page on Animation</a> and the <a href="extensions/customAnimations.html" target="_blank">Custom Animation extension</a> for more details and examples.
+  </p>
+  <ul>
+    <li>
+      New default GoJS animation "fades up", instead of animating Node locations. Added <a>AnimationManager.initialAnimationStyle</a> to control this behavior.
+      Here is an example of:
+      <ul>
+        <li>(top) The new initial animation, the Diagram position animating upwards and Diagram opacity animating from 0 to 1.
+        <li>(middle) A custom "zoom in" animation, animating Diagram scale, which is demonstrated in the new <a href="samples/stateChart.html" target="_blank">State Chart</a> sample,
+        <li>(bottom) <a>AnimationManager.initialAnimationStyle</a> set to <a>AnimationManager.AnimateLocations</a> to perform the GoJS 2.0 and previous style of animation.
+          The <a href="samples/dataVisualization.html" target="_blank">Data Visualization</a> sample uses this option.
+      </ul>
+      <p>
+      <img src="assets/images/changelog/2.1initalAnimation.gif" style="margin-left: 10px; width: 250px;">
+      </p>
+
+    </li>
+    <li>
+      Added <code>"InitialAnimationStarting"</code> <a>DiagramEvent</a> to more easily customize initial animations. See <a>AnimationManager.initialAnimationStyle</a> for details.
+    </li>
+    <li>
+      New class: <a>AnimationTrigger</a>. These describe how to automatically animate a property on a GraphObject when it changes value.
+    </li>
+    <li>
+      New class: <a>Animation</a>. This class lets you declaratively setup custom animations, with options for indefinite animations.
+    </li>
+    <li>
+      New <a>AnimationManager</a> options, including the ability to define custom animation effects to animate with <a>AnimationManager,defineAnimationEffect</a>
+    </li>
+    <li>
+      New Animation samples and samples modified to use new Animation features:
+      <ul>
+        <li><a href="extensions/customAnimations.html" target="_blank">Custom Animation</a> - <strong>New Extension:</strong> Demonstrating a number of Node creation/deletion animations, linking animations, and more.</li>
+        <li><a href="samples/treeLoadAnimation.html" target="_blank">Tree Load Animation</a> - <strong>New Sample:</strong> recursive animation upon model load.</li>
+        <li><a href="samples/flowchart.html" target="_blank">Flowchart</a> - In the Palette only, initial animation is disabled in favor of a custom fade-in animation.</li>
+        <li><a href="samples/stateChart.html" target="_blank">State Chart</a> - Initial animation is disabled in favor of a custom zoom fade-in animation.</li>
+        <li><a href="samples/dataVisualization.html" target="_blank">Data Visualization</a> - Nodes now move using an <a>AnimationTrigger</a>.</li>
+        <li><a href="samples/kittenMonitor.html" target="_blank">Kitten Monitor</a> - Kittens now move using an <a>AnimationTrigger</a>.</li>
+        <li><a href="samples/processFlow.html" target="_blank">Process Flow</a> - An indefinite Animation of the Links' strokeDashArray.</li>
+        <li><a href="samples/shopFloorMonitor.html" target="_blank">Shop Floor Monitor</a> - Link color changes now use an <a>AnimationTrigger</a>.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>Improved Support For Data Synchronization</h3>
+
+  <p>GoJS 2.1 contains some new methods to ease integration of GoJS diagrams in applications that maintain their own data, particularly React apps.</p>
+
+  <p>
+    See the <a href="intro/react.html" target="_blank">Intro page on using GoJS with React</a> and the <a href="https://github.com/NorthwoodsSoftware/gojs-react-basic" target="_blank">gojs-react example project</a> for details and examples.
+    Also see <a href="https://github.com/NorthwoodsSoftware/gojs-react" target="_blank">gojs-react</a>, a package containing React Components for GoJS Diagrams, Palettes, and Overviews.
+  </p>
+  <ul>
+    <li>
+      New method: <a>Model.toIncrementalData</a>. This method outputs an <a>IncrementalData</a> object containing changes that occurred within a <a>Transaction</a>,
+      similar to the existing method, <a>Model.toIncrementalJson</a>. It can be used to keep outside data synchronized with the GoJS model.
+    </li>
+    <li>
+      New methods: <a>Model.mergeNodeDataArray</a> and <a>GraphLinksModel.mergeLinkDataArray</a>. These methods are used to merge outside data changes into the GoJS model.
+    </li>
+    <li>
+      New method: <a>Model.cloneDeep</a>. This method can be used to make a deep copy of an object, which may be useful to ensure GoJS doesn't share references with outside state.
+      It is also used within <a>Model.toIncrementalData</a> to ensure <a>IncrementalData</a>'s list of modified objects won't contain references to the model's data objects.
+    </li>
+  </ul>
+
+
+  <h3>Other Changes for 2.1.0:</h3>
+  <ul>
+    <li>
+      Added <a>DoubleTreeLayout</a> to the extensions and extensionsTS directories.  This is now used by both the
+      <a href="../samples/doubleTree.html">Double Tree</a> and <a href="../samples/doubleTreeJSON.html">Double Tree JSON</a> samples.
+    </li>
+    <li>
+      Updated the sequencing of "ChangingSelection" and "ChangedSelection" <a>DiagramEvent</a>s to be outside of transactions for commands and tools.
+      Exceptions include "ChangingSelection" being called during "Drag" and "Linking" operations when drag-copying or inserting a link.
+      With "ChangedSelection" occuring after a transaction completes, any changes will be complete and can be used in the listener.
+    </li>
+    <li>
+      <a>CommandHandler.zoomToFit</a> now animates by default.
+    </li>
+    <li>
+      Improved the <a>ContextMenuTool.defaultTouchContextMenu</a>'s "Paste" command to use the <a>ContextMenuTool.mouseDownPoint</a>
+      rather than the <a>Diagram.lastInput</a>'s <a>InputEvent.documentPoint</a>.
+    </li>
+    <li>
+      Added new property, <a>Diagram.opacity</a>. This may be useful for fade-in/out animations, or visual indication of a disabled Diagram.
+    </li>
+    <li>
+      Added new method, <a>Diagram.findLinkForKey</a>, which will look for a link corresponding to a model's link data object's unique key.
+      This will only return a link when using a <a>GraphLinksModel</a> with <a>GraphLinksModel.linkKeyProperty</a> set to a non-empty string.
+    </li>
+    <li>
+      <a>Model.applyIncrementalJson</a> now throws an error if model properties (eg. nodeKeyProperty) included in the JSON don't match the existing model.
+      This check only includes properties included in the output from <a>Model.toIncrementalJson</a>.
+    </li>
+    <li>
+      Added new methods, <a>Picture.reload</a>, which reloads a Picture source in case the file on the server has changed,
+      and <a>Picture.redraw</a> which redraws the picture, and can be useful to update the Picture if the source is backed by an HTML Canvas or HTML Video Element.
+    </li>
+    <li>
+      Added new samples:
+      <ul>
+        <li><a href="samples/svgDataUrl.html" target="_blank">SVG Data URL</a> - Export SVG with Base64 hrefs instead of the Picture.source URL</li>
+      </ul>
+    </li>
+
+  </ul>
+
+  <hr />
+
   <h3>GoJS 2.0</h3>
 
   <p>
@@ -102,6 +226,7 @@
   <p>
     We have added the ability to create your own Panels, with the new PanelLayout class. See an example <a href="samples/panelLayout.html" target="_blank">here</a>.
   </p>
+
 
   <h4>Changes for 2.0.18</h4>
   <ul>
@@ -181,7 +306,6 @@
       Minor fixes for using GoJS within Puppeteer, for making SVG.
     </li>
   </ul>
-
 
   <h4>Changes for 2.0.13</h4>
   <ul>
@@ -971,7 +1095,7 @@
     </li>
   </ul>
 
-  <h4>Changes for 1.8 and previous are <a href="../%18VERSION%/changelog.html">here</a>.</h4>
+  <h4>Changes for 2.0 and previous are <a href="../2.0.18/changelog.html">here</a>.</h4>
 
 
   <hr style="margin-top:50px;" />

@@ -173,7 +173,6 @@ WallReshapingTool.prototype.doActivate = function () {
         }
     }
 
-    diagram.isMouseCaptured = true;
     this.calcAngleAndLengthFromHandle(diagram.firstInput.documentPoint);
     this.startTransaction(this.name);
     this.isActive = true;

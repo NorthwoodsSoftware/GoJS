@@ -9,59 +9,55 @@
 
   <style type="text/css">
     /* CSS for the traditional context menu */
-    #contextMenu {
-      z-index: 10002;
-      position: absolute;
-      left: 5px;
-      border: 1px solid #444;
-      background-color: #F5F5F5;
+    .menu {
       display: none;
-      box-shadow: 0 0 10px rgba( 0, 0, 0, .4 );
-      font-size: 12px;
-      font-family: sans-serif;
-      font-weight: bold;
+      position: absolute;
+      opacity: 0;
+      margin: 0;
+      padding: 8px 0;
+      z-index: 999;
+      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+      list-style: none;
+      background-color: #ffffff;
+      border-radius: 4px;
     }
 
-      #contextMenu ul {
-        list-style: none;
-        top: 0;
-        left: 0;
-        margin: 0;
-        padding: 0;
-      }
+    .menu-item {
+      display: block;
+      position: relative;
+      min-width: 60px;
+      margin: 0;
+      padding: 6px 16px;
+      font: bold 12px sans-serif;
+      color: rgba(0, 0, 0, .87);
+      cursor: pointer;
+    }
 
-      #contextMenu li a {
-        position: relative;
-        min-width: 60px;
-        color: #444;
-        display: inline-block;
-        padding: 6px;
-        text-decoration: none;
-        cursor: pointer;
-      }
+    .menu-item::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+      content: "";
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+    }
 
-      #contextMenu li:hover {
-        background: #CEDFF2;
-        color: #EEE;
-      }
+    .menu-item:hover::before {
+      opacity: .04;
+    }
 
-      #contextMenu li ul li {
-        display: none;
-      }
+    .menu .menu {
+      top: -8px;
+      left: 100%;
+    }
 
-        #contextMenu li ul li a {
-          position: relative;
-          min-width: 60px;
-          padding: 6px;
-          text-decoration: none;
-          cursor: pointer;
-        }
-
-      #contextMenu li:hover ul li {
-        display: block;
-        margin-left: 0px;
-        margin-top: 0px;
-      }
+    .show-menu, .menu-item:hover > .menu {
+      display: block;
+      opacity: 1;
+    }
   </style>
 
   <script src="../release/go.js"></script>
@@ -85,7 +81,7 @@
       // we can set mainElement and GoJS will hide it automatically
       var myContextMenu = $(go.HTMLInfo, {
         show: showContextMenu,
-        mainElement: cxElement
+        hide: hideContextMenu
       });
 
       // define a simple Node template (but use the default Link template)
@@ -104,10 +100,10 @@
       // create the model data that will be represented by Nodes and Links
       myDiagram.model = new go.GraphLinksModel(
         [
-          { key: "Alpha", color: "crimson" },
-          { key: "Beta", color: "chartreuse" },
-          { key: "Gamma", color: "aquamarine" },
-          { key: "Delta", color: "gold" }
+          { key: "Alpha", color: "#f38181" },
+          { key: "Beta", color: "#eaffd0" },
+          { key: "Gamma", color: "#95e1d3" },
+          { key: "Delta", color: "#fce38a" }
         ],
         [
           { from: "Alpha", to: "Beta" },
@@ -128,20 +124,34 @@
       function showContextMenu(obj, diagram, tool) {
         // Show only the relevant buttons given the current state.
         var cmd = diagram.commandHandler;
-        document.getElementById("cut").style.display = cmd.canCutSelection() ? "block" : "none";
-        document.getElementById("copy").style.display = cmd.canCopySelection() ? "block" : "none";
-        document.getElementById("paste").style.display = cmd.canPasteSelection() ? "block" : "none";
-        document.getElementById("delete").style.display = cmd.canDeleteSelection() ? "block" : "none";
-        document.getElementById("color").style.display = (obj !== null ? "block" : "none");
+        var hasMenuItem = false;
+        function maybeShowItem(elt, pred) {
+          if (pred) {
+            elt.style.display = "block";
+            hasMenuItem = true;
+          } else {
+            elt.style.display = "none";
+          }
+        }
+        maybeShowItem(document.getElementById("cut"), cmd.canCutSelection());
+        maybeShowItem(document.getElementById("copy"), cmd.canCopySelection());
+        maybeShowItem(document.getElementById("paste"), cmd.canPasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint));
+        maybeShowItem(document.getElementById("delete"), cmd.canDeleteSelection());
+        maybeShowItem(document.getElementById("color"), obj !== null);
 
         // Now show the whole context menu element
-        cxElement.style.display = "block";
-        // we don't bother overriding positionContextMenu, we just do it here:
-        var mousePt = diagram.lastInput.viewPoint;
-        cxElement.style.left = mousePt.x + "px";
-        cxElement.style.top = mousePt.y + "px";
+        if (hasMenuItem) {
+          cxElement.classList.add("show-menu");
+          // we don't bother overriding positionContextMenu, we just do it here:
+          var mousePt = diagram.lastInput.viewPoint;
+          cxElement.style.left = mousePt.x + 5 + "px";
+          cxElement.style.top = mousePt.y + "px";
+        }
       }
 
+      function hideContextMenu() {
+        cxElement.classList.remove("show-menu");
+      }
     }
 
     // This is the general menu command handler, parameterized by the name of the command.
@@ -151,10 +161,10 @@
       switch (val) {
         case "cut": diagram.commandHandler.cutSelection(); break;
         case "copy": diagram.commandHandler.copySelection(); break;
-        case "paste": diagram.commandHandler.pasteSelection(diagram.lastInput.documentPoint); break;
+        case "paste": diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint); break;
         case "delete": diagram.commandHandler.deleteSelection(); break;
         case "color": {
-          var color = window.getComputedStyle(document.elementFromPoint(event.clientX, event.clientY).parentElement)['background-color'];
+          var color = window.getComputedStyle(event.target)['background-color'];
           changeColor(diagram, color); break;
         }
       }
@@ -187,22 +197,20 @@
          so that our context menu's absolute coordinates work correctly. -->
     <div style="position: relative;"  >
       <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
-      <div id="contextMenu">
-        <ul>
-          <li id="cut" onclick="cxcommand(event)"><a href="#" target="_self">Cut</a></li>
-          <li id="copy" onclick="cxcommand(event)"><a href="#" target="_self">Copy</a></li>
-          <li id="paste" onclick="cxcommand(event)"><a href="#" target="_self">Paste</a></li>
-          <li id="delete" onclick="cxcommand(event)"><a href="#" target="_self">Delete</a></li>
-          <li id="color" class="hasSubMenu"><a href="#" target="_self">Color</a>
-            <ul class="subMenu" id="colorSubMenu">
-                <li style="background: crimson;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Red</a></li>
-                <li style="background: chartreuse;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Green</a></li>
-                <li style="background: aquamarine;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Blue</a></li>
-                <li style="background: gold;" onclick="cxcommand(event, 'color')"><a href="#" target="_self">Yellow</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+      <ul id="contextMenu" class="menu">
+        <li id="cut" class="menu-item" onclick="cxcommand(event)">Cut</li>
+        <li id="copy" class="menu-item" onclick="cxcommand(event)">Copy</li>
+        <li id="paste" class="menu-item" onclick="cxcommand(event)">Paste</li>
+        <li id="delete" class="menu-item" onclick="cxcommand(event)">Delete</li>
+        <li id="color" class="menu-item">Color
+          <ul class="menu">
+            <li class="menu-item" style="background-color: #f38181;" onclick="cxcommand(event, 'color')">Red</li>
+            <li class="menu-item" style="background-color: #eaffd0;" onclick="cxcommand(event, 'color')">Green</li>
+            <li class="menu-item" style="background-color: #95e1d3;" onclick="cxcommand(event, 'color')">Blue</li>
+            <li class="menu-item" style="background-color: #fce38a;" onclick="cxcommand(event, 'color')">Yellow</li>
+          </ul>
+        </li>
+      </ul>
     </div>
 
     <div id="description">

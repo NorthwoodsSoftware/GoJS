@@ -5,7 +5,7 @@
 * Floorplan Filesystem Class
 * Handles Floorplan-specific saving / loading model data events
 * Attached to a specific instance of Floorplan (via constructor); can be assigned to Floorplan.floorplanFilesystem
-* Currently only supports saving / loading from localstorage 
+* Currently only supports saving / loading from localstorage
 */
 
 /*
@@ -27,6 +27,7 @@ function FloorplanFilesystem(floorplan, state) {
     this._DEFAULT_MODELDATA = {
         "units": "centimeters",
         "unitsAbbreviation": "cm",
+        "unitsConversionFactor": 2,
         "gridSize": 10,
         "wallWidth": 5,
         "preferences": {
@@ -46,7 +47,7 @@ Object.defineProperty(FloorplanFilesystem.prototype, "floorplan", {
     get: function () { return this._floorplan; }
 });
 
-// Get constant name for an unsaved Floorplan 
+// Get constant name for an unsaved Floorplan
 Object.defineProperty(FloorplanFilesystem.prototype, "UNSAVED_FILENAME", {
     get: function () { return this._UNSAVED_FILENAME; }
 });
@@ -112,7 +113,7 @@ function openWindow(id, listid) {
 */
 
 // Create new floorplan (Ctrl + D or File -> New)
-FloorplanFilesystem.prototype.newFloorplan = function() {
+FloorplanFilesystem.prototype.newFloorplan = function () {
     var floorplan = this.floorplan;
     // checks to see if all changes have been saved
     if (floorplan.isModified) {
@@ -247,7 +248,7 @@ FloorplanFilesystem.prototype.setCurrentFileName = function (name) {
 }
 
 // Get current file name from the current file element
-FloorplanFilesystem.prototype.getCurrentFileName = function() {
+FloorplanFilesystem.prototype.getCurrentFileName = function () {
     var currentFile = document.getElementById(this.state.currentFileId);
     if (currentFile) {
         var name = currentFile.textContent;

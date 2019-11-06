@@ -9,7 +9,7 @@
 
 /* tslint:disable:ordered-imports */
 import { EnumValue } from '../../srcTS/enumValue';
-import { Map, Set, List, EmptyIterator } from '../../srcTS/collections';
+import { Map, Set, List } from '../../srcTS/collections';
 import { Point } from '../../srcTS/point';
 import { Size } from '../../srcTS/size';
 import { Rect } from '../../srcTS/rect';
@@ -19,10 +19,20 @@ import { PathSegment, PathFigure, Geometry } from '../../srcTS/geometry';
 import { DiagramEvent, InputEvent } from '../../srcTS/inputEvent';
 import { ChangedEvent } from '../../srcTS/changedEvent';
 import { Binding, Model } from '../../srcTS/model';
+import { GraphLinksModel } from '../../srcTS/graphLinksModel';
+import { TreeModel } from '../../srcTS/treeModel';
 import { UndoManager, Transaction } from '../../srcTS/undoManager';
+import { CommandHandler } from '../../srcTS/commandHandler';
 import { Tool } from '../../srcTS/tool';
+import { DraggingTool } from '../../srcTS/draggingTool';
+import { RelinkingTool, LinkingTool, LinkingBaseTool } from '../../srcTS/linkingTools';
+import { LinkReshapingTool } from '../../srcTS/linkReshapingTool';
+import { ResizingTool } from '../../srcTS/resizingTool';
+import { RotatingTool } from '../../srcTS/rotatingTool';
+import { PanningTool, DragSelectingTool, ClickCreatingTool, ActionTool, ClickSelectingTool } from '../../srcTS/selectingTools';
+import { TextEditingTool } from '../../srcTS/textEditingTool';
 import { ToolManager } from '../../srcTS/toolManager';
-import { AnimationManager } from '../../srcTS/animationManager';
+import { Animation, AnimationManager, AnimationTrigger } from '../../srcTS/animationManager';
 import { Layer } from '../../srcTS/layer';
 import { Diagram, DraggingInfo } from '../../srcTS/diagram';
 import { Palette } from '../../srcTS/palette';
@@ -39,43 +49,30 @@ import { Node } from '../../srcTS/parts';
 import { Link } from '../../srcTS/parts';
 import { Group, Placeholder } from '../../srcTS/parts';
 import { LayoutEdge, LayoutVertex, LayoutNetwork, Layout } from '../../srcTS/layout';
-import { root } from '../../srcTS/root';
-import { HTMLInfo } from '../../srcTS/htmlInfo';
-
-// The following are optional to building:
-import { SVGSurface } from '../../srcTS/svgContext';
-
-import { CommandHandler } from '../../srcTS/commandHandler';
-import { DraggingTool } from '../../srcTS/draggingTool';
-import { RelinkingTool, LinkingTool, LinkingBaseTool } from '../../srcTS/linkingTools';
-import { LinkReshapingTool } from '../../srcTS/linkReshapingTool';
-import { ResizingTool } from '../../srcTS/resizingTool';
-import { RotatingTool } from '../../srcTS/rotatingTool';
-import { PanningTool, DragSelectingTool, ClickCreatingTool, ActionTool, ClickSelectingTool } from '../../srcTS/selectingTools';
-import { TextEditingTool } from '../../srcTS/textEditingTool';
-import { ContextMenuTool } from '../../srcTS/contextMenuTool';
-
-import { GraphLinksModel } from '../../srcTS/graphLinksModel';
+import { GridLayout } from '../../srcTS/gridLayout';
 import { GraphLinksPartManager } from '../../srcTS/graphLinksPartManager';
-import { TreeModel } from '../../srcTS/treeModel';
 import { TreePartManager } from '../../srcTS/treePartManager';
 
-import { GridLayout } from '../../srcTS/gridLayout';
 import { CircularEdge, CircularVertex, CircularNetwork, CircularLayout } from '../../srcTS/circularLayout';
 import { ForceDirectedEdge, ForceDirectedVertex, ForceDirectedNetwork, ForceDirectedLayout } from '../../srcTS/forceDirectedLayout';
 import { LayeredDigraphEdge, LayeredDigraphVertex, LayeredDigraphNetwork, LayeredDigraphLayout } from '../../srcTS/layeredDigraphLayout';
 import { TreeEdge, TreeVertex, TreeNetwork, TreeLayout } from '../../srcTS/treeLayout';
-
-import { PanelLayoutPosition } from '../../srcTS/panelLayoutPosition';
+import { HTMLInfo } from '../../srcTS/htmlInfo';
+import { ContextMenuTool } from '../../srcTS/contextMenuTool';
+import { PanelLayout } from '../../srcTS/panelLayout';
 import { PanelLayoutHorizontal } from '../../srcTS/panelLayoutHorizontal';
-import { PanelLayoutVertical } from '../../srcTS/panelLayoutVertical';
 import { PanelLayoutSpot } from '../../srcTS/panelLayoutSpot';
-import { PanelLayoutAuto } from '../../srcTS/panelLayoutAuto';
 import { PanelLayoutTable, PanelLayoutTableRow, PanelLayoutTableColumn } from '../../srcTS/panelLayoutTable';
 import { PanelLayoutViewbox } from '../../srcTS/panelLayoutViewbox';
-import { PanelLayoutLink } from '../../srcTS/panelLayoutLink';
-import { PanelLayoutGrid } from '../../srcTS/panelLayoutGrid';
 import { PanelLayoutGraduated } from '../../srcTS/panelLayoutGraduated';
+import { PanelLayoutGrid } from '../../srcTS/panelLayoutGrid';
+
+// Already imported in Panel
+// import { PanelLayoutPosition } from '../../srcTS/panelLayoutPosition';
+// import { PanelLayoutVertical } from '../../srcTS/panelLayoutVertical';
+// import { PanelLayoutAuto } from '../../srcTS/panelLayoutAuto';
+// import { PanelLayoutLink } from '../../srcTS/panelLayoutLink';
+// import { PanelLayoutGrid } from '../../srcTS/panelLayoutGrid';
 
 /**
  * @suppress {duplicate}
@@ -86,42 +83,48 @@ ToolManager.prototype.initializeStandardTools = function(this: ToolManager): voi
   // so that they are added to the list in the correct order.
 
   // mouse-down tools:
-  this._replaceStandardTool('Action', new ActionTool(), this.mouseDownTools);
-  this._replaceStandardTool('Relinking', new RelinkingTool(), this.mouseDownTools);
-  this._replaceStandardTool('LinkReshaping', new LinkReshapingTool(), this.mouseDownTools);
-  this._replaceStandardTool('Resizing', new ResizingTool(), this.mouseDownTools);
-  this._replaceStandardTool('Rotating', new RotatingTool(), this.mouseDownTools);
+  this.replaceStandardTool('Action', new ActionTool(), this.mouseDownTools);
+  this.replaceStandardTool('Relinking', new RelinkingTool(), this.mouseDownTools);
+  this.replaceStandardTool('LinkReshaping', new LinkReshapingTool(), this.mouseDownTools);
+  this.replaceStandardTool('Rotating', new RotatingTool(), this.mouseDownTools);
+  this.replaceStandardTool('Resizing', new ResizingTool(), this.mouseDownTools);
 
   // mouse-move tools:
-  this._replaceStandardTool('Linking', new LinkingTool(), this.mouseMoveTools);
-  this._replaceStandardTool('Dragging', new DraggingTool(), this.mouseMoveTools);
-  this._replaceStandardTool('DragSelecting', new DragSelectingTool(), this.mouseMoveTools);
-  this._replaceStandardTool('Panning', new PanningTool(), this.mouseMoveTools);
+  this.replaceStandardTool('Linking', new LinkingTool(), this.mouseMoveTools);
+  this.replaceStandardTool('Dragging', new DraggingTool(), this.mouseMoveTools);
+  this.replaceStandardTool('DragSelecting', new DragSelectingTool(), this.mouseMoveTools);
+  this.replaceStandardTool('Panning', new PanningTool(), this.mouseMoveTools);
 
   // mouse-up tools:
-  this._replaceStandardTool('ContextMenu', new ContextMenuTool(), this.mouseUpTools);
-  this._replaceStandardTool('TextEditing', new TextEditingTool(), this.mouseUpTools);
-  this._replaceStandardTool('ClickCreating', new ClickCreatingTool(), this.mouseUpTools);
-  this._replaceStandardTool('ClickSelecting', new ClickSelectingTool(), this.mouseUpTools);
+  this.replaceStandardTool('ContextMenu', new ContextMenuTool(), this.mouseUpTools);
+  this.replaceStandardTool('TextEditing', new TextEditingTool(), this.mouseUpTools);
+  this.replaceStandardTool('ClickCreating', new ClickCreatingTool(), this.mouseUpTools);
+  this.replaceStandardTool('ClickSelecting', new ClickSelectingTool(), this.mouseUpTools);
 };
 
-Panel.definePanelLayout('Position', new PanelLayoutPosition());
+// By default, these are added to the library in index.ts. When building from source, you must add them manually.
 Panel.definePanelLayout('Horizontal', new PanelLayoutHorizontal());
-Panel.definePanelLayout('Vertical', new PanelLayoutVertical());
 Panel.definePanelLayout('Spot', new PanelLayoutSpot());
-Panel.definePanelLayout('Auto', new PanelLayoutAuto());
 Panel.definePanelLayout('Table', new PanelLayoutTable());
 Panel.definePanelLayout('Viewbox', new PanelLayoutViewbox());
 Panel.definePanelLayout('TableRow', new PanelLayoutTableRow());
 Panel.definePanelLayout('TableColumn', new PanelLayoutTableColumn());
-Panel.definePanelLayout('Link', new PanelLayoutLink());
-Panel.definePanelLayout('Grid', new PanelLayoutGrid());
 Panel.definePanelLayout('Graduated', new PanelLayoutGraduated());
+Panel.definePanelLayout('Grid', new PanelLayoutGrid());
+// These PanelLayouts are essential to GoJs and are added in panel.ts, so we don't add them here:
+// Panel.definePanelLayout('Position', new PanelLayoutPosition());
+// Panel.definePanelLayout('Vertical', new PanelLayoutVertical());
+// Panel.definePanelLayout('Auto', new PanelLayoutAuto());
+// Panel.definePanelLayout('Link', new PanelLayoutLink());
 
+
+// Add PartManagers for model subclasses.
 Diagram.addPartManager(GraphLinksModel.type, GraphLinksPartManager);
 Diagram.addPartManager(TreeModel.type, TreePartManager);
 
-
+/**
+ * @hidden @internal
+ */
 export const go = {
   get licenseKey() {
     return Diagram.licenseKey;
@@ -134,6 +137,8 @@ export const go = {
   },
 
   'Group': Group,
+
+  // 'Util': Util, // could add back for debug
   'EnumValue': EnumValue,
   'List': List,
   'Set': Set,
@@ -150,14 +155,37 @@ export const go = {
   'DiagramEvent': DiagramEvent,
   'ChangedEvent': ChangedEvent,
   'Model': Model,
+  'GraphLinksModel': GraphLinksModel,
+  'TreeModel': TreeModel,
   'Binding': Binding,
   'Transaction': Transaction,
   'UndoManager': UndoManager,
+  'CommandHandler': CommandHandler,
   'Tool': Tool,
+  'DraggingTool': DraggingTool,
+  'DraggingInfo': DraggingInfo,
+  'LinkingBaseTool': LinkingBaseTool,
+  'LinkingTool': LinkingTool,
+  'RelinkingTool': RelinkingTool,
+  'LinkReshapingTool': LinkReshapingTool,
+  'ResizingTool': ResizingTool,
+  'RotatingTool': RotatingTool,
+  'ClickSelectingTool': ClickSelectingTool,
+  'ActionTool': ActionTool,
+  'ClickCreatingTool': ClickCreatingTool,
+  'HTMLInfo': HTMLInfo,
+  'ContextMenuTool': ContextMenuTool,
+  'DragSelectingTool': DragSelectingTool,
+  'PanningTool': PanningTool,
+  'TextEditingTool': TextEditingTool,
   'ToolManager': ToolManager,
+  'Animation': Animation,
   'AnimationManager': AnimationManager,
+  'AnimationTrigger': AnimationTrigger,
   'Layer': Layer,
   'Diagram': Diagram,
+  'Palette': Palette,
+  'Overview': Overview,
   'Brush': Brush,
   'GraphObject': GraphObject,
   'Panel': Panel,
@@ -175,31 +203,9 @@ export const go = {
   'LayoutNetwork': LayoutNetwork,
   'LayoutVertex': LayoutVertex,
   'LayoutEdge': LayoutEdge,
-
-  // optional:
-  'DraggingTool': DraggingTool,
-  'DraggingInfo': DraggingInfo,
-  'LinkingBaseTool': LinkingBaseTool,
-  'LinkingTool': LinkingTool,
-  'RelinkingTool': RelinkingTool,
-  'LinkReshapingTool': LinkReshapingTool,
-  'ResizingTool': ResizingTool,
-  'RotatingTool': RotatingTool,
-  'ClickSelectingTool': ClickSelectingTool,
-  'ActionTool': ActionTool,
-  'ClickCreatingTool': ClickCreatingTool,
-  'HTMLInfo': HTMLInfo,
-  'ContextMenuTool': ContextMenuTool,
-  'DragSelectingTool': DragSelectingTool,
-  'PanningTool': PanningTool,
-  'TextEditingTool': TextEditingTool,
-
-  'GraphLinksModel': GraphLinksModel,
-  'TreeModel': TreeModel,
-  'CommandHandler': CommandHandler,
-  'Palette': Palette,
-  'Overview': Overview,
   'GridLayout': GridLayout,
+  'PanelLayout': PanelLayout,
+
   'CircularLayout': CircularLayout,
   'CircularNetwork': CircularNetwork,
   'CircularVertex': CircularVertex,

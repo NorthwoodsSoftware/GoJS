@@ -101,7 +101,7 @@
             var level = v.level % (levelColors.length);
             var color = levelColors[level];
             var shape = v.node.findObject("SHAPE");
-            if (shape) shape.fill = $(go.Brush, "Linear", { 0: color, 1: go.Brush.lightenBy(color, 0.05), start: go.Spot.Left, end: go.Spot.Right });
+            if (shape) shape.stroke = $(go.Brush, "Linear", { 0: color, 1: go.Brush.lightenBy(color, 0.05), start: go.Spot.Left, end: go.Spot.Right });
           }
         });
       };
@@ -139,8 +139,8 @@
 
       // This converter is used by the Picture.
       function findHeadShot(key) {
-        if (key < 0 || key > 16) return "images/HSnopic.png"; // There are only 16 images on the server
-        return "images/HS" + key + ".png"
+        if (key < 0 || key > 16) return "images/HSnopic.jpg"; // There are only 16 images on the server
+        return "images/HS" + key + ".jpg"
       }
 
       // define the Node template
@@ -185,7 +185,7 @@
           // define the node's outer shape
           $(go.Shape, "Rectangle",
             {
-              name: "SHAPE", fill: "white", stroke: null,
+              name: "SHAPE", fill: "#333333", stroke: 'white', strokeWidth: 3.5,
               // set the port properties:
               portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer"
             }),
@@ -193,15 +193,16 @@
             $(go.Picture,
               {
                 name: "Picture",
-                desiredSize: new go.Size(39, 50),
-                margin: new go.Margin(6, 8, 6, 10),
+                desiredSize: new go.Size(70, 70),
+                margin: 1.5,
               },
               new go.Binding("source", "key", findHeadShot)),
             // define the panel where the text will appear
             $(go.Panel, "Table",
               {
-                maxSize: new go.Size(150, 999),
-                margin: new go.Margin(6, 10, 0, 3),
+                minSize: new go.Size(130, NaN),
+                maxSize: new go.Size(150, NaN),
+                margin: new go.Margin(6, 10, 0, 6),
                 defaultAlignment: go.Spot.Left
               },
               $(go.RowColumnDefinition, { column: 2, width: 4 }),
@@ -303,7 +304,7 @@
       myDiagram.linkTemplate =
         $(go.Link, go.Link.Orthogonal,
           { corner: 5, relinkableFrom: true, relinkableTo: true },
-          $(go.Shape, { strokeWidth: 4, stroke: "#00a4a4" }));  // the link shape
+          $(go.Shape, { strokeWidth: 1.5, stroke: "#F5F5F5" }));  // the link shape
 
       // read in the JSON-format data from the "mySavedModel" element
       load();
@@ -317,7 +318,18 @@
             "comments": {}
           }
         });
-    }
+
+      // Setup zoom to fit button
+      document.getElementById('zoomToFit').addEventListener('click', function() {
+        myDiagram.commandHandler.zoomToFit();
+      });
+
+      document.getElementById('centerRoot').addEventListener('click', function() {
+        myDiagram.scale = 1;
+        myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
+      });
+
+    } // end init
 
     // Show the diagram's model in JSON format
     function save() {
@@ -339,10 +351,11 @@
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: #696969; border: solid 1px black; height: 500px"></div>
+  <div id="myDiagramDiv" style="background-color: #34343C; border: solid 1px black; height: 570px;"></div>
+  <p><button id="zoomToFit">Zoom to Fit</button> <button id="centerRoot">Center on root</button></p>
+
   <div>
     <div id="myInspector">
-
     </div>
   </div>
   <p>
@@ -381,7 +394,7 @@
       <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
-    <textarea id="mySavedModel" style="width:100%;height:250px">
+    <textarea id="mySavedModel" style="width:100%; height:270px;">
 { "class": "go.TreeModel",
   "nodeDataArray": [
 {"key":1, "name":"Stella Payne Diaz", "title":"CEO"},
