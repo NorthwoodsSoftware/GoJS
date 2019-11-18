@@ -72,7 +72,9 @@
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
-          { "undoManager.isEnabled": true });
+          {
+            "undoManager.isEnabled": true
+          });
 
       // This is the actual HTML context menu:
       var cxElement = document.getElementById("contextMenu");
@@ -121,6 +123,12 @@
         return false;
       }, false);
 
+      function hideCX() {
+        if (myDiagram.currentTool instanceof go.ContextMenuTool) {
+          myDiagram.currentTool.doCancel();
+        }
+      }
+
       function showContextMenu(obj, diagram, tool) {
         // Show only the relevant buttons given the current state.
         var cmd = diagram.commandHandler;
@@ -147,10 +155,17 @@
           cxElement.style.left = mousePt.x + 5 + "px";
           cxElement.style.top = mousePt.y + "px";
         }
+
+        // Optional: Use a `window` click listener with event capture to
+        //           remove the context menu if the user clicks elsewhere on the page
+        window.addEventListener("click", hideCX, true);
       }
 
       function hideContextMenu() {
         cxElement.classList.remove("show-menu");
+        // Optional: Use a `window` click listener with event capture to
+        //           remove the context menu if the user clicks elsewhere on the page
+        window.removeEventListener("click", hideCX, true);
       }
     }
 

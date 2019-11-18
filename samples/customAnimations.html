@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <title>Custom Animation Demo</title>
   <meta name="description" content="Custom animation examples for GoJS." />
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,11 +51,26 @@
         animation.start();
       }
 
+      var addNodeAdornment =
+        $(go.Adornment, "Spot",
+          $(go.Panel, "Auto",
+            $(go.Shape, { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
+            $(go.Placeholder)),
+          // the button to create a "next" node, at the top-right corner
+          $("Button",
+            {
+              alignment: go.Spot.TopRight,
+              click: addNode  // this function is defined below
+            },
+            $(go.Shape, "PlusLine", { desiredSize: new go.Size(6, 6) })
+          )
+        );
+
       // define a simple Node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           {
-            contextClick: addNode,
+            selectionAdornmentTemplate: addNodeAdornment,
             locationSpot: go.Spot.Center
           },
           new go.Binding("location", "loc").makeTwoWay(),
@@ -199,7 +213,7 @@
         }
       );
 
-      //Get the point the object should be at based upon the time and original point
+      // Get the point the object should be at based upon the time and original point
       function getPointBounceDelete(currentTime, obj, animationState, diagram) {
         if (diagram === null) return new go.Point(animationState.xPos, animationState.yPos);
         let height = obj.actualBounds.height;
@@ -384,8 +398,8 @@
         <li>Double click in the Diagram background to create a node, or copy and paste nodes, to view creation animations.
         <li>Delete a node to view deletion animations.
         <li>Draw links to see new link creation animations.
-        <li>Select a node and press the + button to see a link-and-node creation animation.
-        <li>Reload the model to see the custom load animation
+        <li>Select a node and press the + button or the button below to see a link-and-node creation animation.
+        <li>Reload the model using the button below to see the custom load animation
       </ul>
     </div>
 

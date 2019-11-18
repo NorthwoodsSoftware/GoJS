@@ -1,4 +1,3 @@
-'use strict';
 /*
 *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -21,8 +20,11 @@ import * as go from '../release/go';
  * You can also set {@link #vertical} to true if you want the DoubleTreeLayout to
  * perform TreeLayouts both downwards and upwards.
  *
- * At the current time this only handles graphs for which there is a single root node --
- * i.e. where there is only one Node for which {@link Node#findTreeParentNode} returns null.
+ * Normally there should be a single root node.  Hoewver if there are multiple root nodes
+ * found in the nodes and links that this layout is responsible for, this will pretend that
+ * there is a real root node and make all of the apparent root nodes children of that pretend root.
+ *
+ * If there is no root node, all nodes are involved in cycles, so the first given node is chosen.
  *
  * If you want to experiment with this extension, try the <a href="../../samples/doubleTree.html">Double Tree</a> sample.
  * @category Layout Extension
@@ -111,7 +113,8 @@ export class DoubleTreeLayout extends go.Layout {
    * @param coll
    */
   public doLayout(coll: (go.Diagram | go.Group | go.Iterable<go.Part>)): void {
-    const coll2: go.Iterable<go.Part> = this.collectParts(coll);
+    const coll2: go.Set<go.Part> = this.collectParts(coll);
+    if (coll2.count === 0) return;
     const diagram = this.diagram;
     if (diagram !== null) diagram.startTransaction("Double Tree Layout");
 
@@ -123,15 +126,13 @@ export class DoubleTreeLayout extends go.Layout {
 
     // create and perform two TreeLayouts, one in each direction,
     // without moving the ROOT node, on the different subsets of nodes and links
-    const layout1 = new go.TreeLayout();
+    const layout1 = this.createTreeLayout(false);
     layout1.angle = this.vertical ? 270 : 180;
     layout1.arrangement = go.TreeLayout.ArrangementFixedRoots;
-    layout1.setsPortSpot = false;
 
-    const layout2 = new go.TreeLayout();
+    const layout2 = this.createTreeLayout(true);
     layout2.angle = this.vertical ? 90 : 0;
     layout2.arrangement = go.TreeLayout.ArrangementFixedRoots;
-    layout2.setsPortSpot = false;
 
     layout1.doLayout(leftParts);
     layout2.doLayout(rightParts);
@@ -158,16 +159,40 @@ export class DoubleTreeLayout extends go.Layout {
    * one for the subtrees growing towards the left or upwards, and one for the subtrees
    * growing towards the right or downwards.
    */
-  protected separatePartsForLayout(coll: go.Iterable<go.Part>, leftParts: go.Set<go.Part>, rightParts: go.Set<go.Part>): void {
-    let root = null;
-    const it = coll.iterator;
-    while (it.next() && root === null) {
-      const node = it.value;
-      if (node instanceof go.Node && node.findTreeParentNode() === null) root = node;
+  protected separatePartsForLayout(coll: go.Set<go.Part>, leftParts: go.Set<go.Part>, rightParts: go.Set<go.Part>): void {
+    let root: go.Node | null = null;  // the one root
+    const roots = new go.Set<go.Node>();  // in case there are multiple roots
+    coll.each(function(node: go.Part) {
+      if (node instanceof go.Node && node.findTreeParentNode() === null) roots.add(node);
+    });
+    if (roots.count === 0) {  // just choose the first node as the root
+      const it = coll.iterator;
+      while (it.next()) {
+        if (it.value instanceof go.Node) {
+          root = it.value;
+          break;
+        }
+      }
+    } else if (roots.count === 1) {  // normal case: just one root node
+      root = roots.first();
+    } else {  // multiple root nodes -- create a dummy node to be the one real root
+      root = new go.Node();  // the new root node
+      root.location = new go.Point(0, 0);
+      const forwards = (this.diagram ? this.diagram.isTreePathToChildren : true);
+      // now make dummy links from the one root node to each node
+      roots.each(function(child) {
+        const link = new go.Link();
+        if (forwards) {
+          link.fromNode = root;
+          link.toNode = child;
+        } else {
+          link.fromNode = child;
+          link.toNode = root;
+        }
+      });
     }
-    if (root === null) return;  //??? no root? give up!
-
-    //??? This does not handle multiple roots.
+    if (root === null) return;
+  
     // the ROOT node is shared by both subtrees
     leftParts.add(root);
     rightParts.add(root);

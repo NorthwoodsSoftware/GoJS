@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.0
+ * Type definitions for GoJS v2.1.1
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5573,6 +5573,21 @@ export class DraggingTool extends Tool {
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      */
     dragsTree: boolean;
+    /** @hidden
+     * The cursor to show when a drop is allowed and will result in a copy.
+     * This defaults to 'copy'.
+     */
+    copyCursor: string;
+    /** @hidden
+     * The cursor to show when a drop is allowed and will result in a move.
+     * This defaults to the empty string, which refers to the Diagram#defaultCursor.
+     */
+    moveCursor: string;
+    /** @hidden
+     * The cursor to show when a drop is not allowed.
+     * This defaults to 'no-drop'.
+     */
+    nodropCursor: string;
     /**
      * Gets the Part found at the mouse point.
      * This is normally set by a call to #standardMouseSelect.
@@ -5862,6 +5877,11 @@ export abstract class LinkingBaseTool extends Tool {
      * @since 1.3
      */
     isUnconnectedLinkValid: boolean;
+    /** @hidden
+     * Gets or sets the cursor used during the linking or relinking operation.
+     * This defaults to 'pointer'.
+     */
+    linkingCursor: string;
     /**
      * Gets or sets the temporary Link that is shown while the user is drawing or reconnecting a link.
      * Setting this property does not raise any events.
@@ -19781,6 +19801,19 @@ export class Group extends Node {
      * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
+    /**
+     * Measures if needed to make sure the GraphObject#measuredBounds and GraphObject#naturalBounds are all real numbers,
+     * primarily to get the actual width and height.
+     * GraphObject#actualBounds will get a real width and height, but the x and y values may continue to be `NaN`
+     * if they were that way beforehand.
+     *
+     * This is sometimes necessary to call when defining custom layouts or implementing virtualization,
+     * so that it can work with the actual size of the nodes.
+     *
+     * For efficiency, do not call this method unnecessarily.
+     * @since 1.6
+     */
+    ensureBounds(): void;
     /**
      * This read-only property returns a Placeholder that this group may contain in its visual tree.
      */

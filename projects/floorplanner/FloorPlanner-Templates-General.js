@@ -3,13 +3,13 @@
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - GENERAL
-* General GraphObject templates used in the Floor Planner sample   
-* Includes Context Menu, Diagram, Default Group, AngleNode, DimensionLink, PointNode 
+* General GraphObject templates used in the Floor Planner sample
+* Includes Context Menu, Diagram, Default Group, AngleNode, DimensionLink, PointNode
 */
 
 /*
 * Dependencies for Context Menu:
-* Make Selection Group, Ungroup Selection, Clear Empty Groups 
+* Make Selection Group, Ungroup Selection, Clear Empty Groups
 */
 
 // Make the selection a group
@@ -76,14 +76,14 @@ function clearEmptyGroups(floorplan) {
 function makeGroupToolTip() {
     var $ = go.GraphObject.make;
     return $(go.Adornment, "Auto",
-            $(go.Shape, { fill: "#FFFFCC" }),
-            $(go.TextBlock, { margin: 4 },
+        $(go.Shape, { fill: "#FFFFCC" }),
+        $(go.TextBlock, { margin: 4 },
             new go.Binding("text", "", function (text, obj) {
                 var data = obj.part.adornedObject.data;
                 var name = (obj.part.adornedObject.category === "MultiPurposeNode") ? data.text : data.caption;
                 return "Name: " + name + "\nNotes: " + data.notes + '\nMembers: ' + obj.part.adornedObject.memberParts.count;
             }).ofObject())
-        );
+    );
 }
 
 /*
@@ -210,7 +210,7 @@ function makeContextMenu() {
                 } return false;
             }).ofObject()
         )
-   );
+    );
 }
 
 // Default Group
@@ -225,18 +225,18 @@ function makeDefaultGroup() {
             toolTip: makeGroupToolTip()
         },
         new go.Binding("location", "loc"),
-          $(go.Panel, "Auto",
+        $(go.Panel, "Auto",
             $(go.Shape, "RoundedRectangle", { fill: "rgba(128,128,128,0.15)", stroke: 'rgba(128, 128, 128, .05)', name: 'SHAPE', strokeCap: 'square' },
-              new go.Binding("fill", "isSelected", function (s, obj) {
-                  return s ? "rgba(128, 128, 128, .15)" : "rgba(128, 128, 128, 0.10)";
-              }).ofObject()
-              ),
+                new go.Binding("fill", "isSelected", function (s, obj) {
+                    return s ? "rgba(128, 128, 128, .15)" : "rgba(128, 128, 128, 0.10)";
+                }).ofObject()
+            ),
             $(go.Placeholder, { padding: 5 })  // extra padding around group members
-          )
         )
+    )
 }
 
-/* 
+/*
 * Dependencies for Angle Nodes:
 * Make Arc
 */
@@ -250,18 +250,18 @@ function makeArc(node) {
         var start = new go.Point(rad, 0).rotate(ang);
         // this is much more efficient than calling go.GraphObject.make:
         return new go.Geometry()
-              .add(new go.PathFigure(start.x + rad, start.y + rad)  // start point
-                   .add(new go.PathSegment(go.PathSegment.Arc,
-                                           ang, sweep,  // angles
-                                           rad, rad,  // center
-                                           rad, rad)  // radius
-                        ))
-              .add(new go.PathFigure(0, 0))
-              .add(new go.PathFigure(2 * rad, 2 * rad));
+            .add(new go.PathFigure(start.x + rad, start.y + rad)  // start point
+                .add(new go.PathSegment(go.PathSegment.Arc,
+                    ang, sweep,  // angles
+                    rad, rad,  // center
+                    rad, rad)  // radius
+                ))
+            .add(new go.PathFigure(0, 0))
+            .add(new go.PathFigure(2 * rad, 2 * rad));
     } else {  // make sure this arc always occupies the same circular area of RAD radius
         return new go.Geometry()
-              .add(new go.PathFigure(0, 0))
-              .add(new go.PathFigure(2 * rad, 2 * rad));
+            .add(new go.PathFigure(0, 0))
+            .add(new go.PathFigure(2 * rad, 2 * rad));
     }
 }
 
@@ -277,7 +277,7 @@ function makePointNode() {
 }
 
 /*
-* Dynamically appearing parts: 
+* Dynamically appearing parts:
 * Angle Node, Dimension Link
 */
 
@@ -287,16 +287,16 @@ function makeAngleNode() {
     return $(go.Node, "Spot",
         { locationSpot: go.Spot.Center, locationObjectName: "SHAPE", selectionAdorned: false },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-            $(go.Shape, "Circle", // placed where walls intersect, is invisible
+        $(go.Shape, "Circle", // placed where walls intersect, is invisible
             { name: "SHAPE", height: 0, width: 0 }),
-            $(go.Shape, // arc
-            { strokeWidth: 1.5, fill: null }, 
+        $(go.Shape, // arc
+            { strokeWidth: 1.5, fill: null },
             new go.Binding("geometry", "", makeArc).ofObject(),
             new go.Binding("stroke", "sweep", function (sweep) {
                 return (sweep % 45 < 1 || sweep % 45 > 44) ? "dodgerblue" : "lightblue";
             })),
-            // Arc label panel
-            $(go.Panel, "Auto",
+        // Arc label panel
+        $(go.Panel, "Auto",
             { name: "ARCLABEL" },
             // position the label in the center of the arc
             new go.Binding("alignment", "sweep", function (sweep, panel) {
@@ -305,20 +305,20 @@ function makeAngleNode() {
                 var cntr = new go.Point(rad, 0).rotate(angle + sweep / 2);
                 return new go.Spot(0.5, 0.5, cntr.x, cntr.y);
             }),
-                // rectangle containing angle text
-                $(go.Shape,
+            // rectangle containing angle text
+            $(go.Shape,
                 { fill: "white" },
                 new go.Binding("stroke", "sweep", function (sweep) {
                     return (sweep % 45 < 1 || sweep % 45 > 44) ? "dodgerblue" : "lightblue";
                 })),
-                // angle text
-                $(go.TextBlock,
+            // angle text
+            $(go.TextBlock,
                 { font: "7pt sans-serif", margin: 2 },
                 new go.Binding("text", "sweep", function (sweep) {
                     return sweep.toFixed(2) + String.fromCharCode(176);
                 }))
-            )
-        );
+        )
+    );
 }
 
 // Returns a Dimension Link
@@ -327,19 +327,48 @@ function makeDimensionLink() {
     return $(go.Link,
         // link itself
         $(go.Shape,
-        { stroke: "gray", strokeWidth: 2, name: 'SHAPE' }),
+            { stroke: "gray", strokeWidth: 2, name: 'SHAPE' }),
         // to arrow shape
         $(go.Shape,
-        { toArrow: "OpenTriangle", stroke: "gray", strokeWidth: 2 }),
+            { toArrow: "OpenTriangle", stroke: "gray", strokeWidth: 2 }),
         $(go.Shape,
-        // from arrow shape
-        { fromArrow: "BackwardOpenTriangle", stroke: "gray", strokeWidth: 2 }),
-        // dimension link text 
+            // from arrow shape
+            { fromArrow: "BackwardOpenTriangle", stroke: "gray", strokeWidth: 2 }),
+        // dimension link text
         $(go.TextBlock,
-        { text: 'sometext', segmentOffset: new go.Point(0, -10), font: "13px sans-serif" },
-        new go.Binding("text", "", function (link) {
-            var floorplan = link.diagram;
-            if (floorplan) {
+            { text: 'sometext', segmentOffset: new go.Point(0, -10), font: "13px sans-serif" },
+            new go.Binding("text", "", function (link) {
+                var floorplan = link.diagram;
+                if (floorplan) {
+                    var fromPtNode = null; var toPtNode = null;
+                    floorplan.pointNodes.iterator.each(function (node) {
+                        if (node.data.key === link.data.from) fromPtNode = node;
+                        if (node.data.key === link.data.to) toPtNode = node;
+                    });
+                    if (fromPtNode !== null) {
+                        var fromPt = fromPtNode.location;
+                        var toPt = toPtNode.location;
+                        return floorplan.convertPixelsToUnits(Math.sqrt(fromPt.distanceSquaredPoint(toPt))).toFixed(2) + floorplan.model.modelData.unitsAbbreviation;
+                    } return null;
+                } return null;
+            }).ofObject(),
+            // bind angle of textblock to angle of link -- always make text rightside up and readable
+            new go.Binding("angle", "angle", function (angle, link) {
+                if (angle > 90 && angle < 270) return (angle + 180) % 360;
+                return angle;
+            }),
+            // default poisiton text above / below dimension link based on angle
+            new go.Binding("segmentOffset", "angle", function (angle, textblock) {
+                var floorplan = textblock.part.diagram;
+                if (floorplan) {
+                    var wall = floorplan.findPartForKey(textblock.part.data.wall);
+                    if (wall.rotateObject.angle > 135 && wall.rotateObject.angle < 315) return new go.Point(0, 10);
+                    return new go.Point(0, -10);
+                } return new go.Point(0, 0);
+            }).ofObject(),
+            // scale font size according to the length of the link
+            new go.Binding("font", "", function (link) {
+                var floorplan = link.diagram;
                 var fromPtNode = null; var toPtNode = null;
                 floorplan.pointNodes.iterator.each(function (node) {
                     if (node.data.key === link.data.from) fromPtNode = node;
@@ -348,41 +377,12 @@ function makeDimensionLink() {
                 if (fromPtNode !== null) {
                     var fromPt = fromPtNode.location;
                     var toPt = toPtNode.location;
-                    return floorplan.convertPixelsToUnits(Math.sqrt(fromPt.distanceSquaredPoint(toPt))).toFixed(2) + floorplan.model.modelData.unitsAbbreviation;
-                } return null;
-            } return null;
-        }).ofObject(),
-        // bind angle of textblock to angle of link -- always make text rightside up and readable
-        new go.Binding("angle", "angle", function (angle, link) {
-            if (angle > 90 && angle < 270) return (angle + 180) % 360;
-            return angle;
-        }),
-        // default poisiton text above / below dimension link based on angle
-        new go.Binding("segmentOffset", "angle", function (angle, textblock) {
-            var floorplan = textblock.part.diagram;
-            if (floorplan) {
-                var wall = floorplan.findPartForKey(textblock.part.data.wall);
-                if (wall.rotateObject.angle > 135 && wall.rotateObject.angle < 315) return new go.Point(0, 10);
-                return new go.Point(0, -10);
-            } return new go.Point(0,0);
-        }).ofObject(),
-        // scale font size according to the length of the link
-        new go.Binding("font", "", function (link) {
-            var floorplan = link.diagram;
-            var fromPtNode = null; var toPtNode = null;
-            floorplan.pointNodes.iterator.each(function (node) {
-                if (node.data.key === link.data.from) fromPtNode = node;
-                if (node.data.key === link.data.to) toPtNode = node;
-            });
-            if (fromPtNode !== null) {
-                var fromPt = fromPtNode.location;
-                var toPt = toPtNode.location;
-                var distance = Math.sqrt(fromPt.distanceSquaredPoint(toPt));
-                if (distance > 40) return "13px sans-serif";
-                if (distance <= 40 && distance >= 20) return "11px sans-serif";
-                else return "9px sans-serif";
-            } return "13px sans-serif";
-        }).ofObject()
+                    var distance = Math.sqrt(fromPt.distanceSquaredPoint(toPt));
+                    if (distance > 40) return "13px sans-serif";
+                    if (distance <= 40 && distance >= 20) return "11px sans-serif";
+                    else return "9px sans-serif";
+                } return "13px sans-serif";
+            }).ofObject()
         )
     )
 }

@@ -1329,8 +1329,8 @@ var __extends = (this && this.__extends) || (function () {
          * @param force whether or not to force an update based on the quadtree even if none of the segments were deleted
          */
         PackedLayout.prototype.fixMissingMinMaxSegments = function (force) {
-            var _a;
             if (force === void 0) { force = false; }
+            var _a;
             if (!this._minXSegment || !this._maxXSegment || !this._minYSegment || !this._maxYSegment || force) {
                 _a = this._tree.findExtremeObjects(), this._minXSegment = _a[0], this._maxXSegment = _a[1], this._minYSegment = _a[2], this._maxYSegment = _a[3];
             }

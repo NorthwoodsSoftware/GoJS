@@ -29,7 +29,9 @@
 
             // Use a virtualized TreeLayout which does not require
             // that the Nodes and Links exist first for an accurate layout
-            layout: $(VirtualizedTreeLayout, { angle: (HORIZONTAL ? 0 : 90), nodeSpacing: 4 }),
+            layout:
+              $(VirtualizedTreeLayout,
+                { angle: (HORIZONTAL ? 0 : 90), nodeSpacing: 10 }),
 
             // Define the template for Nodes, used by virtualization.
             nodeTemplate:
@@ -57,12 +59,17 @@
             linkTemplate:
               $(go.Link,
                 {
-                  isLayoutPositioned: false,  // optimization
                   fromSpot: (HORIZONTAL ? go.Spot.Right : go.Spot.Bottom),
                   toSpot: (HORIZONTAL ? go.Spot.Left : go.Spot.Top)
                 },
                 $(go.Shape)
               ),
+
+            "SelectionMoved": function(e) {
+              e.subject.each(function(n) {
+                if (n instanceof go.Node) n.data.points = undefined;
+              })
+            },
 
             "animationManager.isEnabled": false
           });
@@ -168,14 +175,20 @@
           if (parent !== null) {
             if (n.bounds.intersectsRect(viewb)) {  // N is inside viewport
               model.addNodeData(parent);  // so that link to parent appears
-              var node = diagram.findNodeForData(n);
-              if (node !== null) {
-                var link = node.findTreeParentLink();
+              var child = diagram.findNodeForData(n);
+              if (child !== null) {
+                var link = child.findTreeParentLink();
                 if (link !== null) {
                   // do this now to avoid delayed routing outside of transaction
                   link.fromNode.ensureBounds();
                   link.toNode.ensureBounds();
-                  link.updateRoute();
+                  if (child.data.fromSpot) link.fromSpot = child.data.fromSpot;
+                  if (child.data.toSpot) link.toSpot = child.data.toSpot;
+                  if (child.data.points) {
+                    link.points = child.data.points;
+                  } else {
+                    link.updateRoute();
+                  }
                 }
               }
             } else {  // N is outside of viewport
@@ -192,7 +205,13 @@
                     // do this now to avoid delayed routing outside of transaction
                     link.fromNode.ensureBounds();
                     link.toNode.ensureBounds();
-                    link.updateRoute();
+                    if (child.data.fromSpot) link.fromSpot = child.data.fromSpot;
+                    if (child.data.toSpot) link.toSpot = child.data.toSpot;
+                    if (child.data.points) {
+                      link.points = child.data.points;
+                    } else {
+                      link.updateRoute();
+                    }
                   }
                 }
               }
@@ -228,7 +247,13 @@
               // do this now to avoid delayed routing outside of transaction
               link.fromNode.ensureBounds();
               link.toNode.ensureBounds();
-              link.updateRoute();
+              if (link.data.fromSpot) link.fromSpot = link.data.fromSpot;
+              if (link.data.toSpot) link.toSpot = link.data.toSpot;
+              //if (link.data.points) {
+              //  link.points = link.data.points;
+              //} else {
+                link.updateRoute();
+              //}
             }
           }
         }
@@ -309,6 +334,15 @@
     };
 
     VirtualizedTreeLayout.prototype.commitLayout = function() {
+      VirtualizedTreeEdge._dummyLink = this.diagram.linkTemplate.copy();
+      VirtualizedTreeEdge._dummyFromNode = this.diagram.nodeTemplate.copy();
+      VirtualizedTreeEdge._dummyToNode = this.diagram.nodeTemplate.copy();
+      VirtualizedTreeEdge._dummyLink.fromNode = VirtualizedTreeEdge._dummyFromNode;
+      VirtualizedTreeEdge._dummyLink.toNode = VirtualizedTreeEdge._dummyToNode;
+      this.diagram.add(VirtualizedTreeEdge._dummyFromNode);
+      this.diagram.add(VirtualizedTreeEdge._dummyToNode);
+      this.diagram.add(VirtualizedTreeEdge._dummyLink);
+
       go.TreeLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
       this.diagram.fixedBounds = computeDocumentBounds(this.model);
@@ -316,7 +350,28 @@
       this.diagram.nodes.each(function(node) {
         node.updateTargetBindings();
       });
+
+      this.diagram.remove(VirtualizedTreeEdge._dummyFromNode);
+      this.diagram.remove(VirtualizedTreeEdge._dummyToNode);
+      this.diagram.remove(VirtualizedTreeEdge._dummyLink);
     };
+
+    VirtualizedTreeLayout._cachedLinks = [];
+
+    VirtualizedTreeLayout.prototype.setPortSpots = function(v) {
+      v.destinationEdges.each(function(e) {
+        e.link = VirtualizedTreeLayout._cachedLinks.pop() || new go.Link();
+      });
+      go.TreeLayout.prototype.setPortSpots.call(this, v);
+      v.destinationEdges.each(function(e) {
+        if (e.data) {
+          e.data.fromSpot = e.link.fromSpot.copy();
+          e.data.toSpot = e.link.toSpot.copy();
+        }
+        VirtualizedTreeLayout._cachedLinks.push(e.link);
+        e.link = null;
+      });
+    }
     // end VirtualizedTreeLayout class
 
 
@@ -324,6 +379,8 @@
       go.TreeNetwork.call(this, layout);
     }
     go.Diagram.inherit(VirtualizedTreeNetwork, go.TreeNetwork);
+
+    VirtualizedTreeNetwork.prototype.createEdge = function() { return new VirtualizedTreeEdge(this); }
 
     VirtualizedTreeNetwork.prototype.addData = function(model) {
       if (model instanceof go.TreeModel) {
@@ -359,6 +416,37 @@
       }
     };
     // end VirtualizedTreeNetwork class
+
+    function VirtualizedTreeEdge(network) {
+      go.TreeEdge.call(this, network);
+    }
+    go.Diagram.inherit(VirtualizedTreeEdge, go.TreeEdge);
+
+    VirtualizedTreeEdge._dummyLink = null;
+    VirtualizedTreeEdge._dummyFromNode = null;
+    VirtualizedTreeEdge._dummyToNode = null;
+
+    VirtualizedTreeEdge.prototype.commit = function() {
+      var parentv = this.fromVertex;
+      if (!parentv) return;
+      var routed = (parentv.alignment === go.TreeLayout.AlignmentStart || parentv.alignment === go.TreeLayout.AlignmentEnd);
+      if (this.data && routed) {
+        this.link = VirtualizedTreeEdge._dummyLink;
+        this.link.fromNode.position = new go.Point(this.fromVertex.x, this.fromVertex.y);
+        this.link.toNode.position = new go.Point(this.toVertex.x, this.toVertex.y);
+        this.link.fromNode.ensureBounds();
+        this.link.toNode.ensureBounds();
+        this.link.updateRoute();
+      }
+      go.TreeEdge.prototype.commit.call(this);
+      if (this.data && routed) {
+        this.data.points = this.link.points.copy();
+        if (this.link.fromNode.actualBounds.x < this.link.toNode.actualBounds.x-150) {
+          console.log(this.link.points)
+        }
+        this.link = null;
+      }
+    }
 
     // end of VirtualizedTree[Layout/Network] classes
 

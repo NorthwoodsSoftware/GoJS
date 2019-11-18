@@ -107,6 +107,7 @@ DoubleTreeLayout.prototype.cloneProtected = function(copy) {
  */
 DoubleTreeLayout.prototype.doLayout = function(coll) {
   coll = this.collectParts(coll);
+  if (coll.count === 0) return;
   var diagram = this.diagram;
   if (diagram !== null) diagram.startTransaction("Double Tree Layout");
 
@@ -152,15 +153,38 @@ DoubleTreeLayout.prototype.createTreeLayout = function(positive) {
  * growing towards the right or downwards.
  */
 DoubleTreeLayout.prototype.separatePartsForLayout = function(coll, leftParts, rightParts) {
-  var root = null;
-  var it = coll.iterator;
-  while (it.next() && root === null) {
-    var node = it.value;
-    if (node instanceof go.Node && node.findTreeParentNode() === null) root = node;
+  var root = null;  // the one root
+  var roots = new go.Set();  // in case there are multiple roots
+  coll.each(function(node) {
+    if (node instanceof go.Node && node.findTreeParentNode() === null) roots.add(node);
+  });
+  if (roots.count === 0) {  // just choose the first node as the root
+    var it = coll.iterator;
+    while (it.next()) {
+      if (it.value instanceof go.Node) {
+        root = it.value;
+        break;
+      }
+    }
+  } else if (roots.count === 1) {  // normal case: just one root node
+    root = roots.first();
+  } else {  // multiple root nodes -- create a dummy node to be the one real root
+    root = new go.Node();  // the new root node
+    root.location = new go.Point(0, 0);
+    var forwards = (this.diagram ? this.diagram.isTreePathToChildren : true);
+    // now make dummy links from the one root node to each node
+    roots.each(function(child) {
+      var link = new go.Link();
+      if (forwards) {
+        link.fromNode = root;
+        link.toNode = child;
+      } else {
+        link.fromNode = child;
+        link.toNode = root;
+      }
+    });
   }
-  if (root === null) return;  //??? no root? give up!
 
-  //??? This does not handle multiple roots.
   // the ROOT node is shared by both subtrees
   leftParts.add(root);
   rightParts.add(root);
