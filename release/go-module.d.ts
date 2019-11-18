@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.0.18
+ * Type definitions for GoJS v2.0.19
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5763,7 +5763,7 @@ export class DraggingTool extends Tool {
      * @param {Diagram} curdiag
      * @return {boolean}
      */
-    simulatedMouseUp(e: Event | Touch | null, other: Diagram, modelpt: Point, curdiag: Diagram | null): boolean;
+    simulatedMouseUp(e: Event | Touch | null, other: Diagram | null, modelpt: Point, curdiag: Diagram | null): boolean;
     /**
      * This predicate is true when the diagram allows objects to be copied and inserted,
      * and some object in the selection is copyable,
@@ -19121,6 +19121,19 @@ export class Group extends Node {
      * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
      */
     constructor(type?: PanelLayout);
+    /**
+     * Measures if needed to make sure the GraphObject#measuredBounds and GraphObject#naturalBounds are all real numbers,
+     * primarily to get the actual width and height.
+     * GraphObject#actualBounds will get a real width and height, but the x and y values may continue to be `NaN`
+     * if they were that way beforehand.
+     *
+     * This is sometimes necessary to call when defining custom layouts or implementing virtualization,
+     * so that it can work with the actual size of the nodes.
+     *
+     * For efficiency, do not call this method unnecessarily.
+     * @since 1.6
+     */
+    ensureBounds(): void;
     /**
      * This read-only property returns a Placeholder that this group may contain in its visual tree.
      */
