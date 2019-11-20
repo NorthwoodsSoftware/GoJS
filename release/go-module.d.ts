@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.1
+ * Type definitions for GoJS v2.1.2
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5790,12 +5790,11 @@ export class DraggingTool extends Tool {
      * Undocumented
      * @expose
      * @param {Event} e
-     * @param {Diagram} other
      * @param {Point} modelpt
      * @param {Diagram} curdiag
      * @return {boolean}
      */
-    simulatedMouseUp(e: Event | Touch | null, other: Diagram | null, modelpt: Point, curdiag: Diagram | null): boolean;
+    simulatedMouseUp(e: Event | Touch | null, modelpt: Point, curdiag: Diagram | null): boolean;
     /**
      * This predicate is true when the diagram allows objects to be copied and inserted,
      * and some object in the selection is copyable,

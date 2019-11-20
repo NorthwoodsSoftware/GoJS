@@ -1677,11 +1677,3 @@ arr.push([
   "treeLoadAnimation",
   ["animation"]
 ]);
-
-arr.push([
-  "customAnimations",
-  "Custom Animations",
-  "Shows how to create several custom Node animations.",
-  "customAnimations",
-  ["animation"]
-]);
