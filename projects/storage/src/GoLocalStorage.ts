@@ -5,16 +5,16 @@
 * Go Local Storage
 */
 
-import {Promise} from 'es6-promise';
+import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage';
 
 /**
  * Class for saving / loading GoJS {@link Model}s to / from Local Storage.
- * GoLocalStorage is the only {@link GoCloudStorage} subclass than can be used in a local page; 
+ * GoLocalStorage is the only {@link GoCloudStorage} subclass than can be used in a local page;
  * that is, one not served by a web server.
  *
- * **Note**: This class will not work with browsers that do not have Local Storage support 
+ * **Note**: This class will not work with browsers that do not have Local Storage support
  * (like some old versions of Internet Explorer).
  * @category Storage
  */
@@ -28,19 +28,24 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
 
     /**
      * @constructor
-     * @param {go.Diagram|go.Diagram[]} managedDiagrams 
+     * @param {go.Diagram|go.Diagram[]} managedDiagrams
      * An array of GoJS {@link Diagram}s whose model(s) will be saved to / loaded from Local Storage.
      * Can also be a single Diagram.
-     * @param {string} defaultModel 
+     * @param {string} defaultModel
      * String representation of the default model data for new diagrams. If this is null, default new
      * diagrams will be empty. Usually a value given by calling {@link Model#toJson} on a GoJS Diagram's Model.
-     * @param {string} iconsRelativeDirectory 
+     * @param {string} iconsRelativeDirectory
      * The directory path relative to the page in which this instance of GoLocalStorage exists, in which
      * the storage service brand icons can be found. The default value is "../goCloudStorageIcons/".
      */
-    constructor(managedDiagrams: go.Diagram|Array<go.Diagram>, defaultModel?: string, iconsRelativeDirectory?: string) {
+    constructor(managedDiagrams: go.Diagram | Array<go.Diagram>, defaultModel?: string, iconsRelativeDirectory?: string) {
         super(managedDiagrams, defaultModel, null, iconsRelativeDirectory);
-        this._localStorage = window.localStorage;
+        try {
+            this._localStorage = window.localStorage;
+        } catch (e) {
+            throw new Error('Cannot access localStorage. Make sure your browser supports localStorage.' +
+                'If so, and this issue persists, try unblocking third-party cookies and site data in your browser settings');
+        }
         this.ui.id = 'goLocalStorageCustomFilepicker';
         this._serviceName = 'Local Storage';
         this._className = 'GoLocalStorage';
@@ -94,7 +99,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
         const title: string = action + ' Diagram File';
         ui.innerHTML += '<strong>' + title + '</strong><hr></hr>';
 
-        //document.getElementsByTagName('body')[0].appendChild(ui);
+        // document.getElementsByTagName('body')[0].appendChild(ui);
         ui.style.visibility = 'visible';
         const filesDiv = document.createElement('div');
         filesDiv.id = 'fileOptions';
@@ -126,13 +131,13 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
                 if (action !== 'Save') {
                     filesDiv.innerHTML +=
                         "<div class='fileOption'>" +
-                            '<input id=' + fileId + " type='radio' name='localStorageFile' />" +
-                            '<label id =' + fileId + '-label' + " for='" + fileId + "'>" + file + '</label>' +
+                        '<input id=' + fileId + " type='radio' name='localStorageFile' />" +
+                        '<label id =' + fileId + '-label' + " for='" + fileId + "'>" + file + '</label>' +
                         '</div>';
                 } else {
                     filesDiv.innerHTML +=
                         "<div class='fileOption'>" +
-                            '<label id =' + fileId + '-label' + " for='" + fileId + "'>" + file + '</label>' +
+                        '<label id =' + fileId + '-label' + " for='" + fileId + "'>" + file + '</label>' +
                         '</div>';
                 }
             }
@@ -142,7 +147,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
         if (!hasCheckedAllFiles) {
             const num: number = numAdditionalFiles + 50;
             filesDiv.innerHTML += "<p>There may be more diagram files not shown. <a id='localStorageLoadMoreFiles'>Click here</a> to try loading more.</p>";
-            document.getElementById('localStorageLoadMoreFiles').onclick = function () {
+            document.getElementById('localStorageLoadMoreFiles').onclick = function() {
                 storage.showUI(action, num);
             };
         }
@@ -168,7 +173,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
         const actionButton = document.createElement('button');
         actionButton.textContent = action;
         actionButton.id = 'actionButton';
-        actionButton.onclick = function () {
+        actionButton.onclick = function() {
             storage.processUIResult(action);
         };
         submitDiv.appendChild(actionButton);
@@ -179,7 +184,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
         const cancelButton = document.createElement('button');
         cancelButton.id = 'cancelButton';
         cancelButton.textContent = 'Cancel';
-        cancelButton.onclick = function () {
+        cancelButton.onclick = function() {
             storage.hideUI(true);
         };
         cancelDiv.appendChild(cancelButton);
@@ -249,11 +254,11 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public getFile(path: string) {
         if (path.indexOf('.diagram') === -1) path += '.diagram';
-            return new Promise(function (resolve, reject) {
-                const fileContent: string = (!!window.localStorage.getItem(path)) ? window.localStorage.getItem(path) : null;
-                const file: Object = { name: path, content: fileContent, path: path, id: path };
-                resolve(file);
-            });
+        return new Promise(function(resolve, reject) {
+            const fileContent: string = (!!window.localStorage.getItem(path)) ? window.localStorage.getItem(path) : null;
+            const file: Object = { name: path, content: fileContent, path: path, id: path };
+            resolve(file);
+        });
     }
 
     /**
@@ -263,7 +268,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public checkFileExists(path: string) {
         if (path.indexOf('.diagram') === -1) path += '.diagram';
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             const fileExists: boolean = !!(window.localStorage.getItem(path));
             resolve(fileExists);
         });
@@ -275,7 +280,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public saveWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storage.showUI('Save'));
         });
     }
@@ -289,7 +294,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public save(path?: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) {
                 if (path.indexOf('.diagram') === -1) path += '.diagram';
                 const item: string = storage.makeSaveFile();
@@ -319,7 +324,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public loadWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storage.showUI('Load'));
         }).catch(function(e: any) {
             throw Error(e);
@@ -333,7 +338,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public load(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) {
                 const fileContents: string = storage.localStorage.getItem(path);
                 if (fileContents) {
@@ -359,7 +364,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public removeWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storage.showUI('Delete'));
         });
     }
@@ -371,10 +376,10 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      */
     public remove(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) {
                 const deletedFile: gcs.DiagramFile = { name: path, path: path, id: path };
-                if (storage.currentDiagramFile && path === storage.currentDiagramFile['name']) storage.currentDiagramFile = {name: null, path: null, id: null};
+                if (storage.currentDiagramFile && path === storage.currentDiagramFile['name']) storage.currentDiagramFile = { name: null, path: null, id: null };
                 storage.localStorage.removeItem(path); // remove file from local storage
                 resolve(deletedFile); // used if deleteDiagram was called without UI
 

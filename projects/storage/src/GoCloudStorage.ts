@@ -136,7 +136,7 @@ export class GoCloudStorage {
      * @param {string} iconsRelativeDirectory The directory path relative to the page in which this instance of GoCloudStorage exists, in which
      * the storage service brand icons can be found. The default value is "../goCloudStorageIcons/".
      */
-    constructor(managedDiagrams: go.Diagram|Array<go.Diagram>, defaultModel?: string, clientId?: string, iconsRelativeDirectory?: string) {
+    constructor(managedDiagrams: go.Diagram | Array<go.Diagram>, defaultModel?: string, clientId?: string, iconsRelativeDirectory?: string) {
         if (managedDiagrams instanceof go.Diagram) managedDiagrams = [managedDiagrams];
         this._managedDiagrams = managedDiagrams;
         this._currentDiagramFile = { name: null, id: null, path: null };
@@ -154,6 +154,12 @@ export class GoCloudStorage {
             this._defaultModel = null;
         }
 
+        // make sure iconsRelativeDirectory has a trailing '/'
+        const lastChar = this._iconsRelativeDirectory.charAt(this._iconsRelativeDirectory.length - 1);
+        if (lastChar !== '/') {
+            this._iconsRelativeDirectory += '/';
+        }
+
         const menu = document.createElement('div');
         menu.className = 'goCustomFilepicker';
         menu.style.visibility = 'hidden';
@@ -166,7 +172,7 @@ export class GoCloudStorage {
         // enable autosaving capability
         // tslint:disable-next-line:no-shadowed-variable
         function addAutoSave(d: go.Diagram) {
-            d.addModelChangedListener(function (e: go.ChangedEvent) {
+            d.addModelChangedListener(function(e: go.ChangedEvent) {
                 if (e.isTransactionFinished && storage.isAutoSaving && e.oldValue !== '') {
                     if (storage.currentDiagramFile.name) {
                         storage.save();
@@ -420,7 +426,7 @@ export class GoCloudStorage {
             if (storage.defaultModel) d.model = go.Model.fromJson(JSON.parse(storage.defaultModel));
             else d.model = new go.GraphLinksModel();
         }
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             // TODO -- offer the chance for user to save their current diagram
             if (saveBefore) {
                 storage.promptUserToSaveBeforeNew().then(function(resp) {
@@ -476,7 +482,7 @@ export class GoCloudStorage {
     }
 
     private promptUserToSaveBeforeNew() {
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             // Remove any prior window like this
             const d = document.getElementById('gcs-save-before-new');
             if (d) {
@@ -493,12 +499,12 @@ export class GoCloudStorage {
             const nb = document.createElement('button');
             nb.innerText = 'No';
 
-            yb.onclick = function () {
+            yb.onclick = function() {
                 document.body.removeChild(div);
                 resolve(true);
             };
 
-            nb.onclick = function () {
+            nb.onclick = function() {
                 document.body.removeChild(div);
                 resolve(false);
             };
@@ -537,7 +543,7 @@ export class GoCloudStorage {
             const diagram: go.Diagram = storage.managedDiagrams[i];
             const div: string = diagram.div.id;
             const _model: string = diagram.model.toJson();
-            item +=  '"' + div + '"' + ': ' + diagram.model.toJson();
+            item += '"' + div + '"' + ': ' + diagram.model.toJson();
             if (i + 1 !== storage.managedDiagrams.length) item += ',\n';
         }
 
