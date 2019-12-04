@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoJS and Angular -- Northwoods Software</title>
+  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <script src="goIntro.js"></script>
+</head>
+
+<body onload="goIntro()">
+  <div id="container" class="container-fluid">
+    <div id="content">
+
+      <h1>Using GoJS with Angular</h1>
+      <p class="box" style="background-color: lightgoldenrodyellow;">
+        Examples of most of the topics discussed on this page can be found in the <a href="#TODO" target="_blank">gojs-angular-basic(Needs
+          different name???)</a>
+        project,
+        which serves as a simple starter project.
+      </p>
+
+      <p>
+        If you are new to GoJS, it may be helpful to first visit the <a href="../learn/index.html" target="_blank">Getting
+          Started Tutorial</a>.
+      </p>
+
+      <p>
+        The easiest way to get a component set up for a GoJS Diagram is to use the <a href="#TODO" target="_blank">gojs-angular</a>
+        package,
+        which exports Angular Components for GoJS Diagrams, Palettes, and Overviews.
+        The <a href="#TODO" target="_blank">gojs-angular-basic(???)</a>
+        project demonstrates how to use these components.
+        More information about the package, including the various props it takes, can be found on the <a href="https://github.com/NorthwoodsSoftware/gojs-react"
+          target="_blank">Github</a> or
+        <a href="https://npmjs.com/gojs-react" target="_blank">NPM</a> pages. Our examples will be using a <a>GraphLinksModel</a>,
+        but any model can be used.
+      </p>
+
+      <h4>You can see a sample project using all GoJS / Angular Components <a href="#TODO">here</a>.</h4>
+
+
+      <h3>Installation</h3>
+      <p>
+        To use the published components, make sure you install GoJS and gojs-angular: <code>npm install gojs gojs-angular</code>.
+      </p>
+
+      <h3>About Component Styling</h3>
+      <p>
+        Whether you are using the published Diagram, Palette, or Overview Angular / GoJS Components, you will probably
+        want to style them.
+        First, you'll need to style a CSS class for the div of your GoJS Diagram / Palette / Overview such as:
+      </p>
+      <pre class="lang-css">
+/* app.component.css */
+.myDiagramDiv {
+  background: whitesmoke;
+  width: 800px;
+  height: 300px;
+  border: 1px solid black;
+}
+
+</pre>
+
+      <p> In order to style the GoJS Diagram / Palette / Overivew div, which will reside in the Angular / GoJS
+        Component(s) you are using, make sure you set <code>encapsulation: ViewEncapsulation.None</code> in the <code>@Component</code>
+        decorator
+        of the component holding your Angular / GoJS Component(s). Without this, your styling will not effect the
+        component divs.
+        Read more about Angular view encapsulation <a href="https://angular.io/api/core/ViewEncapsulation">here</a>.
+      </p>
+      <p>Your <code>@Component</code> decorator for the component holding the your GoJS / Angular Component(s) should
+        look something
+        like: </p>
+      <pre class="lang-ts">
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  encapsulation: ViewEncapsulation.None
+})
+</pre>
+
+      <h2>Using the Diagram Component</h2>
+      <p>
+        Diagram Component accepts several <code>@Input()</code> Angular properties, some of which
+        are
+        optional. They are:
+        <ul>
+          <li><code>initDiagram</code> - A function that must return a GoJS Diagram. You may define your Diagram's Node
+            and Link templates here.</li>
+          <li><code>divClassName</code> - A class name for the div your Diagram will reside in</li>
+          <li><code>model</code> - A valid GoJS Model for your Diagram. Whenever you change model data, be sure to use
+            Model methods, like <code>set</code> or <code>addNodeData</code> so the data in your application updates
+            along with the data in your Diagram </li>
+        </ul>
+      </p>
+      <p>When you're done defining these properties, they might look something like this: </p>
+      <pre class="lang-ts">
+public initDiagram(): go.Diagram {
+
+  const $ = go.GraphObject.make;
+  const dia = $(go.Diagram, { 'undoManager.isEnabled': true });
+
+  // define the Node template
+  dia.nodeTemplate =
+    $(go.Node, 'Auto',
+      {
+        toLinkable: true, fromLinkable: true
+      },
+      $(go.Shape, 'RoundedRectangle', { stroke: null },
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock, { margin: 8 },
+        new go.Binding('text', 'key'))
+    );
+
+  return dia;
+}
+
+public diagramModel: go.GraphLinksModel = new go.GraphLinksModel([
+  { key: 'Alpha', color: 'lightblue' },
+  { key: 'Beta', color: 'orange' },
+  { key: 'Gamma', color: 'lightgreen' },
+  { key: 'Delta', color: 'pink' }
+], [
+    { key: -1, from: 'Alpha', to: 'Beta' },
+    { key: -2, from: 'Alpha', to: 'Gamma' },
+    { key: -3, from: 'Beta', to: 'Beta' },
+    { key: -4, from: 'Gamma', to: 'Delta' },
+    { key: -5, from: 'Delta', to: 'Alpha' }
+  ]
+);
+public diagramDivClassName: string = 'myDiagramDiv';
+</pre>
+      <p>
+        Then, simply pass these properties to your Diagram Component in your template, like this:
+      </p>
+
+      <pre class="lang-html">
+&lt;gojs-diagram #myDiagram [initDiagram]='initDiagram' [model]='diagramModel' [divClassName]='divClassName'&gt;&lt;/gojs-diagram&gt;
+</pre>
+
+      <p>
+        And that's it! You will now have a GoJS Diagram working in your Angular application.
+      </p>
+
+      <h2>Using the Palette Component</h2>
+      The Palette Component accepts the following Angular <code>@Input()</code> properties.
+      <ul>
+        <li><code>initPalette</code> - A function that must return a GoJS Palette. You may define your Palette's Node
+          and Link templates here.</li>
+        <li><code>divClassName</code> - A class name for the div your Palette will reside in</li>
+        <li><code>model</code> - A valid GoJS Model for your Palette. Whenever you change model data, be sure to use
+          Model methods, like <code>set</code> or <code>addNodeData</code> so the data in your application updates
+          along with the data in your Palette </li>
+      </ul>
+      </ul>
+
+      <p>
+        Define these properties in your component that will hold that Palette Component, such as:
+      </p>
+
+      <pre class="lang-ts">
+public initPalette(): go.Palette {
+  const $ = go.GraphObject.make;
+  const palette = $(go.Palette);
+
+  // define the Node template
+  palette.nodeTemplate =
+    $(go.Node, 'Auto',
+      $(go.Shape, 'RoundedRectangle',
+        {
+          stroke: null
+        },
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock, { margin: 8 },
+        new go.Binding('text', 'key'))
+    );
+
+  palette.model = $(go.GraphLinksModel,
+    {
+      linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+    });
+
+  return palette;
+}
+public paletteModel: go.GraphLinksModel = new go.GraphLinksModel([
+  { key: 'Palette Node 1', color: 'firebrick' },
+  { key: 'Palette Node 2', color: 'blueviolet' }
+]);
+public paletteDivClassName = 'myPaletteDiv';
+      </pre>
+
+      <p>
+        Then pass these properties to your Palette Component in your template, like:
+      </p>
+
+      <pre class="lang-html">
+&lt;gojs-palette #myPalette [initPalette]='initPalette' [model]='model' [divClassName]='pDivClassName'&gt;&lt;/nggojs-palette&gt;</pre>
+
+      <p>
+        And that's it! You should now have a GoJS Palette Component working in your Angular application.
+      </p>
+
+      <h2>Using the Overview Component</h2>
+      <p>
+        The Overview Component accepts the following Angular <code>@Input()</code> properties.
+      </p>
+      <ul>
+        <li><code>initOverview</code> - A function that must return a GoJS Overview.</li>
+        <li><code>divClassName</code> - A class name for the div your Overview will reside in</li>
+        <li><code>observedDiagram</code> - The GoJS Diagram this Overview observes</li>
+      </ul>
+
+      <p>
+        Define these properties in the component that will hold your Overview Component, like:
+      </p>
+
+      <pre class="lang-ts">
+public oDivClassName = 'myOverviewDiv';
+public initOverview(): go.Overview {
+  const $ = go.GraphObject.make;
+  const overview = $(go.Overview);
+  return overview;
+}
+public oModelData = { prop: 'val' };
+public observedDiagram = null;
+      </pre>
+
+      <p>
+        Then pass these properties to your Overview Component in your template, like:
+      </p>
+
+      <pre class="lang-html">
+&lt;gojs-overview #myOverview [initOverview]='initOverview' [divClassName]='oDivClassName' [observedDiagram]='observedDiagram'&gt;&lt;/gojs-overview&gt;</pre>
+
+      <p>
+        But wait! <code>observedDiagram</code> is null, so the Overview will not be observing anything!
+        In order to assign your overview a Diagram to observe, you will have to reassign the <code>observedDiagram</code>
+        property after initialization. To do so,
+        simply reassign the bound <code>observedDiagram</code> property in your component holding your Overview
+        Component in the <code>ngAfterViewInit</code> lifecycle hook.
+      </p>
+      <p>
+        Note that in order to avoid a <code>ExpressionChangedAfterItHasBeenCheckedError</code>, you must inform Angular
+        to then detect changes.
+        This can be done with the <a href="https://angular.io/api/core/ChangeDetectorRef">ChangeDetectorRef</a>.detectChanges()
+        method. You can inject a ChangeDetectorRef instance
+        into your wrapper Component constructor, and use that after you alter <code>observedDiagram</code> to call
+        detectChanges(). Like so:
+      </p>
+
+      <pre class="lang-ts">
+constructor(private cdr: ChangeDetectorRef) { }
+
+public ngAfterViewInit() {
+  if (this.observedDiagram) return;
+  // in this snippet, this.myDiagramComponent is a reference to a GoJS/Angular Diagram Component
+  // that has a valid GoJS Diagram
+  this.observedDiagram = this.myDiagramComponent.diagram;
+
+  // IMPORTANT: without this, Angular will throw ExpressionChangedAfterItHasBeenCheckedError (dev mode only)
+  this.cdr.detectChanges();
+}
+      </pre>
+
+      <p>
+        Now, after initialization, your overview should display appropriately.
+      </p>
+
+    </div>
+  </div>
+</body>
+
+</html>

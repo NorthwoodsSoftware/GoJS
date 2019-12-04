@@ -8,7 +8,7 @@ module.exports = {
         "gcs": './src/goCloudStorageFiles', // go cloud storage bundle
     },
     target: 'web',
-    devtool: "source-map",
+    // devtool: "source-map",
     resolve: {
         extensions: [".tsx", ".js", ".ts"]
     },
