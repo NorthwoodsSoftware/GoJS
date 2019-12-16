@@ -50,6 +50,8 @@
 <h4>Rendering the component</h4>
 <p>
   Finally, add an initDiagram function and a model change handler function, and add the ReactDiagram component inside your render method.
+  Note that the UndoManager should always be enabled to allow for transactions to take place,
+  but the <a>UndoManager.maxHistoryLength</a> can be set to 0 to prevent undo and redo.
 </p>
 <pre class="lang-js">
   // App.js
@@ -70,7 +72,8 @@
     const diagram =
       $(go.Diagram,
         {
-          'undoManager.isEnabled': true,  // enable undo & redo
+          'undoManager.isEnabled': true,  // must be set to allow for model change listening
+          // 'undoManager.maxHistoryLength': 0,  // uncomment disable undo/redo functionality
           'clickCreatingTool.archetypeNodeData': { text: 'new node', color: 'lightblue' },
           model: $(go.GraphLinksModel,
             {
@@ -220,7 +223,8 @@
       const diagram =
         $(go.Diagram,
           {
-            'undoManager.isEnabled': true,  // enable undo & redo
+            'undoManager.isEnabled': true,  // must be set to allow for model change listening
+            // 'undoManager.maxHistoryLength': 0,  // uncomment disable undo/redo functionality
             'clickCreatingTool.archetypeNodeData': { text: 'new node', color: 'lightblue' },
             model: $(go.GraphLinksModel,
               {

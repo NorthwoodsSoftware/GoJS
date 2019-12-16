@@ -15,8 +15,8 @@
 
       <h1>Using GoJS with Angular</h1>
       <p class="box" style="background-color: lightgoldenrodyellow;">
-        Examples of most of the topics discussed on this page can be found in the <a href="#TODO" target="_blank">gojs-angular-basic(Needs
-          different name???)</a>
+        Examples of most of the topics discussed on this page can be found in the <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic"
+          target="_blank">gojs-angular-basic</a>
         project,
         which serves as a simple starter project.
       </p>
@@ -30,17 +30,14 @@
         The easiest way to get a component set up for a GoJS Diagram is to use the <a href="#TODO" target="_blank">gojs-angular</a>
         package,
         which exports Angular Components for GoJS Diagrams, Palettes, and Overviews.
-        The <a href="#TODO" target="_blank">gojs-angular-basic(???)</a>
-        project demonstrates how to use these components.
-        More information about the package, including the various props it takes, can be found on the <a href="https://github.com/NorthwoodsSoftware/gojs-react"
-          target="_blank">Github</a> or
-        <a href="https://npmjs.com/gojs-react" target="_blank">NPM</a> pages. Our examples will be using a <a>GraphLinksModel</a>,
+        More information about the package, including the various props it takes, can be found on the
+        <a href="https://npmjs.com/gojs-react" target="_blank">NPM</a> page. Our examples will be using a <a>GraphLinksModel</a>,
         but any model can be used.
       </p>
 
-      <h4>You can see a sample project using all GoJS / Angular Components <a href="#TODO">here</a>.</h4>
+      <h4>You can see a sample project using all GoJS / Angular Components <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">here</a>.</h4>
 
-
+      <h2>General Information</h2>
       <h3>Installation</h3>
       <p>
         To use the published components, make sure you install GoJS and gojs-angular: <code>npm install gojs gojs-angular</code>.
@@ -60,10 +57,9 @@
   height: 300px;
   border: 1px solid black;
 }
-
 </pre>
 
-      <p> In order to style the GoJS Diagram / Palette / Overivew div, which will reside in the Angular / GoJS
+      <p> To style the GoJS Diagram / Palette / Overivew div, which will reside in the Angular / GoJS
         Component(s) you are using, make sure you set <code>encapsulation: ViewEncapsulation.None</code> in the <code>@Component</code>
         decorator
         of the component holding your Angular / GoJS Component(s). Without this, your styling will not effect the
@@ -82,26 +78,76 @@
 })
 </pre>
 
+      <h3>The DataSyncService</h3>
+
+      <p>
+        The <code>gojs-angular</code> package comes with an Angular <a href="https://angular.io/tutorial/toh-pt4">service</a>
+        called DataSyncService (demonstrated later), which is used to
+        easily merge changes (a <a href="https://gojs.net/latest/api/symbols/IncrementalData.html">go.IncrementalData</a>
+        instance). </p>
+
+      <p>This service has three static functions: </p>
+      <ul>
+        <li><code>syncNodeData(changes, array)</code> - Merges any node data changes in a go.IncrementalData object
+          with a given array of node data, then returns the new array</li>
+        <li><code>syncLinkData(changes, array)</code> - Merges any link data changes in a go.IncrementalData object
+          with a given array of link data, then returns the new array. <strong>Note</strong>: Ensure you set the <a
+            href="https://gojs.net/latest/api/symbols/GraphLinksModel.html#linkKeyProperty">linkKeyProperty</a>
+          if you are using GraphLinksModel, so data merging is possible.</li>
+        <li><code>syncModelData(changes, object)</code> - Merges any modelData changes in a go.IncrementalData object
+          with a given modelData object, then returns the new object</li>
+      </ul>
+
+      <p>These functions should allow you to keep your data synced up as needed, without needing to right lots of
+        code.</p>
+
+      <h3>Listening for Model Changes</h3>
+      <p>
+        It is common practice to want to listen for when data changes in a Diagram or Palette, then do something with
+        those changes on an application-level (such as data syncing). That's why, for both the DiagramComponent and
+        PaletteComponent, there is a <code>modelChange</code> @Input property function (more info below).
+      </p>
+      <p>
+        Note that the UndoManager should always be enabled to allow for transactions to take place, but the
+        UndoManager.maxHistoryLength can be set to 0 to prevent undo and redo.
+      </p>
+
+      <br>
       <h2>Using the Diagram Component</h2>
       <p>
         Diagram Component accepts several <code>@Input()</code> Angular properties, some of which
         are
         optional. They are:
         <ul>
-          <li><code>initDiagram</code> - A function that must return a GoJS Diagram. You may define your Diagram's Node
+          <li><code>initDiagram</code> - A function that must return a GoJS Diagram. You may define your Diagram's
+            Node
             and Link templates here.</li>
-          <li><code>divClassName</code> - A class name for the div your Diagram will reside in</li>
-          <li><code>model</code> - A valid GoJS Model for your Diagram. Whenever you change model data, be sure to use
-            Model methods, like <code>set</code> or <code>addNodeData</code> so the data in your application updates
-            along with the data in your Diagram </li>
+          <li><code>divClassName</code> - A class name for your Diagram div</li>
+          <li><code>nodeDataArray</code> - An array containing data objects for your nodes </li>
+          <li><code>linkDataArray</code> - An array containing data objects for your links </li>
+          <li><code>modelData</code> - A data object,
+            containing your diagram's <a href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
+          <li><code>modelChange</code> - A function, which accepts a <a href="">go.IncrementalData</a> object.
+            This function will fire when your Diagram's model changes, allowing you to decide what to do with those
+            changes. A common practice is to sync your app-level data to reflect the changes in the diagram model,
+            which
+            is made simple using the DataSyncService <code>gojs-angular</code> ships with. </li>
         </ul>
       </p>
-      <p>When you're done defining these properties, they might look something like this: </p>
+      <p>For example, these properties may look something like this: </p>
       <pre class="lang-ts">
 public initDiagram(): go.Diagram {
 
   const $ = go.GraphObject.make;
-  const dia = $(go.Diagram, { 'undoManager.isEnabled': true });
+  const dia = $(go.Diagram, {
+    'undoManager.isEnabled': true, // must be set to allow for model change listening
+    // 'undoManager.maxHistoryLength': 0,  // uncomment disable undo/redo functionality
+    model: $(go.GraphLinksModel,
+      {
+        linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+      }
+    )
+  });
 
   // define the Node template
   dia.nodeTemplate =
@@ -119,42 +165,66 @@ public initDiagram(): go.Diagram {
   return dia;
 }
 
-public diagramModel: go.GraphLinksModel = new go.GraphLinksModel([
+public diagramNodeData: Array<go.ObjectData> = [
   { key: 'Alpha', color: 'lightblue' },
   { key: 'Beta', color: 'orange' },
   { key: 'Gamma', color: 'lightgreen' },
   { key: 'Delta', color: 'pink' }
-], [
-    { key: -1, from: 'Alpha', to: 'Beta' },
-    { key: -2, from: 'Alpha', to: 'Gamma' },
-    { key: -3, from: 'Beta', to: 'Beta' },
-    { key: -4, from: 'Gamma', to: 'Delta' },
-    { key: -5, from: 'Delta', to: 'Alpha' }
-  ]
-);
+];
+public diagramLinkData: Array<go.ObjectData> = [
+  { key: -1, from: 'Alpha', to: 'Beta' },
+  { key: -2, from: 'Alpha', to: 'Gamma' },
+  { key: -3, from: 'Beta', to: 'Beta' },
+  { key: -4, from: 'Gamma', to: 'Delta' },
+  { key: -5, from: 'Delta', to: 'Alpha' }
+];
 public diagramDivClassName: string = 'myDiagramDiv';
+public diagramModelData = { prop: 'value' };
+
+// When the diagram model changes, update app data to reflect those changes
+public diagramModelChange = function(changes: go.IncrementalData) {
+  this.diagramNodeData = DataSyncService.syncNodeData(changes, this.diagramNodeData);
+  this.diagramLinkData = DataSyncService.syncLinkData(changes, this.diagramLinkData);
+  this.diagramModelData = DataSyncService.syncModelData(changes, this.diagramModelData);
+};
 </pre>
+
       <p>
-        Then, simply pass these properties to your Diagram Component in your template, like this:
+        Once you've defined your <code>@Input</code> properties for your DiagramComponent, pass these properties
+        to your DiagramComponent in your template, like so:
       </p>
 
       <pre class="lang-html">
-&lt;gojs-diagram #myDiagram [initDiagram]='initDiagram' [model]='diagramModel' [divClassName]='divClassName'&gt;&lt;/gojs-diagram&gt;
+&lt;gojs-diagram
+  [initDiagram]='initDiagram'
+  [nodeDataArray]='diagramNodeData'
+  [linkDataArray]='diagramLinkData'
+  [modelData]='diagramModelData'
+  (modelChange)='diagramModelChange($event)'
+  [divClassName]='diagramDivClassName'&gt;
+&lt;/gojs-diagram&gt;
 </pre>
 
       <p>
-        And that's it! You will now have a GoJS Diagram working in your Angular application.
+        You will now have a GoJS Diagram working in your Angular application.
       </p>
 
+      <br>
       <h2>Using the Palette Component</h2>
       The Palette Component accepts the following Angular <code>@Input()</code> properties.
       <ul>
         <li><code>initPalette</code> - A function that must return a GoJS Palette. You may define your Palette's Node
           and Link templates here.</li>
-        <li><code>divClassName</code> - A class name for the div your Palette will reside in</li>
-        <li><code>model</code> - A valid GoJS Model for your Palette. Whenever you change model data, be sure to use
-          Model methods, like <code>set</code> or <code>addNodeData</code> so the data in your application updates
-          along with the data in your Palette </li>
+        <li><code>divClassName</code> - A class name for the div your Palette div</li>
+        <li><code>nodeDataArray</code> - An array containing data objects for your nodes </li>
+        <li><code>linkDataArray</code> - An array containing data objects for your links </li>
+        <li><code>modelData</code> - A data object,
+          containing your palette's <a href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
+        <li><code>modelChange</code> - A function, which accepts a <a href="">go.IncrementalData</a> object.
+          This function will fire when your Palette's model changes, allowing you to decide what to do with those
+          changes. A common practice is to sync your app-level data to reflect the changes in the palette model,
+          which
+          is made simple using the DataSyncService <code>gojs-angular</code> ships with. </li>
       </ul>
       </ul>
 
@@ -187,11 +257,20 @@ public initPalette(): go.Palette {
 
   return palette;
 }
-public paletteModel: go.GraphLinksModel = new go.GraphLinksModel([
-  { key: 'Palette Node 1', color: 'firebrick' },
-  { key: 'Palette Node 2', color: 'blueviolet' }
-]);
+public paletteNodeData: Array<go.ObjectData> = [
+  { key: 'PaletteNode1', color: 'firebrick' },
+  { key: 'PaletteNode2', color: 'blueviolet' }
+];
+public paletteLinkData: Array<go.ObjectData> = [
+  { from: 'PaletteNode1', to: 'PaletteNode2' }
+];
+public paletteModelData = { prop: 'val' };
 public paletteDivClassName = 'myPaletteDiv';
+public paletteModelChange = function(changes: go.IncrementalData) {
+  this.paletteNodeData = DataSyncService.syncNodeData(changes, this.paletteNodeData);
+  this.paletteLinkData = DataSyncService.syncLinkData(changes, this.paletteLinkData);
+  this.paletteModelData = DataSyncService.syncModelData(changes, this.paletteModelData);
+};
       </pre>
 
       <p>
@@ -199,19 +278,27 @@ public paletteDivClassName = 'myPaletteDiv';
       </p>
 
       <pre class="lang-html">
-&lt;gojs-palette #myPalette [initPalette]='initPalette' [model]='model' [divClassName]='pDivClassName'&gt;&lt;/nggojs-palette&gt;</pre>
+&lt;gojs-palette
+  [initPalette]='initPalette'
+  [nodeDataArray]='paletteNodeData'
+  [linkDataArray]='paletteLinkData'
+  [modelData]='paletteModelData'
+  (modelChange)='paletteModelChange($event)'
+  [divClassName]='paletteDivClassName'&gt;
+&lt;/gojs-palette&gt;</pre>
 
       <p>
-        And that's it! You should now have a GoJS Palette Component working in your Angular application.
+        You should now have a GoJS Palette Component working in your Angular application.
       </p>
 
+      <br>
       <h2>Using the Overview Component</h2>
       <p>
         The Overview Component accepts the following Angular <code>@Input()</code> properties.
       </p>
       <ul>
         <li><code>initOverview</code> - A function that must return a GoJS Overview.</li>
-        <li><code>divClassName</code> - A class name for the div your Overview will reside in</li>
+        <li><code>divClassName</code> - A class name for your Overview div</li>
         <li><code>observedDiagram</code> - The GoJS Diagram this Overview observes</li>
       </ul>
 
@@ -226,26 +313,29 @@ public initOverview(): go.Overview {
   const overview = $(go.Overview);
   return overview;
 }
-public oModelData = { prop: 'val' };
-public observedDiagram = null;
-      </pre>
+public observedDiagram = null;</pre>
 
       <p>
         Then pass these properties to your Overview Component in your template, like:
       </p>
 
       <pre class="lang-html">
-&lt;gojs-overview #myOverview [initOverview]='initOverview' [divClassName]='oDivClassName' [observedDiagram]='observedDiagram'&gt;&lt;/gojs-overview&gt;</pre>
+&lt;gojs-overview
+  [initOverview]='initOverview'
+  [divClassName]='oDivClassName'
+  [observedDiagram]='observedDiagram'&gt;
+&lt;/gojs-overview&gt;</pre>
 
       <p>
-        But wait! <code>observedDiagram</code> is null, so the Overview will not be observing anything!
-        In order to assign your overview a Diagram to observe, you will have to reassign the <code>observedDiagram</code>
+        But, we're not done yet. <code>observedDiagram</code> is null, so the Overview will observe anything.
+        To assign your Overview a Diagram to observe, you will have to reassign the <code>observedDiagram</code>
         property after initialization. To do so,
-        simply reassign the bound <code>observedDiagram</code> property in your component holding your Overview
+        reassign the bound <code>observedDiagram</code> property in your component holding your Overview
         Component in the <code>ngAfterViewInit</code> lifecycle hook.
       </p>
       <p>
-        Note that in order to avoid a <code>ExpressionChangedAfterItHasBeenCheckedError</code>, you must inform Angular
+        <strong>Note</strong>: To avoid a <code>ExpressionChangedAfterItHasBeenCheckedError</code>, you must inform
+        Angular
         to then detect changes.
         This can be done with the <a href="https://angular.io/api/core/ChangeDetectorRef">ChangeDetectorRef</a>.detectChanges()
         method. You can inject a ChangeDetectorRef instance
@@ -268,7 +358,7 @@ public ngAfterViewInit() {
       </pre>
 
       <p>
-        Now, after initialization, your overview should display appropriately.
+        Now, after initialization, your Overview should display appropriately.
       </p>
 
     </div>

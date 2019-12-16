@@ -58,12 +58,12 @@
           $(go.Shape),
           $(go.Shape, { toArrow: "OpenTriangle" }),
           $(go.Panel, "Auto",
-            { _isLinkLabel: true },  // marks this Panel as being a draggable label
+            // mark this Panel as being a draggable label, and set default segment props
+            { _isLinkLabel: true, segmentIndex: NaN, segmentFraction: .5 },
             $(go.Shape, { fill: "white" }),
             $(go.TextBlock, "?", { margin: 3 },
               new go.Binding("text", "color")),
             // remember any modified segment properties in the link data object
-            new go.Binding("segmentIndex").makeTwoWay(),
             new go.Binding("segmentFraction").makeTwoWay()
           )
         );
@@ -99,9 +99,10 @@
     The tool is defined at <a href="LinkLabelOnPathDraggingTool.js">LinkLabelOnPathDraggingTool.js</a>.
   </p>
   <p>
-    The label on the link can be any arbitrarily complex object.  It is positioned by the <a>GraphObject.segmentIndex</a>
-    and <a>GraphObject.segmentFraction</a> properties, which are set by the LinkLabelOnPathDraggingTool.
-    TwoWay Bindings on those two properties automatically remember any modified values on the link data object in the model.
+    The label on the link can be any arbitrarily complex object.
+    It is positioned by the <a>GraphObject.segmentIndex</a> and <a>GraphObject.segmentFraction</a> properties.
+    The segmentIndex is set to NaN such that the whole link path acts as the segment, and the segmentFraction is set by the LinkLabelOnPathDraggingTool.
+    A two-way data binding on segmentFraction automatically remembers any modified value on the link data object in the model.
   </p>
   <p>
     The tool is derived from a similar tool, <a href="LinkLabelDraggingTool.js">LinkLabelDraggingTool.js</a>,

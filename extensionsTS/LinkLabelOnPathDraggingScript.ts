@@ -61,7 +61,8 @@ export function init() {
       $(go.Shape),
       $(go.Shape, { toArrow: 'OpenTriangle' }),
       $(go.Panel, 'Auto',
-        { _isLinkLabel: true },  // marks this Panel as being a draggable label
+        // mark this Panel as being a draggable label, and set default segment props
+        { _isLinkLabel: true, segmentIndex: NaN, segmentFraction: .5 },
         $(go.Shape, { fill: 'white' }),
         $(go.TextBlock, '?', { margin: 3 },
           new go.Binding('text', 'color')),

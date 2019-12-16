@@ -51,7 +51,6 @@ var __extends = (this && this.__extends) || (function () {
              * The label being dragged.
              */
             _this.label = null;
-            _this._originalIndex = 0;
             _this._originalFraction = 0.0;
             _this.name = 'LinkLabelOnPathDragging';
             return _this;
@@ -100,7 +99,6 @@ var __extends = (this && this.__extends) || (function () {
             this.startTransaction('Shifted Label');
             this.label = this.findLabel();
             if (this.label !== null) {
-                this._originalIndex = this.label.segmentIndex;
                 this._originalFraction = this.label.segmentFraction;
             }
             _super.prototype.doActivate.call(this);
@@ -124,7 +122,6 @@ var __extends = (this && this.__extends) || (function () {
          */
         LinkLabelOnPathDraggingTool.prototype.doCancel = function () {
             if (this.label !== null) {
-                this.label.segmentIndex = this._originalIndex;
                 this.label.segmentFraction = this._originalFraction;
             }
             _super.prototype.doCancel.call(this);
@@ -149,7 +146,7 @@ var __extends = (this && this.__extends) || (function () {
             this.stopTool();
         };
         /**
-         * Save the label's {@link GraphObject#segmentIndex} and {@link GraphObject#segmentFraction}
+         * Save the label's {@link GraphObject#segmentFraction}
          * at the closest point to the mouse.
          */
         LinkLabelOnPathDraggingTool.prototype.updateSegmentOffset = function () {
@@ -157,18 +154,15 @@ var __extends = (this && this.__extends) || (function () {
             if (lab === null)
                 return;
             var link = lab.part;
-            if (!(link instanceof go.Link))
+            if (!(link instanceof go.Link) || link.path === null)
                 return;
             var last = this.diagram.lastInput.documentPoint;
-            var idx = link.findClosestSegment(last);
-            idx = Math.min(Math.max(link.firstPickIndex, idx), link.lastPickIndex - 1);
-            var p1 = link.getPoint(idx);
-            var p2 = link.getPoint(idx + 1);
-            var total = Math.sqrt(p1.distanceSquaredPoint(p2));
-            var p = last.copy().projectOntoLineSegmentPoint(p1, p2);
-            var frac = Math.sqrt(p1.distanceSquaredPoint(p)) / total;
-            lab.segmentIndex = idx;
-            lab.segmentFraction = frac;
+            // find the fractional distance along the link path closest to this point
+            var path = link.path;
+            if (path.geometry === null)
+                return;
+            var localpt = path.getLocalPoint(last);
+            lab.segmentFraction = path.geometry.getFractionForPoint(localpt);
         };
         return LinkLabelOnPathDraggingTool;
     }(go.Tool));

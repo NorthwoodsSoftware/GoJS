@@ -50,8 +50,9 @@
                 relinkableTo: true,
                 reshapable: true,
                 resegmentable: true
-            }, $(go.Shape), $(go.Shape, { toArrow: 'OpenTriangle' }), $(go.Panel, 'Auto', { _isLinkLabel: true }, // marks this Panel as being a draggable label
-            $(go.Shape, { fill: 'white' }), $(go.TextBlock, '?', { margin: 3 }, new go.Binding('text', 'color')), 
+            }, $(go.Shape), $(go.Shape, { toArrow: 'OpenTriangle' }), $(go.Panel, 'Auto', 
+            // mark this Panel as being a draggable label, and set default segment props
+            { _isLinkLabel: true, segmentIndex: NaN, segmentFraction: .5 }, $(go.Shape, { fill: 'white' }), $(go.TextBlock, '?', { margin: 3 }, new go.Binding('text', 'color')), 
             // remember any modified segment properties in the link data object
             new go.Binding('segmentIndex').makeTwoWay(), new go.Binding('segmentFraction').makeTwoWay()));
         // create a few nodes and links

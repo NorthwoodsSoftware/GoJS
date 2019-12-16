@@ -7,12 +7,13 @@ if (window.require) {
     paths: {
       "highlight": "../assets/js/highlight",
       "jquery": "../assets/js/jquery.min", // 1.11.3
-      "bootstrap": "../assets/js/bootstrap.min" },
+      "bootstrap": "../assets/js/bootstrap.min"
+    },
     shim: {
       "bootstrap": ["jquery"]
     }
   });
-  require(["highlight", "jquery", "bootstrap"], function() {});
+  require(["highlight", "jquery", "bootstrap"], function () { });
 } else {
   function goLoadSrc(filenames) {
     var scripts = document.getElementsByTagName("script");
@@ -106,7 +107,7 @@ function goIntro() {
   // When the page loads, change the class of li's to highlight the current page
   var url = window.location.href;
   var lindex = url.lastIndexOf('/');
-  url = url.slice(lindex+1).toLowerCase();
+  url = url.slice(lindex + 1).toLowerCase();
   var lis = document.getElementById("sections").getElementsByTagName("li");
   var l = lis.length;
 
@@ -174,7 +175,7 @@ function _traverseDOM(node) {
   if (node.nodeType === 1 &&
     (node.nodeName === "H2" || node.nodeName === "H3" || node.nodeName === "H4") &&
     node.id) {
-    node.addEventListener("click", function(e) {
+    node.addEventListener("click", function (e) {
       window.location.hash = "#" + node.id;
     });
   }
@@ -184,10 +185,12 @@ function _traverseDOM(node) {
 }
 
 
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+(function (i, s, o, g, r, a, m) {
+  i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+    (i[r].q = i[r].q || []).push(arguments)
+  }, i[r].l = 1 * new Date(); a = s.createElement(o),
+    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
 ga('create', 'UA-1506307-5', 'auto');
 ga('send', 'pageview');
@@ -218,6 +221,7 @@ var myMenu = '\
       <li><a href="usingModels.html">Using Models</a></li>\
       <li><a href="dataBinding.html">Data Binding</a></li>\
       <li><a href="react.html">GoJS with React</a></li>\
+      <li><a href="angular.html">GoJS with Angular</a></li>\
       <li><a href="textBlocks.html">TextBlocks</a></li>\
       <li><a href="shapes.html">Shapes</a></li>\
       <li><a href="pictures.html">Pictures</a></li>\

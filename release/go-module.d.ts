@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.3
+ * Type definitions for GoJS v2.1.4
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -2677,16 +2677,22 @@ export class Geometry {
      */
     rotate(angle: number, x?: number, y?: number): Geometry;
     /**
-     * Undocumented
+     * Returns the point at the fractional distance (0-1) along this Geometry's path.
      * @param {number} fraction A fractional amount between 0 and 1, inclusive.
-     * @param {Point=} result an optional Point that is modified and returned.
-     * @return {Point}
+     * @param {Point=} result an optional Point that is modified and returned; otherwise it allocates and returns a new Point.
+     * @return {Point} the Point, in local coordinates, of the fractional distance along the path.
      */
     getPointAlongPath(fraction: number, result?: Point): Point;
     /**
-     * Undocumented
-     * @param {Point} pt A Point near the this Geometry.
+     * Returns the slope expressed as an angle at the fractional distance (0-1) along this Geometry's path, in local coordinates.
+     * @param {number} fraction A fractional amount between 0 and 1, inclusive.
      * @return {number}
+     */
+    getAngleAlongPath(fraction: number): number;
+    /**
+     * Returns the fractional distance (0-1) along this Geometry's path for a nearby point.
+     * @param {Point} pt A Point, in local coordinates, near this Geometry.
+     * @return {number} A fractional amount between 0 and 1, inclusive.
      */
     getFractionForPoint(pt: Point): number;
     /**
@@ -13581,7 +13587,10 @@ export abstract class GraphObject {
      * Non-negative numbers count up from zero, which is the first segment, at the "from" end of the Link.
      * Negative numbers count segments from the "to" end of the Link, where -1 means the last segment
      * and -2 means the next-to-last segment.
-     * The value should be an integer.
+     * The default value is -Infinity. The value should be an integer or NaN.
+     *
+     * Setting this value to NaN means #segmentFraction's fractional distance will be calculated along the entire link route.
+     * A NaN value also means the Link#midPoint and Link#midAngle will not be used when determining label positions.
      *
      * If you do not set this property, the Link will choose a place that is approximately at the
      * mid-point of the link's route.
@@ -13597,6 +13606,8 @@ export abstract class GraphObject {
      * The value should be between zero and one, where zero is at the point at the start of the segment,
      * and where one is at the point at the end of the segment.
      * The default value is zero.
+     *
+     * If #segmentIndex is set to NaN, the fractional distance will be calculated along the entire link route.
      *
      * For examples of how to use this property, see <a href="../../intro/linkLabels.html">Link Labels</a>.
      * @see #segmentIndex
@@ -21086,8 +21097,21 @@ export class Link extends Part {
      * The value must be one of Link.None|None, Link.End|End, Link.Scale|Scale, or Link.Stretch|Stretch.
      *
      * The default value is Link.None|None -- the route is completely recalculated each time.
+     * @see #computeAdjusting
      */
     adjusting: EnumValue;
+    /**
+     * Returns the #adjusting value, unless this Link's Diagram is animating, then it will return Link.End|End
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     *
+     * @expose
+     * @return {EnumValue}
+     * @since 2.1
+     * @see #adjusting
+     */
+    computeAdjusting(): EnumValue;
     /**
      * Gets or sets how rounded the corners are for adjacent line segments when the #curve
      * is Link.None|None, Link.JumpGap|JumpGap, or Link.JumpOver|JumpOver and

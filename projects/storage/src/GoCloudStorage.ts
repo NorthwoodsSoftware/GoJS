@@ -152,6 +152,7 @@ export class GoCloudStorage {
             else this._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : '../goCloudStorageIcons/';
         } else {
             this._defaultModel = null;
+            this._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : '../goCloudStorageIcons/';
         }
 
         // make sure iconsRelativeDirectory has a trailing '/'
