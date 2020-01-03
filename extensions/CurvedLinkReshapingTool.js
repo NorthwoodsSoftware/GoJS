@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom LinkReshapingTool that shows only a single reshape handle on a Bezier curved Link.

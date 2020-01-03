@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS and Angular -- Northwoods Software</title>
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
   <script src="goIntro.js"></script>
 </head>
 
@@ -98,7 +98,7 @@
           with a given modelData object, then returns the new object</li>
       </ul>
 
-      <p>These functions should allow you to keep your data synced up as needed, without needing to right lots of
+      <p>These functions should allow you to keep your data synced up as needed, without needing to write lots of
         code.</p>
 
       <h3>Listening for Model Changes</h3>
@@ -360,6 +360,30 @@ public ngAfterViewInit() {
       <p>
         Now, after initialization, your Overview should display appropriately.
       </p>
+
+      <br>
+      <h2>Updating Properties Based on App State</h2>
+      <p>You may have some app-level properties you want to effect the behavior / appearance of your Diagram, Palette,
+        or Overview. You could subclass their respective components and add <code>@Input</code> bindings with specific
+        setter methods, or, more simply, you can have an <code>ngOnChanges</code> function in your app-level component
+        that updates various Diagram / Palette / Component properties based on your app state.</p>
+
+      <p>For example, say you have an app-level property called <code>showGrid</code>. When <code>showGrid</code> is
+        true, your Diagram's grid should be visible -- when false, it should be invisible. In your AppComponent, you
+        could do something like: </p>
+
+      <pre class="lang-ts">
+
+// myDiagramComponent is a reference to your DiagramComponent
+@ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
+
+public ngDoCheck() {
+  // whenever showGrid changes, update the diagram.grid.visible in the child DiagramComponent
+  if (this.myDiagramComponent && this.myDiagramComponent.diagram instanceof go.Diagram) {
+    this.myDiagramComponent.diagram.grid.visible = this.showGrid;
+  }
+}
+      </pre>
 
     </div>
   </div>

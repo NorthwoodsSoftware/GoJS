@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved. */
 var hash = null;
 function changeHash() {
   if (hash !== null) $("[name='" + hash + "']").parent().css('background', '');

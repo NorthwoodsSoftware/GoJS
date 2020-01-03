@@ -1,17 +1,19 @@
-'use strict';
 /*
-*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 import { Map, Point, Rect, Size } from '../release/go';
 
+/**
+ * @hidden
+ */
 class QuadNode<T> {
   public bounds: Rect;
+  public parent: QuadNode<T> | null;
+  public level: number;
   public objects: Array<T> = [];
   public treeObjects: Array<TreeObject<T>> = [];
   public totalObjects = 0; // total in this node + in all children (recursively)
   public nodes: Array<QuadNode<T> | null> = [null, null, null, null];
-  public parent: QuadNode<T> | null;
-  public level: number;
 
   constructor(bounds: Rect, parent: QuadNode<T> | null, level: number) {
     this.bounds = bounds;
@@ -20,15 +22,15 @@ class QuadNode<T> {
   }
 
   public split(): void {
-    const subWidth = this.bounds.width / 2;
-    const subHeight = this.bounds.height / 2;
+    const w2 = this.bounds.width / 2;
+    const h2 = this.bounds.height / 2;
     const x = this.bounds.x;
     const y = this.bounds.y;
 
-    this.nodes[0] = new QuadNode<T>(new Rect(x + subWidth, y, subWidth, subHeight), this, this.level + 1);
-    this.nodes[1] = new QuadNode<T>(new Rect(x, y, subWidth, subHeight), this, this.level + 1);
-    this.nodes[2] = new QuadNode<T>(new Rect(x, y + subHeight, subWidth, subHeight), this, this.level + 1);
-    this.nodes[3] = new QuadNode<T>(new Rect(x + subWidth, y + subHeight, subWidth, subHeight), this, this.level + 1);
+    this.nodes[0] = new QuadNode<T>(new Rect(x + w2, y, w2, h2), this, this.level + 1);
+    this.nodes[1] = new QuadNode<T>(new Rect(x, y, w2, h2), this, this.level + 1);
+    this.nodes[2] = new QuadNode<T>(new Rect(x, y + h2, w2, h2), this, this.level + 1);
+    this.nodes[3] = new QuadNode<T>(new Rect(x + w2, y + h2, w2, h2), this, this.level + 1);
   }
 
   public clear(): void {
@@ -82,9 +84,7 @@ class TreeObject<T> {
  * @category Layout Extension
  */
 export class Quadtree<T> {
-
-
-  private _root: QuadNode<T>;
+  /** @hidden @internal */ private _root: QuadNode<T>;
 
   /** @hidden @internal */ private readonly _nodeCapacity: number = 1;
   /** @hidden @internal */ private readonly _maxLevels: number = Infinity;
@@ -142,6 +142,7 @@ export class Quadtree<T> {
    */
   public clear(): void {
     this._root.clear();
+    this._treeObjectMap.clear();
   }
 
   /**
@@ -286,7 +287,7 @@ export class Quadtree<T> {
     // grow as many times as necessary to fit the new object
     while (!this._root.bounds.containsRect(bounds)) {
       const old = this._root;
-      this.walk(this._increaseLevel, old);
+      this.walk(n => n.level++, old);
 
       const intersectsTopBound = bounds.y < this._root.bounds.y;
       const intersectsBottomBound = bounds.y + bounds.height > this._root.bounds.y + this._root.bounds.height;
@@ -428,20 +429,6 @@ export class Quadtree<T> {
         }
       }
     }
-  }
-
-  /**
-   * @hidden @internal
-   * Increases the level of the given {@link Quadtree}. Given as an argument
-   * to {@link #walk} in {@link #add} and defined here to
-   * avoid creation of a new function every time {@link #add} is
-   * called.
-   * @this {Quadtree}
-   * @param {QuadNode<T>} n the node to increase the level of
-   * @return {void}
-   */
-  private _increaseLevel(n: QuadNode<T>): void {
-    n.level += 1;
   }
 
   /**
@@ -877,44 +864,6 @@ export class Quadtree<T> {
 
   /**
    * @hidden @internal
-   * Return all TreeObjects that intersect (wholly or partially)
-   * with the given {@link Rect} or {@link Point}. Touching edges
-   * are not considered intersections.
-   * @this {Quadtree}
-   * @param {Rect|Point} rect the Rect or Point to check intersections for. If a point is given, a Rect with size (0, 0) is created for intersection calculations.
-   * @return {Array<TreeObject>} array containing all intersecting TreeObjects
-   */
-  private _intersectingTreeObjs(rect: Rect | Point): Array<TreeObject<T>> {
-    if (rect instanceof Point) {
-      rect = new Rect(rect.x, rect.y, 0, 0);
-    }
-    const returnObjects: Array<TreeObject<T>> = [];
-    this._intersectingTreeObjsHelper(rect, this._root, returnObjects);
-    return returnObjects;
-  }
-
-  private _intersectingTreeObjsHelper(rect: Rect, root: QuadNode<T>, returnObjects: Array<TreeObject<T>>) {
-    const index = this._getIndex(rect, root);
-    const selected = index === -1 ? null : root.nodes[index];
-    if (selected !== null) {
-      this._intersectingTreeObjsHelper(rect, selected, returnObjects);
-    } else if (root.nodes[0]) {
-      const quadrants = this._getQuadrants(rect, root);
-      for (const quadrant of quadrants) {
-        const node = root.nodes[quadrant];
-        this._intersectingTreeObjsHelper(rect, root, returnObjects);
-      }
-    }
-
-    for (const obj of root.treeObjects) {
-      if (Quadtree._rectsIntersect(obj.bounds, rect)) {
-        returnObjects.push(obj);
-      }
-    }
-  }
-
-  /**
-   * @hidden @internal
    * Similar as {@link Rect.intersectsRect}, but doesn't count edges as intersections.
    * Also accounts for floating error (by returning false more often) up to an error of 1e-7.
    * Used by {@link #intersecting}.
@@ -962,17 +911,6 @@ export class Quadtree<T> {
         returnObjects.push(obj.obj);
       }
     }
-  }
-
-  /**
-   * A slightly briefer and more semantic sounding way to call {@link #intersecting}. See
-   * {@link #intersecting} for details.
-   * @this {Quadtree}
-   * @param {Point} point the point to check intersections for
-   * @return {Array<T>} array containing all intersecting objects
-   */
-  public at(point: Point): Array<T> {
-    return this.intersecting(point);
   }
 
   /**

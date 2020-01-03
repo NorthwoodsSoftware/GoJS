@@ -1,9 +1,9 @@
 /*
- * Type definitions for GoJS v2.1.4
+ * Type definitions for GoJS v2.1.5
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
- * Copyright (C) 1998-2019 by Northwoods Software Corporation.
+ * Copyright (C) 1998-2020 by Northwoods Software Corporation.
  * This requires TypeScript v2.8 or later.
  */
 
@@ -15490,7 +15490,7 @@ export abstract class PanelLayout {
      * @expose
      * @param {Panel} panel Panel which called this layout
      * @param {number} width expected width of the panel
-     * @param {number} height expected width of the panel
+     * @param {number} height expected height of the panel
      * @param {Array.<GraphObject>} elements Array of Panel elements
      * @param {Rect} union rectangle to contain the expected union bounds of every element in the Panel. Useful for arrange.
      * @param {number} minw minimum width of the panel
@@ -15503,7 +15503,7 @@ export abstract class PanelLayout {
      *
      * @param {GraphObject} obj Panel which called this layout
      * @param {number} width expected width of the GraphObject
-     * @param {number} height expected width of the GraphObject
+     * @param {number} height expected height of the GraphObject
      * @param {number} minw minimum width of the GraphObject
      * @param {number} minh minimum height of the GraphObject
      */

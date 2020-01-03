@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom TreeLayout that requires a "Split" node and a "Merge" node, by category.

@@ -7,12 +7,15 @@
         define(["require", "exports", "../release/go"], factory);
     }
 })(function (require, exports) {
-    'use strict';
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go_1 = require("../release/go");
+    /**
+     * @hidden
+     */
     var QuadNode = /** @class */ (function () {
         function QuadNode(bounds, parent, level) {
             this.objects = [];
@@ -24,14 +27,14 @@
             this.level = level;
         }
         QuadNode.prototype.split = function () {
-            var subWidth = this.bounds.width / 2;
-            var subHeight = this.bounds.height / 2;
+            var w2 = this.bounds.width / 2;
+            var h2 = this.bounds.height / 2;
             var x = this.bounds.x;
             var y = this.bounds.y;
-            this.nodes[0] = new QuadNode(new go_1.Rect(x + subWidth, y, subWidth, subHeight), this, this.level + 1);
-            this.nodes[1] = new QuadNode(new go_1.Rect(x, y, subWidth, subHeight), this, this.level + 1);
-            this.nodes[2] = new QuadNode(new go_1.Rect(x, y + subHeight, subWidth, subHeight), this, this.level + 1);
-            this.nodes[3] = new QuadNode(new go_1.Rect(x + subWidth, y + subHeight, subWidth, subHeight), this, this.level + 1);
+            this.nodes[0] = new QuadNode(new go_1.Rect(x + w2, y, w2, h2), this, this.level + 1);
+            this.nodes[1] = new QuadNode(new go_1.Rect(x, y, w2, h2), this, this.level + 1);
+            this.nodes[2] = new QuadNode(new go_1.Rect(x, y + h2, w2, h2), this, this.level + 1);
+            this.nodes[3] = new QuadNode(new go_1.Rect(x + w2, y + h2, w2, h2), this, this.level + 1);
         };
         QuadNode.prototype.clear = function () {
             this.treeObjects = [];
@@ -146,6 +149,7 @@
          */
         Quadtree.prototype.clear = function () {
             this._root.clear();
+            this._treeObjectMap.clear();
         };
         /**
          * @hidden @internal
@@ -279,7 +283,7 @@
             // grow as many times as necessary to fit the new object
             while (!this._root.bounds.containsRect(bounds)) {
                 var old = this._root;
-                this.walk(this._increaseLevel, old);
+                this.walk(function (n) { return n.level++; }, old);
                 var intersectsTopBound = bounds.y < this._root.bounds.y;
                 var intersectsBottomBound = bounds.y + bounds.height > this._root.bounds.y + this._root.bounds.height;
                 var intersectsRightBound = bounds.x + bounds.width > this._root.bounds.x + this._root.bounds.width;
@@ -406,19 +410,6 @@
                     }
                 }
             }
-        };
-        /**
-         * @hidden @internal
-         * Increases the level of the given {@link Quadtree}. Given as an argument
-         * to {@link #walk} in {@link #add} and defined here to
-         * avoid creation of a new function every time {@link #add} is
-         * called.
-         * @this {Quadtree}
-         * @param {QuadNode<T>} n the node to increase the level of
-         * @return {void}
-         */
-        Quadtree.prototype._increaseLevel = function (n) {
-            n.level += 1;
         };
         /**
          * @hidden @internal
@@ -837,44 +828,6 @@
         };
         /**
          * @hidden @internal
-         * Return all TreeObjects that intersect (wholly or partially)
-         * with the given {@link Rect} or {@link Point}. Touching edges
-         * are not considered intersections.
-         * @this {Quadtree}
-         * @param {Rect|Point} rect the Rect or Point to check intersections for. If a point is given, a Rect with size (0, 0) is created for intersection calculations.
-         * @return {Array<TreeObject>} array containing all intersecting TreeObjects
-         */
-        Quadtree.prototype._intersectingTreeObjs = function (rect) {
-            if (rect instanceof go_1.Point) {
-                rect = new go_1.Rect(rect.x, rect.y, 0, 0);
-            }
-            var returnObjects = [];
-            this._intersectingTreeObjsHelper(rect, this._root, returnObjects);
-            return returnObjects;
-        };
-        Quadtree.prototype._intersectingTreeObjsHelper = function (rect, root, returnObjects) {
-            var index = this._getIndex(rect, root);
-            var selected = index === -1 ? null : root.nodes[index];
-            if (selected !== null) {
-                this._intersectingTreeObjsHelper(rect, selected, returnObjects);
-            }
-            else if (root.nodes[0]) {
-                var quadrants = this._getQuadrants(rect, root);
-                for (var _i = 0, quadrants_2 = quadrants; _i < quadrants_2.length; _i++) {
-                    var quadrant = quadrants_2[_i];
-                    var node = root.nodes[quadrant];
-                    this._intersectingTreeObjsHelper(rect, root, returnObjects);
-                }
-            }
-            for (var _a = 0, _b = root.treeObjects; _a < _b.length; _a++) {
-                var obj = _b[_a];
-                if (Quadtree._rectsIntersect(obj.bounds, rect)) {
-                    returnObjects.push(obj);
-                }
-            }
-        };
-        /**
-         * @hidden @internal
          * Similar as {@link Rect.intersectsRect}, but doesn't count edges as intersections.
          * Also accounts for floating error (by returning false more often) up to an error of 1e-7.
          * Used by {@link #intersecting}.
@@ -908,8 +861,8 @@
             }
             else if (root.nodes[0]) {
                 var quadrants = this._getQuadrants(rect, root);
-                for (var _i = 0, quadrants_3 = quadrants; _i < quadrants_3.length; _i++) {
-                    var quadrant = quadrants_3[_i];
+                for (var _i = 0, quadrants_2 = quadrants; _i < quadrants_2.length; _i++) {
+                    var quadrant = quadrants_2[_i];
                     var node = root.nodes[quadrant];
                     if (node !== null) {
                         this._containingHelper(rect, node, returnObjects);
@@ -922,16 +875,6 @@
                     returnObjects.push(obj.obj);
                 }
             }
-        };
-        /**
-         * A slightly briefer and more semantic sounding way to call {@link #intersecting}. See
-         * {@link #intersecting} for details.
-         * @this {Quadtree}
-         * @param {Point} point the point to check intersections for
-         * @return {Array<T>} array containing all intersecting objects
-         */
-        Quadtree.prototype.at = function (point) {
-            return this.intersecting(point);
         };
         /**
          * Returns the square of the distance from the centers of the given objects

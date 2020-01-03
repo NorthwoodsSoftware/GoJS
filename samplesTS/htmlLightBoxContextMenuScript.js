@@ -10,7 +10,7 @@
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
     /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
     var myDiagram = null;

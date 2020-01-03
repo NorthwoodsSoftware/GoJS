@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Layout that lays out a chain of nodes in a snake-like fashion

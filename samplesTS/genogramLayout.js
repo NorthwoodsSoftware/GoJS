@@ -23,7 +23,7 @@ var __extends = (this && this.__extends) || (function () {
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
     /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go");
     // A custom layout that shows the two families related to a person's parents

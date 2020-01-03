@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2019 by Northwoods Software Corporation
+* Copyright (C) 1998-2020 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - WALLS

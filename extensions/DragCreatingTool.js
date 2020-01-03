@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Tool for creating a new Node with custom size by dragging its outline in the background.

@@ -1,3 +1,6 @@
+/*
+*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
+*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -7,11 +10,8 @@
         define(["require", "exports", "../release/go", "./PackedLayout"], factory);
     }
 })(function (require, exports) {
-    'use strict';
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    *  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
-    */
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2019 by Northwoods Software Corporation
+* Copyright (C) 1998-2020 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Floorplan Class
@@ -2916,7 +2916,7 @@ export class Floorplan extends go.Diagram {
 } // end Floorplan class definition
 
 /*
-* Copyright (C) 1998-2019 by Northwoods Software Corporation
+* Copyright (C) 1998-2020 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - GENERAL
@@ -3344,7 +3344,7 @@ function makeDimensionLink(opacity?: number, stroke?: string, strokeWidth?: numb
 }
 
 /*
-* Copyright (C) 1998-2019 by Northwoods Software Corporation
+* Copyright (C) 1998-2020 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - FURNITURE
@@ -3585,7 +3585,7 @@ function updateNodeTexture(obj: go.Shape, t: string) {
 }
 
 /*
-* Copyright (C) 1998-2019 by Northwoods Software Corporation
+* Copyright (C) 1998-2020 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - WALLS

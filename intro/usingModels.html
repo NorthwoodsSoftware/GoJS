@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoJS Using Models -- Northwoods Software</title>
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
   <script src="../release/go.js"></script>
   <script src="goIntro.js"></script>
 </head>
@@ -311,6 +311,76 @@ Or you may want to use other features that TreeModel does not support.
 Other pages such as <a href="trees.html">Trees</a> discuss tree-oriented features of <b>GoJS</b> in more detail.
 </p>
 
+<h2 id="IdentityAndReferences">Identity and References</h2>
+<p>
+  Each <a>Node</a> is the visual representation of a specific JavaScript Object that is in the <a>Model.nodeDataArray</a>.
+  If there are two objects in the model, they will result in two nodes, even if they look similar to each other.
+  For example:
+</p>
+<pre class="lang-js">
+  myDiagram.model.nodeDataArray = [
+    { text: "something", count: 17 },
+    { text: "something", count: 17 }
+  ];
+</pre>
+<p>
+  This will cause there to be two separate nodes that happen to have the same property values.
+  In fact each of those JavaScript Objects will get a different "key" value, so that references to nodes
+  will always be able to be distinguished.
+</p>
+<p>
+  This illustrates how the identity of each node is determined by the Object in memory that is the node's data.
+  You cannot delete a node by removing an object that is similar to one that is in the model.
+  Consider this statement:
+</p>
+<pre class="lang-js">
+  myDiagram.model.removeNodeData({ text: "something", count: 17 });
+</pre>
+<p>
+  Such code will never remove any node data from the <a>Model.nodeDataArray</a> nor any <a>Node</a> from any <a>Diagram</a>
+  because the Object that is passed to <a>Model.removeNodeData</a> is a new Object, not the <em>same Object</em> that is present in the model.
+</p>
+<p>
+  Nor can you find a node by giving it a similar node data object.
+  There is no such method on <a>Model</a>, although there is a <a>Model.findNodeDataForKey</a> method.
+  But if you really want to search for nodes that have particular properties,
+  you can call <a>Diagram.findNodesByExample</a>.
+</p>
+<pre class="lang-js">
+  var nodes = myDiagram.findNodesByExample({ text: "something", count: 17 });
+  nodes.each(function(n) { console.log(n.key); });
+</pre>
+<p>
+  For the model shown above, this will return a collection of two <a>Node</a>s.
+  It then iterates over that collection and prints each <a>Node.key</a>.
+</p>
+
+<h3 id="ReferencesToNodes">References to Nodes</h3>
+<p>
+  Although the identity of a node is the node's data object in the model, references to nodes are not "pointers" to those objects.
+  Instead, references are always by the "key" of the node data.
+  (The property need not be named "key" -- see <a>Model.nodeKeyProperty</a>.)
+  Using keys instead of direct references to data objects makes it easier to read and write models,
+  especially by <a>Model.toJson</a> and <a>Model,fromJson</a>, and to debug them in memory.
+  Thus <a>Link</a>s are defined by data using keys, and <a>Group</a> membership is determined using keys:
+</p>
+<pre class="lang-js">
+  myDiagram.model.nodeDataArray = [  // for a GraphLinksModel
+    { key: "Alpha" },
+    { key: "Beta", group: "Gamma" },
+    { key: "Gamma", isGroup: true }
+  ];
+  myDiagram.model.linkDataArray = [  // for a GraphLinksModel
+    { from: "Alpha", to: "Beta"}
+  ];
+</pre>
+<pre class="lang-js">
+  myDiagram.model.nodeDataArray = [  // for a TreeModel
+    { key: "Alpha" },
+    { key: "Beta", parent: "Alpha" }
+  ];
+</pre>
+
 <h2 id="ModifyingModels">Modifying Models</h2>
 <p>
 If you want to add or remove nodes programmatically, you will probably want to call the
@@ -348,6 +418,34 @@ when the JavaScript Array or Object is already part of the Model.
 When first building the Array of Objects for the <a>Model.nodeDataArray</a>
 or when initializing a JavaScript Object as a new node data object, such calls are not necessary.
 But once the data is part of the Model, calling the model's methods to effect changes is necessary.
+</p>
+
+<h3 id="ExternallyModifiedData">Externally Modified Data</h3>
+<p>
+  In some software architectures it might not be possible to insist that all data changes go through <a>Model</a> methods.
+  In such cases it is possible to call <a>Diagram.updateAllRelationshipsFromData</a> and
+  <a>Diagram.updateAllTargetBindings</a>.
+</p>
+<p>
+  However, please note that doing so will prevent the <a>UndoManager</a> from properly recording state changes.
+</p>
+
+<h3 id="ImmutableData">Immutable Data</h3>
+<p>
+  In some software architectures it is customary to have "models" consist of immutable (unmodifiable) data.
+  However making copies of all of the data and then replacing the <a>Diagram.model</a>, causing old
+  Nodes and Links to be re-created, would be unworkably expensive in time and space when the model is large.
+</p>
+<p>
+  If you do have immutable model data, you can update a <a>Model</a> and thus its <a>Diagram</a>s by calling
+  the <a>Model.mergeNodeDataArray</a> and <a>GraphLinksModel.mergeLinkDataArray</a> methods.
+  This will be much more efficient than replacing the <a>Model.nodeDataArray</a> and <a>GraphLinksModel.linkDataArray</a>
+  Arrays each time, because it will preserve the existing Nodes and Links if possible.
+</p>
+<p>
+  However this scheme depends on maintaining the "key"s for all of the node data and for all of the link data.
+  For GraphLinksModels, that means setting <a>GraphLinksModel.linkKeyProperty</a> to the name of the property
+  you want to use to remember the key value.
 </p>
 
 <h2 id="SavingAndLoadingModels">Saving and Loading Models</h2>

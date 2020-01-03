@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Virtualized Packed Groups Layout</title>
+  <meta name="description" content="Quickly layout and show part of a large graph of nested groups." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../samples/assets/require.js"></script>
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+  function init() {
+    require(["../release/go", "./VirtualizedPackedLayout"], function(go, mod) {
+      if (window.goSamples) window.goSamples();  // init for these samples -- you don't need to call this
+
+      var VirtualizedPackedLayout = mod.VirtualizedPackedLayout;
+      var $ = go.GraphObject.make;
+
+      // This custom layout that applies to myWholeModel.
+      // It customizes the VirtualizedPackedLayout to account for Groups.
+      function VirtualizedPackedGroupsLayout() {
+        VirtualizedPackedLayout.call(this);
+        this.isOngoing = false;
+        this.model = null;  // must be set when initializing Diagram and myWholeModel
+        this.sortMode = VirtualizedPackedLayout.Area;
+        this.hasCircularNodes = true;
+        this.topLevelNodes = [];
+      }
+      go.Diagram.inherit(VirtualizedPackedGroupsLayout, VirtualizedPackedLayout);
+
+      VirtualizedPackedGroupsLayout.prototype.doLayout = function() {  // ignore arg
+        if (!this.model) return;
+        var nodes = this.model.nodeDataArray;
+        var topGroups = this.model.topGroups;
+        var maxdiam = 0;
+        if (Array.isArray(topGroups)) {
+          for (var i = 0; i < topGroups.length; i++) {
+            var g = topGroups[i];
+            this.walkGroups(g);
+            maxdiam = Math.max(maxdiam, Math.max(g.bounds.width, g.bounds.height));
+          }
+        }
+        this.topLevelNodes.length = 0;
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i];
+          if (n.group === undefined) this.topLevelNodes.push(n);
+          maxdiam = Math.max(maxdiam, Math.max(n.bounds.width, n.bounds.height));
+        }
+        this.spacing = Math.max(50, maxdiam * 0.2);
+        this.performLayout(this.topLevelNodes);  // only top-level nodes
+        this.diagram.fixedBounds = this.actualBounds;
+      }
+
+      // depth-first walk
+      VirtualizedPackedGroupsLayout.prototype.walkGroups = function(g) {
+        if (!g || !g.isGroup || !g._members) throw new Error("not a group data: " + g);
+        var mems = g._members;
+        if (Array.isArray(mems) && mems.length > 0) {
+          var maxdiam = 0;
+          for (var i = 0; i < mems.length; i++) {
+            var n = mems[i];
+            if (n.isGroup) {
+              this.walkGroups(n);
+            }
+            maxdiam = Math.max(maxdiam, Math.max(n.bounds.width, n.bounds.height));
+          }
+          this.spacing = Math.max(50, maxdiam * 0.2);
+          this.performLayout(mems);
+          g.bounds = this.actualBounds.copy();
+        } else {
+          //!!!???@@@ this needs to be customized to account for your chosen Group template
+          g.bounds = new go.Rect(0, 0, 50, 50);
+        }
+      }
+
+      // override moveNode to handle groups
+      VirtualizedPackedGroupsLayout.prototype.moveNode = function(node, nx, ny) {
+        const dx = nx - node.bounds.x;
+        const dy = ny - node.bounds.y;
+        this.shiftNode(node, dx, dy);
+      }
+
+      VirtualizedPackedGroupsLayout.prototype.shiftNode = function(node, dx, dy) {
+        node.bounds.x += dx;
+        node.bounds.y += dy;
+        if (node.isGroup) {
+          var mems = node._members;
+          if (Array.isArray(mems)) {
+            for (var i = 0; i < mems.length; i++) {
+              var n = mems[i];
+              this.shiftNode(n, dx, dy);
+            }
+          }
+        }
+      }
+
+
+      // The Diagram just shows what should be visible in the viewport.
+      // Its model does NOT include node data for the whole graph, but only that
+      // which might be visible in the viewport.
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            "animationManager.isEnabled": false,  // don't have any unnecessary initial scrolling
+            initialScale: 0.25,
+            layout: new VirtualizedPackedGroupsLayout(),
+            "InitialLayoutCompleted": function(e) {  // initial scroll so that we see some nodes
+              var first = null;
+              var arr = myWholeModel.nodeDataArray;
+              for (var i = 0; i < arr.length; i++) {
+                var d = arr[i];
+                if (!d.isGroup) { first = d; break; }
+              }
+              if (first) {
+                e.diagram.centerRect(first.bounds);
+              }
+            }
+          });
+
+      function fillBinding(depth) { if (depth >= myColors.length) depth = 0; return "rgba(" + myColors[depth] + ",0.1)"; }
+      function strokeBinding(depth) { if (depth >= myColors.length) depth = 0; return "rgb(" + myColors[depth] + ")"; }
+
+      var myColors = ["0,0,0", "0,255,0", "255,0,0", "0,0,255"];
+      var myLayoutFactors = [16, 8, 4, 2];
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { isLayoutPositioned: false },  // optimization
+          new go.Binding("position", "bounds", function(b) { return b.position; }),
+          { width: 50, height: 50 },  // in cooperation with the load function, below
+          $(go.Shape, "Circle",
+            {
+              spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight,
+              portId: "", fill: "white", stroke: "gray"
+            },
+            new go.Binding("fill", "depth", fillBinding),
+            new go.Binding("stroke", "depth", strokeBinding)),
+          $(go.TextBlock,
+            new go.Binding("text", "key"))
+        );
+
+      myDiagram.groupTemplate =
+        $(go.Group, "Auto",
+          { isLayoutPositioned: false },  // optimization
+          // note no Placeholder and no .layout, since VirtualizedPackedGroupsLayout will compute everything
+          new go.Binding("position", "bounds", function(b) { return new go.Point(b.x - b.width * 0.05, b.y - b.height * 0.05); }),
+          new go.Binding("desiredSize", "bounds", function(b) { return new go.Size(b.size.width * 1.1, b.size.height * 1.1); }),
+          $(go.Shape, "Ellipse",
+            {
+              spot1: new go.Spot(0.05, 0.05), spot2: new go.Spot(0.95, 0.95),
+              portId: "", fill: "white", stroke: "gray"
+            },
+            new go.Binding("fill", "depth", fillBinding),
+            new go.Binding("stroke", "depth", strokeBinding)),
+          $(go.TextBlock,
+            new go.Binding("text", "key"))
+        );
+
+      // This model includes all of the data
+      myWholeModel =
+        $(go.GraphLinksModel);  // must match the model used by the Diagram, below
+
+      // The virtualized layout works on the full model, not on the Diagram Nodes and Links
+      myDiagram.layout.model = myWholeModel;
+
+      // Do not set myDiagram.model = myWholeModel -- that would create a zillion Nodes and Links!
+      // In the future Diagram may have built-in support for virtualization.
+      // For now, we have to implement virtualization ourselves by having the Diagram's model
+      // be different than the "real" model.
+      myDiagram.model =   // this only holds nodes that should be in the viewport
+        $(go.GraphLinksModel);  // must match the model, above
+
+      // for now, we have to implement virtualization ourselves
+      myDiagram.isVirtualized = true;
+      myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
+
+      // This is a status message
+      myLoading =
+        $(go.Part,  // this has to set the location or position explicitly
+          { location: new go.Point(0, 0), scale: 4 },
+          $(go.TextBlock, "loading...",
+            { stroke: "red", font: "20pt sans-serif" }));
+
+      // temporarily add the status indicator
+      myDiagram.add(myLoading);
+
+      // Allow the myLoading indicator to be shown now,
+      // but allow objects added in load to also be considered part of the initial Diagram.
+      // If you are not going to add temporary initial Parts, don't call delayInitialization.
+      myDiagram.delayInitialization(load);
+
+
+      // The following code creates a large randomized graph with nested groups in myWholeModel.
+
+      function load() {
+        // create a lot of data for the myWholeModel
+        addGraph(myWholeModel, 123456, 50, 4, 1.0);
+
+        // remove the status indicator
+        myDiagram.remove(myLoading);
+      }
+
+      function addGraph(model, totnodes, maxmembers, maxdepth, percentgroup) {
+        model.topGroups = [];  // add this property to GraphLinksModel
+        addGraphInternal(model, totnodes, maxmembers, maxdepth, percentgroup, 0, null);
+      }
+      function addGraphInternal(model, totnodes, maxmembers, maxdepth, percentgroup, depth, groupdata) {
+        // groupdata may be null for top-level nodes
+        var nkey = model.nodeDataArray.length;
+        if (nkey >= totnodes) return;
+        var numnodes = Math.floor(Math.random() * (maxmembers-1)) + 2;
+        if (nkey + numnodes >= totnodes) numnodes = totnodes-nkey;
+        var nodes = [];
+        var links = [];
+        for (var i = 0; i < numnodes; i++) {
+          var data = { key: nkey + i, bounds: undefined, depth: depth };
+          if (groupdata) {
+            if (!groupdata.isGroup || !groupdata._members) {
+              throw new Error("not a group data: " + groupdata);
+            }
+            // initially no .bounds property for group data
+            data.group = groupdata.key;
+            groupdata._members.push(data);
+          }
+          if (depth < maxdepth && Math.random() < percentgroup) {
+            data.isGroup = true;
+            data._members = [];
+            if (!groupdata) model.topGroups.push(data);  // only remember top-level groups
+          } else {
+            //!!!???@@@ this needs to be customized to account for your chosen Node template
+            data.bounds = new go.Rect(0, 0, 50, 50);
+          }
+          nodes.push(data);
+          if (i > 0) links.push({ from: nkey, to: nkey + i });
+        }
+        for (var i = 1; i <= numnodes/3; i++) {
+          // additional links between nodes other than the first one
+          var from = Math.floor(Math.random() * (numnodes-1)) + 1;
+          var to = Math.floor(Math.random() * (numnodes-1)) + 1;
+          links.push({ from: nodes[from].key, to: nodes[to].key });
+        }
+        model.addNodeDataCollection(nodes);
+        model.addLinkDataCollection(links);
+        for (var i = 0; i < numnodes; i++) {
+          var data = nodes[i];
+          if (data.isGroup) {
+            addGraphInternal(model, totnodes, maxmembers, maxdepth, percentgroup, depth+1, data);
+          }
+        }
+      }
+
+
+      // The following functions implement virtualization of the Diagram
+      // Assume data.bounds is a Rect of the area occupied by the Node in document coordinates.
+
+      // The normal mechanism for determining the size of the document depends on all of the
+      // Nodes and Links existing, so we need to use a function that depends only on the model data.
+      function computeDocumentBounds(model) {
+        var b = new go.Rect();
+        var ndata = model.nodeDataArray;
+        for (var i = 0; i < ndata.length; i++) {
+          var d = ndata[i];
+          if (!d.bounds) continue;
+          if (i === 0) {
+            b.set(d.bounds);
+          } else {
+            b.unionRect(d.bounds);
+          }
+        }
+        return b;
+      }
+
+      // As the user scrolls or zooms, make sure the Parts (Nodes and Links) exist in the viewport.
+      function onViewportChanged(e) {
+        var diagram = e.diagram;
+        // make sure there are Nodes for each node data that is in the viewport
+        // or that is connected to such a Node
+        var viewb = diagram.viewportBounds;  // the new viewportBounds
+        var model = diagram.model;  // assume a GraphLinksModel
+
+        var oldskips = diagram.skipsUndoManager;
+        diagram.skipsUndoManager = true;
+
+        var b = new go.Rect();
+        var ndata = myWholeModel.nodeDataArray;
+        for (var i = 0; i < ndata.length; i++) {
+          var n = ndata[i];
+          if (!n.bounds) continue;
+          if (n.bounds.intersectsRect(viewb)) {
+            model.addNodeData(n);
+          }
+        }
+
+        var ldata = myWholeModel.linkDataArray;
+        for (var i = 0; i < ldata.length; i++) {
+          var l = ldata[i];
+          var fromkey = myWholeModel.getFromKeyForLinkData(l);
+          if (fromkey === undefined) continue;
+          var from = myWholeModel.findNodeDataForKey(fromkey);
+          if (from === null || !from.bounds) continue;
+
+          var tokey = myWholeModel.getToKeyForLinkData(l);
+          if (tokey === undefined) continue;
+          var to = myWholeModel.findNodeDataForKey(tokey);
+          if (to === null || !to.bounds) continue;
+
+          b.set(from.bounds);
+          b.unionRect(to.bounds);
+          if (b.intersectsRect(viewb)) {
+            // also make sure both connected nodes are present,
+            // so that link routing is authentic
+            model.addNodeData(from);
+            model.addNodeData(to);
+            model.addLinkData(l);
+            var link = diagram.findLinkForData(l);
+            if (link !== null) {
+              // do this now to avoid delayed routing outside of transaction
+              link.fromNode.ensureBounds();
+              link.toNode.ensureBounds();
+              link.updateRoute();
+            }
+          }
+        }
+
+        diagram.skipsUndoManager = oldskips;
+
+        if (myRemoveTimer === null) {
+          // only remove offscreen nodes after a delay
+          myRemoveTimer = setTimeout(function() { removeOffscreen(diagram); }, 3000);
+        }
+
+        updateCounts();  // only for this sample
+      }
+
+      // occasionally remove Parts that are offscreen from the Diagram
+      var myRemoveTimer = null;
+
+      function removeOffscreen(diagram) {
+        myRemoveTimer = null;
+
+        var viewb = diagram.viewportBounds;
+        var model = diagram.model;
+        var remove = [];  // collect for later removal
+        var removeLinks = new go.Set();  // links connected to a node data to remove
+        var it = diagram.nodes;
+        while (it.next()) {
+          var n = it.value;
+          var d = n.data;
+          if (d === null) continue;
+          if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
+            // even if the node is out of the viewport, keep it if it is selected or
+            // if any link connecting with the node is still in the viewport
+            if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) {
+              remove.push(d);
+              if (model instanceof go.GraphLinksModel) {
+                removeLinks.addAll(n.linksConnected);
+              }
+            }
+          }
+        }
+
+        if (remove.length > 0) {
+          var oldskips = diagram.skipsUndoManager;
+          diagram.skipsUndoManager = true;
+          model.removeNodeDataCollection(remove);
+          if (model instanceof go.GraphLinksModel) {
+            removeLinks.each(function(l) { if (!l.isSelected) model.removeLinkData(l.data); });
+          }
+          diagram.skipsUndoManager = oldskips;
+        }
+
+        updateCounts();  // only for this sample
+      }
+      // end of virtualized Diagram
+
+
+      // This function is only used in this sample to demonstrate the effects of the virtualization.
+      // In a real application you would delete this function and all calls to it.
+      function updateCounts() {
+        document.getElementById("myMessage1").textContent = myWholeModel.nodeDataArray.length;
+        document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
+        document.getElementById("myMessage3").textContent = myWholeModel.linkDataArray.length;
+        document.getElementById("myMessage4").textContent = myDiagram.links.count;
+      }
+    });
+  }
+  </script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="width:100%; height:800px; border: solid 1px black"></div>
+    <p>
+      Node data in Model: <span id="myMessage1"></span>.
+      Actual Nodes in Diagram: <span id="myMessage2"></span>.<br />
+      Link data in model: <span id="myMessage3"></span>.
+      Actual Links in Diagram: <span id="myMessage4"></span>.
+      </p>
+    <p>
+      This uses the <a>VirtualizedPackedLayout</a> extension,
+      defined <a href="VirtualizedPackedLayout.ts">VirtualizedPackedLayout.ts</a>,
+      to quickly layout a large graph consisting of
+      nested groups.
+    </p>
+  </div>
+</body>
+</html>
