@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>State Chart with Draggable Link Labels</title>
+  <meta name="description" content="TypeScript: Allow the user to shift link labels; useful when the user wants to adjust the position of the label relative to the link path to avoid overlapping the link path or any nodes." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
+    <p>
+      This sample is a modification of the <a href="../samples/stateChart.html">State Chart</a> sample that makes use of
+      the LinkLabelDraggingTool that is defined in its own file, as <a href="LinkLabelDraggingTool.ts">LinkLabelDraggingTool.ts</a>.
+    </p>
+    <p>
+      Note that after dragging a link label you can move a node connected by that link and the label maintains the same position
+      relative to the link route. That relative position is specified by the <a>GraphObject.segmentOffset</a> property.
+      This sample also saves any changes to that property by means of a TwoWay <a>Binding</a>.
+    </p>
+    <p>
+      See also the similar <a href="LinkLabelOnPathDragging.html" target="_blank">Link Label On Path Dragging sample</a>,
+      where the label is constrained to remain on the path of the link.
+    </p>
+    <button id="SaveButton">Save</button>
+    <button id="LoadButton">Load</button> Diagram Model saved in JSON format:
+    <br />
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "nodeKeyProperty": "id",
+  "nodeDataArray": [
+    { "id": 0, "loc": "120 120", "text": "Initial" },
+    { "id": 1, "loc": "330 120", "text": "First down" },
+    { "id": 2, "loc": "226 376", "text": "First up" },
+    { "id": 3, "loc": "60 276", "text": "Second down" },
+    { "id": 4, "loc": "226 226", "text": "Wait" }
+  ],
+  "linkDataArray": [
+    { "from": 0, "to": 0, "text": "up or timer", "curviness": -20 },
+    { "from": 0, "to": 1, "text": "down", "curviness": 20 },
+    { "from": 1, "to": 0, "text": "up (moved)\nPOST", "curviness": 20 },
+    { "from": 1, "to": 1, "text": "down", "curviness": -20 },
+    { "from": 1, "to": 2, "text": "up (no move)" },
+    { "from": 1, "to": 4, "text": "timer" },
+    { "from": 2, "to": 0, "text": "timer\nPOST" },
+    { "from": 2, "to": 3, "text": "down" },
+    { "from": 3, "to": 0, "text": "up\nPOST\n(dblclick\nif no move)" },
+    { "from": 3, "to": 3, "text": "down or timer", "curviness": 20 },
+    { "from": 4, "to": 0, "text": "up\nPOST" },
+    { "from": 4, "to": 4, "text": "down" }
+  ]
+}
+    </textarea>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { LinkLabelDraggingTool } from './LinkLabelDraggingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+        {
+          // have mouse wheel events zoom in and out instead of scroll up and down
+          'toolManager.mouseWheelBehavior': go.ToolManager.WheelZoom,
+          // support double-click in background creating a new node
+          'clickCreatingTool.archetypeNodeData': { text: 'new node' },
+          // enable undo & redo
+          'undoManager.isEnabled': true
+        });
+    // install the LinkLabelDraggingTool as a "mouse move" tool
+    myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelDraggingTool());
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      const button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.substr(0, idx);
+      }
+    });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, 'Auto',
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, 'RoundedRectangle',
+          {
+            parameter1: 20,
+            fill: $(go.Brush, 'Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
+            stroke: 'black',
+            portId: '',
+            fromLinkable: true,
+            fromLinkableSelfNode: true,
+            fromLinkableDuplicates: true,
+            toLinkable: true,
+            toLinkableSelfNode: true,
+            toLinkableDuplicates: true,
+            cursor: 'pointer'
+        }),
+        $(go.TextBlock,
+          {
+            font: 'bold 11pt helvetica, bold arial, sans-serif',
+            editable: true // editing the text automatically updates the model data
+          },
+          new go.Binding('text', 'text').makeTwoWay())
+      );
+
+    // unlike the normal selection Adornment, this one includes a Button
+    myDiagram.nodeTemplate.selectionAdornmentTemplate =
+      $(go.Adornment, 'Spot',
+        $(go.Panel, 'Auto',
+          $(go.Shape, { fill: null, stroke: 'blue', strokeWidth: 2 }),
+          $(go.Placeholder) // this represents the selected Node
+        ),
+        // the button to create a "next" node, at the top-right corner
+        $('Button',
+          {
+            alignment: go.Spot.TopRight,
+            click: addNodeAndLink // this function is defined below
+          },
+          $(go.Shape, 'PlusLine',
+            { desiredSize: new go.Size(6, 6) })
+        ) // end button
+      ); // end Adornment
+
+    // clicking the button inserts a new node to the right of the selected node,
+    // and adds a link to that new node
+    function addNodeAndLink(e, obj) {
+      const adorn = obj.part;
+      const fromNode = adorn.adornedPart;
+      if (fromNode === null) return;
+      e.handled = true;
+      const diagram = e.diagram;
+      diagram.startTransaction('Add State');
+      // get the node data for which the user clicked the button
+      const fromData = fromNode.data;
+      // create a new "State" data object, positioned off to the right of the adorned Node
+      const toData = { text: 'new' };
+      const p = fromNode.location.copy();
+      p.x += 200;
+      toData.loc = go.Point.stringify(p); // the "loc" property is a string, not a Point object
+      // add the new node data to the model
+      const model = diagram.model;
+      model.addNodeData(toData);
+      // create a link data from the old node data to the new node data
+      const linkdata = {
+          from: model.getKeyForNodeData(fromData),
+          to: model.getKeyForNodeData(toData),
+          text: 'transition'
+      };
+      // and add the link data to the model
+      model.addLinkData(linkdata);
+      // select the new Node
+      const newnode = diagram.findNodeForData(toData);
+      diagram.select(newnode);
+      diagram.commitTransaction('Add State');
+      // if the new node is off-screen, scroll the diagram to show the new node
+      if (newnode !== null) diagram.scrollToRect(newnode.actualBounds);
+    }
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      $(go.Link, // the whole link panel
+        { curve: go.Link.Bezier, adjusting: go.Link.Stretch, reshapable: true },
+        new go.Binding('points').makeTwoWay(),
+        new go.Binding('curviness', 'curviness'),
+        $(go.Shape, // the link shape
+          { strokeWidth: 1.5 }), $(go.Shape, // the arrowhead
+          { toArrow: 'standard', stroke: null }),
+        $(go.Panel, 'Auto', { cursor: 'move' }, // visual hint that the user can do something with this link label
+          $(go.Shape, // the label background, which becomes transparent around the edges
+          {
+            fill: $(go.Brush, 'Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+            stroke: null
+          }),
+          $(go.TextBlock, 'transition', // the label text
+            {
+                textAlign: 'center',
+                font: '10pt helvetica, arial, sans-serif',
+                stroke: 'black',
+                margin: 4,
+                editable: true // editing the text automatically updates the model data
+            },
+            new go.Binding('text', 'text').makeTwoWay()),
+          // The GraphObject.segmentOffset property is what the LinkLabelDraggingTool modifies.
+          // This TwoWay binding saves any changes to the same named property on the link data.
+          new go.Binding('segmentOffset', 'segmentOffset', go.Point.parse).makeTwoWay(go.Point.stringify)
+        )
+      );
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+
+    // Show the diagram's model in JSON format
+    function save() {
+      document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
+    }
+    function load() {
+      myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+    }
+    document.getElementById("SaveButton").onclick = save;
+    document.getElementById("LoadButton").onclick = load;
+  </script>
+</body>
+</html>

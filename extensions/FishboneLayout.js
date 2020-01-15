@@ -203,6 +203,8 @@ function FishboneLink() {
 };
 go.Diagram.inherit(FishboneLink, go.Link);
 
+FishboneLink.prototype.computeAdjusting = function() { return this.adjusting; }
+
 FishboneLink.prototype.computePoints = function() {
   var result = go.Link.prototype.computePoints.call(this);
   if (result) {

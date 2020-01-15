@@ -116,6 +116,7 @@ export class Floorplan extends go.Diagram {
     });
 
     // Display different help depending on selection context
+
     this.addDiagramListener('ChangedSelection', function(e) {
       const floorplan: Floorplan = e.diagram as Floorplan;
       floorplan.skipsUndoManager = true;
@@ -188,6 +189,7 @@ export class Floorplan extends go.Diagram {
     * Wall Building Tool, Wall Reshaping Tool
     */
 
+
     const wallBuildingTool = new WallBuildingTool();
     this.toolManager.mouseDownTools.insertAt(0, wallBuildingTool);
 
@@ -195,19 +197,48 @@ export class Floorplan extends go.Diagram {
     this.toolManager.mouseDownTools.insertAt(3, wallReshapingTool);
     wallBuildingTool.isEnabled = false;
 
+
     const nodeLabelDraggingTool = new NodeLabelDraggingTool();
-    this.toolManager.mouseMoveTools.insertAt(0, nodeLabelDraggingTool);
+    this.toolManager.mouseMoveTools.insertAt(3, nodeLabelDraggingTool);
+
 
     /*
     * Tool Overrides
     */
 
+
     // If a wall was dragged to intersect another wall, update angle displays
-    this.toolManager.draggingTool.doMouseUp = function() {
-      go.DraggingTool.prototype.doMouseUp.call(this);
+    this.toolManager.draggingTool.doDeactivate = function() {
+
+      // go.DraggingTool.prototype.doMouseUp.call(this);
+
       const fp: Floorplan = this.diagram as Floorplan;
+      const tool = this;
+
       fp.updateWallAngles();
       this.isGridSnapEnabled = this.diagram.model.modelData.preferences.gridSnap;
+      // maybe recalc rooms, if dragging a wall
+      let selectedWall: go.Group | null | undefined = null;
+      fp.selection.iterator.each(function(p: go.Part) {
+        if (p.category === 'WallGroup' && selectedWall == null) {
+          const w: go.Group = p as go.Group;
+          selectedWall = w;
+        } else if (p.category === 'WallGroup' && selectedWall !== null) {
+          // only worry about selectedWall if there is a single selected wall (cannot drag multiple walls at once)
+          selectedWall = undefined;
+        }
+      });
+      if (selectedWall) {
+
+        const selWallSet = new go.Set<go.Group>(); selWallSet.add(selectedWall);
+
+        fp.updateAllRoomBoundaries(selWallSet);
+        const wrt: WallReshapingTool = fp.toolManager.mouseDownTools.elt(3) as WallReshapingTool;
+        wrt.performMiteringOnWall(selectedWall);
+        fp.updateWall(selectedWall);
+      }
+
+      go.DraggingTool.prototype.doDeactivate.call(this);
     };
 
     // If user holds SHIFT while dragging, do not use grid snap
@@ -221,7 +252,6 @@ export class Floorplan extends go.Diagram {
     // When resizing, constantly update the node info box with updated size info; constantly update Dimension Links
     this.toolManager.resizingTool.doMouseMove = function() {
       const floorplan: Floorplan = this.diagram as Floorplan;
-      const node = this.adornedObject;
       floorplan.updateWallDimensions();
       go.ResizingTool.prototype.doMouseMove.call(this);
     };
@@ -788,28 +818,29 @@ export class Floorplan extends go.Diagram {
         const oip: go.Point = distToS <= distToE ? w1.data.startpoint : w1.data.endpoint;
 
         const ang: number = oip.directionPoint(ip);
-        const newPt: go.Point = wrt.translateAndRotatePoint(ip, ang - 90, 0.1);
+        const newPt: go.Point = wrt.translateAndRotatePoint(ip, ang - 90, 0.5);
 
-        /*
+
         // debug -- show calculated pts
-				var $ = go.GraphObject.make;
-				fp.add(
-					$(go.Node, "Spot", { locationSpot: go.Spot.Center, location: oip },
-						$(go.Shape, "Circle", { desiredSize: new go.Size(5,5), fill: "red" })
-					)
-				);
+        /*
+        const $ = go.GraphObject.make;
+         fp.add(
+           $(go.Node, 'Spot', { locationSpot: go.Spot.Center, location: oip },
+             $(go.Shape, 'Circle', { desiredSize: new go.Size(5, 5), fill: 'red' })
+           )
+         );
 
-				fp.add(
-					$(go.Node, "Spot", { locationSpot: go.Spot.Center, location: ip },
-						$(go.Shape, "Circle", { desiredSize: new go.Size(5,5), fill: "green" })
-					)
-				);
+         fp.add(
+           $(go.Node, 'Spot', { locationSpot: go.Spot.Center, location: ip },
+             $(go.Shape, 'Circle', { desiredSize: new go.Size(5, 5), fill: 'green' })
+           )
+         );
 
-				fp.add(
-					$(go.Node, "Spot", { locationSpot: go.Spot.Center, location: newPt },
-						$(go.Shape, "Circle", { desiredSize: new go.Size(5,5), fill: "cyan" })
-					)
-        ); */
+         fp.add(
+           $(go.Node, 'Spot', { locationSpot: go.Spot.Center, location: newPt },
+             $(go.Shape, 'Circle', { desiredSize: new go.Size(5, 5), fill: 'cyan' })
+           )
+         );*/
 
 
         boundsFound = fp.maybeAddRoomNode(newPt, r.data.floorImage, r);
@@ -1045,6 +1076,11 @@ export class Floorplan extends go.Diagram {
 
       ccWalls.iterator.each(function(w: go.Group) {
 
+        // failsafe
+        if (w === undefined || w === null) {
+          possiblePaths = new go.Set<any>(); return possiblePaths;
+        }
+
         // Base case : if we've found our way back to originalWall (add path to possiblePaths)
         if ((w.data.key === origWall.data.key || ccWalls.contains(origWall)) && wall.data.key !== origWall.data.key) {
           if (path !== null) {
@@ -1157,7 +1193,7 @@ export class Floorplan extends go.Diagram {
     const polygon: go.List<go.Point> = new go.List<go.Point>();
 
     const boundaryWalls: Array<any> = path;
-    if (boundaryWalls === null) {
+    if (boundaryWalls === null || boundaryWalls.length < 2) {
       return null;
     }
     const firstWallKey: string = boundaryWalls[0][0];
@@ -2331,8 +2367,10 @@ export class Floorplan extends go.Diagram {
 
   /**
    * Update Dimension Links shown along walls, based on which walls and wallParts are selected
+   * @param {go.Set<go.Group>} wallsToDisplayFor An optional set of walls to show dimensions for. If this is not provided,
+   *  just show dimensions for selected walls.
    */
-  public updateWallDimensions(): void {
+  public updateWallDimensions(wallsToDisplayFor?: go.Set<go.Group>): void {
     const floorplan: Floorplan = this;
     floorplan.skipsUndoManager = true;
     floorplan.startTransaction('update wall dimensions');
@@ -2356,7 +2394,9 @@ export class Floorplan extends go.Diagram {
     // make visible all dimension links (zero-length dimension links are set to invisible at the end of the function)
     // floorplan.dimensionLinks.iterator.each(function (link) { link.visible = true; });
 
-    const selection: go.Set<go.Part> = floorplan.selection;
+    const selection = (wallsToDisplayFor !== null && wallsToDisplayFor !== undefined) ? wallsToDisplayFor : floorplan.selection;
+    // const selection: go.Set<go.Part> = floorplan.selection;
+
     // gather all selected walls, including walls of selected DoorNodes and WindowNodes
     const walls: go.Set<go.Group> = new go.Set();
     selection.iterator.each(function(part: go.Part) {
@@ -3708,11 +3748,139 @@ function makeWallGroup() {
       locationSpot: go.Spot.TopLeft,
       reshapable: true,
       minSize: new go.Size(1, 1),
-      movable: false,
+      // movable: false,
       selectionAdorned: false,
       mouseDrop: addWallPart,
       mouseDragEnter: wallPartDragOver,
       mouseDragLeave: wallPartDragAway,
+      dragComputation: function(part: go.Part, pt: go.Point, gridPt: go.Point) {
+        let curLoc = part.location;
+        const origLoc = part.location.copy();
+        const fp: Floorplan = part.diagram as Floorplan;
+        const dt = fp.toolManager.draggingTool;
+        // only allow drag if only one wall is selected at a time
+        let wallCount = 0;
+        fp.selection.iterator.each(function(p: go.Part) {
+          if (p.category === 'WallGroup') {
+            wallCount++;
+            if (p.data.key !== part.data.key) {
+              // p.isSelected = false;
+            }
+          }
+          if (p.category === 'RoomNode') {
+            p.isSelected = false;
+          }
+        });
+
+
+        if (wallCount > 1) {
+          return curLoc;
+        }
+
+        const gs = fp.grid.gridCellSize;
+        gridPt.x -= gs.width / 2; gridPt.y -= gs.height / 2;
+        const wrt: WallReshapingTool = fp.toolManager.mouseDownTools.elt(3) as WallReshapingTool;
+
+        // Generate a map of all walls connected to this wall's endpoints (and at which endpoints those walls are connected at/to)
+        const connectedWallsMap = new go.Map<string, any>();
+        const wallsAtStartpoint = wrt.getAllWallsAtIntersection(part.data.startpoint, true);
+        wallsAtStartpoint.iterator.each(function(w: go.Group) {
+          if (w.data.key !== part.data.key) {
+            if (wrt.pointsApproximatelyEqual(w.data.startpoint, part.data.startpoint)) {
+              connectedWallsMap.add(w.data.key, { connectedTo: 'startpoint', connectedFrom: 'startpoint' });
+            } else if (wrt.pointsApproximatelyEqual(w.data.endpoint, part.data.startpoint)) {
+              connectedWallsMap.add(w.data.key, { connectedTo: 'startpoint', connectedFrom: 'endpoint' });
+            }
+          }
+        });
+
+        const wallsAtEndpoint = wrt.getAllWallsAtIntersection(part.data.endpoint, true);
+        wallsAtEndpoint.iterator.each(function(w: go.Group) {
+          if (w.data.key !== part.data.key) {
+            if (wrt.pointsApproximatelyEqual(w.data.startpoint, part.data.endpoint)) {
+              connectedWallsMap.add(w.data.key, { connectedTo: 'endpoint', connectedFrom: 'startpoint' });
+            } else if (wrt.pointsApproximatelyEqual(w.data.endpoint, part.data.endpoint)) {
+              connectedWallsMap.add(w.data.key, { connectedTo: 'endpoint', connectedFrom: 'endpoint' });
+            }
+          }
+        });
+
+        const ptToUse = fp.toolManager.draggingTool.isGridSnapEnabled ? gridPt : pt;
+        const wall = part as go.Group;
+        const changedWalls = new go.Set<go.Group>();
+        moveAndUpdate(ptToUse);
+        /**
+         * Helper function -- actually moves wall / connected walls, based on a given point to use as reference
+         * @param pointToUse
+         */
+        function moveAndUpdate(pointToUse: go.Point) {
+          // Offset this wall's startpoint and endpoints
+          const dx = pointToUse.x - curLoc.x; const dy = pointToUse.y - curLoc.y;
+          fp.model.set(part.data, 'startpoint', new go.Point(part.data.startpoint.x + dx, part.data.startpoint.y + dy));
+          fp.model.set(part.data, 'endpoint', new go.Point(part.data.endpoint.x + dx, part.data.endpoint.y + dy));
+          wrt.performMiteringOnWall(wall);
+
+          // Reset each connected wall's connected endpoints to the proper new start or endpoint of the dragging wall
+          connectedWallsMap.iterator.each(function(kvp: go.KeyValuePair<string, any>) {
+            const wKey = kvp.key;
+            const d = kvp.value;
+            const w = fp.findNodeForKey(wKey) as go.Group;
+            if (w != null && w.data.key !== wall.data.key) {
+              fp.model.set(w.data, d.connectedFrom, part.data[d.connectedTo]);
+              wrt.performMiteringOnWall(w);
+            }
+          });
+
+          // Miter, which will also update the walls
+          wrt.performMiteringAtPoint(wall.data.startpoint, true);
+          wrt.performMiteringAtPoint(wall.data.endpoint, true);
+          curLoc = wall.location;
+
+
+          connectedWallsMap.iterator.each(function(kvp: go.KeyValuePair<string, any>) {
+            const w = fp.findNodeForKey(kvp.key) as go.Group;
+            changedWalls.add(w);
+          });
+          changedWalls.add(wall);
+
+          fp.updateWallDimensions(changedWalls);
+          fp.updateWallAngles();
+        }
+
+
+
+
+
+        // check if selected wall is now overlapping some wall it shouldn't be
+        const allWalls = fp.findNodesByExample({ category: 'WallGroup' });
+        // let cannotMove = false;
+        allWalls.iterator.each(function(n: go.Node) {
+          const w = n as go.Group;
+          if (wall && wall.data.key !== w.data.key && fp.getWallsIntersection(wall, w)) {
+            if (!changedWalls.contains(w)) {
+              moveAndUpdate(origLoc);
+              return origLoc;
+            }
+          }
+        });
+
+        /*
+        const changedWalls = new go.Set<go.Group>();
+        connectedWallsMap.iterator.each(function(kvp: go.KeyValuePair<string, any>) {
+          const w = fp.findNodeForKey(kvp.key) as go.Group;
+          changedWalls.add(w);
+        });
+        changedWalls.add(wall);
+        changedWalls.iterator.each(function(w) {
+          wrt.performMiteringOnWall(w);
+        });*/
+
+        // return wall.location; // Wall location is updated in updateWall() function based on wall endpoints
+        // if (!cannotMove) {
+        return wall.location;
+        // }
+        // return wall.location;
+      },
       copyable: false
     },
     $(go.Shape,

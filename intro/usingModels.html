@@ -314,7 +314,7 @@ Other pages such as <a href="trees.html">Trees</a> discuss tree-oriented feature
 <h2 id="IdentityAndReferences">Identity and References</h2>
 <p>
   Each <a>Node</a> is the visual representation of a specific JavaScript Object that is in the <a>Model.nodeDataArray</a>.
-  If there are two objects in the model, they will result in two nodes, even if they look similar to each other.
+  If there are two objects in the model, they will result in two nodes, even if the properties of both objects are exactly the same.
   For example:
 </p>
 <pre class="lang-js">
@@ -352,7 +352,8 @@ Other pages such as <a href="trees.html">Trees</a> discuss tree-oriented feature
 </pre>
 <p>
   For the model shown above, this will return a collection of two <a>Node</a>s.
-  It then iterates over that collection and prints each <a>Node.key</a>.
+  It then iterates over that collection and prints each <a>Node.key</a>,
+  which in the case of the above model will be some automatically assigned key values.
 </p>
 
 <h3 id="ReferencesToNodes">References to Nodes</h3>
@@ -428,24 +429,38 @@ But once the data is part of the Model, calling the model's methods to effect ch
 </p>
 <p>
   However, please note that doing so will prevent the <a>UndoManager</a> from properly recording state changes.
+  There would be no way for the <a>UndoManager</a> to know what had been the previous values of properties.
+  Furthermore it makes it hard to have more than one Diagram showing the Model.
 </p>
 
 <h3 id="ImmutableData">Immutable Data</h3>
 <p>
   In some software architectures it is customary to have "models" consist of immutable (unmodifiable) data.
-  However making copies of all of the data and then replacing the <a>Diagram.model</a>, causing old
-  Nodes and Links to be re-created, would be unworkably expensive in time and space when the model is large.
+  However, as the GoJS diagram is modified, its model data will be modified, so you cannot use that immutable data in the model.
+  You could make a copy of all of the immutable data and then replace the <a>Diagram.model</a> whenever the data
+  has changed outside of the diagram/model.  But that would cause old Nodes and Links to be re-created,
+  and that would be unworkably expensive in time and space when the model is large.
 </p>
 <p>
-  If you do have immutable model data, you can update a <a>Model</a> and thus its <a>Diagram</a>s by calling
+  If you do have immutable model data, you can update the existing <a>Model</a> and thus its <a>Diagram</a>s by calling
   the <a>Model.mergeNodeDataArray</a> and <a>GraphLinksModel.mergeLinkDataArray</a> methods.
   This will be much more efficient than replacing the <a>Model.nodeDataArray</a> and <a>GraphLinksModel.linkDataArray</a>
   Arrays each time, because it will preserve the existing Nodes and Links if possible.
 </p>
 <p>
-  However this scheme depends on maintaining the "key"s for all of the node data and for all of the link data.
-  For GraphLinksModels, that means setting <a>GraphLinksModel.linkKeyProperty</a> to the name of the property
+  Note that this scheme depends on maintaining the "key"s for all of the node data and for all of the link data.
+  That happens automatically for all nodes, but for GraphLinksModels, it means setting
+  <a>GraphLinksModel.linkKeyProperty</a> to the name of the property on the link data that
   you want to use to remember the key value.
+</p>
+<p>
+  After each diagram transaction some of the model data may have changed.
+  But you cannot share references to that modified data with the rest of the software that is expecting immutable data.
+  Instead you can call <a>Model.toIncrementalData</a> which will provide copies of the modified data.
+  That data can then be used to update the rest of the app's state.
+  Read more about this at <a href="react.html">Using GoJS with React</a>
+  and the <a href="https://github.com/NorthwoodsSoftware/gojs-react">gojs-react package</a>,
+  which provides generic Diagram components that you can use in your app using React.
 </p>
 
 <h2 id="SavingAndLoadingModels">Saving and Loading Models</h2>

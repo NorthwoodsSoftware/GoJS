@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Link Shifting Tool</title>
+  <meta name="description" content="TypeScript: Allow the user to shift the end of a link that is connected with a rectangular node." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+    <p>
+      This sample demonstrates the LinkShiftingTool, which is an extra tool that can be installed in the ToolManager to allow users
+      to shift the end point of the link to be anywhere along the sides of the port with which it remains connected.
+    </p>
+    <p>
+      This only looks good for ports that occupy the whole of a rectangular node. If you want to restrict the user's permitted
+      sides, you can adapt the
+      <code>LinkShiftingTool.doReshape</code> method to do what you want.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { LinkShiftingTool } from './LinkShiftingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', {
+        'undoManager.isEnabled': true
+    });
+    myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool));
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Auto', {
+            fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
+            fromLinkable: true, toLinkable: true,
+            locationSpot: go.Spot.Center
+        }, new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify), $(go.Shape, { fill: 'lightgray' }), $(go.TextBlock, { margin: 10 }, { fromLinkable: false, toLinkable: false }, new go.Binding('text', 'key')));
+    myDiagram.linkTemplate =
+        $(go.Link, {
+            reshapable: true, resegmentable: true,
+            relinkableFrom: true, relinkableTo: true,
+            adjusting: go.Link.Stretch
+        },
+        // remember the (potentially) user-modified route
+        new go.Binding('points').makeTwoWay(),
+        // remember any spots modified by LinkShiftingTool
+        new go.Binding('fromSpot', 'fromSpot', go.Spot.parse).makeTwoWay(go.Spot.stringify), new go.Binding('toSpot', 'toSpot', go.Spot.parse).makeTwoWay(go.Spot.stringify), $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
+    myDiagram.model = new go.GraphLinksModel([
+        { key: 'Alpha', location: '0 0' },
+        { key: 'Beta', location: '0 100' }
+    ], [
+        { from: 'Alpha', to: 'Beta' }
+    ]);
+    myDiagram.addDiagramListener('InitialLayoutCompleted', function (e) {
+        // select the Link in order to show its two additional Adornments, for shifting the ends
+        const firstlink = myDiagram.links.first();
+        if (firstlink !== null)
+            firstlink.isSelected = true;
+    });
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

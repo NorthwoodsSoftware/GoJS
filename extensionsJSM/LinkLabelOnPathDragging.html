@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Draggable Link Labels That Stay On Path</title>
+  <meta name="description" content="TypeScript: This variation on the LinkLabelDraggingTool extension restricts link labels to stay on the link's route while the user is dragging it." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 600px"></div>
+    <p>
+      This sample demonstrates a custom Tool, LinkLabelOnPathDraggingTool, that allows the user to drag the label of a Link, but
+      that keeps the label exactly on the path of the link. The tool is defined at <a href="LinkLabelOnPathDraggingTool.ts">LinkLabelOnPathDraggingTool.ts</a>.
+    </p>
+    <p>
+      The label on the link can be any arbitrarily complex object.
+      It is positioned by the <a>GraphObject.segmentIndex</a> and <a>GraphObject.segmentFraction</a> properties.
+      The segmentIndex is set to NaN such that the whole link path acts as the segment, and the segmentFraction is set by the LinkLabelOnPathDraggingTool.
+      A two-way data binding on segmentFraction automatically remembers any modified value on the link data object in the model.
+    </p>
+    <p>
+      The tool is derived from a similar tool, <a href="LinkLabelDraggingTool.ts">LinkLabelDraggingTool.ts</a>, that allows
+      the user to drag the label in any direction from the mid-point of the Link path.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { LinkLabelOnPathDraggingTool } from './LinkLabelOnPathDraggingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // the ID of the DIV HTML element
+    {
+        layout: $(go.ForceDirectedLayout, { defaultSpringLength: 50, defaultElectricalCharge: 50 }),
+        'undoManager.isEnabled': true
+    });
+    // install the LinkLabelDraggingTool as a "mouse move" tool
+    myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool());
+    myDiagram.nodeTemplate =
+        $(go.Node, go.Panel.Auto, { locationSpot: go.Spot.Center }, $(go.Shape, {
+            fill: 'orange',
+            portId: '',
+            fromLinkable: true,
+            fromSpot: go.Spot.AllSides,
+            toLinkable: true,
+            toSpot: go.Spot.AllSides,
+            cursor: 'pointer'
+        }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 10, font: 'bold 12pt sans-serif' }, new go.Binding('text')));
+    myDiagram.linkTemplate =
+        $(go.Link, {
+            routing: go.Link.AvoidsNodes,
+            corner: 5,
+            relinkableFrom: true,
+            relinkableTo: true,
+            reshapable: true,
+            resegmentable: true
+        }, $(go.Shape), $(go.Shape, { toArrow: 'OpenTriangle' }), $(go.Panel, 'Auto',
+        // mark this Panel as being a draggable label, and set default segment props
+        { _isLinkLabel: true, segmentIndex: NaN, segmentFraction: .5 }, $(go.Shape, { fill: 'white' }), $(go.TextBlock, '?', { margin: 3 }, new go.Binding('text', 'color')),
+        // remember any modified segment properties in the link data object
+        new go.Binding('segmentIndex').makeTwoWay(), new go.Binding('segmentFraction').makeTwoWay()));
+    // create a few nodes and links
+    myDiagram.model = new go.GraphLinksModel([
+        { key: 1, text: 'one', color: 'lightyellow' },
+        { key: 2, text: 'two', color: 'brown' },
+        { key: 3, text: 'three', color: 'green' },
+        { key: 4, text: 'four', color: 'slateblue' },
+        { key: 5, text: 'five', color: 'aquamarine' },
+        { key: 6, text: 'six', color: 'lightgreen' },
+        { key: 7, text: 'seven' }
+    ], [
+        { from: 5, to: 6, color: 'orange' },
+        { from: 1, to: 2, color: 'red' },
+        { from: 1, to: 3, color: 'blue' },
+        { from: 1, to: 4, color: 'goldenrod' },
+        { from: 2, to: 5, color: 'fuchsia' },
+        { from: 3, to: 5, color: 'green' },
+        { from: 4, to: 5, color: 'black' },
+        { from: 6, to: 7 }
+    ]);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

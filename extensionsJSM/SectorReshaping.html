@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tool for Reshaping a Sector of a Circle</title>
+  <meta name="description" content="TypeScript: A demonstration of the SectorReshapingTool extension." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+    <p>
+      Two of the handles permit changing the angles of the sector; one handle permits changing the radius of the sector.
+    </p>
+    <p>
+      Note that the <a>Geometry</a> returned by <code>makeSector</code> always returns a Geometry that
+      occupies the area that would be occupied by a full circle.  That Geometry-creating function also
+      depends on three data properties, <code>radius</code>, <code>angle</code>, and <code>sweep</code>.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { SectorReshapingTool } from './SectorReshapingTool.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', {
+      'animationManager.isEnabled': false,
+      'undoManager.isEnabled': true
+    });
+
+    // install the SectorReshapingTool as a mouse-down tool
+    myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool());
+
+    function makeSector(data) {
+      const radius = SectorReshapingTool.getRadius(data);
+      const angle = SectorReshapingTool.getAngle(data);
+      const sweep = SectorReshapingTool.getSweep(data);
+      const start = new go.Point(radius, 0).rotate(angle);
+      // this is much more efficient than calling go.GraphObject.make:
+      const geo = new go.Geometry()
+        .add(new go.PathFigure(radius + start.x, radius + start.y) // start point
+          .add(new go.PathSegment(go.PathSegment.Arc, angle, sweep, // angles
+            radius, radius, // center
+            radius, radius)) // radius
+          .add(new go.PathSegment(go.PathSegment.Line, radius, radius).close()))
+        .add(new go.PathFigure(0, 0)) // make sure the Geometry always includes the whole circle
+        .add(new go.PathFigure(2 * radius, 2 * radius)); // even if only a small sector is "lit"
+      return geo;
+    }
+
+    myDiagram.nodeTemplate =
+      $(go.Node, 'Spot',
+        {
+          locationSpot: go.Spot.Center, locationObjectName: 'LAMP',
+          selectionObjectName: 'LAMP', selectionAdorned: false
+        },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        // selecting a Node brings it forward in the z-order
+        new go.Binding('layerName', 'isSelected', (s) => s ? 'Foreground' : '').ofObject(),
+        $(go.Panel, 'Spot', { name: 'LAMP' },
+          $(go.Shape, // arc
+            { fill: 'yellow', stroke: 'lightgray', strokeWidth: 0.5 },
+            new go.Binding('geometry', '', makeSector)),
+          $(go.Shape, 'Circle', { name: 'SHAPE', width: 6, height: 6 })),
+        $(go.TextBlock,
+          {
+            alignment: new go.Spot(0.5, 0.5, 0, 3), alignmentFocus: go.Spot.Top,
+            stroke: 'blue', background: 'rgba(255,255,255,0.3)'
+          },
+          new go.Binding('alignment', 'spot', go.Spot.parse).makeTwoWay(go.Spot.stringify),
+          new go.Binding('text', 'name'))
+      );
+
+    myDiagram.model = new go.GraphLinksModel([
+      { name: 'Alpha', radius: 70, sweep: 120 },
+      { name: 'Beta', radius: 70, sweep: 80, angle: 200 }
+    ]);
+    myDiagram.commandHandler.selectAll(); // to show the tool handles
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

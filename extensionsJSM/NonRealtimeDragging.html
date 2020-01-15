@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Non-Realtime Dragging</title>
+  <meta name="description" content="TypeScript: A modification of DraggingTool to show a ghost image of what is being moved, rather than moving the nodes and links in realtime." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+    <p>
+      This custom <a>DraggingTool</a> class causes the user to drag around a translucent image of the Nodes and Links being moved,
+      leaving the selected Parts in place, rather than actually moving those Nodes and Links in realtime.
+      Only when the mouse up occurs does the move happen.
+    </p>
+    <p>
+      This tool is defined in its own file, as <a href="NonRealtimeDraggingTool.ts">NonRealtimeDraggingTool.ts</a>
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { NonRealtimeDraggingTool } from './NonRealtimeDraggingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', {
+        draggingTool: new NonRealtimeDraggingTool(),
+        'undoManager.isEnabled': true
+    });
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Auto', { locationSpot: go.Spot.Center }, $(go.Shape, 'Circle', {
+            fill: 'white',
+            portId: '', cursor: 'pointer',
+            // allow all kinds of links from and to this port
+            fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+            toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true
+        }, new go.Binding('fill', 'color')), $(go.TextBlock, {
+            font: 'bold 14px sans-serif',
+            stroke: '#333',
+            margin: 6,
+            isMultiline: false,
+            editable: true // allow in-place editing by user
+        }, new go.Binding('text', 'text').makeTwoWay()) // the label shows the node data's text
+        );
+    myDiagram.model = new go.GraphLinksModel([
+        { key: 1, text: 'Alpha', color: 'lightblue' },
+        { key: 2, text: 'Beta', color: 'orange' },
+        { key: 3, text: 'Gamma', color: 'lightgreen', group: 5 },
+        { key: 4, text: 'Delta', color: 'pink', group: 5 },
+        { key: 5, text: 'Epsilon', color: 'green', isGroup: true }
+    ], [
+        { from: 1, to: 2, color: 'blue' },
+        { from: 2, to: 2 },
+        { from: 3, to: 4, color: 'green' },
+        { from: 3, to: 1, color: 'purple' }
+    ]);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

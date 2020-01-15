@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.5
+ * Type definitions for GoJS v2.1.6
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -12605,7 +12605,7 @@ export class CommandHandler {
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
-     * @param {number=} newscale This defaults to #defaultScale, which is normally 1.0.  The value should be greater than zero.
+     * @param {number=} newscale This defaults to Diagram#defaultScale, which is normally 1.0.  The value should be greater than zero.
      * @see #canResetZoom
      */
     resetZoom(newscale?: number): void;
@@ -12616,7 +12616,7 @@ export class CommandHandler {
      * This method must not have any side-effects.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
-     * @param {number=} newscale This defaults to #defaultScale, which is normally 1.0.  The value should be greater than zero.
+     * @param {number=} newscale This defaults to Diagram#defaultScale, which is normally 1.0.  The value should be greater than zero.
      * @return {boolean}
      * This returns true if Diagram#allowZoom is true.
      * and if the new scale is within the range of Diagram#minScale and Diagram#maxScale.
@@ -13066,14 +13066,8 @@ export class CommandHandler {
      */
     memberValidation: ((aGroup: Group, somePart: Part) => boolean) | null;
     /**
+     * Undocumented.
      * Deprecated in favor of Diagram#defaultScale.
-     *
-     * Gets or sets the Diagram#scale set by #resetZoom.
-     *
-     * The default value is 1.0.
-     * The value must be a number larger than 0.
-     * Setting this property does not raise any events.
-     * @since 1.3
      */
     defaultScale: number;
     /**
@@ -22692,6 +22686,16 @@ export class Model {
      * Setting this property does not raise a ChangedEvent.
      */
     skipsUndoManager: boolean;
+    /**
+     * Undocumented.
+     * This is called during an undo or redo to modify the model or its objects.
+     *
+     * This does not raise a ChangedEvent.
+     * @expose
+     * @param {ChangedEvent} e This describes the change that needs to be done.
+     * @param {boolean} undo If true, this method should restore the older state, otherwise the newer state.
+     */
+    changeState(e: ChangedEvent, undo: boolean): void;
     /**
      * Begin a transaction, where the changes are held by a Transaction object
      * in the UndoManager.

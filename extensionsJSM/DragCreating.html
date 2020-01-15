@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Drag Creating Tool</title>
+  <meta name="description" content="TypeScript: Create nodes by dragging, thereby specifying their initial size." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%;height: 800px"></div>
+    <label><input id="ToolEnabled" type="checkbox" checked="checked"/>DragCreatingTool enabled</label>
+    <p>
+      This sample demonstrates the DragCreatingTool, which replaces the standard DragSelectingTool. It is defined in its own file,
+      as <a href="DragCreatingTool.ts">DragCreatingTool.ts</a>.
+    </p>
+    <p>
+      Press in the background and then drag to show the area to be occupied by the new node. The mouse-up event will add a copy
+      of the DragCreatingTool.archetypeNodeData object, causing a new node to be created. The tool will assign its <a>GraphObject.position</a>      and <a>GraphObject.desiredSize</a>.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { DragCreatingTool } from './DragCreatingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram =
+        $(go.Diagram, 'myDiagramDiv', {
+            // Define the template for Nodes, just some text inside a colored rectangle
+            nodeTemplate: $(go.Node, 'Auto', { minSize: new go.Size(60, 20), resizable: true }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
+            // temporarily put selected nodes in ForegFround layer
+            new go.Binding('layerName', 'isSelected', (s) => s ? 'Foreground' : '').ofObject(), $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color'))),
+            'undoManager.isEnabled': true
+        });
+
+    myDiagram.add($(go.Part, { layerName: 'Grid', location: new go.Point(0, 0) }, $(go.TextBlock, 'Mouse-down and then drag in the background\nto add a Node there with the drawn size.', { stroke: 'brown' })));
+
+    class CustomDragCreatingTool extends DragCreatingTool {
+        insertPart(bounds) {
+            if (this.archetypeNodeData === null)
+                return null;
+            // use a different color each time
+            this.archetypeNodeData.color = go.Brush.randomColor();
+            // call the base method to do normal behavior and return its result
+            return DragCreatingTool.prototype.insertPart.call(this, bounds);
+        }
+    }
+
+    // Add an instance of the custom tool defined in DragCreatingTool.js.
+    // This needs to be inserted before the standard DragSelectingTool,
+    // which is normally the third Tool in the ToolManager.mouseMoveTools list.
+    // Note that if you do not set the DragCreatingTool.delay, the default value will
+    // require a wait after the mouse down event.  Not waiting will allow the DragSelectingTool
+    // and the PanningTool to be able to run instead of the DragCreatingTool, depending on the delay.
+    myDiagram.toolManager.mouseMoveTools.insertAt(2, $(CustomDragCreatingTool, {
+        isEnabled: true,
+        delay: 0,
+        box: $(go.Part, { layerName: 'Tool' }, $(go.Shape, { name: 'SHAPE', fill: null, stroke: 'cyan', strokeWidth: 2 })),
+        archetypeNodeData: { color: 'white' } // initial properties shared by all nodes
+    }));
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+
+    function toolEnabled() {
+      const enable = document.getElementById('ToolEnabled').checked;
+      const tool = myDiagram.toolManager.findTool('DragCreating');
+      if (tool !== null)
+          tool.isEnabled = enable;
+    }
+  </script>
+</body>
+</html>

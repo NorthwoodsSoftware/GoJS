@@ -272,6 +272,7 @@ var __extends = (this && this.__extends) || (function () {
         function FishboneLink() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
+        FishboneLink.prototype.computeAdjusting = function () { return this.adjusting; };
         /**
          * Determines the points for this link based on spots and maintains horizontal lines.
          */

@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Polyline Linking Tool</title>
+  <meta name="description" content="TypeScript: Let the user draw a new link by clicking consecutive points through which the link's route must pass." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
+    <div id="buttons">
+      <button id="SaveButton">Save</button>
+      <button id="LoadButton">Load</button>
+    </div>
+    <p>
+      This sample demonstrates the PolylineLinkingTool, which replaces the standard LinkingTool. The tool is defined in its own
+      file, as <a href="PolylineLinkingTool.ts">PolylineLinkingTool.ts</a>.
+    </p>
+    <p>
+      The user starts drawing a new link from a node in the normal manner, by dragging from a port, which for feedback purposes
+      has a "pointer" cursor. Normally the user would have to release the mouse near the target port/node. However with the
+      PolylineLinkingTool the user may click at various points to cause the new link to be routed along those points. Clicking
+      on the target port completes the new link. Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point.
+    </p>
+    <p>
+      Furthermore, because <a>Link.resegmentable</a> is true, the user can easily add or remove segments from the route of
+      a selected link. To insert a segment, the user can start dragging the small diamond resegmenting handle. To remove
+      a segment, the user needs to move a regular reshaping handle to cause the adjacent two segments to be in a straight
+      line.
+    </p>
+    <p>
+      The PolylineLinkingTool also works with orthogonally routed links. To demonstrate this, uncomment the two lines that initialize
+      <a>Link.routing</a> to be <a>Link.Orthogonal</a>.
+    </p>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+    { "key": 1, "text": "Node 1", "fill": "blueviolet", "loc": "100 100" },
+    { "key": 2, "text": "Node 2", "fill": "orange", "loc": "400 100" }
+  ],
+  "linkDataArray": [  ]
+}
+    </textarea>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { PolylineLinkingTool } from './PolylineLinkingTool.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram =
+        $(go.Diagram, 'myDiagramDiv');
+
+    // install custom linking tool, defined in PolylineLinkingTool.js
+    const tool = new PolylineLinkingTool();
+    // tool.temporaryLink.routing = go.Link.Orthogonal;  // optional, but need to keep link template in sync, below
+    myDiagram.toolManager.linkingTool = tool;
+
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Spot', { locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), $(go.Shape, {
+            width: 100, height: 100, fill: 'lightgray',
+            portId: '', cursor: 'pointer',
+            fromLinkable: true,
+            fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+            toLinkable: true,
+            toLinkableSelfNode: true, toLinkableDuplicates: true // optional
+        }, new go.Binding('fill')), $(go.Shape, { width: 70, height: 70, fill: 'transparent', stroke: null }), $(go.TextBlock, new go.Binding('text')));
+    myDiagram.linkTemplate =
+        $(go.Link, { reshapable: true, resegmentable: true },
+        // { routing: go.Link.Orthogonal },  // optional, but need to keep LinkingTool.temporaryLink in sync, above
+        { adjusting: go.Link.Stretch }, // optional
+        new go.Binding('points', 'points').makeTwoWay(), $(go.Shape, { strokeWidth: 1.5 }), $(go.Shape, { toArrow: 'OpenTriangle' }));
+    load(); // load a simple diagram from the textarea
+
+    // save a model to and load a model from Json text, displayed below the Diagram
+    export function save() {
+      const str = myDiagram.model.toJson();
+      document.getElementById('mySavedModel').value = str;
+    }
+    export function load() {
+      const str = document.getElementById('mySavedModel').value;
+      myDiagram.model = go.Model.fromJson(str);
+      myDiagram.model.undoManager.isEnabled = true;
+    }
+
+    document.getElementById("SaveButton").onclick = save;
+    document.getElementById("LoadButton").onclick = load;
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

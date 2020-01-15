@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Geometry Reshaping</title>
+  <meta name="description" content="TypeScript: Allow the user to change a Shape by dragging a handle at a point of the Shape's Geometry." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 350px"></div>
+    <p>
+      The GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user via the dragging of tool handles.
+      Reshape handles are drawn as Adornments at each point in the geometry. It is defined in its own file, as <a href="GeometryReshapingTool.ts">GeometryReshapingTool.ts</a>.
+    </p>
+    <p>
+      Usage can also be seen in the <a href="FreehandDrawing.html">Freehand Drawing</a> and <a href="PolygonDrawing.html">Polygon Drawing</a>      samples.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { GeometryReshapingTool } from './GeometryReshapingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+          'undoManager.isEnabled': true // enable undo & redo
+      });
+    myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
+
+    myDiagram.nodeTemplate =
+        $(go.Node, { reshapable: true }, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+        $(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 }, new go.Binding('geometryString', 'geo').makeTwoWay()));
+
+    myDiagram.model = new go.GraphLinksModel([{ geo: 'F M0 145 L75 2 L131 87 L195 0 L249 143z', key: -1 }], []);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Fishbone Layout</title>
+  <meta name="description" content="TypeScript: Cause-and-effect diagrams using FishboneLayout, also known as Ishikawa or herringbone diagrams." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="height:550px;width:100%;border:1px solid black;"></div>
+    <div id="buttons">
+      <label>Layout:</label>
+      <button id="fishbone">Fishbone</button>
+      <button id="branching">Branching</button>
+      <button id="normal">Normal</button>
+    </div>
+    <p>
+      This sample shows a "fishbone" layout of a tree model of cause-and-effect relationships. This type of layout is often seen
+      in root cause analysis, or RCA. The layout is defined in its own file, as <a href="FishboneLayout.ts">FishboneLayout.ts</a>.
+      When using FishboneLayout the diagram uses FishboneLink in order to get custom routing for the links.
+    </p>
+    <p>
+      The buttons each set the <a>Diagram.layout</a> within a transaction.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { FishboneLayout, FishboneLink } from './FishboneLayout.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // refers to its DIV HTML element by id
+        { isReadOnly: true }); // do not allow the user to modify the diagram
+
+        // define the normal node template, just some text
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Auto', $(go.TextBlock, new go.Binding('text'), new go.Binding('font', '', convertFont)));
+
+    function convertFont(data) {
+        let size = data.size;
+        if (size === undefined)
+            size = 13;
+        let weight = data.weight;
+        if (weight === undefined)
+            weight = '';
+        return weight + ' ' + size + 'px sans-serif';
+    }
+
+    // This demo switches the Diagram.linkTemplate between the "normal" and the "fishbone" templates.
+    // If you are only doing a FishboneLayout, you could just set Diagram.linkTemplate
+    // to the template named "fishbone" here, and not switch templates dynamically.
+    // define the non-fishbone link template
+    myDiagram.linkTemplateMap.add('normal', $(go.Link, { routing: go.Link.Orthogonal, corner: 4 }, $(go.Shape)));
+
+    // use this link template for fishbone layouts
+    myDiagram.linkTemplateMap.add('fishbone', $(FishboneLink, // defined above
+      $(go.Shape)));
+
+      // here is the structured data used to build the model
+    const json = {
+        'text': 'Incorrect Deliveries', 'size': 18, 'weight': 'Bold', 'causes': [
+            {
+                'text': 'Skills', 'size': 14, 'weight': 'Bold', 'causes': [
+                    {
+                        'text': 'knowledge', 'weight': 'Bold', 'causes': [
+                            {
+                                'text': 'procedures', 'causes': [
+                                    { 'text': 'documentation' }
+                                ]
+                            },
+                            { 'text': 'products' }
+                        ]
+                    },
+                    { 'text': 'literacy', 'weight': 'Bold' }
+                ]
+            },
+            {
+                'text': 'Procedures', 'size': 14, 'weight': 'Bold', 'causes': [
+                    {
+                        'text': 'manual', 'weight': 'Bold', 'causes': [
+                            { 'text': 'consistency' }
+                        ]
+                    },
+                    {
+                        'text': 'automated', 'weight': 'Bold', 'causes': [
+                            { 'text': 'correctness' },
+                            { 'text': 'reliability' }
+                        ]
+                    }
+                ]
+            },
+            {
+                'text': 'Communication', 'size': 14, 'weight': 'Bold', 'causes': [
+                    { 'text': 'ambiguity', 'weight': 'Bold' },
+                    {
+                        'text': 'sales staff', 'weight': 'Bold', 'causes': [
+                            {
+                                'text': 'order details', 'causes': [
+                                    { 'text': 'lack of knowledge' }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        'text': 'telephone orders', 'weight': 'Bold', 'causes': [
+                            { 'text': 'lack of information' }
+                        ]
+                    },
+                    {
+                        'text': 'picking slips', 'weight': 'Bold', 'causes': [
+                            { 'text': 'details' },
+                            { 'text': 'legibility' }
+                        ]
+                    }
+                ]
+            },
+            {
+                'text': 'Transport', 'size': 14, 'weight': 'Bold', 'causes': [
+                    {
+                        'text': 'information', 'weight': 'Bold', 'causes': [
+                            { 'text': 'incorrect person' },
+                            {
+                                'text': 'incorrect addresses', 'causes': [
+                                    {
+                                        'text': 'customer data base', 'causes': [
+                                            { 'text': 'not up-to-date' },
+                                            { 'text': 'incorrect program' }
+                                        ]
+                                    }
+                                ]
+                            },
+                            { 'text': 'incorrect dept' }
+                        ]
+                    },
+                    {
+                        'text': 'carriers', 'weight': 'Bold', 'causes': [
+                            { 'text': 'efficiency' },
+                            { 'text': 'methods' }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+
+    function walkJson(obj, arr) {
+        const key = arr.length;
+        obj.key = key;
+        arr.push(obj);
+        const children = obj.causes;
+        if (children) {
+            for (let i = 0; i < children.length; i++) {
+                const o = children[i];
+                o.parent = key; // reference to parent node data
+                walkJson(o, arr);
+            }
+        }
+    }
+
+    // build the tree model
+    const nodeDataArray = [];
+    walkJson(json, nodeDataArray);
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+    layoutFishbone();
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+
+    // use FishboneLayout and FishboneLink
+    function layoutFishbone() {
+        myDiagram.startTransaction('fishbone layout');
+        myDiagram.linkTemplate = myDiagram.linkTemplateMap.getValue('fishbone');
+        myDiagram.layout = go.GraphObject.make(FishboneLayout, {
+            angle: 180,
+            layerSpacing: 10,
+            nodeSpacing: 20,
+            rowSpacing: 10
+        });
+        myDiagram.commitTransaction('fishbone layout');
+    }
+    // make the layout a branching tree layout and use a normal link template
+    function layoutBranching() {
+        myDiagram.startTransaction('branching layout');
+        myDiagram.linkTemplate = myDiagram.linkTemplateMap.getValue('normal');
+        myDiagram.layout = go.GraphObject.make(go.TreeLayout, {
+            angle: 180,
+            layerSpacing: 20,
+            alignment: go.TreeLayout.AlignmentBusBranching
+        });
+        myDiagram.commitTransaction('branching layout');
+    }
+    // make the layout a basic tree layout and use a normal link template
+    function layoutNormal() {
+        myDiagram.startTransaction('normal layout');
+        myDiagram.linkTemplate = myDiagram.linkTemplateMap.getValue('normal');
+        myDiagram.layout = go.GraphObject.make(go.TreeLayout, {
+            angle: 180,
+            breadthLimit: 1000,
+            alignment: go.TreeLayout.AlignmentStart
+        });
+        myDiagram.commitTransaction('normal layout');
+    }
+
+    document.getElementById("fishbone").onclick = layoutFishbone;
+    document.getElementById("branching").onclick = layoutBranching;
+    document.getElementById("normal").onclick = layoutNormal;
+  </script>
+</body>
+</html>

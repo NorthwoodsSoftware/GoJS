@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Demo of HyperlinkText Builder</title>
+  <meta name="description" content="TypeScript: Implement a 'hyperlink' that allows the user to open a page by clicking." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>
+    <p>
+      This uses the "HyperlinkText" builder defined in <a href="HyperlinkText.ts">HyperlinkText.ts</a>.
+    </p>
+    <p>
+      Click on the text to open a window to a computed URL. A mouse-over on the text will underline the text. Hover on the text
+      and you will see a tooltip showing the destination URL.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import "./HyperlinkText.js";
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv');
+
+    myDiagram.nodeTemplate =
+      $(go.Node, 'Auto',
+        $(go.Shape, 'Ellipse', { fill: 'lightskyblue' }),
+        $('HyperlinkText',
+          (node) => 'https://gojs.net/' + node.data.version,
+          (node) => 'Visit GoJS ' + node.data.version,
+          { margin: 10 })
+      );
+
+    myDiagram.model = new go.GraphLinksModel([
+      { key: 1, version: 'beta' },
+      { key: 2, version: 'latest' }
+    ], [
+      { from: 1, to: 2 }
+    ]);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

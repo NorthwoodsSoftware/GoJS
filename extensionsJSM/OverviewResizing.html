@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Overview Resizing</title>
+  <meta name="description" content="TypeScript: The OverviewResizingTool extension allows the user to change the viewport of the observed Diagram by resizing the box representing the viewport in an Overview." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+    <div id="myOverviewDiv" style="border: solid 1px black; width: 250px; height: 200px"></div>
+    <p><button id="zoomToFit">Zoom to Fit</button><button id="expandAtRandom">Expand random Node</button></p>
+    <p>
+      This sample demonstrates a custom <a>ResizingTool</a> which allows the user to resize the overview box.
+      It is defined in its own file, as <a href="OverviewResizingTool.ts">OverviewResizingTool.ts</a>.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { OverviewResizingTool } from './OverviewResizingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+    {
+        layout: $(go.ForceDirectedLayout),
+        'undoManager.isEnabled': true // enable undo & redo
+    });
+    // Define the Node template.
+    // This uses a Spot Panel to position a button relative
+    // to the ellipse surrounding the text.
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Spot', {
+            selectionObjectName: 'PANEL',
+            isTreeExpanded: false,
+            isTreeLeaf: false
+        },
+        // the node's outer shape, which will surround the text
+        $(go.Panel, 'Auto', { name: 'PANEL' }, $(go.Shape, 'Circle', { fill: '#03A9F4', stroke: 'black' }), $(go.TextBlock, { font: '12pt sans-serif', margin: 5 }, new go.Binding('text', 'key'))),
+        // the expand/collapse button, at the top-right corner
+        $('TreeExpanderButton', {
+            name: 'TREEBUTTON',
+            width: 20, height: 20,
+            alignment: go.Spot.TopRight,
+            alignmentFocus: go.Spot.Center,
+            // customize the expander behavior to
+            // create children if the node has never been expanded
+            click: function (e, obj) {
+                const node = obj.part; // get the Node containing this Button
+                if (node === null)
+                    return;
+                e.handled = true;
+                expandNode(node);
+            }
+        }) // end TreeExpanderButton
+        ); // end Node
+    // create the model with a root node data
+    myDiagram.model = new go.TreeModel([
+        { key: 0, everExpanded: false }
+    ]);
+    // Overview
+    const myOverview = $(go.Overview, 'myOverviewDiv', // the HTML DIV element for the Overview
+    {
+        observed: myDiagram,
+        contentAlignment: go.Spot.Center,
+        'box.resizable': true,
+        'resizingTool': new OverviewResizingTool()
+    });
+    document.getElementById('zoomToFit').addEventListener('click', function () {
+        myDiagram.zoomToFit();
+    });
+    document.getElementById('expandAtRandom').addEventListener('click', function () {
+        expandAtRandom();
+    });
+
+    function expandNode(node) {
+      const diagram = node.diagram;
+      if (diagram === null)
+          return;
+      diagram.startTransaction('CollapseExpandTree');
+      // this behavior is specific to this incrementalTree sample:
+      const data = node.data;
+      if (!data.everExpanded) {
+          // only create children once per node
+          diagram.model.setDataProperty(data, 'everExpanded', true);
+          const numchildren = createSubTree(data);
+          if (numchildren === 0) { // now known no children: don't need Button!
+              const btn = node.findObject('TREEBUTTON');
+              if (btn !== null)
+                  btn.visible = false;
+          }
+      }
+      // this behavior is generic for most expand/collapse tree buttons:
+      if (node.isTreeExpanded) {
+          diagram.commandHandler.collapseTree(node);
+      }
+      else {
+          diagram.commandHandler.expandTree(node);
+      }
+      diagram.commitTransaction('CollapseExpandTree');
+    }
+    // This dynamically creates the immediate children for a node.
+    // The sample assumes that we have no idea of whether there are any children
+    // for a node until we look for them the first time, which happens
+    // upon the first tree-expand of a node.
+    function createSubTree(parentdata) {
+      let numchildren = Math.floor(Math.random() * 10);
+      if (myDiagram.nodes.count <= 1) {
+          numchildren += 1; // make sure the root node has at least one child
+      }
+      // create several node data objects and add them to the model
+      const model = myDiagram.model;
+      const parent = myDiagram.findNodeForData(parentdata);
+      if (parent === null)
+          return;
+      for (let i = 0; i < numchildren; i++) {
+          const childdata = {
+              key: model.nodeDataArray.length,
+              parent: parentdata.key
+          };
+          // add to model.nodeDataArray and create a Node
+          model.addNodeData(childdata);
+          // position the new child node close to the parent
+          const child = myDiagram.findNodeForData(childdata);
+          if (child !== null)
+              child.location = parent.location;
+      }
+      return numchildren;
+    }
+    function expandAtRandom() {
+      const eligibleNodes = [];
+      myDiagram.nodes.each(function (n) {
+          if (!n.isTreeExpanded)
+              eligibleNodes.push(n);
+      });
+      const node = eligibleNodes[Math.floor(Math.random() * (eligibleNodes.length))];
+      expandNode(node);
+    }
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

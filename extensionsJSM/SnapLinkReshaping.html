@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Snap Link Reshaping</title>
+  <meta name="description" content="TypeScript: When reshaping an orthogonal link, make sure the points are moved onto a grid." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div style="width: 100%; display: flex; justify-content: space-between">
+      <div id="myPaletteDiv" style="width: 105px; height: 620px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
+      <div id="myDiagramDiv" style="flex-grow: 1; height: 620px; border: solid 1px black"></div>
+    </div>
+    <p>
+      This sample is a simplified version of the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
+      Links are not draggable, there are no custom <a>Adornment</a>s, nodes are not rotatable, and links
+      do not have text labels.
+    </p>
+    <p>
+      Its purpose is to demonstrate the <a href="SnapLinkReshapingTool.ts">SnapLinkReshapingTool</a>,
+      an extension of <a>LinkReshapingTool</a> that snaps each dragged reshape handle of selected Links to
+      the nearest grid point.
+    </p>
+    <p>
+      Note how the "LinkReshaped" DiagramEvent listener changes the <a>Link.routing</a> of the reshaped Link,
+      so that it is no longer AvoidsNodes routing but simple Orthogonal routing.
+      This combined with <a>Link.adjusting</a> being End permits the middle points of the link route to be
+      retained even after the user moves or resizes nodes.
+      Furthermore there is a TwoWay <a>Binding</a> on <a>Link.routing</a>, so that the model remembers
+      whether the link route had ever been reshaped manually.
+    </p>
+    <button id="SaveButton">Save</button>
+    <button id="LoadButton">Load</button>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+  { "class": "go.GraphLinksModel",
+    "linkFromPortIdProperty": "fromPort",
+    "linkToPortIdProperty": "toPort",
+    "modelData": {"position":"0 0"},
+    "nodeDataArray": [
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-3, "loc":"184 176"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-2, "loc":"248 248"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-4, "loc":"424 192"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-5, "loc":"320 152"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-6, "loc":"424 320"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-7, "loc":"352 256"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-8, "loc":"176 296"},
+  {"text":"DB", "figure":"Database", "fill":"lightgray", "key":-9, "loc":"288 344"},
+  {"text":"Step", "key":-10, "loc":"96 240"},
+  {"text":"Step", "key":-11, "loc":"536 280"}
+  ],
+    "linkDataArray": [
+  {"from":-10, "to":-11, "fromPort":"R", "toPort":"L", "points":[121,240,131,240,132,240,132,240,216,240,216,176,264,176,264,104,392,104,392,240,480,240,480,280,501,280,511,280], "routing":"Orthogonal"}
+    ]}
+    </textarea>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import './Figures.js';
+    import { SnapLinkReshapingTool } from './SnapLinkReshapingTool.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+        {
+          // supply a simple narrow grid that manually reshaped link routes will follow
+          grid: $(go.Panel, 'Grid', { gridCellSize: new go.Size(8, 8) }, $(go.Shape, 'LineH', { stroke: 'lightgray', strokeWidth: 0.5 }), $(go.Shape, 'LineV', { stroke: 'lightgray', strokeWidth: 0.5 })),
+          'draggingTool.isGridSnapEnabled': true,
+          linkReshapingTool: $(SnapLinkReshapingTool),
+          // when the user reshapes a Link, change its Link.routing from AvoidsNodes to Orthogonal,
+          // so that combined with Link.adjusting == End the link will retain its reshaped mid points
+          // even after nodes are moved
+          'LinkReshaped': (e) => { e.subject.routing = go.Link.Orthogonal; },
+          'animationManager.isEnabled': false,
+          'undoManager.isEnabled': true
+        });
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      const button = document.getElementById('SaveButton');
+      if (button)
+        button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0)
+          document.title += '*';
+      }
+      else {
+        if (idx >= 0)
+          document.title = document.title.substr(0, idx);
+      }
+    });
+    // Define a function for creating a "port" that is normally transparent.
+    // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
+    // and where the port is positioned on the node, and the boolean "output" and "input" arguments
+    // control whether the user can draw links from or to the port.
+    function makePort(name, spot, output, input) {
+      // the port is basically just a small transparent square
+      return $(go.Shape, 'Circle', {
+        fill: null,
+        stroke: null,
+        desiredSize: new go.Size(7, 7),
+        alignment: spot,
+        alignmentFocus: spot,
+        portId: name,
+        fromSpot: spot, toSpot: spot,
+        fromLinkable: output, toLinkable: input,
+        cursor: 'pointer' // show a different cursor to indicate potential link point
+      });
+    }
+    myDiagram.nodeTemplate =
+      $(go.Node, 'Spot',
+        { locationSpot: go.Spot.Center },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        { selectable: true },
+        { resizable: true, resizeObjectName: 'PANEL' },
+        // the main object is a Panel that surrounds a TextBlock with a Shape
+        $(go.Panel, 'Auto',
+          { name: 'PANEL' },
+          new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
+          $(go.Shape, 'Rectangle', // default figure
+            {
+              portId: '',
+              fromLinkable: true, toLinkable: true, cursor: 'pointer',
+              fill: 'white' // default color
+            },
+            new go.Binding('figure'),
+            new go.Binding('fill')),
+          $(go.TextBlock,
+            {
+              font: 'bold 11pt Helvetica, Arial, sans-serif',
+              margin: 8,
+              maxSize: new go.Size(160, NaN),
+              wrap: go.TextBlock.WrapFit,
+              editable: true
+            },
+            new go.Binding('text').makeTwoWay())
+        ),
+        // four small named ports, one on each side:
+        makePort('T', go.Spot.Top, false, true),
+        makePort('L', go.Spot.Left, true, true),
+        makePort('R', go.Spot.Right, true, true),
+        makePort('B', go.Spot.Bottom, true, false),
+        {
+          mouseEnter: (e, node) => {
+            if (node instanceof go.Node)
+              showSmallPorts(node, true);
+          },
+          mouseLeave: (e, node) => {
+            if (node instanceof go.Node)
+              showSmallPorts(node, false);
+          }
+        });
+
+    function showSmallPorts(node, show) {
+      node.ports.each((port) => {
+        if (port.portId !== '') { // don't change the default port, which is the big shape
+          port.fill = show ? 'rgba(0,0,0,.3)' : null;
+        }
+      });
+    }
+
+    myDiagram.linkTemplate =
+      $(go.Link, // the whole link panel
+        { relinkableFrom: true, relinkableTo: true, reshapable: true, resegmentable: true },
+        {
+          routing: go.Link.AvoidsNodes,
+          adjusting: go.Link.End,
+          curve: go.Link.JumpOver,
+          corner: 5,
+          toShortLength: 4
+        },
+        new go.Binding('points').makeTwoWay(),
+        // remember the Link.routing too
+        new go.Binding('routing', 'routing', go.Binding.parseEnum(go.Link, go.Link.AvoidsNodes))
+          .makeTwoWay(go.Binding.toString),
+        $(go.Shape, // the link path shape
+          { isPanelMain: true, strokeWidth: 2 }),
+        $(go.Shape, // the arrowhead
+          { toArrow: 'Standard', stroke: null }));
+
+    load(); // load an initial diagram from some JSON text
+
+    const link = myDiagram.links.first();
+    if (link) link.isSelected = true;
+
+    // initialize the Palette that is on the left side of the page
+    const myPalette =
+      $(go.Palette, 'myPaletteDiv', // must name or refer to the DIV HTML element
+        {
+          maxSelectionCount: 1,
+          nodeTemplateMap: myDiagram.nodeTemplateMap,
+          model: new go.GraphLinksModel([
+            { text: 'Start', figure: 'Circle', fill: 'green' },
+            { text: 'Step' },
+            { text: 'DB', figure: 'Database', fill: 'lightgray' },
+            { text: '???', figure: 'Diamond', fill: 'lightskyblue' },
+            { text: 'End', figure: 'Circle', fill: 'red' },
+            { text: 'Comment', figure: 'RoundedRectangle', fill: 'lightyellow' }
+          ])
+        });
+
+    // Show the diagram's model in JSON format that the user may edit
+    function save() {
+      saveDiagramProperties(); // do this first, before writing to JSON
+      document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
+    }
+
+    function load() {
+      myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+      loadDiagramProperties();
+    }
+
+    function saveDiagramProperties() {
+      myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
+    }
+
+    // Called by "InitialLayoutCompleted" DiagramEvent listener, NOT directly by load()!
+    function loadDiagramProperties() {
+      // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
+      const pos = myDiagram.model.modelData.position;
+      if (pos) myDiagram.initialPosition = go.Point.parse(pos);
+    }
+
+    document.getElementById("SaveButton").onclick = save;
+    document.getElementById("LoadButton").onclick = load;
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

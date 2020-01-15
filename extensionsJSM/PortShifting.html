@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Logic Circuit with shiftable ports</title>
+  <meta name="description" content="TypeScript: Allow the user to shift ports that are in a node." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div style="width: 100%; display: flex; justify-content: space-between">
+      <div id="palette" style="width: 100px; height: 500px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
+      <div id="myDiagramDiv" style="flex-grow: 1; height: 500px; border: solid 1px black"></div>
+    </div>
+    <div id="description">
+      <p>
+        This is exactly like the <a href="../samples/LogicCircuit.html">Logic Circuit sample</a> but also makes use of the
+        PortShiftingTool, which is defined in <a href="PortShiftingTool.ts">PortShiftingTool.ts</a>
+      </p>
+      <p>
+        When the user wants to shift the position of a port on a node, the user can hold down the Shift key during a mouse-down on
+        a port element. Dragging then will move the port within the node.
+      </p>
+      <p>
+        Note how the relative position of the port within the node is maintained as you resize the node.
+      </p>
+      <p>
+        If you want to persist the port's spot, you should add a TwoWay Binding of the <a>GraphObject.alignment</a> property
+        with a property that you define on the node data for each port.
+      </p>
+      <p>
+        This sample does not constrain the position of the port within the node, but you could adapt the PortShiftingTool.updateAlignment
+        method to do so. For example if you wanted, you could keep a port stuck along one edge of the node.
+      </p>
+    </div>
+    <div id="buttons">
+      <button id="saveModel">Save</button>
+      <button id="loadModel">Load</button>
+    </div>
+    <textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"category":"input", "key":"input1", "loc":"-150 -80" },
+{"category":"or", "key":"or1", "loc":"-70 0" },
+{"category":"not", "key":"not1", "loc":"10 0" },
+{"category":"xor", "key":"xor1", "loc":"100 0" },
+{"category":"or", "key":"or2", "loc":"200 0" },
+{"category":"output", "key":"output1", "loc":"200 -100" }
+ ],
+  "linkDataArray": [
+{"from":"input1", "fromPort":"out", "to":"or1", "toPort":"in1"},
+{"from":"or1", "fromPort":"out", "to":"not1", "toPort":"in"},
+{"from":"not1", "fromPort":"out", "to":"or1", "toPort":"in2"},
+{"from":"not1", "fromPort":"out", "to":"xor1", "toPort":"in1"},
+{"from":"xor1", "fromPort":"out", "to":"or2", "toPort":"in1"},
+{"from":"or2", "fromPort":"out", "to":"xor1", "toPort":"in2"},
+{"from":"xor1", "fromPort":"out", "to":"output1", "toPort":""}
+ ]}
+    </textarea>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import './Figures.js';
+    import { PortShiftingTool } from './PortShiftingTool.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const red = 'orangered'; // 0 or false
+    const green = 'forestgreen'; // 1 or true
+
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // create a new Diagram in the HTML DIV element "myDiagramDiv"
+        {
+          'draggingTool.isGridSnapEnabled': true,
+          'undoManager.isEnabled': true
+        });
+    // install the PortShiftingTool as a "mouse move" tool
+    myDiagram.toolManager.mouseMoveTools.insertAt(0, new PortShiftingTool());
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', function(e) {
+      const button = document.getElementById('saveModel');
+      if (button)
+        button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0)
+          document.title += '*';
+      }
+      else {
+        if (idx >= 0)
+          document.title = document.title.substr(0, idx);
+      }
+    });
+    const palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"
+    // creates relinkable Links that will avoid crossing Nodes when possible and will jump over other Links in their paths
+    myDiagram.linkTemplate =
+      $(go.Link, {
+        routing: go.Link.AvoidsNodes,
+        curve: go.Link.JumpOver,
+        corner: 3,
+        relinkableFrom: true, relinkableTo: true,
+        selectionAdorned: false,
+        shadowOffset: new go.Point(0, 0), shadowBlur: 5, shadowColor: 'blue'
+      }, new go.Binding('isShadowed', 'isSelected').ofObject(), $(go.Shape, { name: 'SHAPE', strokeWidth: 2, stroke: red }));
+    // node template helpers
+    const sharedToolTip = $('ToolTip', { 'Border.figure': 'RoundedRectangle' }, $(go.TextBlock, { margin: 2 }, new go.Binding('text', '', function(d) { return d.category; })));
+    // define some common property settings
+    function nodeStyle() {
+      return [new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      new go.Binding('isShadowed', 'isSelected').ofObject(),
+      {
+        selectionAdorned: false,
+        shadowOffset: new go.Point(0, 0),
+        shadowBlur: 15,
+        shadowColor: 'blue',
+        resizable: true,
+        resizeObjectName: 'NODESHAPE',
+        toolTip: sharedToolTip
+      }];
+    }
+    function shapeStyle() {
+      return {
+        name: 'NODESHAPE',
+        fill: 'lightgray',
+        stroke: 'darkslategray',
+        desiredSize: new go.Size(40, 40),
+        strokeWidth: 2
+      };
+    }
+    function portStyle(input) {
+      return {
+        desiredSize: new go.Size(6, 6),
+        fill: 'black',
+        fromSpot: go.Spot.Right,
+        fromLinkable: !input,
+        toSpot: go.Spot.Left,
+        toLinkable: input,
+        toMaxLinks: 1,
+        cursor: 'pointer'
+      };
+    }
+    // define templates for each type of node
+    const inputTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'Circle', shapeStyle(), { fill: red }), // override the default fill (from shapeStyle()) to be red
+      $(go.Shape, 'Rectangle', portStyle(false), // the only port
+        { portId: '', alignment: new go.Spot(1, 0.5) }), {
+      doubleClick: function(e, obj) {
+        if (!(obj instanceof go.Node))
+          return;
+        e.diagram.startTransaction('Toggle Input');
+        const shp = obj.findObject('NODESHAPE');
+        shp.fill = (shp.fill === green) ? red : green;
+        updateStates();
+        e.diagram.commitTransaction('Toggle Input');
+      }
+    });
+    const outputTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'Rectangle', shapeStyle(), { fill: green }), // override the default fill (from shapeStyle()) to be green
+      $(go.Shape, 'Rectangle', portStyle(true), // the only port
+        { portId: '', alignment: new go.Spot(0, 0.5) }));
+    const andTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'AndGate', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in1', alignment: new go.Spot(0, 0.3) }), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in2', alignment: new go.Spot(0, 0.7) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    const orTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'OrGate', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in1', alignment: new go.Spot(0.16, 0.3) }), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in2', alignment: new go.Spot(0.16, 0.7) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    const xorTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'XorGate', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in1', alignment: new go.Spot(0.26, 0.3) }), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in2', alignment: new go.Spot(0.26, 0.7) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    const norTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'NorGate', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in1', alignment: new go.Spot(0.16, 0.3) }), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in2', alignment: new go.Spot(0.16, 0.7) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    const xnorTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'XnorGate', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in1', alignment: new go.Spot(0.26, 0.3) }), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in2', alignment: new go.Spot(0.26, 0.7) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    const nandTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'NandGate', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in1', alignment: new go.Spot(0, 0.3) }), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in2', alignment: new go.Spot(0, 0.7) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    const notTemplate = $(go.Node, 'Spot', nodeStyle(), $(go.Shape, 'Inverter', shapeStyle()), $(go.Shape, 'Rectangle', portStyle(true), { portId: 'in', alignment: new go.Spot(0, 0.5) }), $(go.Shape, 'Rectangle', portStyle(false), { portId: 'out', alignment: new go.Spot(1, 0.5) }));
+    // add the templates created above to myDiagram and palette
+    myDiagram.nodeTemplateMap.add('input', inputTemplate);
+    myDiagram.nodeTemplateMap.add('output', outputTemplate);
+    myDiagram.nodeTemplateMap.add('and', andTemplate);
+    myDiagram.nodeTemplateMap.add('or', orTemplate);
+    myDiagram.nodeTemplateMap.add('xor', xorTemplate);
+    myDiagram.nodeTemplateMap.add('not', notTemplate);
+    myDiagram.nodeTemplateMap.add('nand', nandTemplate);
+    myDiagram.nodeTemplateMap.add('nor', norTemplate);
+    myDiagram.nodeTemplateMap.add('xnor', xnorTemplate);
+    // share the template map with the Palette
+    palette.nodeTemplateMap = myDiagram.nodeTemplateMap;
+    palette.model.nodeDataArray = [
+      { category: 'input' },
+      { category: 'output' },
+      { category: 'and' },
+      { category: 'or' },
+      { category: 'xor' },
+      { category: 'not' },
+      { category: 'nand' },
+      { category: 'nor' },
+      { category: 'xnor' }
+    ];
+    // load the initial diagram
+    load();
+    // continually update the diagram
+    loop();
+
+    // update the diagram every 250 milliseconds
+    function loop() {
+      setTimeout(function() { updateStates(); loop(); }, 250);
+    }
+    // update the value and appearance of each node according to its type and input values
+    function updateStates() {
+      const oldskip = myDiagram.skipsUndoManager;
+      myDiagram.skipsUndoManager = true;
+      // do all "input" nodes first
+      myDiagram.nodes.each(function(node) {
+        if (node.category === 'input') {
+          doInput(node);
+        }
+      });
+      // now we can do all other kinds of nodes
+      myDiagram.nodes.each(function(node) {
+        switch (node.category) {
+          case 'and':
+            doAnd(node);
+            break;
+          case 'or':
+            doOr(node);
+            break;
+          case 'xor':
+            doXor(node);
+            break;
+          case 'not':
+            doNot(node);
+            break;
+          case 'nand':
+            doNand(node);
+            break;
+          case 'nor':
+            doNor(node);
+            break;
+          case 'xnor':
+            doXnor(node);
+            break;
+          case 'output':
+            doOutput(node);
+            break;
+          case 'input': break; // doInput already called, above
+        }
+      });
+      myDiagram.skipsUndoManager = oldskip;
+    }
+    // helper predicate
+    function linkIsTrue(link) {
+      return link.findObject('SHAPE').stroke === green;
+    }
+    // helper function for propagating results
+    function setOutputLinks(node, color) {
+      node.findLinksOutOf().each(function(link) { link.findObject('SHAPE').stroke = color; });
+    }
+    // update nodes by the specific function for its type
+    // determine the color of links coming out of this node based on those coming in and node type
+    function doInput(node) {
+      // the output is just the node's Shape.fill
+      setOutputLinks(node, node.findObject('NODESHAPE').fill);
+    }
+    function doAnd(node) {
+      const color = node.findLinksInto().all(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doNand(node) {
+      const color = !node.findLinksInto().all(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doNot(node) {
+      const color = !node.findLinksInto().all(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doOr(node) {
+      const color = node.findLinksInto().any(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doNor(node) {
+      const color = !node.findLinksInto().any(linkIsTrue) ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doXor(node) {
+      let truecount = 0;
+      node.findLinksInto().each(function(link) {
+        if (linkIsTrue(link))
+          truecount++;
+      });
+      const color = truecount % 2 !== 0 ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doXnor(node) {
+      let truecount = 0;
+      node.findLinksInto().each(function(link) {
+        if (linkIsTrue(link))
+          truecount++;
+      });
+      const color = truecount % 2 === 0 ? green : red;
+      setOutputLinks(node, color);
+    }
+    function doOutput(node) {
+      // assume there is just one input link
+      // we just need to update the node's Shape.fill
+      node.linksConnected.each(function(link) { node.findObject('NODESHAPE').fill = link.findObject('SHAPE').stroke; });
+    }
+    // save a model to and load a model from Json text, displayed below the Diagram
+    function save() {
+      document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
+    }
+    function load() {
+      myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+    }
+    document.getElementById("saveModel").onclick = save;
+    document.getElementById("loadModel").onclick = load;
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

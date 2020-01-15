@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Packed Layout</title>
+  <meta name="description" content="TypeScript: Arrange nodes into rectangular or elliptical areas, ignoring any links." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <style type="text/css">
+    input[type="number"] {
+      width: 60px;
+      margin-left: 3px;
+    }
+
+    input[type=checkbox], input[type=radio] {
+      vertical-align: middle;
+      position: relative;
+      bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="sample">
+    <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>General Properties</b><br />
+        PackShape:<br /> <input type="radio" name="packShape" onclick="layout()" value="Elliptical" checked> Elliptical<br />
+                   <input type="radio" name="packShape" onclick="layout()" value="Rectangular"> Rectangular<br />
+                   <input type="radio" name="packShape" onclick="layout()" value="Spiral"> Spiral<br />
+        PackMode:<br /> <input type="radio" name="packMode" onclick="layout()" value="AspectOnly" checked> Aspect Ratio<br />
+                  <input type="radio" name="packMode" onclick="layout()" value="ExpandToFit"> Expand to Fit<br />
+                  <input type="radio" name="packMode" onclick="layout()" value="Fit"> Fit<br />
+
+        <table>
+          <tr>
+            <td>Aspect ratio: </td>
+            <td><input type="number" size="2" id="aspectRatio" value="1" onchange="layout()"></td>
+          </tr>
+          <tr>
+            <td>Layout width: </td>
+            <td><input type="number" size="2" id="width" value="600" onchange="layout()"></td>
+          </tr>
+          <tr>
+            <td>Layout height: </td>
+            <td><input type="number" size="2" id="height" value="600" onchange="layout()"></td>
+        </table>
+      </span>
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>Node Sorting Properties</b><br />
+        SortOrder:<br /> <input type="radio" name="sortOrder" onclick="layout()" value="Descending" checked> Descending<br />
+                   <input type="radio" name="sortOrder" onclick="layout()" value="Ascending"> Ascending<br />
+        SortMode: <br />
+          <input type="radio" name="sortMode" onclick="layout()" id="modeNone" value="None"> None (do not sort nodes)<br />
+          <input type="radio" name="sortMode" onclick="layout()" id="modeMaxSide" value="MaxSide"> Max Side Length<br />
+          <input type="radio" name="sortMode" onclick="layout()" id="modeArea" value="Area" checked> Area<br />
+
+        <b>Padding between nodes</b><br />
+          Spacing: <input type="number" id="nodeSpacing" value="0" onchange="layout()"><br />
+        <b>Circle Packing</b><br />
+          hasCircularNodes <input type="checkbox" id="hasCircularNodes" onclick="layout()">
+      </span>
+
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>Node Generation</b><br />
+        <table>
+          <tr>
+            <td>Number of nodes: </td>
+            <td><input type="number" id="numNodes" value="100" onchange="layout()"><br /></td>
+          </tr>
+          <tr>
+            <td>Node shape:<br /><input type="radio" name="shapeToPack" onclick="layout()" value="Rectangle" checked> Rectangles<br />
+                               <input type="radio" name="shapeToPack" onclick="layout()" value="Ellipse"> Ellipses<br />
+          </tr>
+          <tr>
+            <td>Minimum side length: </td>
+            <td><input type="number" id="nodeMinSide" value="30" onchange="layout()"><br /></td>
+          </tr>
+          <tr>
+            <td>Maximum side length: </td>
+            <td><input type="number" id="nodeMaxSide" value="50" onchange="layout()"><br /></td>
+          </tr>
+        </table>
+        Same width/height <input type="checkbox" id="sameSides" onclick="layout()"><br />
+        <button type="button" id="randomizeGraph" style="margin-top: 5px;">Randomize Graph</button>
+      </span>
+    </div>
+    <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+    <p>
+      This sample demonstrates a custom Layout, PackedLayout, which attempts to pack nodes as close together as possible without overlap.
+      Each node is assumed to be either rectangular or circular (dictated by the 'nodesAreCircles' property). This layout supports packing
+      nodes into either a rectangle or an ellipse, with the shape determined by the PackShape and the aspect ratio determined by either the
+      aspectRatio property, or the specified width and height (depending on the PackMode).
+    </p>
+    <p>
+      The layout is defined in its own file, as <a href="PackedLayout.ts">PackedLayout.ts</a>, with an additional dependency on <a href="Quadtree.ts">Quadtree.ts</a>.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { PackedLayout } from './PackedLayout.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    // nodes need to be randomized again if any of these change
+    let minSidePrevious = 0.0;
+    let maxSidePrevious = 0.0;
+    let sameSidesPrevious = false;
+
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // must be the ID or reference to div
+        {
+          'animationManager.isEnabled': true,
+          layout: $(PackedLayout),
+          scale: 0.75, isReadOnly: true
+        });
+    // Nodes have a template with bindings for size, shape, and fill color
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Auto', new go.Binding('visible', 'visible'), $(go.Shape, { strokeWidth: 0 }, new go.Binding('figure', 'figure'), new go.Binding('width', 'width'), new go.Binding('height', 'height'), new go.Binding('fill', 'fill')));
+    myDiagram.model = new go.GraphLinksModel([]);
+    // find the elements in the DOM which control configuration
+    const aspectRatio = document.getElementById('aspectRatio');
+    aspectRatio.onkeydown = aspectRatioHandler;
+    const layoutWidth = document.getElementById('width');
+    const layoutHeight = document.getElementById('height');
+    const nodeSpacing = document.getElementById('nodeSpacing');
+    const hasCircularNodes = document.getElementById('hasCircularNodes');
+    const numNodes = document.getElementById('numNodes');
+    const nodeMinSide = document.getElementById('nodeMinSide');
+    const nodeMaxSide = document.getElementById('nodeMaxSide');
+    const sameSides = document.getElementById('sameSides');
+    // create a layout with the default values
+    rebuildGraph();
+
+    // when arrow keys are pressed and the aspect ratio is below 1, increment using the harmonic sequence
+    // this makes the aspect ratio change as follows: 3:1, 2:1, 1:1, 1:2, 1:3, etc.
+    function aspectRatioHandler(e) {
+        if (e.key === 'ArrowUp' && parseFloat(aspectRatio.value) < 1) {
+            e.preventDefault();
+            const denom = Math.round(1 / parseFloat(aspectRatio.value));
+            aspectRatio.value = (+(1 / (denom - 1)).toFixed(2)) + '';
+            rebuildGraph();
+        }
+        else if (e.key === 'ArrowDown' && parseFloat(aspectRatio.value) <= 1) {
+            e.preventDefault();
+            const denom = Math.round(1 / parseFloat(aspectRatio.value));
+            if (denom < 10) {
+                aspectRatio.value = (+(1 / (denom + 1)).toFixed(2)) + '';
+                rebuildGraph();
+            }
+        }
+    }
+    function validateInput() {
+        if (!aspectRatio.value || parseFloat(aspectRatio.value) <= 0) {
+            aspectRatio.value = '0.1';
+        }
+        if (!layoutWidth.value || parseFloat(layoutWidth.value) <= 0) {
+            layoutWidth.value = '1';
+        }
+        if (!layoutHeight.value || parseFloat(layoutHeight.value) <= 0) {
+            layoutHeight.value = '1';
+        }
+        if (!nodeSpacing.value) {
+            nodeSpacing.value = '0';
+        }
+        if (!numNodes.value || parseInt(numNodes.value) < 1) {
+            numNodes.value = '1';
+        }
+        if (!nodeMinSide.value || parseFloat(nodeMinSide.value) < 1) {
+            nodeMinSide.value = '1';
+        }
+        if (!nodeMaxSide.value || parseFloat(nodeMaxSide.value) < 1) {
+            nodeMaxSide.value = '1';
+        }
+    }
+
+    function rebuildGraph() {
+        validateInput();
+        let packShape = PackedLayout.Elliptical;
+        switch (getRadioValue('packShape')) {
+            case 'Elliptical':
+                packShape = PackedLayout.Elliptical;
+                break;
+            case 'Rectangular':
+                packShape = PackedLayout.Rectangular;
+                break;
+            case 'Spiral':
+                packShape = PackedLayout.Spiral;
+                break;
+        }
+        let packMode = PackedLayout.AspectOnly;
+        switch (getRadioValue('packMode')) {
+            case 'AspectOnly':
+                packMode = PackedLayout.AspectOnly;
+                break;
+            case 'Fit':
+                packMode = PackedLayout.Fit;
+                break;
+            case 'ExpandToFit':
+                packMode = PackedLayout.ExpandToFit;
+                break;
+        }
+        let sortMode = PackedLayout.None;
+        switch (getRadioValue('sortMode')) {
+            case 'None':
+                sortMode = PackedLayout.None;
+                break;
+            case 'MaxSide':
+                sortMode = PackedLayout.MaxSide;
+                break;
+            case 'Area':
+                sortMode = PackedLayout.Area;
+                break;
+        }
+        let sortOrder = PackedLayout.Descending;
+        switch (getRadioValue('sortOrder')) {
+            case 'Descending':
+                sortOrder = PackedLayout.Descending;
+                break;
+            case 'Ascending':
+                sortOrder = PackedLayout.Ascending;
+                break;
+        }
+        const params = {
+            packMode: packMode,
+            packShape: packShape,
+            sortMode: sortMode,
+            sortOrder: sortOrder,
+            aspectRatio: parseFloat(aspectRatio.value),
+            size: new go.Size(parseFloat(layoutWidth.value), parseFloat(layoutHeight.value)),
+            spacing: parseFloat(nodeSpacing.value),
+            hasCircularNodes: hasCircularNodes.checked,
+            arrangesToOrigin: false
+        };
+        disableInputs(params);
+        if (sameSides.checked !== sameSidesPrevious
+            || parseFloat(nodeMinSide.value) !== minSidePrevious
+            || parseFloat(nodeMaxSide.value) !== maxSidePrevious) {
+            sameSidesPrevious = sameSides.checked;
+            minSidePrevious = parseFloat(nodeMinSide.value);
+            maxSidePrevious = parseFloat(nodeMaxSide.value);
+            randomize();
+            return;
+        }
+        myDiagram.startTransaction('packed layout');
+        generateNodeData();
+        myDiagram.layout = go.GraphObject.make(PackedLayout, params /* defined above */);
+        myDiagram.commitTransaction('packed layout');
+    }
+
+    function randomize() {
+        myDiagram.model = new go.GraphLinksModel([]);
+        rebuildGraph();
+    }
+    window.randomize = randomize;
+
+    function generateNodeData() {
+        const nodeDataArray = myDiagram.model.nodeDataArray;
+        const count = parseInt(numNodes.value);
+        const min = parseFloat(nodeMinSide.value);
+        const max = parseFloat(nodeMaxSide.value);
+        const shapeToPack = getRadioValue('shapeToPack');
+        if (count > nodeDataArray.length) {
+            const arr = new Array();
+            for (let i = nodeDataArray.length; i < count; i++) {
+                const width = Math.floor(Math.random() * (max - min + 1)) + min;
+                const height = sameSides.checked ? width : Math.floor(Math.random() * (max - min + 1)) + min;
+                const color = go.Brush.randomColor(128, 235);
+                arr.push({ width: width, height: height, fill: color, figure: shapeToPack });
+            }
+            myDiagram.model.addNodeDataCollection(arr);
+        }
+        else if (count < nodeDataArray.length) {
+            while (count < nodeDataArray.length) {
+                myDiagram.model.removeNodeData(nodeDataArray[nodeDataArray.length - 1]);
+            }
+        }
+        else {
+            for (const data of nodeDataArray) {
+                myDiagram.model.set(data, 'figure', shapeToPack);
+            }
+        }
+        sameSidesPrevious = sameSides.checked;
+        minSidePrevious = min;
+        maxSidePrevious = max;
+    }
+    var hasCircularNodesSavedState = null;
+    var sameSidesSavedState = null;
+    function disableInputs(params) {
+        setRadioButtonsDisabled('packMode', params.packShape === PackedLayout.Spiral);
+        aspectRatio.disabled = params.packMode !== PackedLayout.AspectOnly || params.packShape === PackedLayout.Spiral;
+        layoutWidth.disabled = params.packMode === PackedLayout.AspectOnly || params.packShape === PackedLayout.Spiral;
+        layoutHeight.disabled = params.packMode === PackedLayout.AspectOnly || params.packShape === PackedLayout.Spiral;
+        nodeSpacing.disabled = params.packMode === PackedLayout.ExpandToFit;
+        hasCircularNodes.disabled = params.packShape === PackedLayout.Spiral;
+        if (params.packShape === PackedLayout.Spiral) {
+            if (hasCircularNodesSavedState === null) {
+                hasCircularNodesSavedState = hasCircularNodes.checked;
+            }
+            hasCircularNodes.checked = true;
+            params.hasCircularNodes = true;
+        }
+        else if (hasCircularNodesSavedState !== null) {
+            hasCircularNodes.checked = hasCircularNodesSavedState;
+            params.hasCircularNodes = false;
+            hasCircularNodesSavedState = null;
+        }
+        sameSides.disabled = params.hasCircularNodes;
+        if (params.hasCircularNodes) {
+            if (sameSidesSavedState === null) {
+                sameSidesSavedState = sameSides.checked;
+            }
+            sameSides.checked = true;
+        }
+        else if (sameSidesSavedState !== null) {
+            sameSides.checked = sameSidesSavedState;
+            sameSidesSavedState = null;
+        }
+    }
+    function getRadioValue(name) {
+        const radio = document.getElementsByName(name);
+        for (let i = 0; i < radio.length; i++) {
+            if (radio[i].checked)
+                return radio[i].value;
+        }
+    }
+    function setRadioButtonsDisabled(name, disabled) {
+        const radio = document.getElementsByName(name);
+        for (let i = 0; i < radio.length; i++) {
+            radio[i].disabled = disabled;
+        }
+    }
+
+    document.getElementById("randomizeGraph").onclick = randomize;
+
+    function layout() {
+      rebuildGraph();
+    }
+    window.layout = layout;  // make accessible to button onclick event handlers
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

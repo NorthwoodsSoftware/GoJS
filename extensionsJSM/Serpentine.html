@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Serpentine Layout</title>
+  <meta name="description" content="TypeScript: Arrange a chain of nodes in rows, alternating directions, back and forth." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px; min-width: 200px"></div>
+    <p>
+      This sample demonstrates a custom Layout, SerpentineLayout, which assumes the graph consists of a chain of nodes.
+      The layout is defined in its own file, as <a href="SerpentineLayout.ts">SerpentineLayout.ts</a>.
+    </p>
+    <p>
+      It also has <a>Layout.isViewportSized</a> set to true, so that resizing the Diagram DIV will automatically re-layout.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { SerpentineLayout } from './SerpentineLayout.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        isTreePathToChildren: false,
+        layout: $(SerpentineLayout) // defined in SerpentineLayout.js
+      });
+    myDiagram.nodeTemplate =
+      $(go.Node, go.Panel.Auto,
+        $(go.Shape, { figure: 'RoundedRectangle', fill: 'white' },
+          new go.Binding('fill', 'color')),
+        $(go.TextBlock, { margin: 4 },
+          new go.Binding('text', 'key')));
+
+    myDiagram.linkTemplate =
+      $(go.Link, go.Link.Orthogonal,
+        { corner: 5 },
+        $(go.Shape),
+        $(go.Shape, { toArrow: 'Standard' }));
+
+    myDiagram.model = $(go.TreeModel, {
+      nodeParentKeyProperty: 'next',
+      nodeDataArray: [
+        { key: 'Alpha', next: 'Beta', color: 'coral' },
+        { key: 'Beta', next: 'Gamma', color: 'tomato' },
+        { key: 'Gamma', next: 'Delta', color: 'goldenrod' },
+        { key: 'Delta', next: 'Epsilon', color: 'orange' },
+        { key: 'Epsilon', next: 'Zeta', color: 'coral' },
+        { key: 'Zeta', next: 'Eta', color: 'tomato' },
+        { key: 'Eta', next: 'Theta', color: 'goldenrod' },
+        { key: 'Theta', next: 'Iota', color: 'orange' },
+        { key: 'Iota', next: 'Kappa', color: 'coral' },
+        { key: 'Kappa', next: 'Lambda', color: 'tomato' },
+        { key: 'Lambda', next: 'Mu', color: 'goldenrod' },
+        { key: 'Mu', next: 'Nu', color: 'orange' },
+        { key: 'Nu', next: 'Xi', color: 'coral' },
+        { key: 'Xi', next: 'Omicron', color: 'tomato' },
+        { key: 'Omicron', next: 'Pi', color: 'goldenrod' },
+        { key: 'Pi', next: 'Rho', color: 'orange' },
+        { key: 'Rho', next: 'Sigma', color: 'coral' },
+        { key: 'Sigma', next: 'Tau', color: 'tomato' },
+        { key: 'Tau', next: 'Upsilon', color: 'goldenrod' },
+        { key: 'Upsilon', next: 'Phi', color: 'orange' },
+        { key: 'Phi', next: 'Chi', color: 'coral' },
+        { key: 'Chi', next: 'Psi', color: 'tomato' },
+        { key: 'Psi', next: 'Omega', color: 'goldenrod' },
+        { key: 'Omega', color: 'orange' }
+      ]
+    });
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

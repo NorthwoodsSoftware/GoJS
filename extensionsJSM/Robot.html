@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Simulating Input Events</title>
+  <meta name="description" content="TypeScript: Test a diagram by simulating abstract input events." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div style="width: 100%; display: flex; justify-content: space-between">
+      <div id="myPaletteDiv" style="width: 80px; height: 400px; margin-right: 2px; border: solid 1px black"></div>
+      <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
+    </div>
+    <p>
+      To simulate mouse events the buttons below use the <b>Robot</b> class that is defined in <a href="Robot.ts">Robot.ts</a>.
+    </p>
+    <p>
+      Click these buttons in order from top to bottom:<br />
+      <button id="dragFromPalette">Drag From Palette</button><br />
+      <button id="copyNode">Copy Node</button><br />
+      <button id="dragSelectNodes">Drag Select Nodes</button><br />
+      <button id="clickContextMenu">Context Menu Click Alpha</button><br />
+      <button id="deleteSelection">Delete</button><br />
+    </p>
+    <p>
+      Clicking operations:<br />
+      <button id="clickLambda">Click Lambda</button><br />
+      <button id="doubleClickLambda">Double Click Lambda</button><br />
+    </p>
+    <p>
+      The <a>UndoManager</a> has been enabled in the main Diagram.
+      Give focus to the Diagram and you can undo everything and then redo everything to confirm what was executed by the Robot.
+    </p>
+    <div id="myStatus" style="color:green"></div>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { Robot } from './Robot.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    function showProperties(e, obj) {
+      const node = obj.part.adornedPart;
+      if (node === null || node.data === null)
+        return;
+      let msg = 'Context clicked: ' + node.data.key + '. ';
+      msg += 'Selection includes:';
+      myDiagram.selection.each(function(part) {
+        msg += ' ' + part.toString();
+      });
+      const stat = document.getElementById('myStatus');
+      if (stat !== null)
+        stat.textContent = msg;
+    }
+    function nodeClicked(e, obj) {
+      const evt = e.copy();
+      const node = obj.part;
+      if (node === null || node.data === null)
+        return;
+      const type = evt.clickCount === 2 ? 'Double-Clicked: ' : 'Clicked: ';
+      const msg = type + node.data.key + '. ';
+      const stat = document.getElementById('myStatus');
+      if (stat !== null)
+        stat.textContent = msg;
+    }
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+        {
+          nodeTemplate:
+            $(go.Node, 'Auto',
+              {
+                click: nodeClicked,
+                doubleClick: nodeClicked,
+                contextMenu:
+                  $('ContextMenu',
+                    $('ContextMenuButton',
+                      $(go.TextBlock, 'Properties'),
+                      { click: showProperties }))
+              },
+            $(go.Shape, 'Rectangle', { fill: 'lightgray' },
+              { portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' }),
+            $(go.TextBlock, { margin: 3 },
+              new go.Binding('text', 'key'))
+          ),
+          model: new go.GraphLinksModel([
+            { key: 'Lambda' },
+            { key: 'Mu' }
+          ], [
+            { from: 'Lambda', to: 'Mu' }
+          ]),
+          'undoManager.isEnabled': true
+        });
+
+    // a shared Robot that can be used by all commands for this one Diagram
+    const myRobot = new Robot(myDiagram); // defined in Robot.js
+
+    // initialize the Palette that is on the left side of the page
+    const myPalette =
+      $(go.Palette, 'myPaletteDiv', // must name or refer to the DIV HTML element
+        {
+          nodeTemplate: myDiagram.nodeTemplate,
+          model: new go.GraphLinksModel([
+            { key: 'Alpha' },
+            { key: 'Beta' },
+            { key: 'Gamma' },
+            { key: 'Delta' }
+          ])
+        });
+
+    function dragFromPalette() {
+      // simulate a drag-and-drop between Diagrams:
+      const dragdrop = { sourceDiagram: myPalette, targetDiagram: myDiagram };
+      myRobot.mouseDown(5, 5, 0, dragdrop); // this should be where the Alpha node is in the source myPalette
+      myRobot.mouseMove(60, 60, 100, dragdrop);
+      myRobot.mouseUp(100, 100, 200, dragdrop); // this is where the node will be dropped in the target myDiagram
+      // If successful in dragging a node from the Palette into the Diagram,
+      // the DraggingTool will perform a transaction.
+    }
+
+    function copyNode() {
+      const alpha = myDiagram.findNodeForKey('Alpha');
+      if (alpha === null)
+        return;
+      const loc = alpha.actualBounds.center;
+      const options = { control: true, alt: true };
+      // Simulate a mouse drag to move the Alpha node:
+      myRobot.mouseDown(loc.x, loc.y, 0, options);
+      myRobot.mouseMove(loc.x + 80, loc.y + 50, 50, options);
+      myRobot.mouseMove(loc.x + 20, loc.y + 100, 100, options);
+      myRobot.mouseUp(loc.x + 20, loc.y + 100, 150, options);
+      // If successful, will have made a copy of the "Alpha" node below it.
+      // Alternatively you could copy the Node using commands:
+      // myDiagram.commandHandler.copySelection();
+      // myDiagram.commandHandler.pasteSelection(new go.Point(loc.x+20, loc.y+100));
+    }
+
+    function dragSelectNodes() {
+      const alpha = myDiagram.findNodeForKey('Alpha');
+      if (alpha === null)
+        return;
+      const alpha2 = myDiagram.findNodeForKey('Alpha2');
+      if (alpha2 === null)
+        return;
+      const coll = new go.Set();
+      coll.add(alpha);
+      coll.add(alpha2);
+      const area = myDiagram.computePartsBounds(coll);
+      area.inflate(30, 30);
+      // Simulate dragging in the background around the two Alpha nodes.
+      // This uses timestamps to pretend to wait a while to avoid activating the PanningTool.
+      // Hopefully this mouse down does not hit any Part, but in the Diagram's background:
+      myRobot.mouseDown(area.x, area.y, 0);
+      // NOTE that this mouseMove timestamp needs to be > myDiagram.toolManager.dragSelectingTool.delay:
+      myRobot.mouseMove(area.centerX, area.centerY, 200);
+      myRobot.mouseUp(area.right, area.bottom, 250);
+      // Now should have selected both "Alpha" and "Alpha2" using the DragSelectingTool.
+      // Alternatively you could select the Nodes programmatically:
+      // alpha.isSelected = true;
+      // alpha2.isSelected = true;
+    }
+
+    function clickContextMenu() {
+      const alpha = myDiagram.findNodeForKey('Alpha');
+      if (alpha === null)
+        return;
+      const loc = alpha.location;
+      // right click on Alpha
+      myRobot.mouseDown(loc.x + 10, loc.y + 10, 0, { right: true });
+      myRobot.mouseUp(loc.x + 10, loc.y + 10, 100, { right: true });
+      // Alternatively you could invoke the Show Context Menu command directly:
+      // myDiagram.commandHandler.showContextMenu(alpha);
+      // move mouse over first context menu button
+      myRobot.mouseMove(loc.x + 20, loc.y + 20, 200);
+      // and click that button
+      myRobot.mouseDown(loc.x + 20, loc.y + 20, 300);
+      myRobot.mouseUp(loc.x + 20, loc.y + 20, 350);
+      // This should have invoked the ContextMenuButton's click function, showProperties,
+      // which should have put a green message in the myStatus DIV.
+    }
+
+    function deleteSelection() {
+      // Simulate clicking the "Del" key:
+      myRobot.keyDown('Del');
+      myRobot.keyUp('Del');
+      // Now the selected Nodes are deleted.
+      // Alternatively you could invoke the Delete command directly:
+      // myDiagram.commandHandler.deleteSelection();
+    }
+
+    function clickLambda() {
+      const lambda = myDiagram.findNodeForKey('Lambda');
+      if (lambda === null)
+        return;
+      const loc = lambda.location;
+      // click on Lambda
+      myRobot.mouseDown(loc.x + 10, loc.y + 10, 0, {});
+      myRobot.mouseUp(loc.x + 10, loc.y + 10, 100, {});
+      // Clicking is just a sequence of input events.
+      // There is no command in CommandHandler for such a basic gesture.
+    }
+
+    function doubleClickLambda() {
+      const lambda = myDiagram.findNodeForKey('Lambda');
+      if (lambda === null)
+        return;
+      const loc = lambda.location;
+      // double-click on Lambda
+      myRobot.mouseDown(loc.x + 10, loc.y + 10, 0, {});
+      myRobot.mouseUp(loc.x + 10, loc.y + 10, 100, {});
+      myRobot.mouseDown(loc.x + 10, loc.y + 10, 200, { clickCount: 2 });
+      myRobot.mouseUp(loc.x + 10, loc.y + 10, 300, { clickCount: 2 });
+    }
+
+    document.getElementById("dragFromPalette").onclick = dragFromPalette;
+    document.getElementById("copyNode").onclick = copyNode;
+    document.getElementById("dragSelectNodes").onclick = dragSelectNodes;
+    document.getElementById("clickContextMenu").onclick = clickContextMenu;
+    document.getElementById("deleteSelection").onclick = deleteSelection;
+    document.getElementById("clickLambda").onclick = clickLambda;
+    document.getElementById("doubleClickLambda").onclick = doubleClickLambda;
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

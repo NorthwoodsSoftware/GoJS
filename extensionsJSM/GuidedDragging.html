@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Guided Dragging</title>
+  <meta name="description" content="TypeScript: A demonstration of the GuidedDraggingTool extension." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+    <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+    <p>
+      This custom <a>DraggingTool</a> class makes guidelines visible as a Part is dragged around a Diagram and is nearly
+      aligned with another Part.
+      If a locationObjectName is set, then this aligns <a>Part.locationObject</a>s instead.
+      The tool is defined in its own file, as <a href="GuidedDraggingTool.ts">GuidedDraggingTool.ts</a>.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { GuidedDraggingTool } from './GuidedDraggingTool.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        draggingTool: new GuidedDraggingTool(),
+        'draggingTool.horizontalGuidelineColor': 'blue',
+        'draggingTool.verticalGuidelineColor': 'blue',
+        'draggingTool.centerGuidelineColor': 'green',
+        'draggingTool.guidelineWidth': 1,
+        'undoManager.isEnabled': true // enable undo & redo
+      });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, 'Auto', // the Shape will go around the TextBlock
+        $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 },
+        // Shape.fill is bound to Node.data.color
+        new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8 }, // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding('text', 'key')));
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel([
+      { key: 'Alpha', color: 'lightblue' },
+      { key: 'Beta', color: 'orange' },
+      { key: 'Gamma', color: 'lightgreen' },
+      { key: 'Delta', color: 'pink' }
+    ], [
+      { from: 'Alpha', to: 'Beta' },
+      { from: 'Alpha', to: 'Gamma' },
+      { from: 'Beta', to: 'Beta' },
+      { from: 'Gamma', to: 'Delta' },
+      { from: 'Delta', to: 'Alpha' }
+    ]);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

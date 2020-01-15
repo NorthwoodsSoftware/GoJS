@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tree Map</title>
+  <meta name="description" content="TypeScript: Display hierarchical data by nesting, where the area of each node is proportional to some value for the node.  Clicking consecutively results in selecting containing Groups." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+      <span style="display: inline-block; vertical-align: top; padding: 5px">
+        <b>New Tree</b><br />
+        MinNodes: <input type="number" width="2" id="minNodes" value="300" /><br />
+        MaxNodes: <input type="number" width="2" id="maxNodes" value="500" /><br />
+        MinChildren: <input type="number" width="2" id="minChil" value="2" /><br />
+        MaxChildren: <input type="number" width="2" id="maxChil" value="5" /><br />
+        <button type="button" id="rebuildGraph">Generate Tree</button>
+      </span>
+    </div>
+    <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+    <p>
+      This sample demonstrates a custom Layout, TreeMapLayout, which assumes that the diagram consists of nested Groups and simple Nodes.
+      Each node is positioned and sized to fill an area of the viewport proportionate to its "size", as determined by its Node.data.size property.
+      Each Group gets a size that is the sum of all of its member Nodes.
+    </p>
+    <p>
+      The layout is defined in its own file, as <a href="TreeMapLayout.ts">TreeMapLayout.ts</a>.
+    </p>
+    <p>
+      Clicking repeatedly at the same point will initially select the Node at that point, and then its containing Group, and so on up the chain of containers.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { TreeMapLayout } from './TreeMapLayout.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram =
+      $(go.Diagram, 'myDiagramDiv', // must be the ID or reference to div
+        {
+          initialAutoScale: go.Diagram.Uniform,
+          'animationManager.isEnabled': false,
+          layout: $(TreeMapLayout, { isTopLevelHorizontal: false }),
+          allowMove: false, allowCopy: false, allowDelete: false
+        });
+
+    // change selection behavior to cycle up the chain of containing Groups
+    myDiagram.toolManager.clickSelectingTool.standardMouseSelect = function() {
+      const diagram = this.diagram;
+      if (diagram === null || !diagram.allowSelect) return;
+      const e = diagram.lastInput;
+      if (!(e.control || e.meta) && !e.shift) {
+        const part = diagram.findPartAt(e.documentPoint, false);
+        if (part !== null) {
+          let firstselected = null; // is this or any containing Group selected?
+          let node = part;
+          while (node !== null) {
+            if (node.isSelected) {
+              firstselected = node;
+              break;
+            } else {
+              node = node.containingGroup;
+            }
+          }
+          if (firstselected !== null) { // deselect this and select its containing Group
+            firstselected.isSelected = false;
+            const group = firstselected.containingGroup;
+            if (group !== null)
+              group.isSelected = true;
+            return;
+          }
+        }
+      }
+      go.ClickSelectingTool.prototype.standardMouseSelect.call(this);
+    };
+
+    // Nodes and Groups are the absolute minimum template: no elements at all!
+    myDiagram.nodeTemplate =
+      $(go.Node,
+        { background: 'rgba(99,99,99,0.2)' },
+        new go.Binding('background', 'fill'),
+        {
+          toolTip: $('ToolTip',
+            $(go.TextBlock, new go.Binding('text', '', tooltipString).ofObject()))
+        });
+
+    myDiagram.groupTemplate =
+      $(go.Group, 'Auto',
+        { layout: null },
+        { background: 'rgba(99,99,99,0.2)' },
+        new go.Binding('background', 'fill'),
+        {
+          toolTip: $('ToolTip',
+            $(go.TextBlock, new go.Binding('text', '', tooltipString).ofObject()))
+        });
+
+    function tooltipString(part) {
+      if (part instanceof go.Adornment && part.adornedPart !== null) part = part.adornedPart;
+      let msg = createPath(part);
+      msg += '\nsize: ' + part.data.size;
+      if (part instanceof go.Group) {
+        const group = part;
+        msg += '\n# children: ' + group.memberParts.count;
+        msg += '\nsubtotal size: ' + group.data.total;
+      }
+      return msg;
+    }
+
+    function createPath(part) {
+      const parent = part.containingGroup;
+      return (parent !== null ? createPath(parent) + '/' : '') + part.data.text;
+    }
+
+    // generate a tree with the default values
+    rebuildGraph();
+
+    function rebuildGraph() {
+      let minNodes = document.getElementById('minNodes').value;
+      minNodes = parseInt(minNodes, 10);
+      let maxNodes = document.getElementById('maxNodes').value;
+      maxNodes = parseInt(maxNodes, 10);
+      let minChil = document.getElementById('minChil').value;
+      minChil = parseInt(minChil, 10);
+      let maxChil = document.getElementById('maxChil').value;
+      maxChil = parseInt(maxChil, 10);
+      // create and assign a new model
+      const model = new go.GraphLinksModel();
+      model.nodeGroupKeyProperty = 'parent';
+      model.nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil);
+      myDiagram.model = model;
+    }
+
+    // Creates a random number (between MIN and MAX) of randomly colored nodes.
+    function generateNodeData(minNodes, maxNodes, minChil, maxChil) {
+      const nodeArray = [];
+      if (minNodes === undefined || isNaN(minNodes) || minNodes < 1)
+        minNodes = 1;
+      if (maxNodes === undefined || isNaN(maxNodes) || maxNodes < minNodes)
+        maxNodes = minNodes;
+      // Create a bunch of node data
+      const numNodes = Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes;
+      for (let i = 0; i < numNodes; i++) {
+        const size = Math.random() * Math.random() * 10000; // non-uniform distribution
+        // nodeArray.push(new nodes(i, false, undefined, i.toString(), go.Brush.randomColor(), size, -1));
+        nodeArray.push({
+          key: i,
+          isGroup: false,
+          parent: undefined,
+          text: i.toString(),
+          fill: go.Brush.randomColor(),
+          size: size,
+          total: -1 // use a negative value to indicate that the total for the group has not been computed
+        });
+      }
+      // Takes the random collection of node data and creates a random tree with them.
+      // Respects the minimum and maximum number of links from each node.
+      // The minimum can be disregarded if we run out of nodes to link to.
+      if (nodeArray.length > 1) {
+        if (minChil === undefined || isNaN(minChil) || minChil < 0)
+          minChil = 0;
+        if (maxChil === undefined || isNaN(maxChil) || maxChil < minChil)
+          maxChil = minChil;
+        // keep the Set of node data that do not yet have a parent
+        const available = new go.Set();
+        available.addAll(nodeArray);
+        for (let i = 0; i < nodeArray.length; i++) {
+          const parent = nodeArray[i];
+          available.remove(parent);
+          // assign some number of node data as children of this parent node data
+          const children = Math.floor(Math.random() * (maxChil - minChil + 1)) + minChil;
+          for (let j = 0; j < children; j++) {
+            const child = available.first();
+            if (child === null)
+              break; // oops, ran out already
+            available.remove(child);
+            // have the child node data refer to the parent node data by its key
+            child.parent = parent.key;
+            if (!parent.isGroup) { // make sure PARENT is a group
+              parent.isGroup = true;
+            }
+            let par = parent;
+            while (par !== null) {
+              par.total += child.total; // sum up sizes of all children
+              if (par.parent !== undefined) {
+                par = nodeArray[par.parent];
+              }
+              else {
+                break;
+              }
+            }
+          }
+        }
+      }
+      return nodeArray;
+    }
+    document.getElementById("rebuildGraph").onclick = rebuildGraph;
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

@@ -24,7 +24,7 @@ try {
     var file = files[i];
     if (file.includes(".d.ts")) {
       var fileData = '';
-      var lines = fs.readFileSync(path.join(__dirname, 'src',  file), 'utf-8').split('\n');
+      var lines = fs.readFileSync(path.join(__dirname, 'src', file), 'utf-8').split('\n');
       for (var j in lines) {
         var line = lines[j];
         if (line.substr(0, 6) !== "import") {
@@ -42,4 +42,4 @@ try {
       fs.unlinkSync(path.join(__dirname, 'src', file));
     }
   }
-} catch (e) {console.log(e);}
+} catch (e) { console.log(e); }

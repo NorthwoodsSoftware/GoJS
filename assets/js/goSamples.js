@@ -314,6 +314,7 @@ var mySampleMenu = '\
           <li><a href="cLayout.html">Circular Layout</a></li>\
           <li><a href="interactiveForce.html">Interactive Force</a></li>\
           <li><a href="../extensions/Fishbone.html">GoJS Extensions</a></li>\
+          <li><a href="../projects/index.html">GoJS Projects</a></li>\
           <li><a href="all.html">Complete List</a></li>\
         </ul>\
       </div>\
@@ -398,6 +399,7 @@ var myExtensionMenu = '\
           <li><a href="TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a></li>\
           <li><a href="TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a></li>\
           <li><a href="../samples/flowchart.html">GoJS Samples</a></li>\
+          <li><a href="../projects/index.html">GoJS Projects</a></li>\
           <li><a href="../samples/all.html">Complete List</a></li>\
         </ul>\
       </div>\

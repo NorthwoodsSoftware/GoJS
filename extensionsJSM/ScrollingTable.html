@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Scrolling Table</title>
+  <meta name="description" content="TypeScript: Allow users to scroll the items in a Table Panel." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+	<div id="sample">
+		<div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+		<p>
+      This makes use of the "ScrollingTable" Panel defined in <a href="ScrollingTable.ts">ScrollingTable.ts</a>.
+      The "AutoRepeatButton" Panel is also defined in that file. Each node is resizable.
+		</p>
+		<p>
+			Note how links connect particular port elements on each node. When an element has a <a>GraphObject.index</a> less than
+			the <a>Panel.topIndex</a>, the panel arranges it be zero sized at the top of the panel. Similarly, elements beyond the
+			last item in the panel are arranged to be at the end of the list, which may be at the bottom of the panel.
+		</p>
+	</div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import "./ScrollingTable.js";  // to define the "ScrollingTable" and "AutoRepeatButton" builders
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', {
+      'PartResized': function(e) {
+        const node = e.subject;
+        const scroller = node.findObject('SCROLLER');
+        if (scroller !== null)
+          scroller._updateScrollBar(scroller.findObject('TABLE'));
+      }
+    });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, 'Vertical',
+        {
+          selectionObjectName: 'SCROLLER',
+          resizable: true, resizeObjectName: 'SCROLLER',
+          portSpreading: go.Node.SpreadingNone
+        },
+        new go.Binding('location').makeTwoWay(),
+        $(go.TextBlock,
+          { font: 'bold 14px sans-serif' },
+          new go.Binding('text', 'key')),
+        $(go.Panel, 'Auto',
+          $(go.Shape, { fill: 'white' }),
+          $('ScrollingTable',
+            {
+              name: 'SCROLLER',
+              desiredSize: new go.Size(NaN, 60),
+              stretch: go.GraphObject.Fill,
+              defaultColumnSeparatorStroke: 'gray',
+              defaultColumnSeparatorStrokeWidth: 0.5
+            },
+            new go.Binding('TABLE.itemArray', 'items'),
+            new go.Binding('TABLE.column', 'left', function(left) { return left ? 2 : 0; }),
+            new go.Binding('desiredSize', 'size').makeTwoWay(),
+            {
+              'TABLE.itemTemplate':
+                $(go.Panel, 'TableRow',
+                  {
+                    defaultStretch: go.GraphObject.Horizontal,
+                    fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides,
+                    fromLinkable: true, toLinkable: true
+                  },
+                  new go.Binding('portId', 'name'),
+                  $(go.TextBlock, { column: 0 }, new go.Binding('text', 'name')),
+                  $(go.TextBlock, { column: 1 }, new go.Binding('text', 'value'))),
+        'TABLE.defaultColumnSeparatorStroke': 'gray',
+        'TABLE.defaultColumnSeparatorStrokeWidth': 0.5,
+        'TABLE.defaultRowSeparatorStroke': 'gray',
+        'TABLE.defaultRowSeparatorStrokeWidth': 0.5,
+        'TABLE.defaultSeparatorPadding': new go.Margin(1, 3, 0, 3)
+      })));
+
+    myDiagram.model = $(go.GraphLinksModel, {
+      linkFromPortIdProperty: 'fromPort',
+      linkToPortIdProperty: 'toPort',
+      nodeDataArray: [
+        {
+          key: 'Alpha', left: true, location: new go.Point(0, 0), size: new go.Size(100, 50),
+          items: [
+            { name: 'A', value: 1 },
+            { name: 'B', value: 2 },
+            { name: 'C', value: 3 },
+            { name: 'D', value: 4 },
+            { name: 'E', value: 5 },
+            { name: 'F', value: 6 },
+            { name: 'G', value: 7 }
+          ]
+        },
+        {
+          key: 'Beta', location: new go.Point(150, 0),
+          items: [
+            { name: 'Aa', value: 1 },
+            { name: 'Bb', value: 2 },
+            { name: 'Cc', value: 3 },
+            { name: 'Dd', value: 4 },
+            { name: 'Ee', value: 5 },
+            { name: 'Ff', value: 6 },
+            { name: 'Gg', value: 7 },
+            { name: 'Hh', value: 8 },
+            { name: 'Ii', value: 9 },
+            { name: 'Jj', value: 10 },
+            { name: 'Kk', value: 11 },
+            { name: 'Ll', value: 12 },
+            { name: 'Mm', value: 13 },
+            { name: 'Nn', value: 14 }
+          ]
+        }
+      ],
+      linkDataArray: [
+        { from: 'Alpha', fromPort: 'D', to: 'Beta', toPort: 'Ff' },
+        { from: 'Alpha', fromPort: 'A', to: 'Beta', toPort: 'Nn' },
+        { from: 'Alpha', fromPort: 'G', to: 'Beta', toPort: 'Aa' }
+      ]
+    });
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

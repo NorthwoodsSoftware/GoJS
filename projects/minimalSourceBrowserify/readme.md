@@ -7,7 +7,6 @@ There are many related projects in this directory:
 * **minimalSource**, for an example of building GoJS while excluding as many modules as possible. This project uses webpack's tree shaking to remove unused modules.
 * **maximalSource**, for an example of building GoJS while including every module.
 * **minimalSourceBrowserify**, for another minimal example of building GoJS with Browserify. Also does not use `require`.
-* **minimalSourceRollup**, for another minimal example of building GoJS with Rollup.
 
 With npm, install the dependencies:
 

@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Polygon Drawing Tool</title>
+  <meta name="description" content="TypeScript: The user can draw a new polygon by clicking where its points should go." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 350px"></div>
+    <div id="buttons">
+      <button type="button" id="select">Select</button>
+      <button type="button" id="drawPolygon">Draw Polygon</button>
+      <button type="button" id="drawPolyline">Draw Polyline</button>
+      <button type="button" id="finishDrawing">Finish Drawing</button>
+      <button type="button" id="cancelDrawing">Cancel Drawing</button>
+      <button type="button" id="undo">Undo Last Point</button>
+      <br/>
+      <label><input type="checkbox" id = "allowResizing" checked="checked" />Allow Resizing</label>
+      <label><input type="checkbox" id = "allowReshaping" checked="checked" />Allow Reshaping</label>
+      <label><input type="checkbox" id = "allowRotating" checked="checked" />Allow Rotating</label>
+      <p>
+        This sample demonstrates the PolygonDrawingTool, a custom <a>Tool</a> added to the Diagram's mouseDownTools. It is
+        defined in its own file, as <a href="PolygonDrawingTool.ts">PolygonDrawingTool.ts</a>. It also demonstrates the GeometryReshapingTool,
+        another custom tool, defined in <a href="GeometryReshapingTool.ts">GeometryReshapingTool.ts</a>.
+      </p>
+      <p>
+        These extensions serve as examples of features that can be added to GoJS by writing new classes. With the PolygonDrawingTool,
+        a new mode is supported that allows the user to draw custom shapes. With the GeometryReshapingTool, users can change
+        the geometry (i.e. the "shape") of a <a>Shape</a>s in a selected <a>Node</a>.
+        <br/> Click a "Draw" button and then click in the diagram to place a new point in a polygon or polyline shape. Right-click,
+        double-click, or Enter to finish. Press <b>Escape</b> to cancel, or <b>Z</b> to remove the last point. Click the
+        "Select" button to switch back to the normal selection behavior, so that you can select, resize, and rotate the shapes.
+        The checkboxes control whether you can resize, reshape, and/or rotate selected shapes.
+      </p>
+    </div>
+    <div>
+      <button id="save">Save</button>
+      <button id="load">Load</button>
+    </div>
+    <textarea id="mySavedDiagram" style="width:100%;height:300px">
+{ "position": "0 0",
+  "model": { "class": "go.GraphLinksModel",
+  "nodeDataArray": [ {"loc":"183 148", "category": "PolygonDrawing", "geo":"F M0 145 L75 2 L131 87 L195 0 L249 143z", "key":-1} ],
+  "linkDataArray": [  ]
+} }
+    </textarea>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { GeometryReshapingTool } from './GeometryReshapingTool.js';
+    import { PolygonDrawingTool } from './PolygonDrawingTool.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make;
+
+    const myDiagram =
+        $(go.Diagram, 'myDiagramDiv');
+    myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
+
+    myDiagram.nodeTemplateMap.add('PolygonDrawing', $(go.Node, { locationSpot: go.Spot.Center }, // to support rotation about the center
+    new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), {
+        selectionAdorned: true, selectionObjectName: 'SHAPE',
+        selectionAdornmentTemplate: // custom selection adornment: a blue rectangle
+        $(go.Adornment, 'Auto', $(go.Shape, { stroke: 'dodgerblue', fill: null }), $(go.Placeholder, { margin: -1 }))
+    }, { resizable: true, resizeObjectName: 'SHAPE' }, { rotatable: true, rotateObjectName: 'SHAPE' }, { reshapable: true }, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+    $(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('angle').makeTwoWay(), new go.Binding('geometryString', 'geo').makeTwoWay(), new go.Binding('fill'), new go.Binding('stroke'), new go.Binding('strokeWidth'))));
+    // create polygon drawing tool for myDiagram, defined in PolygonDrawingTool.js
+    const tool = new PolygonDrawingTool();
+    // provide the default JavaScript object for a new polygon in the model
+    tool.archetypePartData = { fill: 'yellow', stroke: 'blue', strokeWidth: 3, category: 'PolygonDrawing' };
+    tool.isPolygon = true; // for a polyline drawing tool set this property to false
+    // install as first mouse-down-tool
+    myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
+    load(); // load a simple diagram from the textarea
+
+    function mode(draw, polygon) {
+      // assume PolygonDrawingTool is the first tool in the mouse-down-tools list
+      const tool = myDiagram.toolManager.mouseDownTools.elt(0);
+      tool.isEnabled = draw;
+      tool.isPolygon = polygon;
+      tool.archetypePartData.fill = (polygon ? 'yellow' : null);
+      tool.temporaryShape.fill = (polygon ? 'yellow' : null);
+    }
+    // this command ends the PolygonDrawingTool
+    function finish(commit) {
+      const tool = myDiagram.currentTool;
+      if (commit && tool instanceof PolygonDrawingTool) {
+          const lastInput = myDiagram.lastInput;
+          if (lastInput.event instanceof MouseEvent)
+              tool.removeLastPoint(); // remove point from last mouse-down
+          tool.finishShape();
+      }
+      else {
+          tool.doCancel();
+      }
+    }
+    // this command removes the last clicked point from the temporary Shape
+    function undo() {
+      const tool = myDiagram.currentTool;
+      if (tool instanceof PolygonDrawingTool) {
+          const lastInput = myDiagram.lastInput;
+          if (lastInput.event instanceof MouseEvent)
+              tool.removeLastPoint(); // remove point from last mouse-down
+          tool.undo();
+      }
+    }
+    function updateAllAdornments() {
+      myDiagram.selection.each((p) => { p.updateAdornments(); });
+    }
+    // save a model to and load a model from Json text, displayed below the Diagram
+    function save() {
+      const str = '{ "position": "' + go.Point.stringify(myDiagram.position) + '",\n  "model": ' + myDiagram.model.toJson() + ' }';
+      document.getElementById('mySavedDiagram').value = str;
+    }
+    function load() {
+      const str = document.getElementById('mySavedDiagram').value;
+      try {
+          const json = JSON.parse(str);
+          myDiagram.initialPosition = go.Point.parse(json.position || '0 0');
+          myDiagram.model = go.Model.fromJson(json.model);
+          myDiagram.model.undoManager.isEnabled = true;
+      }
+      catch (ex) {
+          alert(ex);
+      }
+    }
+    function select() {
+      mode(false, false);
+    }
+    function drawPolygon() {
+      mode(true, true);
+    }
+    function drawPolyline() {
+      mode(true, false);
+    }
+    function finishDrawing() {
+      finish(true);
+    }
+    function cancelDrawing() {
+      finish(false);
+    }
+    function allowResizing() {
+      myDiagram.allowResize = !myDiagram.allowResize;
+      updateAllAdornments();
+    }
+    function allowReshaping() {
+      myDiagram.allowReshape = !myDiagram.allowReshape;
+      updateAllAdornments();
+    }
+    function allowRotating() {
+      myDiagram.allowRotate = !myDiagram.allowRotate;
+      updateAllAdornments();
+    }
+
+    document.getElementById("select").onclick = select;
+    document.getElementById("drawPolygon").onclick = drawPolygon;
+    document.getElementById("drawPolyline").onclick = drawPolyline;
+    document.getElementById("finishDrawing").onclick = finishDrawing;
+    document.getElementById("cancelDrawing").onclick = cancelDrawing;
+    document.getElementById("undo").onclick = undo;
+    document.getElementById("allowResizing").onclick = allowResizing;
+    document.getElementById("allowReshaping").onclick = allowReshaping;
+    document.getElementById("allowRotating").onclick = allowRotating;
+    document.getElementById("save").onclick = save;
+    document.getElementById("load").onclick = load;
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

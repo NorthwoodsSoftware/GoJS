@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HTMLInfo Text Editor</title>
+  <meta name="description" content="TypeScript: A re-implementation of the default text editor, implemented by the TextEditor extension." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+    <p>This sample constructs an <a>HTMLInfo</a> that acts as a re-implementation of the default text editor.</p>
+    <p>
+      The implementation is contained in the file <a href="TextEditor.ts" target="_blank">TextEditor.js</a>
+      and exposes <code>window.TextEditor</code>,
+      which is used in this file as the value of <code>myDiagram.toolManager.textEditingTool.defaultTextEditor</code>.
+    </p>
+    <p>
+      This also adds a text validation predicate, <code>okName</code>, as the <a>TextBlock.textValidation</a> property.
+      That predicate makes sure that the new string has at least three characters and contains a vowel.
+    </p>
+    <p>You can see additional custom text editors in the <a href="../samples/customTextEditingTool.html">Custom TextEditingTool sample</a>.</p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import './TextEditor.js';
+
+    if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+    {
+        'undoManager.isEnabled': true // enable undo & redo
+    });
+    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
+    // this predicate is true if the new string has at least three characters
+    // and has a vowel in it
+    function okName(textblock, oldstr, newstr) {
+        return newstr.length >= 3 && /[aeiouy]/i.test(newstr);
+    }
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Auto', // the Shape will go around the TextBlock
+        $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8, editable: true, textValidation: okName }, // some room around the text
+        new go.Binding('text', 'key')));
+    myDiagram.model = new go.GraphLinksModel([
+        { key: 'Alpha', color: 'lightblue' },
+        { key: 'Beta', color: 'orange' },
+        { key: 'Gamma', color: 'lightgreen' },
+        { key: 'Delta', color: 'pink' }
+    ], [
+        { from: 'Alpha', to: 'Beta' },
+        { from: 'Alpha', to: 'Gamma' },
+        { from: 'Beta', to: 'Beta' },
+        { from: 'Gamma', to: 'Delta' },
+        { from: 'Delta', to: 'Alpha' }
+    ]);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+  </script>
+</body>
+</html>

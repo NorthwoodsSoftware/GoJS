@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Drawing Commands</title>
+  <meta name="description" content="TypeScript: The DrawCommandHandler extension implements various commands for aligning and rotating objects and for handling arrow keys to select or shift." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+</head>
+<body>
+  <div id="sample">
+    <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+        Also add a border to help see the edges. -->
+    <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+    <p>
+      Align:
+      <button id="leftsides">Left Sides</button>
+      <button id="rightsides">Right Sides</button>
+      <button id="tops">Tops</button>
+      <button id="bottoms">Bottoms</button>
+      <button id="cenX">Center X</button>
+      <button id="cenY">Center Y</button>
+      <button id="row">Row</button>
+      <button id="column">Column</button>
+      </br>
+      Rotate:
+      <button id="45">45°</button>
+      <button id="-45">-45°</button>
+      <button id="90">90°</button>
+      <button id="-90">-90°</button>
+      <button id="180">180°</button>
+      </br>
+      Arrow Mode:
+      <input type="radio" name="arrow" id="move" checked="checked">Move</input>
+      <input type="radio" name="arrow" id="select">Select</input>
+      <input type="radio" name="arrow" id="scroll">Scroll</input>
+    </p>
+    <p>
+      This example demonstrates a custom <a>CommandHandler</a>.
+      It allows the user to position selected Parts in a diagram relative to each other,
+      overrides <a>CommandHandler.doKeyDown</a> to allow handling the arrow keys in additional manners,
+      and uses a "paste offset" so that pasting objects will cascade them rather than place them on top of one another.
+      It is defined in its own file, as <a href="DrawCommandHandler.ts">DrawCommandHandler.ts</a>.
+    </p>
+    <p>
+      The above buttons can be used to align Parts, rotate Parts, or change the behavior of the arrow keys.
+    </p>
+    <p>
+      Usage can also be seen in the <a href="../projects/bpmn/BPMN.html">BPMN Editor</a> sample.
+    </p>
+  </div>
+
+  <script type="module" id="code">
+    import * as go from "../release/go-module.js";
+    import { DrawCommandHandler } from './DrawCommandHandler.js';
+
+    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+    {
+        commandHandler: new DrawCommandHandler(),
+        'undoManager.isEnabled': true // enable undo & redo
+    });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+        $(go.Node, 'Auto', // the Shape will go around the TextBlock
+        { locationSpot: go.Spot.Center }, $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 },
+        // Shape.fill is bound to Node.data.color
+        new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8 }, // some room around the text
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding('text', 'key')));
+
+        // but use the default Link template, by not setting Diagram.linkTemplate
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel([
+        { key: 'Alpha', color: 'lightblue' },
+        { key: 'Beta', color: 'orange' },
+        { key: 'Gamma', color: 'lightgreen' },
+        { key: 'Delta', color: 'pink' }
+    ], [
+        { from: 'Alpha', to: 'Beta' },
+        { from: 'Alpha', to: 'Gamma' },
+        { from: 'Beta', to: 'Beta' },
+        { from: 'Gamma', to: 'Delta' },
+        { from: 'Delta', to: 'Alpha' }
+    ]);
+
+    window.myDiagram = myDiagram; // Attach to the window for console debugging
+
+    function askSpace() {
+      const space = parseInt(prompt('Desired space between nodes (in pixels):') || '0');
+      return space;
+    }
+
+    // update arrowkey function
+    function arrowMode() {
+      // no transaction needed, because we are modifying the CommandHandler for future use
+      const move = document.getElementById('move');
+      const select = document.getElementById('select');
+      const scroll = document.getElementById('scroll');
+      if (move.checked === true) {
+          myDiagram.commandHandler.arrowKeyBehavior = 'move';
+      }
+      else if (select.checked === true) {
+          myDiagram.commandHandler.arrowKeyBehavior = 'select';
+      }
+      else if (scroll.checked === true) {
+          myDiagram.commandHandler.arrowKeyBehavior = 'scroll';
+      }
+    }
+
+    document.getElementById("leftsides").onclick = function () { myDiagram.commandHandler.alignLeft(); }
+    document.getElementById("rightsides").onclick = function () { myDiagram.commandHandler.alignRight(); }
+    document.getElementById("tops").onclick = function () { myDiagram.commandHandler.alignTop(); }
+    document.getElementById("bottoms").onclick = function () { myDiagram.commandHandler.alignBottom(); }
+    document.getElementById("cenX").onclick = function () { myDiagram.commandHandler.alignCenterX(); }
+    document.getElementById("cenY").onclick = function () { myDiagram.commandHandler.alignCenterY(); }
+    document.getElementById("row").onclick = function () { myDiagram.commandHandler.alignRow(askSpace()); }
+    document.getElementById("column").onclick = function () { myDiagram.commandHandler.alignColumn(askSpace()); }
+    document.getElementById("45").onclick = function () { myDiagram.commandHandler.rotate(45); }
+    document.getElementById("-45").onclick = function () { myDiagram.commandHandler.rotate(-45); }
+    document.getElementById("90").onclick = function () { myDiagram.commandHandler.rotate(90); }
+    document.getElementById("-90").onclick = function () { myDiagram.commandHandler.rotate(-90); }
+    document.getElementById("180").onclick = function () { myDiagram.commandHandler.rotate(180); }
+    document.getElementById("move").onclick = arrowMode;
+    document.getElementById("select").onclick = arrowMode;
+    document.getElementById("scroll").onclick = arrowMode;
+  </script>
+</body>
+</html>
