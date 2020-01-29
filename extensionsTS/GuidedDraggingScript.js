@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./GuidedDraggingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./GuidedDraggingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,15 +19,15 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var GuidedDraggingTool_1 = require("./GuidedDraggingTool");
+    var go = require("../release/go.js");
+    var GuidedDraggingTool_js_1 = require("./GuidedDraggingTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
-            draggingTool: new GuidedDraggingTool_1.GuidedDraggingTool(),
+            draggingTool: new GuidedDraggingTool_js_1.GuidedDraggingTool(),
             'draggingTool.horizontalGuidelineColor': 'blue',
             'draggingTool.verticalGuidelineColor': 'blue',
             'draggingTool.centerGuidelineColor': 'green',

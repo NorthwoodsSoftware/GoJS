@@ -11,7 +11,6 @@
 */
 
 import * as go from '../release/go-module.js';
-import { TreeVertex } from '../release/go';
 
 /**
  * FishboneLayout is a custom {@link Layout} derived from {@link TreeLayout} for creating "fishbone" diagrams.
@@ -235,6 +234,7 @@ export class FishboneLayout extends go.TreeLayout {
  * @category Part Extension
  */
 export class FishboneLink extends go.Link {
+  public computeAdjusting(): go.EnumValue { return this.adjusting; }
   /**
    * Determines the points for this link based on spots and maintains horizontal lines.
    */

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./ZoomSlider"], factory);
+        define(["require", "exports", "../release/go.js", "./ZoomSlider.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var ZoomSlider_1 = require("./ZoomSlider");
+    var go = require("../release/go.js");
+    var ZoomSlider_js_1 = require("./ZoomSlider.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -51,7 +51,7 @@
             { from: 'Gamma', to: 'Delta' },
             { from: 'Delta', to: 'Alpha' }
         ]);
-        var zoomSlider = new ZoomSlider_1.ZoomSlider(myDiagram);
+        var zoomSlider = new ZoomSlider_js_1.ZoomSlider(myDiagram);
         // Attach to the window for console manipulation
         window.myDiagram = myDiagram;
         window.zoomSlider = zoomSlider;

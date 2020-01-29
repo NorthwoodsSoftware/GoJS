@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
+import * as go from '../release/go.js';
 
 /**
  * The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.

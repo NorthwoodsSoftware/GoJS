@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,7 +12,7 @@
     /*
     *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
-    var go_1 = require("../release/go");
+    var go = require("../release/go.js");
     /**
      * @hidden
      */
@@ -31,10 +31,10 @@
             var h2 = this.bounds.height / 2;
             var x = this.bounds.x;
             var y = this.bounds.y;
-            this.nodes[0] = new QuadNode(new go_1.Rect(x + w2, y, w2, h2), this, this.level + 1);
-            this.nodes[1] = new QuadNode(new go_1.Rect(x, y, w2, h2), this, this.level + 1);
-            this.nodes[2] = new QuadNode(new go_1.Rect(x, y + h2, w2, h2), this, this.level + 1);
-            this.nodes[3] = new QuadNode(new go_1.Rect(x + w2, y + h2, w2, h2), this, this.level + 1);
+            this.nodes[0] = new QuadNode(new go.Rect(x + w2, y, w2, h2), this, this.level + 1);
+            this.nodes[1] = new QuadNode(new go.Rect(x, y, w2, h2), this, this.level + 1);
+            this.nodes[2] = new QuadNode(new go.Rect(x, y + h2, w2, h2), this, this.level + 1);
+            this.nodes[3] = new QuadNode(new go.Rect(x + w2, y + h2, w2, h2), this, this.level + 1);
         };
         QuadNode.prototype.clear = function () {
             this.treeObjects = [];
@@ -93,7 +93,7 @@
         function Quadtree(nodeCapacity, maxLevel, bounds) {
             /** @hidden @internal */ this._nodeCapacity = 1;
             /** @hidden @internal */ this._maxLevels = Infinity;
-            /** @hidden @internal */ this._treeObjectMap = new go_1.Map();
+            /** @hidden @internal */ this._treeObjectMap = new go.Map();
             // we can avoid unnecessary work when adding objects if there are no objects with 0 width or height.
             // Note that after being set to true, these flags are not ever set again to false, even if all objects
             // with zero width/height are removed (assumption was made that this should almost never matter)
@@ -106,7 +106,7 @@
                 this._maxLevels = maxLevel;
             }
             if (bounds === undefined) {
-                bounds = new go_1.Rect();
+                bounds = new go.Rect();
             }
             this._root = new QuadNode(bounds, null, 0);
         }
@@ -244,11 +244,11 @@
             if (!(obj instanceof TreeObject) && (x === undefined || x === null)) {
                 throw new Error('Invalid bounds for added object');
             }
-            if (x instanceof go_1.Rect) {
+            if (x instanceof go.Rect) {
                 bounds = x.copy();
             }
             else {
-                bounds = new go_1.Rect(x, y, w, h);
+                bounds = new go.Rect(x, y, w, h);
             }
             var treeObj;
             if (obj instanceof TreeObject) {
@@ -270,13 +270,13 @@
             // initialize bounds of tree as the max width or height of the first object added
             if (this._root.bounds.width === 0 || this._root.bounds.height === 0) {
                 var len = Math.max(bounds.width, bounds.height);
-                this._root.bounds = new go_1.Rect(bounds.x, bounds.y, len, len);
+                this._root.bounds = new go.Rect(bounds.x, bounds.y, len, len);
             }
             // fixes quadtree having a width and height of 0 if the first object added is a point
             // this will only be called after a second object is added, the new width/height is the maximum distance between them
             if (this._root.bounds !== undefined && (this._root.bounds.width === 0 || this._root.bounds.height === 0)) {
                 var len = Math.max(Math.abs(bounds.x - this._root.bounds.x), Math.abs(bounds.y - this._root.bounds.y));
-                this._root.bounds = new go_1.Rect(Math.min(this._root.bounds.x, bounds.x), Math.min(this._root.bounds.y, bounds.y), len, len);
+                this._root.bounds = new go.Rect(Math.min(this._root.bounds.x, bounds.x), Math.min(this._root.bounds.y, bounds.y), len, len);
             }
             // map the object to its corresponding TreeObject (so that the bounds of this object can be retrieved later)
             this._treeObjectMap.add(obj, treeObj);
@@ -295,7 +295,7 @@
                      * |old| 3 |
                      * |___|___|
                      */
-                    var newBounds = new go_1.Rect(this._root.bounds.x, this._root.bounds.y - this._root.bounds.height, this._root.bounds.width * 2, this._root.bounds.height * 2);
+                    var newBounds = new go.Rect(this._root.bounds.x, this._root.bounds.y - this._root.bounds.height, this._root.bounds.width * 2, this._root.bounds.height * 2);
                     this._root = new QuadNode(newBounds, null, 0);
                     this._root.split();
                     this._root.nodes[2] = old;
@@ -314,7 +314,7 @@
                      * | 2 |old|
                      * |___|___|
                      */
-                    var newBounds = new go_1.Rect(this._root.bounds.x - this._root.bounds.width, this._root.bounds.y - this._root.bounds.height, this._root.bounds.width * 2, this._root.bounds.height * 2);
+                    var newBounds = new go.Rect(this._root.bounds.x - this._root.bounds.width, this._root.bounds.y - this._root.bounds.height, this._root.bounds.width * 2, this._root.bounds.height * 2);
                     this._root = new QuadNode(newBounds, null, 0);
                     this._root.split();
                     this._root.nodes[3] = old;
@@ -336,7 +336,7 @@
                      * | 2 | 3 |
                      * |___|___|
                      */
-                    var newBounds = new go_1.Rect(this._root.bounds.x, this._root.bounds.y, this._root.bounds.width * 2, this._root.bounds.height * 2);
+                    var newBounds = new go.Rect(this._root.bounds.x, this._root.bounds.y, this._root.bounds.width * 2, this._root.bounds.height * 2);
                     this._root = new QuadNode(newBounds, null, 0);
                     this._root.split();
                     this._root.nodes[1] = old;
@@ -352,7 +352,7 @@
                      * | 2 | 3 |
                      * |___|___|
                      */
-                    var newBounds = new go_1.Rect(this._root.bounds.x - this._root.bounds.width, this._root.bounds.y, this._root.bounds.width * 2, this._root.bounds.height * 2);
+                    var newBounds = new go.Rect(this._root.bounds.x - this._root.bounds.width, this._root.bounds.y, this._root.bounds.width * 2, this._root.bounds.height * 2);
                     this._root = new QuadNode(newBounds, null, 0);
                     this._root.split();
                     this._root.nodes[0] = old;
@@ -715,7 +715,7 @@
         Quadtree.prototype.move = function (obj, x, y) {
             var treeObj = this._treeObjectMap.get(obj);
             if (treeObj && this.remove(obj)) {
-                if (x instanceof go_1.Point) {
+                if (x instanceof go.Point) {
                     treeObj.bounds.x = x.x;
                     treeObj.bounds.y = x.y;
                 }
@@ -743,7 +743,7 @@
         Quadtree.prototype.resize = function (obj, width, height) {
             var treeObj = this._treeObjectMap.get(obj);
             if (treeObj && this.remove(obj)) {
-                if (width instanceof go_1.Size) {
+                if (width instanceof go.Size) {
                     treeObj.bounds.width = width.width;
                     treeObj.bounds.height = width.height;
                 }
@@ -772,7 +772,7 @@
         Quadtree.prototype.setTo = function (obj, x, y, width, height) {
             var treeObj = this._treeObjectMap.get(obj);
             if (treeObj && this.remove(obj)) {
-                if (x instanceof go_1.Rect) {
+                if (x instanceof go.Rect) {
                     treeObj.bounds.set(x);
                 }
                 else if (y !== undefined && width !== undefined && height !== undefined) {
@@ -796,8 +796,8 @@
          * @return {Array<T>} array containing all intersecting objects
          */
         Quadtree.prototype.intersecting = function (rect) {
-            if (rect instanceof go_1.Point) {
-                rect = new go_1.Rect(rect.x, rect.y, 0, 0);
+            if (rect instanceof go.Point) {
+                rect = new go.Rect(rect.x, rect.y, 0, 0);
             }
             var returnObjects = [];
             this._intersectingHelper(rect, this._root, returnObjects);
@@ -846,8 +846,8 @@
          * @return {Array<T>} array containing all containing objects
          */
         Quadtree.prototype.containing = function (rect) {
-            if (rect instanceof go_1.Point) {
-                rect = new go_1.Rect(rect.x, rect.y, 0, 0);
+            if (rect instanceof go.Point) {
+                rect = new go.Rect(rect.x, rect.y, 0, 0);
             }
             var returnObjects = [];
             this._containingHelper(rect, this._root, returnObjects);

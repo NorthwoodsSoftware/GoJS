@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { OverviewResizingTool } from './OverviewResizingTool';
+import * as go from '../release/go.js';
+import { OverviewResizingTool } from './OverviewResizingTool.js';
 
 let myDiagram: go.Diagram;
 

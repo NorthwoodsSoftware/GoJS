@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
+import * as go from '../release/go.js';
 
 /**
  * This CurvedLinkReshapingTool class allows for a {@link Link}'s path to be modified by the user

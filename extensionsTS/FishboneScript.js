@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./FishboneLayout", "./FishboneLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./FishboneLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,9 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var FishboneLayout_1 = require("./FishboneLayout");
-    var FishboneLayout_2 = require("./FishboneLayout");
+    var go = require("../release/go.js");
+    var FishboneLayout_js_1 = require("./FishboneLayout.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -48,7 +47,7 @@
         // define the non-fishbone link template
         myDiagram.linkTemplateMap.add('normal', $(go.Link, { routing: go.Link.Orthogonal, corner: 4 }, $(go.Shape)));
         // use this link template for fishbone layouts
-        myDiagram.linkTemplateMap.add('fishbone', $(FishboneLayout_2.FishboneLink, // defined above
+        myDiagram.linkTemplateMap.add('fishbone', $(FishboneLayout_js_1.FishboneLink, // defined above
         $(go.Shape)));
         // here is the structured data used to build the model
         var json = {
@@ -162,7 +161,7 @@
     function layoutFishbone() {
         myDiagram.startTransaction('fishbone layout');
         myDiagram.linkTemplate = myDiagram.linkTemplateMap.getValue('fishbone');
-        myDiagram.layout = go.GraphObject.make(FishboneLayout_1.FishboneLayout, {
+        myDiagram.layout = go.GraphObject.make(FishboneLayout_js_1.FishboneLayout, {
             angle: 180,
             layerSpacing: 10,
             nodeSpacing: 20,

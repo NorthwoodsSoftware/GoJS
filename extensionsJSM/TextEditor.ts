@@ -82,10 +82,13 @@ import * as go from '../release/go-module.js';
 
   TextEditor.mainElement = textarea; // to reference it more easily
 
+  (TextEditor as any).tool = null; // Initialize
+
   // used to be in doActivate
   TextEditor.show = (textBlock: go.GraphObject, diagram: go.Diagram, tool: go.Tool) => {
     if (!diagram || !diagram.div) return;
     if (!(textBlock instanceof go.TextBlock)) return;
+    if ((TextEditor as any).tool !== null) return; // Only one at a time.
 
     (TextEditor as any).tool = tool;  // remember the TextEditingTool for use by listeners
 

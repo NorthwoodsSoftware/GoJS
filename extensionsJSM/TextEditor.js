@@ -76,12 +76,15 @@ import * as go from '../release/go-module.js';
     }, false);
     TextEditor.valueFunction = () => textarea.value;
     TextEditor.mainElement = textarea; // to reference it more easily
+    TextEditor.tool = null; // Initialize
     // used to be in doActivate
     TextEditor.show = (textBlock, diagram, tool) => {
         if (!diagram || !diagram.div)
             return;
         if (!(textBlock instanceof go.TextBlock))
             return;
+        if (TextEditor.tool !== null)
+            return; // Only one at a time.
         TextEditor.tool = tool; // remember the TextEditingTool for use by listeners
         // This is called during validation, if validation failed:
         if (tool.state === go.TextEditingTool.StateInvalid) {

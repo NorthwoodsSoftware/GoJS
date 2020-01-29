@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
+    var go = require("../release/go.js");
     /**
      * The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.
      *

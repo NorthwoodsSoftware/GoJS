@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./LinkLabelDraggingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./LinkLabelDraggingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var LinkLabelDraggingTool_1 = require("./LinkLabelDraggingTool");
+    var go = require("../release/go.js");
+    var LinkLabelDraggingTool_js_1 = require("./LinkLabelDraggingTool.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -37,7 +37,7 @@
                 'undoManager.isEnabled': true
             });
         // install the LinkLabelDraggingTool as a "mouse move" tool
-        myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelDraggingTool_1.LinkLabelDraggingTool());
+        myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelDraggingTool_js_1.LinkLabelDraggingTool());
         // when the document is modified, add a "*" to the title and enable the "Save" button
         myDiagram.addDiagramListener('Modified', function (e) {
             var button = document.getElementById('SaveButton');

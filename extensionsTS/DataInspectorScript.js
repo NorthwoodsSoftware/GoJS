@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./DataInspector"], factory);
+        define(["require", "exports", "../release/go.js", "./DataInspector.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var DataInspector_1 = require("./DataInspector");
+    var go = require("../release/go.js");
+    var DataInspector_js_1 = require("./DataInspector.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -103,7 +103,7 @@
         // Declare which properties to show and how.
         // By default, all properties on the model data objects are shown unless the inspector option "includesOwnProperties" is set to false.
         // Show the primary selection's data, or blanks if no Part is selected:
-        var inspector1 = new DataInspector_1.Inspector('myInspectorDiv1', myDiagram, {
+        var inspector1 = new DataInspector_js_1.Inspector('myInspectorDiv1', myDiagram, {
             // allows for multiple nodes to be inspected at once
             multipleSelection: true,
             // max number of node properties will be shown when multiple selection is true
@@ -116,16 +116,16 @@
             properties: {
                 'text': {},
                 // key would be automatically added for nodes, but we want to declare it read-only also:
-                'key': { readOnly: true, show: DataInspector_1.Inspector.showIfPresent },
+                'key': { readOnly: true, show: DataInspector_js_1.Inspector.showIfPresent },
                 // color would be automatically added for nodes, but we want to declare it a color also:
-                'color': { show: DataInspector_1.Inspector.showIfPresent, type: 'color' },
+                'color': { show: DataInspector_js_1.Inspector.showIfPresent, type: 'color' },
                 // Comments and LinkComments are not in any node or link data (yet), so we add them here:
-                'Comments': { show: DataInspector_1.Inspector.showIfNode },
-                'LinkComments': { show: DataInspector_1.Inspector.showIfLink },
-                'isGroup': { readOnly: true, show: DataInspector_1.Inspector.showIfPresent },
-                'flag': { show: DataInspector_1.Inspector.showIfNode, type: 'checkbox' },
+                'Comments': { show: DataInspector_js_1.Inspector.showIfNode },
+                'LinkComments': { show: DataInspector_js_1.Inspector.showIfLink },
+                'isGroup': { readOnly: true, show: DataInspector_js_1.Inspector.showIfPresent },
+                'flag': { show: DataInspector_js_1.Inspector.showIfNode, type: 'checkbox' },
                 'state': {
-                    show: DataInspector_1.Inspector.showIfNode,
+                    show: DataInspector_js_1.Inspector.showIfNode,
                     type: 'select',
                     choices: function (node, propName) {
                         if (Array.isArray(node.data.choices))
@@ -135,11 +135,11 @@
                 },
                 'choices': { show: false },
                 // an example of specifying the <input> type
-                'password': { show: DataInspector_1.Inspector.showIfPresent, type: 'password' }
+                'password': { show: DataInspector_js_1.Inspector.showIfPresent, type: 'password' }
             }
         });
         // Always show the first Node:
-        var inspector2 = new DataInspector_1.Inspector('myInspectorDiv2', myDiagram, {
+        var inspector2 = new DataInspector_js_1.Inspector('myInspectorDiv2', myDiagram, {
             // By default the inspector works on the Diagram selection.
             // This property lets us inspect a specific object by calling Inspector.inspectObject(object)
             inspectSelection: false,
@@ -148,7 +148,7 @@
                 // This property we want to declare as a color, to show a color-picker:
                 'color': { type: 'color' },
                 // key would be automatically added for node data, but we want to declare it read-only also:
-                'key': { readOnly: true, show: DataInspector_1.Inspector.showIfPresent(myDiagram.selection.first(), 'key') }
+                'key': { readOnly: true, show: DataInspector_js_1.Inspector.showIfPresent(myDiagram.selection.first(), 'key') }
             }
         });
         // If not inspecting a selection, you can programatically decide what to inspect (a Part, or a JavaScript object)
@@ -157,7 +157,7 @@
         if (firstnode !== null)
             inspector2.inspectObject(firstnode.data);
         // Always show the model.modelData:
-        var inspector3 = new DataInspector_1.Inspector('myInspectorDiv3', myDiagram, {
+        var inspector3 = new DataInspector_js_1.Inspector('myInspectorDiv3', myDiagram, {
             inspectSelection: false
         });
         inspector3.inspectObject(myDiagram.model.modelData);

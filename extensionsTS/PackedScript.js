@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./PackedLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./PackedLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var PackedLayout_1 = require("./PackedLayout");
+    var go = require("../release/go.js");
+    var PackedLayout_js_1 = require("./PackedLayout.js");
     var myDiagram;
     var aspectRatio;
     var layoutWidth;
@@ -43,7 +43,7 @@
             $(go.Diagram, 'myDiagramDiv', // must be the ID or reference to div
             {
                 'animationManager.isEnabled': true,
-                layout: $(PackedLayout_1.PackedLayout),
+                layout: $(PackedLayout_js_1.PackedLayout),
                 scale: 0.75, isReadOnly: true
             });
         // Nodes have a template with bindings for size, shape, and fill color
@@ -108,49 +108,49 @@
     }
     function rebuildGraph() {
         validateInput();
-        var packShape = PackedLayout_1.PackedLayout.Elliptical;
+        var packShape = PackedLayout_js_1.PackedLayout.Elliptical;
         switch (getRadioValue('packShape')) {
             case 'Elliptical':
-                packShape = PackedLayout_1.PackedLayout.Elliptical;
+                packShape = PackedLayout_js_1.PackedLayout.Elliptical;
                 break;
             case 'Rectangular':
-                packShape = PackedLayout_1.PackedLayout.Rectangular;
+                packShape = PackedLayout_js_1.PackedLayout.Rectangular;
                 break;
             case 'Spiral':
-                packShape = PackedLayout_1.PackedLayout.Spiral;
+                packShape = PackedLayout_js_1.PackedLayout.Spiral;
                 break;
         }
-        var packMode = PackedLayout_1.PackedLayout.AspectOnly;
+        var packMode = PackedLayout_js_1.PackedLayout.AspectOnly;
         switch (getRadioValue('packMode')) {
             case 'AspectOnly':
-                packMode = PackedLayout_1.PackedLayout.AspectOnly;
+                packMode = PackedLayout_js_1.PackedLayout.AspectOnly;
                 break;
             case 'Fit':
-                packMode = PackedLayout_1.PackedLayout.Fit;
+                packMode = PackedLayout_js_1.PackedLayout.Fit;
                 break;
             case 'ExpandToFit':
-                packMode = PackedLayout_1.PackedLayout.ExpandToFit;
+                packMode = PackedLayout_js_1.PackedLayout.ExpandToFit;
                 break;
         }
-        var sortMode = PackedLayout_1.PackedLayout.None;
+        var sortMode = PackedLayout_js_1.PackedLayout.None;
         switch (getRadioValue('sortMode')) {
             case 'None':
-                sortMode = PackedLayout_1.PackedLayout.None;
+                sortMode = PackedLayout_js_1.PackedLayout.None;
                 break;
             case 'MaxSide':
-                sortMode = PackedLayout_1.PackedLayout.MaxSide;
+                sortMode = PackedLayout_js_1.PackedLayout.MaxSide;
                 break;
             case 'Area':
-                sortMode = PackedLayout_1.PackedLayout.Area;
+                sortMode = PackedLayout_js_1.PackedLayout.Area;
                 break;
         }
-        var sortOrder = PackedLayout_1.PackedLayout.Descending;
+        var sortOrder = PackedLayout_js_1.PackedLayout.Descending;
         switch (getRadioValue('sortOrder')) {
             case 'Descending':
-                sortOrder = PackedLayout_1.PackedLayout.Descending;
+                sortOrder = PackedLayout_js_1.PackedLayout.Descending;
                 break;
             case 'Ascending':
-                sortOrder = PackedLayout_1.PackedLayout.Ascending;
+                sortOrder = PackedLayout_js_1.PackedLayout.Ascending;
                 break;
         }
         var params = {
@@ -176,7 +176,7 @@
         }
         myDiagram.startTransaction('packed layout');
         generateNodeData();
-        myDiagram.layout = go.GraphObject.make(PackedLayout_1.PackedLayout, params /* defined above */);
+        myDiagram.layout = go.GraphObject.make(PackedLayout_js_1.PackedLayout, params /* defined above */);
         myDiagram.commitTransaction('packed layout');
     }
     exports.rebuildGraph = rebuildGraph;
@@ -219,13 +219,13 @@
     var hasCircularNodesSavedState = null;
     var sameSidesSavedState = null;
     function disableInputs(params) {
-        setRadioButtonsDisabled('packMode', params.packShape === PackedLayout_1.PackedLayout.Spiral);
-        aspectRatio.disabled = params.packMode !== PackedLayout_1.PackedLayout.AspectOnly || params.packShape === PackedLayout_1.PackedLayout.Spiral;
-        layoutWidth.disabled = params.packMode === PackedLayout_1.PackedLayout.AspectOnly || params.packShape === PackedLayout_1.PackedLayout.Spiral;
-        layoutHeight.disabled = params.packMode === PackedLayout_1.PackedLayout.AspectOnly || params.packShape === PackedLayout_1.PackedLayout.Spiral;
-        nodeSpacing.disabled = params.packMode === PackedLayout_1.PackedLayout.ExpandToFit;
-        hasCircularNodes.disabled = params.packShape === PackedLayout_1.PackedLayout.Spiral;
-        if (params.packShape === PackedLayout_1.PackedLayout.Spiral) {
+        setRadioButtonsDisabled('packMode', params.packShape === PackedLayout_js_1.PackedLayout.Spiral);
+        aspectRatio.disabled = params.packMode !== PackedLayout_js_1.PackedLayout.AspectOnly || params.packShape === PackedLayout_js_1.PackedLayout.Spiral;
+        layoutWidth.disabled = params.packMode === PackedLayout_js_1.PackedLayout.AspectOnly || params.packShape === PackedLayout_js_1.PackedLayout.Spiral;
+        layoutHeight.disabled = params.packMode === PackedLayout_js_1.PackedLayout.AspectOnly || params.packShape === PackedLayout_js_1.PackedLayout.Spiral;
+        nodeSpacing.disabled = params.packMode === PackedLayout_js_1.PackedLayout.ExpandToFit;
+        hasCircularNodes.disabled = params.packShape === PackedLayout_js_1.PackedLayout.Spiral;
+        if (params.packShape === PackedLayout_js_1.PackedLayout.Spiral) {
             if (hasCircularNodesSavedState === null) {
                 hasCircularNodesSavedState = hasCircularNodes.checked;
             }

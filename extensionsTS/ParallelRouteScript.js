@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./ParallelRouteLink"], factory);
+        define(["require", "exports", "../release/go.js", "./ParallelRouteLink.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var ParallelRouteLink_1 = require("./ParallelRouteLink");
+    var go = require("../release/go.js");
+    var ParallelRouteLink_js_1 = require("./ParallelRouteLink.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -36,7 +36,7 @@
                 cursor: 'pointer'
             }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8 }, new go.Binding('text')));
         myDiagram.linkTemplate =
-            $(ParallelRouteLink_1.ParallelRouteLink, {
+            $(ParallelRouteLink_js_1.ParallelRouteLink, {
                 relinkableFrom: true, relinkableTo: true,
                 reshapable: true // , resegmentable: true
             }, $(go.Shape, { strokeWidth: 2 }, new go.Binding('stroke', 'fromNode', function (node) { return node.port.fill; }).ofObject()), $(go.Shape, { toArrow: 'OpenTriangle', strokeWidth: 1.5 }, new go.Binding('stroke', 'fromNode', function (node) { return node.port.fill; }).ofObject()));

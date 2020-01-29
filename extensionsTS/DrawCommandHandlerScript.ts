@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { DrawCommandHandler } from './DrawCommandHandler';
+import * as go from '../release/go.js';
+import { DrawCommandHandler } from './DrawCommandHandler.js';
 
 let myDiagram: go.Diagram;
 

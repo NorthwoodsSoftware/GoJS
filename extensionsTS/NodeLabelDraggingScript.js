@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./NodeLabelDraggingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./NodeLabelDraggingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var NodeLabelDraggingTool_1 = require("./NodeLabelDraggingTool");
+    var go = require("../release/go.js");
+    var NodeLabelDraggingTool_js_1 = require("./NodeLabelDraggingTool.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -37,7 +37,7 @@
                 'undoManager.isEnabled': true
             });
         // install the NodeLabelDraggingTool as a "mouse move" tool
-        myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool_1.NodeLabelDraggingTool());
+        myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool_js_1.NodeLabelDraggingTool());
         // when the document is modified, add a "*" to the title and enable the "Save" button
         myDiagram.addDiagramListener('Modified', function (e) {
             var button = document.getElementById('SaveButton');

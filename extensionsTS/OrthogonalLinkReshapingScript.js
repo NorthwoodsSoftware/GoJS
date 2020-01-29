@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./OrthogonalLinkReshapingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./OrthogonalLinkReshapingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var OrthogonalLinkReshapingTool_1 = require("./OrthogonalLinkReshapingTool");
+    var go = require("../release/go.js");
+    var OrthogonalLinkReshapingTool_js_1 = require("./OrthogonalLinkReshapingTool.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -29,7 +29,7 @@
         myDiagram =
             $(go.Diagram, 'myDiagramDiv', {
                 'undoManager.isEnabled': true,
-                'linkReshapingTool': new OrthogonalLinkReshapingTool_1.OrthogonalLinkReshapingTool()
+                'linkReshapingTool': new OrthogonalLinkReshapingTool_js_1.OrthogonalLinkReshapingTool()
             });
         myDiagram.nodeTemplate =
             $(go.Node, 'Auto', {

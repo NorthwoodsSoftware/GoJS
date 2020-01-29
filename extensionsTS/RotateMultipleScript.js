@@ -7,20 +7,20 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./RotateMultipleTool"], factory);
+        define(["require", "exports", "../release/go.js", "./RotateMultipleTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var go = require("../release/go");
-    var RotateMultipleTool_1 = require("./RotateMultipleTool");
+    var go = require("../release/go.js");
+    var RotateMultipleTool_js_1 = require("./RotateMultipleTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
-            rotatingTool: new RotateMultipleTool_1.RotateMultipleTool(),
+            rotatingTool: new RotateMultipleTool_js_1.RotateMultipleTool(),
             'undoManager.isEnabled': true // enable undo & redo
         });
         // define a simple Node template

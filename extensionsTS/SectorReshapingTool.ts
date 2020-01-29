@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
+import * as go from '../release/go.js';
 
 /**
  * The SectorReshapingTool class lets the user interactively modify the angles of a "pie"-shaped sector of a circle.

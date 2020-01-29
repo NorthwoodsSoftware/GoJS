@@ -10,9 +10,9 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import './Figures';
-import { SnapLinkReshapingTool } from './SnapLinkReshapingTool';
+import * as go from '../release/go.js';
+import './Figures.js';
+import { SnapLinkReshapingTool } from './SnapLinkReshapingTool.js';
 
 let myDiagram: go.Diagram;
 let myPalette: go.Diagram;

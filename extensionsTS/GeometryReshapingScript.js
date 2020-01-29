@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./GeometryReshapingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./GeometryReshapingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var GeometryReshapingTool_1 = require("./GeometryReshapingTool");
+    var go = require("../release/go.js");
+    var GeometryReshapingTool_js_1 = require("./GeometryReshapingTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -29,7 +29,7 @@
         {
             'undoManager.isEnabled': true // enable undo & redo
         });
-        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_1.GeometryReshapingTool());
+        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_js_1.GeometryReshapingTool());
         myDiagram.nodeTemplate =
             $(go.Node, { reshapable: true }, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
             $(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 }, new go.Binding('geometryString', 'geo').makeTwoWay()));

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./Figures", "./PortShiftingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./Figures.js", "./PortShiftingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,9 +19,9 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    require("./Figures");
-    var PortShiftingTool_1 = require("./PortShiftingTool");
+    var go = require("../release/go.js");
+    require("./Figures.js");
+    var PortShiftingTool_js_1 = require("./PortShiftingTool.js");
     var red = 'orangered'; // 0 or false
     var green = 'forestgreen'; // 1 or true
     var myDiagram;
@@ -36,7 +36,7 @@
                 'undoManager.isEnabled': true
             });
         // install the PortShiftingTool as a "mouse move" tool
-        myDiagram.toolManager.mouseMoveTools.insertAt(0, new PortShiftingTool_1.PortShiftingTool());
+        myDiagram.toolManager.mouseMoveTools.insertAt(0, new PortShiftingTool_js_1.PortShiftingTool());
         // when the document is modified, add a "*" to the title and enable the "Save" button
         myDiagram.addDiagramListener('Modified', function (e) {
             var button = document.getElementById('saveModel');

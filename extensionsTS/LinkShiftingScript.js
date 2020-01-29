@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./LinkShiftingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./LinkShiftingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var LinkShiftingTool_1 = require("./LinkShiftingTool");
+    var go = require("../release/go.js");
+    var LinkShiftingTool_js_1 = require("./LinkShiftingTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -28,7 +28,7 @@
         var myDiagram = $(go.Diagram, 'myDiagramDiv', {
             'undoManager.isEnabled': true
         });
-        myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool_1.LinkShiftingTool));
+        myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool_js_1.LinkShiftingTool));
         myDiagram.nodeTemplate =
             $(go.Node, 'Auto', {
                 fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,

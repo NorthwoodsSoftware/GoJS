@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./RadialLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./RadialLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -32,8 +32,8 @@ var __extends = (this && this.__extends) || (function () {
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var RadialLayout_1 = require("./RadialLayout");
+    var go = require("../release/go.js");
+    var RadialLayout_js_1 = require("./RadialLayout.js");
     var myDiagram;
     var CustomRadialLayout = /** @class */ (function (_super) {
         __extends(CustomRadialLayout, _super);
@@ -77,7 +77,7 @@ var __extends = (this && this.__extends) || (function () {
             }
         };
         return CustomRadialLayout;
-    }(RadialLayout_1.RadialLayout));
+    }(RadialLayout_js_1.RadialLayout));
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this

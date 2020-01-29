@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,7 +19,7 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
+    var go = require("../release/go.js");
     /**
      * This class implements a zoom slider for GoJS diagrams.
      * The constructor takes two arguments:
@@ -312,7 +312,7 @@
                 zoomRangeContainer.style.height = sliderHeight + 'px';
                 zoomRangeInput.style.width = rangeWidth + 'px';
                 zoomRangeInput.style.height = sliderHeight + 'px';
-                zoomRangeInput.style.transformOrigin = null;
+                zoomRangeInput.style.transformOrigin = '';
                 zoomInBtn.style.width = sliderHeight + 'px';
                 zoomInBtn.style.height = sliderHeight + 'px';
             }
@@ -351,7 +351,7 @@
                 return;
             // Need to set the transform of the range input and move the buttons to the correct sides
             if (this.orientation === 'horizontal') {
-                zoomRangeInput.style.transform = null;
+                zoomRangeInput.style.transform = '';
                 this._sliderDiv.insertBefore(zoomOutBtn, this._sliderDiv.firstChild);
                 this._sliderDiv.appendChild(zoomInBtn);
             }

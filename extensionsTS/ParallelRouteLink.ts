@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
+import * as go from '../release/go.js';
 
 /**
  * This custom {@link Link} class customizes its route to go parallel to other links connecting the same ports,

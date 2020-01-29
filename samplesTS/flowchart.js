@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     'use strict';
@@ -12,7 +12,7 @@
     /*
     *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
-    var go = require("../release/go");
+    var go = require("../release/go.js");
     var myDiagram;
     var myPalette;
     function init() {

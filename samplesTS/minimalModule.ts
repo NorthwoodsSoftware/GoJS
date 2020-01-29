@@ -8,7 +8,7 @@
 // you must compile this file with:
 // tsc -p .\tsconfigModule.json
 
-import { go } from '../release/go-module.js';
+import * as go from '../release/go-module.js';
 
 export function init() {
 

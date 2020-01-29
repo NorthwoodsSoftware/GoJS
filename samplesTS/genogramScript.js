@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./GenogramLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./GenogramLayout.js"], factory);
     }
 })(function (require, exports) {
     'use strict';
@@ -12,8 +12,8 @@
     /*
     *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
-    var go = require("../release/go");
-    var GenogramLayout_1 = require("./GenogramLayout");
+    var go = require("../release/go.js");
+    var GenogramLayout_js_1 = require("./GenogramLayout.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -25,7 +25,7 @@
             nodeSelectionAdornmentTemplate: $(go.Adornment, 'Auto', { layerName: 'Grid' }, // the predefined layer that is behind everything else
             $(go.Shape, 'Circle', { fill: 'yellow', stroke: null }), $(go.Placeholder)),
             layout: // use a custom layout, defined below
-            $(GenogramLayout_1.GenogramLayout, { direction: 90, layerSpacing: 30, columnSpacing: 10 })
+            $(GenogramLayout_js_1.GenogramLayout, { direction: 90, layerSpacing: 30, columnSpacing: 10 })
         });
         // determine the color for each attribute shape
         function attrFill(a) {

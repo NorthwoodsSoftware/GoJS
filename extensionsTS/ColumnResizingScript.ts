@@ -10,9 +10,9 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { ColumnResizingTool } from './ColumnResizingTool';
-import { RowResizingTool } from './RowResizingTool';
+import * as go from '../release/go.js';
+import { ColumnResizingTool } from './ColumnResizingTool.js';
+import { RowResizingTool } from './RowResizingTool.js';
 
 export function init() {
   if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this

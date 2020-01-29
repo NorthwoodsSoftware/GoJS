@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./ParallelLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./ParallelLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var ParallelLayout_1 = require("./ParallelLayout");
+    var go = require("../release/go.js");
+    var ParallelLayout_js_1 = require("./ParallelLayout.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -29,7 +29,7 @@
         {
             allowCopy: false,
             allowDelete: false,
-            layout: $(ParallelLayout_1.ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
+            layout: $(ParallelLayout_js_1.ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
         });
         // define the Node templates
         myDiagram.nodeTemplate =
@@ -48,7 +48,7 @@
         // define the Group template to be fairly simple
         myDiagram.groupTemplate =
             $(go.Group, 'Auto', {
-                layout: $(ParallelLayout_1.ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
+                layout: $(ParallelLayout_js_1.ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
             }, $(go.Shape, { fill: 'transparent', stroke: 'darkgoldenrod' }), $(go.Placeholder, { padding: 10 }), $('SubGraphExpanderButton', { alignment: go.Spot.TopLeft }));
         myDiagram.model = new go.GraphLinksModel([
             { key: -1, isGroup: true },

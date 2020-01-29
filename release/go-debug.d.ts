@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.6
+ * Type definitions for GoJS v2.1.7
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -1939,6 +1939,21 @@ export class Rect {
      */
     static intersects(rx: number, ry: number, rw: number, rh: number, x: number, y: number, w: number, h: number): boolean;
     /**
+     * Undocumented.
+     * This static function is true if a rectangular area is intersected by a finite straight line segment.
+     * @param {number} x The X coordinate of the rectangle to check for intersection with the line segment.
+     * @param {number} y The Y coordinate of the rectangle to check for intersection with the line segment.
+     * @param {number} w The Width of the rectangle to check for intersection with the line segment.
+     * @param {number} h The Height of the rectangle to check for intersection with the line segment.
+     * @param {number} p1x The X coordinate of one end of the line segment.
+     * @param {number} p1y The Y coordinate of one end of the line segment.
+     * @param {number} p2x The X coordinate of other end of the line segment.
+     * @param {number} p2y The Y coordinate of other end of the line segment.
+     * @return {boolean} True if the given finite line segment intersects with the given rectangular area, false otherwise.
+     * false otherwise.
+     */
+    static intersectsLineSegment(x: number, y: number, w: number, h: number, p1x: number, p1y: number, p2x: number, p2y: number): boolean;
+    /**
      * Gets or sets the top-left x coordinate of the Rect.
      */
     x: number;
@@ -2676,6 +2691,13 @@ export class Geometry {
      * @since 1.1
      */
     rotate(angle: number, x?: number, y?: number): Geometry;
+    /**
+     * Undocumented.
+     * @param {Point} p in local geometry coordinates
+     * @param {number=} sw half the stroke width that a Shape has or that you want to pretend it has
+     * @return {boolean}
+     */
+    containsPoint(p: Point, sw?: number): boolean;
     /**
      * Returns the point at the fractional distance (0-1) along this Geometry's path.
      * @param {number} fraction A fractional amount between 0 and 1, inclusive.
@@ -10324,10 +10346,12 @@ export class Diagram {
      * Deselect all selected Parts.
      * This removes all parts from the #selection collection.
      * This method raises the "ChangingSelection" and "ChangedSelection" Diagram events.
+     * @expose
+     * @param {boolean=} skipsEvents if true, do not raise the DiagramEvents "ChangingSelection" and "ChangedSelection"; if not supplied the value is assumed to be false.
      * @see #select
      * @see #selectCollection
      */
-    clearSelection(): void;
+    clearSelection(skipsEvents?: boolean): void;
     /**
      * Make the given object the only selected object.
      * This method raises the "ChangingSelection" and "ChangedSelection" Diagram events.
@@ -10348,6 +10372,7 @@ export class Diagram {
     /**
      * Remove highlights from all Parts.
      * This removes all parts from the #highlighteds collection.
+     * @expose
      * @see #highlight
      * @see #highlightCollection
      * @see Part#isHighlighted
@@ -12191,6 +12216,8 @@ export class Overview extends Diagram {
      * @param {Element|string} div A reference to a div or its ID as a string.
      */
     constructor(div?: Element | string);
+    private saveSnapshot;
+    private drawObserved;
     /**
      * Gets or sets the Diagram for which this Overview is
      * displaying a model and showing its viewport into that model.
@@ -12208,9 +12235,20 @@ export class Overview extends Diagram {
     /**
      * Gets or sets whether this overview draws the temporary layers of the observed Diagram.
      * The default value is true.
+     *
+     * Setting this property does not notify about any changed event.
      * @since 1.2
      */
     drawsTemporaryLayers: boolean;
+    /**
+     * Undocumented.
+     * Gets or sets how long it waits before updating, in milliseconds.
+     * The default value is zero.
+     * Any new value must be a non-negative number.
+     *
+     * Setting this property does not notify about any changed event.
+     */
+    updateDelay: number;
 }
 /**
  * The Diagram#commandHandler implements various
@@ -18809,7 +18847,7 @@ export class Part extends Panel {
      * This predicate is true if this part is a member of the given Part, perhaps indirectly.
      *
      * If the given part is a Group and this part is a member of the given group, this returns true.
-     * If this part is a Node and it is a label node for the given link, this returns true.
+     * If this part is a Node and it is a label node for a link that is a member of the given group, this returns true.
      * Otherwise this searches recursively any Part#containingGroup of the given part.
      *
      * A part cannot be contained by itself.
@@ -19977,7 +20015,7 @@ export class Group extends Node {
     findExternalNodesConnected(): Iterator<Node>;
     /**
      * Return a collection of Parts that are all of the nodes and links
-     * that are members of this group, including inside nested groups,
+     * that are members of this group, including inside nested groups and label nodes,
      * but excluding this group itself.
      *
      * For member nodes that are Groups, this will include its members recursively.

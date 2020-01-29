@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./TreeMapLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./TreeMapLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var TreeMapLayout_1 = require("./TreeMapLayout");
+    var go = require("../release/go.js");
+    var TreeMapLayout_js_1 = require("./TreeMapLayout.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -31,7 +31,7 @@
             {
                 initialAutoScale: go.Diagram.Uniform,
                 'animationManager.isEnabled': false,
-                layout: $(TreeMapLayout_1.TreeMapLayout, { isTopLevelHorizontal: false }),
+                layout: $(TreeMapLayout_js_1.TreeMapLayout, { isTopLevelHorizontal: false }),
                 allowMove: false, allowCopy: false, allowDelete: false
             });
         // change selection behavior to cycle up the chain of containing Groups

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./NonRealtimeDraggingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./NonRealtimeDraggingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,14 +19,14 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var NonRealtimeDraggingTool_1 = require("./NonRealtimeDraggingTool");
+    var go = require("../release/go.js");
+    var NonRealtimeDraggingTool_js_1 = require("./NonRealtimeDraggingTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         var myDiagram = $(go.Diagram, 'myDiagramDiv', {
-            draggingTool: new NonRealtimeDraggingTool_1.NonRealtimeDraggingTool(),
+            draggingTool: new NonRealtimeDraggingTool_js_1.NonRealtimeDraggingTool(),
             'undoManager.isEnabled': true
         });
         myDiagram.nodeTemplate =

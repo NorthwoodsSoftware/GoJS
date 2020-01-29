@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,7 +19,7 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
+    var go = require("../release/go.js");
     // HTML + JavaScript text editor menu, made with HTMLInfo
     // This is a re-implementation of the default text editor
     // This file exposes one instance of HTMLInfo, window.TextEditor
@@ -87,12 +87,15 @@
         }, false);
         TextEditor.valueFunction = function () { return textarea.value; };
         TextEditor.mainElement = textarea; // to reference it more easily
+        TextEditor.tool = null; // Initialize
         // used to be in doActivate
         TextEditor.show = function (textBlock, diagram, tool) {
             if (!diagram || !diagram.div)
                 return;
             if (!(textBlock instanceof go.TextBlock))
                 return;
+            if (TextEditor.tool !== null)
+                return; // Only one at a time.
             TextEditor.tool = tool; // remember the TextEditingTool for use by listeners
             // This is called during validation, if validation failed:
             if (tool.state === go.TextEditingTool.StateInvalid) {

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./LocalStorageCommandHandler"], factory);
+        define(["require", "exports", "../release/go.js", "./LocalStorageCommandHandler.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,20 +19,20 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var LocalStorageCommandHandler_1 = require("./LocalStorageCommandHandler");
+    var go = require("../release/go.js");
+    var LocalStorageCommandHandler_js_1 = require("./LocalStorageCommandHandler.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
-            commandHandler: new LocalStorageCommandHandler_1.LocalStorageCommandHandler(),
+            commandHandler: new LocalStorageCommandHandler_js_1.LocalStorageCommandHandler(),
             'undoManager.isEnabled': true // enable undo & redo
         });
         var myDiagram2 = $(go.Diagram, 'myDiagramDiv2', // create a Diagram for the DIV HTML element
         {
-            commandHandler: new LocalStorageCommandHandler_1.LocalStorageCommandHandler(),
+            commandHandler: new LocalStorageCommandHandler_js_1.LocalStorageCommandHandler(),
             'undoManager.isEnabled': true // enable undo & redo
         });
         // define a simple Node template

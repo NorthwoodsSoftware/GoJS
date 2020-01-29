@@ -50,7 +50,7 @@ class QuadNode<T> {
 
 /**
  * Object to be contained by the {@link Quadtree} class. This object needs
- * to have go.Rectangular bounds (described by an {@link go.Rect} object), as well
+ * to have rectangular bounds (described by an {@link Rect} object), as well
  * as something (of any type) associated with it.
  */
 class TreeObject<T> {
@@ -64,7 +64,7 @@ class TreeObject<T> {
 }
 
 /**
- * Implementation of the quadtree data structure using the {@link go.Rect} class.
+ * Implementation of the quadtree data structure using the {@link Rect} class.
  * Each Quadtree has defined bounds found at {@link #bounds}, an array
  * of member rectangles, and an array of child nodes
  * (Quadtrees themselves). If the Quadtree has no
@@ -227,12 +227,12 @@ export class Quadtree<T> {
    * will grow to accomodate it. Possibly restructures the
    * tree if a more efficient configuration can be found with
    * the new dimensions. Bounds can be given either as a
-   * single {@link go.Rect} or as any combination of arguments
-   * which is valid for the {@link go.Rect} constructor.
+   * single {@link Rect} or as any combination of arguments
+   * which is valid for the {@link Rect} constructor.
    * @this {Quadtree}
    * @param {T} obj the object to insert
-   * @param {Rect|Point|number} x The go.Rect bounds of the object, or top-left go.Point, or x value.
-   * @param {Point|Size|number} y Bottom-right go.Point or go.Size or y value.
+   * @param {Rect|Point|number} x The Rect bounds of the object, or top-left Point, or x value.
+   * @param {Point|Size|number} y Bottom-right Point or Size or y value.
    * @param {number} w Width to be used if x,y are specified;
    * must be non-negative.
    * @param {number} h Height to be used if x,y are specified;
@@ -744,10 +744,10 @@ export class Quadtree<T> {
 
   /**
    * Can be called as either (obj, x, y) or (obj, point). Translate
-   * the given object to given x and y coordinates or to a given {@link go.Point}.
+   * the given object to given x and y coordinates or to a given {@link Point}.
    * @this {Quadtree}
    * @param {T} obj the object to move
-   * @param {number|Point} x the x coordinate or go.Point to move the object to
+   * @param {number|Point} x the x coordinate or Point to move the object to
    * @param {number} y the y coordinate to move the object to
    * @return {boolean} whether or not the move was successful. False if the object was not in the tree.
    */
@@ -761,7 +761,7 @@ export class Quadtree<T> {
         treeObj.bounds.x = x;
         treeObj.bounds.y = y;
       } else {
-        throw new Error('Please provide the position as either a go.Point or two numbers');
+        throw new Error('Please provide the position as either a Point or two numbers');
       }
       this.add(treeObj);
       return true;
@@ -771,10 +771,10 @@ export class Quadtree<T> {
 
   /**
    * Can be called as either (obj, width, height) or (obj, size). Resize
-   * the given object to given width and height or to a given {@link go.Size}.
+   * the given object to given width and height or to a given {@link Size}.
    * @this {Quadtree}
    * @param {T} obj the object to resize
-   * @param {number|Size} width the width or go.Size to resize the object to
+   * @param {number|Size} width the width or Size to resize the object to
    * @param {number} height the height to resize the object to
    * @return {boolean} whether or not the resize was successful. False if the object was not in the tree.
    */
@@ -788,7 +788,7 @@ export class Quadtree<T> {
         treeObj.bounds.width = width;
         treeObj.bounds.height = height;
       } else {
-        throw new Error('Please provide the size as either a go.Size or two numbers');
+        throw new Error('Please provide the size as either a Size or two numbers');
       }
       this.add(treeObj);
       return true;
@@ -798,13 +798,13 @@ export class Quadtree<T> {
 
   /**
    * Updates the given object to have the bounds given, provided as either a
-   * {@link go.Rect} or x, y, width, and height.
+   * {@link Rect} or x, y, width, and height.
    * @this {Quadtree}
    * @param obj the object to change the bounds of
-   * @param x the x-coordinate or go.Rect to set the object to
-   * @param y the y-coordinate to set the object to, unnecessary if a go.Rect was given
-   * @param width the width to set the object to, unnecessary if a go.Rect was given
-   * @param height the height to set the object to, unnecessary if a go.Rect was given
+   * @param x the x-coordinate or Rect to set the object to
+   * @param y the y-coordinate to set the object to, unnecessary if a Rect was given
+   * @param width the width to set the object to, unnecessary if a Rect was given
+   * @param height the height to set the object to, unnecessary if a Rect was given
    */
   public setTo(obj: T, x: number | go.Rect, y?: number, width?: number, height?: number): boolean {
     const treeObj = this._treeObjectMap.get(obj);
@@ -814,7 +814,7 @@ export class Quadtree<T> {
       } else if (y !== undefined && width !== undefined && height !== undefined) {
         treeObj.bounds.setTo(x, y, width, height);
       } else {
-        throw new Error('Please provide new bounds as either a go.Rect or combination of four numbers (x, y, width, height)');
+        throw new Error('Please provide new bounds as either a Rect or combination of four numbers (x, y, width, height)');
       }
       this.add(treeObj);
       return true;
@@ -824,11 +824,11 @@ export class Quadtree<T> {
 
   /**
    * Return all objects that intersect (wholly or partially) with
-   * the given {@link go.Rect} or {@link go.Point}. Touching edges and
+   * the given {@link Rect} or {@link Point}. Touching edges and
    * objects overlapping by 1e-7 or less (to account for floating
    * point error) are both not considered intersections.
    * @this {Quadtree}
-   * @param {Rect|Point} rect the go.Rect or go.Point to check intersections for. If a point is given, a go.Rect with size (0, 0) is created for intersection calculations.
+   * @param {Rect|Point} rect the Rect or Point to check intersections for. If a point is given, a Rect with size (0, 0) is created for intersection calculations.
    * @return {Array<T>} array containing all intersecting objects
    */
   public intersecting(rect: go.Rect | go.Point): Array<T> {
@@ -864,7 +864,7 @@ export class Quadtree<T> {
 
   /**
    * @hidden @internal
-   * Similar as {@link go.Rect.intersectsRect}, but doesn't count edges as intersections.
+   * Similar as {@link Rect.intersectsRect}, but doesn't count edges as intersections.
    * Also accounts for floating error (by returning false more often) up to an error of 1e-7.
    * Used by {@link #intersecting}.
    * @this {Quadtree}
@@ -877,9 +877,9 @@ export class Quadtree<T> {
   }
 
   /**
-   * Return all objects that fully contain the given {@link go.Rect} or {@link go.Point}.
+   * Return all objects that fully contain the given {@link Rect} or {@link Point}.
    * @this {Quadtree}
-   * @param {Rect|Point} rect the go.Rect or go.Point to check containing for. If a point is given, a go.Rect with size (0, 0) is created for containment calculations.
+   * @param {Rect|Point} rect the Rect or Point to check containing for. If a point is given, a Rect with size (0, 0) is created for containment calculations.
    * @return {Array<T>} array containing all containing objects
    */
   public containing(rect: go.Rect | go.Point): Array<T> {

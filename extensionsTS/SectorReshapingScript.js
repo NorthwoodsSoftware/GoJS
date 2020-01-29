@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./SectorReshapingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./SectorReshapingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var SectorReshapingTool_1 = require("./SectorReshapingTool");
+    var go = require("../release/go.js");
+    var SectorReshapingTool_js_1 = require("./SectorReshapingTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -30,11 +30,11 @@
             'undoManager.isEnabled': true
         });
         // install the SectorReshapingTool as a mouse-down tool
-        myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool_1.SectorReshapingTool());
+        myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool_js_1.SectorReshapingTool());
         function makeSector(data) {
-            var radius = SectorReshapingTool_1.SectorReshapingTool.getRadius(data);
-            var angle = SectorReshapingTool_1.SectorReshapingTool.getAngle(data);
-            var sweep = SectorReshapingTool_1.SectorReshapingTool.getSweep(data);
+            var radius = SectorReshapingTool_js_1.SectorReshapingTool.getRadius(data);
+            var angle = SectorReshapingTool_js_1.SectorReshapingTool.getAngle(data);
+            var sweep = SectorReshapingTool_js_1.SectorReshapingTool.getSweep(data);
             var start = new go.Point(radius, 0).rotate(angle);
             // this is much more efficient than calling go.GraphObject.make:
             var geo = new go.Geometry()

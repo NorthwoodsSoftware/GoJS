@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { PackedLayout } from './PackedLayout';
+import * as go from '../release/go.js';
+import { PackedLayout } from './PackedLayout.js';
 
 // define an interface for PackedLayout parameters so that they can easily be passed between functions
 interface PackedLayoutParams {

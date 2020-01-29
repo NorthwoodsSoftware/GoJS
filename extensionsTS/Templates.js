@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,7 +19,7 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
+    var go = require("../release/go.js");
     // These are the definitions for all of the predefined templates and tool archetypes.
     // You do not need to load this file in order to use the default templates and archetypes.
     // Although we have tried to provide definitions here that are faithful to how they

@@ -75,9 +75,12 @@
 
   TextEditor.mainElement = textarea; // to reference it more easily
 
+  TextEditor.tool = null; // Initialize
+
   // used to be in doActivate
   TextEditor.show = function(textBlock, diagram, tool) {
     if (!(textBlock instanceof go.TextBlock)) return;
+    if (TextEditor.tool !== null) return; // Only one at a time.
 
     TextEditor.tool = tool;  // remember the TextEditingTool for use by listeners
 

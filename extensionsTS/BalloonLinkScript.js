@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./BalloonLink"], factory);
+        define(["require", "exports", "../release/go.js", "./BalloonLink.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var BalloonLink_1 = require("./BalloonLink");
+    var go = require("../release/go.js");
+    var BalloonLink_js_1 = require("./BalloonLink.js");
     function init() {
         if (window.goSamples())
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -38,7 +38,7 @@
             // TextBlock.text is bound to Node.data.key
             new go.Binding('text', 'key')));
         myDiagram.linkTemplate =
-            $(BalloonLink_1.BalloonLink, $(go.Shape, { stroke: 'limegreen', strokeWidth: 3, fill: 'limegreen' }));
+            $(BalloonLink_js_1.BalloonLink, $(go.Shape, { stroke: 'limegreen', strokeWidth: 3, fill: 'limegreen' }));
         // create the model data that will be represented by Nodes and Links
         myDiagram.model = new go.GraphLinksModel([
             { key: 'Alpha', color: 'lightblue' },

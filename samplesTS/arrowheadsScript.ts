@@ -3,7 +3,7 @@
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from '../release/go';
+import * as go from '../release/go.js';
 
 export function init() {
   if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this

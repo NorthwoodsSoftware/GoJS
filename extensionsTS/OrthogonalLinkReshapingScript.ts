@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { OrthogonalLinkReshapingTool } from './OrthogonalLinkReshapingTool';
+import * as go from '../release/go.js';
+import { OrthogonalLinkReshapingTool } from './OrthogonalLinkReshapingTool.js';
 
 let myDiagram: go.Diagram;
 

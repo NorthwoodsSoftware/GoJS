@@ -10,9 +10,9 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { FreehandDrawingTool } from './FreehandDrawingTool';
-import { GeometryReshapingTool } from './GeometryReshapingTool';
+import * as go from '../release/go.js';
+import { FreehandDrawingTool } from './FreehandDrawingTool.js';
+import { GeometryReshapingTool } from './GeometryReshapingTool.js';
 
 let myDiagram: go.Diagram;
 

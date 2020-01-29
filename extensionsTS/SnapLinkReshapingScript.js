@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./Figures", "./SnapLinkReshapingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./Figures.js", "./SnapLinkReshapingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,9 +19,9 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    require("./Figures");
-    var SnapLinkReshapingTool_1 = require("./SnapLinkReshapingTool");
+    var go = require("../release/go.js");
+    require("./Figures.js");
+    var SnapLinkReshapingTool_js_1 = require("./SnapLinkReshapingTool.js");
     var myDiagram;
     var myPalette;
     function init() {
@@ -34,7 +34,7 @@
                 // supply a simple narrow grid that manually reshaped link routes will follow
                 grid: $(go.Panel, 'Grid', { gridCellSize: new go.Size(8, 8) }, $(go.Shape, 'LineH', { stroke: 'lightgray', strokeWidth: 0.5 }), $(go.Shape, 'LineV', { stroke: 'lightgray', strokeWidth: 0.5 })),
                 'draggingTool.isGridSnapEnabled': true,
-                linkReshapingTool: $(SnapLinkReshapingTool_1.SnapLinkReshapingTool),
+                linkReshapingTool: $(SnapLinkReshapingTool_js_1.SnapLinkReshapingTool),
                 // when the user reshapes a Link, change its Link.routing from AvoidsNodes to Orthogonal,
                 // so that combined with Link.adjusting == End the link will retain its reshaped mid points
                 // even after nodes are moved

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./CurvedLinkReshapingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./CurvedLinkReshapingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var CurvedLinkReshapingTool_1 = require("./CurvedLinkReshapingTool");
+    var go = require("../release/go.js");
+    var CurvedLinkReshapingTool_js_1 = require("./CurvedLinkReshapingTool.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -33,7 +33,7 @@
                 'toolManager.mouseWheelBehavior': go.ToolManager.WheelZoom,
                 // support double-click in background creating a new node
                 'clickCreatingTool.archetypeNodeData': { text: 'new node' },
-                'linkReshapingTool': new CurvedLinkReshapingTool_1.CurvedLinkReshapingTool(),
+                'linkReshapingTool': new CurvedLinkReshapingTool_js_1.CurvedLinkReshapingTool(),
                 // enable undo & redo
                 'undoManager.isEnabled': true
             });

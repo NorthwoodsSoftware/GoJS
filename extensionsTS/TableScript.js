@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./TableLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./TableLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -32,8 +32,8 @@ var __extends = (this && this.__extends) || (function () {
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var TableLayout_1 = require("./TableLayout");
+    var go = require("../release/go.js");
+    var TableLayout_js_1 = require("./TableLayout.js");
     // define a custom ResizingTool to limit how far one can shrink a row or column
     var LaneResizingTool = /** @class */ (function (_super) {
         __extends(LaneResizingTool, _super);
@@ -101,7 +101,7 @@ var __extends = (this && this.__extends) || (function () {
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         var myDiagram = $(go.Diagram, 'myDiagramDiv', {
-            layout: $(TableLayout_1.TableLayout, $(go.RowColumnDefinition, { row: 1, height: 22 }), // fixed size column headers
+            layout: $(TableLayout_js_1.TableLayout, $(go.RowColumnDefinition, { row: 1, height: 22 }), // fixed size column headers
             $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
             ),
             'SelectionMoved': function (e) { e.diagram.layoutDiagram(true); },

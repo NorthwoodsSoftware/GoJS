@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { LinkLabelDraggingTool } from './LinkLabelDraggingTool';
+import * as go from '../release/go.js';
+import { LinkLabelDraggingTool } from './LinkLabelDraggingTool.js';
 
 let myDiagram: go.Diagram;
 

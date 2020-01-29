@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./LinkLabelOnPathDraggingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./LinkLabelOnPathDraggingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var LinkLabelOnPathDraggingTool_1 = require("./LinkLabelOnPathDraggingTool");
+    var go = require("../release/go.js");
+    var LinkLabelOnPathDraggingTool_js_1 = require("./LinkLabelOnPathDraggingTool.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -31,7 +31,7 @@
             'undoManager.isEnabled': true
         });
         // install the LinkLabelDraggingTool as a "mouse move" tool
-        myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool_1.LinkLabelOnPathDraggingTool());
+        myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool_js_1.LinkLabelOnPathDraggingTool());
         myDiagram.nodeTemplate =
             $(go.Node, go.Panel.Auto, { locationSpot: go.Spot.Center }, $(go.Shape, {
                 fill: 'orange',

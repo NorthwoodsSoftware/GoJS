@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./DimensioningLink"], factory);
+        define(["require", "exports", "../release/go.js", "./DimensioningLink.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var DimensioningLink_1 = require("./DimensioningLink");
+    var go = require("../release/go.js");
+    var DimensioningLink_js_1 = require("./DimensioningLink.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -33,7 +33,7 @@
             $(go.Node, 'Auto', { locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), { resizable: true }, $(go.Shape, { strokeWidth: 0, fill: 'lightgray' }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 10 }, new go.Binding('text', 'key')));
         // A generalized example template using a DimensioningLink.
         // Most usage might not have so many Bindings.
-        myDiagram.linkTemplateMap.add('Dimensioning', $(DimensioningLink_1.DimensioningLink, new go.Binding('fromSpot', 'fromSpot', go.Spot.parse), new go.Binding('toSpot', 'toSpot', go.Spot.parse), new go.Binding('direction'), new go.Binding('extension'), new go.Binding('inset'), $(go.Shape, { stroke: 'gray' }, new go.Binding('stroke', 'color')), $(go.Shape, { fromArrow: 'BackwardOpenTriangle', segmentIndex: 2, stroke: 'gray' }, new go.Binding('stroke', 'color')), $(go.Shape, { toArrow: 'OpenTriangle', segmentIndex: -3, stroke: 'gray' }, new go.Binding('stroke', 'color')), $(go.TextBlock, {
+        myDiagram.linkTemplateMap.add('Dimensioning', $(DimensioningLink_js_1.DimensioningLink, new go.Binding('fromSpot', 'fromSpot', go.Spot.parse), new go.Binding('toSpot', 'toSpot', go.Spot.parse), new go.Binding('direction'), new go.Binding('extension'), new go.Binding('inset'), $(go.Shape, { stroke: 'gray' }, new go.Binding('stroke', 'color')), $(go.Shape, { fromArrow: 'BackwardOpenTriangle', segmentIndex: 2, stroke: 'gray' }, new go.Binding('stroke', 'color')), $(go.Shape, { toArrow: 'OpenTriangle', segmentIndex: -3, stroke: 'gray' }, new go.Binding('stroke', 'color')), $(go.TextBlock, {
             segmentIndex: 2,
             segmentFraction: 0.5,
             segmentOrientation: go.Link.OrientUpright,

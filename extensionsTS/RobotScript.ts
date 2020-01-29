@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { Robot } from './Robot';
+import * as go from '../release/go.js';
+import { Robot } from './Robot.js';
 
 let robot: Robot;  // this global variable will hold an instance of the Robot class for myDiagram
 let myDiagram: go.Diagram;

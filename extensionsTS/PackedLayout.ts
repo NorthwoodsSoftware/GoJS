@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { Quadtree } from './Quadtree';
+import * as go from '../release/go.js';
+import { Quadtree } from './Quadtree.js';
 
 /**
  * @hidden @internal

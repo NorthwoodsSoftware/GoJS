@@ -2,8 +2,8 @@
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as  go from '../release/go';
-import { RotateMultipleTool } from './RotateMultipleTool';
+import * as  go from '../release/go.js';
+import { RotateMultipleTool } from './RotateMultipleTool.js';
 
 export function init() {
   if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this

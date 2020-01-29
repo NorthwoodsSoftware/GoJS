@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./PolylineLinkingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./PolylineLinkingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var PolylineLinkingTool_1 = require("./PolylineLinkingTool");
+    var go = require("../release/go.js");
+    var PolylineLinkingTool_js_1 = require("./PolylineLinkingTool.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -29,7 +29,7 @@
         myDiagram =
             $(go.Diagram, 'myDiagramDiv');
         // install custom linking tool, defined in PolylineLinkingTool.js
-        var tool = new PolylineLinkingTool_1.PolylineLinkingTool();
+        var tool = new PolylineLinkingTool_js_1.PolylineLinkingTool();
         // tool.temporaryLink.routing = go.Link.Orthogonal;  // optional, but need to keep link template in sync, below
         myDiagram.toolManager.linkingTool = tool;
         myDiagram.nodeTemplate =

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./FreehandDrawingTool", "./GeometryReshapingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./FreehandDrawingTool.js", "./GeometryReshapingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,9 +19,9 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var FreehandDrawingTool_1 = require("./FreehandDrawingTool");
-    var GeometryReshapingTool_1 = require("./GeometryReshapingTool");
+    var go = require("../release/go.js");
+    var FreehandDrawingTool_js_1 = require("./FreehandDrawingTool.js");
+    var GeometryReshapingTool_js_1 = require("./GeometryReshapingTool.js");
     var myDiagram;
     function init() {
         if (window.goSamples)
@@ -29,7 +29,7 @@
         var $ = go.GraphObject.make;
         myDiagram =
             $(go.Diagram, 'myDiagramDiv');
-        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_1.GeometryReshapingTool());
+        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_js_1.GeometryReshapingTool());
         myDiagram.nodeTemplateMap.add('FreehandDrawing', $(go.Part, { locationSpot: go.Spot.Center, isLayoutPositioned: false }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), {
             selectionAdorned: true, selectionObjectName: 'SHAPE',
             selectionAdornmentTemplate: // custom selection adornment: a blue rectangle
@@ -37,7 +37,7 @@
         }, { resizable: true, resizeObjectName: 'SHAPE' }, { rotatable: true, rotateObjectName: 'SHAPE' }, { reshapable: true }, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
         $(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('angle').makeTwoWay(), new go.Binding('geometryString', 'geo').makeTwoWay(), new go.Binding('fill'), new go.Binding('stroke'), new go.Binding('strokeWidth'))));
         // create drawing tool for myDiagram, defined in FreehandDrawingTool.js
-        var tool = new FreehandDrawingTool_1.FreehandDrawingTool();
+        var tool = new FreehandDrawingTool_js_1.FreehandDrawingTool();
         // provide the default JavaScript object for a new polygon in the model
         tool.archetypePartData = { stroke: 'green', strokeWidth: 3, category: 'FreehandDrawing' };
         // allow the tool to start on top of an existing Part

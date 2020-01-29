@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./SpiralLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./SpiralLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var SpiralLayout_1 = require("./SpiralLayout");
+    var go = require("../release/go.js");
+    var SpiralLayout_js_1 = require("./SpiralLayout.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -29,7 +29,7 @@
         {
             initialAutoScale: go.Diagram.Uniform,
             isTreePathToChildren: false,
-            layout: $(SpiralLayout_1.SpiralLayout) // defined in SpiralLayout.js
+            layout: $(SpiralLayout_js_1.SpiralLayout) // defined in SpiralLayout.js
         });
         myDiagram.nodeTemplate =
             $(go.Node, go.Panel.Auto, { locationSpot: go.Spot.Center }, $(go.Shape, { figure: 'Circle', fill: 'white' }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'key')));

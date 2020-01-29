@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
+import * as go from '../release/go.js';
 
 /**
  * This class implements a zoom slider for GoJS diagrams.
@@ -308,7 +308,7 @@ export class ZoomSlider {
 
       zoomRangeInput.style.width = rangeWidth + 'px';
       zoomRangeInput.style.height = sliderHeight + 'px';
-      zoomRangeInput.style.transformOrigin = null;
+      zoomRangeInput.style.transformOrigin = '';
 
       zoomInBtn.style.width = sliderHeight + 'px';
       zoomInBtn.style.height = sliderHeight + 'px';
@@ -355,7 +355,7 @@ export class ZoomSlider {
 
     // Need to set the transform of the range input and move the buttons to the correct sides
     if (this.orientation === 'horizontal') {
-      zoomRangeInput.style.transform = null;
+      zoomRangeInput.style.transform = '';
       this._sliderDiv.insertBefore(zoomOutBtn, this._sliderDiv.firstChild);
       this._sliderDiv.appendChild(zoomInBtn);
     } else {

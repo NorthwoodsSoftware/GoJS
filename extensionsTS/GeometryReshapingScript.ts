@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { GeometryReshapingTool } from './GeometryReshapingTool';
+import * as go from '../release/go.js';
+import { GeometryReshapingTool } from './GeometryReshapingTool.js';
 
 export function init() {
   if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this

@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./DragZoomingTool"], factory);
+        define(["require", "exports", "../release/go.js", "./DragZoomingTool.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var DragZoomingTool_1 = require("./DragZoomingTool");
+    var go = require("../release/go.js");
+    var DragZoomingTool_js_1 = require("./DragZoomingTool.js");
     var myDiagram;
     var myLoading;
     function init() {
@@ -48,7 +48,7 @@
         // Add an instance of the custom tool defined in DragZoomingTool.js.
         // This needs to be inserted before the standard DragSelectingTool,
         // which is normally the third Tool in the ToolManager.mouseMoveTools list.
-        myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool_1.DragZoomingTool());
+        myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool_js_1.DragZoomingTool());
         // This is a status message
         myLoading =
             $(go.Part, { selectable: false, location: new go.Point(0, 0) }, $(go.TextBlock, 'loading...', { stroke: 'red', font: '20pt sans-serif' }));

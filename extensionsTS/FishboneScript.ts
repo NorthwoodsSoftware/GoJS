@@ -10,9 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { FishboneLayout } from './FishboneLayout';
-import { FishboneLink } from './FishboneLayout';
+import * as go from '../release/go.js';
+import { FishboneLayout, FishboneLink } from './FishboneLayout.js';
 
 let myDiagram: go.Diagram;
 

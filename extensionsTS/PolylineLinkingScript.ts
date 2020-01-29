@@ -10,8 +10,8 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go';
-import { PolylineLinkingTool } from './PolylineLinkingTool';
+import * as go from '../release/go.js';
+import { PolylineLinkingTool } from './PolylineLinkingTool.js';
 
 let myDiagram: go.Diagram;
 

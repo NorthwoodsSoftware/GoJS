@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go"], factory);
+        define(["require", "exports", "../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
+    var go = require("../release/go.js");
     /**
      * FishboneLayout is a custom {@link Layout} derived from {@link TreeLayout} for creating "fishbone" diagrams.
      * A fishbone diagram also requires a {@link Link} class that implements custom routing, {@link FishboneLink}.
@@ -74,7 +74,7 @@ var __extends = (this && this.__extends) || (function () {
             var net = _super.prototype.makeNetwork.call(this, coll);
             // make a copy of the collection of TreeVertexes
             // because we will be modifying the TreeNetwork.vertexes collection in the loop
-            var verts = new go.List().addAll(net.vertexes);
+            var verts = new go.List().addAll(net.vertexes.iterator);
             verts.each(function (v) {
                 // ignore leaves of tree
                 if (v.destinationEdges.count === 0)

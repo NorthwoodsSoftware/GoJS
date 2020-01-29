@@ -7,7 +7,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../release/go", "./SerpentineLayout"], factory);
+        define(["require", "exports", "../release/go.js", "./SerpentineLayout.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -19,8 +19,8 @@
     * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
-    var go = require("../release/go");
-    var SerpentineLayout_1 = require("./SerpentineLayout");
+    var go = require("../release/go.js");
+    var SerpentineLayout_js_1 = require("./SerpentineLayout.js");
     function init() {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
@@ -28,7 +28,7 @@
         var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
             isTreePathToChildren: false,
-            layout: $(SerpentineLayout_1.SerpentineLayout) // defined in SerpentineLayout.js
+            layout: $(SerpentineLayout_js_1.SerpentineLayout) // defined in SerpentineLayout.js
         });
         myDiagram.nodeTemplate =
             $(go.Node, go.Panel.Auto, $(go.Shape, { figure: 'RoundedRectangle', fill: 'white' }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'key')));

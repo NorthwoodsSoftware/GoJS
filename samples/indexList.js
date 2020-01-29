@@ -976,6 +976,14 @@ arr.push([
 ]);
 
 arr.push([
+  "../extensions/PackedHierarchy",
+  "Packed Hierarchy",
+  "A customized PackedLayout that arranges nested circular groups.",
+  "PackedHierarchy",
+  ["customlayout", "extensions"]
+]);
+
+arr.push([
   "svgDataUrl",
   "SVG Data URL",
   "In makeSVG, replace image sources with Base64",
