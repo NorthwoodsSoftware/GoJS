@@ -1685,3 +1685,11 @@ arr.push([
   "treeLoadAnimation",
   ["animation"]
 ]);
+
+arr.push([
+  "gameOfLife",
+  "Game of Life",
+  "A cellular automation simulation.",
+  "gameOfLife",
+  [""]
+]);

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Conway's Game of Life</title>
+  <meta name="description" content="A cellular automation simulation in GoJS">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    // two dimensional array which will represent the board state
+    // this will be filled with Nodes once they are created
+    var goLGrid = [];
+
+    // the size of the board
+    var rows = 40;
+    var cols = 40;
+
+    var interval = 15; // the interval between steps in ms when the simulation is enabled
+    var initializing = true;
+    var enabled = false; // flag to turn the simulation on or off
+
+    var myDiagram;
+
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            "animationManager.isEnabled": false,
+            // disable movement/edit controls, since the myDiagram is a static grid
+            "panningTool.isEnabled": false,
+            isReadOnly: true,
+            allowZoom: false,
+            allowSelect: false,
+            hasHorizontalScrollbar: false,
+            hasVerticalScrollbar: false,
+            initialAutoScale: go.Diagram.Uniform
+          });
+
+      var nodeSize = 25;
+      var nodeDataArray = []; // array to hold Node data for the model
+      // populate data array by initializing Nodes in a grid and setting their "isAlive" state to false
+      for (var i = 0; i < rows; i++) {
+        var row = new Array(cols);
+        for (var j = 0; j < cols; j++) {
+          nodeDataArray.push({ location: new go.Point(j * nodeSize, i * nodeSize), row: i, col: j, isAlive: false });
+        }
+        goLGrid.push(row);
+      }
+
+      // stroke color and width of the grid lines
+      var gridStroke = "#A2A2A2";
+      var gridStrokeWidth = 1;
+
+      // define the node template, which also includes interactive functionality, such as clicking to toggle a node's state
+      myDiagram.nodeTemplate =
+        $(go.Part, {
+          isLayoutPositioned: false,
+          mouseEnter: function(e, part, prev) {  // set mouseover border
+            if (!initializing && !enabled) {
+              var shape = part.elt(0);
+              if (shape) {
+                shape.stroke = "steelblue";
+                shape.strokeWidth = 3;
+              }
+              part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
+
+              // drag with a button down to add or erase cells
+              if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
+                select(part);
+              }
+            }
+          },
+          mouseLeave: function(e, part, next) {  // restore to original borders
+            var shape = part.elt(0);
+            if (shape) {
+              shape.stroke = gridStroke;
+              shape.strokeWidth = gridStrokeWidth
+            }
+            part.zOrder = 1;
+          },
+          click: function(e, part) { // left click to toggle cell
+            initializing = false;
+            if (!enabled) {
+              select(part);
+            }
+          },
+          contextClick: function(e, part) { // right click to clear cell
+            initializing = false;
+            if (!enabled && part.data.isAlive) {
+              select(part);
+            }
+          },
+          zOrder: 1
+        },
+        $(go.Shape,
+          {
+            figure: "Rectangle",
+            fill: "white",
+            stroke: gridStroke,
+            strokeWidth: gridStrokeWidth,
+            width: nodeSize,
+            height: nodeSize
+          }),
+        new go.Binding("location"),
+      );
+
+      // use a simple model for our node data
+      myDiagram.model = new go.Model(nodeDataArray);
+
+      // myDiagram.parts is populated after a model is assigned;
+      // populate the internal gamestate array with the newly created nodes
+      for (var it = myDiagram.parts.iterator; it.next(); ) {
+        var part = it.value;
+        goLGrid[part.data.row][part.data.col] = part;
+      }
+
+      // load the default sample
+      var e = document.getElementById("samplePatterns");
+      loadSample(e.options[e.selectedIndex].value);
+    }
+
+    // toggles a given node's state, both visually and in the internal gamestate
+    function select(part) {
+      var shape = part.elt(0);
+      if (shape) {
+        if (shape.fill === "white") {
+          shape.fill = "steelblue";
+        } else {
+          shape.fill = "white";
+        }
+      };
+      part.data.isAlive = !part.data.isAlive;
+    }
+
+    // toggles the state of the simulation, changing the button text from "Start" to "Pause" or back again
+    function toggleSimulation() {
+      initializing = false;
+      var button = document.getElementById("start");
+      if (!enabled) {
+        button.value = "Pause";
+        enabled = true;
+        goLStep();
+      } else {
+        button.value = "Start";
+        enabled = false;
+      }
+    }
+
+    // the callback for the step button, only steps forward if the simulation is currently stopped
+    function stepOnclick() {
+      initializing = false;
+      if (!enabled) {
+        goLStep(true);
+      }
+    }
+
+    // performs a single step in the Game of Life
+    function goLStep(isManualStep) {
+      if (goLGrid.length === 0) {
+        return; // don't do anything if things aren't initialized yet
+      }
+
+      var isAlive = false;
+      var toSelect = [];
+      var liveCellCount = 0; // count the number of live cells to determine if there are no more left
+      for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < cols; j++) {
+          if (isAlive) {
+            liveCellCount++;
+          }
+
+          // count the number of cells in the 8 squares adjacent to this one
+          var total = 0;
+
+          var above = goLGrid[i > 0 ? i - 1 : rows - 1];
+          var below = goLGrid[i + 1 < rows ? i + 1 : 0];
+          var left = j > 0 ? j - 1 : cols - 1;
+          var right = j + 1 < cols ? j + 1 : 0;
+
+          total += above[left].data.isAlive;
+          total += above[j].data.isAlive;
+          total += above[right].data.isAlive;
+          total += goLGrid[i][left].data.isAlive;
+          total += goLGrid[i][right].data.isAlive;
+          total += below[left].data.isAlive;
+          total += below[j].data.isAlive;
+          total += below[right].data.isAlive;
+
+          // toggle the cell if necessary according to the three rules
+          var part = goLGrid[i][j];
+          isAlive = part.data.isAlive;
+          if ((total <= 1 && isAlive)
+              || (total > 3 && isAlive)
+              || (total === 3 && !isAlive)) {
+            if (!isAlive) {
+              liveCellCount++;
+            } else {
+              liveCellCount--;
+            }
+            toSelect.push(part); // don't actually toggle the cell yet, this happens all at once after everything is done
+          }
+        }
+      }
+
+      // change the board state according the earlier loop
+      if (enabled || isManualStep) {
+        for (var n of toSelect) {
+          select(n);
+        }
+      }
+
+      if (enabled) {
+        if (liveCellCount === 0) {
+          toggleSimulation(); // stop the simulation if there are no more live cells
+        } else {
+          setTimeout(goLStep, interval); // queue another step if the simuation is still enabled
+        }
+      }
+    }
+
+    // clear the board of all live cells, stopping the simulation if it's currently enabled
+    function goLClear() {
+      if (enabled) {
+        toggleSimulation();
+      }
+      for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < cols; j++) {
+          var part = goLGrid[i][j];
+          if (part.data.isAlive) {
+            select(part);
+          }
+        }
+      }
+    }
+
+    // this function contains all of the data for the four included sample patterns as well as the logic for drawing them
+    function loadSample(value) {
+      goLClear(); // clear the board first, stopping the simulation if it's enabled
+      // select the correct sample data based on the option value passed to the function
+      var sampleData = [];
+      switch (value) {
+        case "symm4":
+          sampleData = [
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1, 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 0]
+          ];
+          break;
+        case "pulsar":
+          sampleData = [
+            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0],
+            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
+            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
+            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
+            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0],
+            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
+            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
+            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
+            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0]
+          ]
+          break;
+        case "spaceships":
+          sampleData = [
+            [1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [1,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ , 1, 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  , 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1, 1, 1, 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  , 1,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 0],
+            [ ,  ,  , 1, 1,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  , 0],
+            [1, 1,  , 1,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  , 0],
+            [1, 1,  , 1,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  , 0],
+            [ ,  ,  , 1, 1,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  , 0],
+            [ ,  ,  ,  , 1,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  ,  ,  ,  ,  , 0]
+          ]
+          break;
+        case "bigGliders":
+          sampleData = [
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  , 1,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  ,  ,  , 1, 1,  ,  , 1, 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  , 1,  ,  ,  ,  , 1, 1,  ,  ,  , 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  , 1, 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1, 1,  ,  ,  , 1,  , 1, 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  , 1, 1, 1, 1],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  , 1, 1,  , 1,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1, 1, 1,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ , 1, 1,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [1, 1,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  , 1,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  , 1, 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+            [ ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
+          ]
+          break;
+      }
+
+      // draw the sample pattern in the middle of the board
+      var startRow = Math.floor((rows / 2) - (sampleData.length / 2));
+      var startCol = Math.floor((cols / 2) - (sampleData[0].length / 2));
+      for (var i = startRow; i < startRow + sampleData.length; i++) {
+        for (var j = startCol; j < startCol + sampleData[0].length; j++) {
+          if (sampleData[i - startRow][j - startCol] === 1) {
+            select(goLGrid[i][j]);
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:500px; height:500px"></div>
+    <p>
+      Game Controls:
+      <input id="start" onclick="toggleSimulation()" type="button" value="Start" />
+      <input id="step" onclick="stepOnclick()" type="button" value="Step" />
+      <input id="clear" onclick="goLClear()" type="button" value="Clear" style="margin-bottom: 10px" />
+      Sample patterns:
+      <select id="samplePatterns" onchange="loadSample(this.options[this.selectedIndex].value)" style="margin-bottom: 10px">
+        <option value="symm4">Symmetry</option>
+        <option value="pulsar">Pulsar</option>
+        <option value="spaceships">Spaceships</option>
+        <option value="bigGliders">Big gliders</option>
+      </select>
+    </p>
+    <p>
+      This sample shows an implementation of <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway's Game of Life</a> in GoJS.
+      Conway's Game of Life is a simple cellular automaton devised by British mathematician John Horton Conway in 1970. To start or advance the simulation,
+      use the controls above.
+    </p>
+    <p>
+      Whether or not a given cell lives, dies, or is born in a step is determined by the number of live cells in the 8 squares adjacent to it. For a cell <i>x</i> with <i>n</i> adjacent live cells:
+    </p>
+    <ul>
+      <li>If <i>n</i> &lt;= 1, cell <i>x</i> dies or stays dead (from underpopulation).</li>
+      <li>If <i>n</i> &gt; 3, cell <i>x</i> dies or stays dead (from overpopulation).</li>
+      <li>If <i>n</i> = 3, then <i>x</i> is born or stays alive.</li>
+      <li>If <i>n</i> = 2, then <i>x</i> maintains its status.</li>
+    </ul>
+    <p>
+      Though the rules are simple, they can produce complex patterns, some of which are shown in the dropdown above.
+      To create your own patterns, click or drag anywhere on the grid when the simulation is not running.
+    </p>
+    <p>
+      Each cell is implemented by a simple <a>Part</a> holding a small square <a>Shape</a>.
+    </p>
+  </div>
+</body>
+</html>

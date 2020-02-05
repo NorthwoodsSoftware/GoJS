@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.7
+ * Type definitions for GoJS v2.1.8
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -7137,6 +7137,12 @@ export class ResizingTool extends Tool {
      */
     isGridSnapEnabled: boolean;
     /**
+     * Undocumented.
+     * Gets the Point opposite to the chosen, dragged handle of the "Resizing" Adornment.
+     * This property has no meaning until after #doActivate has been called.
+     */
+    oppositePoint: Point;
+    /**
      * This read-only property returns the Size that was the original value of the GraphObject#desiredSize
      * of the element that is being resized.
      * @since 1.1
@@ -10416,6 +10422,7 @@ export class Diagram {
      * @param {Rect} r
      * @see #centerRect
      * @see #scroll
+     * @see CommandHandler#scrollToPart
      */
     scrollToRect(r: Rect): void;
     /**
@@ -12235,11 +12242,23 @@ export class Overview extends Diagram {
     /**
      * Gets or sets whether this overview draws the temporary layers of the observed Diagram.
      * The default value is true.
+     * Setting this property to false may improve drawing performance,
+     * especially if the Diagram#grid is visible.
      *
      * Setting this property does not notify about any changed event.
      * @since 1.2
      */
     drawsTemporaryLayers: boolean;
+    /**
+     * Gets or sets whether this overview draws the Diagram#grid of the observed Diagram,
+     * if it is visible.  The default value is true.
+     *
+     * This property is only considered when #drawsTemporaryLayers is true.
+     * Setting this to false may help improve drawing performance.
+     *
+     * Setting this property does not notify about any changed event.
+     */
+    drawsGrid: boolean;
     /**
      * Undocumented.
      * Gets or sets how long it waits before updating, in milliseconds.
@@ -12695,15 +12714,19 @@ export class CommandHandler {
      * if there are any Parts in that collection, or else in the Diagram#selection collection,
      * scrolling to each one in turn by calling Diagram#centerRect.
      *
+     * This method animates to the scrolled part, and Diagram#scrollToRect does not.
+     *
      * This is normally invoked by the `Space` keyboard shortcut.
      * If there is no argument and there is no highlighted or selected Part, this command does nothing.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     *
      * @expose
      * @param {Part=} part This defaults to the first highlighted Part of Diagram#highlighteds,
      *                     or, if there are no highlighted Parts, the first selected Part.
      * @see #canScrollToPart
+     * @see Diagram#scrollToRect
      * @since 1.6
      */
     scrollToPart(part?: Part): void;
