@@ -3,10 +3,10 @@
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import { DrawCommandHandler } from '../../extensionsTS/DrawCommandHandler';
-import '../../extensionsTS/Figures';
-import * as go from '../../release/go';
-import { BPMNLinkingTool, BPMNRelinkingTool, PoolLink } from './BPMNClasses';
+import { DrawCommandHandler } from '../../extensionsTS/DrawCommandHandler.js';
+import '../../extensionsTS/Figures.js';
+import * as go from '../../release/go.js';
+import { BPMNLinkingTool, BPMNRelinkingTool, PoolLink } from './BPMNClasses.js';
 
 declare var jQuery: any;
 

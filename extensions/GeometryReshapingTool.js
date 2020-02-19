@@ -336,11 +336,10 @@ GeometryReshapingTool.prototype.reshape = function(newPoint) {
   shape.geometry = geo;  // modify the Shape
   var part = shape.part;  // move the Part holding the Shape
   part.ensureBounds();
-  if (!part.locationSpot.equals(go.Spot.Center)) {  // but only if the locationSpot isn't Center
+  if (part.locationObject !== shape && !part.locationSpot.equals(go.Spot.Center)) {  // but only if the locationSpot isn't Center
     // support the whole Node being rotated
     part.move(part.position.copy().subtract(offset.rotate(part.angle)));
   }
-  this.updateAdornments(part);  // update any Adornments of the Part
   this.diagram.maybeUpdate();  // force more frequent drawing for smoother looking behavior
 };
 

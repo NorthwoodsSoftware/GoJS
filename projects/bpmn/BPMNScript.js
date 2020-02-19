@@ -20,15 +20,15 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../../extensionsTS/DrawCommandHandler", "../../extensionsTS/Figures", "../../release/go", "./BPMNClasses"], factory);
+        define(["require", "exports", "../../extensionsTS/DrawCommandHandler.js", "../../extensionsTS/Figures.js", "../../release/go.js", "./BPMNClasses.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var DrawCommandHandler_1 = require("../../extensionsTS/DrawCommandHandler");
-    require("../../extensionsTS/Figures");
-    var go = require("../../release/go");
-    var BPMNClasses_1 = require("./BPMNClasses");
+    var DrawCommandHandler_js_1 = require("../../extensionsTS/DrawCommandHandler.js");
+    require("../../extensionsTS/Figures.js");
+    var go = require("../../release/go.js");
+    var BPMNClasses_js_1 = require("./BPMNClasses.js");
     // This file holds all of the JavaScript code specific to the BPMN.html page.
     var myDiagram;
     // Setup all of the Diagrams and what they need.
@@ -774,7 +774,7 @@ var __extends = (this && this.__extends) || (function () {
             model.setDataProperty(obj.data, 'isDefault', false);
             myDiagram.commitTransaction('setSequenceLinkConditionalFlow');
         }
-        var messageFlowLinkTemplate = $(BPMNClasses_1.PoolLink, // defined in BPMNClasses.js
+        var messageFlowLinkTemplate = $(BPMNClasses_js_1.PoolLink, // defined in BPMNClasses.js
         {
             routing: go.Link.Orthogonal, curve: go.Link.JumpGap, corner: 10,
             fromSpot: go.Spot.TopBottomSides, toSpot: go.Spot.TopBottomSides,
@@ -804,7 +804,7 @@ var __extends = (this && this.__extends) || (function () {
                 nodeTemplateMap: nodeTemplateMap,
                 linkTemplateMap: linkTemplateMap,
                 groupTemplateMap: groupTemplateMap,
-                commandHandler: new DrawCommandHandler_1.DrawCommandHandler(),
+                commandHandler: new DrawCommandHandler_js_1.DrawCommandHandler(),
                 // default to having arrow keys move selected nodes
                 'commandHandler.arrowKeyBehavior': 'move',
                 mouseDrop: function (e) {
@@ -814,8 +814,8 @@ var __extends = (this && this.__extends) || (function () {
                     if (!ok)
                         myDiagram.currentTool.doCancel();
                 },
-                linkingTool: new BPMNClasses_1.BPMNLinkingTool(),
-                relinkingTool: new BPMNClasses_1.BPMNRelinkingTool(),
+                linkingTool: new BPMNClasses_js_1.BPMNLinkingTool(),
+                relinkingTool: new BPMNClasses_js_1.BPMNRelinkingTool(),
                 'SelectionMoved': relayoutDiagram,
                 'SelectionCopied': relayoutDiagram
             });

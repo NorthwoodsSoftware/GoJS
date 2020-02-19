@@ -6,8 +6,8 @@
 * A FloorplanPalette is a Palette with special rules
 */
 
-import * as go from '../../../release/go';
-import { Floorplan } from './Floorplan';
+import * as go from '../../../release/go.js';
+import { Floorplan } from './Floorplan.js';
 
 export class FloorplanPalette extends go.Palette {
 

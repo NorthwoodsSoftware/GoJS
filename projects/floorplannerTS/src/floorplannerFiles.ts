@@ -3,10 +3,10 @@
  * All Rights Reserved.
 */
 
-import * as Floorplan from './Floorplan';
-import * as FloorplanPalette from './FloorplanPalette';
-import * as WallBuildingTool from './WallBuildingTool';
-import * as WallReshapingTool from './WallReshapingTool';
+import * as Floorplan from './Floorplan.js';
+import * as FloorplanPalette from './FloorplanPalette.js';
+import * as WallBuildingTool from './WallBuildingTool.js';
+import * as WallReshapingTool from './WallReshapingTool.js';
 
 module.exports = {
     Floorplan: require('./Floorplan').Floorplan,

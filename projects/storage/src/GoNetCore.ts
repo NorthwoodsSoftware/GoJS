@@ -7,7 +7,7 @@
 
 import { Promise } from 'es6-promise';
 import * as go from 'gojs';
-import * as gcs from './GoCloudStorage';
+import * as gcs from './GoCloudStorage.js';
 
 /**
  * @hidden

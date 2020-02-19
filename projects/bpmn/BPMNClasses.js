@@ -20,12 +20,12 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../../release/go"], factory);
+        define(["require", "exports", "../../release/go.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var go = require("../../release/go");
+    var go = require("../../release/go.js");
     // Contains PoolLink and BPMNLinkingTool classes for the BPMN sample
     /**
      * PoolLink, a special Link class for message flows from edges of pools

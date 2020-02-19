@@ -327,13 +327,12 @@ export class GeometryReshapingTool extends go.Tool {
         const offset = geo.normalize(); // avoid any negative coordinates in the geometry
         shape.geometry = geo; // modify the Shape
         const part = shape.part; // move the Part holding the Shape
-        if (part !== null) {
-            part.ensureBounds();
-            if (!part.locationSpot.equals(go.Spot.Center)) { // but only if the locationSpot isn't Center
-                // support the whole Node being rotated
-                part.move(part.position.copy().subtract(offset.rotate(part.angle)));
-            }
-            this.updateAdornments(part); // update any Adornments of the Part
+        if (part === null)
+            return;
+        part.ensureBounds();
+        if (part.locationObject !== shape && !part.locationSpot.equals(go.Spot.Center)) { // but only if the locationSpot isn't Center
+            // support the whole Node being rotated
+            part.move(part.position.copy().subtract(offset.rotate(part.angle)));
         }
         this.diagram.maybeUpdate(); // force more frequent drawing for smoother looking behavior
     }

@@ -6,10 +6,10 @@
 * A Floorplan is a Diagram with special rules
 */
 
-import * as go from '../../../release/go';
-import { NodeLabelDraggingTool } from './NodeLabelDraggingTool';
-import { WallBuildingTool } from './WallBuildingTool';
-import { WallReshapingTool } from './WallReshapingTool';
+import * as go from '../../../release/go.js';
+import { NodeLabelDraggingTool } from './NodeLabelDraggingTool.js';
+import { WallBuildingTool } from './WallBuildingTool.js';
+import { WallReshapingTool } from './WallReshapingTool.js';
 
 export class Floorplan extends go.Diagram {
 

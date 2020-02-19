@@ -2,7 +2,7 @@
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from '../../release/go';
+import * as go from '../../release/go.js';
 
 // Contains PoolLink and BPMNLinkingTool classes for the BPMN sample
 

@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.8
+ * Type definitions for GoJS v2.1.9
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -1404,6 +1404,20 @@ export class Point {
      */
     direction(px: number, py: number): number;
     /**
+     * Undocumented.
+     * This static function is true if two finite straight line segments intersect each other.
+     * @param {number} a1x
+     * @param {number} a1y
+     * @param {number} a2x
+     * @param {number} a2y
+     * @param {number} b1x
+     * @param {number} b1y
+     * @param {number} b2x
+     * @param {number} b2y
+     * @return {boolean} True if the two given finite line segments intersect with each other, false otherwise.
+     */
+    static intersectingLineSegments(a1x: number, a1y: number, a2x: number, a2y: number, b1x: number, b1y: number, b2x: number, b2y: number): boolean;
+    /**
      * Modify this point to be the closest point to this point that is on a finite line segment.
      * @param {number} px one end of the finite line segment
      * @param {number} py one end of the finite line segment
@@ -1950,7 +1964,6 @@ export class Rect {
      * @param {number} p2x The X coordinate of other end of the line segment.
      * @param {number} p2y The Y coordinate of other end of the line segment.
      * @return {boolean} True if the given finite line segment intersects with the given rectangular area, false otherwise.
-     * false otherwise.
      */
     static intersectsLineSegment(x: number, y: number, w: number, h: number, p1x: number, p1y: number, p2x: number, p2y: number): boolean;
     /**
@@ -23497,7 +23510,7 @@ export class Binding {
      * @param {function(*,*)|null=} conv A side-effect-free function converting the data property value to the value to set the target property.
      *   If the function is null or not supplied, no conversion takes place.
      */
-    constructor(targetprop?: string, sourceprop?: string, conv?: ((val: any, targetObj: any) => void) | null);
+    constructor(targetprop?: string, sourceprop?: string, conv?: ((val: any, targetObj: any) => any) | null);
     /**
      * Create a copy of this Binding, with the same property values.
      * @expose
@@ -23604,7 +23617,7 @@ export class Binding {
      * If the #targetProperty is the empty string, the function should
      * set a property on the second argument, which will be the target GraphObject.
      */
-    converter: ((val: any, targetObj: any) => void) | null;
+    converter: ((val: any, targetObj: any) => any) | null;
     /**
      * Gets or sets a converter function to apply to the GraphObject property value
      * in order to produce the value to set to a data property.
@@ -23627,7 +23640,7 @@ export class Binding {
      * If the #sourceProperty is the empty string, the function should
      * modify the second argument, which will be the source data object.
      */
-    backConverter: ((val: any, srcData: any, model: any) => void) | null;
+    backConverter: ((val: any, srcData: any, model: any) => any) | null;
     /**
      * Gets or sets the directions and frequency in which the binding may be evaluated.
      * The default value is Binding.OneWay.
@@ -23656,7 +23669,7 @@ export class Binding {
      * @param {function(*,*,*) | null=} backconv
      * @return {Binding} this two-way Binding.
      */
-    makeTwoWay(backconv?: ((val: any, srcData: any, model: any) => void) | null): Binding;
+    makeTwoWay(backconv?: ((val: any, srcData: any, model: any) => any) | null): Binding;
     /**
      * Modify this Binding to set its #sourceName property so as to identify
      * a GraphObject in the visual tree of the bound Panel as the data source,
