@@ -29,6 +29,7 @@
         myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
             commandHandler: new DrawCommandHandler_js_1.DrawCommandHandler(),
+            "commandHandler.archetypeGroupData": { isGroup: true },
             'undoManager.isEnabled': true // enable undo & redo
         });
         // define a simple Node template
@@ -105,4 +106,8 @@
     exports.rotateNeg90 = rotateNeg90;
     function rotate180() { myDiagram.commandHandler.rotate(180); }
     exports.rotate180 = rotate180;
+    function front() { myDiagram.commandHandler.pullToFront(); }
+    exports.front = front;
+    function back() { myDiagram.commandHandler.pushToBack(); }
+    exports.back = back;
 });

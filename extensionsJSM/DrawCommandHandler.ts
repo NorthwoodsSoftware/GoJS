@@ -264,6 +264,103 @@ export class DrawCommandHandler extends go.CommandHandler {
 
 
   /**
+   * Change the z-ordering of selected parts to pull them forward, in front of all other parts
+   * in their respective layers.
+   * All unselected parts in each layer with a selected Part with a non-numeric {@link Part#zOrder} will get a zOrder of zero.
+   * @this {DrawCommandHandler}
+   */
+  public pullToFront(): void {
+    const diagram = this.diagram;
+    diagram.startTransaction("pullToFront");
+    // find the affected Layers
+    const layers = new go.Map<go.Layer, number>();
+    diagram.selection.each(function(part) {
+      if (part.layer !== null) layers.set(part.layer, 0);
+    });
+    // find the maximum zOrder in each Layer
+    layers.iteratorKeys.each(function(layer) {
+      let max = 0;
+      layer.parts.each(function(part) {
+        if (part.isSelected) return;
+        const z = part.zOrder;
+        if (isNaN(z)) {
+          part.zOrder = 0;
+        } else {
+          max = Math.max(max, z);
+        }
+      });
+      layers.set(layer, max);
+    });
+    // assign each selected Part.zOrder to the computed value for each Layer
+    diagram.selection.each(function(part) {
+      const z = layers.get(part.layer as go.Layer) || 0;
+      DrawCommandHandler._assignZOrder(part, z + 1);
+    });
+    diagram.commitTransaction("pullToFront");
+  }
+
+  /**
+   * Change the z-ordering of selected parts to push them backward, behind of all other parts
+   * in their respective layers.
+   * All unselected parts in each layer with a selected Part with a non-numeric {@link Part#zOrder} will get a zOrder of zero.
+   * @this {DrawCommandHandler}
+   */
+  public pushToBack(): void {
+    const diagram = this.diagram;
+    diagram.startTransaction("pushToBack");
+    // find the affected Layers
+    const layers = new go.Map<go.Layer, number>();
+    diagram.selection.each(function(part) {
+      if (part.layer !== null) layers.set(part.layer, 0);
+    });
+    // find the minimum zOrder in each Layer
+    layers.iteratorKeys.each(function(layer) {
+      let min = 0;
+      layer.parts.each(function(part) {
+        if (part.isSelected) return;
+        const z = part.zOrder;
+        if (isNaN(z)) {
+          part.zOrder = 0;
+        } else {
+          min = Math.min(min, z);
+        }
+      });
+      layers.set(layer, min);
+    });
+    // assign each selected Part.zOrder to the computed value for each Layer
+    diagram.selection.each(function(part) {
+      const z = layers.get(part.layer as go.Layer) || 0;
+      DrawCommandHandler._assignZOrder(part,
+          // make sure a group's nested nodes are also behind everything else
+          z - 1 - DrawCommandHandler._findGroupDepth(part));
+    });
+    diagram.commitTransaction("pushToBack");
+  }
+
+  private static _assignZOrder(part: go.Part, z: number, root?: go.Part): void {
+    if (root === undefined) root = part;
+    if (part.layer === root.layer) part.zOrder = z;
+    if (part instanceof go.Group) {
+      part.memberParts.each(function(m) {
+        DrawCommandHandler._assignZOrder(m, z+1, root);
+      });
+    }
+  }
+
+  private static _findGroupDepth(part: go.Part): number {
+    if (part instanceof go.Group) {
+      let d = 0;
+      part.memberParts.each(function(m) {
+        d = Math.max(d, DrawCommandHandler._findGroupDepth(m));
+      });
+      return d+1;
+    } else {
+      return 0;
+    }
+  }
+
+
+  /**
    * This implements custom behaviors for arrow key keyboard events.
    * Set {@link #arrowKeyBehavior} to "select", "move" (the default), "scroll" (the standard behavior), or "none"
    * to affect the behavior when the user types an arrow key.
@@ -401,6 +498,7 @@ export class DrawCommandHandler extends go.CommandHandler {
   private _angleCloseness(a: number, dir: number): number {
     return Math.min(Math.abs(dir - a), Math.min(Math.abs(dir + 360 - a), Math.abs(dir - 360 - a)));
   }
+
 
   /**
    * Reset the last offset for pasting.

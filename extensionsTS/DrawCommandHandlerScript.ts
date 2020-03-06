@@ -23,6 +23,7 @@ export function init() {
   myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
     {
       commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
+      "commandHandler.archetypeGroupData": { isGroup: true },
       'undoManager.isEnabled': true  // enable undo & redo
     });
 
@@ -94,3 +95,5 @@ export function rotateNeg45() { (myDiagram.commandHandler as DrawCommandHandler)
 export function rotate90() { (myDiagram.commandHandler as DrawCommandHandler).rotate(90); }
 export function rotateNeg90() { (myDiagram.commandHandler as DrawCommandHandler).rotate(-90); }
 export function rotate180() { (myDiagram.commandHandler as DrawCommandHandler).rotate(180); }
+export function front() { (myDiagram.commandHandler as DrawCommandHandler).pullToFront(); }
+export function back() { (myDiagram.commandHandler as DrawCommandHandler).pushToBack(); }

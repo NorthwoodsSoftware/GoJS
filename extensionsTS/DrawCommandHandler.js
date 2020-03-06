@@ -304,6 +304,107 @@ var __extends = (this && this.__extends) || (function () {
             diagram.commitTransaction('rotate ' + angle.toString());
         };
         /**
+         * Change the z-ordering of selected parts to pull them forward, in front of all other parts
+         * in their respective layers.
+         * All unselected parts in each layer with a selected Part with a non-numeric {@link Part#zOrder} will get a zOrder of zero.
+         * @this {DrawCommandHandler}
+         */
+        DrawCommandHandler.prototype.pullToFront = function () {
+            var diagram = this.diagram;
+            diagram.startTransaction("pullToFront");
+            // find the affected Layers
+            var layers = new go.Map();
+            diagram.selection.each(function (part) {
+                if (part.layer !== null)
+                    layers.set(part.layer, 0);
+            });
+            // find the maximum zOrder in each Layer
+            layers.iteratorKeys.each(function (layer) {
+                var max = 0;
+                layer.parts.each(function (part) {
+                    if (part.isSelected)
+                        return;
+                    var z = part.zOrder;
+                    if (isNaN(z)) {
+                        part.zOrder = 0;
+                    }
+                    else {
+                        max = Math.max(max, z);
+                    }
+                });
+                layers.set(layer, max);
+            });
+            // assign each selected Part.zOrder to the computed value for each Layer
+            diagram.selection.each(function (part) {
+                var z = layers.get(part.layer) || 0;
+                DrawCommandHandler._assignZOrder(part, z + 1);
+            });
+            diagram.commitTransaction("pullToFront");
+        };
+        /**
+         * Change the z-ordering of selected parts to push them backward, behind of all other parts
+         * in their respective layers.
+         * All unselected parts in each layer with a selected Part with a non-numeric {@link Part#zOrder} will get a zOrder of zero.
+         * @this {DrawCommandHandler}
+         */
+        DrawCommandHandler.prototype.pushToBack = function () {
+            var diagram = this.diagram;
+            diagram.startTransaction("pushToBack");
+            // find the affected Layers
+            var layers = new go.Map();
+            diagram.selection.each(function (part) {
+                if (part.layer !== null)
+                    layers.set(part.layer, 0);
+            });
+            // find the minimum zOrder in each Layer
+            layers.iteratorKeys.each(function (layer) {
+                var min = 0;
+                layer.parts.each(function (part) {
+                    if (part.isSelected)
+                        return;
+                    var z = part.zOrder;
+                    if (isNaN(z)) {
+                        part.zOrder = 0;
+                    }
+                    else {
+                        min = Math.min(min, z);
+                    }
+                });
+                layers.set(layer, min);
+            });
+            // assign each selected Part.zOrder to the computed value for each Layer
+            diagram.selection.each(function (part) {
+                var z = layers.get(part.layer) || 0;
+                DrawCommandHandler._assignZOrder(part, 
+                // make sure a group's nested nodes are also behind everything else
+                z - 1 - DrawCommandHandler._findGroupDepth(part));
+            });
+            diagram.commitTransaction("pushToBack");
+        };
+        DrawCommandHandler._assignZOrder = function (part, z, root) {
+            if (root === undefined)
+                root = part;
+            if (part.layer === root.layer)
+                part.zOrder = z;
+            if (part instanceof go.Group) {
+                part.memberParts.each(function (m) {
+                    DrawCommandHandler._assignZOrder(m, z + 1, root);
+                });
+            }
+        };
+        DrawCommandHandler._findGroupDepth = function (part) {
+            if (part instanceof go.Group) {
+                var d_1 = 0;
+                part.memberParts.each(function (m) {
+                    d_1 = Math.max(d_1, DrawCommandHandler._findGroupDepth(m));
+                });
+                return d_1 + 1;
+            }
+            else {
+                return 0;
+            }
+        };
+        /**
          * This implements custom behaviors for arrow key keyboard events.
          * Set {@link #arrowKeyBehavior} to "select", "move" (the default), "scroll" (the standard behavior), or "none"
          * to affect the behavior when the user types an arrow key.

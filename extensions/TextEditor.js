@@ -3,6 +3,10 @@
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
+// This is the definitions of the predefined text editor used by TextEditingTool
+// when you set or bind TextBlock.editable to true.
+// You do not need to load this file in order to use in-place text editing.
+
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
 // This file exposes one instance of HTMLInfo, window.TextEditor

@@ -12,14 +12,6 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /*
-    * This is an extension and not part of the main GoJS library.
-    * Note that the API for this class may change with any version, even point releases.
-    * If you intend to use an extension in production, you should copy the code to your own source directory.
-    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
-    * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-    */
-    var go = require("../release/go.js");
     // These are the definitions for all of the predefined arrowheads.
     // You do not need to load this file in order to use arrowheads.
     // Typical custom definition:
@@ -30,6 +22,7 @@
     //       $(go.Shape),
     //       $(go.Shape, { toArrow: "Zigzag" })
     //     );
+    var go = require("../release/go.js");
     go.Shape.defineArrowheadGeometry('Standard', 'F1 m 0,0 l 8,4 -8,4 2,-4 z');
     go.Shape.defineArrowheadGeometry('Backward', 'F1 m 8,0 l -2,4 2,4 -8,-4 z');
     go.Shape.defineArrowheadGeometry('Triangle', 'F1 m 0,0 l 8,4.62 -8,4.62 z');

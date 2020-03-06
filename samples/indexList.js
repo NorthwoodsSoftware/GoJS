@@ -41,7 +41,8 @@ var tags = [
   "html",
   "inspector",
   "frameworks",
-  "storage"
+  "storage",
+  "export"
 ].sort();
 tags.unshift("all", "featured");
 
@@ -988,7 +989,7 @@ arr.push([
   "SVG Data URL",
   "In makeSVG, replace image sources with Base64",
   "svgDataUrl",
-  ["svg"]
+  ["svg", "export"]
 ]);
 
 arr.push([
@@ -1390,6 +1391,14 @@ arr.push([
 ]);
 
 arr.push([
+  "../projects/pdf/minimalPDF",
+  "PDF generation",
+  "Generating a PDF file holding all of the pages of a Diagram's rendering.",
+  "minimal",
+  ["export"]
+]);
+
+arr.push([
   "../projects/bpmn/BPMN",
   "BPMN Editor",
   "The start of a Business Process Model and Notation editor.",
@@ -1427,7 +1436,7 @@ arr.push([
   "Minimal Image Download",
   "Minimal, showing image Blob creation with Diagram.makeImageData, and download.",
   "minimal",
-  []
+  ["export"]
 ]);
 
 arr.push([
@@ -1435,7 +1444,7 @@ arr.push([
   "Minimal SVG Download",
   "Minimal, showing SVG creation with Diagram.makeSvg, and download.",
   "minimal",
-  []
+  ["svg", "export"]
 ]);
 
 arr.push([

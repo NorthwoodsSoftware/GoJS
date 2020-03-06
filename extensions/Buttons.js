@@ -325,7 +325,7 @@ go.GraphObject.defineBuilder('ToolTip', function (args) {
     {
       isShadowed: true,
       shadowColor: 'rgba(0, 0, 0, .4)',
-      shadowOffset: new Point(0, 3),
+      shadowOffset: new go.Point(0, 3),
       shadowBlur: 5
     },
     go.GraphObject.make(go.Shape,
@@ -336,8 +336,8 @@ go.GraphObject.defineBuilder('ToolTip', function (args) {
         parameter2: 1,
         fill: '#F5F5F5',
         stroke: '#F0F0F0',
-        spot1: new Spot(0, 0, 4, 6),
-        spot2: new Spot(1, 1, -4, -4)
+        spot1: new go.Spot(0, 0, 4, 6),
+        spot2: new go.Spot(1, 1, -4, -4)
       }
     )
   );
@@ -362,7 +362,7 @@ go.GraphObject.defineBuilder('ContextMenu', function (args) {
       background: useBackground ? '#F5F5F5' : null,
       isShadowed: true,
       shadowColor: 'rgba(0, 0, 0, .4)',
-      shadowOffset: new Point(0, 3),
+      shadowOffset: new go.Point(0, 3),
       shadowBlur: 5
     },
     // don't set the background if the ContextMenu is adorning something and there's a Placeholder

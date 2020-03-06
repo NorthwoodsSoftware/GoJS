@@ -31,6 +31,10 @@
       <button id="-90">-90°</button>
       <button id="180">180°</button>
       </br>
+      Z-Order:
+      <button id="front">Pull to Front</button>
+      <button id="back">Push to Back</button>
+      </br>
       Arrow Mode:
       <input type="radio" name="arrow" id="move" checked="checked">Move</input>
       <input type="radio" name="arrow" id="select">Select</input>
@@ -61,6 +65,7 @@
     const myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
     {
         commandHandler: new DrawCommandHandler(),
+        "commandHandler.archetypeGroupData": { isGroup: true },
         'undoManager.isEnabled': true // enable undo & redo
     });
 
@@ -125,6 +130,8 @@
     document.getElementById("90").onclick = function () { myDiagram.commandHandler.rotate(90); }
     document.getElementById("-90").onclick = function () { myDiagram.commandHandler.rotate(-90); }
     document.getElementById("180").onclick = function () { myDiagram.commandHandler.rotate(180); }
+    document.getElementById("front").onclick = function () { myDiagram.commandHandler.pullToFront(); }
+    document.getElementById("back").onclick = function () { myDiagram.commandHandler.pushToBack(); }
     document.getElementById("move").onclick = arrowMode;
     document.getElementById("select").onclick = arrowMode;
     document.getElementById("scroll").onclick = arrowMode;

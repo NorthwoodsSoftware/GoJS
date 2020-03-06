@@ -9,7 +9,7 @@
 // Although we have tried to provide definitions here that are faithful to how they
 // are actually implemented, there may be some differences from what is in the library.
 
-// Caution: these may change in version 2.0.
+// Caution: these may change in a future version.
 
 // Set up the default templates that each Diagram starts off with.
 function setupDiagramTemplates(diagram /* : go.Diagram */) {

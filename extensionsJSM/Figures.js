@@ -1,15 +1,16 @@
 /*
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
-/*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
 // This file holds definitions of all standard shape figures -- string values for Shape.figure.
+// You do not need to load this file in order to use named Shape figure.
+// The following figures are built-in to the go.js library and thus do not need to be redefined:
+//   Rectangle, Square, RoundedRectangle, Border, Ellipse, Circle,
+//   TriangleRight, TriangleDown, TriangleLeft, TriangleUp, Triangle,
+//   LineH, LineV, None, BarH, BarV, MinusLine, PlusLine, XLine
+// If you need any of the other figures that are defined in this file, we suggest that you copy
+// just those definitions into your own code.  Do not load this file unless you really want to
+// define a lot of code that your app does not use and will not get garbage-collected.
+import * as go from '../release/go-module.js';
 // The following functions and variables are used throughout this file:
 /**
  * @hidden @internal

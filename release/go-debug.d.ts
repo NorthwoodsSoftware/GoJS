@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.9
+ * Type definitions for GoJS v2.1.10
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5766,6 +5766,13 @@ export class DraggingTool extends Tool {
      * @since 1.1
      */
     moveParts(parts: Map<Part, DraggingInfo>, offset: Point, check: boolean): void;
+    /**
+     * Undocumented.
+     * @expose
+     * @param pt
+     * @return {GraphObject|null}
+     */
+    protected findDragOverObject(pt: Point): GraphObject | null;
     /**
      * Perform any additional side-effects during a drag, whether an internal move or copy or an external drag,
      * that may affect the existing non-moved object(s).
@@ -19346,6 +19353,9 @@ export class Node extends Part {
     getAvoidableRect(result: Rect): Rect;
     /**
      * Undocumented
+     * Starting with this node, walk up the chain of containingGroups to find a node that is visible.
+     * This can be overridden to find a tree-parent/ancestor if the reason that this node
+     * is not visible is because of a collapsed tree rather than a collapsed group.
      * @expose
      * @return {Node}
      */
@@ -19363,8 +19373,16 @@ export class Node extends Part {
      */
     readonly linksConnected: Iterator<Link>;
     /**
+     * Undocumented.
+     * Return a collection of Links that connect with this Node or any in its subtree, excluding any isTreeLink Links.
+     * For trees this is the analog of Group#findExternalLinksConnected for Groups.
+     * @return {Iterator.<Link>}
+     */
+    findExternalTreeLinksConnected(): Iterator<Link>;
+    /**
      * Returns an iterator over all of the Links that connect with this node in either direction,
      * perhaps limited to the given port id on this node.
+     * @expose
      * @param {string|null=} pid A port identifier string; if null the link's portId is ignored and all links are included in the search.
      * @return {Iterator.<Link>}
      */

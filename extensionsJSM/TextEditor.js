@@ -1,13 +1,9 @@
 /*
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
-/*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+// This is the definitions of the predefined text editor used by TextEditingTool
+// when you set or bind TextBlock.editable to true.
+// You do not need to load this file in order to use in-place text editing.
 import * as go from '../release/go-module.js';
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
