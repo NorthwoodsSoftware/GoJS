@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.10 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.10<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.11 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.11<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Diagram</h1>
@@ -966,7 +966,7 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the content alignment <a href="Spot.html">Spot</a> of this Diagram, to be used in determining
-								how parts are positioned when the <a href="Diagram.html#viewportBounds">viewportBounds</a> width or height is smaller than the <a href="Diagram.html#documentBounds">documentBounds</a>.</p>
+								how parts are positioned when the <a href="Diagram.html#viewportBounds">viewportBounds</a> width or height is larger than the <a href="Diagram.html#documentBounds">documentBounds</a>.</p>
 								<p>For instance a spot of <a href="Spot.html#static-Center">Spot.Center</a> would ensure that the Diagram&#39;s
 								contents are always centered in the viewport.</p>
 								<p>If you want the content to be aligned only initially, use <a href="Diagram.html#initialContentAlignment">initialContentAlignment</a> instead.</p>
@@ -1473,7 +1473,7 @@ myDiagram.model = <span class="hljs-keyword">new</span> go.GraphLinksModel(
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Gets or sets the initial content alignment <a href="Spot.html">Spot</a> of this Diagram, to be used in determining
-								how parts are positioned initially relative to the viewport, when the <a href="Diagram.html#viewportBounds">viewportBounds</a> width or height is smaller than the <a href="Diagram.html#documentBounds">documentBounds</a>.</p>
+								how parts are positioned initially relative to the viewport, when the <a href="Diagram.html#viewportBounds">viewportBounds</a> width or height is larger than the <a href="Diagram.html#documentBounds">documentBounds</a>.</p>
 								<p>For instance a spot of <a href="Spot.html#static-Center">Spot.Center</a> would ensure that the Diagram&#39;s contents are initially centered in the viewport.</p>
 								<p>To initially align the document when the documentBounds are larger than the viewport, use <a href="Diagram.html#initialDocumentSpot">initialDocumentSpot</a> and <a href="Diagram.html#initialViewportSpot">initialViewportSpot</a>.</p>
 								<p>If you want the content to be constantly aligned with a spot, use <a href="Diagram.html#contentAlignment">contentAlignment</a> instead.</p>
@@ -4608,10 +4608,11 @@ DerivedClass.prototype.someMethod = ...;</code></pre>
 												The scale of the diagram. If <strong>scale</strong> is specified and <strong>size</strong> is not, the resulting image will be sized to uniformly
 												fit the space needed for the given scale.
 												Can be constrained by the <strong>maxSize</strong> property. A scale value of <code>NaN</code> will
-											automatically scale ot fit within the maxSize, but may be smaller, with a maximum computed scale of 1.</li>
+											automatically scale to fit within the maxSize, but may be smaller, with a maximum computed scale of 1.</li>
 											<li><strong>maxSize:</strong>
 												The maximum size of the created image, as a <a href="Size.html">Size</a>. The default value is <code>(Infinity, Infinity)</code> for SVG and <code>(2000, 2000)</code> for images.
-											This is typically used when <strong>scale</strong> is specified.</li>
+												This is typically used when <strong>scale</strong> is specified and helps prevent accidental excessive memory usage,
+											which is especially useful in limited-memory environments.  You cannot use Infinity when providing a maximum size for an image.</li>
 											<li><strong>position:</strong>
 												The position of the diagram, as a <a href="Point.html">Point</a>.
 												By default this is the position of <a href="Diagram.html#documentBounds">Diagram.documentBounds</a> with the <a href="Diagram.html#padding">Diagram.padding</a> removed.

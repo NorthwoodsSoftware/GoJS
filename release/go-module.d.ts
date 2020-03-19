@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.10
+ * Type definitions for GoJS v2.1.11
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8488,8 +8488,15 @@ export class AnimationManager {
      */
     constructor();
     /**
-     * This read-only property returns a Set of reasons the default animation may start.
-     * This set can be queried in #canStart to turn off specific default animations.
+     * Undocumented
+     */
+    readonly animationReasons: Set<string>;
+    /**
+     * This method is passed the reason the animation is to begin,
+     * and must return true or false based on whether or not the animation is to be allowed.
+     * Returning true means the animation will occur, returning false will stop the animation's setup.
+     *
+     * By default, this method always returns true.
      *
      * These are the possible reasons GoJS will begin an animation:
      * ```md
@@ -8506,30 +8513,18 @@ export class AnimationManager {
      *   Called by AnimationTriggers:
      *     "Trigger"
      * ```
-     * @return {Set.<string>}
-     * @see #canStart
-     * @since 2.1
-     */
-    readonly animationReasons: Set<string>;
-    /**
-     * This method is passed the reason the animation is to begin,
-     * and must return true or false based on whether or not the animation is to be allowed.
-     * Returning true means the animation will occur, returning false will stop the animation's setup.
      *
-     * By default, this method always returns true.
+     * Example usage:
      *
-     * The reasons GoJS will begin an animation are collected in the set #animationReasons,
-     * and can be queried in this method to conditionally allow animations, for instance:
      * ```js
      * // disallow expand/collapse animations, but allow all others
      * myDiagram.animationManager.canStart = function(reason) {
-     *   if (this.animationReasons.contains("Expand Tree")) return false;
+     *   if (reason === "Expand Tree") return false;
      *   return true;
      * }
      * ```
      * @param {string} reason Reason for starting the animation
      * @return {boolean}
-     * @see #animationReasons
      * @since 2.1
      */
     canStart(reason: string): boolean;
@@ -11698,7 +11693,7 @@ export class Diagram {
     zoomPoint: Point;
     /**
      * Gets or sets the content alignment Spot of this Diagram, to be used in determining
-     * how parts are positioned when the #viewportBounds width or height is smaller than the #documentBounds.
+     * how parts are positioned when the #viewportBounds width or height is larger than the #documentBounds.
      *
      * For instance a spot of Spot.Center would ensure that the Diagram's
      * contents are always centered in the viewport.
@@ -11715,7 +11710,7 @@ export class Diagram {
     contentAlignment: Spot;
     /**
      * Gets or sets the initial content alignment Spot of this Diagram, to be used in determining
-     * how parts are positioned initially relative to the viewport, when the #viewportBounds width or height is smaller than the #documentBounds.
+     * how parts are positioned initially relative to the viewport, when the #viewportBounds width or height is larger than the #documentBounds.
      *
      * For instance a spot of Spot.Center would ensure that the Diagram's contents are initially centered in the viewport.
      *
@@ -11945,10 +11940,11 @@ export class Diagram {
      *     The scale of the diagram. If **scale** is specified and **size** is not, the resulting image will be sized to uniformly
      *     fit the space needed for the given scale.
      *     Can be constrained by the **maxSize** property. A scale value of `NaN` will
-     *     automatically scale ot fit within the maxSize, but may be smaller, with a maximum computed scale of 1.
+     *     automatically scale to fit within the maxSize, but may be smaller, with a maximum computed scale of 1.
      *   - **maxSize:**
      *     The maximum size of the created image, as a Size. The default value is `(Infinity, Infinity)` for SVG and `(2000, 2000)` for images.
-     *     This is typically used when **scale** is specified.
+     *     This is typically used when **scale** is specified and helps prevent accidental excessive memory usage,
+     *     which is especially useful in limited-memory environments.  You cannot use Infinity when providing a maximum size for an image.
      *   - **position:**
      *     The position of the diagram, as a Point.
      *     By default this is the position of Diagram#documentBounds with the Diagram#padding removed.

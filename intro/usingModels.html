@@ -390,12 +390,13 @@ Use the <a>Model.findNodeDataForKey</a> method to find a particular node data ob
 You may also call <a>Model.copyNodeData</a> to make a copy of a node data object that you can then modify and pass to <a>Model.addNodeData</a>.
 </p>
 <p>
-It does not work to simply modify the <a>Model.nodeDataArray</a>, because the <b>GoJS</b> software
-will not be notified about any change to any JavaScript Array and thus will not have a chance to
-add or remove <a>Node</a>s or other <a>Part</a>s as needed.
+It does not work to simply mutate the Array that is the value of <a>Model.nodeDataArray</a>,
+because the <b>GoJS</b> software will not be notified about any change to any JavaScript Array and
+thus will not have a chance to add or remove <a>Node</a>s or other <a>Part</a>s as needed.
+(But setting the <a>Model.nodeDataArray</a> property to refer to a different Array does of course notify the model.)
 </p>
 <p>
-Similarly, it does not work to simply modify a property of a node data object.
+Similarly, it does not work to simply set a property of a node data object.
 Any <a>Binding</a> that depends on the property will not be notified about any changes,
 so it will not be able to update its target <a>GraphObject</a> property.
 For example, setting the color property will not cause the <a>Shape</a> to change color.

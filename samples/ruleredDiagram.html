@@ -51,11 +51,8 @@
 
       // Keep references to the scales and indicators to easily update them
       var gradScaleHoriz =
-        $(go.Node, "Graduated",
-          {
-            graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
-            isInDocumentBounds: false, isAnimated: false
-          },
+        $(go.Part, "Graduated",
+          { graduatedTickUnit: 10, pickable: false, layerName: "Grid", isAnimated: false },
           $(go.Shape, { geometryString: "M0 0 H400" }),
           $(go.Shape, { geometryString: "M0 0 V3", interval: 1 }),
           $(go.Shape, { geometryString: "M0 0 V15", interval: 5 }),
@@ -70,11 +67,8 @@
         );
 
       var gradScaleVert =
-        $(go.Node, "Graduated",
-          {
-            graduatedTickUnit: 10, pickable: false, layerName: "Foreground",
-            isInDocumentBounds: false, isAnimated: false
-          },
+        $(go.Part, "Graduated",
+          { graduatedTickUnit: 10, pickable: false, layerName: "Grid", isAnimated: false },
           $(go.Shape, { geometryString: "M0 0 V400" }),
           $(go.Shape, { geometryString: "M0 0 V3", interval: 1, alignmentFocus: go.Spot.Bottom }),
           $(go.Shape, { geometryString: "M0 0 V15", interval: 5, alignmentFocus: go.Spot.Bottom }),
@@ -91,21 +85,19 @@
 
       // These indicators are globally defined so they can be accessed by the div's mouseevents
       gradIndicatorHoriz =
-        $(go.Node,
+        $(go.Part,
           {
-            pickable: false, layerName: "Foreground", visible: false,
-            isInDocumentBounds: false, isAnimated: false,
-            locationSpot: go.Spot.Top
+            pickable: false, layerName: "Grid", visible: false,
+            isAnimated: false, locationSpot: go.Spot.Top
           },
           $(go.Shape, { geometryString: "M0 0 V15", strokeWidth: 2, stroke: "red" })
         );
 
       gradIndicatorVert =
-        $(go.Node,
+        $(go.Part,
           {
-            pickable: false, layerName: "Foreground", visible: false,
-            isInDocumentBounds: false, isAnimated: false,
-            locationSpot: go.Spot.Left
+            pickable: false, layerName: "Grid", visible: false,
+            isAnimated: false, locationSpot: go.Spot.Left
           },
           $(go.Shape, { geometryString: "M0 0 H15", strokeWidth: 2, stroke: "red" })
         );
@@ -134,60 +126,62 @@
       // No need to override PanningTool since the ViewportBoundsChanged listener will fire
 
       function setupScalesAndIndicators() {
-        var vb = myDiagram.viewportBounds;
-        myDiagram.startTransaction("add scales");
-        updateScales();
-        // Add each node to the diagram
-        myDiagram.add(gradScaleHoriz);
-        myDiagram.add(gradScaleVert);
-        myDiagram.add(gradIndicatorHoriz);
-        myDiagram.add(gradIndicatorVert);
-        myDiagram.commitTransaction("add scales");
+        myDiagram.commit(function(d) {
+          // Add each node to the diagram
+          d.add(gradScaleHoriz);
+          d.add(gradScaleVert);
+          d.add(gradIndicatorHoriz);
+          d.add(gradIndicatorVert);
+          updateScales();
+          updateIndicators();
+        }, null);  // null says to skip UndoManager recording of changes
       }
 
       function updateScales() {
         var vb = myDiagram.viewportBounds;
-        myDiagram.startTransaction("update scales");
-        // Update properties of horizontal scale to reflect viewport
-        gradScaleHoriz.location = new go.Point(vb.x, vb.y);
-        gradScaleHoriz.graduatedMin = vb.x;
-        gradScaleHoriz.graduatedMax = vb.right;
-        gradScaleHoriz.scale = 1 / myDiagram.scale;
-        // Update properties of vertical scale to reflect viewport
-        gradScaleVert.location = new go.Point(vb.x, vb.y);
-        gradScaleVert.graduatedMin = vb.y;
-        gradScaleVert.graduatedMax = vb.bottom;
-        gradScaleVert.scale = 1 / myDiagram.scale;
-        myDiagram.commitTransaction("update scales");
+        if (!vb.isReal()) return;
+        myDiagram.commit(function(diag) {
+          // Update properties of horizontal scale to reflect viewport
+          gradScaleHoriz.location = new go.Point(vb.x, vb.y);
+          gradScaleHoriz.graduatedMin = vb.x;
+          gradScaleHoriz.graduatedMax = vb.right;
+          gradScaleHoriz.scale = 1 / diag.scale;
+          // Update properties of vertical scale to reflect viewport
+          gradScaleVert.location = new go.Point(vb.x, vb.y);
+          gradScaleVert.graduatedMin = vb.y;
+          gradScaleVert.graduatedMax = vb.bottom;
+          gradScaleVert.scale = 1 / diag.scale;
+        }, null);
       }
 
       function updateIndicators() {
         var vb = myDiagram.viewportBounds;
-        var mouseCoords = myDiagram.lastInput.documentPoint;
-        myDiagram.startTransaction("update indicators");
-        // Keep the indicators in line with the mouse as viewport changes or mouse moves
-        gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
-        gradIndicatorHoriz.scale = 1 / myDiagram.scale;
-        gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
-        gradIndicatorVert.scale = 1 / myDiagram.scale;
-        myDiagram.commitTransaction("update indicators");
+        if (!vb.isReal()) return;
+        myDiagram.commit(function(diag) {
+          var mouseCoords = diag.lastInput.documentPoint;
+          // Keep the indicators in line with the mouse as viewport changes or mouse moves
+          gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
+          gradIndicatorHoriz.scale = 1 / diag.scale;
+          gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
+          gradIndicatorVert.scale = 1 / diag.scale;
+        }, null);
       }
     }
 
     // Show indicators on mouseover of the diagram div
     function showIndicators() {
-      myDiagram.startTransaction("show indicators");
-      gradIndicatorHoriz.visible = true;
-      gradIndicatorVert.visible = true;
-      myDiagram.commitTransaction("show indicators");
+      myDiagram.commit(function(diag) {
+        gradIndicatorHoriz.visible = true;
+        gradIndicatorVert.visible = true;
+      }, null);
     }
 
     // Hide indicators on mouseout of the diagram div
     function hideIndicators() {
-      myDiagram.startTransaction("hide indicators");
-      gradIndicatorHoriz.visible = false;
-      gradIndicatorVert.visible = false;
-      myDiagram.commitTransaction("hide indicators");
+      myDiagram.commit(function(diag) {
+        gradIndicatorHoriz.visible = false;
+        gradIndicatorVert.visible = false;
+      }, null);
     }
 
   </script>
@@ -231,9 +225,10 @@
     </ul>
   </p>
   <p>
-    The rulers depend on the <a>Diagram.viewportBounds</a>, which can be impacted by changes to the <a>Diagram.documentBounds</a>.
-    Therefore, the <a>Part.isInDocumentBounds</a> property is set to <code>false</code> to prevent circular
-    dependencies in cases where the rulers grow/shrink to fit the viewport.
+    The rulers and the indicators are implemented using simple <a>Part</a>s, not <a>Node</a>s, so that they
+    are not treated as nodes by some layouts and so that they do not show up in the collection of <a>Diagram.nodes</a>.
+    They are put in the "Grid" <a>Layer</a> so that any changes to them are not recorded
+    by the UndoManager, because the "Grid" Layer has all of its Parts ignored by the UndoManager.
   </p>
 </div>
 </body>

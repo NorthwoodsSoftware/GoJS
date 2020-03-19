@@ -105,6 +105,11 @@
       // iterate over page areas of document bounds
       for (var j = 0; j < db.height; j += imgHeight) {
         for (var i = 0; i < db.width; i += imgWidth) {
+
+          // if any page has no Parts partially or fully in it, skip rendering that page
+          var r = new go.Rect(p.x + i, p.y + j, imgWidth, imgHeight);
+          if (diagram.findPartsIn(r, true, false).count === 0) continue;
+
           if (i > 0 || j > 0) doc.addPage(pageOptions);
 
           var makeOptions = {};

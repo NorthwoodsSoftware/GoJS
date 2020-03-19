@@ -6,7 +6,6 @@
   <meta name="description" content="A Sankey diagram with the thickness of links indicating the flow quantity." />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
-
   <script src="../release/go.js"></script>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
@@ -15,20 +14,32 @@
     }
     go.Diagram.inherit(SankeyLayout, go.LayeredDigraphLayout);
 
-    // Before creating the LayeredDigraphNetwork of vertexes and edges,
-    // determine the desired height of each node (Shape).
-    SankeyLayout.prototype.createNetwork = function() {
+    // determine the desired height of each node/vertex,
+    // based on the thicknesses of the connected links;
+    // actually modify the height of each node's SHAPE
+    SankeyLayout.prototype.makeNetwork = function(coll) {
+      var net = go.LayeredDigraphLayout.prototype.makeNetwork.call(this, coll);
       this.diagram.nodes.each(function(node) {
+        // figure out how tall the node's bar should be
         var height = getAutoHeightForNode(node);
-        var font = "bold " + Math.max(12, Math.round(height / 8)) + "pt Segoe UI, sans-serif"
         var shape = node.findObject("SHAPE");
+        if (shape) shape.height = height;
         var text = node.findObject("TEXT");
         var ltext = node.findObject("LTEXT");
-        if (shape) shape.height = height;
+        var font = "bold " + Math.max(12, Math.round(height / 8)) + "pt Segoe UI, sans-serif"
         if (text) text.font = font;
         if (ltext) ltext.font = font;
+        // and update the vertex's dimensions accordingly
+        var v = net.findVertex(node);
+        if (v !== null) {
+          node.ensureBounds();
+          var r = node.actualBounds;
+          v.width = r.width;
+          v.height = r.height;
+          v.focusY = v.height/2;
+        }
       });
-      return go.LayeredDigraphLayout.prototype.createNetwork.call(this);
+      return net;
     };
 
     function getAutoHeightForNode(node) {
@@ -63,11 +74,17 @@
               break;
             }
           }
-          return Math.ceil(max / this.columnSpacing);
+          return Math.max(2, Math.ceil(max / this.columnSpacing));
         }
-        return 1;
+        return 2;
       }
       return go.LayeredDigraphLayout.prototype.nodeMinColumnSpace.call(this, v, topleft);
+    }
+
+    // treat dummy vertexes as being thicker, so that the Bezier curves are gentler
+    SankeyLayout.prototype.nodeMinLayerSpace = function(v, topleft) {
+      if (v.node === null) return 100;
+      return go.LayeredDigraphLayout.prototype.nodeMinLayerSpace.call(this, v, topleft);
     }
 
     SankeyLayout.prototype.assignLayers = function() {
@@ -116,7 +133,7 @@
                 direction: 0,  // rightwards
                 layeringOption: go.LayeredDigraphLayout.LayerOptimalLinkLength,
                 packOption: go.LayeredDigraphLayout.PackStraighten || go.LayeredDigraphLayout.PackMedian,
-                layerSpacing: 150,  // lots of space between layers, for nicer thick links
+                layerSpacing: 100,  // lots of space between layers, for nicer thick links
                 columnSpacing: 1
               })
           });
@@ -142,14 +159,12 @@
           $(go.Shape,
             {
               name: "SHAPE",
-              figure: "Rectangle",
               fill: "#2E8DEF",  // default fill color
-              stroke: null,
               strokeWidth: 0,
               portId: "",
               fromSpot: go.Spot.RightSide,
               toSpot: go.Spot.LeftSide,
-              height: 50,
+              height: 10,
               width: 20
             },
             new go.Binding("fill", "color")),
