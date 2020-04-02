@@ -5,7 +5,7 @@
 * Go Google Drive
 */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage.js';
 
@@ -45,7 +45,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      * @param {string} iconsRelativeDirectory The directory path relative to the page in which this instance of GoGoogleDrive exists, in which
      * the storage service brand icons can be found. The default value is "../goCloudStorageIcons/".
      */
-    constructor(managedDiagrams: go.Diagram|Array<go.Diagram>, clientId: string, pickerApiKey: string, defaultModel?: string, iconsRelativeDirectory?: string) {
+    constructor(managedDiagrams: go.Diagram | Array<go.Diagram>, clientId: string, pickerApiKey: string, defaultModel?: string, iconsRelativeDirectory?: string) {
         super(managedDiagrams, defaultModel, clientId, iconsRelativeDirectory);
         this._scope = 'https://www.googleapis.com/auth/drive';
         this._pickerApiKey = pickerApiKey;
@@ -121,7 +121,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
                     'client_id': storage.clientId,
                     'scope': storage.scope,
                     'immediate': false
-                }, function (authResult) {
+                }, function(authResult) {
                     if (authResult && !authResult.error) {
                         storage._oauthToken = authResult.access_token;
                     }
@@ -157,7 +157,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
                 .setOAuthToken(storage._oauthToken)
                 .addView(view)
                 .setDeveloperKey(storage.pickerApiKey)
-                .setCallback(function (args) {
+                .setCallback(function(args) {
                     cb(args);
                 })
                 .build();
@@ -175,12 +175,12 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public getUserInfo() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const request = storage.gapiClient.request({
                 'path': '/drive/v3/about',
                 'method': 'GET',
                 'params': { 'fields': 'user' },
-                callback: function (resp) {
+                callback: function(resp) {
                     if (resp) resolve(resp.user);
                     else reject(resp);
                 }
@@ -202,11 +202,11 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public getFile(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const req = storage.gapiClient.request({
                 path: '/drive/v3/files/' + path,
                 method: 'GET',
-                callback: function (resp) {
+                callback: function(resp) {
                     if (!resp.error) {
                         resolve(resp);
                     } else {
@@ -224,11 +224,11 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public checkFileExists(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const req = storage.gapiClient.request({
                 path: '/drive/v3/files/' + path,
                 method: 'GET',
-                callback: function (resp) {
+                callback: function(resp) {
                     const bool = (!!resp);
                     resolve(bool);
                 }
@@ -259,7 +259,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
         const actionButton = document.createElement('button');
         actionButton.id = 'actionButton';
         actionButton.textContent = 'Save';
-        actionButton.onclick = function () {
+        actionButton.onclick = function() {
             storage.saveWithUI();
         };
         submitDiv.appendChild(actionButton);
@@ -270,7 +270,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
         const cancelButton = document.createElement('button');
         cancelButton.id = 'cancelButton';
         cancelButton.textContent = 'Cancel';
-        cancelButton.onclick = function () {
+        cancelButton.onclick = function() {
             storage.hideUI(true);
         };
         cancelDiv.appendChild(cancelButton);
@@ -286,7 +286,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
     public saveWithUI() {
         const storage = this;
         const ui = storage.ui;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (ui.style.visibility === 'hidden') {
                 resolve(storage.showUI());
             } else {
@@ -306,7 +306,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public save(path?: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) { // save as
                 if (path.indexOf('.diagram') === -1) path += '.diagram';
                 let overwrite: boolean = false;
@@ -316,7 +316,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
                     'path': '/drive/v3/files',
                     'method': 'GET',
                     'params': { 'q': 'trashed=false and name contains ".diagram" and mimeType = "application/json"' },
-                    callback: function (resp) {
+                    callback: function(resp) {
                         const savedDiagrams: Array<Object> = resp.files;
                         if (savedDiagrams) {
                             for (let i = 0; i < savedDiagrams.length; i++) {
@@ -357,7 +357,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
                             },
                             'body': multipartRequestBody
                         });
-                        req.execute(function (response) {
+                        req.execute(function(response) {
                             const savedFile: gcs.DiagramFile = { name: response.name, id: response.id, path: response.name };
                             storage.currentDiagramFile = savedFile;
                             resolve(savedFile); // used if save was called without UI
@@ -376,7 +376,7 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
                     method: 'PATCH',
                     params: { uploadType: 'media' },
                     body: saveFile,
-                    callback: function (resp) {
+                    callback: function(resp) {
                         if (!resp.error) {
                             // successful save
                             const savedFile: gcs.DiagramFile = { name: resp.name, id: resp.id, path: resp.name };
@@ -398,14 +398,14 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public loadWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
-            const loadFunction: Function = function (data) {
+        return new Promise(function(resolve: Function, reject: Function) {
+            const loadFunction: Function = function(data) {
                 if (data.action === 'picked') {
                     const file = data.docs[0];
                     storage.gapiClient.request({
                         'path': '/drive/v3/files/' + file.id + '?alt=media',
                         'method': 'GET',
-                        callback: function (modelData) {
+                        callback: function(modelData) {
                             if (file.name.indexOf('.diagram') !== -1) {
                                 const loadedFile = { name: file.name, path: file.name, id: file.id };
                                 resolve(storage.load(file.id));
@@ -427,12 +427,12 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public load(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
-            storage.getFile(path).then(function (file: any) {
+        return new Promise(function(resolve: Function, reject: Function) {
+            storage.getFile(path).then(function(file: any) {
                 storage.gapiClient.request({
                     'path': '/drive/v3/files/' + file.id + '?alt=media',
                     'method': 'GET',
-                    callback: function (modelData) {
+                    callback: function(modelData) {
                         if (modelData) {
                             if (file.name.indexOf('.diagram') !== -1) {
                                 storage.loadFromFileContents(JSON.stringify(modelData));
@@ -455,8 +455,8 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public removeWithUI() {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
-            const deleteFunction = function (data: Object) {
+        return new Promise(function(resolve: Function, reject: Function) {
+            const deleteFunction = function(data: Object) {
                 if (data['action'] === 'picked') {
                     const file = data['docs'][0];
                     resolve(storage.remove(file.id));
@@ -473,13 +473,13 @@ export class GoGoogleDrive extends gcs.GoCloudStorage {
      */
     public remove(path: string) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
-            storage.getFile(path).then(function (deletedFile: Object) {
+        return new Promise(function(resolve: Function, reject: Function) {
+            storage.getFile(path).then(function(deletedFile: Object) {
                 storage.gapiClient.request({
                     'path': 'drive/v3/files/' + path,
                     'method': 'DELETE',
-                    callback: function () {
-                        if (storage.currentDiagramFile && path === storage.currentDiagramFile.id) storage.currentDiagramFile = {name: null, path: null, id: null };
+                    callback: function() {
+                        if (storage.currentDiagramFile && path === storage.currentDiagramFile.id) storage.currentDiagramFile = { name: null, path: null, id: null };
                         deletedFile['path'] = deletedFile['name']; // google drive file references don't include path
                         resolve(deletedFile);
                     }

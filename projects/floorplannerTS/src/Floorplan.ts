@@ -6,7 +6,7 @@
 * A Floorplan is a Diagram with special rules
 */
 
-import * as go from '../../../release/go.js';
+import * as go from 'gojs';
 import { NodeLabelDraggingTool } from './NodeLabelDraggingTool.js';
 import { WallBuildingTool } from './WallBuildingTool.js';
 import { WallReshapingTool } from './WallReshapingTool.js';

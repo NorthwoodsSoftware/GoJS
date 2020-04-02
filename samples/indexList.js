@@ -650,6 +650,14 @@ arr.push([
 ]);
 
 arr.push([
+  "productionEditor",
+  "Production Editor",
+  "A designer for creating production process diagrams.",
+  "productionEditor",
+  ["geometries", "svg", "process", "palette", "inspector", "html"]
+]);
+
+arr.push([
   "systemDynamics",
   "System Dynamics",
   "A System Dynamics diagram shows the storages and flows of material in some system, and the factors that influence the rates of flow.",
@@ -786,6 +794,14 @@ arr.push([
   "A gauge using a scale made with a Graduated Panel.",
   "instrumentGauge",
   ["gauges", "geometries"]
+]);
+
+arr.push([
+  "controlGauges",
+  "Meter and Gauge Controls",
+  "Various meters and gauges that show particular values and can be modified by the user by dragging.",
+  "controlGauges",
+  ["gauges", "geometries", "tools"]
 ]);
 
 // HTML

@@ -32,6 +32,7 @@ export class PolygonDrawingTool extends go.Tool {
         this._isPolygon = true;
         this._hasArcs = false;
         this._isOrthoOnly = false;
+        this._isGridSnapEnabled = false;
         this._archetypePartData = {}; // the data to copy for a new polygon Part
         // this is the Shape that is shown during a drawing operation
         this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
@@ -47,18 +48,24 @@ export class PolygonDrawingTool extends go.Tool {
     get isPolygon() { return this._isPolygon; }
     set isPolygon(val) { this._isPolygon = val; }
     /**
-     * Gets or sets whether this tools draws shapes with quadratic bezier curves for each segment, or just straight lines.
+     * Gets or sets whether this tool draws shapes with quadratic bezier curves for each segment, or just straight lines.
      *
      * The default value is false -- only use straight lines.
      */
     get hasArcs() { return this._hasArcs; }
     set hasArcs(val) { this._hasArcs = val; }
     /**
-     * Gets or sets whether this tools draws shapes with only orthogonal segments, or segments in any direction.
+     * Gets or sets whether this tool draws shapes with only orthogonal segments, or segments in any direction.
      * The default value is false -- draw segments in any direction. This does not restrict the closing segment, which may not be orthogonal.
      */
     get isOrthoOnly() { return this._isOrthoOnly; }
     set isOrthoOnly(val) { this._isOrthoOnly = val; }
+    /**
+     * Gets or sets whether this tool only places the shape's corners on the Diagram's visible grid.
+     * The default value is false
+     */
+    get isGridSnapEnabled() { return this._isGridSnapEnabled; }
+    set isGridSnapEnabled(val) { this._isGridSnapEnabled = val; }
     /**
      * Gets or sets the node data object that is copied and added to the model
      * when the drawing operation completes.
@@ -137,11 +144,12 @@ export class PolygonDrawingTool extends go.Tool {
      * Given a potential Point for the next segment, return a Point it to snap to the grid, and remain orthogonal, if either is applicable.
      */
     modifyPointForGrid(p) {
-        const grid = this.diagram.grid;
         const pregrid = p.copy();
-        if (grid !== null && grid.visible) {
+        const grid = this.diagram.grid;
+        if (grid !== null && grid.visible && this.isGridSnapEnabled) {
             const cell = grid.gridCellSize;
             const orig = grid.gridOrigin;
+            p = p.copy();
             p.snapToGrid(orig.x, orig.y, cell.width, cell.height); // compute the closest grid point (modifies p)
         }
         if (this.temporaryShape.geometry === null)

@@ -5,7 +5,7 @@
  * GoCloudStorage.js
 */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 
 
@@ -288,7 +288,7 @@ export class GoCloudStorage {
      *   - {@link GoOneDrive#authorize}
      * @return {Promise<any>} Returns a Promise that resolves with a boolean stating whether authorization was succesful (true) or failed (false).
      */
-    public authorize(refreshToken: boolean = false) {
+    public authorize(refreshToken: boolean = false): Promise<any> {
         return new Promise(function(resolve: Function, reject: Function) {
             reject('authorize not implemented');
         });

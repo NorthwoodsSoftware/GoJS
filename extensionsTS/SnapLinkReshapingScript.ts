@@ -183,3 +183,8 @@ function loadDiagramProperties() {
   const pos = (myDiagram.model.modelData as any).position;
   if (pos) myDiagram.initialPosition = go.Point.parse(pos);
 }
+
+export function toggleAvoidsNodes(e: MouseEvent) {
+  const tool = myDiagram.toolManager.linkReshapingTool as SnapLinkReshapingTool;
+  if (tool !== null) tool.avoidsNodes = (e.target as HTMLInputElement).checked;
+}

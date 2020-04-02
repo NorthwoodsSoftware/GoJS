@@ -6,39 +6,31 @@
   <meta name="description" content="A thermometer." />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
-
   <script src="../release/go.js"></script>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don"t need to call this
+      var $ = go.GraphObject.make;
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
-
-
-      myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+      myDiagram = $(go.Diagram, "myDiagramDiv",
         {
           layout: $(go.GridLayout, { isOngoing: false, wrappingColumn: 4 }),
           "animationManager.isEnabled": false,
-          "undoManager.isEnabled": true  // enable undo & redo
+          "undoManager.isEnabled": true
         });
 
       // ResizingTool customization: add just one handle, instead of eight
       myDiagram.toolManager.resizingTool.makeAdornment = function(resizeObj) {
-        var adornment = null;
-        adornment = new go.Adornment();
-        adornment.type = go.Panel.Spot;
-        adornment.locationSpot = go.Spot.Center;
-
-        var surrogate = new go.Placeholder();
-        surrogate.isPanelMain = true;
-        adornment.add(surrogate);
-
-        adornment.add(this.makeHandle(resizeObj, go.Spot.MiddleTop));
-
-        adornment.category = this.name;
-        adornment.adornedObject = resizeObj;
-        return adornment;
+        return $(go.Adornment, "Spot",
+                  {
+                    locationSpot: go.Spot.Center,
+                    category: this.name,
+                    adornedObject: resizeObj
+                   },
+                  $(go.Placeholder),
+                  this.makeHandle(resizeObj, go.Spot.Top)
+                );
       }
 
       var ORIGINAL_HEIGHT = 400;
@@ -47,7 +39,7 @@
           0: The BarSpace, which is the main element and
           1: The Farenheit scale, on the left
           2: The Celsius scale, on the right
-          3: The shape that represents mercury in the thermometer
+          3: The shape that represents alcohol or mercury in the thermometer
           4: (Cosmetic) The stem that attaches to the bulb
           5: (Cosmetic) The bulb
 
@@ -97,19 +89,17 @@
               interval: 32, graduatedFunction: function(n) { return n === 32 ? "32—" : "" },
               font: "bold 12px Georgia", stroke: "red", alignmentFocus: new go.Spot(1, 0.5, 20, 0)
             })
-
-
           ),
 
-          // Mercury bar, which represents the values of farenheit and celsius
+          // Mercury/alcohol bar, which represents the values of farenheit and celsius
           $(go.Shape,
             {
               width: 25, strokeWidth: 0, fill: "red",
               alignment: go.Spot.Bottom,
               alignmentFocus: go.Spot.Bottom,
             },
-            new go.Binding('fill', 'type', function(t) { return t === "scaling" ? "lightcoral" : "red" }),
-            // To determine the mercury level, look at both data.farenheit and data.celsius, but prefer celsius
+            new go.Binding('fill', 'type', function(t) { return t === "scaling" ? "dimgray" : "red" }),
+            // To determine the level, look at both data.farenheit and data.celsius, but prefer celsius
             new go.Binding("height", "", function(data) {
               var thermometerHeight = ORIGINAL_HEIGHT;
               if (data.type === "scaling") thermometerHeight = data.height;
@@ -122,8 +112,7 @@
               } else {
                 return 0;
               }
-            }
-            ),
+            }),
             new go.Binding("maxSize", "height", function(h) { return new go.Size(NaN, h) })
           ),
 
@@ -159,7 +148,7 @@
               width: 25, height: 10, strokeWidth: 0, fill: "red",
               alignment: go.Spot.Bottom
             },
-            new go.Binding('fill', 'type', function(t) { return t === "scaling" ? "lightcoral" : "red" })
+            new go.Binding('fill', 'type', function(t) { return t === "scaling" ? "dimgray" : "red" })
           ),
           $(go.Shape, "Circle",
             {
@@ -168,7 +157,7 @@
               alignment: go.Spot.Bottom,
               alignmentFocus: go.Spot.Top,
             },
-            new go.Binding('fill', 'type', function(t) { return t === "scaling" ? "lightcoral" : "red" })
+            new go.Binding('fill', 'type', function(t) { return t === "scaling" ? "dimgray" : "red" })
           )
         ); // end node template
 
@@ -180,17 +169,11 @@
           { type: "scaling", height: 400, farenheit: 22 /*, celsius: 0*/ },
           { type: "scaling", height: 250, farenheit: 68 /*, celsius: 20*/ },
         ]);
-
     }
-
-
-
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <!-- The DIV for the Diagram needs an explicit size or else we won"t see anything.
-       This also adds a border to help see the edges of the viewport. -->
   <div id="myDiagramDiv" style="border: solid 1px black; width:800px; height:500px"></div>
   <p>
     This sample uses <a href="../intro/graduatedPanels.html">Graduated Panels</a> and <code>Panel.alignmentFocusName</code> to line up thermometer scales.

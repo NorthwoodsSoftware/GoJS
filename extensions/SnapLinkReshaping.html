@@ -154,6 +154,10 @@
               { text: "Comment", figure: "RoundedRectangle", fill: "lightyellow" }
             ])
           });
+
+      document.getElementById("AvoidsNodesCheckBox").onclick = function(e) {
+        myDiagram.toolManager.linkReshapingTool.avoidsNodes = e.target.checked;
+      }
     }
 
 
@@ -185,6 +189,7 @@
     <div id="myPaletteDiv" style="width: 105px; height: 620px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
     <div id="myDiagramDiv" style="flex-grow: 1; height: 620px; border: solid 1px black"></div>
   </div>
+  <label><input type="checkbox" id="AvoidsNodesCheckBox" checked="checked"/>avoidsNodes</label>
   <p>
     This sample is a simplified version of the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
     Links are not draggable, there are no custom <a>Adornment</a>s, nodes are not rotatable, and links
@@ -193,7 +198,9 @@
   <p>
     Its purpose is to demonstrate the <a href="SnapLinkReshapingTool.js">SnapLinkReshapingTool</a>,
     an extension of <a>LinkReshapingTool</a> that snaps each dragged reshape handle of selected Links to
-    the nearest grid point.
+    the nearest grid point.  If the <a>SnapLinkReshapingTool.avoidsNodes</a> option is true,
+    as it is by default, then the reshaping is limited to points where the adjacent segments would not
+    be crossing over any avoidable nodes.
   </p>
   <p>
     Note how the "LinkReshaped" DiagramEvent listener changes the <a>Link.routing</a> of the reshaped Link,

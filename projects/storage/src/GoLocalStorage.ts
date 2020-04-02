@@ -5,7 +5,7 @@
 * Go Local Storage
 */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage.js';
 
@@ -63,7 +63,7 @@ export class GoLocalStorage extends gcs.GoCloudStorage {
      * @param {boolean} refreshToken This parameter can be ignored. It exists only to maintain GoCloudStorage system structure
      * @return {Promise<boolean>} Returns a Promise that resolves with a boolean (true if local storage is supported, false if not)
      */
-    public authorize(refreshToken: boolean = false) {
+    public authorize(refreshToken: boolean = false): Promise<any> {
         const storage = this;
         return new Promise(function(resolve: Function, reject: Function) {
             try {

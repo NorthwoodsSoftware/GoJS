@@ -6,7 +6,7 @@
 * Used to reshape walls via their endpoints in a Floorplan
 */
 
-import * as go from '../../../release/go.js';
+import * as go from 'gojs';
 import { Floorplan } from './Floorplan.js';
 import { WallBuildingTool } from './WallBuildingTool.js';
 

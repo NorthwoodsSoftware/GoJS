@@ -1,11 +1,11 @@
-    /*
+/*
 * Copyright (C) 1998-2020 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Go DropBox
 */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage.js';
 
@@ -32,11 +32,11 @@ export class GoDropBox extends gcs.GoCloudStorage {
      * @param {string} iconsRelativeDirectory The directory path relative to the page in which this instance of GoDropBox exists, in which
      * the storage service brand icons can be found. The default value is "../goCloudStorageIcons/".
      */
-    constructor(managedDiagrams: go.Diagram|Array<go.Diagram>, clientId: string, defaultModel?: string, iconsRelativeDirectory?: string) {
+    constructor(managedDiagrams: go.Diagram | Array<go.Diagram>, clientId: string, defaultModel?: string, iconsRelativeDirectory?: string) {
         super(managedDiagrams, defaultModel, clientId, iconsRelativeDirectory);
         if (window['Dropbox']) {
             const Dropbox = window['Dropbox'];
-            this._dropbox = new Dropbox({clientId: clientId});
+            this._dropbox = new Dropbox({ clientId: clientId });
         }
         this.menuPath = '';
         this.ui.id = 'goDropBoxCustomFilepicker';
@@ -104,7 +104,7 @@ export class GoDropBox extends gcs.GoCloudStorage {
      */
     public authorize(refreshToken: boolean = false) {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             // First, check if we're explicitly being told to refresh token (redirect to login screen)
             if (refreshToken) {
                 storage.maybeSaveAppState();
@@ -164,7 +164,7 @@ export class GoDropBox extends gcs.GoCloudStorage {
             const fileContents: string = window.localStorage.getItem('gdb-' + storage.clientId);
             storage.loadFromFileContents(fileContents);
             localStorage.removeItem('gdb-' + storage.clientId);
-        } catch (e) {}
+        } catch (e) { }
     }
 
     /**
@@ -178,27 +178,27 @@ export class GoDropBox extends gcs.GoCloudStorage {
         storage.maybeSaveAppState();
         dbx.setAccessToken(null);
         dbx.authTokenRevoke();
-            /*.then(function(response) {
-                // the access token for `dbx` has been revoked
-                console.log("got authTokenRevoke response:");
+        /*.then(function(response) {
+            // the access token for `dbx` has been revoked
+            console.log("got authTokenRevoke response:");
+            console.log(response);
+
+            // this should fail now:
+            dbx.usersGetCurrentAccount()
+              .then(function(response) {
+                console.log("got usersGetCurrentAccount response:");
                 console.log(response);
+              })
+              .catch(function(error) {
+                console.log("got usersGetCurrentAccount error:");
+                console.log(error);
+              });
 
-                // this should fail now:
-                dbx.usersGetCurrentAccount()
-                  .then(function(response) {
-                    console.log("got usersGetCurrentAccount response:");
-                    console.log(response);
-                  })
-                  .catch(function(error) {
-                    console.log("got usersGetCurrentAccount error:");
-                    console.log(error);
-                  });
-
-            })
-            .catch(function(error) {
-              console.log("got authTokenRevoke error:");
-              console.log(error);
-            });*/
+        })
+        .catch(function(error) {
+          console.log("got authTokenRevoke error:");
+          console.log(error);
+        });*/
         // window.location.href = window.location.href.substr(0, window.location.href.indexOf('#'));
     }
 
@@ -235,16 +235,16 @@ export class GoDropBox extends gcs.GoCloudStorage {
      */
     public getUserInfo() {
         const storage = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             // Case: No access token in URI
             if (!storage.dropbox.getAccessToken() && window.location.hash.indexOf('access_token') === -1) {
                 storage.authorize(true);
             } else if (!storage.dropbox.getAccessToken() && window.location.hash.indexOf('access_token') === 1) {
                 storage.authorize(false);
             }
-            storage.dropbox.usersGetCurrentAccount(null).then(function (userData) {
+            storage.dropbox.usersGetCurrentAccount(null).then(function(userData) {
                 resolve(userData);
-            }).catch(function (e) {
+            }).catch(function(e) {
                 // Case: storage.dropbox.access_token has expired or become malformed; get another access token
                 if (e.status === 400) {
                     storage.authorize(true);
@@ -271,7 +271,7 @@ export class GoDropBox extends gcs.GoCloudStorage {
         const actionButton = document.createElement('button');
         actionButton.id = 'actionButton';
         actionButton.textContent = 'Save';
-        actionButton.onclick = function () {
+        actionButton.onclick = function() {
             const input: HTMLInputElement = (document.getElementById('gdb-userInput')) as HTMLInputElement;
             const val: string = input.value;
             if (val !== '' && val !== undefined && val != null) {
@@ -287,7 +287,7 @@ export class GoDropBox extends gcs.GoCloudStorage {
         const cancelButton = document.createElement('button');
         cancelButton.id = 'cancelButton';
         cancelButton.textContent = 'Cancel';
-        cancelButton.onclick = function () {
+        cancelButton.onclick = function() {
             storage.hideUI(true);
         };
         cancelDiv.appendChild(cancelButton);
@@ -370,9 +370,9 @@ export class GoDropBox extends gcs.GoCloudStorage {
         const storage = this;
         if (path.indexOf('.diagram') === -1) path += '.diagram';
         return new Promise(function(resolve: Function, reject: Function) {
-            storage.dropbox.filesGetMetadata({ path: path }).then(function (resp) {
+            storage.dropbox.filesGetMetadata({ path: path }).then(function(resp) {
                 if (resp) resolve(true);
-            }).catch(function (err) {
+            }).catch(function(err) {
                 resolve(false);
             });
         });
@@ -393,9 +393,9 @@ export class GoDropBox extends gcs.GoCloudStorage {
     public getFile(path: string) {
         const storage = this;
         if (path.indexOf('.diagram') === -1) path += '.diagram';
-        return storage.dropbox.filesGetMetadata({ path: path }).then(function (resp) {
+        return storage.dropbox.filesGetMetadata({ path: path }).then(function(resp) {
             if (resp) return resp;
-        }).catch(function (err) {
+        }).catch(function(err) {
             return null;
         });
     }
@@ -481,14 +481,14 @@ export class GoDropBox extends gcs.GoCloudStorage {
                     });
                 };
 
-                function makeTextFile (text) {
-                    const data = new Blob([text], {type: 'text/plain'});
+                function makeTextFile(text) {
+                    const data = new Blob([text], { type: 'text/plain' });
                     let uri = '';
                     uri = window.URL.createObjectURL(data);
 
                     return uri;
                 }
-                const dataURI =  'data:text/html,' + encodeURIComponent(storage.makeSaveFile());
+                const dataURI = 'data:text/html,' + encodeURIComponent(storage.makeSaveFile());
 
                 const Dropbox = window['Dropbox'];
                 Dropbox.save(dataURI, filename, storage._options);
@@ -508,15 +508,15 @@ export class GoDropBox extends gcs.GoCloudStorage {
      */
     public save(path?: string) {
         const storage = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (path) { // save as
                 storage.dropbox.filesUpload({
                     contents: storage.makeSaveFile(),
                     path: path,
                     autorename: true, // instead of overwriting, save to a different name (i.e. test.diagram -> test(1).diagram)
-                    mode: {'.tag': 'add'},
+                    mode: { '.tag': 'add' },
                     mute: false
-                }).then(function (resp) {
+                }).then(function(resp) {
                     const savedFile: gcs.DiagramFile = { name: resp.name, id: resp.id, path: resp.path_lower };
                     storage.currentDiagramFile = savedFile;
 
@@ -538,9 +538,9 @@ export class GoDropBox extends gcs.GoCloudStorage {
                     contents: storage.makeSaveFile(),
                     path: path,
                     autorename: false,
-                    mode: {'.tag': 'overwrite'},
+                    mode: { '.tag': 'overwrite' },
                     mute: true
-                }).then(function (resp) {
+                }).then(function(resp) {
                     const savedFile: Object = { name: resp.name, id: resp.id, path: resp.path_lower };
                     resolve(savedFile);
                 }).catch(function(e) {
@@ -585,9 +585,9 @@ export class GoDropBox extends gcs.GoCloudStorage {
      */
     public load(path: string) {
         const storage = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (path) {
-                storage.dropbox.filesGetTemporaryLink({ path: path }).then(function (resp) {
+                storage.dropbox.filesGetTemporaryLink({ path: path }).then(function(resp) {
                     const link: string = resp.link;
                     storage.currentDiagramFile.name = resp.metadata.name;
                     storage.currentDiagramFile.id = resp.metadata.id;
@@ -595,7 +595,7 @@ export class GoDropBox extends gcs.GoCloudStorage {
                     const xhr: XMLHttpRequest = new XMLHttpRequest();
                     xhr.open('GET', link, true);
                     xhr.setRequestHeader('Authorization', 'Bearer ' + storage.dropbox.getAccessToken());
-                    xhr.onload = function () {
+                    xhr.onload = function() {
                         if (xhr.readyState === 4 && (xhr.status === 200)) {
                             storage.loadFromFileContents(xhr.response);
 
@@ -649,9 +649,9 @@ export class GoDropBox extends gcs.GoCloudStorage {
      */
     public remove(path: string) {
         const storage = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (path) {
-                storage.dropbox.filesDelete({ path: path }).then(function (resp) {
+                storage.dropbox.filesDelete({ path: path }).then(function(resp) {
                     if (storage.currentDiagramFile && storage.currentDiagramFile['id'] === resp['id']) storage.currentDiagramFile = { name: null, path: null, id: null };
                     const deletedFile: gcs.DiagramFile = { name: resp.name, id: resp['id'], path: resp.path_lower };
 

@@ -18,9 +18,12 @@ module.exports = {
         libraryTarget: 'window',
         library: 'gfp'
     },
+    optimization: {
+        minimize: false
+    },
     externals: [
         {
-            '../../../release/go': 'go'
+            'gojs': 'go'
         }
     ],
     module: {

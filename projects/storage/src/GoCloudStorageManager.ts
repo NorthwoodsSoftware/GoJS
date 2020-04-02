@@ -5,7 +5,7 @@
  * Go Cloud Storage Manager
  */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage.js';
 
@@ -32,7 +32,7 @@ export class GoCloudStorageManager {
      * **Note:** If this parameter is supplied, it is used as for the "iconsRelativeDirectory" constructor parameter for each instance
      * this instance of GoCloudStorageManager manages in {@link #storages}.
      */
-    constructor(storages: go.Set<gcs.GoCloudStorage>|Array<gcs.GoCloudStorage>, iconsRelativeDirectory?: string) {
+    constructor(storages: go.Set<gcs.GoCloudStorage> | Array<gcs.GoCloudStorage>, iconsRelativeDirectory?: string) {
         if (storages instanceof Array) {
             const storagesSet = new go.Set<gcs.GoCloudStorage>();
             for (let i = 0; i < storages.length; i++) {
@@ -44,7 +44,7 @@ export class GoCloudStorageManager {
             }
             storages = storagesSet;
         }
-        if (!(storages instanceof go.Set) || !storages) throw Error ("Cannot create GoCloudStorageManager with provided 'storages' parameter");
+        if (!(storages instanceof go.Set) || !storages) throw Error("Cannot create GoCloudStorageManager with provided 'storages' parameter");
         const storageManager = this;
         storageManager._storages = storages;
         storageManager._currentStorage = storages.first();
@@ -127,7 +127,7 @@ export class GoCloudStorageManager {
      */
     public load() {
         const storageManager = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storageManager.handleAction('Load'));
         });
     }
@@ -138,7 +138,7 @@ export class GoCloudStorageManager {
      */
     public remove() {
         const storageManager = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             resolve(storageManager.handleAction('Remove'));
         });
     }
@@ -152,7 +152,7 @@ export class GoCloudStorageManager {
      */
     public save(isSaveAs: boolean = true) {
         const storageManager = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (isSaveAs) resolve(storageManager.handleAction('SaveAs'));
             else resolve(storageManager.handleAction('Save'));
         });
@@ -227,7 +227,7 @@ export class GoCloudStorageManager {
             menu.appendChild(selectedStorage);
 
             // display the name of the currently selected radio button's storage service
-            menu.onchange = function () {
+            menu.onchange = function() {
                 const radios: NodeListOf<HTMLInputElement> = document.getElementsByName('storageSelection') as NodeListOf<HTMLInputElement>;
                 let selectedStorageClassName: string = null;
                 for (let i = 0; i < radios.length; i++) {
@@ -260,8 +260,8 @@ export class GoCloudStorageManager {
 
                 optionsDiv.innerHTML +=
                     '<label>' +
-                        '<input id=' + type + " type='radio' name='storageSelection' " + checkedStr + ' />' +
-                        "<img class='storageLogo' src=" + src + ' >';
+                    '<input id=' + type + " type='radio' name='storageSelection' " + checkedStr + ' />' +
+                    "<img class='storageLogo' src=" + src + ' >';
             });
 
             menu.appendChild(optionsDiv);
@@ -288,7 +288,7 @@ export class GoCloudStorageManager {
                     if (storage.className === selectedStorage) storageManager.currentStorage = storage;
                 });
                 if (storageManager.currentStorageNeedsAuth()) {
-                    storageManager.currentStorage.authorize().then(function (resp) {
+                    storageManager.currentStorage.authorize().then(function(resp) {
                     });
                 }
                 resolve(storageManager.currentStorage);
@@ -327,7 +327,7 @@ export class GoCloudStorageManager {
     private currentStorageNeedsAuth() {
         const storageManager = this;
         const currentStorageClass: string = storageManager.currentStorage.className;
-        if (currentStorageClass ===  'GoGoogleDrive' || currentStorageClass === 'GoDropBox') return true;
+        if (currentStorageClass === 'GoGoogleDrive' || currentStorageClass === 'GoDropBox') return true;
         return false;
     }
 
@@ -371,9 +371,10 @@ export class GoCloudStorageManager {
                 }
                 storageManager.hideMenu();
             }
-            if (storageManager.currentStorageNeedsAuth()) { storage.authorize().then(function() {
-                doAction();
-            });
+            if (storageManager.currentStorageNeedsAuth()) {
+                storage.authorize().then(function() {
+                    doAction();
+                });
             } else doAction();
         });
     }

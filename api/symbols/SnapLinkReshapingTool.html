@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.11 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.11<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.12 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.12<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class SnapLinkReshapingTool</h1>
@@ -123,7 +123,9 @@
 			</section>
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
-					<p>The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.</p>
+					<p>The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.
+						If <a href="SnapLinkReshapingTool.html#avoidsNodes">avoidsNodes</a> is true and the link is orthogonal,
+					it also avoids reshaping the link so that any adjacent segments cross over any avoidable nodes.</p>
 					<p>If you want to experiment with this extension, try the <a href="../../extensionsTS/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.</p>
 				</div>
 			</section>
@@ -134,6 +136,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="SnapLinkReshapingTool.html#avoidsNodes" class="tsd-kind-icon">avoids<wbr>Nodes</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="SnapLinkReshapingTool.html#gridCellSize" class="tsd-kind-icon">grid<wbr>Cell<wbr>Size</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="SnapLinkReshapingTool.html#gridOrigin" class="tsd-kind-icon">grid<wbr>Origin</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="SnapLinkReshapingTool.html#isGridSnapEnabled" class="tsd-kind-icon">is<wbr>Grid<wbr>Snap<wbr>Enabled</a></li>
@@ -143,6 +146,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="SnapLinkReshapingTool.html#computeReshape" class="tsd-kind-icon">compute<wbr>Reshape</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="SnapLinkReshapingTool.html#doActivate" class="tsd-kind-icon">do<wbr>Activate</a></li>
 							</ul>
 						</section>
 					</div>
@@ -150,6 +154,22 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="avoidsNodes" class="tsd-anchor"></a>
+					<h3>
+						avoids<wbr>Nodes
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets whether a reshape handle&#39;s position should only be dragged where the
+									adjacent segments do not cross over any nodes.
+								This affects the behavior of <a href="SnapLinkReshapingTool.html#computeReshape">computeReshape</a>.</p>
+								<p>The default value is true.</p>
+							</div>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
 					<a name="gridCellSize" class="tsd-anchor"></a>
 					<h3>
@@ -211,6 +231,9 @@
 								<p>Pretend while dragging a reshape handle the mouse point is at the nearest grid point, if <a href="SnapLinkReshapingTool.html#isGridSnapEnabled">isGridSnapEnabled</a> is true.
 									This uses <a href="SnapLinkReshapingTool.html#gridCellSize">gridCellSize</a> and <a href="SnapLinkReshapingTool.html#gridOrigin">gridOrigin</a>, unless those are not real values,
 								in which case this uses the <a href="Diagram.html#grid">Diagram.grid</a>&#39;s <a href="Panel.html#gridCellSize">Panel.gridCellSize</a> and <a href="Panel.html#gridOrigin">Panel.gridOrigin</a>.</p>
+								<p>If <a href="SnapLinkReshapingTool.html#avoidsNodes">avoidsNodes</a> is true and the adorned Link is <a href="Link.html#isOrthogonal">Link.isOrthogonal</a>,
+									this method also avoids returning a Point that causes the adjacent segments, both before and after
+								the current handle&#39;s index, to cross over any Nodes that are <a href="Node.html#avoidable">Node.avoidable</a>.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -219,6 +242,25 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="Point.html" class="tsd-signature-type">Point</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="doActivate" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagOverride">Override</span>
+						do<wbr>Activate
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">do<wbr>Activate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This override records information about the original point of the handle being dragged,
+								if the <a href="LinkReshapingTool.html#adornedLink">adornedLink</a> is Orthogonal and if <a href="SnapLinkReshapingTool.html#avoidsNodes">avoidsNodes</a> is true.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -240,6 +282,9 @@
 						<a href="SnapLinkReshapingTool.html" class="tsd-kind-icon">Snap<wbr>Link<wbr>Reshaping<wbr>Tool</a>
 						<ul>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="SnapLinkReshapingTool.html#avoidsNodes" class="tsd-kind-icon">avoids<wbr>Nodes</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="SnapLinkReshapingTool.html#gridCellSize" class="tsd-kind-icon">grid<wbr>Cell<wbr>Size</a>
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
@@ -250,6 +295,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="SnapLinkReshapingTool.html#computeReshape" class="tsd-kind-icon">compute<wbr>Reshape</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="SnapLinkReshapingTool.html#doActivate" class="tsd-kind-icon">do<wbr>Activate</a>
 							</li>
 						</ul>
 					</li>

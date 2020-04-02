@@ -67,14 +67,14 @@
     </div>
 
     <div class="container-fluid learn-container">
-    <h2>Programmatically interacting with Nodes</h2>
+      <h2 id="ProgrammaticallyInteractiveWithNodes">Programmatically interacting with Nodes</h2>
 
-    <p>
-      This guide will show you some basic ways of programmatically interacting with <b>GoJS</b> nodes and model data.
-      Throughout this guide, we will use the following diagram setup as our starting point:
-    </p>
+      <p>
+        This guide will show you some basic ways of programmatically interacting with <b>GoJS</b> nodes and model data.
+        Throughout this guide, we will use the following diagram setup as our starting point:
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 var $ = go.GraphObject.make;
 myDiagram = $(go.Diagram, "myDiagramDiv",
               {
@@ -100,52 +100,52 @@ myDiagram.model = new go.GraphLinksModel(
 ]);
     </pre>
 
-    <p>
-      The code produces this Diagram:
-    </p>
+      <p>
+        The code produces this Diagram:
+      </p>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv" class="diagramStyling" style="width:700px; height:150px"></div>
-    <script>
-    function setupDiagram(divname) {
-      var $ = go.GraphObject.make;
-      var myDiagram = $(go.Diagram, divname,
-                    {
-                      "undoManager.isEnabled": true
-                    });
+      <!-- LIVE -->
+      <div id="myDiagramDiv" class="diagramStyling" style="width:700px; height:150px"></div>
+      <script>
+        function setupDiagram(divname) {
+          var $ = go.GraphObject.make;
+          var myDiagram = $(go.Diagram, divname,
+            {
+              "undoManager.isEnabled": true
+            });
 
-      // define a simple Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          $(go.Shape, "Rectangle",
-            { stroke: null, name: "SHAPE" },
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 6, font: "18px sans-serif" },
-            new go.Binding("text", "key"))
-        );
+          // define a simple Node template
+          myDiagram.nodeTemplate =
+            $(go.Node, "Auto",
+              $(go.Shape, "Rectangle",
+                { stroke: null, name: "SHAPE" },
+                new go.Binding("fill", "color")),
+              $(go.TextBlock,
+                { margin: 6, font: "18px sans-serif" },
+                new go.Binding("text", "key"))
+            );
 
-      myDiagram.model = new go.GraphLinksModel(
-      [
-        { key: "Alpha", color: "lightblue" },
-        { key: "Beta", color: "orange" },
-        { key: "Gamma", color: "lightgreen" },
-        { key: "Delta", color: "pink" }
-      ]);
-      return myDiagram;
-    }
-    setupDiagram("myDiagramDiv")
-    </script>
+          myDiagram.model = new go.GraphLinksModel(
+            [
+              { key: "Alpha", color: "lightblue" },
+              { key: "Beta", color: "orange" },
+              { key: "Gamma", color: "lightgreen" },
+              { key: "Delta", color: "pink" }
+            ]);
+          return myDiagram;
+        }
+        setupDiagram("myDiagramDiv")
+      </script>
 
-    <h2>Finding single nodes: Diagram.findNodeForKey</h2>
+      <h2 id="FindingSingleNodesDiagramFindNodeForKey">Finding single nodes: Diagram.findNodeForKey</h2>
 
-    <p>
-      You can use <code>Diagram.findNodeForKey(key)</code> to get a reference to a Node in JavaScript.
-      Key values in <b>GoJS</b> can be either strings or numbers.
-      You can then use the Node reference to manipulate and inspect the Node.
-    </p>
+      <p>
+        You can use <code>Diagram.findNodeForKey(key)</code> to get a reference to a Node in JavaScript.
+        Key values in <b>GoJS</b> can be either strings or numbers.
+        You can then use the Node reference to manipulate and inspect the Node.
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 var node = myDiagram.findNodeForKey("Alpha");
 
 // Selects the node:
@@ -158,47 +158,47 @@ myDiagram.select(node);
 console.log(node.data);
     </pre>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv2" class="diagramStyling" style="width:700px; height:150px"></div>
-    <script>
-    var myDiagram = setupDiagram("myDiagramDiv2");
-    var node = myDiagram.findNodeForKey("Alpha");
-    myDiagram.select(node);
-    if (window.console) console.log(node.data);
-    </script>
+      <!-- LIVE -->
+      <div id="myDiagramDiv2" class="diagramStyling" style="width:700px; height:150px"></div>
+      <script>
+        var myDiagram = setupDiagram("myDiagramDiv2");
+        var node = myDiagram.findNodeForKey("Alpha");
+        myDiagram.select(node);
+        if (window.console) console.log(node.data);
+      </script>
 
-    <p>
-      However <code>findNodeForKey</code> may return <code>null</code> if no node data uses that key value.
-      Also, it only looks at the model data to find a node data that uses the given key value,
-      from which it finds the corresponding Node in the Diagram.
-      It does not look at the text values of any TextBlocks that are within the Nodes,
-      so it can work even if no text is shown at all.
-    </p>
-    <p>
-      Once you have a <a>Node</a>, you can get its key either via the <a>Node.key</a> property or
-      by looking at its data: <code>someNode.data.key</code>, just as you can look at any of the data properties.
-    </p>
+      <p>
+        However <code>findNodeForKey</code> may return <code>null</code> if no node data uses that key value.
+        Also, it only looks at the model data to find a node data that uses the given key value,
+        from which it finds the corresponding Node in the Diagram.
+        It does not look at the text values of any TextBlocks that are within the Nodes,
+        so it can work even if no text is shown at all.
+      </p>
+      <p>
+        Once you have a <a>Node</a>, you can get its key either via the <a>Node.key</a> property or
+        by looking at its data: <code>someNode.data.key</code>, just as you can look at any of the data properties.
+      </p>
 
-    <h2>Collections of Nodes and Links</h2>
+      <h2 id="CollectionsOfNodesAndLinks">Collections of Nodes and Links</h2>
 
-    <p>
-      Diagrams have several properties and methods that return iterators describing collections of Parts.
-      (Nodes and Links are kinds of Parts.)
-      <code>Diagram.nodes</code> and <code>Diagram.links</code> return iterators of all Nodes and Links in the Diagram, respectively.
-      <code>Diagram.selection</code> returns an iterator of selected Parts
-      (both selected Nodes and selected Links).
-    </p>
+      <p>
+        Diagrams have several properties and methods that return iterators describing collections of Parts.
+        (Nodes and Links are kinds of Parts.)
+        <code>Diagram.nodes</code> and <code>Diagram.links</code> return iterators of all Nodes and Links in the Diagram, respectively.
+        <code>Diagram.selection</code> returns an iterator of selected Parts
+        (both selected Nodes and selected Links).
+      </p>
 
-    <p>
-      There are also more specific methods for common operations, such as <code>Diagram.findTreeRoots()</code>
-      which returns an iterator of all top-level Nodes that have no parent nodes.
-    </p>
+      <p>
+        There are also more specific methods for common operations, such as <code>Diagram.findTreeRoots()</code>
+        which returns an iterator of all top-level Nodes that have no parent nodes.
+      </p>
 
-    <p>
-      This next example uses <code>Diagram.nodes</code> and shows how to iterate over the collection.
-    </p>
+      <p>
+        This next example uses <code>Diagram.nodes</code> and shows how to iterate over the collection.
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 // Calling Diagram.commit executes the given function between startTransaction and commitTransaction
 // calls.  That automatically updates the display and allows the effects to be undone.
 myDiagram.commit(function(d) {  // this Diagram
@@ -212,33 +212,33 @@ myDiagram.commit(function(d) {  // this Diagram
 }, "decrease scale");
     </pre>
 
-    <p>As a result we have very scaled-down nodes, except for Beta:</p>
+      <p>As a result we have very scaled-down nodes, except for Beta:</p>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:150px"></div>
-    <script>
-    var myDiagram = setupDiagram("myDiagramDiv3");
-    myDiagram.commit(function(d) {  // this Diagram
-      // iterate over all nodes in Diagram
-      d.nodes.each(function(node) {
-        if (node.data.key === "Beta") return; //skip Beta, just to contrast
-        node.scale = 0.4; // shrink each node
-      });
-    }, "decrease scale");
-    </script>
+      <!-- LIVE -->
+      <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:150px"></div>
+      <script>
+        var myDiagram = setupDiagram("myDiagramDiv3");
+        myDiagram.commit(function(d) {  // this Diagram
+          // iterate over all nodes in Diagram
+          d.nodes.each(function(node) {
+            if (node.data.key === "Beta") return; //skip Beta, just to contrast
+            node.scale = 0.4; // shrink each node
+          });
+        }, "decrease scale");
+      </script>
 
 
-    <h2>Named GraphObjects and Panel.findObject</h2>
+      <h2 id="NamedGraphObjectsAndPanelFindObject">Named GraphObjects and Panel.findObject</h2>
 
-    <p>
-      Often we want to manipulate a property that belongs to one of the Node's elements,
-      perhaps an element arbitrarily deep in the template.
-      In our example Diagram, each Node has one Shape,
-      and if we want to change the color of this Shape directly we would need a reference to it.
-      To make it possible to find, we can give that Shape a name:
-    </p>
+      <p>
+        Often we want to manipulate a property that belongs to one of the Node's elements,
+        perhaps an element arbitrarily deep in the template.
+        In our example Diagram, each Node has one Shape,
+        and if we want to change the color of this Shape directly we would need a reference to it.
+        To make it possible to find, we can give that Shape a name:
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -250,20 +250,20 @@ myDiagram.nodeTemplate =
   );
     </pre>
 
-    <p>
-      Names allow us to easily find GraphObjects inside of Panels
-      (all Nodes are also Panels) using <code>Panel.findObject</code>,
-      which will search the visual tree of a Panel starting at that panel.
-      So when we have a reference to a Node, we can call <code>someNode.findObject("SomeName")</code>
-      to search through the node for the named object.
-      It will return a reference to the named GraphObject if it is found, or <code>null</code> otherwise.
-    </p>
+      <p>
+        Names allow us to easily find GraphObjects inside of Panels
+        (all Nodes are also Panels) using <code>Panel.findObject</code>,
+        which will search the visual tree of a Panel starting at that panel.
+        So when we have a reference to a Node, we can call <code>someNode.findObject("SomeName")</code>
+        to search through the node for the named object.
+        It will return a reference to the named GraphObject if it is found, or <code>null</code> otherwise.
+      </p>
 
-    <p>
-      Using this, we could make an HTML button that changes the fill of the Shape inside of a selected Node:
-    </p>
+      <p>
+        Using this, we could make an HTML button that changes the fill of the Shape inside of a selected Node:
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 var selectionButton = document.getElementById("selectionButton");
 selectionButton.addEventListener("click", function() {
   myDiagram.commit(function(d) {
@@ -278,35 +278,35 @@ selectionButton.addEventListener("click", function() {
 });
     </pre>
 
-    <!-- LIVE -->
-    <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:150px"></div>
-    <button id="selectionButton">Select some Nodes; then click here to change Shape.fill inside selected Nodes</button>
-    <script>
-    var myDiagram = setupDiagram("myDiagramDiv4");
+      <!-- LIVE -->
+      <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:150px"></div>
+      <button id="selectionButton">Select some Nodes; then click here to change Shape.fill inside selected Nodes</button>
+      <script>
+        var myDiagram = setupDiagram("myDiagramDiv4");
 
-    var selectionButton = document.getElementById("selectionButton");
-    selectionButton.addEventListener("click", function() {
-      myDiagram.commit(function(d) {
-        d.selection.each(function(node) {
-          var shape = node.findObject("SHAPE");
-          // If there was a GraphObject in the node named SHAPE, then set its fill to red:
-          if (shape !== null) {
-            shape.fill = "red";
-          }
+        var selectionButton = document.getElementById("selectionButton");
+        selectionButton.addEventListener("click", function() {
+          myDiagram.commit(function(d) {
+            d.selection.each(function(node) {
+              var shape = node.findObject("SHAPE");
+              // If there was a GraphObject in the node named SHAPE, then set its fill to red:
+              if (shape !== null) {
+                shape.fill = "red";
+              }
+            });
+          }, "change color");
         });
-      }, "change color");
-    });
-    </script>
+      </script>
 
 
-    <h2>Changing Properties and Updating the Model using Data Bindings</h2>
+      <h2 id="ChangingProperteisAndUpdatingModelUsingDataBindings">Changing Properties and Updating the Model using Data Bindings</h2>
 
-    <p>
-      Looking again at our Node template, we have the <code>Shape.fill</code>
-      property data-bound to the "color" property of our Node data:
-    </p>
+      <p>
+        Looking again at our Node template, we have the <code>Shape.fill</code>
+        property data-bound to the "color" property of our Node data:
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -318,12 +318,12 @@ myDiagram.nodeTemplate =
   );
     </pre>
 
-    <p>
-      Changing the Shape's <code>fill</code> property inside our node will not,
-      as the Node template currently stands, update the model data.
-    </p>
+      <p>
+        Changing the Shape's <code>fill</code> property inside our node will not,
+        as the Node template currently stands, update the model data.
+      </p>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 var node = myDiagram.findNodeForKey("Alpha");
 var shape = node.findObject("SHAPE");
 shape.fill = "red";
@@ -332,27 +332,27 @@ shape.fill = "red";
 console.log(node.data.color);
     </pre>
 
-    <p>
-      This is undesirable in some cases.
-      When we want the change to persist while saving and loading,
-      we will want the model data updated too.
-    </p>
+      <p>
+        This is undesirable in some cases.
+        When we want the change to persist while saving and loading,
+        we will want the model data updated too.
+      </p>
 
-    <p>
-      In other situations this might be a good thing.
-      For instance if we want the color change for only cosmetic purposes,
-      such as changing the color of a button when hovering over it with the mouse,
-      we would not bother modifying the model data.
-    </p>
+      <p>
+        In other situations this might be a good thing.
+        For instance if we want the color change for only cosmetic purposes,
+        such as changing the color of a button when hovering over it with the mouse,
+        we would not bother modifying the model data.
+      </p>
 
-    <p>
-      Suppose that we do want to update the model.
-      The preferred way to do this is to modify the data in the model
-      and depend on the data binding to automatically update the Shape.
-      However, we cannot modify the data directly by just setting the JavaScript property.
-    </p>
+      <p>
+        Suppose that we do want to update the model.
+        The preferred way to do this is to modify the data in the model
+        and depend on the data binding to automatically update the Shape.
+        However, we cannot modify the data directly by just setting the JavaScript property.
+      </p>
 
-    <pre class="lang-js" style="border: 6px solid red">
+      <pre class="lang-js" style="border: 6px solid red">
 var node = myDiagram.findNodeForKey("Alpha");
 
 // DO NOT DO THIS!
@@ -362,12 +362,12 @@ var node = myDiagram.findNodeForKey("Alpha");
 node.data.color = "red";
     </pre>
 
-    <p>
-      Instead we should set the data property using the method
-      <code>Model.set(data, propertyName, propertyValue)</code>.
-    </p>
+      <p>
+        Instead we should set the data property using the method
+        <code>Model.set(data, propertyName, propertyValue)</code>.
+      </p>
 
-    <pre class="lang-js" style="border: 6px solid lime">
+      <pre class="lang-js" style="border: 6px solid lime">
   var node = myDiagram.findNodeForKey("Alpha");
 
   // Model.commit executes the given function within a transaction
@@ -385,7 +385,7 @@ node.data.color = "red";
   console.log(node.data.color);
     </pre>
 
-    <pre class="lang-js">
+      <pre class="lang-js">
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -397,30 +397,36 @@ myDiagram.nodeTemplate =
   );
     </pre>
 
-    <p>
-      Note that there is no longer any need to name the Shape "SHAPE",
-      because there is no longer any need to call <code>findObject</code> to look for the particular Shape.
-      Data binding will automatically update properties, so we do not have to do that ourselves.
-    </p>
+      <p>
+        Note that there is no longer any need to name the Shape "SHAPE",
+        because there is no longer any need to call <code>findObject</code> to look for the particular Shape.
+        Data binding will automatically update properties, so we do not have to do that ourselves.
+      </p>
 
-    <h2>Subjects Mentioned and Further Reading</h2>
-    <ul>
-      <li>Data Binding — See the <a href="../intro/dataBinding.html">intro page on Data Binding for lots more detail</a>.</li>
-      <li>Transactions — See the <a href="../intro/transactions.html">intro page on Transactions</a>.</li>
-      <li><code>console.log</code> — A powerful debugging aid that is part of most browser's developer tools.
-        See the <a href="https://developers.google.com/chrome-developer-tools/docs/console">Chrome guide</a> or
-        the <a href="https://developer.mozilla.org/en-US/docs/Tools/Browser_Console">Firefox guide</a> for their respective developer consoles.</li>
-    </ul>
-    <p>
-      If you are ready for a comprehensive overview of <b>GoJS</b>, have a look at the <a href="../intro/index.html">technical introduction</a>.
-      If you want to explore by example, have a look at <a href="../samples/index.html">the samples</a> to get a feel for what's possible with <b>GoJS</b>.
-    </p>
+      <h2 id="SubjectMentionedAndFurtherReading">Subjects Mentioned and Further Reading</h2>
+      <ul>
+        <li>Data Binding — See the <a href="../intro/dataBinding.html">intro page on Data Binding for lots more detail</a>.</li>
+        <li>Transactions — See the <a href="../intro/transactions.html">intro page on Transactions</a>.</li>
+        <li>
+          <code>console.log</code> — A powerful debugging aid that is part of most browser's developer tools.
+          See the <a href="https://developers.google.com/chrome-developer-tools/docs/console">Chrome guide</a> or
+          the <a href="https://developer.mozilla.org/en-US/docs/Tools/Browser_Console">Firefox guide</a> for their respective developer consoles.
+        </li>
+      </ul>
+      <p>
+        You may want to read more tutorials, such as the <a href="interactivity.html">Interactivity</a> tutorial.
+        You can also watch tutorials on <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">YouTube</a>.
+      </p>
+      <p>
+        If you are ready for a comprehensive overview of <b>GoJS</b>, have a look at the <a href="../intro/index.html">technical introduction</a>.
+        If you want to explore by example, have a look at <a href="../samples/index.html">the samples</a> to get a feel for what's possible with <b>GoJS</b>.
+      </p>
 
-  <p class="footer">
-    GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2020 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
-  </p>
+      <p class="footer">
+        GoJS &reg; by Northwoods Software. Copyright &copy; 1998-2020 <a href="https://www.nwoods.com" target="_blank">Northwoods Software</a> &reg;
+      </p>
 
-  </div> <!-- end main -->
+    </div> <!-- end main -->
   <div class="banner" id="bannerbottom">
     <!-- text in banner-->
   </div>

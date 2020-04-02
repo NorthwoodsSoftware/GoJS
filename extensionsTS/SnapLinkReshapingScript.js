@@ -161,4 +161,10 @@
         if (pos)
             myDiagram.initialPosition = go.Point.parse(pos);
     }
+    function toggleAvoidsNodes(e) {
+        var tool = myDiagram.toolManager.linkReshapingTool;
+        if (tool !== null)
+            tool.avoidsNodes = e.target.checked;
+    }
+    exports.toggleAvoidsNodes = toggleAvoidsNodes;
 });

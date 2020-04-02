@@ -33,6 +33,7 @@ function PolygonDrawingTool() {
   this._isPolygon = true;
   this._hasArcs = false;
   this._isOrthoOnly = false;
+  this._isGridSnapEnabled = false;
   this._archetypePartData = {}; // the data to copy for a new polygon Part
 
   // this is the Shape that is shown during a drawing operation
@@ -96,11 +97,12 @@ PolygonDrawingTool.prototype.doDeactivate = function() {
 * @this {PolygonDrawingTool}
 */
 PolygonDrawingTool.prototype.modifyPointForGrid = function(p) {
-  var grid = this.diagram.grid;
   var pregrid = p.copy();
-  if (grid !== null && grid.visible) {
+  var grid = this.diagram.grid;
+  if (grid !== null && grid.visible && this.isGridSnapEnabled) {
     var cell = grid.gridCellSize;
     var orig = grid.gridOrigin;
+    p = p.copy();
     p.snapToGrid(orig.x, orig.y, cell.width, cell.height); // compute the closest grid point (modifies p)
   }
   if (this.temporaryShape.geometry === null) return p;
@@ -341,7 +343,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "isPolygon", {
 });
 
 /**
-* Gets or sets whether this tools draws shapes with quadratic bezier curves for each segment, or just straight lines.
+* Gets or sets whether this tool draws shapes with quadratic bezier curves for each segment, or just straight lines.
 * The default value is false -- only use straight lines.
 * @name PolygonDrawingTool#hasArcs
 * @function.
@@ -353,7 +355,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
 });
 
 /**
-* Gets or sets whether this tools draws shapes with only orthogonal segments, or segments in any direction.
+* Gets or sets whether this tool draws shapes with only orthogonal segments, or segments in any direction.
 * The default value is false -- draw segments in any direction. This does not restrict the closing segment, which may not be orthogonal.
 * @name PolygonDrawingTool#isOrthoOnly
 * @function.
@@ -362,6 +364,18 @@ Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
 Object.defineProperty(PolygonDrawingTool.prototype, "isOrthoOnly", {
   get: function() { return this._isOrthoOnly; },
   set: function(val) { this._isOrthoOnly = val; }
+});
+
+/**
+* Gets or sets whether this tool only places the shape's corners on the Diagram's visible grid.
+* The default value is false.
+* @name PolygonDrawingTool#isGridSnapEnabled
+* @function.
+* @return {boolean}
+*/
+Object.defineProperty(PolygonDrawingTool.prototype, "isGridSnapEnabled", {
+  get: function() { return this._isGridSnapEnabled; },
+  set: function(val) { this._isGridSnapEnabled = val; }
 });
 
 

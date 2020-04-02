@@ -5,7 +5,7 @@
 * Go Net Core (unfinished)
 */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage.js';
 

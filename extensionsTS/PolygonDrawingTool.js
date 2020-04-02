@@ -57,6 +57,7 @@ var __extends = (this && this.__extends) || (function () {
             _this._isPolygon = true;
             _this._hasArcs = false;
             _this._isOrthoOnly = false;
+            _this._isGridSnapEnabled = false;
             _this._archetypePartData = {}; // the data to copy for a new polygon Part
             // this is the Shape that is shown during a drawing operation
             _this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
@@ -78,7 +79,7 @@ var __extends = (this && this.__extends) || (function () {
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
             /**
-             * Gets or sets whether this tools draws shapes with quadratic bezier curves for each segment, or just straight lines.
+             * Gets or sets whether this tool draws shapes with quadratic bezier curves for each segment, or just straight lines.
              *
              * The default value is false -- only use straight lines.
              */
@@ -89,11 +90,21 @@ var __extends = (this && this.__extends) || (function () {
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "isOrthoOnly", {
             /**
-             * Gets or sets whether this tools draws shapes with only orthogonal segments, or segments in any direction.
+             * Gets or sets whether this tool draws shapes with only orthogonal segments, or segments in any direction.
              * The default value is false -- draw segments in any direction. This does not restrict the closing segment, which may not be orthogonal.
              */
             get: function () { return this._isOrthoOnly; },
             set: function (val) { this._isOrthoOnly = val; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(PolygonDrawingTool.prototype, "isGridSnapEnabled", {
+            /**
+             * Gets or sets whether this tool only places the shape's corners on the Diagram's visible grid.
+             * The default value is false
+             */
+            get: function () { return this._isGridSnapEnabled; },
+            set: function (val) { this._isGridSnapEnabled = val; },
             enumerable: true,
             configurable: true
         });
@@ -183,11 +194,12 @@ var __extends = (this && this.__extends) || (function () {
          * Given a potential Point for the next segment, return a Point it to snap to the grid, and remain orthogonal, if either is applicable.
          */
         PolygonDrawingTool.prototype.modifyPointForGrid = function (p) {
-            var grid = this.diagram.grid;
             var pregrid = p.copy();
-            if (grid !== null && grid.visible) {
+            var grid = this.diagram.grid;
+            if (grid !== null && grid.visible && this.isGridSnapEnabled) {
                 var cell = grid.gridCellSize;
                 var orig = grid.gridOrigin;
+                p = p.copy();
                 p.snapToGrid(orig.x, orig.y, cell.width, cell.height); // compute the closest grid point (modifies p)
             }
             if (this.temporaryShape.geometry === null)

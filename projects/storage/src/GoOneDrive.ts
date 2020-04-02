@@ -5,7 +5,7 @@
 * Go One Drive
 */
 
-import { Promise } from 'es6-promise';
+// import { Promise } from 'es6-promise';
 import * as go from 'gojs';
 import * as gcs from './GoCloudStorage.js';
 
@@ -32,7 +32,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
      * @param {string} iconsRelativeDirectory The directory path relative to the page in which this instance of GoOneDrive exists, in which
      * the storage service brand icons can be found. The default value is "../goCloudStorageIcons/".
      */
-    constructor(managedDiagrams: go.Diagram|Array<go.Diagram>, clientId: string, defaultModel?: string, iconsRelativeDirectory?: string) {
+    constructor(managedDiagrams: go.Diagram | Array<go.Diagram>, clientId: string, defaultModel?: string, iconsRelativeDirectory?: string) {
         super(managedDiagrams, defaultModel, clientId, iconsRelativeDirectory);
         this._oauthToken = null;
         this.ui.id = 'goOneDriveSavePrompt';
@@ -130,11 +130,11 @@ export class GoOneDrive extends gcs.GoCloudStorage {
         const storage = this;
         if (path.indexOf('.diagram') === -1) path += '.diagram';
 
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const xhr: XMLHttpRequest = new XMLHttpRequest();
             xhr.open('GET', 'https://graph.microsoft.com/v1.0' + path, true);
             xhr.setRequestHeader('Authorization', 'Bearer ' + storage.oauthToken);
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 let bool; let err;
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -172,12 +172,12 @@ export class GoOneDrive extends gcs.GoCloudStorage {
     public getFile(path: string, token?: string): Promise<any> {
         const storage = this;
         if (path.indexOf('.diagram') === -1) path += '.diagram';
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const xhr: XMLHttpRequest = new XMLHttpRequest();
             xhr.open('GET', 'https://graph.microsoft.com/v1.0' + path, true);
             const t: string = (token) ? token : storage.oauthToken;
             xhr.setRequestHeader('Authorization', 'Bearer ' + t);
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {  // 200=OK
                         const file: Object = JSON.parse(xhr.response);
@@ -216,7 +216,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
         const actionButton = document.createElement('button');
         actionButton.id = 'actionButton';
         actionButton.textContent = 'Save';
-        actionButton.onclick = function () {
+        actionButton.onclick = function() {
             storage.saveWithUI();
         };
         submitDiv.appendChild(actionButton);
@@ -226,7 +226,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
         const cancelButton = document.createElement('button');
         cancelButton.id = 'cancelButton';
         cancelButton.textContent = 'Cancel';
-        cancelButton.onclick = function () {
+        cancelButton.onclick = function() {
             storage.hideUI(true);
         };
         cancelDiv.appendChild(cancelButton);
@@ -243,7 +243,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
     public saveWithUI(): Promise<any> {
         const storage = this;
         const ui = storage.ui;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (ui.style.visibility === 'hidden') {
                 resolve(storage.showUI());
             } else {
@@ -253,7 +253,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
                     clientId: storage.clientId,
                     action: 'query',
                     openInNewWindow: true,
-                    success: function (selection) {
+                    success: function(selection) {
                         const folder: Object = selection.value[0];
                         const token: string = selection.accessToken;
 
@@ -286,7 +286,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
      */
     public save(path?: string): Promise<any> {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) { // save as
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
                 if (path.indexOf('.diagram') === -1) path += '.diagram';
@@ -294,12 +294,14 @@ export class GoOneDrive extends gcs.GoCloudStorage {
                 xhr.open('PUT', 'https://graph.microsoft.com/v1.0' + path + ':/content', true);
                 xhr.setRequestHeader('Authorization', 'Bearer ' + storage.oauthToken);
                 xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.onreadystatechange = function () {
+                xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (xhr.status >= 200 && xhr.status < 300) {
                             const file: Object = JSON.parse(xhr.response);
-                            const savedFile: gcs.DiagramFile = { name: file['name'], id: file['id'],
-                                path: file['parentReference']['path'] + '/' + file['name'], parentReference: file['parentReference'] };
+                            const savedFile: gcs.DiagramFile = {
+                                name: file['name'], id: file['id'],
+                                path: file['parentReference']['path'] + '/' + file['name'], parentReference: file['parentReference']
+                            };
                             resolve(savedFile);
                         } else if (xhr.status === 401) { // unauthorized request
                             storage.authorize(true);
@@ -318,11 +320,13 @@ export class GoOneDrive extends gcs.GoCloudStorage {
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
                 xhr.open('PUT', url, true);
                 xhr.setRequestHeader('Authorization', 'Bearer ' + t);
-                xhr.onload = function () {
+                xhr.onload = function() {
                     if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 201)) {
                         const file: Object = JSON.parse(xhr.response);
-                        const savedFile: gcs.DiagramFile = { name: file['name'], id: file['id'],
-                            path: file['parentReference']['path'] + '/' + file['name'], token: token, parentReference: file['parentReference'] };
+                        const savedFile: gcs.DiagramFile = {
+                            name: file['name'], id: file['id'],
+                            path: file['parentReference']['path'] + '/' + file['name'], token: token, parentReference: file['parentReference']
+                        };
                         storage.currentDiagramFile = savedFile;
                         resolve(savedFile); // used if saveDiagram was called without UI
 
@@ -346,7 +350,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
      */
     public loadWithUI(): Promise<any> {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const odOptions: Object = {
                 clientId: storage.clientId,
                 action: 'share',
@@ -354,7 +358,7 @@ export class GoOneDrive extends gcs.GoCloudStorage {
                 advanced: {
                     filter: '.diagram' // only show diagram files
                 },
-                success: function (files: Object) {
+                success: function(files: Object) {
                     const file: Object = files['value'][0];
                     const token: string = files['accessToken'];
                     const filePath = file['parentReference']['path'] + '/' + file['name'];
@@ -375,20 +379,22 @@ export class GoOneDrive extends gcs.GoCloudStorage {
      */
     public load(path: string, token?: string): Promise<any> {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             if (path) {
                 const t: string = (token) ? token : storage.oauthToken;
-                storage.getFile(path, t).then(function (file: Object) {
+                storage.getFile(path, t).then(function(file: Object) {
                     const downloadLink: string = file['@microsoft.graph.downloadUrl'];
                     // Download file from download link
                     const downloadxhr: XMLHttpRequest = new XMLHttpRequest();
                     downloadxhr.open('GET', downloadLink, true);
-                    downloadxhr.onreadystatechange = function () {
+                    downloadxhr.onreadystatechange = function() {
                         if (downloadxhr.readyState === 4) {
                             if (downloadxhr.status === 200) {
                                 storage.loadFromFileContents(downloadxhr.response);
-                                const loadedFile: gcs.DiagramFile = { name: file['name'], id: file['id'], path: file['parentReference']['path'] + '/' + file['name'], token: token,
-                                    parentReference: { id: file['parentReference']['id'], driveId: file['parentReference']['driveId'] } };
+                                const loadedFile: gcs.DiagramFile = {
+                                    name: file['name'], id: file['id'], path: file['parentReference']['path'] + '/' + file['name'], token: token,
+                                    parentReference: { id: file['parentReference']['id'], driveId: file['parentReference']['driveId'] }
+                                };
                                 storage.currentDiagramFile = loadedFile;
                                 resolve(loadedFile);
                             }
@@ -406,17 +412,17 @@ export class GoOneDrive extends gcs.GoCloudStorage {
      */
     public removeWithUI(): Promise<any> {
         const storage = this;
-        return new Promise(function (resolve: Function, reject: Function) {
+        return new Promise(function(resolve: Function, reject: Function) {
             const odOptions = {
                 clientId: storage.clientId,
                 action: 'share',
                 openInNewWindow: true,
-                success: function (files: Object) {
+                success: function(files: Object) {
                     if (files) {
                         const file: Object = files['value'][0];
                         const token: string = files['accessToken'];
                         const filePath: string = file['parentReference']['path'] + '/' + file['name'];
-                        resolve(new Promise(function (res: Function, rej: Function) {
+                        resolve(new Promise(function(res: Function, rej: Function) {
                             res(storage.remove(filePath, token));
                         }));
                     }
@@ -437,15 +443,15 @@ export class GoOneDrive extends gcs.GoCloudStorage {
     public remove(path: string, token?: string): Promise<any> {
         const storage = this;
         const t: string = (token) ? token : storage.oauthToken;
-        return new Promise(function (resolve: Function, reject: Function) {
-            storage.getFile(path, t).then(function (file: Object) {
+        return new Promise(function(resolve: Function, reject: Function) {
+            storage.getFile(path, t).then(function(file: Object) {
                 const deletedFile: gcs.DiagramFile = { name: file['name'], id: file['id'], path: file['parentReference']['path'] + '/' + file['name'] };
                 const xhr: XMLHttpRequest = new XMLHttpRequest();
                 xhr.open('DELETE', 'https://graph.microsoft.com/v1.0' + path, true);
                 xhr.setRequestHeader('Authorization', 'Bearer' + t);
-                xhr.onload = function () {
+                xhr.onload = function() {
                     if (xhr.readyState === 4 && xhr.status === 204) {
-                        if (storage.currentDiagramFile && path === storage.currentDiagramFile.path) storage.currentDiagramFile = {id: null, path: null, name: null};
+                        if (storage.currentDiagramFile && path === storage.currentDiagramFile.path) storage.currentDiagramFile = { id: null, path: null, name: null };
                         resolve(deletedFile);
                     } else if (xhr.status === 401) { // unauthorized request
                         storage.authorize(true);

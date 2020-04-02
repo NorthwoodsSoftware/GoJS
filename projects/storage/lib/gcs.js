@@ -1,10 +1,2564 @@
 /*! Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved. */
-var gcs=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=3)}([function(e,t,n){(function(t,n){
-/*!
- * @overview es6-promise - a tiny implementation of Promises/A+.
- * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   v4.2.4+314e4831
- */var r;r=function(){"use strict";function e(e){return"function"==typeof e}var r=Array.isArray?Array.isArray:function(e){return"[object Array]"===Object.prototype.toString.call(e)},o=0,i=void 0,a=void 0,s=function(e,t){m[o]=e,m[o+1]=t,2===(o+=2)&&(a?a(h):_())},c="undefined"!=typeof window?window:void 0,u=c||{},l=u.MutationObserver||u.WebKitMutationObserver,d="undefined"==typeof self&&void 0!==t&&"[object process]"==={}.toString.call(t),p="undefined"!=typeof Uint8ClampedArray&&"undefined"!=typeof importScripts&&"undefined"!=typeof MessageChannel;function f(){var e=setTimeout;return function(){return e(h,1)}}var m=new Array(1e3);function h(){for(var e=0;e<o;e+=2){(0,m[e])(m[e+1]),m[e]=void 0,m[e+1]=void 0}o=0}var v,g,y,w,_=void 0;function b(e,t){var n=this,r=new this.constructor(S);void 0===r[D]&&R(r);var o=n._state;if(o){var i=arguments[o-1];s(function(){return N(o,r,i,n._result)})}else A(n,r,e,t);return r}function P(e){if(e&&"object"==typeof e&&e.constructor===this)return e;var t=new this(S);return O(t,e),t}d?_=function(){return t.nextTick(h)}:l?(g=0,y=new l(h),w=document.createTextNode(""),y.observe(w,{characterData:!0}),_=function(){w.data=g=++g%2}):p?((v=new MessageChannel).port1.onmessage=h,_=function(){return v.port2.postMessage(0)}):_=void 0===c?function(){try{var e=Function("return this")().require("vertx");return void 0!==(i=e.runOnLoop||e.runOnContext)?function(){i(h)}:f()}catch(e){return f()}}():f();var D=Math.random().toString(36).substring(2);function S(){}var I=void 0,k=1,E=2,C={error:null};function T(e){try{return e.then}catch(e){return C.error=e,C}}function F(t,n,r){n.constructor===t.constructor&&r===b&&n.constructor.resolve===P?function(e,t){t._state===k?M(e,t._result):t._state===E?U(e,t._result):A(t,void 0,function(t){return O(e,t)},function(t){return U(e,t)})}(t,n):r===C?(U(t,C.error),C.error=null):void 0===r?M(t,n):e(r)?function(e,t,n){s(function(e){var r=!1,o=function(e,t,n,r){try{e.call(t,n,r)}catch(e){return e}}(n,t,function(n){r||(r=!0,t!==n?O(e,n):M(e,n))},function(t){r||(r=!0,U(e,t))},e._label);!r&&o&&(r=!0,U(e,o))},e)}(t,n,r):M(t,n)}function O(e,t){var n,r;e===t?U(e,new TypeError("You cannot resolve a promise with itself")):(r=typeof(n=t),null===n||"object"!==r&&"function"!==r?M(e,t):F(e,t,T(t)))}function x(e){e._onerror&&e._onerror(e._result),L(e)}function M(e,t){e._state===I&&(e._result=t,e._state=k,0!==e._subscribers.length&&s(L,e))}function U(e,t){e._state===I&&(e._state=E,e._result=t,s(x,e))}function A(e,t,n,r){var o=e._subscribers,i=o.length;e._onerror=null,o[i]=t,o[i+k]=n,o[i+E]=r,0===i&&e._state&&s(L,e)}function L(e){var t=e._subscribers,n=e._state;if(0!==t.length){for(var r=void 0,o=void 0,i=e._result,a=0;a<t.length;a+=3)r=t[a],o=t[a+n],r?N(n,r,o,i):o(i);e._subscribers.length=0}}function N(t,n,r,o){var i=e(r),a=void 0,s=void 0,c=void 0,u=void 0;if(i){if((a=function(e,t){try{return e(t)}catch(e){return C.error=e,C}}(r,o))===C?(u=!0,s=a.error,a.error=null):c=!0,n===a)return void U(n,new TypeError("A promises callback cannot return that same promise."))}else a=o,c=!0;n._state!==I||(i&&c?O(n,a):u?U(n,s):t===k?M(n,a):t===E&&U(n,a))}var G=0;function R(e){e[D]=G++,e._state=void 0,e._result=void 0,e._subscribers=[]}var j=function(){function e(e,t){this._instanceConstructor=e,this.promise=new e(S),this.promise[D]||R(this.promise),r(t)?(this.length=t.length,this._remaining=t.length,this._result=new Array(this.length),0===this.length?M(this.promise,this._result):(this.length=this.length||0,this._enumerate(t),0===this._remaining&&M(this.promise,this._result))):U(this.promise,new Error("Array Methods must be provided an Array"))}return e.prototype._enumerate=function(e){for(var t=0;this._state===I&&t<e.length;t++)this._eachEntry(e[t],t)},e.prototype._eachEntry=function(e,t){var n=this._instanceConstructor,r=n.resolve;if(r===P){var o=T(e);if(o===b&&e._state!==I)this._settledAt(e._state,t,e._result);else if("function"!=typeof o)this._remaining--,this._result[t]=e;else if(n===B){var i=new n(S);F(i,e,o),this._willSettleAt(i,t)}else this._willSettleAt(new n(function(t){return t(e)}),t)}else this._willSettleAt(r(e),t)},e.prototype._settledAt=function(e,t,n){var r=this.promise;r._state===I&&(this._remaining--,e===E?U(r,n):this._result[t]=n),0===this._remaining&&M(r,this._result)},e.prototype._willSettleAt=function(e,t){var n=this;A(e,void 0,function(e){return n._settledAt(k,t,e)},function(e){return n._settledAt(E,t,e)})},e}(),B=function(){function e(t){this[D]=G++,this._result=this._state=void 0,this._subscribers=[],S!==t&&("function"!=typeof t&&function(){throw new TypeError("You must pass a resolver function as the first argument to the promise constructor")}(),this instanceof e?function(e,t){try{t(function(t){O(e,t)},function(t){U(e,t)})}catch(t){U(e,t)}}(this,t):function(){throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.")}())}return e.prototype.catch=function(e){return this.then(null,e)},e.prototype.finally=function(e){var t=this.constructor;return this.then(function(n){return t.resolve(e()).then(function(){return n})},function(n){return t.resolve(e()).then(function(){throw n})})},e}();return B.prototype.then=b,B.all=function(e){return new j(this,e).promise},B.race=function(e){var t=this;return r(e)?new t(function(n,r){for(var o=e.length,i=0;i<o;i++)t.resolve(e[i]).then(n,r)}):new t(function(e,t){return t(new TypeError("You must pass an array to race."))})},B.resolve=P,B.reject=function(e){var t=new this(S);return U(t,e),t},B._setScheduler=function(e){a=e},B._setAsap=function(e){s=e},B._asap=s,B.polyfill=function(){var e=void 0;if(void 0!==n)e=n;else if("undefined"!=typeof self)e=self;else try{e=Function("return this")()}catch(e){throw new Error("polyfill failed because global object is unavailable in this environment")}var t=e.Promise;if(t){var r=null;try{r=Object.prototype.toString.call(t.resolve())}catch(e){}if("[object Promise]"===r&&!t.cast)return}e.Promise=B},B.Promise=B,B},e.exports=r()}).call(this,n(5),n(6))},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=n(0),o=n(2),i=function(){function e(e,t,n,r){if(e instanceof o.Diagram&&(e=[e]),this._managedDiagrams=e,this._currentDiagramFile={name:null,id:null,path:null},this._isAutoSaving=!0,n?this._clientId=n:n=null,t){var i=t.trim().charAt(0);t&&"{"===i&&(this._defaultModel=t),this._iconsRelativeDirectory="{"===i||r?r||"../goCloudStorageIcons/":t}else this._defaultModel=null,this._iconsRelativeDirectory=r||"../goCloudStorageIcons/";"/"!==this._iconsRelativeDirectory.charAt(this._iconsRelativeDirectory.length-1)&&(this._iconsRelativeDirectory+="/");var a=document.createElement("div");function s(e){e.addModelChangedListener(function(e){e.isTransactionFinished&&u.isAutoSaving&&""!==e.oldValue&&u.currentDiagramFile.name&&u.save()})}a.className="goCustomFilepicker",a.style.visibility="hidden",document.getElementsByTagName("body")[0].appendChild(a),this._ui=a,this._deferredPromise={promise:this.makeDeferredPromise()};var c=this.managedDiagrams,u=this;if(c instanceof o.Diagram)s(c);else for(var l=0;l<c.length;l++)s(c[l])}return Object.defineProperty(e.prototype,"managedDiagrams",{get:function(){return this._managedDiagrams},set:function(e){this._managedDiagrams=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"defaultModel",{get:function(){return this._defaultModel},set:function(e){this._defaultModel=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"iconsRelativeDirectory",{get:function(){return this._iconsRelativeDirectory},set:function(e){this._iconsRelativeDirectory=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"clientId",{get:function(){return this._clientId},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"currentDiagramFile",{get:function(){return this._currentDiagramFile},set:function(e){this._currentDiagramFile=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"isAutoSaving",{get:function(){return this._isAutoSaving},set:function(e){this._isAutoSaving=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"serviceName",{get:function(){return this._serviceName},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"className",{get:function(){return this._className},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"ui",{get:function(){return this._ui},enumerable:!0,configurable:!0}),e.prototype.authorize=function(e){return void 0===e&&(e=!1),new r.Promise(function(e,t){t("authorize not implemented")})},e.prototype.makeDeferredPromise=function(){var e,t,n=new r.Promise(function(n,r){e=n,t=r});return n.resolve=e,n.reject=t,n},e.prototype.getUserInfo=function(){return new r.Promise(function(e,t){t("getUserInfo not implemented")})},e.prototype.hideUI=function(e){void 0===e&&(e=!1);if(this.ui.style.visibility="hidden",e){var t=document.getElementById("actionButton").innerHTML;this._deferredPromise.promise.resolve(t+" canceled by user"),this._deferredPromise.promise=this.makeDeferredPromise()}},e.prototype.checkFileExists=function(e){return new r.Promise(function(e,t){t("checkFileExists not implemented")})},e.prototype.getFile=function(e){return new r.Promise(function(e,t){throw Error("getFile not implemented")})},e.prototype.showUI=function(e){return new r.Promise(function(e,t){throw Error("showUI not implemented")})},e.prototype.create=function(e,t){void 0===t&&(t=!1);var n=this;function i(e){n.defaultModel?e.model=o.Model.fromJson(JSON.parse(n.defaultModel)):e.model=new o.GraphLinksModel}return new r.Promise(function(r,a){if(t&&n.promptUserToSaveBeforeNew().then(function(t){if(t)n.saveWithUI().then(function(t){if(n.currentDiagramFile={name:null,id:null,path:null},n.managedDiagrams instanceof o.Diagram)i(n.managedDiagrams);else for(var a=0;a<n.managedDiagrams.length;a++)i(n.managedDiagrams[a]);n.isAutoSaving?r(e?n.save(e):n.saveWithUI()):r("New diagram created.")});else{if(n.currentDiagramFile={name:null,id:null,path:null},n.managedDiagrams instanceof o.Diagram)i(n.managedDiagrams);else for(var a=0;a<n.managedDiagrams.length;a++)i(n.managedDiagrams[a]);n.isAutoSaving?r(e?n.save(e):n.saveWithUI()):r("New diagram created.")}}),!t){if(n.currentDiagramFile={name:null,id:null,path:null},n.managedDiagrams instanceof o.Diagram)i(n.managedDiagrams);else for(var s=0;s<n.managedDiagrams.length;s++)i(n.managedDiagrams[s]);n.isAutoSaving?r(e?n.save(e):n.saveWithUI()):r("New diagram created.")}})},e.prototype.promptUserToSaveBeforeNew=function(){return new r.Promise(function(e,t){var n=document.getElementById("gcs-save-before-new");n&&document.body.removeChild(n);var r=document.createElement("div");r.id="gcs-save-before-new";var o=document.createElement("p");o.innerText="Save current diagram(s) before creating a new file?";var i=document.createElement("button");i.innerText="Yes";var a=document.createElement("button");a.innerText="No",i.onclick=function(){document.body.removeChild(r),e(!0)},a.onclick=function(){document.body.removeChild(r),e(!1)},a.style.float="right",r.style["font-family"]="Arial, Helvetica, sans-serif",r.style.width="400px",r.style.top="25%",r.style.left="40%",r.style.position="absolute",r.style.border="1px solid black",r.style.padding="10px",r.style["box-shadow"]="10px 10px 5px #888888",r.style.background="white",r.style["z-index"]="100",r.appendChild(o),r.appendChild(i),r.appendChild(a),document.body.appendChild(r)})},e.prototype.makeSaveFile=function(){var e="{\n";if(0!==this.managedDiagrams.length){for(var t=0;t<this.managedDiagrams.length;t++){var n=this.managedDiagrams[t],r=n.div.id;n.model.toJson();e+='"'+r+'": '+n.model.toJson(),t+1!==this.managedDiagrams.length&&(e+=",\n")}return e+="\n}"}},e.prototype.loadFromFileContents=function(e){var t=JSON.parse(e);for(var n in t){var r=t[n],i=document.getElementById(n),a=o.Diagram.fromDiv(i);if(!a)throw Error("No Diagram on page is associated with a div with id "+n);a.model=o.Model.fromJson(JSON.stringify(r))}},e.prototype.saveWithUI=function(){return new r.Promise(function(e,t){t("saveWithUI not implemented")})},e.prototype.save=function(e){return new r.Promise(function(e,t){t("save not implemented")})},e.prototype.load=function(e){return new r.Promise(function(e,t){t("load not implemented")})},e.prototype.loadWithUI=function(){return new r.Promise(function(e,t){t("loadWithUI not implemented")})},e.prototype.remove=function(e){return new r.Promise(function(e,t){t("remove not implemented")})},e.prototype.removeWithUI=function(){return new r.Promise(function(e,t){t("removeWithUI not implemented")})},e}();t.GoCloudStorage=i},function(e,t){e.exports=go},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),e.exports={GoLocalStorage:n(4).GoLocalStorage,GoDropBox:n(7).GoDropBox,GoGoogleDrive:n(8).GoGoogleDrive,GoOneDrive:n(9).GoOneDrive,GoNetCore:n(10).GoNetCore,GoCloudStorageManager:n(11).GoCloudStorageManager}},function(e,t,n){"use strict";var r,o=this&&this.__extends||(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,"__esModule",{value:!0});var i=n(0),a=function(e){function t(t,n,r){var o=e.call(this,t,n,null,r)||this;try{o._localStorage=window.localStorage}catch(e){throw new Error("Cannot access localStorage. Make sure your browser supports localStorage.If so, and this issue persists, try unblocking third-party cookies and site data in your browser settings")}return o.ui.id="goLocalStorageCustomFilepicker",o._serviceName="Local Storage",o._className="GoLocalStorage",o}return o(t,e),Object.defineProperty(t.prototype,"localStorage",{get:function(){return this._localStorage},enumerable:!0,configurable:!0}),t.prototype.authorize=function(e){void 0===e&&(e=!1);var t=this;return new i.Promise(function(e,n){try{t.localStorage.setItem("item","item"),t.localStorage.removeItem("item"),e(!0)}catch(t){e(!1)}})},t.prototype.showUI=function(e,n){var r=this,o=r.ui;n||(n=0);var i=t._MIN_FILES_IN_UI+n;o.innerHTML="<img class='icons' src='"+r.iconsRelativeDirectory+"localStorage.png'></img>";var a=e+" Diagram File";o.innerHTML+="<strong>"+a+"</strong><hr></hr>",o.style.visibility="visible";var s=document.createElement("div");s.id="fileOptions";var c=[],u=(t._MIN_FILES_IN_UI,0),l=!1;if(0!==r.localStorage.length){for(var d in r.localStorage)if(c.length<i){u++;var p=r.localStorage.getItem(d);if(p&&(-1!==p.indexOf("GraphLinksModel")||-1!==p.indexOf("TreeModel"))){var f={key:d,model:p};c.push(f)}u===r.localStorage.length&&(l=!0)}}else l=!0;if(0!==c.length)for(var m=0;m<c.length;m++){var h=(f=c[m].key).replace(/ /g,"qwe45qw34");s.innerHTML+="Save"!==e?"<div class='fileOption'><input id="+h+" type='radio' name='localStorageFile' /><label id ="+h+"-label for='"+h+"'>"+f+"</label></div>":"<div class='fileOption'><label id ="+h+"-label for='"+h+"'>"+f+"</label></div>"}if(!l){var v=n+50;s.innerHTML+="<p>There may be more diagram files not shown. <a id='localStorageLoadMoreFiles'>Click here</a> to try loading more.</p>",document.getElementById("localStorageLoadMoreFiles").onclick=function(){r.showUI(e,v)}}if(o.appendChild(s),r.currentDiagramFile.id){var g=r.currentDiagramFile.id.replace(/ /g,"qwe45qw34"),y=document.getElementById(g+"-label");y&&(y.style.fontStyle="italic")}if("Save"===e){var w=document.createElement("div");w.id="userInputDiv",w.innerHTML+='<span>Save Diagram As </span><input id="userInput" placeholder="Enter filename"></input>',o.appendChild(w)}var _=document.createElement("div");_.id="submitDiv";var b=document.createElement("button");b.textContent=e,b.id="actionButton",b.onclick=function(){r.processUIResult(e)},_.appendChild(b),o.appendChild(_);var P=document.createElement("div"),D=document.createElement("button");return D.id="cancelButton",D.textContent="Cancel",D.onclick=function(){r.hideUI(!0)},P.appendChild(D),o.appendChild(P),r._deferredPromise.promise},t.prototype.processUIResult=function(e){var t=function(){for(var e=document.getElementsByName("localStorageFile"),t=null,n=0;n<e.length;n++)e[n].checked&&(t=e[n].id.replace(/qwe45qw34/g," "));return t||null}();switch(e){case"Save":var n=document.getElementById("userInput").value;n&&(n+=".diagram",this.save(n));break;case"Load":this.load(t);break;case"Delete":this.remove(t)}this.hideUI()},t.prototype.getFile=function(e){return-1===e.indexOf(".diagram")&&(e+=".diagram"),new i.Promise(function(t,n){var r=window.localStorage.getItem(e)?window.localStorage.getItem(e):null;t({name:e,content:r,path:e,id:e})})},t.prototype.checkFileExists=function(e){return-1===e.indexOf(".diagram")&&(e+=".diagram"),new i.Promise(function(t,n){t(!!window.localStorage.getItem(e))})},t.prototype.saveWithUI=function(){var e=this;return new i.Promise(function(t,n){t(e.showUI("Save"))})},t.prototype.save=function(e){var t=this;return new i.Promise(function(n,r){if(e){-1===e.indexOf(".diagram")&&(e+=".diagram");var o=t.makeSaveFile();t.localStorage.setItem(e,o);var i={name:e,id:e,path:e};t.currentDiagramFile=i,n(i),t._deferredPromise.promise.resolve(i),t._deferredPromise.promise=t.makeDeferredPromise()}else if(t.currentDiagramFile.path){var a=t.currentDiagramFile.path;i={name:a,path:a,id:a},o=t.makeSaveFile();t.localStorage.setItem(a,o),n(a)}else n(t.saveWithUI())})},t.prototype.loadWithUI=function(){var e=this;return new i.Promise(function(t,n){t(e.showUI("Load"))}).catch(function(e){throw Error(e)})},t.prototype.load=function(e){var t=this;return new i.Promise(function(n,r){if(!e)throw Error("Cannot load file from local storage with path "+e);var o=t.localStorage.getItem(e);if(!o)throw Error("Cannot load file from local storage with path "+e);t.loadFromFileContents(o);var i={name:e,id:e,path:e};t.currentDiagramFile=i,n(i),t._deferredPromise.promise.resolve(i),t._deferredPromise.promise=t.makeDeferredPromise()}).catch(function(e){throw Error(e)})},t.prototype.removeWithUI=function(){var e=this;return new i.Promise(function(t,n){t(e.showUI("Delete"))})},t.prototype.remove=function(e){var t=this;return new i.Promise(function(n,r){if(!e)throw Error("Cannot delete file from local storage with path "+e);var o={name:e,path:e,id:e};t.currentDiagramFile&&e===t.currentDiagramFile.name&&(t.currentDiagramFile={name:null,path:null,id:null}),t.localStorage.removeItem(e),n(o),t._deferredPromise.promise.resolve(o),t._deferredPromise.promise=t.makeDeferredPromise()})},t._MIN_FILES_IN_UI=100,t}(n(1).GoCloudStorage);t.GoLocalStorage=a},function(e,t){var n,r,o=e.exports={};function i(){throw new Error("setTimeout has not been defined")}function a(){throw new Error("clearTimeout has not been defined")}function s(e){if(n===setTimeout)return setTimeout(e,0);if((n===i||!n)&&setTimeout)return n=setTimeout,setTimeout(e,0);try{return n(e,0)}catch(t){try{return n.call(null,e,0)}catch(t){return n.call(this,e,0)}}}!function(){try{n="function"==typeof setTimeout?setTimeout:i}catch(e){n=i}try{r="function"==typeof clearTimeout?clearTimeout:a}catch(e){r=a}}();var c,u=[],l=!1,d=-1;function p(){l&&c&&(l=!1,c.length?u=c.concat(u):d=-1,u.length&&f())}function f(){if(!l){var e=s(p);l=!0;for(var t=u.length;t;){for(c=u,u=[];++d<t;)c&&c[d].run();d=-1,t=u.length}c=null,l=!1,function(e){if(r===clearTimeout)return clearTimeout(e);if((r===a||!r)&&clearTimeout)return r=clearTimeout,clearTimeout(e);try{r(e)}catch(t){try{return r.call(null,e)}catch(t){return r.call(this,e)}}}(e)}}function m(e,t){this.fun=e,this.array=t}function h(){}o.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];u.push(new m(e,t)),1!==u.length||l||s(f)},m.prototype.run=function(){this.fun.apply(null,this.array)},o.title="browser",o.browser=!0,o.env={},o.argv=[],o.version="",o.versions={},o.on=h,o.addListener=h,o.once=h,o.off=h,o.removeListener=h,o.removeAllListeners=h,o.emit=h,o.prependListener=h,o.prependOnceListener=h,o.listeners=function(e){return[]},o.binding=function(e){throw new Error("process.binding is not supported")},o.cwd=function(){return"/"},o.chdir=function(e){throw new Error("process.chdir is not supported")},o.umask=function(){return 0}},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";var r,o=this&&this.__extends||(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,"__esModule",{value:!0});var i=n(0),a=function(e){function t(t,n,r,o){var i=e.call(this,t,r,n,o)||this;if(window.Dropbox){var a=window.Dropbox;i._dropbox=new a({clientId:n})}return i.menuPath="",i.ui.id="goDropBoxCustomFilepicker",i._serviceName="Dropbox",i._className="GoDropBox",i._options={success:function(e){alert("Here's the file link: "+e[0].link)},cancel:function(){},linkType:"direct",multiselect:!1,extensions:[".pdf",".doc",".docx",".diagram"],folderselect:!1},i}return o(t,e),Object.defineProperty(t.prototype,"dropbox",{get:function(){return this._dropbox},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"menuPath",{get:function(){return this._menuPath},set:function(e){this._menuPath=e},enumerable:!0,configurable:!0}),t.prototype.authorize=function(e){void 0===e&&(e=!1);var t=this;return new i.Promise(function(n,r){if(e){t.maybeSaveAppState();var o=t.dropbox.getAuthenticationUrl(window.location.href);window.location.href=o,n(!1)}else if(!t.dropbox.getAccessToken())if(t.getAccessTokenFromUrl())t.dropbox.setAccessToken(t.getAccessTokenFromUrl()),n(!0);else{t.maybeSaveAppState();o=t.dropbox.getAuthenticationUrl(window.location.href);window.location.href=o,n(!1)}t.maybeLoadAppState(),n(!0)})},t.prototype.getAccessTokenFromUrl=function(){var e=window.location.hash.substring(window.location.hash.indexOf("=")+1,window.location.hash.indexOf("&"));return e||null},t.prototype.maybeSaveAppState=function(){try{var e=this.makeSaveFile();window.localStorage.setItem("gdb-"+this.clientId,e)}catch(e){throw new Error("Local storage not supported; diagrams model data will not be preserved during Dropboc authentication.")}},t.prototype.maybeLoadAppState=function(){try{var e=window.localStorage.getItem("gdb-"+this.clientId);this.loadFromFileContents(e),localStorage.removeItem("gdb-"+this.clientId)}catch(e){}},t.prototype.signOut=function(){var e=this.dropbox;this.maybeSaveAppState(),e.setAccessToken(null),e.authTokenRevoke()},t.prototype.getUserInfo=function(){var e=this;return new i.Promise(function(t,n){e.dropbox.getAccessToken()||-1!==window.location.hash.indexOf("access_token")?e.dropbox.getAccessToken()||1!==window.location.hash.indexOf("access_token")||e.authorize(!1):e.authorize(!0),e.dropbox.usersGetCurrentAccount(null).then(function(e){t(e)}).catch(function(t){400===t.status&&e.authorize(!0)})})},t.prototype.showUI=function(){var e=this,t=e.ui;t.innerHTML="",t.style.visibility="visible",t.innerHTML="<img class='icons' src='"+e.iconsRelativeDirectory+"dropBox.png'></img><strong>Save Diagram As</strong><hr></hr>";var n=document.createElement("div");n.id="userInputDiv",n.innerHTML+='<input id="gdb-userInput" placeholder="Enter filename"></input>',t.appendChild(n);var r=document.createElement("div");r.id="submitDiv";var o=document.createElement("button");o.id="actionButton",o.textContent="Save",o.onclick=function(){var n=document.getElementById("gdb-userInput").value;""!==n&&void 0!==n&&null!=n&&(t.style.visibility="hidden",e.saveWithUI(n))},r.appendChild(o),t.appendChild(r);var i=document.createElement("div");i.id="cancelDiv";var a=document.createElement("button");return a.id="cancelButton",a.textContent="Cancel",a.onclick=function(){e.hideUI(!0)},i.appendChild(a),t.appendChild(i),e._deferredPromise.promise},t.prototype.hideUI=function(t){this.menuPath="",e.prototype.hideUI.call(this,t)},t.prototype.processUIResult=function(e){var t=function(){for(var e=document.getElementsByName("dropBoxFile"),t=null,n=0;n<e.length;n++)e[n].checked&&(t=e[n].getAttribute("data"));return t}();switch(e){case"Save":if(this.menuPath||""===this.menuPath){var n=document.getElementById("userInput").value;n?(-1===n.indexOf(".diagram")&&(n+=".diagram"),this.save(this.menuPath+"/"+n)):console.log("Proposed file name is not valid")}break;case"Load":this.load(t);break;case"Delete":this.remove(t)}this.hideUI()},t.prototype.checkFileExists=function(e){var t=this;return-1===e.indexOf(".diagram")&&(e+=".diagram"),new i.Promise(function(n,r){t.dropbox.filesGetMetadata({path:e}).then(function(e){e&&n(!0)}).catch(function(e){n(!1)})})},t.prototype.getFile=function(e){return-1===e.indexOf(".diagram")&&(e+=".diagram"),this.dropbox.filesGetMetadata({path:e}).then(function(e){if(e)return e}).catch(function(e){return null})},t.prototype.saveWithUI=function(e){var t=this;return void 0===e||null==e?new i.Promise(function(e,n){e(t.showUI())}):(e.length<8?e+=".diagram":".diagram"!==e.substring(e.length-8,e.length)&&(e+=".diagram"),new i.Promise(function(n,r){t._options.success=function(e){t.dropbox.filesListFolder({path:"",recursive:!0}).then(function(e){for(var r=e.entries,o=new Date(-84e5),i=null,a=0;a<r.length;a++){var s=r[a],c=new Date(s.server_modified);null!=c&&void 0!==c&&c instanceof Date&&c>o&&(c=o,i=s)}var u={name:i.name,path:i.path_lower,id:i.id};t.currentDiagramFile=u,n(u),t._deferredPromise.promise.resolve(u),t._deferredPromise.promise=t.makeDeferredPromise()})};var o="data:text/html,"+encodeURIComponent(t.makeSaveFile());window.Dropbox.save(o,e,t._options)}))},t.prototype.save=function(e){var t=this;return new i.Promise(function(n,r){e?t.dropbox.filesUpload({contents:t.makeSaveFile(),path:e,autorename:!0,mode:{".tag":"add"},mute:!1}).then(function(e){var r={name:e.name,id:e.id,path:e.path_lower};t.currentDiagramFile=r,n(r),t._deferredPromise.promise.resolve(r),t._deferredPromise.promise=t.makeDeferredPromise()}).catch(function(e){400===e.status&&t.authorize(!0)}):t.currentDiagramFile.path?(e=t.currentDiagramFile.path,t.dropbox.filesUpload({contents:t.makeSaveFile(),path:e,autorename:!1,mode:{".tag":"overwrite"},mute:!0}).then(function(e){var t={name:e.name,id:e.id,path:e.path_lower};n(t)}).catch(function(e){400===e.status&&t.authorize(!0)})):n(t.saveWithUI())})},t.prototype.loadWithUI=function(){var e=this;return e._options.success=function(t){var n=t[0];e.dropbox.filesGetMetadata({path:n.id}).then(function(t){var n=t.path_display;e.load(n)})},window.Dropbox.choose(e._options),e._deferredPromise.promise},t.prototype.load=function(e){var t=this;return new i.Promise(function(n,r){if(!e)throw Error("Cannot load file from Dropbox with path "+e);t.dropbox.filesGetTemporaryLink({path:e}).then(function(r){var o=r.link;t.currentDiagramFile.name=r.metadata.name,t.currentDiagramFile.id=r.metadata.id,t.currentDiagramFile.path=e;var i=new XMLHttpRequest;i.open("GET",o,!0),i.setRequestHeader("Authorization","Bearer "+t.dropbox.getAccessToken()),i.onload=function(){if(4!==i.readyState||200!==i.status)throw Error("Cannot load file from Dropbox with path "+e);t.loadFromFileContents(i.response);var o={name:r.metadata.name,id:r.metadata.id,path:r.metadata.path_lower};n(o),t._deferredPromise.promise.resolve(o),t._deferredPromise.promise=t.makeDeferredPromise()},i.send()}).catch(function(e){400===e.status&&t.authorize(!0)})})},t.prototype.removeWithUI=function(){var e=this;return e._options.success=function(t){var n=t[0];e.dropbox.filesGetMetadata({path:n.id}).then(function(t){var n=t.path_display;e.remove(n)})},window.Dropbox.choose(e._options),e._deferredPromise.promise},t.prototype.remove=function(e){var t=this;return new i.Promise(function(n,r){if(!e)throw Error("Cannot delete file from Dropbox with path "+e);t.dropbox.filesDelete({path:e}).then(function(e){t.currentDiagramFile&&t.currentDiagramFile.id===e.id&&(t.currentDiagramFile={name:null,path:null,id:null});var r={name:e.name,id:e.id,path:e.path_lower};n(r),t._deferredPromise.promise.resolve(r),t._deferredPromise.promise=t.makeDeferredPromise()}).catch(function(e){400===e.status&&t.authorize(!0)})})},t}(n(1).GoCloudStorage);t.GoDropBox=a},function(e,t,n){"use strict";var r,o=this&&this.__extends||(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,"__esModule",{value:!0});var i=n(0),a=function(e){function t(t,n,r,o,i){var a=e.call(this,t,o,n,i)||this;return a._scope="https://www.googleapis.com/auth/drive",a._pickerApiKey=r,a._oauthToken=null,a._gapiClient=null,a._gapiPicker=null,a.ui.id="goGoogleDriveSavePrompt",a._serviceName="Google Drive",a._className="GoGoogleDrive",a}return o(t,e),Object.defineProperty(t.prototype,"pickerApiKey",{get:function(){return this._pickerApiKey},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"scope",{get:function(){return this._scope},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"gapiClient",{get:function(){return this._gapiClient},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"gapiPicker",{get:function(){return this._gapiPicker},enumerable:!0,configurable:!0}),t.prototype.authorize=function(e){void 0===e&&(e=!1);var t=this,n=null;if(window.gapi){if(n=window.gapi,e){var r=document.location.href;document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue="+r}return new i.Promise(function(e,r){n.load("client:auth",function(){n.auth.authorize({client_id:t.clientId,scope:t.scope,immediate:!1},function(r){r&&!r.error&&(t._oauthToken=r.access_token),t._gapiClient=n.client,window.google&&(t._gapiPicker=window.google.picker),e(!0)})}),n.load("picker",{})})}},t.prototype.createPicker=function(e){if(this._oauthToken){var t=this.clientId.substring(0,this.clientId.indexOf("-")),n=new this.gapiPicker.View(this.gapiPicker.ViewId.DOCS);n.setMimeTypes("application/json"),n.setQuery("*.diagram"),(new this.gapiPicker.PickerBuilder).enableFeature(this.gapiPicker.Feature.NAV_HIDDEN).enableFeature(this.gapiPicker.Feature.MULTISELECT_ENABLED).setAppId(t).setOrigin(window.location.protocol+"//"+window.location.host).setOAuthToken(this._oauthToken).addView(n).setDeveloperKey(this.pickerApiKey).setCallback(function(t){e(t)}).build().setVisible(!0)}},t.prototype.getUserInfo=function(){var e=this;return new i.Promise(function(t,n){e.gapiClient.request({path:"/drive/v3/about",method:"GET",params:{fields:"user"},callback:function(e){e?t(e.user):n(e)}})})},t.prototype.getFile=function(e){var t=this;return new i.Promise(function(n,r){t.gapiClient.request({path:"/drive/v3/files/"+e,method:"GET",callback:function(e){e.error?r(e.error):n(e)}})})},t.prototype.checkFileExists=function(e){var t=this;return new i.Promise(function(n,r){t.gapiClient.request({path:"/drive/v3/files/"+e,method:"GET",callback:function(e){n(!!e)}})})},t.prototype.showUI=function(){var e=this,t=e.ui;t.innerHTML="",t.style.visibility="visible",t.innerHTML="<img class='icons' src='"+e.iconsRelativeDirectory+"googleDrive.jpg'></img><strong>Save Diagram As</strong><hr></hr>";var n=document.createElement("div");n.id="userInputDiv",n.innerHTML+='<input id="userInput" placeholder="Enter filename"></input>',t.appendChild(n);var r=document.createElement("div");r.id="submitDiv";var o=document.createElement("button");o.id="actionButton",o.textContent="Save",o.onclick=function(){e.saveWithUI()},r.appendChild(o),t.appendChild(r);var i=document.createElement("div");i.id="cancelDiv";var a=document.createElement("button");return a.id="cancelButton",a.textContent="Cancel",a.onclick=function(){e.hideUI(!0)},i.appendChild(a),t.appendChild(i),e._deferredPromise.promise},t.prototype.saveWithUI=function(){var e=this,t=e.ui;return new i.Promise(function(n,r){if("hidden"===t.style.visibility)n(e.showUI());else{var o=document.getElementById("userInput").value;e.save(o),n(e.hideUI())}})},t.prototype.save=function(e){var t=this;return new i.Promise(function(n,r){if(e){-1===e.indexOf(".diagram")&&(e+=".diagram");t.gapiClient.request({path:"/drive/v3/files",method:"GET",params:{q:'trashed=false and name contains ".diagram" and mimeType = "application/json"'},callback:function(r){var o=r.files;if(o)for(var i=0;i<o.length;i++)o[i].name===e&&(!0,o[i]);var a="-------314159265358979323846",s="\r\n--"+a+"\r\n",c={name:e,mimeType:"application/json"},u=t.makeSaveFile(),l=s+"Content-Type: application/json\r\n\r\n"+JSON.stringify(c)+s+"Content-Type: application/json\r\n\r\n"+u+"\r\n---------314159265358979323846--";t.gapiClient.request({path:"/upload/drive/v3/files",method:"POST",params:{uploadType:"multipart"},headers:{"Content-Type":'multipart/related; boundary="'+a+'"'},body:l}).execute(function(e){var r={name:e.name,id:e.id,path:e.name};t.currentDiagramFile=r,n(r),t._deferredPromise.promise.resolve(r),t._deferredPromise.promise=t.makeDeferredPromise()})}})}else if(t.currentDiagramFile.path){var o=t.currentDiagramFile.id,i=t.makeSaveFile();t.gapiClient.request({path:"/upload/drive/v3/files/"+o,method:"PATCH",params:{uploadType:"media"},body:i,callback:function(e){if(e.error)401===e.error.code&&t.authorize(!0);else{var r={name:e.name,id:e.id,path:e.name};n(r)}}})}else n(t.saveWithUI())})},t.prototype.loadWithUI=function(){var e=this;return new i.Promise(function(t,n){e.createPicker(function(n){if("picked"===n.action){var r=n.docs[0];e.gapiClient.request({path:"/drive/v3/files/"+r.id+"?alt=media",method:"GET",callback:function(n){if(-1!==r.name.indexOf(".diagram")){var o={name:r.name,path:r.name,id:r.id};t(e.load(r.id)),e.currentDiagramFile=o}}})}})})},t.prototype.load=function(e){var t=this;return new i.Promise(function(n,r){t.getFile(e).then(function(e){t.gapiClient.request({path:"/drive/v3/files/"+e.id+"?alt=media",method:"GET",callback:function(r){if(r&&-1!==e.name.indexOf(".diagram")){t.loadFromFileContents(JSON.stringify(r));var o={name:e.name,path:e.name,id:e.id};t.currentDiagramFile=o,n(o)}}})}).catch(function(e){r(e.message)})})},t.prototype.removeWithUI=function(){var e=this;return new i.Promise(function(t,n){e.createPicker(function(n){if("picked"===n.action){var r=n.docs[0];t(e.remove(r.id))}})})},t.prototype.remove=function(e){var t=this;return new i.Promise(function(n,r){t.getFile(e).then(function(r){t.gapiClient.request({path:"drive/v3/files/"+e,method:"DELETE",callback:function(){t.currentDiagramFile&&e===t.currentDiagramFile.id&&(t.currentDiagramFile={name:null,path:null,id:null}),r.path=r.name,n(r)}})}).catch(function(e){r(e.message)})})},t}(n(1).GoCloudStorage);t.GoGoogleDrive=a},function(e,t,n){"use strict";var r,o=this&&this.__extends||(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,"__esModule",{value:!0});var i=n(0),a=function(e){function t(t,n,r,o){var i=e.call(this,t,r,n,o)||this;return i._oauthToken=null,i.ui.id="goOneDriveSavePrompt",window.OneDrive&&(i._oneDriveFilepicker=window.OneDrive),i.authorize(!1),i._serviceName="Microsoft OneDrive",i._className="GoOneDrive",i}return o(t,e),Object.defineProperty(t.prototype,"oauthToken",{get:function(){return this._oauthToken},set:function(e){this._oauthToken=e},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"oneDriveFilepicker",{get:function(){return this._oneDriveFilepicker},enumerable:!0,configurable:!0}),t.prototype.authorize=function(e){var t=this;return new i.Promise(function(n,r){if(e||-1===window.location.hash.indexOf("access_token")){if(e){var o="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="+t.clientId+"&scope=files.readwrite.all&response_type=token&redirect_uri="+window.location.href;window.location.href=o,n(!0)}}else{var i=window.location.hash.substring(window.location.hash.indexOf("=")+1,window.location.hash.indexOf("&"));t.oauthToken=i,n(!0)}})},t.prototype.getUserInfo=function(){var e=this;return new i.Promise(function(t,n){var r=new XMLHttpRequest;e.oauthToken?(r.open("GET","https://graph.microsoft.com/v1.0/me"),r.setRequestHeader("Authorization","Bearer "+e.oauthToken),r.onreadystatechange=function(){4===r.readyState&&200===r.status?t(JSON.parse(r.response)):401===r.status&&(e.authorize(!0),n(r.response))},r.send()):-1===window.location.hash.indexOf("access_token")?(n("No acessToken in current uri"),e.authorize(!0)):(n("oauthToken not set"),e.authorize(!1))})},t.prototype.checkFileExists=function(e){var t=this;return-1===e.indexOf(".diagram")&&(e+=".diagram"),new i.Promise(function(n,r){var o=new XMLHttpRequest;o.open("GET","https://graph.microsoft.com/v1.0"+e,!0),o.setRequestHeader("Authorization","Bearer "+t.oauthToken),o.onreadystatechange=function(){var e,i;4===o.readyState&&(200===o.status?e=!0:401===o.status?t.authorize(!0):404===o.status?e=!1:i=o.response,n(e),i&&r(i))},o.send()})},t.prototype.getFile=function(e,t){var n=this;return-1===e.indexOf(".diagram")&&(e+=".diagram"),new i.Promise(function(r,o){var i=new XMLHttpRequest;i.open("GET","https://graph.microsoft.com/v1.0"+e,!0);var a=t||n.oauthToken;i.setRequestHeader("Authorization","Bearer "+a),i.onreadystatechange=function(){if(4===i.readyState)if(200===i.status){var e=JSON.parse(i.response);r(e)}else 401===i.status?n.authorize(!0):o(i.response)},i.send()})},t.prototype.showUI=function(){var e=this,t=e.ui;t.innerHTML="",t.style.visibility="visible",t.innerHTML="<img class='icons' src='"+e.iconsRelativeDirectory+"oneDrive.png'></img><strong>Save Diagram As</strong><hr></hr>";var n=document.createElement("div");n.id="userInputDiv",n.innerHTML+='<input id="userInput" placeholder="Enter filename"></input>',t.appendChild(n);var r=document.createElement("div");r.id="submitDiv";var o=document.createElement("button");o.id="actionButton",o.textContent="Save",o.onclick=function(){e.saveWithUI()},r.appendChild(o),t.appendChild(r);var i=document.createElement("div");i.id="cancelDiv";var a=document.createElement("button");return a.id="cancelButton",a.textContent="Cancel",a.onclick=function(){e.hideUI(!0)},i.appendChild(a),t.appendChild(i),e._deferredPromise.promise},t.prototype.saveWithUI=function(){var e=this,t=e.ui;return new i.Promise(function(n,r){if("hidden"===t.style.visibility)n(e.showUI());else{var o=document.getElementById("userInput").value;o&&-1===o.indexOf(".diagram")&&(o+=".diagram");var i={clientId:e.clientId,action:"query",openInNewWindow:!0,success:function(t){var n=t.value[0],r=t.accessToken;e.currentDiagramFile={id:null,name:o,token:r,parentReference:{driveId:n.parentReference.driveId,id:n.id},path:"placeholder"},e.hideUI(),e.save()}};o&&""!==o&&void 0!==o?e.oneDriveFilepicker.save(i):r("Cannot save file to OneDrive with save name "+o)}})},t.prototype.save=function(e){var t=this;return new i.Promise(function(n,r){if(e){var o=new XMLHttpRequest;-1===e.indexOf(".diagram")&&(e+=".diagram");var i=t.makeSaveFile();o.open("PUT","https://graph.microsoft.com/v1.0"+e+":/content",!0),o.setRequestHeader("Authorization","Bearer "+t.oauthToken),o.setRequestHeader("Content-Type","application/json"),o.onreadystatechange=function(){if(4===o.readyState)if(o.status>=200&&o.status<300){var e=JSON.parse(o.response),r={name:e.name,id:e.id,path:e.parentReference.path+"/"+e.name,parentReference:e.parentReference};n(r)}else{if(401!==o.status)throw Error(o.response);t.authorize(!0)}},o.send(i)}else if(t.currentDiagramFile.path){var a=t.currentDiagramFile.token,s=t.generateGraphUrl(t.currentDiagramFile,!0,!0),c=(i=t.makeSaveFile(),a?t.currentDiagramFile.token:t.oauthToken),u=new XMLHttpRequest;u.open("PUT",s,!0),u.setRequestHeader("Authorization","Bearer "+c),u.onload=function(){if(4!==u.readyState||200!==u.status&&201!==u.status)r(u.response);else{var e=JSON.parse(u.response),o={name:e.name,id:e.id,path:e.parentReference.path+"/"+e.name,token:a,parentReference:e.parentReference};t.currentDiagramFile=o,n(o),t._deferredPromise.promise.resolve(o),t._deferredPromise.promise=t.makeDeferredPromise()}},u.send(i)}else n(t.saveWithUI())})},t.prototype.loadWithUI=function(){var e=this;return new i.Promise(function(t,n){var r={clientId:e.clientId,action:"share",multiSelect:!1,advanced:{filter:".diagram"},success:function(n){var r=n.value[0],o=n.accessToken,i=r.parentReference.path+"/"+r.name;t(e.load(i,o))}};e.oneDriveFilepicker.open(r)})},t.prototype.load=function(e,t){var n=this;return new i.Promise(function(r,o){if(e){var i=t||n.oauthToken;n.getFile(e,i).then(function(e){var o=e["@microsoft.graph.downloadUrl"],i=new XMLHttpRequest;i.open("GET",o,!0),i.onreadystatechange=function(){if(4===i.readyState&&200===i.status){n.loadFromFileContents(i.response);var o={name:e.name,id:e.id,path:e.parentReference.path+"/"+e.name,token:t,parentReference:{id:e.parentReference.id,driveId:e.parentReference.driveId}};n.currentDiagramFile=o,r(o)}},i.send()})}else o("Cannot load file from OneDrive with path "+e)})},t.prototype.removeWithUI=function(){var e=this;return new i.Promise(function(t,n){var r={clientId:e.clientId,action:"share",openInNewWindow:!0,success:function(n){if(n){var r=n.value[0],o=n.accessToken,a=r.parentReference.path+"/"+r.name;t(new i.Promise(function(t,n){t(e.remove(a,o))}))}}};e.oneDriveFilepicker.open(r)})},t.prototype.remove=function(e,t){var n=this,r=t||n.oauthToken;return new i.Promise(function(t,o){n.getFile(e,r).then(function(i){var a={name:i.name,id:i.id,path:i.parentReference.path+"/"+i.name},s=new XMLHttpRequest;s.open("DELETE","https://graph.microsoft.com/v1.0"+e,!0),s.setRequestHeader("Authorization","Bearer"+r),s.onload=function(){4===s.readyState&&204===s.status?(n.currentDiagramFile&&e===n.currentDiagramFile.path&&(n.currentDiagramFile={id:null,path:null,name:null}),t(a)):401===s.status?n.authorize(!0):o(s.response)},s.send()}).catch(function(e){throw Error(e)})})},t.prototype.generateGraphUrl=function(e,t,n){var r="https://graph.microsoft.com/v1.0/";return r+=t?"drives/"+e.parentReference.driveId+"/items/"+e.parentReference.id+"/children/"+e.name:"drives/"+e.parentReference.driveId+"/items/"+e.id,n&&(r+="/content"),r},t}(n(1).GoCloudStorage);t.GoOneDrive=a},function(e,t,n){"use strict";var r,o=this&&this.__extends||(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,"__esModule",{value:!0});var i=n(0),a=function(e){function t(t,n,r,o){var i=e.call(this,t,r)||this;return i._rootEndpoint=n,i.ui.id="goNetCoreCustomFilepicker",i._serviceName="Microsoft ASP .NET Core Web API",i._className="GoNetCore",i}return o(t,e),Object.defineProperty(t.prototype,"rootEndpoint",{get:function(){return this._rootEndpoint},enumerable:!0,configurable:!0}),t.prototype.authorize=function(e){void 0===e&&(e=!1);return new i.Promise(function(e,t){e(!0)})},t.prototype.showUI=function(e,n){var r=this,o=r.ui;n||(n=0);var i=t._MIN_FILES_IN_UI+n;o.innerHTML="";var a=e+" Diagram File";o.innerHTML+="<strong>"+a+"</strong><hr></hr>",document.getElementsByTagName("body")[0].appendChild(o),o.style.visibility="visible";var s=document.createElement("div");s.id="fileOptions";var c=[],u=(t._MIN_FILES_IN_UI,0),l=!1;return r.getFiles().then(function(t){if(0!==t.length)for(var a in t){var d=t[a];if(c.length<i){u++;var p=d.file;if(p&&-1!==p.indexOf("GraphLinksModel")){var f={name:d.name,id:d.id};c.push(f)}u===t.length&&(l=!0)}}else l=!0;if(0!==c.length)for(a=0;a<c.length;a++){var m=(d=c[a]).name,h=d.id;s.innerHTML+="Save"!==e?"<div class='fileOption'><input id="+h+" type='radio' name='localStorageFile' /><label id ="+h+"-label for='"+m+"'>"+m+"</label></div>":"<div class='fileOption'><label id ="+h+"-label for='"+h+"'>"+m+"</label></div>"}if(!l){var v=n+50;s.innerHTML+="<p>There may be more diagram files not shown. <a id='netCoreLoadMoreFiles'>Click here</a> to try loading more.</p>",document.getElementById("netCoreLoadMoreFiles").onclick=function(){r.showUI(e,v)}}if(o.appendChild(s),r.currentDiagramFile.id){var g=document.getElementById(r.currentDiagramFile.id+"-label");g&&(g.style.fontStyle="italic")}if("Save"===e){var y=document.createElement("div");y.id="userInputDiv",y.innerHTML+='<span>Save Diagram As </span><input id="userInput" placeholder="Enter filename"></input>',o.appendChild(y)}var w=document.createElement("div");w.id="submitDiv";var _=document.createElement("button");_.textContent=e,_.id="actionButton",_.onclick=function(){r.processUIResult(e)},w.appendChild(_),o.appendChild(w);var b=document.createElement("div"),P=document.createElement("button");P.id="cancelButton",P.textContent="Cancel",P.onclick=function(){r.hideUI(!0)},b.appendChild(P),o.appendChild(b)}),r._deferredPromise.promise},t.prototype.processUIResult=function(e){var t=function(){for(var e=document.getElementsByName("localStorageFile"),t=null,n=0;n<e.length;n++)e[n].checked&&(t=e[n].id.replace(/qwe45qw34/g," "));return t||null}();switch(e){case"Save":var n=document.getElementById("userInput").value;n&&(n+=".diagram",this.save(n));break;case"Load":this.load(t);break;case"Delete":this.remove(t)}this.hideUI()},t.prototype.getFile=function(e){var t=this.rootEndpoint+e;return new i.Promise(function(n,r){if(e){var o=new XMLHttpRequest;o.open("GET",t,!0),o.onreadystatechange=function(){4===o.readyState&&o.status>=200&&o.status<300&&n(JSON.parse(o.response))},o.send()}else r("Cannot get diagram file from ASP .NET Core Web API with id "+e)})},t.prototype.getFiles=function(){var e=this;return new i.Promise(function(t,n){var r=new XMLHttpRequest;r.open("GET",e.rootEndpoint,!0),r.onreadystatechange=function(){4===r.readyState&&(r.status>=200&&r.status<300?t(JSON.parse(r.response)):n(r.response))},r.send()})},t.prototype.checkFileExists=function(e){var t=this.rootEndpoint+e;return new i.Promise(function(e,n){var r=new XMLHttpRequest;r.open("GET",t,!0),r.onreadystatechange=function(){4===r.readyState&&(r.status>=200&&r.status<300?e(!0):e(!1))},r.send()})},t.prototype.saveWithUI=function(){var e=this;return new i.Promise(function(t,n){t(e.showUI("Save"))})},t.prototype.save=function(e){var t=this;return new i.Promise(function(n,r){if(t.currentDiagramFile.id&&!e){var o=new XMLHttpRequest;t.getFile(t.currentDiagramFile.id).then(function(e){var i={id:t.currentDiagramFile.id,name:t.currentDiagramFile.name,file:t.makeSaveFile()},a={id:i.id,name:i.name,path:i.name};o.open("PUT",t.rootEndpoint+t.currentDiagramFile.id,!0),o.setRequestHeader("Content-Type","application/json; charset=utf-8"),o.onreadystatechange=function(){4===o.readyState&&(o.status>200&&o.status<300?n(a):r(o.responseText))},o.send(JSON.stringify(i))})}else{var i=new XMLHttpRequest,a={name:null!==e?e:"New diagram",file:t.makeSaveFile()};i.open("POST",t.rootEndpoint,!0),i.setRequestHeader("Content-Type","application/json; charset=utf-8"),i.onreadystatechange=function(){if(4===i.readyState)if(i.status>200&&i.status<300){var e={id:JSON.parse(i.response).id,name:a.name,path:a.name};t.currentDiagramFile=e,n(e),t._deferredPromise.promise.resolve(e),t._deferredPromise.promise=t.makeDeferredPromise()}else r(i.responseText)},i.send(JSON.stringify(a))}})},t.prototype.loadWithUI=function(){var e=this;return new i.Promise(function(t,n){t(e.showUI("Load"))}).catch(function(e){throw Error(e)})},t.prototype.load=function(e){var t=this;return new i.Promise(function(n,r){if(!e)throw Error("Cannot load file from .NET Core Web API with path "+e);var o=new XMLHttpRequest;o.open("GET",t.rootEndpoint+e,!0),o.onreadystatechange=function(){if(4===o.readyState)if(o.status>=200&&o.status<300){var e=JSON.parse(o.response);t.loadFromFileContents(e.file);var i={id:e.id,path:e.name,name:e.name};t.currentDiagramFile=i,n(i),t._deferredPromise.promise.resolve(i),t._deferredPromise.promise=t.makeDeferredPromise()}else r(o.responseText)},o.send()}).catch(function(e){throw Error(e)})},t.prototype.removeWithUI=function(){var e=this;return new i.Promise(function(t,n){t(e.showUI("Delete"))})},t.prototype.remove=function(e){var t=this;return new i.Promise(function(n,r){if(!e)throw Error("Cannot delete file from local storage with id "+e);t.getFile(e).then(function(o){var i={name:o.name,path:o.name,id:e};t.currentDiagramFile&&o.name===t.currentDiagramFile.name&&(t.currentDiagramFile={name:null,path:null,id:null});var a=new XMLHttpRequest;a.open("DELETE",t.rootEndpoint+e,!0),a.onreadystatechange=function(){4===a.readyState&&(a.status>=200&&a.status<300?(n(i),t._deferredPromise.promise.resolve(i),t._deferredPromise.promise=t.makeDeferredPromise()):r(a.responseText))},a.send()})})},t._MIN_FILES_IN_UI=100,t}(n(1).GoCloudStorage);t.GoNetCore=a},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=n(0),o=n(2),i=n(1),a=function(){function e(e,t){if(e instanceof Array){for(var n=new o.Set,r=0;r<e.length;r++){if(!(e[r]instanceof i.GoCloudStorage))throw new Error("Cannot create GoCloudStorageManager; provided 'storages' parameter elements are not all of type GoCloudStorage");n.add(e[r])}e=n}if(!(e instanceof o.Set&&e))throw Error("Cannot create GoCloudStorageManager with provided 'storages' parameter");var a=this;a._storages=e,a._currentStorage=e.first();var s=document.createElement("div");s.id="goCloudStorageManagerMenu",a._menu=s,a._deferredPromise={promise:i.GoCloudStorage.prototype.makeDeferredPromise()},a._iconsRelativeDirectory=t||"../goCloudStorageIcons/",t&&a._storages.iterator.each(function(e){e.iconsRelativeDirectory=t}),-1!==window.location.href.indexOf("account_id=dbid")&&e.iterator.each(function(e){"GoDropBox"===e.className&&(a._currentStorage=e,a.currentStorage.authorize())}),document.getElementsByTagName("body")[0].appendChild(a.menu)}return Object.defineProperty(e.prototype,"storages",{get:function(){return this._storages},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"iconsRelativeDirectory",{get:function(){return this._iconsRelativeDirectory},set:function(e){this._iconsRelativeDirectory=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"menu",{get:function(){return this._menu},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"currentStorage",{get:function(){return this._currentStorage},set:function(e){this._currentStorage=e},enumerable:!0,configurable:!0}),e.prototype.create=function(e){void 0===e&&(e=!1);var t=this;return new r.Promise(function(n,r){n(t.handleAction("Create",e))})},e.prototype.load=function(){var e=this;return new r.Promise(function(t,n){t(e.handleAction("Load"))})},e.prototype.remove=function(){var e=this;return new r.Promise(function(t,n){t(e.handleAction("Remove"))})},e.prototype.save=function(e){void 0===e&&(e=!0);var t=this;return new r.Promise(function(n,r){n(e?t.handleAction("SaveAs"):t.handleAction("Save"))})},e.prototype.showMessage=function(e,t){t||(t=2);var n=document.createElement("div");n.id="goCloudStorageManagerMessageBox",n.innerHTML="<p>"+e+"</p>",document.body.appendChild(n),setTimeout(function(){n.style.opacity="0",setTimeout(function(){n.parentNode.removeChild(n)},1e3)},1e3*t)},e.prototype.getStorageIconPath=function(e){if(null==this.iconsRelativeDirectory||void 0===this.iconsRelativeDirectory)return null;var t=this.iconsRelativeDirectory;switch(e){case"GoGoogleDrive":t+="googleDrive.jpg";break;case"GoOneDrive":t+="oneDrive.png";break;case"GoLocalStorage":t+="localStorage.png";break;case"GoDropBox":t+="dropBox.png"}return t},e.prototype.selectStorageService=function(){var e=this,t=this.storages;return new r.Promise(function(n,r){var o=e.menu;o.innerHTML="<strong>Select Storage Service</strong><hr></hr>";var i=document.createElement("p");i.id="gcsmSelectedStorage",i.innerHTML=e.currentStorage.serviceName,o.appendChild(i),o.onchange=function(){for(var e=document.getElementsByName("storageSelection"),n=null,r=0;r<e.length;r++)e[r].checked&&(n=e[r].id);var o="";t.iterator.each(function(e){e.className===n&&(o=e.serviceName)}),document.getElementById("gcsmSelectedStorage").innerHTML=o},e.menu.style.visibility="visible";var a=document.createElement("div");a.id="storageOptions",t.iterator.each(function(t){var n=t.className,r=e.getStorageIconPath(n),o="";t.className===e.currentStorage.className&&(o="checked"),a.innerHTML+="<label><input id="+n+" type='radio' name='storageSelection' "+o+" /><img class='storageLogo' src="+r+" >"}),o.appendChild(a);o.innerHTML+="<p class='description'>This will be where you save / load diagram model data to / from. You will need to grant GoCloudStorage permission to access your files on the selected storage service.</p>";var s=document.createElement("div"),c=document.createElement("button");c.id="actionButton",c.textContent="Select",c.onclick=function(){for(var t=document.getElementsByName("storageSelection"),r=null,o=0;o<t.length;o++)t[o].checked&&(r=t[o].id);e.storages.each(function(t){t.className===r&&(e.currentStorage=t)}),e.currentStorageNeedsAuth()&&e.currentStorage.authorize().then(function(e){}),n(e.currentStorage),e.hideMenu()},s.appendChild(c),o.appendChild(s);var u=document.createElement("div"),l=document.createElement("button");l.id="cancelButton",l.textContent="Cancel",l.onclick=function(){e.hideMenu()},u.appendChild(l),o.appendChild(u)})},e.prototype.hideMenu=function(){this.menu.style.visibility="hidden"},e.prototype.currentStorageNeedsAuth=function(){var e=this.currentStorage.className;return"GoGoogleDrive"===e||"GoDropBox"===e},e.prototype.handleAction=function(e,t){void 0===t&&(t=!1);var n=this,o=n.currentStorage;return new r.Promise(function(r,i){function a(){switch(e){case"Load":r(o.loadWithUI());break;case"SaveAs":r(o.saveWithUI());break;case"Save":r(o.save());break;case"Remove":r(o.removeWithUI());break;case"Create":r(o.create(null,t))}n.hideMenu()}n.currentStorageNeedsAuth()?o.authorize().then(function(){a()}):a()})},e}();t.GoCloudStorageManager=a}]);
-//# sourceMappingURL=gcs.js.map
+var gcs =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var go = __webpack_require__(1);
+var GoCloudStorage = (function () {
+    function GoCloudStorage(managedDiagrams, defaultModel, clientId, iconsRelativeDirectory) {
+        if (managedDiagrams instanceof go.Diagram)
+            managedDiagrams = [managedDiagrams];
+        this._managedDiagrams = managedDiagrams;
+        this._currentDiagramFile = { name: null, id: null, path: null };
+        this._isAutoSaving = true;
+        if (clientId)
+            this._clientId = clientId;
+        else
+            clientId = null;
+        if (defaultModel) {
+            var firstChar = defaultModel.trim().charAt(0);
+            if (defaultModel && firstChar === '{')
+                this._defaultModel = defaultModel;
+            if (firstChar !== '{' && !iconsRelativeDirectory)
+                this._iconsRelativeDirectory = defaultModel;
+            else
+                this._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : '../goCloudStorageIcons/';
+        }
+        else {
+            this._defaultModel = null;
+            this._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : '../goCloudStorageIcons/';
+        }
+        var lastChar = this._iconsRelativeDirectory.charAt(this._iconsRelativeDirectory.length - 1);
+        if (lastChar !== '/') {
+            this._iconsRelativeDirectory += '/';
+        }
+        var menu = document.createElement('div');
+        menu.className = 'goCustomFilepicker';
+        menu.style.visibility = 'hidden';
+        document.getElementsByTagName('body')[0].appendChild(menu);
+        this._ui = menu;
+        this._deferredPromise = { promise: this.makeDeferredPromise() };
+        function addAutoSave(d) {
+            d.addModelChangedListener(function (e) {
+                if (e.isTransactionFinished && storage.isAutoSaving && e.oldValue !== '') {
+                    if (storage.currentDiagramFile.name) {
+                        storage.save();
+                    }
+                }
+            });
+        }
+        var d = this.managedDiagrams;
+        var storage = this;
+        if (d instanceof go.Diagram) {
+            addAutoSave(d);
+        }
+        else {
+            for (var i = 0; i < d.length; i++) {
+                addAutoSave(d[i]);
+            }
+        }
+    }
+    Object.defineProperty(GoCloudStorage.prototype, "managedDiagrams", {
+        get: function () { return this._managedDiagrams; },
+        set: function (value) { this._managedDiagrams = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "defaultModel", {
+        get: function () { return this._defaultModel; },
+        set: function (value) { this._defaultModel = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "iconsRelativeDirectory", {
+        get: function () { return this._iconsRelativeDirectory; },
+        set: function (value) { this._iconsRelativeDirectory = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "clientId", {
+        get: function () { return this._clientId; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "currentDiagramFile", {
+        get: function () { return this._currentDiagramFile; },
+        set: function (value) { this._currentDiagramFile = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "isAutoSaving", {
+        get: function () { return this._isAutoSaving; },
+        set: function (value) { this._isAutoSaving = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "serviceName", {
+        get: function () { return this._serviceName; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "className", {
+        get: function () { return this._className; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorage.prototype, "ui", {
+        get: function () { return this._ui; },
+        enumerable: true,
+        configurable: true
+    });
+    GoCloudStorage.prototype.authorize = function (refreshToken) {
+        if (refreshToken === void 0) { refreshToken = false; }
+        return new Promise(function (resolve, reject) {
+            reject('authorize not implemented');
+        });
+    };
+    GoCloudStorage.prototype.makeDeferredPromise = function () {
+        var res;
+        var rej;
+        var promise = new Promise(function (resolve, reject) {
+            res = resolve;
+            rej = reject;
+        });
+        promise.resolve = res;
+        promise.reject = rej;
+        return promise;
+    };
+    GoCloudStorage.prototype.getUserInfo = function () {
+        return new Promise(function (resolve, reject) {
+            reject('getUserInfo not implemented');
+        });
+    };
+    GoCloudStorage.prototype.hideUI = function (isActionCanceled) {
+        if (isActionCanceled === void 0) { isActionCanceled = false; }
+        var storage = this;
+        storage.ui.style.visibility = 'hidden';
+        if (isActionCanceled) {
+            var action = document.getElementById('actionButton').innerHTML;
+            storage._deferredPromise.promise.resolve(action + ' canceled by user');
+            storage._deferredPromise.promise = storage.makeDeferredPromise();
+        }
+    };
+    GoCloudStorage.prototype.checkFileExists = function (path) {
+        return new Promise(function (resolve, reject) {
+            reject('checkFileExists not implemented');
+        });
+    };
+    GoCloudStorage.prototype.getFile = function (path) {
+        return new Promise(function (resolve, reject) {
+            throw Error('getFile not implemented');
+        });
+    };
+    GoCloudStorage.prototype.showUI = function (action) {
+        return new Promise(function (resolve, reject) {
+            throw Error('showUI not implemented');
+        });
+    };
+    GoCloudStorage.prototype.create = function (path, saveBefore) {
+        if (saveBefore === void 0) { saveBefore = false; }
+        var storage = this;
+        function makeNewDiagram(d) {
+            if (storage.defaultModel)
+                d.model = go.Model.fromJson(JSON.parse(storage.defaultModel));
+            else
+                d.model = new go.GraphLinksModel();
+        }
+        return new Promise(function (resolve, reject) {
+            if (saveBefore) {
+                storage.promptUserToSaveBeforeNew().then(function (resp) {
+                    if (resp) {
+                        storage.saveWithUI().then(function (diagramFile) {
+                            storage.currentDiagramFile = { name: null, id: null, path: null };
+                            if (storage.managedDiagrams instanceof go.Diagram) {
+                                makeNewDiagram(storage.managedDiagrams);
+                            }
+                            else {
+                                for (var i = 0; i < storage.managedDiagrams.length; i++) {
+                                    makeNewDiagram(storage.managedDiagrams[i]);
+                                }
+                            }
+                            if (storage.isAutoSaving) {
+                                if (path) {
+                                    resolve(storage.save(path));
+                                }
+                                else
+                                    resolve(storage.saveWithUI());
+                            }
+                            else
+                                resolve('New diagram created.');
+                        });
+                    }
+                    else {
+                        storage.currentDiagramFile = { name: null, id: null, path: null };
+                        if (storage.managedDiagrams instanceof go.Diagram) {
+                            makeNewDiagram(storage.managedDiagrams);
+                        }
+                        else {
+                            for (var i = 0; i < storage.managedDiagrams.length; i++) {
+                                makeNewDiagram(storage.managedDiagrams[i]);
+                            }
+                        }
+                        if (storage.isAutoSaving) {
+                            if (path) {
+                                resolve(storage.save(path));
+                            }
+                            else
+                                resolve(storage.saveWithUI());
+                        }
+                        else
+                            resolve('New diagram created.');
+                    }
+                });
+            }
+            if (!saveBefore) {
+                storage.currentDiagramFile = { name: null, id: null, path: null };
+                if (storage.managedDiagrams instanceof go.Diagram) {
+                    makeNewDiagram(storage.managedDiagrams);
+                }
+                else {
+                    for (var i = 0; i < storage.managedDiagrams.length; i++) {
+                        makeNewDiagram(storage.managedDiagrams[i]);
+                    }
+                }
+                if (storage.isAutoSaving) {
+                    if (path) {
+                        resolve(storage.save(path));
+                    }
+                    else
+                        resolve(storage.saveWithUI());
+                }
+                else
+                    resolve('New diagram created.');
+            }
+        });
+    };
+    GoCloudStorage.prototype.promptUserToSaveBeforeNew = function () {
+        return new Promise(function (resolve, reject) {
+            var d = document.getElementById('gcs-save-before-new');
+            if (d) {
+                document.body.removeChild(d);
+            }
+            var div = document.createElement('div');
+            div.id = 'gcs-save-before-new';
+            var p = document.createElement('p');
+            p.innerText = 'Save current diagram(s) before creating a new file?';
+            var yb = document.createElement('button');
+            yb.innerText = 'Yes';
+            var nb = document.createElement('button');
+            nb.innerText = 'No';
+            yb.onclick = function () {
+                document.body.removeChild(div);
+                resolve(true);
+            };
+            nb.onclick = function () {
+                document.body.removeChild(div);
+                resolve(false);
+            };
+            nb.style['float'] = 'right';
+            div.style['font-family'] = 'Arial, Helvetica, sans-serif';
+            div.style['width'] = '400px';
+            div.style['top'] = '25%';
+            div.style['left'] = '40%';
+            div.style['position'] = 'absolute';
+            div.style['border'] = '1px solid black';
+            div.style['padding'] = '10px';
+            div.style['box-shadow'] = '10px 10px 5px #888888';
+            div.style['background'] = 'white';
+            div.style['z-index'] = '100';
+            div.appendChild(p);
+            div.appendChild(yb);
+            div.appendChild(nb);
+            document.body.appendChild(div);
+        });
+    };
+    GoCloudStorage.prototype.makeSaveFile = function () {
+        var item = '{\n';
+        var storage = this;
+        if (storage.managedDiagrams.length === 0)
+            return;
+        for (var i = 0; i < storage.managedDiagrams.length; i++) {
+            var diagram = storage.managedDiagrams[i];
+            var div = diagram.div.id;
+            var _model = diagram.model.toJson();
+            item += '"' + div + '"' + ': ' + diagram.model.toJson();
+            if (i + 1 !== storage.managedDiagrams.length)
+                item += ',\n';
+        }
+        item += '\n}';
+        return item;
+    };
+    GoCloudStorage.prototype.loadFromFileContents = function (fileContents) {
+        var models = JSON.parse(fileContents);
+        for (var divId in models) {
+            var model = models[divId];
+            var div = document.getElementById(divId);
+            var diagram = go.Diagram.fromDiv(div);
+            if (diagram) {
+                diagram.model = go.Model.fromJson(JSON.stringify(model));
+            }
+            else {
+                throw Error('No Diagram on page is associated with a div with id ' + divId);
+            }
+        }
+    };
+    GoCloudStorage.prototype.saveWithUI = function () {
+        return new Promise(function (resolve, reject) {
+            reject('saveWithUI not implemented');
+        });
+    };
+    GoCloudStorage.prototype.save = function (path) {
+        return new Promise(function (resolve, reject) {
+            reject('save not implemented');
+        });
+    };
+    GoCloudStorage.prototype.load = function (path) {
+        return new Promise(function (resolve, reject) {
+            reject('load not implemented');
+        });
+    };
+    GoCloudStorage.prototype.loadWithUI = function () {
+        return new Promise(function (resolve, reject) {
+            reject('loadWithUI not implemented');
+        });
+    };
+    GoCloudStorage.prototype.remove = function (path) {
+        return new Promise(function (resolve, reject) {
+            reject('remove not implemented');
+        });
+    };
+    GoCloudStorage.prototype.removeWithUI = function () {
+        return new Promise(function (resolve, reject) {
+            reject('removeWithUI not implemented');
+        });
+    };
+    return GoCloudStorage;
+}());
+exports.GoCloudStorage = GoCloudStorage;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+module.exports = go;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+module.exports = {
+    GoLocalStorage: __webpack_require__(3).GoLocalStorage,
+    GoDropBox: __webpack_require__(4).GoDropBox,
+    GoGoogleDrive: __webpack_require__(5).GoGoogleDrive,
+    GoOneDrive: __webpack_require__(6).GoOneDrive,
+    GoNetCore: __webpack_require__(7).GoNetCore,
+    GoCloudStorageManager: __webpack_require__(8).GoCloudStorageManager
+};
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var gcs = __webpack_require__(0);
+var GoLocalStorage = (function (_super) {
+    __extends(GoLocalStorage, _super);
+    function GoLocalStorage(managedDiagrams, defaultModel, iconsRelativeDirectory) {
+        var _this = _super.call(this, managedDiagrams, defaultModel, null, iconsRelativeDirectory) || this;
+        try {
+            _this._localStorage = window.localStorage;
+        }
+        catch (e) {
+            throw new Error('Cannot access localStorage. Make sure your browser supports localStorage.' +
+                'If so, and this issue persists, try unblocking third-party cookies and site data in your browser settings');
+        }
+        _this.ui.id = 'goLocalStorageCustomFilepicker';
+        _this._serviceName = 'Local Storage';
+        _this._className = 'GoLocalStorage';
+        return _this;
+    }
+    Object.defineProperty(GoLocalStorage.prototype, "localStorage", {
+        get: function () { return this._localStorage; },
+        enumerable: true,
+        configurable: true
+    });
+    GoLocalStorage.prototype.authorize = function (refreshToken) {
+        if (refreshToken === void 0) { refreshToken = false; }
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            try {
+                storage.localStorage.setItem('item', 'item');
+                storage.localStorage.removeItem('item');
+                resolve(true);
+            }
+            catch (e) {
+                resolve(false);
+            }
+        });
+    };
+    GoLocalStorage.prototype.showUI = function (action, numAdditionalFiles) {
+        var storage = this;
+        var ui = storage.ui;
+        var spacestring = 'qwe45qw34';
+        if (!numAdditionalFiles)
+            numAdditionalFiles = 0;
+        var maxFilesToShow = GoLocalStorage._MIN_FILES_IN_UI + numAdditionalFiles;
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "localStorage.png'></img>";
+        var title = action + ' Diagram File';
+        ui.innerHTML += '<strong>' + title + '</strong><hr></hr>';
+        ui.style.visibility = 'visible';
+        var filesDiv = document.createElement('div');
+        filesDiv.id = 'fileOptions';
+        var savedDiagrams = [];
+        var numFilesToCheck = GoLocalStorage._MIN_FILES_IN_UI + numAdditionalFiles;
+        var numFilesChecked = 0;
+        var hasCheckedAllFiles = false;
+        if (storage.localStorage.length !== 0) {
+            for (var key in storage.localStorage) {
+                if (savedDiagrams.length < maxFilesToShow) {
+                    numFilesChecked++;
+                    var fileContent = storage.localStorage.getItem(key);
+                    if (fileContent && (fileContent.indexOf('GraphLinksModel') !== -1 || fileContent.indexOf('TreeModel') !== -1)) {
+                        var file = { key: key, model: fileContent };
+                        savedDiagrams.push(file);
+                    }
+                    if (numFilesChecked === storage.localStorage.length)
+                        hasCheckedAllFiles = true;
+                }
+            }
+        }
+        else
+            hasCheckedAllFiles = true;
+        if (savedDiagrams.length !== 0) {
+            for (var i = 0; i < savedDiagrams.length; i++) {
+                var kvp = savedDiagrams[i];
+                var file = kvp['key'];
+                var fileId = file.replace(/ /g, spacestring);
+                if (action !== 'Save') {
+                    filesDiv.innerHTML +=
+                        "<div class='fileOption'>" +
+                            '<input id=' + fileId + " type='radio' name='localStorageFile' />" +
+                            '<label id =' + fileId + '-label' + " for='" + fileId + "'>" + file + '</label>' +
+                            '</div>';
+                }
+                else {
+                    filesDiv.innerHTML +=
+                        "<div class='fileOption'>" +
+                            '<label id =' + fileId + '-label' + " for='" + fileId + "'>" + file + '</label>' +
+                            '</div>';
+                }
+            }
+        }
+        if (!hasCheckedAllFiles) {
+            var num_1 = numAdditionalFiles + 50;
+            filesDiv.innerHTML += "<p>There may be more diagram files not shown. <a id='localStorageLoadMoreFiles'>Click here</a> to try loading more.</p>";
+            document.getElementById('localStorageLoadMoreFiles').onclick = function () {
+                storage.showUI(action, num_1);
+            };
+        }
+        ui.appendChild(filesDiv);
+        if (storage.currentDiagramFile.id) {
+            var str = storage.currentDiagramFile.id.replace(/ /g, spacestring);
+            var el = document.getElementById(str + '-label');
+            if (el)
+                el.style.fontStyle = 'italic';
+        }
+        if (action === 'Save') {
+            var userInputDiv = document.createElement('div');
+            userInputDiv.id = 'userInputDiv';
+            userInputDiv.innerHTML += '<span>Save Diagram As </span><input id="userInput" placeholder="Enter filename"></input>';
+            ui.appendChild(userInputDiv);
+        }
+        var submitDiv = document.createElement('div');
+        submitDiv.id = 'submitDiv';
+        var actionButton = document.createElement('button');
+        actionButton.textContent = action;
+        actionButton.id = 'actionButton';
+        actionButton.onclick = function () {
+            storage.processUIResult(action);
+        };
+        submitDiv.appendChild(actionButton);
+        ui.appendChild(submitDiv);
+        var cancelDiv = document.createElement('div');
+        var cancelButton = document.createElement('button');
+        cancelButton.id = 'cancelButton';
+        cancelButton.textContent = 'Cancel';
+        cancelButton.onclick = function () {
+            storage.hideUI(true);
+        };
+        cancelDiv.appendChild(cancelButton);
+        ui.appendChild(cancelDiv);
+        return storage._deferredPromise['promise'];
+    };
+    GoLocalStorage.prototype.processUIResult = function (action) {
+        var storage = this;
+        function getSelectedFile() {
+            var radios = document.getElementsByName('localStorageFile');
+            var selectedFile = null;
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedFile = radios[i].id.replace(/qwe45qw34/g, ' ');
+                }
+            }
+            if (selectedFile)
+                return selectedFile;
+            else
+                return null;
+        }
+        var file = getSelectedFile();
+        switch (action) {
+            case 'Save': {
+                var name_1 = document.getElementById('userInput').value;
+                if (name_1) {
+                    name_1 += '.diagram';
+                    storage.save(name_1);
+                }
+                else {
+                }
+                break;
+            }
+            case 'Load': {
+                storage.load(file);
+                break;
+            }
+            case 'Delete': {
+                storage.remove(file);
+                break;
+            }
+        }
+        storage.hideUI();
+    };
+    GoLocalStorage.prototype.getFile = function (path) {
+        if (path.indexOf('.diagram') === -1)
+            path += '.diagram';
+        return new Promise(function (resolve, reject) {
+            var fileContent = (!!window.localStorage.getItem(path)) ? window.localStorage.getItem(path) : null;
+            var file = { name: path, content: fileContent, path: path, id: path };
+            resolve(file);
+        });
+    };
+    GoLocalStorage.prototype.checkFileExists = function (path) {
+        if (path.indexOf('.diagram') === -1)
+            path += '.diagram';
+        return new Promise(function (resolve, reject) {
+            var fileExists = !!(window.localStorage.getItem(path));
+            resolve(fileExists);
+        });
+    };
+    GoLocalStorage.prototype.saveWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storage.showUI('Save'));
+        });
+    };
+    GoLocalStorage.prototype.save = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                if (path.indexOf('.diagram') === -1)
+                    path += '.diagram';
+                var item = storage.makeSaveFile();
+                storage.localStorage.setItem(path, item);
+                var savedFile = { name: path, id: path, path: path };
+                storage.currentDiagramFile = savedFile;
+                resolve(savedFile);
+                storage._deferredPromise['promise'].resolve(savedFile);
+                storage._deferredPromise['promise'] = storage.makeDeferredPromise();
+            }
+            else if (storage.currentDiagramFile.path) {
+                var saveName = storage.currentDiagramFile['path'];
+                var savedFile = { name: saveName, path: saveName, id: saveName };
+                var item = storage.makeSaveFile();
+                storage.localStorage.setItem(saveName, item);
+                resolve(saveName);
+            }
+            else {
+                resolve(storage.saveWithUI());
+            }
+        });
+    };
+    GoLocalStorage.prototype.loadWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storage.showUI('Load'));
+        }).catch(function (e) {
+            throw Error(e);
+        });
+    };
+    GoLocalStorage.prototype.load = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                var fileContents = storage.localStorage.getItem(path);
+                if (fileContents) {
+                    storage.loadFromFileContents(fileContents);
+                    var loadedFile = { name: path, id: path, path: path };
+                    storage.currentDiagramFile = loadedFile;
+                    resolve(loadedFile);
+                    storage._deferredPromise.promise.resolve(loadedFile);
+                    storage._deferredPromise.promise = storage.makeDeferredPromise();
+                }
+                else
+                    throw Error('Cannot load file from local storage with path ' + path);
+            }
+            else
+                throw Error('Cannot load file from local storage with path ' + path);
+        }).catch(function (e) {
+            throw Error(e);
+        });
+    };
+    GoLocalStorage.prototype.removeWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storage.showUI('Delete'));
+        });
+    };
+    GoLocalStorage.prototype.remove = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                var deletedFile = { name: path, path: path, id: path };
+                if (storage.currentDiagramFile && path === storage.currentDiagramFile['name'])
+                    storage.currentDiagramFile = { name: null, path: null, id: null };
+                storage.localStorage.removeItem(path);
+                resolve(deletedFile);
+                storage._deferredPromise['promise'].resolve(deletedFile);
+                storage._deferredPromise['promise'] = storage.makeDeferredPromise();
+            }
+            else
+                throw Error('Cannot delete file from local storage with path ' + path);
+        });
+    };
+    GoLocalStorage._MIN_FILES_IN_UI = 100;
+    return GoLocalStorage;
+}(gcs.GoCloudStorage));
+exports.GoLocalStorage = GoLocalStorage;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var gcs = __webpack_require__(0);
+var GoDropBox = (function (_super) {
+    __extends(GoDropBox, _super);
+    function GoDropBox(managedDiagrams, clientId, defaultModel, iconsRelativeDirectory) {
+        var _this = _super.call(this, managedDiagrams, defaultModel, clientId, iconsRelativeDirectory) || this;
+        if (window['Dropbox']) {
+            var Dropbox = window['Dropbox'];
+            _this._dropbox = new Dropbox({ clientId: clientId });
+        }
+        _this.menuPath = '';
+        _this.ui.id = 'goDropBoxCustomFilepicker';
+        _this._serviceName = 'Dropbox';
+        _this._className = 'GoDropBox';
+        _this._options = {
+            success: function (files) {
+                alert("Here's the file link: " + files[0].link);
+            },
+            cancel: function () {
+            },
+            linkType: 'direct',
+            multiselect: false,
+            extensions: ['.pdf', '.doc', '.docx', '.diagram'],
+            folderselect: false
+        };
+        return _this;
+    }
+    Object.defineProperty(GoDropBox.prototype, "dropbox", {
+        get: function () { return this._dropbox; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoDropBox.prototype, "menuPath", {
+        get: function () { return this._menuPath; },
+        set: function (value) { this._menuPath = value; },
+        enumerable: true,
+        configurable: true
+    });
+    GoDropBox.prototype.authorize = function (refreshToken) {
+        if (refreshToken === void 0) { refreshToken = false; }
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (refreshToken) {
+                storage.maybeSaveAppState();
+                var authUrl = storage.dropbox.getAuthenticationUrl(window.location.href);
+                window.location.href = authUrl;
+                resolve(false);
+            }
+            else if (!storage.dropbox.getAccessToken()) {
+                if (storage.getAccessTokenFromUrl()) {
+                    storage.dropbox.setAccessToken(storage.getAccessTokenFromUrl());
+                    resolve(true);
+                }
+                else {
+                    storage.maybeSaveAppState();
+                    var authUrl = storage.dropbox.getAuthenticationUrl(window.location.href);
+                    window.location.href = authUrl;
+                    resolve(false);
+                }
+            }
+            storage.maybeLoadAppState();
+            resolve(true);
+        });
+    };
+    GoDropBox.prototype.getAccessTokenFromUrl = function () {
+        var accessToken = window.location.hash.substring(window.location.hash.indexOf('=') + 1, window.location.hash.indexOf('&'));
+        return !!accessToken ? accessToken : null;
+    };
+    GoDropBox.prototype.maybeSaveAppState = function () {
+        var storage = this;
+        try {
+            var item = storage.makeSaveFile();
+            window.localStorage.setItem('gdb-' + storage.clientId, item);
+        }
+        catch (e) {
+            throw new Error('Local storage not supported; diagrams model data will not be preserved during Dropboc authentication.');
+        }
+    };
+    GoDropBox.prototype.maybeLoadAppState = function () {
+        var storage = this;
+        try {
+            var fileContents = window.localStorage.getItem('gdb-' + storage.clientId);
+            storage.loadFromFileContents(fileContents);
+            localStorage.removeItem('gdb-' + storage.clientId);
+        }
+        catch (e) { }
+    };
+    GoDropBox.prototype.signOut = function () {
+        var storage = this;
+        var dbx = storage.dropbox;
+        storage.maybeSaveAppState();
+        dbx.setAccessToken(null);
+        dbx.authTokenRevoke();
+    };
+    GoDropBox.prototype.getUserInfo = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (!storage.dropbox.getAccessToken() && window.location.hash.indexOf('access_token') === -1) {
+                storage.authorize(true);
+            }
+            else if (!storage.dropbox.getAccessToken() && window.location.hash.indexOf('access_token') === 1) {
+                storage.authorize(false);
+            }
+            storage.dropbox.usersGetCurrentAccount(null).then(function (userData) {
+                resolve(userData);
+            }).catch(function (e) {
+                if (e.status === 400) {
+                    storage.authorize(true);
+                }
+            });
+        });
+    };
+    GoDropBox.prototype.showUI = function () {
+        var storage = this;
+        var ui = storage.ui;
+        ui.innerHTML = '';
+        ui.style.visibility = 'visible';
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "dropBox.png'></img><strong>Save Diagram As</strong><hr></hr>";
+        var userInputDiv = document.createElement('div');
+        userInputDiv.id = 'userInputDiv';
+        userInputDiv.innerHTML += '<input id="gdb-userInput" placeholder="Enter filename"></input>';
+        ui.appendChild(userInputDiv);
+        var submitDiv = document.createElement('div');
+        submitDiv.id = 'submitDiv';
+        var actionButton = document.createElement('button');
+        actionButton.id = 'actionButton';
+        actionButton.textContent = 'Save';
+        actionButton.onclick = function () {
+            var input = (document.getElementById('gdb-userInput'));
+            var val = input.value;
+            if (val !== '' && val !== undefined && val != null) {
+                ui.style.visibility = 'hidden';
+                storage.saveWithUI(val);
+            }
+        };
+        submitDiv.appendChild(actionButton);
+        ui.appendChild(submitDiv);
+        var cancelDiv = document.createElement('div');
+        cancelDiv.id = 'cancelDiv';
+        var cancelButton = document.createElement('button');
+        cancelButton.id = 'cancelButton';
+        cancelButton.textContent = 'Cancel';
+        cancelButton.onclick = function () {
+            storage.hideUI(true);
+        };
+        cancelDiv.appendChild(cancelButton);
+        ui.appendChild(cancelDiv);
+        return storage._deferredPromise.promise;
+    };
+    GoDropBox.prototype.hideUI = function (isActionCanceled) {
+        var storage = this;
+        storage.menuPath = '';
+        _super.prototype.hideUI.call(this, isActionCanceled);
+    };
+    GoDropBox.prototype.processUIResult = function (action) {
+        var storage = this;
+        function getSelectedFilepath() {
+            var radios = document.getElementsByName('dropBoxFile');
+            var selectedFile = null;
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedFile = radios[i].getAttribute('data');
+                }
+            }
+            return selectedFile;
+        }
+        var filePath = getSelectedFilepath();
+        switch (action) {
+            case 'Save': {
+                if (storage.menuPath || storage.menuPath === '') {
+                    var name_1 = document.getElementById('userInput').value;
+                    if (name_1) {
+                        if (name_1.indexOf('.diagram') === -1)
+                            name_1 += '.diagram';
+                        storage.save(storage.menuPath + '/' + name_1);
+                    }
+                    else {
+                        console.log('Proposed file name is not valid');
+                    }
+                }
+                break;
+            }
+            case 'Load': {
+                storage.load(filePath);
+                break;
+            }
+            case 'Delete': {
+                storage.remove(filePath);
+                break;
+            }
+        }
+        storage.hideUI();
+    };
+    GoDropBox.prototype.checkFileExists = function (path) {
+        var storage = this;
+        if (path.indexOf('.diagram') === -1)
+            path += '.diagram';
+        return new Promise(function (resolve, reject) {
+            storage.dropbox.filesGetMetadata({ path: path }).then(function (resp) {
+                if (resp)
+                    resolve(true);
+            }).catch(function (err) {
+                resolve(false);
+            });
+        });
+    };
+    GoDropBox.prototype.getFile = function (path) {
+        var storage = this;
+        if (path.indexOf('.diagram') === -1)
+            path += '.diagram';
+        return storage.dropbox.filesGetMetadata({ path: path }).then(function (resp) {
+            if (resp)
+                return resp;
+        }).catch(function (err) {
+            return null;
+        });
+    };
+    GoDropBox.prototype.saveWithUI = function (filename) {
+        var storage = this;
+        if (filename === undefined || filename == null) {
+            return new Promise(function (resolve, reject) {
+                resolve(storage.showUI());
+            });
+        }
+        else {
+            if (filename.length < 8) {
+                filename += '.diagram';
+            }
+            else {
+                var lastEight = filename.substring(filename.length - 8, filename.length);
+                if (lastEight !== '.diagram') {
+                    filename += '.diagram';
+                }
+            }
+            return new Promise(function (resolve, reject) {
+                storage._options.success = function (resp) {
+                    var a = 3;
+                    var savedFile = null;
+                    storage.dropbox.filesListFolder({
+                        path: '',
+                        recursive: true
+                    }).then(function (r) {
+                        var files = r.entries;
+                        var possibleFiles = [];
+                        var latestestDate = new Date(-8400000);
+                        var latestFile = null;
+                        for (var i = 0; i < files.length; i++) {
+                            var file = files[i];
+                            var dateModified = new Date(file.server_modified);
+                            if (dateModified != null && dateModified !== undefined && dateModified instanceof Date) {
+                                if (dateModified > latestestDate) {
+                                    dateModified = latestestDate;
+                                    latestFile = file;
+                                }
+                            }
+                        }
+                        var savedFile = { name: latestFile.name, path: latestFile.path_lower, id: latestFile.id };
+                        storage.currentDiagramFile = savedFile;
+                        resolve(savedFile);
+                        storage._deferredPromise.promise.resolve(savedFile);
+                        storage._deferredPromise.promise = storage.makeDeferredPromise();
+                    });
+                };
+                function makeTextFile(text) {
+                    var data = new Blob([text], { type: 'text/plain' });
+                    var uri = '';
+                    uri = window.URL.createObjectURL(data);
+                    return uri;
+                }
+                var dataURI = 'data:text/html,' + encodeURIComponent(storage.makeSaveFile());
+                var Dropbox = window['Dropbox'];
+                Dropbox.save(dataURI, filename, storage._options);
+            });
+        }
+    };
+    GoDropBox.prototype.save = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                storage.dropbox.filesUpload({
+                    contents: storage.makeSaveFile(),
+                    path: path,
+                    autorename: true,
+                    mode: { '.tag': 'add' },
+                    mute: false
+                }).then(function (resp) {
+                    var savedFile = { name: resp.name, id: resp.id, path: resp.path_lower };
+                    storage.currentDiagramFile = savedFile;
+                    resolve(savedFile);
+                    storage._deferredPromise.promise.resolve(savedFile);
+                    storage._deferredPromise.promise = storage.makeDeferredPromise();
+                }).catch(function (e) {
+                    if (e.status === 400) {
+                        storage.authorize(true);
+                    }
+                });
+            }
+            else if (storage.currentDiagramFile.path) {
+                path = storage.currentDiagramFile.path;
+                storage.dropbox.filesUpload({
+                    contents: storage.makeSaveFile(),
+                    path: path,
+                    autorename: false,
+                    mode: { '.tag': 'overwrite' },
+                    mute: true
+                }).then(function (resp) {
+                    var savedFile = { name: resp.name, id: resp.id, path: resp.path_lower };
+                    resolve(savedFile);
+                }).catch(function (e) {
+                    if (e.status === 400) {
+                        storage.authorize(true);
+                    }
+                });
+            }
+            else {
+                resolve(storage.saveWithUI());
+            }
+        });
+    };
+    GoDropBox.prototype.loadWithUI = function () {
+        var storage = this;
+        storage._options.success = function (r) {
+            var file = r[0];
+            storage.dropbox.filesGetMetadata({ path: file.id }).then(function (resp) {
+                var path = resp.path_display;
+                storage.load(path);
+            });
+        };
+        var Dropbox = window['Dropbox'];
+        Dropbox.choose(storage._options);
+        return storage._deferredPromise.promise;
+    };
+    GoDropBox.prototype.load = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                storage.dropbox.filesGetTemporaryLink({ path: path }).then(function (resp) {
+                    var link = resp.link;
+                    storage.currentDiagramFile.name = resp.metadata.name;
+                    storage.currentDiagramFile.id = resp.metadata.id;
+                    storage.currentDiagramFile.path = path;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', link, true);
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + storage.dropbox.getAccessToken());
+                    xhr.onload = function () {
+                        if (xhr.readyState === 4 && (xhr.status === 200)) {
+                            storage.loadFromFileContents(xhr.response);
+                            var loadedFile = { name: resp.metadata.name, id: resp.metadata.id, path: resp.metadata.path_lower };
+                            resolve(loadedFile);
+                            storage._deferredPromise.promise.resolve(loadedFile);
+                            storage._deferredPromise.promise = storage.makeDeferredPromise();
+                        }
+                        else {
+                            throw Error('Cannot load file from Dropbox with path ' + path);
+                        }
+                    };
+                    xhr.send();
+                }).catch(function (e) {
+                    if (e.status === 400) {
+                        storage.authorize(true);
+                    }
+                });
+            }
+            else
+                throw Error('Cannot load file from Dropbox with path ' + path);
+        });
+    };
+    GoDropBox.prototype.removeWithUI = function () {
+        var storage = this;
+        storage._options.success = function (r) {
+            var file = r[0];
+            storage.dropbox.filesGetMetadata({ path: file.id }).then(function (resp) {
+                var path = resp.path_display;
+                storage.remove(path);
+            });
+        };
+        var Dropbox = window['Dropbox'];
+        Dropbox.choose(storage._options);
+        return storage._deferredPromise.promise;
+    };
+    GoDropBox.prototype.remove = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                storage.dropbox.filesDelete({ path: path }).then(function (resp) {
+                    if (storage.currentDiagramFile && storage.currentDiagramFile['id'] === resp['id'])
+                        storage.currentDiagramFile = { name: null, path: null, id: null };
+                    var deletedFile = { name: resp.name, id: resp['id'], path: resp.path_lower };
+                    resolve(deletedFile);
+                    storage._deferredPromise.promise.resolve(deletedFile);
+                    storage._deferredPromise.promise = storage.makeDeferredPromise();
+                }).catch(function (e) {
+                    if (e.status === 400) {
+                        storage.authorize(true);
+                    }
+                });
+            }
+            else
+                throw Error('Cannot delete file from Dropbox with path ' + path);
+        });
+    };
+    return GoDropBox;
+}(gcs.GoCloudStorage));
+exports.GoDropBox = GoDropBox;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var gcs = __webpack_require__(0);
+var GoGoogleDrive = (function (_super) {
+    __extends(GoGoogleDrive, _super);
+    function GoGoogleDrive(managedDiagrams, clientId, pickerApiKey, defaultModel, iconsRelativeDirectory) {
+        var _this = _super.call(this, managedDiagrams, defaultModel, clientId, iconsRelativeDirectory) || this;
+        _this._scope = 'https://www.googleapis.com/auth/drive';
+        _this._pickerApiKey = pickerApiKey;
+        _this._oauthToken = null;
+        _this._gapiClient = null;
+        _this._gapiPicker = null;
+        _this.ui.id = 'goGoogleDriveSavePrompt';
+        _this._serviceName = 'Google Drive';
+        _this._className = 'GoGoogleDrive';
+        return _this;
+    }
+    Object.defineProperty(GoGoogleDrive.prototype, "pickerApiKey", {
+        get: function () { return this._pickerApiKey; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoGoogleDrive.prototype, "scope", {
+        get: function () { return this._scope; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoGoogleDrive.prototype, "gapiClient", {
+        get: function () { return this._gapiClient; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoGoogleDrive.prototype, "gapiPicker", {
+        get: function () { return this._gapiPicker; },
+        enumerable: true,
+        configurable: true
+    });
+    GoGoogleDrive.prototype.authorize = function (refreshToken) {
+        if (refreshToken === void 0) { refreshToken = false; }
+        var storage = this;
+        var gapi = null;
+        if (window['gapi'])
+            gapi = window['gapi'];
+        else
+            return;
+        if (refreshToken) {
+            var href = document.location.href;
+            document.location.href = 'https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=' + href;
+        }
+        return new Promise(function (resolve, reject) {
+            function auth() {
+                gapi.auth.authorize({
+                    'client_id': storage.clientId,
+                    'scope': storage.scope,
+                    'immediate': false
+                }, function (authResult) {
+                    if (authResult && !authResult.error) {
+                        storage._oauthToken = authResult.access_token;
+                    }
+                    storage._gapiClient = gapi.client;
+                    if (window['google'])
+                        storage._gapiPicker = window['google']['picker'];
+                    resolve(true);
+                });
+            }
+            gapi.load('client:auth', auth);
+            gapi.load('picker', {});
+        });
+    };
+    GoGoogleDrive.prototype.createPicker = function (cb) {
+        var storage = this;
+        if (storage._oauthToken) {
+            var appId = storage.clientId.substring(0, this.clientId.indexOf('-'));
+            var view = new storage.gapiPicker.View(storage.gapiPicker.ViewId.DOCS);
+            view.setMimeTypes('application/json');
+            view.setQuery('*.diagram');
+            var picker = new storage.gapiPicker.PickerBuilder()
+                .enableFeature(storage.gapiPicker.Feature.NAV_HIDDEN)
+                .enableFeature(storage.gapiPicker.Feature.MULTISELECT_ENABLED)
+                .setAppId(appId)
+                .setOrigin(window.location.protocol + '//' + window.location.host)
+                .setOAuthToken(storage._oauthToken)
+                .addView(view)
+                .setDeveloperKey(storage.pickerApiKey)
+                .setCallback(function (args) {
+                cb(args);
+            })
+                .build();
+            picker.setVisible(true);
+        }
+    };
+    GoGoogleDrive.prototype.getUserInfo = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var request = storage.gapiClient.request({
+                'path': '/drive/v3/about',
+                'method': 'GET',
+                'params': { 'fields': 'user' },
+                callback: function (resp) {
+                    if (resp)
+                        resolve(resp.user);
+                    else
+                        reject(resp);
+                }
+            });
+        });
+    };
+    GoGoogleDrive.prototype.getFile = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var req = storage.gapiClient.request({
+                path: '/drive/v3/files/' + path,
+                method: 'GET',
+                callback: function (resp) {
+                    if (!resp.error) {
+                        resolve(resp);
+                    }
+                    else {
+                        reject(resp.error);
+                    }
+                }
+            });
+        });
+    };
+    GoGoogleDrive.prototype.checkFileExists = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var req = storage.gapiClient.request({
+                path: '/drive/v3/files/' + path,
+                method: 'GET',
+                callback: function (resp) {
+                    var bool = (!!resp);
+                    resolve(bool);
+                }
+            });
+        });
+    };
+    GoGoogleDrive.prototype.showUI = function () {
+        var storage = this;
+        var ui = storage.ui;
+        ui.innerHTML = '';
+        ui.style.visibility = 'visible';
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "googleDrive.jpg'></img><strong>Save Diagram As</strong><hr></hr>";
+        var userInputDiv = document.createElement('div');
+        userInputDiv.id = 'userInputDiv';
+        userInputDiv.innerHTML += '<input id="userInput" placeholder="Enter filename"></input>';
+        ui.appendChild(userInputDiv);
+        var submitDiv = document.createElement('div');
+        submitDiv.id = 'submitDiv';
+        var actionButton = document.createElement('button');
+        actionButton.id = 'actionButton';
+        actionButton.textContent = 'Save';
+        actionButton.onclick = function () {
+            storage.saveWithUI();
+        };
+        submitDiv.appendChild(actionButton);
+        ui.appendChild(submitDiv);
+        var cancelDiv = document.createElement('div');
+        cancelDiv.id = 'cancelDiv';
+        var cancelButton = document.createElement('button');
+        cancelButton.id = 'cancelButton';
+        cancelButton.textContent = 'Cancel';
+        cancelButton.onclick = function () {
+            storage.hideUI(true);
+        };
+        cancelDiv.appendChild(cancelButton);
+        ui.appendChild(cancelDiv);
+        return storage._deferredPromise.promise;
+    };
+    GoGoogleDrive.prototype.saveWithUI = function () {
+        var storage = this;
+        var ui = storage.ui;
+        return new Promise(function (resolve, reject) {
+            if (ui.style.visibility === 'hidden') {
+                resolve(storage.showUI());
+            }
+            else {
+                var saveName = document.getElementById('userInput').value;
+                storage.save(saveName);
+                resolve(storage.hideUI());
+            }
+        });
+    };
+    GoGoogleDrive.prototype.save = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                if (path.indexOf('.diagram') === -1)
+                    path += '.diagram';
+                var overwrite_1 = false;
+                var overwriteFile_1 = null;
+                var request = storage.gapiClient.request({
+                    'path': '/drive/v3/files',
+                    'method': 'GET',
+                    'params': { 'q': 'trashed=false and name contains ".diagram" and mimeType = "application/json"' },
+                    callback: function (resp) {
+                        var savedDiagrams = resp.files;
+                        if (savedDiagrams) {
+                            for (var i = 0; i < savedDiagrams.length; i++) {
+                                if (savedDiagrams[i]['name'] === path) {
+                                    overwrite_1 = true;
+                                    overwriteFile_1 = savedDiagrams[i];
+                                }
+                            }
+                        }
+                        var boundary = '-------314159265358979323846';
+                        var delimiter = '\r\n--' + boundary + '\r\n';
+                        var closeDelim = '\r\n--' + boundary + '--';
+                        var contentType = 'application/json';
+                        var metadata = {
+                            'name': path,
+                            'mimeType': contentType
+                        };
+                        var data = storage.makeSaveFile();
+                        var multipartRequestBody = delimiter +
+                            'Content-Type: application/json\r\n\r\n' +
+                            JSON.stringify(metadata) +
+                            delimiter +
+                            'Content-Type: ' + contentType + '\r\n\r\n' +
+                            data +
+                            closeDelim;
+                        var req = storage.gapiClient.request({
+                            'path': '/upload/drive/v3/files',
+                            'method': 'POST',
+                            'params': { 'uploadType': 'multipart' },
+                            'headers': {
+                                'Content-Type': 'multipart/related; boundary="' + boundary + '"'
+                            },
+                            'body': multipartRequestBody
+                        });
+                        req.execute(function (response) {
+                            var savedFile = { name: response.name, id: response.id, path: response.name };
+                            storage.currentDiagramFile = savedFile;
+                            resolve(savedFile);
+                            storage._deferredPromise.promise.resolve(savedFile);
+                            storage._deferredPromise.promise = storage.makeDeferredPromise();
+                        });
+                    }
+                });
+            }
+            else if (storage.currentDiagramFile.path) {
+                var fileId = storage.currentDiagramFile.id;
+                var saveFile = storage.makeSaveFile();
+                storage.gapiClient.request({
+                    path: '/upload/drive/v3/files/' + fileId,
+                    method: 'PATCH',
+                    params: { uploadType: 'media' },
+                    body: saveFile,
+                    callback: function (resp) {
+                        if (!resp.error) {
+                            var savedFile = { name: resp.name, id: resp.id, path: resp.name };
+                            resolve(savedFile);
+                        }
+                        else if (resp.error.code === 401) {
+                            storage.authorize(true);
+                        }
+                    }
+                });
+            }
+            else {
+                resolve(storage.saveWithUI());
+            }
+        });
+    };
+    GoGoogleDrive.prototype.loadWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var loadFunction = function (data) {
+                if (data.action === 'picked') {
+                    var file_1 = data.docs[0];
+                    storage.gapiClient.request({
+                        'path': '/drive/v3/files/' + file_1.id + '?alt=media',
+                        'method': 'GET',
+                        callback: function (modelData) {
+                            if (file_1.name.indexOf('.diagram') !== -1) {
+                                var loadedFile = { name: file_1.name, path: file_1.name, id: file_1.id };
+                                resolve(storage.load(file_1.id));
+                                storage.currentDiagramFile = loadedFile;
+                            }
+                        }
+                    });
+                }
+            };
+            storage.createPicker(loadFunction);
+        });
+    };
+    GoGoogleDrive.prototype.load = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            storage.getFile(path).then(function (file) {
+                storage.gapiClient.request({
+                    'path': '/drive/v3/files/' + file.id + '?alt=media',
+                    'method': 'GET',
+                    callback: function (modelData) {
+                        if (modelData) {
+                            if (file.name.indexOf('.diagram') !== -1) {
+                                storage.loadFromFileContents(JSON.stringify(modelData));
+                                var loadedFile = { name: file['name'], path: file['name'], id: file['id'] };
+                                storage.currentDiagramFile = loadedFile;
+                                resolve(loadedFile);
+                            }
+                        }
+                    }
+                });
+            }).catch(function (e) {
+                reject(e.message);
+            });
+        });
+    };
+    GoGoogleDrive.prototype.removeWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var deleteFunction = function (data) {
+                if (data['action'] === 'picked') {
+                    var file = data['docs'][0];
+                    resolve(storage.remove(file.id));
+                }
+            };
+            storage.createPicker(deleteFunction);
+        });
+    };
+    GoGoogleDrive.prototype.remove = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            storage.getFile(path).then(function (deletedFile) {
+                storage.gapiClient.request({
+                    'path': 'drive/v3/files/' + path,
+                    'method': 'DELETE',
+                    callback: function () {
+                        if (storage.currentDiagramFile && path === storage.currentDiagramFile.id)
+                            storage.currentDiagramFile = { name: null, path: null, id: null };
+                        deletedFile['path'] = deletedFile['name'];
+                        resolve(deletedFile);
+                    }
+                });
+            }).catch(function (e) {
+                reject(e.message);
+            });
+        });
+    };
+    return GoGoogleDrive;
+}(gcs.GoCloudStorage));
+exports.GoGoogleDrive = GoGoogleDrive;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var gcs = __webpack_require__(0);
+var GoOneDrive = (function (_super) {
+    __extends(GoOneDrive, _super);
+    function GoOneDrive(managedDiagrams, clientId, defaultModel, iconsRelativeDirectory) {
+        var _this = _super.call(this, managedDiagrams, defaultModel, clientId, iconsRelativeDirectory) || this;
+        _this._oauthToken = null;
+        _this.ui.id = 'goOneDriveSavePrompt';
+        if (window['OneDrive']) {
+            _this._oneDriveFilepicker = window['OneDrive'];
+        }
+        _this.authorize(false);
+        _this._serviceName = 'Microsoft OneDrive';
+        _this._className = 'GoOneDrive';
+        return _this;
+    }
+    Object.defineProperty(GoOneDrive.prototype, "oauthToken", {
+        get: function () { return this._oauthToken; },
+        set: function (value) { this._oauthToken = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoOneDrive.prototype, "oneDriveFilepicker", {
+        get: function () { return this._oneDriveFilepicker; },
+        enumerable: true,
+        configurable: true
+    });
+    GoOneDrive.prototype.authorize = function (refreshToken) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (!refreshToken && window.location.hash.indexOf('access_token') !== -1) {
+                var accessToken = window.location.hash.substring(window.location.hash.indexOf('=') + 1, window.location.hash.indexOf('&'));
+                storage.oauthToken = accessToken;
+                resolve(true);
+            }
+            else if (refreshToken) {
+                var authUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=' + storage.clientId +
+                    '&scope=files.readwrite.all&response_type=token&redirect_uri=' + window.location.href + '';
+                window.location.href = authUrl;
+                resolve(true);
+            }
+        });
+    };
+    GoOneDrive.prototype.getUserInfo = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            if (!storage.oauthToken) {
+                if (window.location.hash.indexOf('access_token') === -1) {
+                    reject('No acessToken in current uri');
+                    storage.authorize(true);
+                }
+                else {
+                    reject('oauthToken not set');
+                    storage.authorize(false);
+                }
+            }
+            else {
+                xhr.open('GET', 'https://graph.microsoft.com/v1.0/me');
+                xhr.setRequestHeader('Authorization', 'Bearer ' + storage.oauthToken);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        resolve(JSON.parse(xhr.response));
+                    }
+                    else if (xhr.status === 401) {
+                        storage.authorize(true);
+                        reject(xhr.response);
+                    }
+                };
+                xhr.send();
+            }
+        });
+    };
+    GoOneDrive.prototype.checkFileExists = function (path) {
+        var storage = this;
+        if (path.indexOf('.diagram') === -1)
+            path += '.diagram';
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://graph.microsoft.com/v1.0' + path, true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + storage.oauthToken);
+            xhr.onreadystatechange = function () {
+                var bool;
+                var err;
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        bool = true;
+                    }
+                    else if (xhr.status === 401) {
+                        storage.authorize(true);
+                    }
+                    else if (xhr.status === 404) {
+                        bool = false;
+                    }
+                    else {
+                        err = xhr.response;
+                    }
+                    resolve(bool);
+                    if (err)
+                        reject(err);
+                }
+            };
+            xhr.send();
+        });
+    };
+    GoOneDrive.prototype.getFile = function (path, token) {
+        var storage = this;
+        if (path.indexOf('.diagram') === -1)
+            path += '.diagram';
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://graph.microsoft.com/v1.0' + path, true);
+            var t = (token) ? token : storage.oauthToken;
+            xhr.setRequestHeader('Authorization', 'Bearer ' + t);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var file = JSON.parse(xhr.response);
+                        resolve(file);
+                    }
+                    else if (xhr.status === 401) {
+                        storage.authorize(true);
+                    }
+                    else {
+                        reject(xhr.response);
+                    }
+                }
+            };
+            xhr.send();
+        });
+    };
+    GoOneDrive.prototype.showUI = function () {
+        var storage = this;
+        var ui = storage.ui;
+        ui.innerHTML = '';
+        ui.style.visibility = 'visible';
+        ui.innerHTML = "<img class='icons' src='" + storage.iconsRelativeDirectory + "oneDrive.png'></img><strong>Save Diagram As</strong><hr></hr>";
+        var userInputDiv = document.createElement('div');
+        userInputDiv.id = 'userInputDiv';
+        userInputDiv.innerHTML += '<input id="userInput" placeholder="Enter filename"></input>';
+        ui.appendChild(userInputDiv);
+        var submitDiv = document.createElement('div');
+        submitDiv.id = 'submitDiv';
+        var actionButton = document.createElement('button');
+        actionButton.id = 'actionButton';
+        actionButton.textContent = 'Save';
+        actionButton.onclick = function () {
+            storage.saveWithUI();
+        };
+        submitDiv.appendChild(actionButton);
+        ui.appendChild(submitDiv);
+        var cancelDiv = document.createElement('div');
+        cancelDiv.id = 'cancelDiv';
+        var cancelButton = document.createElement('button');
+        cancelButton.id = 'cancelButton';
+        cancelButton.textContent = 'Cancel';
+        cancelButton.onclick = function () {
+            storage.hideUI(true);
+        };
+        cancelDiv.appendChild(cancelButton);
+        ui.appendChild(cancelDiv);
+        return storage._deferredPromise.promise;
+    };
+    GoOneDrive.prototype.saveWithUI = function () {
+        var storage = this;
+        var ui = storage.ui;
+        return new Promise(function (resolve, reject) {
+            if (ui.style.visibility === 'hidden') {
+                resolve(storage.showUI());
+            }
+            else {
+                var saveName_1 = document.getElementById('userInput').value;
+                if (saveName_1 && saveName_1.indexOf('.diagram') === -1)
+                    saveName_1 += '.diagram';
+                var odOptions = {
+                    clientId: storage.clientId,
+                    action: 'query',
+                    openInNewWindow: true,
+                    success: function (selection) {
+                        var folder = selection.value[0];
+                        var token = selection.accessToken;
+                        storage.currentDiagramFile = {
+                            id: null,
+                            name: saveName_1,
+                            token: token,
+                            parentReference: {
+                                driveId: folder['parentReference']['driveId'],
+                                id: folder['id']
+                            },
+                            path: 'placeholder'
+                        };
+                        storage.hideUI();
+                        storage.save();
+                    }
+                };
+                if (saveName_1 && saveName_1 !== '' && saveName_1 !== undefined)
+                    storage.oneDriveFilepicker.save(odOptions);
+                else
+                    reject('Cannot save file to OneDrive with save name ' + saveName_1);
+            }
+        });
+    };
+    GoOneDrive.prototype.save = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                var xhr_1 = new XMLHttpRequest();
+                if (path.indexOf('.diagram') === -1)
+                    path += '.diagram';
+                var bodyContent = storage.makeSaveFile();
+                xhr_1.open('PUT', 'https://graph.microsoft.com/v1.0' + path + ':/content', true);
+                xhr_1.setRequestHeader('Authorization', 'Bearer ' + storage.oauthToken);
+                xhr_1.setRequestHeader('Content-Type', 'application/json');
+                xhr_1.onreadystatechange = function () {
+                    if (xhr_1.readyState === 4) {
+                        if (xhr_1.status >= 200 && xhr_1.status < 300) {
+                            var file = JSON.parse(xhr_1.response);
+                            var savedFile = {
+                                name: file['name'], id: file['id'],
+                                path: file['parentReference']['path'] + '/' + file['name'], parentReference: file['parentReference']
+                            };
+                            resolve(savedFile);
+                        }
+                        else if (xhr_1.status === 401) {
+                            storage.authorize(true);
+                        }
+                        else {
+                            throw Error(xhr_1.response);
+                        }
+                    }
+                };
+                xhr_1.send(bodyContent);
+            }
+            else if (storage.currentDiagramFile.path) {
+                var token_1 = storage.currentDiagramFile.token;
+                var url = storage.generateGraphUrl(storage.currentDiagramFile, true, true);
+                var bodyContent = storage.makeSaveFile();
+                var t = (!token_1) ? storage.oauthToken : storage.currentDiagramFile.token;
+                var xhr_2 = new XMLHttpRequest();
+                xhr_2.open('PUT', url, true);
+                xhr_2.setRequestHeader('Authorization', 'Bearer ' + t);
+                xhr_2.onload = function () {
+                    if (xhr_2.readyState === 4 && (xhr_2.status === 200 || xhr_2.status === 201)) {
+                        var file = JSON.parse(xhr_2.response);
+                        var savedFile = {
+                            name: file['name'], id: file['id'],
+                            path: file['parentReference']['path'] + '/' + file['name'], token: token_1, parentReference: file['parentReference']
+                        };
+                        storage.currentDiagramFile = savedFile;
+                        resolve(savedFile);
+                        storage._deferredPromise.promise.resolve(savedFile);
+                        storage._deferredPromise.promise = storage.makeDeferredPromise();
+                    }
+                    else {
+                        reject(xhr_2.response);
+                    }
+                };
+                xhr_2.send(bodyContent);
+            }
+            else {
+                resolve(storage.saveWithUI());
+            }
+        });
+    };
+    GoOneDrive.prototype.loadWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var odOptions = {
+                clientId: storage.clientId,
+                action: 'share',
+                multiSelect: false,
+                advanced: {
+                    filter: '.diagram'
+                },
+                success: function (files) {
+                    var file = files['value'][0];
+                    var token = files['accessToken'];
+                    var filePath = file['parentReference']['path'] + '/' + file['name'];
+                    resolve(storage.load(filePath, token));
+                }
+            };
+            storage.oneDriveFilepicker.open(odOptions);
+        });
+    };
+    GoOneDrive.prototype.load = function (path, token) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                var t = (token) ? token : storage.oauthToken;
+                storage.getFile(path, t).then(function (file) {
+                    var downloadLink = file['@microsoft.graph.downloadUrl'];
+                    var downloadxhr = new XMLHttpRequest();
+                    downloadxhr.open('GET', downloadLink, true);
+                    downloadxhr.onreadystatechange = function () {
+                        if (downloadxhr.readyState === 4) {
+                            if (downloadxhr.status === 200) {
+                                storage.loadFromFileContents(downloadxhr.response);
+                                var loadedFile = {
+                                    name: file['name'], id: file['id'], path: file['parentReference']['path'] + '/' + file['name'], token: token,
+                                    parentReference: { id: file['parentReference']['id'], driveId: file['parentReference']['driveId'] }
+                                };
+                                storage.currentDiagramFile = loadedFile;
+                                resolve(loadedFile);
+                            }
+                        }
+                    };
+                    downloadxhr.send();
+                });
+            }
+            else
+                reject('Cannot load file from OneDrive with path ' + path);
+        });
+    };
+    GoOneDrive.prototype.removeWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var odOptions = {
+                clientId: storage.clientId,
+                action: 'share',
+                openInNewWindow: true,
+                success: function (files) {
+                    if (files) {
+                        var file = files['value'][0];
+                        var token_2 = files['accessToken'];
+                        var filePath_1 = file['parentReference']['path'] + '/' + file['name'];
+                        resolve(new Promise(function (res, rej) {
+                            res(storage.remove(filePath_1, token_2));
+                        }));
+                    }
+                }
+            };
+            storage.oneDriveFilepicker.open(odOptions);
+        });
+    };
+    GoOneDrive.prototype.remove = function (path, token) {
+        var storage = this;
+        var t = (token) ? token : storage.oauthToken;
+        return new Promise(function (resolve, reject) {
+            storage.getFile(path, t).then(function (file) {
+                var deletedFile = { name: file['name'], id: file['id'], path: file['parentReference']['path'] + '/' + file['name'] };
+                var xhr = new XMLHttpRequest();
+                xhr.open('DELETE', 'https://graph.microsoft.com/v1.0' + path, true);
+                xhr.setRequestHeader('Authorization', 'Bearer' + t);
+                xhr.onload = function () {
+                    if (xhr.readyState === 4 && xhr.status === 204) {
+                        if (storage.currentDiagramFile && path === storage.currentDiagramFile.path)
+                            storage.currentDiagramFile = { id: null, path: null, name: null };
+                        resolve(deletedFile);
+                    }
+                    else if (xhr.status === 401) {
+                        storage.authorize(true);
+                    }
+                    else {
+                        reject(xhr.response);
+                    }
+                };
+                xhr.send();
+            }).catch(function (err) {
+                throw Error(err);
+            });
+        });
+    };
+    GoOneDrive.prototype.generateGraphUrl = function (driveItem, targetParentFolder, itemRelativeApiPath) {
+        var url = 'https://graph.microsoft.com/v1.0/';
+        if (targetParentFolder)
+            url += 'drives/' + driveItem['parentReference']['driveId'] + '/items/' + driveItem['parentReference']['id'] + '/children/' + driveItem['name'];
+        else
+            url += 'drives/' + driveItem['parentReference']['driveId'] + '/items/' + driveItem['id'];
+        if (itemRelativeApiPath)
+            url += '/content';
+        return url;
+    };
+    return GoOneDrive;
+}(gcs.GoCloudStorage));
+exports.GoOneDrive = GoOneDrive;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var gcs = __webpack_require__(0);
+var GoNetCore = (function (_super) {
+    __extends(GoNetCore, _super);
+    function GoNetCore(managedDiagrams, rootEndpoint, defaultModel, iconsRelativeDirectory) {
+        var _this = _super.call(this, managedDiagrams, defaultModel) || this;
+        _this._rootEndpoint = rootEndpoint;
+        _this.ui.id = 'goNetCoreCustomFilepicker';
+        _this._serviceName = 'Microsoft ASP .NET Core Web API';
+        _this._className = 'GoNetCore';
+        return _this;
+    }
+    Object.defineProperty(GoNetCore.prototype, "rootEndpoint", {
+        get: function () { return this._rootEndpoint; },
+        enumerable: true,
+        configurable: true
+    });
+    GoNetCore.prototype.authorize = function (refreshToken) {
+        if (refreshToken === void 0) { refreshToken = false; }
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(true);
+        });
+    };
+    GoNetCore.prototype.showUI = function (action, numAdditionalFiles) {
+        var storage = this;
+        var ui = storage.ui;
+        var spacestring = 'qwe45qw34';
+        if (!numAdditionalFiles)
+            numAdditionalFiles = 0;
+        var maxFilesToShow = GoNetCore._MIN_FILES_IN_UI + numAdditionalFiles;
+        ui.innerHTML = '';
+        var title = action + ' Diagram File';
+        ui.innerHTML += '<strong>' + title + '</strong><hr></hr>';
+        document.getElementsByTagName('body')[0].appendChild(ui);
+        ui.style.visibility = 'visible';
+        var filesDiv = document.createElement('div');
+        filesDiv.id = 'fileOptions';
+        var savedDiagrams = [];
+        var numFilesToCheck = GoNetCore._MIN_FILES_IN_UI + numAdditionalFiles;
+        var numFilesChecked = 0;
+        var hasCheckedAllFiles = false;
+        storage.getFiles().then(function (files) {
+            if (files.length !== 0) {
+                for (var i in files) {
+                    var item = files[i];
+                    if (savedDiagrams.length < maxFilesToShow) {
+                        numFilesChecked++;
+                        var fileContent = item.file;
+                        if (fileContent && fileContent.indexOf('GraphLinksModel' || false) !== -1) {
+                            var file = { name: item.name, id: item.id };
+                            savedDiagrams.push(file);
+                        }
+                        if (numFilesChecked === files.length)
+                            hasCheckedAllFiles = true;
+                    }
+                }
+            }
+            else
+                hasCheckedAllFiles = true;
+            if (savedDiagrams.length !== 0) {
+                for (var i = 0; i < savedDiagrams.length; i++) {
+                    var item = savedDiagrams[i];
+                    var name_1 = item.name;
+                    var id = item.id;
+                    if (action !== 'Save') {
+                        filesDiv.innerHTML +=
+                            "<div class='fileOption'>" +
+                                '<input id=' + id + " type='radio' name='localStorageFile' />" +
+                                '<label id =' + id + '-label' + " for='" + name_1 + "'>" + name_1 + '</label>' +
+                                '</div>';
+                    }
+                    else {
+                        filesDiv.innerHTML +=
+                            "<div class='fileOption'>" +
+                                '<label id =' + id + '-label' + " for='" + id + "'>" + name_1 + '</label>' +
+                                '</div>';
+                    }
+                }
+            }
+            if (!hasCheckedAllFiles) {
+                var num_1 = numAdditionalFiles + 50;
+                filesDiv.innerHTML += "<p>There may be more diagram files not shown. <a id='netCoreLoadMoreFiles'>Click here</a> to try loading more.</p>";
+                document.getElementById('netCoreLoadMoreFiles').onclick = function () {
+                    storage.showUI(action, num_1);
+                };
+            }
+            ui.appendChild(filesDiv);
+            if (storage.currentDiagramFile.id) {
+                var el = document.getElementById(storage.currentDiagramFile.id + '-label');
+                if (el)
+                    el.style.fontStyle = 'italic';
+            }
+            if (action === 'Save') {
+                var userInputDiv = document.createElement('div');
+                userInputDiv.id = 'userInputDiv';
+                userInputDiv.innerHTML += '<span>Save Diagram As </span><input id="userInput" placeholder="Enter filename"></input>';
+                ui.appendChild(userInputDiv);
+            }
+            var submitDiv = document.createElement('div');
+            submitDiv.id = 'submitDiv';
+            var actionButton = document.createElement('button');
+            actionButton.textContent = action;
+            actionButton.id = 'actionButton';
+            actionButton.onclick = function () {
+                storage.processUIResult(action);
+            };
+            submitDiv.appendChild(actionButton);
+            ui.appendChild(submitDiv);
+            var cancelDiv = document.createElement('div');
+            var cancelButton = document.createElement('button');
+            cancelButton.id = 'cancelButton';
+            cancelButton.textContent = 'Cancel';
+            cancelButton.onclick = function () {
+                storage.hideUI(true);
+            };
+            cancelDiv.appendChild(cancelButton);
+            ui.appendChild(cancelDiv);
+        });
+        return storage._deferredPromise['promise'];
+    };
+    GoNetCore.prototype.processUIResult = function (action) {
+        var storage = this;
+        function getSelectedFile() {
+            var radios = document.getElementsByName('localStorageFile');
+            var selectedFile = null;
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedFile = radios[i].id.replace(/qwe45qw34/g, ' ');
+                }
+            }
+            if (selectedFile)
+                return selectedFile;
+            else
+                return null;
+        }
+        var file = getSelectedFile();
+        switch (action) {
+            case 'Save': {
+                var name_2 = document.getElementById('userInput').value;
+                if (name_2) {
+                    name_2 += '.diagram';
+                    storage.save(name_2);
+                }
+                else {
+                }
+                break;
+            }
+            case 'Load': {
+                storage.load(file);
+                break;
+            }
+            case 'Delete': {
+                storage.remove(file);
+                break;
+            }
+        }
+        storage.hideUI();
+    };
+    GoNetCore.prototype.getFile = function (path) {
+        var storage = this;
+        var url = storage.rootEndpoint + path;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                var xhr_1 = new XMLHttpRequest();
+                xhr_1.open('GET', url, true);
+                xhr_1.onreadystatechange = function () {
+                    if (xhr_1.readyState === 4) {
+                        if (xhr_1.status >= 200 && xhr_1.status < 300) {
+                            resolve((JSON.parse(xhr_1.response)));
+                        }
+                    }
+                };
+                xhr_1.send();
+            }
+            else
+                reject('Cannot get diagram file from ASP .NET Core Web API with id ' + path);
+        });
+    };
+    GoNetCore.prototype.getFiles = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', storage.rootEndpoint, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve(JSON.parse(xhr.response));
+                    }
+                    else
+                        reject(xhr.response);
+                }
+            };
+            xhr.send();
+        });
+    };
+    GoNetCore.prototype.checkFileExists = function (path) {
+        var storage = this;
+        var url = storage.rootEndpoint + path;
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve((true));
+                    }
+                    else {
+                        resolve(false);
+                    }
+                }
+            };
+            xhr.send();
+        });
+    };
+    GoNetCore.prototype.saveWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storage.showUI('Save'));
+        });
+    };
+    GoNetCore.prototype.save = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (storage.currentDiagramFile.id && !path) {
+                var xhr_2 = new XMLHttpRequest();
+                storage.getFile(storage.currentDiagramFile.id).then(function (resp) {
+                    var item = {
+                        id: storage.currentDiagramFile.id,
+                        name: storage.currentDiagramFile.name,
+                        file: storage.makeSaveFile()
+                    };
+                    var savedFile = { id: item.id, name: item.name, path: item.name };
+                    xhr_2.open('PUT', storage.rootEndpoint + storage.currentDiagramFile.id, true);
+                    xhr_2.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+                    xhr_2.onreadystatechange = function () {
+                        if (xhr_2.readyState === 4) {
+                            if (xhr_2.status > 200 && xhr_2.status < 300) {
+                                resolve(savedFile);
+                            }
+                            else {
+                                reject(xhr_2.responseText);
+                            }
+                        }
+                    };
+                    xhr_2.send(JSON.stringify(item));
+                });
+            }
+            else {
+                var xhr_3 = new XMLHttpRequest();
+                var item_1 = {
+                    name: (path !== null) ? path : 'New diagram',
+                    file: storage.makeSaveFile()
+                };
+                xhr_3.open('POST', storage.rootEndpoint, true);
+                xhr_3.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+                xhr_3.onreadystatechange = function () {
+                    if (xhr_3.readyState === 4) {
+                        if (xhr_3.status > 200 && xhr_3.status < 300) {
+                            var id = JSON.parse(xhr_3.response).id;
+                            var savedFile = { id: id, name: item_1.name, path: item_1.name };
+                            storage.currentDiagramFile = savedFile;
+                            resolve(savedFile);
+                            storage._deferredPromise['promise'].resolve(savedFile);
+                            storage._deferredPromise['promise'] = storage.makeDeferredPromise();
+                        }
+                        else {
+                            reject(xhr_3.responseText);
+                        }
+                    }
+                };
+                xhr_3.send(JSON.stringify(item_1));
+            }
+        });
+    };
+    GoNetCore.prototype.loadWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storage.showUI('Load'));
+        }).catch(function (e) {
+            throw Error(e);
+        });
+    };
+    GoNetCore.prototype.load = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                var xhr_4 = new XMLHttpRequest();
+                xhr_4.open('GET', storage.rootEndpoint + path, true);
+                xhr_4.onreadystatechange = function () {
+                    if (xhr_4.readyState === 4) {
+                        if (xhr_4.status >= 200 && xhr_4.status < 300) {
+                            var respJSON = JSON.parse(xhr_4.response);
+                            storage.loadFromFileContents(respJSON.file);
+                            var loadedFile = { id: respJSON.id, path: respJSON.name, name: respJSON.name };
+                            storage.currentDiagramFile = loadedFile;
+                            resolve(loadedFile);
+                            storage._deferredPromise.promise.resolve(loadedFile);
+                            storage._deferredPromise.promise = storage.makeDeferredPromise();
+                        }
+                        else {
+                            reject(xhr_4.responseText);
+                        }
+                    }
+                };
+                xhr_4.send();
+            }
+            else
+                throw Error('Cannot load file from .NET Core Web API with path ' + path);
+        }).catch(function (e) {
+            throw Error(e);
+        });
+    };
+    GoNetCore.prototype.removeWithUI = function () {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storage.showUI('Delete'));
+        });
+    };
+    GoNetCore.prototype.remove = function (path) {
+        var storage = this;
+        return new Promise(function (resolve, reject) {
+            if (path) {
+                storage.getFile(path).then(function (resp) {
+                    var deletedFile = { name: resp.name, path: resp.name, id: path };
+                    if (storage.currentDiagramFile && resp.name === storage.currentDiagramFile.name)
+                        storage.currentDiagramFile = { name: null, path: null, id: null };
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', storage.rootEndpoint + path, true);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                resolve(deletedFile);
+                                storage._deferredPromise['promise'].resolve(deletedFile);
+                                storage._deferredPromise['promise'] = storage.makeDeferredPromise();
+                            }
+                            else {
+                                reject(xhr.responseText);
+                            }
+                        }
+                    };
+                    xhr.send();
+                });
+            }
+            else
+                throw Error('Cannot delete file from local storage with id ' + path);
+        });
+    };
+    GoNetCore._MIN_FILES_IN_UI = 100;
+    return GoNetCore;
+}(gcs.GoCloudStorage));
+exports.GoNetCore = GoNetCore;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var go = __webpack_require__(1);
+var gcs = __webpack_require__(0);
+var GoCloudStorageManager = (function () {
+    function GoCloudStorageManager(storages, iconsRelativeDirectory) {
+        if (storages instanceof Array) {
+            var storagesSet = new go.Set();
+            for (var i = 0; i < storages.length; i++) {
+                if (!(storages[i] instanceof gcs.GoCloudStorage)) {
+                    throw new Error("Cannot create GoCloudStorageManager; provided 'storages' parameter elements are not all of type GoCloudStorage");
+                }
+                else {
+                    storagesSet.add(storages[i]);
+                }
+            }
+            storages = storagesSet;
+        }
+        if (!(storages instanceof go.Set) || !storages)
+            throw Error("Cannot create GoCloudStorageManager with provided 'storages' parameter");
+        var storageManager = this;
+        storageManager._storages = storages;
+        storageManager._currentStorage = storages.first();
+        var menu = document.createElement('div');
+        menu.id = 'goCloudStorageManagerMenu';
+        storageManager._menu = menu;
+        storageManager._deferredPromise = { promise: gcs.GoCloudStorage.prototype.makeDeferredPromise() };
+        storageManager._iconsRelativeDirectory = (!!iconsRelativeDirectory) ? iconsRelativeDirectory : '../goCloudStorageIcons/';
+        if (iconsRelativeDirectory) {
+            storageManager._storages.iterator.each(function (storage) {
+                storage.iconsRelativeDirectory = iconsRelativeDirectory;
+            });
+        }
+        if (window.location.href.indexOf('account_id=dbid') !== -1) {
+            storages.iterator.each(function (storage) {
+                if (storage.className === 'GoDropBox') {
+                    storageManager._currentStorage = storage;
+                    storageManager.currentStorage.authorize();
+                }
+            });
+        }
+        document.getElementsByTagName('body')[0].appendChild(storageManager.menu);
+    }
+    Object.defineProperty(GoCloudStorageManager.prototype, "storages", {
+        get: function () { return this._storages; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorageManager.prototype, "iconsRelativeDirectory", {
+        get: function () { return this._iconsRelativeDirectory; },
+        set: function (value) { this._iconsRelativeDirectory = value; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorageManager.prototype, "menu", {
+        get: function () { return this._menu; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GoCloudStorageManager.prototype, "currentStorage", {
+        get: function () { return this._currentStorage; },
+        set: function (value) { this._currentStorage = value; },
+        enumerable: true,
+        configurable: true
+    });
+    GoCloudStorageManager.prototype.create = function (saveBeforeCreate) {
+        if (saveBeforeCreate === void 0) { saveBeforeCreate = false; }
+        var storageManager = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storageManager.handleAction('Create', saveBeforeCreate));
+        });
+    };
+    GoCloudStorageManager.prototype.load = function () {
+        var storageManager = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storageManager.handleAction('Load'));
+        });
+    };
+    GoCloudStorageManager.prototype.remove = function () {
+        var storageManager = this;
+        return new Promise(function (resolve, reject) {
+            resolve(storageManager.handleAction('Remove'));
+        });
+    };
+    GoCloudStorageManager.prototype.save = function (isSaveAs) {
+        if (isSaveAs === void 0) { isSaveAs = true; }
+        var storageManager = this;
+        return new Promise(function (resolve, reject) {
+            if (isSaveAs)
+                resolve(storageManager.handleAction('SaveAs'));
+            else
+                resolve(storageManager.handleAction('Save'));
+        });
+    };
+    GoCloudStorageManager.prototype.showMessage = function (msg, seconds) {
+        if (!seconds)
+            seconds = 2;
+        var messageBox = document.createElement('div');
+        messageBox.id = 'goCloudStorageManagerMessageBox';
+        messageBox.innerHTML = '<p>' + msg + '</p>';
+        document.body.appendChild(messageBox);
+        setTimeout(function () {
+            messageBox.style.opacity = '0';
+            setTimeout(function () { messageBox.parentNode.removeChild(messageBox); }, 1000);
+        }, 1000 * seconds);
+    };
+    GoCloudStorageManager.prototype.getStorageIconPath = function (className) {
+        var storageManager = this;
+        if (storageManager.iconsRelativeDirectory == null || storageManager.iconsRelativeDirectory === undefined)
+            return null;
+        var src = storageManager.iconsRelativeDirectory;
+        switch (className) {
+            case 'GoGoogleDrive': {
+                src += 'googleDrive.jpg';
+                break;
+            }
+            case 'GoOneDrive': {
+                src += 'oneDrive.png';
+                break;
+            }
+            case 'GoLocalStorage': {
+                src += 'localStorage.png';
+                break;
+            }
+            case 'GoDropBox': {
+                src += 'dropBox.png';
+                break;
+            }
+        }
+        return src;
+    };
+    GoCloudStorageManager.prototype.selectStorageService = function () {
+        var storageManager = this;
+        var storages = this.storages;
+        return new Promise(function (resolve, reject) {
+            var menu = storageManager.menu;
+            var title = 'Select Storage Service';
+            menu.innerHTML = '<strong>' + title + '</strong><hr></hr>';
+            var selectedStorage = document.createElement('p');
+            selectedStorage.id = 'gcsmSelectedStorage';
+            selectedStorage.innerHTML = storageManager.currentStorage.serviceName;
+            menu.appendChild(selectedStorage);
+            menu.onchange = function () {
+                var radios = document.getElementsByName('storageSelection');
+                var selectedStorageClassName = null;
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) {
+                        selectedStorageClassName = radios[i].id;
+                    }
+                }
+                var serviceNameStr = '';
+                storages.iterator.each(function (s) {
+                    if (s.className === selectedStorageClassName) {
+                        serviceNameStr = s.serviceName;
+                    }
+                });
+                document.getElementById('gcsmSelectedStorage').innerHTML = serviceNameStr;
+            };
+            storageManager.menu.style.visibility = 'visible';
+            var optionsDiv = document.createElement('div');
+            optionsDiv.id = 'storageOptions';
+            var it = storages.iterator;
+            it.each(function (storage) {
+                var type = storage.className;
+                var src = storageManager.getStorageIconPath(type);
+                var isChecked = storage.className === storageManager.currentStorage.className;
+                var checkedStr = '';
+                if (isChecked)
+                    checkedStr = 'checked';
+                optionsDiv.innerHTML +=
+                    '<label>' +
+                        '<input id=' + type + " type='radio' name='storageSelection' " + checkedStr + ' />' +
+                        "<img class='storageLogo' src=" + src + ' >';
+            });
+            menu.appendChild(optionsDiv);
+            var description = 'This will be where you save / load diagram model data to / from. You will need to grant GoCloudStorage permission to access your files on the selected storage service.';
+            menu.innerHTML += "<p class='description'>" + description + '</p>';
+            var submitDiv = document.createElement('div');
+            var actionButton = document.createElement('button');
+            actionButton.id = 'actionButton';
+            actionButton.textContent = 'Select';
+            actionButton.onclick = function () {
+                var radios = document.getElementsByName('storageSelection');
+                var selectedStorage = null;
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) {
+                        selectedStorage = radios[i].id;
+                    }
+                }
+                storageManager.storages.each(function (storage) {
+                    if (storage.className === selectedStorage)
+                        storageManager.currentStorage = storage;
+                });
+                if (storageManager.currentStorageNeedsAuth()) {
+                    storageManager.currentStorage.authorize().then(function (resp) {
+                    });
+                }
+                resolve(storageManager.currentStorage);
+                storageManager.hideMenu();
+            };
+            submitDiv.appendChild(actionButton);
+            menu.appendChild(submitDiv);
+            var cancelDiv = document.createElement('div');
+            var cancelButton = document.createElement('button');
+            cancelButton.id = 'cancelButton';
+            cancelButton.textContent = 'Cancel';
+            cancelButton.onclick = function () {
+                storageManager.hideMenu();
+            };
+            cancelDiv.appendChild(cancelButton);
+            menu.appendChild(cancelDiv);
+        });
+    };
+    GoCloudStorageManager.prototype.hideMenu = function () {
+        var storageManager = this;
+        storageManager.menu.style.visibility = 'hidden';
+    };
+    GoCloudStorageManager.prototype.currentStorageNeedsAuth = function () {
+        var storageManager = this;
+        var currentStorageClass = storageManager.currentStorage.className;
+        if (currentStorageClass === 'GoGoogleDrive' || currentStorageClass === 'GoDropBox')
+            return true;
+        return false;
+    };
+    GoCloudStorageManager.prototype.handleAction = function (action, saveBeforeCreate) {
+        if (saveBeforeCreate === void 0) { saveBeforeCreate = false; }
+        var storageManager = this;
+        var storage = storageManager.currentStorage;
+        return new Promise(function (resolve, reject) {
+            function doAction() {
+                switch (action) {
+                    case 'Load': {
+                        resolve(storage.loadWithUI());
+                        break;
+                    }
+                    case 'SaveAs': {
+                        resolve(storage.saveWithUI());
+                        break;
+                    }
+                    case 'Save': {
+                        resolve(storage.save());
+                        break;
+                    }
+                    case 'Remove': {
+                        resolve(storage.removeWithUI());
+                        break;
+                    }
+                    case 'Create': {
+                        resolve(storage.create(null, saveBeforeCreate));
+                        break;
+                    }
+                }
+                storageManager.hideMenu();
+            }
+            if (storageManager.currentStorageNeedsAuth()) {
+                storage.authorize().then(function () {
+                    doAction();
+                });
+            }
+            else
+                doAction();
+        });
+    };
+    return GoCloudStorageManager;
+}());
+exports.GoCloudStorageManager = GoCloudStorageManager;
+
+
+/***/ })
+/******/ ]);
