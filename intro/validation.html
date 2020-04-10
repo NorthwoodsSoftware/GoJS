@@ -533,9 +533,67 @@ whereas setting the property on the <a>TextBlock</a> only applies to that text o
 </p>
 <p>
   If you want to execute code after a text edit completes, implement a "TextEdited"
-  <a>DiagramEvent</a> listener by calling <a>Diagram.addDiagramListener</a>.
+  <a>DiagramEvent</a> listener.
 </p>
 
+<h3 id="ShowingTextEditingErrorMessage">Showing a Text Editing Error Message</h3>
+<p>
+If you would like to show a custom error message when text validation fails,
+one way is to show a tooltip <a>Adornment</a>.
+Here is an example where a valid string must contain the letter "W".
+</p>
+<pre class="lang-js" id="textEditingMessage">
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape,
+      { fill: "white", portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" },
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      {
+        margin: 8,
+        editable: true,
+        isMultiline: false,
+        textValidation: function(tb, olds, news) {
+          return news.indexOf("W") >= 0;  // new string must contain a "W"
+        },
+        errorFunction: function(tool, olds, news) {
+          // create and show tooltip about why editing failed for this textblock
+          var mgr = tool.diagram.toolManager;
+          mgr.hideToolTip();  // hide any currently showing tooltip
+          var node = tool.textBlock.part;
+          // create a GoJS tooltip, which is an Adornment
+          var tt = $("ToolTip",
+                      {
+                        "Border.fill": "pink",
+                        "Border.stroke": "red",
+                        "Border.strokeWidth": 2
+                      },
+                      $(go.TextBlock,
+                        "Unable to replace the string '" + olds + "' with '" + news +
+                        "' on node '" + node.key +
+                        "'\nbecause the new string does not contain the capital letter 'W'."));
+          mgr.showToolTip(tt, node);
+        },
+        textEdited: function(tb, olds, news) {
+          var mgr = tb.diagram.toolManager;
+          mgr.hideToolTip();
+        }
+      },
+      new go.Binding("text").makeTwoWay())
+  );
+
+diagram.model = new go.GraphLinksModel([
+  { key: 1, text: "Alpha" },
+  { key: 2, text: "Beta" }
+], [
+  { from: 1, to: 2 }
+]);
+</pre>
+<script>goCode("textEditingMessage", 600, 200)</script>
+<p>
+  Try editing the text of a node by twice clicking on some text.
+  If the string does not have the letter "W" in it, it will show an error message describing the problem.
+</p>
 </div>
 </div>
 </body>

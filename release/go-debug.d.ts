@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.12
+ * Type definitions for GoJS v2.1.13
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11942,9 +11942,11 @@ export class Diagram {
      *     Can be constrained by the **maxSize** property. A scale value of `NaN` will
      *     automatically scale to fit within the maxSize, but may be smaller, with a maximum computed scale of 1.
      *   - **maxSize:**
-     *     The maximum size of the created image, as a Size. The default value is `(Infinity, Infinity)` for SVG and `(2000, 2000)` for images.
+     *     The maximum size of the created image, as a Size.
+     *     The default value is `(Infinity, Infinity)` for SVG and `(2000, 2000)` for images.
      *     This is typically used when **scale** is specified and helps prevent accidental excessive memory usage,
-     *     which is especially useful in limited-memory environments.  You cannot use Infinity when providing a maximum size for an image.
+     *     which is especially needed in limited-memory environments.
+     *     You cannot use Infinity when providing a maximum size for an image -- consider calling #makeSvg instead.
      *   - **position:**
      *     The position of the diagram, as a Point.
      *     By default this is the position of Diagram#documentBounds with the Diagram#padding removed.
@@ -11976,7 +11978,7 @@ export class Diagram {
      *     The optional MIME type of the image. Valid values are typically `"image/png"` and `"image/jpeg"`.
      *     Some browsers allow `"image/webp"`. The default value is `"image/png"`, and unrecognized values will defer to the default.
      *   - **returnType:**
-     *     The optional return type of the image data. Valid values are `"ImageData"`, `"string"`, and `"blob"`.
+     *     The optional return type of the image data. Valid values are `"ImageData"`, `"Image"`, `"string"`, and `"blob"`.
      *     The `"string"` option returns a base64 string representation of the image.
      *     The `"ImageData"` option returns an `ImageData` object representation of the image.
      *     The `"Image"` option returns an `HTMLImageElement` using `ImageData` as the `HTMLImageElement.src`.

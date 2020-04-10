@@ -24,7 +24,8 @@
 
             // use a virtualized ForceDirectedLayout which does not require
             // that the Nodes and Links exist first for an accurate layout
-            layout: $(VirtualizedForceDirectedLayout, { maxIterations: 25 }),
+            layout: $(VirtualizedForceDirectedLayout,
+                      { defaultSpringLength: 10, maxIterations: 15 }),
 
             // Define the template for Nodes, used by virtualization.
             nodeTemplate:
@@ -84,29 +85,35 @@
         }
       });
 
-      // This is a status message
-      myLoading =
-        $(go.Part,  // this has to set the location or position explicitly
-          { location: new go.Point(0, 0) },
-          $(go.TextBlock, "loading...",
-            { stroke: "red", font: "20pt sans-serif" }));
+      myDiagram.delayInitialization(function() { spinDuring("mySpinner", load); });
+    }
 
-      // temporarily add the status indicator
-      myDiagram.add(myLoading);
-
-      // Allow the myLoading indicator to be shown now,
-      // but allow objects added in load to also be considered part of the initial Diagram.
-      // If you are not going to add temporary initial Parts, don't call delayInitialization.
-      myDiagram.delayInitialization(load);
+    // implement a wait spinner in HTML with CSS animation
+    function spinDuring(spinner, compute) {  // where compute is a function of zero args
+      // show the animated spinner
+      if (typeof spinner === "string") spinner = document.getElementById(spinner);
+      if (spinner) {
+        // position it in the middle of the viewport DIV
+        var x = Math.floor(myDiagram.div.offsetWidth/2 - spinner.naturalWidth/2);
+        var y = Math.floor(myDiagram.div.offsetHeight/2 - spinner.naturalHeight/2);
+        spinner.style.left = x + "px";
+        spinner.style.top = y + "px";
+        spinner.style.display = "inline";
+      }
+      setTimeout(function() {
+        try {
+          compute();  // do the computation
+        } finally {
+          if (spinner) spinner.style.display = "none";
+        }
+      }, 20);
     }
 
     function load() {
       // create a lot of data for the myWholeModel
-      generateNodes(myWholeModel, 1234, 1234);
+      generateNodes(myWholeModel, 2345, 2345);
       generateLinks(myWholeModel, 1, 5);
-
-      // remove the status indicator
-      myDiagram.remove(myLoading);
+      myDiagram.layoutDiagram(true);
     }
 
     // Creates a random number of randomly colored nodes.
@@ -343,7 +350,6 @@
       return net;
     };
 
-    /** k */
     VirtualizedForceDirectedLayout.prototype.commitLayout = function() {
       go.ForceDirectedLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
@@ -407,10 +413,15 @@
       document.getElementById("myMessage4").textContent = myDiagram.links.count;
     }
   </script>
+  <style>
+    #mySpinner { display: none; position: absolute; z-index: 100; animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body onload="init()">
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 600px"></div>
+  <img id="mySpinner" src="images/spinner.png">
   <div id="description">
   <p>This uses a <a>GraphLinksModel</a> and a virtualized <a>ForceDirectedLayout</a>.</p>
   Node data in Model: <span id="myMessage1"></span>.

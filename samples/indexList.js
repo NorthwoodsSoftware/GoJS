@@ -1440,14 +1440,6 @@ arr.push([
 ]);
 
 arr.push([
-  "minimalXML",
-  "Minimal XML",
-  "Minimal, loading XML from server.",
-  "minimal",
-  ["frameworks"]
-]);
-
-arr.push([
   "minimalBlob",
   "Minimal Image Download",
   "Minimal, showing image Blob creation with Diagram.makeImageData, and download.",

@@ -58,7 +58,7 @@
           node._temp = true;  // flag to avoid repeated searches during external drag-and-drop
           while (!isUnoccupied(r, node)) {
             r.x += 10;  // note that this is an unimaginative search algorithm --
-            r.y += 10;  // you can improve the search here to be more appropriate for your app
+            r.y += 2;  // you can improve the search here to be more appropriate for your app
           }
           r.inflate(0.5, 0.5);  // restore to actual size
           // return the proposed new location point
@@ -91,21 +91,35 @@
         );
 
       myDiagram.model = new go.GraphLinksModel([
-        { pos: "0 0", size: "50 300", color: go.Brush.randomColor() },
+        { pos: "-30 0", size: "50 300", color: go.Brush.randomColor() },
         { pos: "120 20", size: "300 50", color: go.Brush.randomColor() },
         { pos: "100 200", size: "300 50", color: go.Brush.randomColor() },
         { pos: "500 50", size: "50 300", color: go.Brush.randomColor() },
-        { key: 1, pos: "100 100", size: "50 50", color: "lightgray" },
-        { key: 2, pos: "200 140", size: "50 50", color: "lightgray" }
+        { key: 1, pos: "100 100", size: "50 50", color: "gray" },
+        { key: 2, pos: "200 140", size: "50 50", color: "gray" }
       ]);
 
       myDiagram.findNodeForKey(1).isSelected = true;
+
+      // initialize the Palette that is on the left side of the page
+      myPalette =
+        $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
+          {
+            nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
+            model: new go.GraphLinksModel([  // specify the contents of the Palette
+              { size: "50 50", color: go.Brush.randomColor() },
+              { size: "60 40", color: go.Brush.randomColor() }
+            ])
+          });
     }
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%;height: 400px"></div>
+  <div style="width: 100%; display: flex; justify-content: space-between">
+    <div id="myPaletteDiv" style="width: 100px; background-color: floralwhite; border: solid 1px black; margin-right: 2px"></div>
+    <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 400px"></div>
+  </div>
   <p>
     Drag a node around.
     Notice how you cannot force the dragged node to overlap any other (stationary) node.
@@ -115,6 +129,7 @@
   <p>
     This functionality is implemented by a custom <a>Part.dragComputation</a> property function,
     which affects how the <a>DraggingTool</a> can move selected nodes.
+    You will want to adjust how it finds an empty spot for the dragged node when dragging from another Diagram.
   </p>
 </div>
 </body>
