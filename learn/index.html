@@ -69,10 +69,10 @@
 
     <div class="container-fluid learn-container">
 
-      <h id="GoJSTutorials"2>GoJS Tutorials</h2>
+      <h2 id="GoJSTutorials">GoJS Tutorials</h2>
       <p>
         For video tutorials, see our <a href="https://www.nwoods.com/videos.html">YouTube videos</a>.
-        For the textual tutorials, read on.
+        For textual tutorials, read on.
       </p>
 
       <p>
@@ -96,7 +96,7 @@
       </pre>
 
       <p>
-        You can download <b>GoJS</b> (and all the samples) <a target="_blank" href="../download.html">here</a>.
+        You can download <b>GoJS</b> and all the documentation and samples from <a target="_blank" href="../download.html">here</a>.
         Alternatively you can link straight to a <b>GoJS</b> library provided by a
         <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Glossary/CDN">CDN</a> such as:
         <pre class="lang-html">&lt;script src="https://unpkg.com/gojs/release/go-debug.js"&gt;&lt;/script&gt;</pre>
@@ -168,12 +168,12 @@ var myDiagram =
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
-    {
-      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+    { // enable Ctrl-Z to undo and Ctrl-Y to redo
+      "undoManager.isEnabled": true
     });
 
 var myModel = $(go.Model);
-// in the model data, each node is represented by a JavaScript object:
+// for each object in this Array, the Diagram creates a Node to represent it
 myModel.nodeDataArray = [
   { key: "Alpha" },
   { key: "Beta" },
@@ -188,12 +188,12 @@ myDiagram.model = myModel;
         var $ = go.GraphObject.make;
         var myDiagram =
           $(go.Diagram, "myDiagramDiv2",
-            {
-              "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+            { // enable Ctrl-Z to undo and Ctrl-Y to redo
+              "undoManager.isEnabled": true
             });
 
         var myModel = $(go.Model);
-        // in the model data, each node is represented by a JavaScript object:
+        // for each object in this Array, the Diagram creates a Node to represent it
         myModel.nodeDataArray = [
           { key: "Alpha" },
           { key: "Beta" },
@@ -214,6 +214,10 @@ myDiagram.model = myModel;
           Press the Delete key to delete selected nodes.
           (Read about more <a href="../intro/commands.html">Keyboard Commands</a>.)
         </li>
+        <li>
+          On touch devices, press and hold to bring up a context menu.
+          (Read about <a href="../intro/contextMenus.html">Context Menus</a>.)
+        </li>
         <li>Since the undo manager was enabled, CTRL-Z and CTRL-Y will undo and redo moves and copies and deletions.</li>
       </ul>
 
@@ -226,7 +230,7 @@ myDiagram.model = myModel;
       <ul>
         <li><a href="../intro/shapes.html">Shape</a>, to display pre-defined or custom geometry with colors</li>
         <li><a href="../intro/textblocks.html">TextBlock</a>, to display (potentially editable) text in various fonts</li>
-        <li><a href="../intro/pictures.html">Picture</a>, to display images</li>
+        <li><a href="../intro/pictures.html">Picture</a>, to display images, including SVG files</li>
         <li>
           <a href="../intro/panels.html">Panel</a>, containers to hold a collection of other objects that
           can be positioned and sized in different manners according to the type of the Panel (like tables,
@@ -238,7 +242,7 @@ myDiagram.model = myModel;
         All of these building blocks are derived from the
         <a href="../api/symbols/GraphObject.html">GraphObject</a> abstract class,
         so we casually refer to them as GraphObjects or objects or elements.
-        Note that a GraphObject is <em>not</em> an HTML DOM element, so there is not as much overhead in
+        Note that a GraphObject is <em>not</em> an HTML DOM element, so much less overhead in
         creating or modifying such objects.
       </p>
 
@@ -277,7 +281,7 @@ myDiagram.nodeTemplate =
 
       <pre class="lang-js">
 myDiagram.nodeTemplate =
-  $(go.Node, "Vertical", // second argument of a Node/Panel can be a Panel type
+  $(go.Node, "Vertical", // second argument of a Node (or any Panel) can be a Panel type
     /* set Node properties here */
     { // the Node.location point will be at the center of each node
       locationSpot: go.Spot.Center
@@ -298,14 +302,14 @@ myDiagram.nodeTemplate =
     $(go.TextBlock,
       "default text",  // string argument can be initial text string
       { /* set TextBlock properties here */ },
-      // example TextBlock binding sets TextBlock.text to the value of Node.data.key
-      new go.Binding("text", "key"))
+      // example TextBlock binding sets TextBlock.text to the value of Node.data.text
+      new go.Binding("text"))
   );
       </pre>
 
       <p>
         The nesting of GraphObjects within Panels can be arbitrarily deep,
-        and every class has its own unique set of properties to explore,
+        and every class has its own unique set of properties to utilize,
         but this shows the general idea.
       </p>
 
@@ -329,8 +333,8 @@ myDiagram.nodeTemplate =
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
-    {
-      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+    { // enable Ctrl-Z to undo and Ctrl-Y to redo
+      "undoManager.isEnabled": true
     });
 
 // define a simple Node template
@@ -349,7 +353,7 @@ myDiagram.nodeTemplate =
       "Default Text",  // the initial value for TextBlock.text
       // some room around the text, a larger font, and a white stroke:
       { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-      // TextBlock.text is data bound to the "name" attribute of the model data
+      // TextBlock.text is data bound to the "name" property of the model data
       new go.Binding("text", "name"))
   );
 
@@ -373,8 +377,8 @@ myDiagram.model = model;
         var $ = go.GraphObject.make;
         var myDiagram =
           $(go.Diagram, "myDiagramDiv3",
-            {
-              "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+            { // enable Ctrl-Z to undo and Ctrl-Y to redo
+              "undoManager.isEnabled": true
             });
 
         // define a simple Node template
@@ -383,8 +387,9 @@ myDiagram.model = model;
             // the entire node will have a light-blue background
             { background: "#44CCFF" },
             $(go.Picture,
-              // the picture has a red background, only visible when there is no source set
-              // or when the image is partially transparent
+              // Pictures should normally have an explicit width and height.
+              // This picture has a red background, only visible when there is no source set
+              // or when the image is partially transparent.
               { margin: 10, width: 50, height: 50, background: "red" },
               // Picture.source is data bound to the "source" attribute of model data:
               new go.Binding("source")),
@@ -392,7 +397,7 @@ myDiagram.model = model;
               "Default Text",  // the initial value for TextBlock.text
               // some room around the text, a larger font, and a white stroke
               { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-              // TextBlock.text is data bound to the "name" attribute of model data:
+              // TextBlock.text is data bound to the "name" property of model data:
               new go.Binding("text", "name"))
           );
 
@@ -432,7 +437,7 @@ myDiagram.model = model;
       </p>
 
       <p>
-        In GraphLinksModel, we have <code>model.linkDataArray</code> in addition to the <code>model.nodeDataArray</code>.
+        In GraphLinksModel, we have a <code>model.linkDataArray</code> in addition to the <code>model.nodeDataArray</code>.
         It holds an array of JavaScript objects, each describing a link by specifying the "to" and "from" node keys.
         Here's an example where node A links to node B and where node B links to node C:
       </p>
@@ -493,9 +498,7 @@ myDiagram.model = model;
 var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
-    {
-      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
-    });
+    { "undoManager.isEnabled": true });
 
 // the template we defined earlier
 myDiagram.nodeTemplate =
@@ -529,9 +532,7 @@ myDiagram.model = model;
         var $ = go.GraphObject.make;
         var myDiagram =
           $(go.Diagram, "myDiagramDiv4",
-            {
-              "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
-            });
+            { "undoManager.isEnabled": true });
 
         // the template we defined earlier
         myDiagram.nodeTemplate =
@@ -605,7 +606,7 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+      "undoManager.isEnabled": true,
       layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
                 { angle: 90, layerSpacing: 35 })
     });
@@ -642,7 +643,7 @@ myDiagram.model = model;
         var myDiagram =
           $(go.Diagram, "myDiagramDiv5",
             {
-              "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+              "undoManager.isEnabled": true,
               layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
                 { angle: 90, layerSpacing: 35 })
             });
@@ -697,7 +698,8 @@ myDiagram.linkTemplate =
     // default routing is go.Link.Normal
     // default corner is 0
     { routing: go.Link.Orthogonal, corner: 5 },
-    $(go.Shape, { strokeWidth: 3, stroke: "#555" }) // the link shape
+    // the link path, a Shape
+    $(go.Shape, { strokeWidth: 3, stroke: "#555" })
 
     // if we wanted an arrowhead we would also add another Shape with toArrow defined:
     // $(go.Shape, { toArrow: "Standard", stroke: null }
@@ -716,8 +718,8 @@ var $ = go.GraphObject.make;
 var myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
-      "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
-      layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
+      "undoManager.isEnabled": true,
+      layout: $(go.TreeLayout,
                 { angle: 90, layerSpacing: 35 })
     });
 
@@ -737,7 +739,8 @@ myDiagram.nodeTemplate =
 myDiagram.linkTemplate =
   $(go.Link,
     { routing: go.Link.Orthogonal, corner: 5 },
-    $(go.Shape, { strokeWidth: 3, stroke: "#555" })); // the link shape
+    $(go.Shape, // the link's path shape
+      { strokeWidth: 3, stroke: "#555" }));
 
 var model = $(go.TreeModel);
 model.nodeDataArray =
@@ -797,11 +800,12 @@ myDiagram.model = model;
 
       <h2 id="LearnMore">Learn More</h2>
       <p>
-        You may want to read more tutorials, such as the <a href="graphObject.html">GraphObject manipulation</a> tutorial.
+        You may want to read more tutorials, such as the <a href="graphObject.html">GraphObject Manipulation</a> tutorial
+        and the <a href="interactivity.html">Interactivity</a> tutorial.
         You can also watch tutorials on <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">YouTube</a>.
       </p>
       <p>
-        Also consider perusing the <a href="../samples/index.html">samples</a> to see some of the diagrams possible with <b>GoJS</b>,
+        Also consider looking at the <a href="../samples/index.html">samples</a> to see some of the diagrams possible with <b>GoJS</b>,
         or read the <a href="../intro/index.html">technical introduction</a> to get
         an in-depth look at the components of <b>GoJS</b>.
       </p>
