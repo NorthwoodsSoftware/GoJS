@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.14
+ * Type definitions for GoJS v2.1.15
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -13649,6 +13649,10 @@ export abstract class GraphObject {
      * Changes to the angle caused by orientation might not result in Changed events,
      * and any original value for the angle may be lost.
      *
+     * In the case of Graduated Panels, if this value is Link.None, Link.OrientAlong, or Link.OrientUpright,
+     * any TextBlock label #angle will be respected. Depending on this value, the effective TextBlock angle will be either
+     * fixed or relative to the slope of the path where it is rendered.
+     *
      * For examples of how to use this property, see <a href="../../intro/linkLabels.html">Link Labels</a>.
      * @see #segmentFraction
      * @see #segmentIndex
@@ -14022,6 +14026,12 @@ export abstract class GraphObject {
      * it will be normalized to be in that range.
      * Zero is along the positive X-axis (rightwards); 90 is along the positive Y-axis (downwards).
      * Default is 0.
+     *
+     * When set on a Graduated Panel's TextBlock label, this value will be be ignored if segmentOrientation is not
+     * Link.None, Link.OrientAlong, or Link.OrientUpright. OrientAlong and OrientUpright will use this angle
+     * relative to the slope of the main path.
+     *
+     * When set on a Link label, this value will be be ignored if segmentOrientation is not Link.None.
      * @see #scale
      * @see #stretch
      */

@@ -927,6 +927,14 @@ arr.push([
 ]);
 
 arr.push([
+  "gameOfLife",
+  "Game of Life",
+  "A cellular automation simulation.",
+  "gameOfLife",
+  []
+]);
+
+arr.push([
   "spreadsheet",
   "Spreadsheet",
   "An example of nested Table Panels forming a spreadsheet-like grid.",
@@ -964,6 +972,14 @@ arr.push([
   "Showcases two Diagrams observing the same Model. Modifying positions in one Diagram will modify them in the model, updating the other Diagram as well.",
   "updateDemo",
   ["treelayout", "buttons", "html"]
+]);
+
+arr.push([
+  "singlePage",
+  "Single Page View",
+  "Show a diagram on a sheet of paper, limiting dragging and resizing to stay within the page minus margins.",
+  "singlePage",
+  []
 ]);
 
 arr.push([
@@ -1705,13 +1721,5 @@ arr.push([
   "Panel Layout",
   "Shows how to create a custom PaneLayout.",
   "minimal",
-  []
-]);
-
-arr.push([
-  "gameOfLife",
-  "Game of Life",
-  "A cellular automation simulation.",
-  "gameOfLife",
   []
 ]);

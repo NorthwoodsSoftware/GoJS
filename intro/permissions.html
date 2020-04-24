@@ -17,6 +17,8 @@
 Programmatically there are no restrictions on what you can do.
 However you may want to restrict the actions that your users may perform.
 </p>
+
+<h3 id="DiagramIsEnabled">Diagram.isEnabled</h3>
 <p>
 The simplest restriction is to set <a>Diagram.isEnabled</a> to false.
 Users will not be able to do much of anything.
@@ -53,6 +55,7 @@ the commands cannot execute because the diagram is disabled.
 </pre>
 <script>goCode("isEnabled", 600, 150)</script>
 
+<h3 id="DiagramIsReadOnly">Diagram.isReadOnly</h3>
 <p>
 More common is to set <a>Diagram.isReadOnly</a> to true.
 This allows users to scroll and zoom and to select parts, but not to insert or delete or drag or modify parts.
@@ -89,6 +92,7 @@ This allows users to scroll and zoom and to select parts, but not to insert or d
 </pre>
 <script>goCode("isReadOnly", 600, 150)</script>
 
+<h3 id="DiagramIsModelReadOnly">Diagram.isModelReadOnly</h3>
 <p>
 Another possibility is to set <a>Model.isReadOnly</a> to true.
 This allows users to scroll, zoom, select, and move parts, but not to insert or delete parts,
@@ -127,6 +131,29 @@ If you are loading new Models, you will need to set this Diagram property after 
   diagram.model.isReadOnly = true;  // Disable adding or removing parts
 </pre>
 <script>goCode("isModelReadOnly", 600, 150)</script>
+
+<h3 id="AllowingCollapseExpand">Allowing Collapse and Expand</h3>
+<p>
+One common situation with diagrams that are <a>Diagram.isReadOnly</a> is that the user can not
+collapse or expand trees or subgraphs.  Instead of setting <a>Diagram.isReadOnly</a>, you can set
+these properties:
+</p>
+<pre class="lang-js" id="collapseExpand">
+$(go.Palette, "myPaletteDiv",
+  {
+    isReadOnly: false,
+    isModelReadOnly: true,
+    allowDelete: false,
+    allowInsert: false,
+    allowLink: false,
+    allowMove: false,
+    allowTextEdit: false,
+    // maybe other Diagram.allow... properties too, depending on your templates
+    // also consider disabling Tools
+    "contextMenuTool.isEnabled": false,
+    nodeTemplateMap: . . .
+  })
+</pre>
 
 <h2 id="SpecificPermissions">Specific permissions</h2>
 <p>

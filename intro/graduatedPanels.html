@@ -463,6 +463,68 @@ diagram.add(
   from the previous example.
 </p>
 
+<p>
+  Lastly, any angle specified on a label will be respected if orientation is one of <a>Link.OrientNone</a>,
+  <a>Link.OrientAlong</a>, or <a>Link.OrientUpright</a>. In the case of Along and Upright, the angle will be
+  added to the slope of the main path at the point of the TextBlock.
+</p>
+<pre class="lang-js" id="graduatedApprTxtAngle">
+  diagram.add(
+    $(go.Part, "Spot",
+      $(go.Panel, "Graduated",
+        $(go.Shape, { geometryString: "M0 0 L100 0 100 100 L0 100" }),
+        $(go.Shape, { geometryString: "M0 0 V10" }),
+        $(go.TextBlock,
+          {
+            interval: 5,
+            angle: 45,
+            segmentOffset: new go.Point(0, 12)
+          }
+        )
+      ),
+      $(go.TextBlock, "None")
+    ));
+
+  diagram.add(
+    $(go.Part, "Spot",
+      $(go.Panel, "Graduated",
+        $(go.Shape, { geometryString: "M0 0 L100 0 100 100 L0 100" }),
+        $(go.Shape, { geometryString: "M0 0 V10" }),
+        $(go.TextBlock,
+          {
+            interval: 5,
+            angle: 45,
+            segmentOrientation: go.Link.OrientAlong,
+            segmentOffset: new go.Point(0, 12)
+          }
+        )
+      ),
+      $(go.TextBlock, "Along")
+    ));
+
+  diagram.add(
+    $(go.Part, "Spot",
+      $(go.Panel, "Graduated",
+        $(go.Shape, { geometryString: "M0 0 L100 0 100 100 L0 100" }),
+        $(go.Shape, { geometryString: "M0 0 V10" }),
+        $(go.TextBlock,
+          {
+            interval: 5,
+            angle: 45,
+            segmentOrientation: go.Link.OrientUpright,
+            segmentOffset: new go.Point(0, 12)
+          }
+        )
+      ),
+      $(go.TextBlock, "Upright")
+    ));
+  </pre>
+  <script>goCode("graduatedApprTxtAngle", 300, 300)</script>
+  <p>
+    With None, the labels are always 45 degrees. With Along, the labels are always 45 degrees more than the slope.
+    With Upright, the labels are always 45 degrees more than the slope, then rotated upright if necessary.
+  </p>
+
 <h3 id="FunctionalAppearanceProperties">Functional Appearance Properties</h3>
 <p>
   There are also some functional properties allowing for further customization of the appearance of ticks and labels.
@@ -573,7 +635,8 @@ diagram.addDiagramListener("InitialLayoutCompleted", function(e) {
 </p>
 <p>
   Note that for demonstration purposes this example has the marker being a separate Part from the "gauge" Part.
-  A real gauge would have the marker be part of the gauge as an indicator of a particular value.
+  A real gauge would have the marker be part of the gauge as an indicator of a particular value, optionally draggable by the user.
+  See some examples at <a href="../samples/controlGauges.html" target="_blank">Instrument Controls: Gauges and Meters</a>.
 </p>
 
 <h2 id="OtherConsiderations">Other Considerations</h2>

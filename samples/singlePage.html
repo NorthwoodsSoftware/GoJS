@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>A Single Page Diagram</title>
+  <meta name="description" content="A diagram that shows a sheet of paper; nodes cannot be dragged or resized beyond the edge of the sheet." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
+
+      var pageSize = new go.Size(612, 792);
+      var pageMargin = new go.Margin(10);
+      var usableMargin = new go.Margin(10);
+      var pageBounds = new go.Rect(-usableMargin.left, -usableMargin.top, pageSize.width, pageSize.height);
+      var usableArea = pageBounds.copy().subtractMargin(usableMargin);
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            fixedBounds: pageBounds.copy().addMargin(pageMargin),
+            initialAutoScale: go.Diagram.Uniform,
+            "animationManager.isInitial": false,
+            "undoManager.isEnabled": true,
+            "resizingTool.doMouseMove": function() {
+              var e = this.diagram.lastInput;
+              e.documentPoint = limitPoint(e.documentPoint);
+              e.viewPoint = this.diagram.transformDocToView(e.documentPoint);
+              go.ResizingTool.prototype.doMouseMove.call(this);
+            },
+            "resizingTool.doMouseUp": function() {
+              var e = this.diagram.lastInput;
+              e.documentPoint = limitPoint(e.documentPoint);
+              e.viewPoint = this.diagram.transformDocToView(e.documentPoint);
+              go.ResizingTool.prototype.doMouseUp.call(this);
+            },
+            "TextEdited": function(e) {
+              var node = e.subject.part;
+              node.ensureBounds();  // has been resized, compute its new bounds
+              var pt = limitPoint(node.location);
+              node.location = stayInFixedArea(node, pt, pt);
+            }
+          });
+
+      // the background Part showing the sheet of paper;
+      // it has the fixed bounds of the diagram contents
+      myDiagram.add(
+        $(go.Part, "Grid",
+          {
+            layerName: "Grid",
+            position: pageBounds.position,
+            desiredSize: pageSize,
+            isShadowed: true,
+            background: "floralwhite"
+          },
+          $(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5 }),
+          $(go.Shape, "LineV", { stroke: "lightgray", strokeWidth: 0.5 })
+        ));
+
+      // this function is the Node.dragComputation, to limit the movement of the parts
+      // use GRIDPT instead of PT if DraggingTool.isGridSnapEnabled and movement should snap to grid
+      function stayInFixedArea(part, pt, gridpt) {
+        var diagram = part.diagram;
+        if (diagram === null) return pt;
+        // compute the document area without padding
+        var v = usableArea;
+        // get the bounds of the part being dragged
+        var b = part.actualBounds;
+        var loc = part.location;
+        // now limit the location appropriately
+        var x = Math.max(v.x, Math.min(pt.x, v.right - b.width)) + (loc.x - b.x);
+        var y = Math.max(v.y, Math.min(pt.y, v.bottom - b.height)) + (loc.y - b.y);
+        return new go.Point(x, y);
+      }
+
+      function limitPoint(p) {
+        return new go.Point(Math.max(usableArea.left, Math.min(p.x, usableArea.right)),
+                            Math.max(usableArea.top, Math.min(p.y, usableArea.bottom)));
+      }
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          {
+            resizable: true,  // but limited by overrides of ResizingTool methods, above
+            dragComputation: stayInFixedArea  // this limits the DraggingTool
+          },
+          $(go.Shape,
+            { fill: "white", portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 8, editable: true },
+            new go.Binding("text").makeTwoWay())
+        );
+
+      myDiagram.linkTemplate =
+        $(go.Link,
+          { relinkableFrom: true, relinkableTo: true },
+          $(go.Shape),
+          $(go.Shape, { toArrow: "OpenTriangle" })
+        );
+
+      myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: "Alpha", color: "lightblue" },
+        { key: 2, text: "Beta", color: "orange" },
+        { key: 3, text: "Gamma", color: "lightgreen" },
+        { key: 4, text: "Delta", color: "pink" }
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 }
+      ]);
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+    This pretends to show a sheet of paper with the diagram on it.
+    Both the <a>DraggingTool</a> and the <a>ResizingTool</a> are constrained to keep the nodes within
+    the area of the sheet of paper, minus the margins.
+    The user can zoom and scroll/pan normally.
+    There are several variables, such as <code>pageSize</code>, that govern how the diagram is set up.
+  </div>
+</body>
+</html>
