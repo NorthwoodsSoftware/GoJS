@@ -377,7 +377,7 @@ arr.push([
   "Path Animation",
   "Animation of diagram parts (tokens) along link paths.",
   "pathAnimation",
-  ["collections", "forcedirectedlayout"]
+  ["collections", "forcedirectedlayout", "animation"]
 ]);
 
 arr.push([
@@ -834,7 +834,7 @@ arr.push([
   "Charts in Nodes",
   "Shows how to render a data-driven chart within each Node using the Chart.js library.",
   "canvases",
-  ["charts", "palette", "html", "frameworks"]
+  ["charts", "html", "frameworks"]
 ]);
 
 arr.push([
@@ -851,6 +851,14 @@ arr.push([
   "Custom Animations",
   "Shows how to create several custom Node animations.",
   "customAnimations",
+  ["animation"]
+]);
+
+arr.push([
+  "animatedFocus",
+  "Animated Scroll and Attention",
+  "Aninmated focus by scrolling to a node along with animation of the size of the node to draw attention to it..",
+  "animatedFocus",
   ["animation"]
 ]);
 
@@ -924,14 +932,6 @@ arr.push([
   "A monitoring diagram where the nodes (kittens) move about a house, with tooltips for each kitten.",
   "kittenMonitor",
   ["tooltips", "monitoring", "animation"]
-]);
-
-arr.push([
-  "gameOfLife",
-  "Game of Life",
-  "A cellular automation simulation.",
-  "gameOfLife",
-  []
 ]);
 
 arr.push([
@@ -1281,14 +1281,6 @@ arr.push([
   ["groups", "extensions", "inspector", "html"]
 ]);
 
-arr.push([
-  "../extensions/DebugInspector",
-  "Debug Inspector",
-  "A more complex inspector for inspecting all sorts of GraphObject, Node, Link, Shape, etc properties, and Part data.",
-  "debugInspector",
-  ["groups", "extensions", "inspector", "html"]
-]);
-
 // Other
 arr.push([
   "../extensions/CheckBoxes",
@@ -1493,14 +1485,6 @@ arr.push([
 ]);
 
 arr.push([
-  "angular",
-  "Minimal AngularJS",
-  "Minimal, using AngularJS.",
-  "minimal",
-  ["frameworks"]
-]);
-
-arr.push([
   "vue",
   "Minimal Vue.js",
   "Minimal, using Vue.js.",
@@ -1629,14 +1613,6 @@ arr.push([
 ]);
 
 arr.push([
-  "regroupingScaled",
-  "Regrouping Scaled",
-  "Regrouping with nested groups scaled ever smaller.",
-  "regroupingScaled",
-  ["gridlayout", "groups", "palette", "buttons"]
-]);
-
-arr.push([
   "regroupingTreeView",
   "Regrouping Tree View",
   "Regrouping with tree view of grouping hierarchy.",
@@ -1693,6 +1669,14 @@ arr.push([
 ]);
 
 arr.push([
+  "addToPalette",
+  "Adding Nodes to the Palette",
+  "Select and edit a node and add a copy of it to the palette.",
+  "addToPalette",
+  ["palette", "overview"]
+]);
+
+arr.push([
   "dragUnoccupied",
   "Drag Unoccupied",
   "Demonstrates a function to avoid any overlapping of nodes during dragging.",
@@ -1721,5 +1705,13 @@ arr.push([
   "Panel Layout",
   "Shows how to create a custom PaneLayout.",
   "minimal",
+  []
+]);
+
+arr.push([
+  "gameOfLife",
+  "Game of Life",
+  "A cellular automation simulation.",
+  "gameOfLife",
   []
 ]);

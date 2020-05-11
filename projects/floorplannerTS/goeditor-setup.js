@@ -7,7 +7,7 @@
  * DO NOT delete or rename this file
  */
 
-function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, diagramsType) {
+function setupEditorApplication(diagramsCount, palettesCount, pathToStorage, diagramsType) {
 
   if (diagramsType === null || !diagramsType) {
     diagramsType = go.Diagram;
@@ -19,44 +19,44 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
 
   // choose new storage service; then, update the current storage span with the correct picture of the current storage service being used
   updateCurrentStorageSpan = function () {
-      storageManager.selectStorageService().then(function(storage){
-         var span = document.getElementById("currentStorageSpan");
-         span.innerHTML = "";
-         var imageSrc = storageManager.getStorageIconPath(storage.className);
-         var img = document.createElement("img");
-         img.src = imageSrc;
-         img.style.width = "20px"; img.style.height = "20px"; img.style.float = "left";
-         span.appendChild(img);
-         storage.isAutoSaving = isAutoSavingCheckbox.checked;
-         updateAutoSaveVisibility();
-      });
+    storageManager.selectStorageService().then(function (storage) {
+      var span = document.getElementById("currentStorageSpan");
+      span.innerHTML = "";
+      var imageSrc = storageManager.getStorageIconPath(storage.className);
+      var img = document.createElement("img");
+      img.src = imageSrc;
+      img.style.width = "20px"; img.style.height = "20px"; img.style.float = "left";
+      span.appendChild(img);
+      storage.isAutoSaving = isAutoSavingCheckbox.checked;
+      updateAutoSaveVisibility();
+    });
   }
 
-  isAutoSavingCheckbox.addEventListener("change", function() {
-      storageManager.storages.iterator.each(function (storage) {
-          storage.isAutoSaving = isAutoSavingCheckbox.checked;
-      });
-      // update the title to reflect the save
-      var currentFile = document.getElementById("ge-filename");
-      var currentFileTitle = currentFile.innerText;
-      if (currentFileTitle[currentFileTitle.length-1] == "*" && storageManager.currentStorage.currentDiagramFile.name != null ) {
-        currentFile.innerText = currentFileTitle.substr(0,currentFileTitle.length-1);
-        storageManager.currentStorage.save();
-      }
+  isAutoSavingCheckbox.addEventListener("change", function () {
+    storageManager.storages.iterator.each(function (storage) {
+      storage.isAutoSaving = isAutoSavingCheckbox.checked;
+    });
+    // update the title to reflect the save
+    var currentFile = document.getElementById("ge-filename");
+    var currentFileTitle = currentFile.innerText;
+    if (currentFileTitle[currentFileTitle.length - 1] == "*" && storageManager.currentStorage.currentDiagramFile.name != null) {
+      currentFile.innerText = currentFileTitle.substr(0, currentFileTitle.length - 1);
+      storageManager.currentStorage.save();
+    }
   });
 
   // update the title on page to reflect newly loaded diagram title
-  updateTitle = function() {
+  updateTitle = function () {
     var currentFile = document.getElementById("ge-filename");
-      if (storageManager.currentStorage.currentDiagramFile.path !== null) {
-          var storage = storageManager.currentStorage;
-          if (storage.currentDiagramFile.path) currentFile.innerHTML = storage.currentDiagramFile.path;
-          else currentFile.innerHTML = storage.currentDiagramFile.name;
-      }
-      else {
-          currentFile.innerHTML = "Untitled";
-          storageTag.innerHTML = "Unsaved";
-      }
+    if (storageManager.currentStorage.currentDiagramFile.path !== null) {
+      var storage = storageManager.currentStorage;
+      if (storage.currentDiagramFile.path) currentFile.innerHTML = storage.currentDiagramFile.path;
+      else currentFile.innerHTML = storage.currentDiagramFile.name;
+    }
+    else {
+      currentFile.innerHTML = "Untitled";
+      storageTag.innerHTML = "Unsaved";
+    }
   }
 
   // can only use the auto save checkbox if the file is already saved to the current storage service
@@ -71,49 +71,49 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
   */
   handlePromise = function (action) {
 
-      function handleFileData(action, fileData) {
-          var words = [];
-          switch (action) {
-              case 'Load': words = ['Loaded', 'from']; break;
-              case 'Delete': words = ['Deleted', 'from']; break;
-              case 'New': words = ['Created', 'at']; break;
-              case 'Save': words = ['Saved', 'to']; break;
-              case 'SaveAs': words = ['Saved', 'to']; break;
-          }
-          var storageServiceName = storageManager.currentStorage.serviceName;
-          if (fileData.id && fileData.name && fileData.path) storageManager.showMessage(words[0] + ' ' + fileData.name + ' (file ID ' + fileData.id + ') ' +
-              words[1] + ' path ' + fileData.path + " in " + storageServiceName, 1.5);
-          else console.log(fileData); // may have an explanation for why fileData isn't complete
-          updateTitle();
-          updateAutoSaveVisibility();
-      }
-
+    function handleFileData(action, fileData) {
+      var words = [];
       switch (action) {
-          case 'Load': storageManager.load().then(function (fileData) {
-              handleFileData(action, fileData);
-          }); break;
-          case 'Delete': storageManager.remove().then(function (fileData) {
-              handleFileData(action, fileData);
-          }); break;
-          case 'New':
-              var saveBefore = false;
-              var currentFile = document.getElementById("ge-filename");
-              // only prompt to save current changes iff there is some modified state
-              var currentFileTitle = currentFile.innerText;
-              if (currentFileTitle.substr(currentFileTitle.length-1,1) === "*") {
-                saveBefore = true;
-              }
-              storageManager.create(saveBefore).then(function (fileData) {
-                handleFileData(action, fileData);
-            });
-            break;
-          case 'SaveAs': storageManager.save().then(function (fileData){
-              handleFileData(action, fileData);
-          }); break;
-          case 'Save': storageManager.save(false).then(function (fileData) {
-              handleFileData(action, fileData);
-          }); break;
+        case 'Load': words = ['Loaded', 'from']; break;
+        case 'Delete': words = ['Deleted', 'from']; break;
+        case 'New': words = ['Created', 'at']; break;
+        case 'Save': words = ['Saved', 'to']; break;
+        case 'SaveAs': words = ['Saved', 'to']; break;
       }
+      var storageServiceName = storageManager.currentStorage.serviceName;
+      if (fileData.id && fileData.name && fileData.path) storageManager.showMessage(words[0] + ' ' + fileData.name + ' (file ID ' + fileData.id + ') ' +
+        words[1] + ' path ' + fileData.path + " in " + storageServiceName, 1.5);
+      else console.log(fileData); // may have an explanation for why fileData isn't complete
+      updateTitle();
+      updateAutoSaveVisibility();
+    }
+
+    switch (action) {
+      case 'Load': storageManager.load().then(function (fileData) {
+        handleFileData(action, fileData);
+      }); break;
+      case 'Delete': storageManager.remove().then(function (fileData) {
+        handleFileData(action, fileData);
+      }); break;
+      case 'New':
+        var saveBefore = false;
+        var currentFile = document.getElementById("ge-filename");
+        // only prompt to save current changes iff there is some modified state
+        var currentFileTitle = currentFile.innerText;
+        if (currentFileTitle.substr(currentFileTitle.length - 1, 1) === "*") {
+          saveBefore = true;
+        }
+        storageManager.create(saveBefore).then(function (fileData) {
+          handleFileData(action, fileData);
+        });
+        break;
+      case 'SaveAs': storageManager.save().then(function (fileData) {
+        handleFileData(action, fileData);
+      }); break;
+      case 'Save': storageManager.save(false).then(function (fileData) {
+        handleFileData(action, fileData);
+      }); break;
+    }
   }
 
   // Small, generic helper functions
@@ -126,7 +126,7 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
   makeDiagramImage = function () {
     for (var i = 0; i < diagrams.length; i++) {
       var diagram = diagrams[i];
-      var imgdata = diagram.makeImageData({ maxSize: new go.Size(Infinity,Infinity), scale: 2, padding: 10, background: diagram.div.style.background });
+      var imgdata = diagram.makeImageData({ maxSize: new go.Size(Infinity, Infinity), scale: 2, padding: 10, background: diagram.div.style.background });
       var a = document.createElement("a");
       var filename = document.getElementById("ge-filename").innerText;
       filename.split('.');
@@ -139,13 +139,13 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
   }
 
   // make SVG files of each diagram
-  makeDiagramSvg = function() {
+  makeDiagramSvg = function () {
     for (var i = 0; i < diagrams.length; i++) {
       var diagram = diagrams[i];
       var svgDataEl = diagram.makeSVG();
       var s = new XMLSerializer();
       var svgData = s.serializeToString(svgDataEl);
-      var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+      var svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
       var svgUrl = URL.createObjectURL(svgBlob);
       var downloadLink = document.createElement("a");
       downloadLink.href = svgUrl;
@@ -159,35 +159,35 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
     }
   }
 
-	$ = go.GraphObject.make;  // for conciseness in defining templates
-	go.licenseKey = "2bfa45e7b66058c511895a25406c3bbe5aa07a37dc9418a55d5614f7be583c40209be87e58868e95dbac4efc1c28c0d9db907b399119553de76383dd11e084f0b3657ae1115a4ed9a151249699fc2da6fe7963e2c4e027a4da2adcf3f9b8c09d5ce1ecd357ce";
+  $ = go.GraphObject.make;  // for conciseness in defining templates
+
 
   // build diagrams
   diagrams = [];
   overviews = [];
   for (var i = 0; i < diagramsCount; i++) {
-    var diagram =  new diagramsType("ge-diagram-"+i);  // create a Diagram for the DIV HTML element
+    var diagram = new diagramsType("ge-diagram-" + i);  // create a Diagram for the DIV HTML element
     diagram.undoManager.isEnabled = true;
     // When diagram is modified, change title to include a *
     diagram.addChangedListener(function (e) {
       // maybe update the file header
-        var currentFile = document.getElementById("ge-filename");
-        if (isAutoSavingCheckbox.checked && storageManager.currentStorage.currentDiagramFile.name != null) return;
-        if (currentFile) {
-            var idx = currentFile.textContent.indexOf("*");
-            if (e.diagram.isModified) {
-                if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
-            }
-            else {
-                if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
-            }
+      var currentFile = document.getElementById("ge-filename");
+      if (isAutoSavingCheckbox.checked && storageManager.currentStorage.currentDiagramFile.name != null) return;
+      if (currentFile) {
+        var idx = currentFile.textContent.indexOf("*");
+        if (e.diagram.isModified) {
+          if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
         }
+        else {
+          if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+        }
+      }
     });
 
     diagrams[i] = diagram;
 
     // make an overview for each diagram
-    var overview = $(go.Overview, "ge-overview-"+i, { observed: diagram });
+    var overview = $(go.Overview, "ge-overview-" + i, { observed: diagram });
     overviews[i] = overview;
   }
 
@@ -200,60 +200,60 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
   // build palette(s)
   palettes = [];
   for (var i = 0; i < palettesCount; i++) {
-    var palette = $(go.Palette, "ge-palette-"+i);
+    var palette = $(go.Palette, "ge-palette-" + i);
     palettes[i] = palette;
   }
 
 
-	// Go Cloud Storage stuff
-	defaultModel = null; // change this if you want -- so GoCloudStorage documentation
+  // Go Cloud Storage stuff
+  defaultModel = null; // change this if you want -- so GoCloudStorage documentation
 
   var iconsDir = pathToStorage + "/goCloudStorageIcons/";
-	gls = new gcs.GoLocalStorage(diagrams, defaultModel, iconsDir);
-	god = new gcs.GoOneDrive(diagrams, 'f9b171a6-a12e-48c1-b86c-814ed40fcdd1', defaultModel, iconsDir);
-	ggd = new gcs.GoGoogleDrive(diagrams, '16225373139-n24vtg7konuetna3ofbmfcaj2infhgmg.apps.googleusercontent.com', 'AIzaSyDBj43lBLpYMMVKw4aN_pvuRg7_XMVGf18', defaultModel, iconsDir);
-	gdb = new gcs.GoDropBox(diagrams, '3sm2ko6q7u1gbix', defaultModel, iconsDir);
-	storages = [gls, god, ggd, gdb];
-	storageManager = new gcs.GoCloudStorageManager(storages, iconsDir);
+  gls = new gcs.GoLocalStorage(diagrams, defaultModel, iconsDir);
+  god = new gcs.GoOneDrive(diagrams, 'f9b171a6-a12e-48c1-b86c-814ed40fcdd1', defaultModel, iconsDir);
+  ggd = new gcs.GoGoogleDrive(diagrams, '16225373139-n24vtg7konuetna3ofbmfcaj2infhgmg.apps.googleusercontent.com', 'AIzaSyDBj43lBLpYMMVKw4aN_pvuRg7_XMVGf18', defaultModel, iconsDir);
+  gdb = new gcs.GoDropBox(diagrams, '3sm2ko6q7u1gbix', defaultModel, iconsDir);
+  storages = [gls, god, ggd, gdb];
+  storageManager = new gcs.GoCloudStorageManager(storages, iconsDir);
 
-	var span = document.getElementById("currentStorageSpan");
-	span.innerHTML = "";
-	var imageSrc = storageManager.getStorageIconPath(storageManager.currentStorage.className);
-	var img = document.createElement("img");
-	img.src = imageSrc;
-	img.style.width = "20px"; img.style.height = "20px"; img.style.float = "left";
-	span.appendChild(img);
+  var span = document.getElementById("currentStorageSpan");
+  span.innerHTML = "";
+  var imageSrc = storageManager.getStorageIconPath(storageManager.currentStorage.className);
+  var img = document.createElement("img");
+  img.src = imageSrc;
+  img.style.width = "20px"; img.style.height = "20px"; img.style.float = "left";
+  span.appendChild(img);
 
 
-	document.getElementById('file-input').accept = ".csv";
+  document.getElementById('file-input').accept = ".csv";
 
-	storageManager.currentStorage.isAutoSaving = isAutoSavingCheckbox.checked;
+  storageManager.currentStorage.isAutoSaving = isAutoSavingCheckbox.checked;
 
-	// enable hotkeys
-	document.body.addEventListener("keydown", function (e) {
-	  var keynum = e.which;
-	  if (e.ctrlKey) {
-	    e.preventDefault();
-	    switch (keynum) {
-	      case 83: handlePromise('Save'); break; // ctrl + s
-	      case 79: handlePromise('Load'); break; // ctrl + o
-	      case 68: handlePromise('New'); break; // ctrl + d
-	      case 82: handlePromise('Delete'); break; // ctrl + r
+  // enable hotkeys
+  document.body.addEventListener("keydown", function (e) {
+    var keynum = e.which;
+    if (e.ctrlKey) {
+      e.preventDefault();
+      switch (keynum) {
+        case 83: handlePromise('Save'); break; // ctrl + s
+        case 79: handlePromise('Load'); break; // ctrl + o
+        case 68: handlePromise('New'); break; // ctrl + d
+        case 82: handlePromise('Delete'); break; // ctrl + r
         case 80: geHideShowWindow('ge-palettes-window'); break;
         case 69: geHideShowWindow('ge-overviews-window'); break; // ctrl + e
         case 73: geHideShowWindow('ge-inspector-window'); break; // ctrl + i
-	    }
-	  }
-	});
+      }
+    }
+  });
 
-	updateAutoSaveVisibility();
+  updateAutoSaveVisibility();
 
-	// Format the inspector for your specific needs. You may need to edit the DataInspector class
-	inspector = new Inspector('ge-inspector', diagrams[0],
-	  {
-	    includesOwnProperties: true,
-	  }
-	);
+  // Format the inspector for your specific needs. You may need to edit the DataInspector class
+  inspector = new Inspector('ge-inspector', diagrams[0],
+    {
+      includesOwnProperties: true,
+    }
+  );
 
   geHideShowWindow = function (id, doShow) {
     var geWindow = document.getElementById(id);
@@ -279,11 +279,11 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
     gcsWindows = [].slice.call(gcsWindows);
     var gcsManagerMenu = document.getElementById("goCloudStorageManagerMenu");
     gcsWindows.push(gcsManagerMenu);
-    for (var i = 0 ; i < gcsWindows.length; i++) {
+    for (var i = 0; i < gcsWindows.length; i++) {
       var gcsWindow = gcsWindows[i];
 
       // possibly delete pre-existing window
-      var id = "ge-"+gcsWindow.id+"-window";
+      var id = "ge-" + gcsWindow.id + "-window";
       var windowParent = document.getElementById(id);
       if (windowParent !== null && windowParent !== undefined) {
         windowParent.parentNode.removeChild(windowParent);
@@ -299,7 +299,7 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
 
 
       var handle = document.createElement("div");
-      handle.id = id+"-handle";
+      handle.id = id + "-handle";
       handle.classList.add("ge-handle");
       handle.classList.add("ui-draggable-handle");
       handle.innerText = "Storage";
@@ -310,7 +310,7 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
       button.classList.add("ge-window-button");
       button.onclick = function () {
         var ci = this.id.indexOf("-close");
-        var wpid = this.id.substring(0,ci);
+        var wpid = this.id.substring(0, ci);
         var windowParent = document.getElementById(wpid);
         geHideShowWindow(windowParent.id);
         for (var i = 0; i < windowParent.children.length; i++) {
@@ -329,14 +329,14 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
 
       var observer = new MutationObserver(styleChangedCallback);
       observer.observe(gcsWindow, {
-          attributes: true,
-          attributeFilter: ['style'],
+        attributes: true,
+        attributeFilter: ['style'],
       });
 
       function styleChangedCallback(mutations) {
-          var newVis = mutations[0].target.style.visibility;
-          var pn = mutations[0].target.parentNode;
-          pn.style.visibility = newVis;
+        var newVis = mutations[0].target.style.visibility;
+        var pn = mutations[0].target.parentNode;
+        pn.style.visibility = newVis;
       }
 
     }
@@ -346,7 +346,7 @@ function setupEditorApplication (diagramsCount, palettesCount, pathToStorage, di
       var draggables = document.getElementsByClassName("ge-draggable");
       for (var i = 0; i < draggables.length; i++) {
         var draggable = draggables[i];
-        var id = "#"+draggable.id; var hid = id+"-handle";
+        var id = "#" + draggable.id; var hid = id + "-handle";
         JQUERY(id).draggable({ handle: hid, stack: ".ge-draggable", containment: "window", scroll: false });
       }
     });

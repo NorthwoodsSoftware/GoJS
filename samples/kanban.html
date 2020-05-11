@@ -32,9 +32,6 @@
           var sz = holder.actualBounds;
           len = Math.max(len, sz.height);
         }
-        var box = lane.selectionObject;
-        // naturalBounds instead of actualBounds to disregard the shape's stroke width
-        len = Math.max(len, box.naturalBounds.height);
       });
       return new go.Size(NaN, len);
     }
@@ -87,7 +84,10 @@
         if (shape !== null) {  // change the desiredSize to be big enough in both directions
           var sz = computeLaneSize(lane);
           shape.width = (!isNaN(shape.width)) ? Math.max(shape.width, sz.width) : sz.width;
-          shape.height = (isNaN(shape.height) ? minsize.height : Math.max(shape.height, minsize.height));
+          // if you want the height of all of the lanes to shrink as the maximum needed height decreases:
+          shape.height = minsize.height;
+          // if you want the height of all of the lanes to remain at the maximum height ever needed:
+          //shape.height = (isNaN(shape.height) ? minsize.height : Math.max(shape.height, minsize.height));
           var cell = lane.resizeCellSize;
           if (!isNaN(shape.width) && !isNaN(cell.width) && cell.width > 0) shape.width = Math.ceil(shape.width / cell.width) * cell.width;
           if (!isNaN(shape.height) && !isNaN(cell.height) && cell.height > 0) shape.height = Math.ceil(shape.height / cell.height) * cell.height;
@@ -280,7 +280,7 @@
           ),  // end Horizontal Panel
           $(go.Panel, "Auto",  // the lane consisting of a background Shape and a Placeholder representing the subgraph
             $(go.Shape, "Rectangle",  // this is the resized object
-              { name: "SHAPE", fill: "#F1F1F1", stroke: null, strokeWidth: 4 },
+              { name: "SHAPE", fill: "#F1F1F1", stroke: null, strokeWidth: 4 },  // strokeWidth controls space between lanes
               new go.Binding("fill", "isHighlighted", function(h) { return h ? "#D6D6D6" : "#F1F1F1"; }).ofObject(),
               new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
             $(go.Placeholder,

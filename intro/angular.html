@@ -130,6 +130,8 @@
           <li><code>modelData</code> - A data object,
             containing your diagram's <a href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
             This property is optional.
+          <li><code>skipsDiagramUpdate</code> - A boolean flag, specifying whether the component should skip updating,
+            often set when updating state from a GoJS model change.</li>
           <li><code>modelChange</code> - A function, which accepts a <a href="">go.IncrementalData</a> object.
             This function will fire when your Diagram's model changes, allowing you to decide what to do with those
             changes. A common practice is to sync your app-level data to reflect the changes in the diagram model,
@@ -183,9 +185,15 @@ public diagramLinkData: Array<go.ObjectData> = [
 ];
 public diagramDivClassName: string = 'myDiagramDiv';
 public diagramModelData = { prop: 'value' };
+public skipsDiagramUpdate = false;
 
 // When the diagram model changes, update app data to reflect those changes
 public diagramModelChange = function(changes: go.IncrementalData) {
+  // when setting state here, be sure to set skipsDiagramUpdate: true since GoJS already has this update
+  // (since this is a GoJS model changed listener event function)
+  // this way, we don't log an unneeded transaction in the Diagram's undoManager history
+  this.skipsDiagramUpdate = true;
+
   this.diagramNodeData = DataSyncService.syncNodeData(changes, this.diagramNodeData);
   this.diagramLinkData = DataSyncService.syncLinkData(changes, this.diagramLinkData);
   this.diagramModelData = DataSyncService.syncModelData(changes, this.diagramModelData);
@@ -203,6 +211,7 @@ public diagramModelChange = function(changes: go.IncrementalData) {
   [nodeDataArray]='diagramNodeData'
   [linkDataArray]='diagramLinkData'
   [modelData]='diagramModelData'
+  [skipsDiagramUpdate]='skipsDiagramUpdate'
   (modelChange)='diagramModelChange($event)'
   [divClassName]='diagramDivClassName'&gt;
 &lt;/gojs-diagram&gt;

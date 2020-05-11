@@ -249,24 +249,26 @@ const KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
 
 // PREDEFINED figures, built into the v2.0 library:
 
-go.Shape.defineFigureGenerator('Rectangle', (shape, w, h) => {  // predefined in 2.0
-  const geo = new go.Geometry(go.Geometry.Rectangle);
-  geo.startX = 0;
-  geo.startY = 0;
-  geo.endX = w;
-  geo.endY = h;
-  return geo;
-});
+// These first few are commented out due to optimizations in the built-in definitions.
 
-go.Shape.defineFigureGenerator('Square', (shape, w, h) => {  // predefined in 2.0
-  const geo = new go.Geometry(go.Geometry.Rectangle);
-  geo.startX = 0;
-  geo.startY = 0;
-  geo.endX = w;
-  geo.endY = h;
-  geo.defaultStretch = go.GraphObject.Uniform;
-  return geo;
-});
+//go.Shape.defineFigureGenerator('Rectangle', (shape, w, h) => {  // predefined in 2.0
+//  const geo = new go.Geometry(go.Geometry.Rectangle);
+//  geo.startX = 0;
+//  geo.startY = 0;
+//  geo.endX = w;
+//  geo.endY = h;
+//  return geo;
+//});
+
+//go.Shape.defineFigureGenerator('Square', (shape, w, h) => {  // predefined in 2.0
+//  const geo = new go.Geometry(go.Geometry.Rectangle);
+//  geo.startX = 0;
+//  geo.startY = 0;
+//  geo.endX = w;
+//  geo.endY = h;
+//  geo.defaultStretch = go.GraphObject.Uniform;
+//  return geo;
+//});
 
 FigureParameter.setFigureParameter('RoundedRectangle', 0, new FigureParameter('CornerRounding', 5));
 go.Shape.defineFigureGenerator('RoundedRectangle', (shape, w, h) => {  // predefined in 2.0
@@ -295,28 +297,28 @@ go.Shape.defineFigureGenerator('RoundedRectangle', (shape, w, h) => {  // predef
 
 go.Shape.defineFigureGenerator('Border', 'RoundedRectangle');  // predefined in 2.0
 
-go.Shape.defineFigureGenerator('Ellipse', (shape, w, h) => {  // predefined in 2.0
-  const geo = new go.Geometry(go.Geometry.Ellipse);
-  geo.startX = 0;
-  geo.startY = 0;
-  geo.endX = w;
-  geo.endY = h;
-  geo.spot1 = GeneratorEllipseSpot1;
-  geo.spot2 = GeneratorEllipseSpot2;
-  return geo;
-});
+//go.Shape.defineFigureGenerator('Ellipse', (shape, w, h) => {  // predefined in 2.0
+//  const geo = new go.Geometry(go.Geometry.Ellipse);
+//  geo.startX = 0;
+//  geo.startY = 0;
+//  geo.endX = w;
+//  geo.endY = h;
+//  geo.spot1 = GeneratorEllipseSpot1;
+//  geo.spot2 = GeneratorEllipseSpot2;
+//  return geo;
+//});
 
-go.Shape.defineFigureGenerator('Circle', (shape, w, h) => {  // predefined in 2.0
-  const geo = new go.Geometry(go.Geometry.Ellipse);
-  geo.startX = 0;
-  geo.startY = 0;
-  geo.endX = w;
-  geo.endY = h;
-  geo.spot1 = GeneratorEllipseSpot1;
-  geo.spot2 = GeneratorEllipseSpot2;
-  geo.defaultStretch = go.GraphObject.Uniform;
-  return geo;
-});
+//go.Shape.defineFigureGenerator('Circle', (shape, w, h) => {  // predefined in 2.0
+//  const geo = new go.Geometry(go.Geometry.Ellipse);
+//  geo.startX = 0;
+//  geo.startY = 0;
+//  geo.endX = w;
+//  geo.endY = h;
+//  geo.spot1 = GeneratorEllipseSpot1;
+//  geo.spot2 = GeneratorEllipseSpot2;
+//  geo.defaultStretch = go.GraphObject.Uniform;
+//  return geo;
+//});
 
 go.Shape.defineFigureGenerator('TriangleRight', (shape, w, h) => {  // predefined in 2.0
   return new go.Geometry()

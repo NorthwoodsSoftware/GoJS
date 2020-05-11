@@ -239,84 +239,84 @@ var mySampleMenu = '\
       </div>\
       <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">\
         <ul id="sections" class="classList nav navbar-nav">\
-          <li><a href="index.html"><b>Index</b></a></li>\
-          <li><a href="minimal.html">Minimal</a></li>\
-          <li><a href="basic.html">Basic</a></li>\
-          <li><a href="classHierarchy.html">Class Hierarchy</a></li>\
-          <li><a href="DOMTree.html">DOM Tree</a></li>\
-          <li><a href="visualTree.html">Visual Tree</a></li>\
-          <li><a href="shapes.html">Shapes</a></li>\
-          <li><a href="icons.html">SVG Icons</a></li>\
-          <li><a href="arrowheads.html">Arrowheads</a></li>\
-          <li><a href="navigation.html">Navigation</a></li>\
+          <li><a href="../samples/index.html"><b>Index</b></a></li>\
+          <li><a href="../samples/minimal.html">Minimal</a></li>\
+          <li><a href="../samples/basic.html">Basic</a></li>\
+          <li><a href="../samples/classHierarchy.html">Class Hierarchy</a></li>\
+          <li><a href="../samples/DOMTree.html">DOM Tree</a></li>\
+          <li><a href="../samples/visualTree.html">Visual Tree</a></li>\
+          <li><a href="../samples/shapes.html">Shapes</a></li>\
+          <li><a href="../samples/icons.html">SVG Icons</a></li>\
+          <li><a href="../samples/arrowheads.html">Arrowheads</a></li>\
+          <li><a href="../samples/navigation.html">Navigation</a></li>\
           <hr>\
-          <li><a href="familyTree.html">Family Tree</a></li>\
-          <li><a href="localView.html">Local View</a></li>\
-          <li><a href="decisionTree.html">Decision Tree</a></li>\
-          <li><a href="incrementalTree.html">Incremental Tree</a></li>\
-          <li><a href="doubleTree.html">Double Tree</a></li>\
-          <li><a href="orgChartStatic.html">OrgChart (Static)</a></li>\
-          <li><a href="orgChartEditor.html">OrgChart Editor</a></li>\
-          <li><a href="mindMap.html">Mind Map</a></li>\
-          <li><a href="tournament.html">Tournament</a></li>\
-          <li><a href="treeView.html">Tree View</a></li>\
-          <li><a href="genogram.html">Genogram</a></li>\
-          <li><a href="IVRtree.html">IVR Tree</a></li>\
-          <li><a href="parseTree.html">Parse Tree</a></li>\
+          <li><a href="../samples/familyTree.html">Family Tree</a></li>\
+          <li><a href="../samples/localView.html">Local View</a></li>\
+          <li><a href="../samples/decisionTree.html">Decision Tree</a></li>\
+          <li><a href="../samples/incrementalTree.html">Incremental Tree</a></li>\
+          <li><a href="../samples/doubleTree.html">Double Tree</a></li>\
+          <li><a href="../samples/orgChartStatic.html">OrgChart (Static)</a></li>\
+          <li><a href="../samples/orgChartEditor.html">OrgChart Editor</a></li>\
+          <li><a href="../samples/mindMap.html">Mind Map</a></li>\
+          <li><a href="../samples/tournament.html">Tournament</a></li>\
+          <li><a href="../samples/treeView.html">Tree View</a></li>\
+          <li><a href="../samples/genogram.html">Genogram</a></li>\
+          <li><a href="../samples/IVRtree.html">IVR Tree</a></li>\
+          <li><a href="../samples/parseTree.html">Parse Tree</a></li>\
           <hr>\
-          <li><a href="beatPaths.html">Beat Paths</a></li>\
-          <li><a href="conceptMap.html">Concept Map</a></li>\
-          <li><a href="euler.html">Euler Diagram</a></li>\
-          <li><a href="dataVisualization.html">Data Visualization</a></li>\
-          <li><a href="entityRelationship.html">Entity Relationship</a></li>\
-          <li><a href="friendWheel.html">Friend Wheel</a></li>\
-          <li><a href="radial.html">Recentering Radial</a></li>\
-          <li><a href="radialPartition.html">Radial Partition</a></li>\
-          <li><a href="distances.html">Distances and Paths</a></li>\
-          <li><a href="sankey.html">Sankey</a></li>\
-          <li><a href="PERT.html">PERT</a></li>\
-          <li><a href="gantt.html">Gantt</a></li>\
-          <li><a href="shopFloorMonitor.html">Shop Floor Monitor</a></li>\
-          <li><a href="kittenMonitor.html">Kitten Monitor</a></li>\
-          <li><a href="grouping.html">Grouping</a></li>\
-          <li><a href="swimBands.html">Layer Bands</a></li>\
-          <li><a href="swimLanes.html">Swim Lanes</a></li>\
-          <li><a href="umlClass.html">UML Class</a></li>\
+          <li><a href="../samples/beatPaths.html">Beat Paths</a></li>\
+          <li><a href="../samples/conceptMap.html">Concept Map</a></li>\
+          <li><a href="../samples/euler.html">Euler Diagram</a></li>\
+          <li><a href="../samples/dataVisualization.html">Data Visualization</a></li>\
+          <li><a href="../samples/entityRelationship.html">Entity Relationship</a></li>\
+          <li><a href="../samples/friendWheel.html">Friend Wheel</a></li>\
+          <li><a href="../samples/radial.html">Recentering Radial</a></li>\
+          <li><a href="../samples/radialPartition.html">Radial Partition</a></li>\
+          <li><a href="../samples/distances.html">Distances and Paths</a></li>\
+          <li><a href="../samples/sankey.html">Sankey</a></li>\
+          <li><a href="../samples/PERT.html">PERT</a></li>\
+          <li><a href="../samples/gantt.html">Gantt</a></li>\
+          <li><a href="../samples/shopFloorMonitor.html">Shop Floor Monitor</a></li>\
+          <li><a href="../samples/kittenMonitor.html">Kitten Monitor</a></li>\
+          <li><a href="../samples/grouping.html">Grouping</a></li>\
+          <li><a href="../samples/swimBands.html">Layer Bands</a></li>\
+          <li><a href="../samples/swimLanes.html">Swim Lanes</a></li>\
+          <li><a href="../samples/umlClass.html">UML Class</a></li>\
           <hr>\
-          <li><a href="flowchart.html">Flowchart</a></li>\
-          <li><a href="pageFlow.html">Page Flow</a></li>\
-          <li><a href="processFlow.html">Process Flow</a></li>\
-          <li><a href="systemDynamics.html">System Dynamics</a></li>\
-          <li><a href="stateChart.html">State Chart</a></li>\
-          <li><a href="kanban.html">Kanban Board</a></li>\
-          <li><a href="sequentialFunction.html">Sequential Function</a></li>\
-          <li><a href="grafcet.html">Grafcet Diagrams</a></li>\
-          <li><a href="sequenceDiagram.html">Sequence Diagram</a></li>\
-          <li><a href="logicCircuit.html">Logic Circuit</a></li>\
-          <li><a href="records.html">Record Mapper</a></li>\
-          <li><a href="dataFlow.html">Data Flow</a></li>\
-          <li><a href="dynamicPorts.html">Dynamic Ports</a></li>\
-          <li><a href="planogram.html">Planogram</a></li>\
-          <li><a href="seatingChart.html">Seating Chart</a></li>\
-          <li><a href="regrouping.html">Regrouping</a></li>\
-          <li><a href="pipes.html">Pipes</a></li>\
-          <li><a href="draggableLink.html">Draggable Link</a></li>\
-          <li><a href="linksToLinks.html">Links to Links</a></li>\
-          <li><a href="updateDemo.html">Update Demo</a></li>\
-          <li><a href="contentAlign.html">Content Alignment</a></li>\
-          <li><a href="htmlInteraction.html">HTML Interaction</a></li>\
-          <li><a href="customContextMenu.html">Context Menu</a></li>\
-          <li><a href="canvases.html">Canvases</a></li>\
-          <li><a href="comments.html">Comments</a></li>\
-          <li><a href="gLayout.html">Grid Layout</a></li>\
-          <li><a href="tLayout.html">Tree Layout</a></li>\
-          <li><a href="fdLayout.html">Force Directed</a></li>\
-          <li><a href="ldLayout.html">Layered Digraph</a></li>\
-          <li><a href="cLayout.html">Circular Layout</a></li>\
-          <li><a href="interactiveForce.html">Interactive Force</a></li>\
+          <li><a href="../samples/flowchart.html">Flowchart</a></li>\
+          <li><a href="../samples/pageFlow.html">Page Flow</a></li>\
+          <li><a href="../samples/processFlow.html">Process Flow</a></li>\
+          <li><a href="../samples/systemDynamics.html">System Dynamics</a></li>\
+          <li><a href="../samples/stateChart.html">State Chart</a></li>\
+          <li><a href="../samples/kanban.html">Kanban Board</a></li>\
+          <li><a href="../samples/sequentialFunction.html">Sequential Function</a></li>\
+          <li><a href="../samples/grafcet.html">Grafcet Diagrams</a></li>\
+          <li><a href="../samples/sequenceDiagram.html">Sequence Diagram</a></li>\
+          <li><a href="../samples/logicCircuit.html">Logic Circuit</a></li>\
+          <li><a href="../samples/records.html">Record Mapper</a></li>\
+          <li><a href="../samples/dataFlow.html">Data Flow</a></li>\
+          <li><a href="../samples/dynamicPorts.html">Dynamic Ports</a></li>\
+          <li><a href="../samples/planogram.html">Planogram</a></li>\
+          <li><a href="../samples/seatingChart.html">Seating Chart</a></li>\
+          <li><a href="../samples/regrouping.html">Regrouping</a></li>\
+          <li><a href="../samples/pipes.html">Pipes</a></li>\
+          <li><a href="../samples/draggableLink.html">Draggable Link</a></li>\
+          <li><a href="../samples/linksToLinks.html">Links to Links</a></li>\
+          <li><a href="../samples/updateDemo.html">Update Demo</a></li>\
+          <li><a href="../samples/contentAlign.html">Content Alignment</a></li>\
+          <li><a href="../samples/htmlInteraction.html">HTML Interaction</a></li>\
+          <li><a href="../samples/customContextMenu.html">Context Menu</a></li>\
+          <li><a href="../samples/canvases.html">Canvases</a></li>\
+          <li><a href="../samples/comments.html">Comments</a></li>\
+          <li><a href="../samples/gLayout.html">Grid Layout</a></li>\
+          <li><a href="../samples/tLayout.html">Tree Layout</a></li>\
+          <li><a href="../samples/fdLayout.html">Force Directed</a></li>\
+          <li><a href="../samples/ldLayout.html">Layered Digraph</a></li>\
+          <li><a href="../samples/cLayout.html">Circular Layout</a></li>\
+          <li><a href="../samples/interactiveForce.html">Interactive Force</a></li>\
           <li><a href="../extensions/Fishbone.html">GoJS Extensions</a></li>\
           <li><a href="../projects/index.html">GoJS Projects</a></li>\
-          <li><a href="all.html">Complete List</a></li>\
+          <li><a href="../samples/all.html">Complete List</a></li>\
         </ul>\
       </div>\
     </div>\
@@ -341,64 +341,62 @@ var myExtensionMenu = '\
       <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">\
         <ul id="sections" class="classList nav navbar-nav">\
           <li><a href="../samples/index.html"><b>Index</b></a></li>\
-          <li><a href="Fishbone.html">Fishbone Layout</a></li>\
-          <li><a href="PackedLayout.html">Packed Layout</a></li>\
-          <li><a href="Parallel.html">Parallel Layout</a></li>\
-          <li><a href="Serpentine.html">Serpentine Layout</a></li>\
-          <li><a href="Spiral.html">Spiral Layout</a></li>\
-          <li><a href="TreeMap.html">Tree Map Layout</a></li>\
-          <li><a href="Table.html">Table Layout</a></li>\
+          <li><a href="../extensions/Fishbone.html">Fishbone Layout</a></li>\
+          <li><a href="../extensions/PackedLayout.html">Packed Layout</a></li>\
+          <li><a href="../extensions/Parallel.html">Parallel Layout</a></li>\
+          <li><a href="../extensions/Serpentine.html">Serpentine Layout</a></li>\
+          <li><a href="../extensions/Spiral.html">Spiral Layout</a></li>\
+          <li><a href="../extensions/TreeMap.html">Tree Map Layout</a></li>\
+          <li><a href="../extensions/Table.html">Table Layout</a></li>\
           <hr>\
-          <li><a href="RealtimeDragSelecting.html">Realtime Selecting</a></li>\
-          <li><a href="DragCreating.html">Drag Creating</a></li>\
-          <li><a href="DragZooming.html">Drag Zooming</a></li>\
-          <li><a href="ResizeMultiple.html">Resize Multiple</a></li>\
-          <li><a href="RotateMultiple.html">Rotate Multiple</a></li>\
-          <li><a href="CurvedLinkReshaping.html">Bez. Link Reshaping</a></li>\
-          <li><a href="OrthogonalLinkReshaping.html">Orth. Link Reshaping</a></li>\
-          <li><a href="SnapLinkReshaping.html">Snap Link Reshaping</a></li>\
-          <li><a href="GeometryReshaping.html">Geometry Reshaping</a></li>\
-          <li><a href="SectorReshaping.html">Sector Reshaping</a></li>\
-          <li><a href="FreehandDrawing.html">Freehand Drawing</a></li>\
-          <li><a href="PolygonDrawing.html">Polygon Drawing</a></li>\
-          <li><a href="PolylineLinking.html">Polyline Linking</a></li>\
-          <li><a href="LinkShifting.html">Link Shifting</a></li>\
-          <li><a href="LinkLabelDragging.html">Link Label Dragging</a></li>\
-          <li><a href="NodeLabelDragging.html">Node Label Dragging</a></li>\
-          <li><a href="LinkLabelOnPathDragging.html">Label On Path Dragging</a></li>\
-          <li><a href="GuidedDragging.html">Guided Dragging</a></li>\
-          <li><a href="NonRealtimeDragging.html">Non-Realtime Dragging</a></li>\
-          <li><a href="PortShifting.html">Port Shifting</a></li>\
-          <li><a href="ColumnResizing.html">Column Resizing</a></li>\
-          <li><a href="OverviewResizing.html">Overview Resizing</a></li>\
+          <li><a href="../extensions/RealtimeDragSelecting.html">Realtime Selecting</a></li>\
+          <li><a href="../extensions/DragCreating.html">Drag Creating</a></li>\
+          <li><a href="../extensions/DragZooming.html">Drag Zooming</a></li>\
+          <li><a href="../extensions/ResizeMultiple.html">Resize Multiple</a></li>\
+          <li><a href="../extensions/RotateMultiple.html">Rotate Multiple</a></li>\
+          <li><a href="../extensions/CurvedLinkReshaping.html">Bez. Link Reshaping</a></li>\
+          <li><a href="../extensions/OrthogonalLinkReshaping.html">Orth. Link Reshaping</a></li>\
+          <li><a href="../extensions/SnapLinkReshaping.html">Snap Link Reshaping</a></li>\
+          <li><a href="../extensions/GeometryReshaping.html">Geometry Reshaping</a></li>\
+          <li><a href="../extensions/SectorReshaping.html">Sector Reshaping</a></li>\
+          <li><a href="../extensions/FreehandDrawing.html">Freehand Drawing</a></li>\
+          <li><a href="../extensions/PolygonDrawing.html">Polygon Drawing</a></li>\
+          <li><a href="../extensions/PolylineLinking.html">Polyline Linking</a></li>\
+          <li><a href="../extensions/LinkShifting.html">Link Shifting</a></li>\
+          <li><a href="../extensions/LinkLabelDragging.html">Link Label Dragging</a></li>\
+          <li><a href="../extensions/NodeLabelDragging.html">Node Label Dragging</a></li>\
+          <li><a href="../extensions/LinkLabelOnPathDragging.html">Label On Path Dragging</a></li>\
+          <li><a href="../extensions/GuidedDragging.html">Guided Dragging</a></li>\
+          <li><a href="../extensions/NonRealtimeDragging.html">Non-Realtime Dragging</a></li>\
+          <li><a href="../extensions/PortShifting.html">Port Shifting</a></li>\
+          <li><a href="../extensions/ColumnResizing.html">Column Resizing</a></li>\
+          <li><a href="../extensions/OverviewResizing.html">Overview Resizing</a></li>\
           <hr>\
-          <li><a href="ScrollingTable.html">Scrolling Table</a></li>\
-          <li><a href="BalloonLink.html">Balloon Links</a></li>\
-          <li><a href="ParallelRoute.html">Parallel Route Links</a></li>\
-          <li><a href="Dimensioning.html">Dimensioning Links</a></li>\
-          <li><a href="DrawCommandHandler.html">Drawing Commands</a></li>\
-          <li><a href="LocalStorageCommandHandler.html">Local Storage</a></li>\
-          <li><a href="Robot.html">Simulating Input</a></li>\
-          <li><a href="DataInspector.html">Data Inspector</a></li>\
-          <li><a href="DebugInspector.html">Debug Inspector</a></li>\
+          <li><a href="../extensions/ScrollingTable.html">Scrolling Table</a></li>\
+          <li><a href="../extensions/BalloonLink.html">Balloon Links</a></li>\
+          <li><a href="../extensions/ParallelRoute.html">Parallel Route Links</a></li>\
+          <li><a href="../extensions/Dimensioning.html">Dimensioning Links</a></li>\
+          <li><a href="../extensions/DrawCommandHandler.html">Drawing Commands</a></li>\
+          <li><a href="../extensions/LocalStorageCommandHandler.html">Local Storage</a></li>\
+          <li><a href="../extensions/Robot.html">Simulating Input</a></li>\
+          <li><a href="../extensions/DataInspector.html">Data Inspector</a></li>\
           <hr>\
-          <li><a href="BPMN.html" target="_blank">BPMN Editor</a></li>\
-          <li><a href="FloorPlanEditor.html" target="_blank">Floor Plan Editor</a></li>\
-          <li><a href="FloorPlanMonitor.html" target="_blank">Floor Plan Monitor</a></li>\
-          <li><a href="FloorPlanner.html" target="_blank">Floor Planner</a></li>\
+          <li><a href="../projects/bpmn/BPMN.html" target="_blank">BPMN Editor</a></li>\
+          <li><a href="../projects/floorplanner/FloorPlanner.html" target="_blank">Floor Planner</a></li>\
+          <li><a href="../projects/floorplannerTS/index.html" target="_blank">Floor Planner (TypeScript)</a></li>\
           <hr>\
-          <li><a href="CheckBoxes.html">CheckBoxes</a></li>\
-          <li><a href="Hyperlink.html">Hyperlinks</a></li>\
-          <li><a href="TextEditor.html">Text Editor</a></li>\
-          <li><a href="ZoomSlider.html">Zoom Slider</a></li>\
+          <li><a href="../extensions/CheckBoxes.html">CheckBoxes</a></li>\
+          <li><a href="../extensions/Hyperlink.html">Hyperlinks</a></li>\
+          <li><a href="../extensions/TextEditor.html">Text Editor</a></li>\
+          <li><a href="../extensions/ZoomSlider.html">Zoom Slider</a></li>\
           <hr>\
-          <li><a href="Buttons.js" target="_blank">Buttons.js</a></li>\
-          <li><a href="Figures.js" target="_blank">Figures.js</a></li>\
-          <li><a href="Arrowheads.js" target="_blank">Arrowheads.js</a></li>\
-          <li><a href="Templates.js" target="_blank">Templates.js</a></li>\
-          <li><a href="TextEditor.js" target="_blank">TextEditor.js</a></li>\
-          <li><a href="TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a></li>\
-          <li><a href="TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a></li>\
+          <li><a href="../extensions/Buttons.js" target="_blank">Buttons.js</a></li>\
+          <li><a href="../extensions/Figures.js" target="_blank">Figures.js</a></li>\
+          <li><a href="../extensions/Arrowheads.js" target="_blank">Arrowheads.js</a></li>\
+          <li><a href="../extensions/Templates.js" target="_blank">Templates.js</a></li>\
+          <li><a href="../extensions/TextEditor.js" target="_blank">TextEditor.js</a></li>\
+          <li><a href="../extensions/TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a></li>\
+          <li><a href="../extensions/TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a></li>\
           <li><a href="../samples/flowchart.html">GoJS Samples</a></li>\
           <li><a href="../projects/index.html">GoJS Projects</a></li>\
           <li><a href="../samples/all.html">Complete List</a></li>\

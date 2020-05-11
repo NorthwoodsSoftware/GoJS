@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Adding a Custom Node to a Palette</title>
+  <meta name="description" content="An example of having the user customize a Palette by adding copies of Diagram nodes to the Palette's Model." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../extensions/Figures.js"></script>
+  <link rel='stylesheet' href='../extensions/dataInspector.css' />
+  <script src="../extensions/dataInspector.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+      var $ = go.GraphObject.make;
+
+      // initialize main Diagram
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            "undoManager.isEnabled": true
+          });
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { locationSpot: go.Spot.Center },
+          new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Shape, "Circle",
+            {
+              fill: "white", stroke: "gray", strokeWidth: 2,
+              portId: "", fromLinkable: true, toLinkable: true,
+              fromLinkableDuplicates: true, toLinkableDuplicates: true,
+              fromLinkableSelfNode: true, toLinkableSelfNode: true
+            },
+            new go.Binding("stroke", "color"),
+            new go.Binding("figure")),
+          $(go.TextBlock,
+            {
+              margin: new go.Margin(5, 5, 3, 5), font: "10pt sans-serif",
+              minSize: new go.Size(16, 16), maxSize: new go.Size(120, NaN),
+              textAlign: "center", editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        );
+
+      // initialize Palette
+      myPalette =
+        $(go.Palette, "myPaletteDiv",
+          {
+            nodeTemplate: myDiagram.nodeTemplate,
+            contentAlignment: go.Spot.Center,
+            layout:
+              $(go.GridLayout,
+                { wrappingColumn: 1, cellSize: new go.Size(2, 2) }),
+            "ModelChanged": function(e) {     // just for demonstration purposes,
+              if (e.isTransactionFinished) {  // show the model data in the page's TextArea
+                document.getElementById("mySavedPaletteModel").textContent = e.model.toJson();
+              }
+            }
+          });
+
+      // now add the initial contents of the Palette
+      myPalette.model.nodeDataArray = [
+        { text: "Circle", color: "blue", figure: "Circle" },
+        { text: "Square", color: "purple", figure: "Square" },
+        { text: "Ellipse", color: "orange", figure: "Ellipse" },
+        { text: "Rectangle", color: "red", figure: "Rectangle" },
+        { text: "Rounded\nRectangle", color: "green", figure: "RoundedRectangle" },
+        { text: "Triangle", color: "purple", figure: "Triangle" },
+      ];
+
+      // initialize Overview
+      myOverview =
+        $(go.Overview, "myOverviewDiv",
+          {
+            observed: myDiagram,
+            contentAlignment: go.Spot.Center
+          });
+
+      var inspector = new Inspector('myInspectorDiv', myDiagram,
+        {
+          // uncomment this line to only inspect the named properties below instead of all properties on each object:
+          // includesOwnProperties: false,
+          properties: {
+            "text": {},
+            // key would be automatically added for nodes, but we want to declare it read-only also:
+            "key": { readOnly: true, show: Inspector.showIfPresent },
+            // color would be automatically added for nodes, but we want to declare it a color also:
+            "color": { type: 'color' },
+            "figure": {}
+          }
+        });
+
+      load();
+    }
+
+    // save a model to and load a model from Json text, displayed below the Diagram
+    function save() {
+      var str = myDiagram.model.toJson();
+      document.getElementById("mySavedModel").value = str;
+    }
+    function load() {
+      var str = document.getElementById("mySavedModel").value;
+      myDiagram.model = go.Model.fromJson(str);
+    }
+
+    function addToPalette() {
+      var node = myDiagram.selection.filter(function(p) { return p instanceof go.Node; }).first();
+      if (node !== null) {
+        myPalette.startTransaction();
+        var item = myPalette.model.copyNodeData(node.data);
+        myPalette.model.addNodeData(item);
+        myPalette.commitTransaction("added item to palette");
+      }
+    }
+
+    // The user cannot delete selected nodes in the Palette with the Delete key or Control-X,
+    // but they can if they do so programmatically.
+    function removeFromPalette() {
+      myPalette.commandHandler.deleteSelection();
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:140px">
+      <div id="myPaletteDiv" style="background-color: whitesmoke; border: solid 1px black; height: 400px"></div>
+      <div id="myOverviewDiv" style="border: solid 1px black; height: 100px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:500px">
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:200px">
+      <div id="myInspectorDiv" class="inspector"></div>
+    </span>
+  </div>
+  <p>
+    This sample supports the normal kind of drag-and-drop from a <a>Palette</a> to a <a>Diagram</a>.
+    The Data <a>Inspector</a> allows you to edit the properties of a selected node in the diagram.
+  </p>
+  <p>
+    This sample also supports dynamically adding a copy of a selected node in the diagram to the
+    palette by the "Add To Palette" button.
+    See the current state of the palette's model in the top textarea.
+    The palette is <a>Diagram.isReadOnly</a>, so the user cannot delete selected nodes from the palette.
+    But the "Delete From Palette" button removes any selected nodes from the palette.
+  </p>
+  <div>
+    <button onclick="addToPalette()">Add To Palette</button>
+    <button onclick="removeFromPalette()">Delete From Palette</button>
+    Palette model:
+  </div>
+  <textarea id="mySavedPaletteModel" style="width:100%;height:200px"></textarea>
+  <div>
+    <button id="loadModel" onclick="load()">Load</button>
+    <button id="saveModel" onclick="save()">Save</button>
+    Diagram model:
+  </div>
+  <textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+    { "key": 1, "text": "hello", "figure":"Circle", "color":"green", "location":"0 0" },
+    { "key": 2, "text": "world", "figure":"Rectangle", "color":"red", "location":"100 0" }
+ ],
+  "linkDataArray": [
+    { "from":1, "to":2 }
+ ]}
+  </textarea>
+</div>
+</body>
+</html>

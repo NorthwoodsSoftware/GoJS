@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Drawing Attention to a Node</title>
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+      var $ = go.GraphObject.make;
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            // allow some empty space to appear when scrolled to the edge of the document
+            scrollMargin: 200,
+            // the layout does not really matter for this sample
+            layout: $(go.GridLayout, { wrappingWidth: 4000 }),
+            "InitialLayoutCompleted": function(e) {
+              // wait until initial layout and initial animation are finished,
+              // then select the node and scroll to it with its own animation
+              var node = null;  // you might choose a particular node in your app
+              setTimeout(function() { focusOnNode(node); },
+                         e.diagram.animationManager.duration);
+            }
+          });
+
+      // the templates do not really matter for this sample
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { width: 120, height: 60 },
+          $(go.Shape,
+            new go.Binding("fill")),
+          $(go.TextBlock,
+            new go.Binding("text"))
+        );
+
+      // create enough nodes so that only part of the document will fit in the viewport
+      var arr = [];
+      for (var i = 0; i < 1000; i++) {
+        var color = go.Brush.randomColor();
+        arr.push({ text: color, fill: color });
+      }
+      myDiagram.model = new go.GraphLinksModel(arr);
+    }
+
+    function focusOnNode(node) {  // node is optional
+      // If no node is given, choose a node at random, and select it.
+      if (!node) {
+        var arr = myDiagram.model.nodeDataArray;
+        var data = arr[Math.floor(Math.random() * arr.length)];
+        node = myDiagram.findNodeForData(data);
+      }
+      if (!node) return;
+      myDiagram.select(node);
+
+      // Set up an Animation that shows the node significantly larger than normal
+      // and then scales it back down to normal.
+      // This intentionally does not operate on the selected node itself,
+      // but on a temporary copy of it, so that the node and the model are unaffected.
+      var focus1 = node.copy();
+      focus1.layerName = "Tool";
+      focus1.isInDocumentBounds = false;
+      focus1.locationSpot = go.Spot.Center;
+      focus1.location = node.actualBounds.center;
+      // Figure out how large to scale it initially; assume maximum is one third of the viewport size
+      var w = Math.max(node.actualBounds.width, 1);
+      var h = Math.max(node.actualBounds.height, 1);
+      var viewscale = Math.max(myDiagram.viewportBounds.width/w, myDiagram.viewportBounds.height/h) / 3;
+      // Now create the Animation showing the temporary node scaled initially at VIEWSCALE
+      var anim = new go.Animation();
+      anim.addTemporaryPart(focus1, myDiagram);
+      anim.add(focus1, "scale", viewscale, 1.0);  // and animating down to scale 1.0
+      // This animation occurs concurrently with the scrolling animation.
+      anim.duration = myDiagram.animationManager.duration + 1000;
+      anim.start();
+      // Meanwhile, make sure that the node is in the viewport, so the user can see it
+      myDiagram.commandHandler.scrollToPart(node);
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <p>
+    Click on this button to select a node at random, scroll to it, and animate a copy of it -- all to
+    draw attention to it.<br/>
+    <button onclick="focusOnNode()">Focus on random Node</button>
+  </p>
+  <p>
+    This calls <a>CommandHandler.scrollToPart</a>, which conducts an animation to scroll
+    the viewport to where the node is.  Note that if the node is close to the edge of the document,
+    the viewport cannot be scrolled so that the node is nearer to the center of the viewport unless you
+    increase the <a>Diagram.scrollMargin</a>.
+  </p>
+  <p>
+    This also creates an <a>Animation</a> that operates on a temporary copy of the selected node,
+    making it appear much larger but animating the scale so that it appears to shrink to be
+    the selected node where it is in the diagram.
+  </p>
+</div>
+</body>
+</html>
