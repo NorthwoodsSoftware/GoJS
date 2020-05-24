@@ -234,35 +234,45 @@ var mySampleMenu = '\
               <span class="icon-bar"></span>\
             </button>\
           </div>\
-          <span class="navbar-brand">Samples</span>\
+          <span class="navbar-brand"><a href="../samples/index.html"><b>Index</b></a></span>\
         </div>\
       </div>\
       <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">\
         <ul id="sections" class="classList nav navbar-nav">\
-          <li><a href="../samples/index.html"><b>Index</b></a></li>\
-          <li><a href="../samples/minimal.html">Minimal</a></li>\
-          <li><a href="../samples/basic.html">Basic</a></li>\
-          <li><a href="../samples/classHierarchy.html">Class Hierarchy</a></li>\
-          <li><a href="../samples/DOMTree.html">DOM Tree</a></li>\
-          <li><a href="../samples/visualTree.html">Visual Tree</a></li>\
-          <li><a href="../samples/shapes.html">Shapes</a></li>\
-          <li><a href="../samples/icons.html">SVG Icons</a></li>\
-          <li><a href="../samples/arrowheads.html">Arrowheads</a></li>\
-          <li><a href="../samples/navigation.html">Navigation</a></li>\
-          <hr>\
-          <li><a href="../samples/familyTree.html">Family Tree</a></li>\
-          <li><a href="../samples/localView.html">Local View</a></li>\
-          <li><a href="../samples/decisionTree.html">Decision Tree</a></li>\
-          <li><a href="../samples/incrementalTree.html">Incremental Tree</a></li>\
-          <li><a href="../samples/doubleTree.html">Double Tree</a></li>\
           <li><a href="../samples/orgChartStatic.html">OrgChart (Static)</a></li>\
           <li><a href="../samples/orgChartEditor.html">OrgChart Editor</a></li>\
-          <li><a href="../samples/mindMap.html">Mind Map</a></li>\
-          <li><a href="../samples/tournament.html">Tournament</a></li>\
-          <li><a href="../samples/treeView.html">Tree View</a></li>\
+          <li><a href="../samples/familyTree.html">Family Tree</a></li>\
           <li><a href="../samples/genogram.html">Genogram</a></li>\
+          <li><a href="../samples/doubleTree.html">Double Tree</a></li>\
+          <li><a href="../samples/mindMap.html">Mind Map</a></li>\
+          <li><a href="../samples/decisionTree.html">Decision Tree</a></li>\
           <li><a href="../samples/IVRtree.html">IVR Tree</a></li>\
+          <li><a href="../samples/incrementalTree.html">Incremental Tree</a></li>\
           <li><a href="../samples/parseTree.html">Parse Tree</a></li>\
+          <li><a href="../samples/treeView.html">Tree View</a></li>\
+          <li><a href="../samples/tournament.html">Tournament</a></li>\
+          <li><a href="../samples/localView.html">Local View</a></li>\
+          <hr>\
+          <li><a href="../samples/flowchart.html">Flowchart</a></li>\
+          <li><a href="../samples/blockEditor.html">Block Editor</a></li>\
+          <li><a href="../samples/pageFlow.html">Page Flow</a></li>\
+          <li><a href="../samples/processFlow.html">Process Flow</a></li>\
+          <li><a href="../samples/systemDynamics.html">System Dynamics</a></li>\
+          <li><a href="../samples/stateChart.html">State Chart</a></li>\
+          <li><a href="../samples/kanban.html">Kanban Board</a></li>\
+          <li><a href="../samples/sequentialFunction.html">Sequential Function</a></li>\
+          <li><a href="../samples/grafcet.html">Grafcet Diagrams</a></li>\
+          <li><a href="../samples/sequenceDiagram.html">Sequence Diagram</a></li>\
+          <li><a href="../samples/logicCircuit.html">Logic Circuit</a></li>\
+          <li><a href="../samples/records.html">Record Mapper</a></li>\
+          <li><a href="../samples/dataFlow.html">Data Flow</a></li>\
+          <li><a href="../samples/dynamicPorts.html">Dynamic Ports</a></li>\
+          <li><a href="../samples/planogram.html">Planogram</a></li>\
+          <li><a href="../samples/seatingChart.html">Seating Chart</a></li>\
+          <li><a href="../samples/regrouping.html">Regrouping</a></li>\
+          <li><a href="../samples/pipes.html">Pipes</a></li>\
+          <li><a href="../samples/draggableLink.html">Draggable Link</a></li>\
+          <li><a href="../samples/linksToLinks.html">Links to Links</a></li>\
           <hr>\
           <li><a href="../samples/beatPaths.html">Beat Paths</a></li>\
           <li><a href="../samples/conceptMap.html">Concept Map</a></li>\
@@ -283,37 +293,29 @@ var mySampleMenu = '\
           <li><a href="../samples/swimLanes.html">Swim Lanes</a></li>\
           <li><a href="../samples/umlClass.html">UML Class</a></li>\
           <hr>\
-          <li><a href="../samples/flowchart.html">Flowchart</a></li>\
-          <li><a href="../samples/pageFlow.html">Page Flow</a></li>\
-          <li><a href="../samples/processFlow.html">Process Flow</a></li>\
-          <li><a href="../samples/systemDynamics.html">System Dynamics</a></li>\
-          <li><a href="../samples/stateChart.html">State Chart</a></li>\
-          <li><a href="../samples/kanban.html">Kanban Board</a></li>\
-          <li><a href="../samples/sequentialFunction.html">Sequential Function</a></li>\
-          <li><a href="../samples/grafcet.html">Grafcet Diagrams</a></li>\
-          <li><a href="../samples/sequenceDiagram.html">Sequence Diagram</a></li>\
-          <li><a href="../samples/logicCircuit.html">Logic Circuit</a></li>\
-          <li><a href="../samples/records.html">Record Mapper</a></li>\
-          <li><a href="../samples/dataFlow.html">Data Flow</a></li>\
-          <li><a href="../samples/dynamicPorts.html">Dynamic Ports</a></li>\
-          <li><a href="../samples/planogram.html">Planogram</a></li>\
-          <li><a href="../samples/seatingChart.html">Seating Chart</a></li>\
-          <li><a href="../samples/regrouping.html">Regrouping</a></li>\
-          <li><a href="../samples/pipes.html">Pipes</a></li>\
-          <li><a href="../samples/draggableLink.html">Draggable Link</a></li>\
-          <li><a href="../samples/linksToLinks.html">Links to Links</a></li>\
+          <li><a href="../samples/minimal.html">Minimal</a></li>\
+          <li><a href="../samples/basic.html">Basic (editing)</a></li>\
+          <li><a href="../samples/classHierarchy.html">Class Hierarchy</a></li>\
+          <li><a href="../samples/DOMTree.html">DOM Tree</a></li>\
+          <li><a href="../samples/visualTree.html">Visual Tree</a></li>\
+          <li><a href="../samples/shapes.html">Shape Figures</a></li>\
+          <li><a href="../samples/icons.html">SVG Icons</a></li>\
+          <li><a href="../samples/arrowheads.html">Arrowheads</a></li>\
+          <li><a href="../samples/navigation.html">Navigation</a></li>\
           <li><a href="../samples/updateDemo.html">Update Demo</a></li>\
           <li><a href="../samples/contentAlign.html">Content Alignment</a></li>\
           <li><a href="../samples/htmlInteraction.html">HTML Interaction</a></li>\
           <li><a href="../samples/customContextMenu.html">Context Menu</a></li>\
           <li><a href="../samples/canvases.html">Canvases</a></li>\
           <li><a href="../samples/comments.html">Comments</a></li>\
+          <hr>\
           <li><a href="../samples/gLayout.html">Grid Layout</a></li>\
           <li><a href="../samples/tLayout.html">Tree Layout</a></li>\
           <li><a href="../samples/fdLayout.html">Force Directed</a></li>\
           <li><a href="../samples/ldLayout.html">Layered Digraph</a></li>\
           <li><a href="../samples/cLayout.html">Circular Layout</a></li>\
           <li><a href="../samples/interactiveForce.html">Interactive Force</a></li>\
+          <hr>\
           <li><a href="../extensions/Fishbone.html">GoJS Extensions</a></li>\
           <li><a href="../projects/index.html">GoJS Projects</a></li>\
           <li><a href="../samples/all.html">Complete List</a></li>\
@@ -335,12 +337,11 @@ var myExtensionMenu = '\
               <span class="icon-bar"></span>\
             </button>\
           </div>\
-          <span class="navbar-brand">Extensions</span>\
+          <span class="navbar-brand"><a href="../samples/index.html"><b>Index</b></a></span>\
         </div>\
       </div>\
       <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">\
         <ul id="sections" class="classList nav navbar-nav">\
-          <li><a href="../samples/index.html"><b>Index</b></a></li>\
           <li><a href="../extensions/Fishbone.html">Fishbone Layout</a></li>\
           <li><a href="../extensions/PackedLayout.html">Packed Layout</a></li>\
           <li><a href="../extensions/Parallel.html">Parallel Layout</a></li>\
@@ -389,7 +390,6 @@ var myExtensionMenu = '\
           <li><a href="../extensions/Hyperlink.html">Hyperlinks</a></li>\
           <li><a href="../extensions/TextEditor.html">Text Editor</a></li>\
           <li><a href="../extensions/ZoomSlider.html">Zoom Slider</a></li>\
-          <hr>\
           <li><a href="../extensions/Buttons.js" target="_blank">Buttons.js</a></li>\
           <li><a href="../extensions/Figures.js" target="_blank">Figures.js</a></li>\
           <li><a href="../extensions/Arrowheads.js" target="_blank">Arrowheads.js</a></li>\
@@ -397,6 +397,7 @@ var myExtensionMenu = '\
           <li><a href="../extensions/TextEditor.js" target="_blank">TextEditor.js</a></li>\
           <li><a href="../extensions/TextEditorRadioButtons.js" target="_blank">TextEditorRadioButtons.js</a></li>\
           <li><a href="../extensions/TextEditorSelectBox.js" target="_blank">TextEditorSelectBox.js</a></li>\
+          <hr>\
           <li><a href="../samples/flowchart.html">GoJS Samples</a></li>\
           <li><a href="../projects/index.html">GoJS Projects</a></li>\
           <li><a href="../samples/all.html">Complete List</a></li>\

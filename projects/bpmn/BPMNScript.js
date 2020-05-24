@@ -1073,7 +1073,9 @@ var __extends = (this && this.__extends) || (function () {
     var LaneResizingTool = /** @class */ (function (_super) {
         __extends(LaneResizingTool, _super);
         function LaneResizingTool() {
-            return _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super.call(this) || this;
+            _this.name = "LaneResizingTool";
+            return _this;
         }
         LaneResizingTool.prototype.isLengthening = function () {
             return (this.handle !== null && this.handle.alignment === go.Spot.Right);

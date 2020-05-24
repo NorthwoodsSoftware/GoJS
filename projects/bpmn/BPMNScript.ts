@@ -1485,6 +1485,10 @@ function computeMinLaneSize(lane: go.Group) {
 
 // define a custom ResizingTool to limit how far one can shrink a lane Group
 class LaneResizingTool extends go.ResizingTool {
+  public constructor() {
+    super();
+    this.name = "LaneResizingTool";
+  }
   public isLengthening() {
     return (this.handle !== null && this.handle.alignment === go.Spot.Right);
   }

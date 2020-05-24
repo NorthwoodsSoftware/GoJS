@@ -748,6 +748,14 @@ arr.push([
 ]);
 
 arr.push([
+  "donutCharts",
+  "Donut Charts",
+  "Ring-shaped pie charts within nodes.",
+  "donutCharts",
+  ["itemarrays", "geometries", "charts"]
+]);
+
+arr.push([
   "candlestickCharts",
   "Candlestick Charts",
   "Simple candlestick or range charts within nodes.",
@@ -899,6 +907,14 @@ arr.push([
   "Adornment Buttons",
   "Selected nodes show a row of buttons that execute commands or start tools.",
   "adornmentButtons",
+  ["buttons", "geometries"]
+]);
+
+arr.push([
+  "radialAdornment",
+  "Radial Adornment Buttons",
+  "An adornment showing buttons in a circle on one selected node.",
+  "radialAdornment",
   ["buttons", "geometries"]
 ]);
 

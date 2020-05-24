@@ -346,7 +346,6 @@ var __extends = (this && this.__extends) || (function () {
                 return;
             var locpt = shape.getLocalPoint(newPoint);
             var geo = shape.geometry.copy();
-            shape.desiredSize = new go.Size(NaN, NaN); // set the desiredSize once we've gotten our Geometry so we don't clobber
             var type = this.handle._typ;
             if (type === undefined)
                 return;
@@ -371,6 +370,7 @@ var __extends = (this && this.__extends) || (function () {
                     break;
             }
             var offset = geo.normalize(); // avoid any negative coordinates in the geometry
+            shape.desiredSize = new go.Size(NaN, NaN); // clear the desiredSize so Geometry can determine size
             shape.geometry = geo; // modify the Shape
             var part = shape.part; // move the Part holding the Shape
             if (part === null)

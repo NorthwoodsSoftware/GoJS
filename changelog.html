@@ -206,15 +206,36 @@
 
     <hr style="margin-top:50px;" />
 
-    <h4>Changes for 2.1.16</h4>
+    <h4>Changes for 2.1.17</h4>
     <ul>
       <li>
-        Fixed <a>Diagram.makeImage</a> when a Picture has an SVG source that has a different size than its viewbox.
-        In some browsers the SVGs had been drawn with the incorrect aspect ratio.
+        Added the <a href="samples/radialAdornment.html">Radial Adornment Buttons</a> sample,
+        showing a selection <a>Adornment</a>, only on one node, that is like a context menu
+        with buttons arranged in a circle around the selected node.
       </li>
       <li>
-        Fixed <a>Diagram.delayInitialization</a> incorrectly resetting the <a>Diagram.position</a> when animation is enabled.
+        Added the <a href="samples/donutCharts.html">Donut Charts</a> sample,
+        showing a simple circular bar chart in each node.
       </li>
+      <li>
+        Fixed exporting the <a>Picture.reloadSource</a> and <a>Picture.redraw</a> methods.
+      </li>
+      <li>
+        Fixed the <a>LinkingBaseTool.temporaryFromPort</a> and <a>LinkingBaseTool.temporaryToPort</a> property setters
+        to replace the port of the corresponding temporary node.  This allows customization of a <a>LinkingTool</a>
+        by setting either or both of those two properties.
+      </li>
+      <li>
+        Fixed <a>Diagram.makeImage</a> with a Picture SVG data URI source, in the same manner as in 2.1.16.
+      </li>
+      <li>
+        Fixed undo of a <a>Shape.geometry</a> setting, after its <a>GraphObject.desiredSize</a> had been set.
+        This particular sequence of events was discovered in the use of the <a>GeometryReshapingTool</a> extension.
+      </li>
+    </ul>
+
+    <h4>Changes for 2.1.16</h4>
+    <ul>
       <li>
         Added the <a href="samples/animatedFocus.html">Animated Focus</a> sample,
         which demonstrates how to scroll to a node and really make it obvious where the node is
@@ -226,6 +247,13 @@
         customizing it, and then executing a command to copy it to the palette's model.
         The user can also remove selected items from the palette via a command,
         even though <a>Palette.isReadOnly</a> is true.
+      </li>
+      <li>
+        Fixed <a>Diagram.makeImage</a> when a Picture has an SVG source that has a different size than its viewbox.
+        In some browsers the SVGs had been drawn with the incorrect aspect ratio.
+      </li>
+      <li>
+        Fixed <a>Diagram.delayInitialization</a> incorrectly resetting the <a>Diagram.position</a> when animation is enabled.
       </li>
     </ul>
 
@@ -439,8 +467,7 @@
     <h4>Changes for 2.1.3</h4>
     <ul>
       <li>
-        Fixed a regression (that started in 2.0.0) with AvoidsNodes links improperly re-routing when using the
-        DraggingTool.
+        Fixed a regression from 2.0.0 with AvoidsNodes links improperly re-routing when using the DraggingTool.
       </li>
       <li>
         Fixed a undo (redo) bug with <a>AnimationTrigger</a>s that used location or position on Parts.
@@ -501,7 +528,7 @@
         Fixed the operation of <a>Diagram.handlesDragDropForTopLevelParts</a> when dragging on the elements of a <a>Group</a>.
       </li>
       <li>
-        Fixed a bug where <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a> would
+        Fixed <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a> would
         not affect scrolling size in some browsers.
       </li>
       <li>
@@ -550,7 +577,7 @@
         This check only includes properties included in the output from <a>Model.toIncrementalJson</a>.
       </li>
       <li>
-        Added new methods, <a>Picture.reload</a>, which reloads a Picture source in case the file on the server has
+        Added new methods, <a>Picture.reloadSource</a>, which reloads a Picture source in case the file on the server has
         changed,
         and <a>Picture.redraw</a> which redraws the picture, and can be useful to update the Picture if the source is
         backed by an HTML Canvas or HTML Video Element.
@@ -621,7 +648,7 @@
     <h4>Changes for 2.0.17</h4>
     <ul>
       <li>
-        Fixed a bug with scrollbars when setting invisible/hidden Diagram DIVs to visible/unhidden while modifying
+        Fixed scrollbars when setting invisible/hidden Diagram DIVs to visible/unhidden while modifying
         their size.
       </li>
       <li>
@@ -656,10 +683,10 @@
         Fixed an animation bug where some Model loading events might not respect the value of <a>AnimationManager.isInitial</a>.
       </li>
       <li>
-        Fixed a bug with <a>AnimationManager.isInitial</a>, where subsequent animations may not occur when it is false.
+        Fixed <a>AnimationManager.isInitial</a>, where subsequent animations may not occur when it is false.
       </li>
       <li>
-        Fixed a bug with Picture drawing when the Picture is scaled to be drawn smaller than a pixel.
+        Fixed Picture drawing when the Picture is scaled to be drawn smaller than a pixel.
         During expanding animations, it is possible that such a small scale is applied to a Picture.
       </li>
     </ul>
@@ -739,8 +766,7 @@
     <h4>Changes for 2.0.11</h4>
     <ul>
       <li>
-        Fixed a bug with <a>CommandHandler.standardMouseOver</a> mis-reporting the current object, a regression from
-        2.0.10.
+        Fixed <a>CommandHandler.standardMouseOver</a> mis-reporting the current object, a regression from 2.0.10.
       </li>
     </ul>
 
@@ -748,7 +774,7 @@
     <h4>Changes for 2.0.10</h4>
     <ul>
       <li>
-        Fixed a bug with simulated <a>InputEvent</a>s, such as used by <a>Robot</a>, that caused <a>GraphObject.mouseEnter</a>
+        Fixed simulated <a>InputEvent</a>s, such as used by <a>Robot</a>, that caused <a>GraphObject.mouseEnter</a>
         and <a>GraphObject.mouseLeave</a> event handlers not to be called.
       </li>
       <li>
@@ -756,10 +782,10 @@
         This provides a more uniform protocol of selection events.
       </li>
       <li>
-        Fixed a bug that would prevent some <a>Picture.successFunction</a>s from ever firing.
+        Fixed some cases of preventing some <a>Picture.successFunction</a>s from ever firing.
       </li>
       <li>
-        Fixed a bug with Bezier link routing in <a>LayeredDigraphLayout</a> when <a>LayeredDigraphLayout.setsPortSpots</a>
+        Fixed Bezier link routing in <a>LayeredDigraphLayout</a> when <a>LayeredDigraphLayout.setsPortSpots</a>
         was false
         and an end of the link was undirected.
       </li>
@@ -803,10 +829,10 @@
         Drawing performance improvements, especially in well-connected graphs.
       </li>
       <li>
-        Fixed a bug with trackpad scrolling reversing at the end of scroll events.
+        Fixed trackpad scrolling reversing at the end of scroll events.
       </li>
       <li>
-        Fixed a bug drawing grids on some <a>Overview</a>s.
+        Fixed drawing grids on some <a>Overview</a>s.
       </li>
     </ul>
 
@@ -859,10 +885,10 @@
         New intro page on <a href="intro/replacingDeleting.html">Replacing Diagrams and Models</a>
       </li>
       <li>
-        Fixed a bug with Link Shape Geometries not rendering when updated partially off-screen.
+        Fixed Link Shape Geometries not rendering when updated partially off-screen.
       </li>
       <li>
-        Fixed a bug with <a>InputEvent.clickCount</a>: Before, on touch devices, this count was incremented only on the
+        Fixed <a>InputEvent.clickCount</a>: Before, on touch devices, this count was incremented only on the
         end of the touch, and not the start.
         This was discrepant from mouse click behavior, and would lead to problems when Tools queried the clickCount on
         touch/mouseDown,
@@ -879,7 +905,7 @@
 
     <h4>Changes for 2.0.6</h4>
     <ul>
-      <li>Fixed a bug with the <code>go.d.ts</code> file where <a>GraphObject.alignment</a> was missing.</li>
+      <li>Fixed the <code>go.d.ts</code> file where <a>GraphObject.alignment</a> was missing.</li>
       <li>
         Added missing cloneProtected overrides for <a>BalloonLink</a> and <a>DimensioningLink</a> so data is properly
         copied.
@@ -898,10 +924,9 @@
         <code>preventDefault</code> on non-cancelable events.
         This has been fixed.
       </li>
-      <li>Fixed a bug with <a>Diagram.zoomToFit</a> when <a>Diagram.scrollMode</a> was set to <a>Diagram,InfiniteScroll</a>.</li>
+      <li>Fixed <a>Diagram.zoomToFit</a> when <a>Diagram.scrollMode</a> was set to <a>Diagram,InfiniteScroll</a>.</li>
       <li>
-        Fixed a bug where <a>GuidedDraggingTool</a> was snapping the whole part to a guideline instead of the
-        location object.
+        Fixed <a>GuidedDraggingTool</a> snapping the whole part to a guideline instead of the location object.
       </li>
     </ul>
 
@@ -934,10 +959,10 @@
         remembered in the <a>UndoManager.history</a> but allows commits and rollbacks to occur normally.
       </li>
       <li>
-        Fixed a bug from 2.0.1 with <a>Diagram.makeSvg</a> incorrectly re-using SVG elements.
+        Fixed a bug introduced in 2.0.1 with <a>Diagram.makeSvg</a> incorrectly re-using SVG elements.
       </li>
       <li>
-        Fixed a bug from 2.0.0 with <a>Diagram.makeSvg</a> when drawing dashed paths.
+        Fixed a bug introduced in 2.0.0 with <a>Diagram.makeSvg</a> when drawing dashed paths.
       </li>
       <li>
         Deployment fixes for electron apps.
@@ -1000,7 +1025,7 @@
         Performance improvements with JumpOver/JumpGap Links.
       </li>
       <li>
-        Fixed a bug with inappropriate invalidation of link routes when a Group was moved.
+        Fixed inappropriate invalidation of link routes when a Group was moved.
       </li>
       <li>
         Fixes for SVG rendering of Pattern brushes.

@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Buttons in a Circular Adornment</title>
+  <meta name="description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+
+  // Produce a "Button" that is shaped as the intersection of a circular sector and an annular ring.
+  // The first argument is the angle at which the button will be placed relative to the center.
+  // The second argument is the sweep angle over which the button will extend;
+  // by default this is 90 degrees, as if there are exactly four buttons around the whole circle.
+  go.GraphObject.defineBuilder("SectorButton", function(args) {
+    var angle = go.GraphObject.takeBuilderArgument(args, 0.0, function(a) { return typeof a === "number"; });
+    var sweep = go.GraphObject.takeBuilderArgument(args, 90.0, function(a) { return typeof a === "number"; });
+
+    // default brushes for "Button" shape
+    var buttonFillNormal = "whitesmoke";
+    var buttonStrokeNormal = "gray";
+
+    var buttonFillOver = "dodgerblue";
+    var buttonStrokeOver = "blue";
+
+    var buttonFillDisabled = "darkgray";
+
+    function makeAnnularWedge(angle, sweep, outer, inner) {
+      // the Geometry will be centered about (0,0)
+      var p = new go.Point(outer, 0).rotate(angle - sweep / 2);
+      var q = new go.Point(inner, 0).rotate(angle + sweep / 2);
+      var geo = new go.Geometry()
+        .add(new go.PathFigure(-outer, -outer))  // always make sure the Geometry includes the top left corner
+        .add(new go.PathFigure(outer, outer))    // and the bottom right corner of the whole circular area
+        .add(new go.PathFigure(p.x, p.y)  // start at outer corner, go clockwise
+          .add(new go.PathSegment(go.PathSegment.Arc, angle - sweep / 2, sweep, 0, 0, outer, outer))
+          .add(new go.PathSegment(go.PathSegment.Line, q.x, q.y))  // to opposite inner corner, then anticlockwise
+          .add(new go.PathSegment(go.PathSegment.Arc, angle + sweep / 2, -sweep, 0, 0, inner, inner).close()));
+      return geo;
+    }
+
+    var geo = makeAnnularWedge(angle, sweep, 80, 40);
+
+    var pt = new go.Point(60, 0).rotate(angle);
+    var align = new go.Spot(0.5, 0.5, pt.x, pt.y);
+    args.forEach(function(obj) { if (obj instanceof go.GraphObject) obj.alignment = align; });
+
+    var button =
+      go.GraphObject.make(go.Panel, "Spot",
+        {
+          isActionable: true,  // needed so that the ActionTool intercepts mouse events
+          enabledChanged: function(button, enabled) {
+            var shape = button.findObject("ButtonBorder");
+            if (shape !== null) {
+              shape.fill = enabled ? button["_buttonFillNormal"] : button["_buttonFillDisabled"];
+            }
+          },
+          // save these values for the mouseEnter and mouseLeave event handlers
+          "_buttonFillNormal": buttonFillNormal,
+          "_buttonStrokeNormal": buttonStrokeNormal,
+          "_buttonFillOver": buttonFillOver,
+          "_buttonStrokeOver": buttonStrokeOver,
+          "_buttonFillDisabled": buttonFillDisabled
+        },
+        go.GraphObject.make(go.Shape,  // the border
+          {
+            name: "ButtonBorder",
+            fill: buttonFillNormal,
+            stroke: buttonStrokeNormal,
+            geometry: geo
+          })
+      );
+
+    // There's no GraphObject inside the button shape -- it must be added as part of the button definition.
+    // This way the object could be a TextBlock or a Shape or a Picture or arbitrarily complex Panel.
+
+    // mouse-over behavior
+    button.mouseEnter = function(e, button, prev) {
+      var shape = button.findObject("ButtonBorder");  // the border Shape
+      if (shape instanceof go.Shape) {
+        var brush = button["_buttonFillOver"];
+        button["_buttonFillNormal"] = shape.fill;
+        shape.fill = brush;
+        brush = button["_buttonStrokeOver"];
+        button["_buttonStrokeNormal"] = shape.stroke;
+        shape.stroke = brush;
+      }
+    };
+
+    button.mouseLeave = function(e, button, prev) {
+      var shape = button.findObject("ButtonBorder");  // the border Shape
+      if (shape instanceof go.Shape) {
+        shape.fill = button["_buttonFillNormal"];
+        shape.stroke = button["_buttonStrokeNormal"];
+      }
+    };
+
+    return button;
+  });
+
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        { // show the selection Adornment only on the first selection if it is a Node
+          "ChangedSelection": function(e) {
+            var node = e.diagram.selection.first();
+            if (node === null) {
+              var oldnode = selectionAdornment.adornedPart;
+              if (oldnode) oldnode.removeAdornment("Radial");
+              selectionAdornment.adornedObject = null;
+            } else if (node instanceof go.Node) {
+              selectionAdornment.adornedObject = node;
+              node.addAdornment("Radial", selectionAdornment);
+            }
+          },
+          "InitialLayoutCompleted": function(e) {
+            // show the adornment on the "Beta" node
+            e.diagram.select(e.diagram.findNodeForKey(2));
+          },
+          "undoManager.isEnabled": true
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { resizable: true },
+        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+        $(go.Shape,
+          { portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8, editable: true },
+          new go.Binding("text").makeTwoWay())
+      );
+
+    // Show a radial Adornment holding buttons when a node is selected.
+    // This is not a template, so there is only one instance of it that can be shown at a time.
+    // If you want every selected node to have their own copy of this adornment,
+    // set Node.selectionAdornmentTemplate to this and remove the "ChangedSelection" DiagramEvent listener.
+    var selectionAdornment =
+      $(go.Adornment, "Spot",
+        { layerName: "Tool" }, // so that it's in front of other Adornments
+        $(go.Panel, "Auto",
+          $(go.Shape, { fill: null, stroke: "dodgerblue", strokeWidth: 4, pickable: false }),
+          $(go.Placeholder, { margin: 2 })
+        ),
+        $(go.Panel,
+          $("SectorButton", 0, 90,  // start angle, sweep angle,
+            $(go.TextBlock, "New\nLink"),
+            { // start drawing a new link from this node
+              click: function(e, button) {
+                var node = button.part.adornedPart;  // this Node
+                e.diagram.clearSelection();  // hide all Adornments for clarity
+                var tool = e.diagram.toolManager.linkingTool;  // the LinkingTool
+                tool.startObject = node.port;  // the default port of the Node
+                e.diagram.currentTool = tool;  // start the LinkingTool
+                tool.doActivate();  // and activate it
+              }
+            }),
+          $("SectorButton", 90, 90,
+            $(go.Shape, { geometryString: "F1 M29.181 19.070c-1.679-2.908-0.669-6.634 2.255-8.328l-3.145-5.447c-0.898 0.527-1.943 0.829-3.058 0.829-3.361 0-6.085-2.742-6.085-6.125h-6.289c0.008 1.044-0.252 2.103-0.811 3.070-1.679 2.908-5.411 3.897-8.339 2.211l-3.144 5.447c0.905 0.515 1.689 1.268 2.246 2.234 1.676 2.903 0.672 6.623-2.241 8.319l3.145 5.447c0.895-0.522 1.935-0.82 3.044-0.82 3.35 0 6.067 2.725 6.084 6.092h6.289c-0.003-1.034 0.259-2.080 0.811-3.038 1.676-2.903 5.399-3.894 8.325-2.219l3.145-5.447c-0.899-0.515-1.678-1.266-2.232-2.226zM16 22.479c-3.578 0-6.479-2.901-6.479-6.479s2.901-6.479 6.479-6.479c3.578 0 6.479 2.901 6.479 6.479s-2.901 6.479-6.479 6.479z" }),
+            {
+              click: function(e, button) {
+                // maybe use a DataInspector?
+                alert("Show Settings for " + button.part.adornedPart.data.text);
+              }
+            }),
+          $("SectorButton", 180, 90,
+            $(go.TextBlock, "?", { font: "bold 14pt sans-serif" }),
+            {
+              click: function(e, button) {
+                // maybe show some info in HTML?
+                alert("Show Information about " + button.part.adornedPart.data.text);
+              }
+            }),
+          $("SectorButton", 270, 90,
+            $(go.Shape, "XLine", { stroke: "red", strokeWidth: 4, width: 16, height: 16 }),
+            {
+              click: function(e, button) {
+                // this is different from CommandHandler.deleteSelection because this
+                // only deletes the one node, not all selected parts
+                e.diagram.commit(function(d) {
+                  d.remove(button.part.adornedPart);
+                }, "deleted node");
+              }
+            })
+        )
+      );
+
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue" },
+      { key: 2, text: "Beta", color: "orange" },
+      { key: 3, text: "Gamma", color: "lightgreen" },
+      { key: 4, text: "Delta", color: "pink" },
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 1, to: 3 },
+      { from: 2, to: 2 },
+      { from: 3, to: 4 },
+      { from: 4, to: 1 }
+    ]);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+  <p>
+    Selecting a Node shows not only a dodgerblue rectangle around the selected node,
+    but also a circular arrangement of Buttons.
+    The red "X" deletes the node.
+    The "?" and cog/gear Shape currently just call `alert`, but they could do anything that you want.
+    The "New Link" starts the <a>LinkingTool</a> drawing a new Link from that Node.
+  </p>
+</div>
+</body>
+</html>

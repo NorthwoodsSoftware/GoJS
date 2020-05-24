@@ -10,6 +10,22 @@
   <script src="../release/go.js"></script>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
+    // use a V figure instead of MinusLine in the TreeExpanderButton
+    go.Shape.defineFigureGenerator("ExpandedLine", function(shape, w, h) {
+      return new go.Geometry()
+            .add(new go.PathFigure(0, 0.25*h, false)
+                  .add(new go.PathSegment(go.PathSegment.Line, .5 * w, 0.75*h))
+                  .add(new go.PathSegment(go.PathSegment.Line, w, 0.25*h)));
+    });
+
+    // use a sideways V figure instead of PlusLine in the TreeExpanderButton
+    go.Shape.defineFigureGenerator("CollapsedLine", function(shape, w, h) {
+      return new go.Geometry()
+            .add(new go.PathFigure(0.25*w, 0, false)
+                  .add(new go.PathSegment(go.PathSegment.Line, 0.75*w, .5 * h))
+                  .add(new go.PathSegment(go.PathSegment.Line, 0.25*w, h)));
+    });
+
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -58,7 +74,9 @@
             }
           },
           $("TreeExpanderButton",
-            {
+            { // customize the button's appearance
+              "_treeExpandedFigure": "ExpandedLine",
+              "_treeCollapsedFigure": "CollapsedLine",
               "ButtonBorder.fill": "whitesmoke",
               "ButtonBorder.stroke": null,
               "_buttonFillOver": "rgba(0,128,255,0.25)",

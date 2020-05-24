@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.16
+ * Type definitions for GoJS v2.1.17
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11911,6 +11911,11 @@ export class Diagram {
      *
      * By default this method returns a snapshot of the visible diagram, but optional arguments give more options.
      *
+     * Note that a returned HTMLImageElement, either returned directly or passed to the callback function,
+     * might not yet have the <code>complete</code> property set to true.
+     * So if you need to draw the image immediately, you should check that property first.
+     * If it is false, add a "load" listener to the HTMLImageElement that does the drawing you want.
+     *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
      * @param {any=} options a JavaScript object detailing optional arguments for image creation, to be passed to #makeImageData.
@@ -11935,6 +11940,11 @@ export class Diagram {
      * ```
      * <p class="boxread">
      * See the page on <a href="../../intro/makingImages.html">Making Images</a> for more usage examples.
+     *
+     * Note that a returned HTMLImageElement, either returned directly or passed to the callback function,
+     * might not yet have the <code>complete</code> property set to true.
+     * So if you need to draw the image immediately, you should check that property first.
+     * If it is false, add a "load" listener to the HTMLImageElement that does the drawing you want.
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
@@ -12006,7 +12016,7 @@ export class Diagram {
      *     The optional details to pass to the HTMLCanvasElement's toDataURL function.
      *     If the type is `"image/jpeg"` then this can be a number from `0` to `1`, inclusive, describing the desired jpeg quality.
      *
-     * @return {ImageData|string|null} An ImageData, or a base64-encoded string describing an image, or null if a callback is specified.
+     * @return {ImageData|string|null} An ImageData, or a base64-encoded string describing an image, or an HTMLImageElement, or null if a callback is specified.
      * @see #makeImage
      */
     makeImageData(options?: ImageRendererOptions): HTMLImageElement | ImageData | string | null;

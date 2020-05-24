@@ -65,6 +65,7 @@
                 if (canvases) {  // remove the Canvas that was in the DOM for rendering
                   canvases.removeChild(div);
                 }
+                picture.redraw();
               }
             }
           }
@@ -157,12 +158,30 @@
         }
       }, "added chart node");
     }
+
+    function modifyNodes() {
+      myDiagram.commit(function(diag) {
+        diag.selection.each(function(node) {
+          var oldset = node.data.datasets;
+          if (!oldset) return;  // if it's a link, there's no datasets property
+          diag.model.set(node.data, "datasets", 
+            [{
+              label: oldset[0].label,
+              fill: false,
+              backgroundColor: oldset[0].backgroundColor,
+              borderColor: oldset[0].borderColor,
+              data: makeRandomPoints()
+            }]);
+        });
+      }, "modified selected nodes");
+    }
   </script>
 </head>
 <body onload="init()">
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
   <button onclick="addNode()">Add Chart</button>
+  <button onclick="modifyNodes()">Modify Charts of Selected Nodes</button>
   <p>
     This app demonstrates using a popular charting library, <a href="https://chartjs.org">Chart.js</a>,
     for rendering charts within nodes.

@@ -319,9 +319,9 @@ GeometryReshapingTool.prototype.doMouseUp = function() {
 */
 GeometryReshapingTool.prototype.reshape = function(newPoint) {
   var shape = this.adornedShape;
+  if (shape === null || shape.geometry === null) return;
   var locpt = shape.getLocalPoint(newPoint);
   var geo = shape.geometry.copy();
-  shape.desiredSize = new go.Size(NaN, NaN); // set the desiredSize once we've gotten our Geometry so we don't clobber
   var type = this.handle._typ;
   if (type === undefined) return;
   var fig = geo.figures.elt(this.handle._fig);
@@ -333,6 +333,7 @@ GeometryReshapingTool.prototype.reshape = function(newPoint) {
     case 3: seg.point2X = locpt.x; seg.point2Y = locpt.y; break;
   }
   var offset = geo.normalize();  // avoid any negative coordinates in the geometry
+  shape.desiredSize = new go.Size(NaN, NaN); // clear the desiredSize so Geometry can determine size
   shape.geometry = geo;  // modify the Shape
   var part = shape.part;  // move the Part holding the Shape
   part.ensureBounds();

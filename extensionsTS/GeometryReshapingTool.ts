@@ -303,7 +303,6 @@ export class GeometryReshapingTool extends go.Tool {
     if (shape === null || shape.geometry === null) return;
     const locpt = shape.getLocalPoint(newPoint);
     const geo = shape.geometry.copy();
-    shape.desiredSize = new go.Size(NaN, NaN); // set the desiredSize once we've gotten our Geometry so we don't clobber
     const type = (this.handle as any)._typ;
     if (type === undefined) return;
     const fig = geo.figures.elt((this.handle as any)._fig);
@@ -315,6 +314,7 @@ export class GeometryReshapingTool extends go.Tool {
       case 3: seg.point2X = locpt.x; seg.point2Y = locpt.y; break;
     }
     const offset = geo.normalize();  // avoid any negative coordinates in the geometry
+    shape.desiredSize = new go.Size(NaN, NaN); // clear the desiredSize so Geometry can determine size
     shape.geometry = geo;  // modify the Shape
     const part = shape.part;  // move the Part holding the Shape
     if (part === null) return;

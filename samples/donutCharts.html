@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Donut Charts</title>
+  <meta name="description" content="A donut chart in each node." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv");
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Spot",
+        $(go.Panel,
+          $(go.Shape, "Circle",  // provide a whole-circle background for the chart
+            { width: 100, height: 100, strokeWidth: 0, fill: "transparent" }),
+          $(go.Shape, { fill: "transparent", stroke: "cyan", strokeWidth: 8 },
+            new go.Binding("geometry", "value", makeArc),
+            new go.Binding("stroke", "color1")),
+          $(go.Shape, { fill: "transparent", stroke: "gray", strokeWidth: 8 },
+            new go.Binding("geometry", "value", makeArcRest),
+            new go.Binding("stroke", "color2"))
+        ),
+        $(go.TextBlock,
+          new go.Binding("text"))
+      );
+
+    // These arcs assume the angle starts at 270 degrees, at the top of the circle.
+    // They all assume the circle is 100x100 in size.
+    function makeArc(sweep) {
+      return new go.Geometry()
+          .add(new go.PathFigure(50, 0)
+              .add(new go.PathSegment(go.PathSegment.Arc, -90, sweep, 50, 50, 50, 50)));
+    }
+
+    function makeArcRest(sweep) {
+      var p = new go.Point(50, 0).rotate(-90+sweep).offset(50, 50);
+      return new go.Geometry()
+          .add(new go.PathFigure(p.x, p.y)
+              .add(new go.PathSegment(go.PathSegment.Arc, sweep-90, 360-sweep, 50, 50, 50, 50)));
+    }
+
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", value: 0 },
+      { key: 2, text: "Beta", value: 90 },
+      { key: 3, text: "Gamma", value: 135 },
+      { key: 4, text: "Delta", value: 330, color1: "red", color2: "green" }
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 1, to: 3 },
+      { from: 3, to: 4 },
+      { from: 4, to: 1 }
+    ]);
+  }
+
+  function changeValue() {
+    var node = myDiagram.selection.first();
+    if (node instanceof go.Node) {
+      myDiagram.model.commit(function(m) {
+        var val = node.data.value;
+        val += Math.random() * 40 - 20;
+        if (val < 0) val = 20;
+        else if (val >= 360) val = 340;
+        m.set(node.data, "value", val);
+      }, "changed data value");
+    }
+  }
+</script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+    <button onclick="changeValue()">Change Selected Value</button>
+    <p>
+      Each node contains a Position Panel containing two Shape elements that get Geometry values
+      that show a data value as an annular bar in a circle.  One can also specify the colors of
+      the two bars -- the bar showing the value and the rest of the circle.
+    </p>
+    <p>
+      For more sophisticated charts within nodes, see the <a href="canvases.html">Canvas Charts</a> sample.
+    </p>
+  </div>
+</body>
+</html>
