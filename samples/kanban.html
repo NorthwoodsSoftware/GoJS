@@ -11,59 +11,13 @@
   <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
   <script id="code">
-    // For the layout
-    var MINLENGTH = 200;  // this controls the minimum length of any swimlane
-    var MINBREADTH = 100;  // this controls the minimum breadth of any non-collapsed swimlane
-
-    // some shared functions
-
-    // this is called after nodes have been moved
-    function relayoutDiagram() {
-      myDiagram.selection.each(function(n) { n.invalidateLayout(); });
-      myDiagram.layoutDiagram();
-    }
-
-    // compute the minimum size of the whole diagram needed to hold all of the Lane Groups
-    function computeMinPoolSize() {
-      var len = MINLENGTH;
-      myDiagram.findTopLevelGroups().each(function(lane) {
-        var holder = lane.placeholder;
-        if (holder !== null) {
-          var sz = holder.actualBounds;
-          len = Math.max(len, sz.height);
-        }
-      });
-      return new go.Size(NaN, len);
-    }
-
-    // compute the minimum size for a particular Lane Group
-    function computeLaneSize(lane) {
-      // assert(lane instanceof go.Group);
-      var sz = computeMinLaneSize(lane);
-      if (lane.isSubGraphExpanded) {
-        var holder = lane.placeholder;
-        if (holder !== null) {
-          var hsz = holder.actualBounds;
-          sz.width = Math.max(sz.width, hsz.width);
-        }
-      }
-      // minimum breadth needs to be big enough to hold the header
-      var hdr = lane.findObject("HEADER");
-      if (hdr !== null) sz.width = Math.max(sz.width, hdr.actualBounds.width);
-      return sz;
-    }
-
-    // determine the minimum size of a Lane Group, even if collapsed
-    function computeMinLaneSize(lane) {
-      if (!lane.isSubGraphExpanded) return new go.Size(1, MINLENGTH);
-      return new go.Size(MINBREADTH, MINLENGTH);
-    }
-
 
     // define a custom grid layout that makes sure the length of each lane is the same
     // and that each lane is broad enough to hold its subgraph
     function PoolLayout() {
       go.GridLayout.call(this);
+      this.MINLENGTH = 200;  // this controls the minimum length of any swimlane
+      this.MINBREADTH = 100;  // this controls the minimum breadth of any non-collapsed swimlane
       this.cellSize = new go.Size(1, 1);
       this.wrappingColumn = Infinity;
       this.wrappingWidth = Infinity;
@@ -77,17 +31,18 @@
       if (diagram === null) return;
       diagram.startTransaction("PoolLayout");
       // make sure all of the Group Shapes are big enough
-      var minsize = computeMinPoolSize();
+      var minlen = this.computeMinPoolLength();
+      var lay = this;
       diagram.findTopLevelGroups().each(function(lane) {
         if (!(lane instanceof go.Group)) return;
         var shape = lane.selectionObject;
         if (shape !== null) {  // change the desiredSize to be big enough in both directions
-          var sz = computeLaneSize(lane);
+          var sz = lay.computeLaneSize(lane);
           shape.width = (!isNaN(shape.width)) ? Math.max(shape.width, sz.width) : sz.width;
           // if you want the height of all of the lanes to shrink as the maximum needed height decreases:
-          shape.height = minsize.height;
+          shape.height = minlen;
           // if you want the height of all of the lanes to remain at the maximum height ever needed:
-          //shape.height = (isNaN(shape.height) ? minsize.height : Math.max(shape.height, minsize.height));
+          //shape.height = (isNaN(shape.height) ? minlen : Math.max(shape.height, minlen));
           var cell = lane.resizeCellSize;
           if (!isNaN(shape.width) && !isNaN(cell.width) && cell.width > 0) shape.width = Math.ceil(shape.width / cell.width) * cell.width;
           if (!isNaN(shape.height) && !isNaN(cell.height) && cell.height > 0) shape.height = Math.ceil(shape.height / cell.height) * cell.height;
@@ -97,6 +52,36 @@
       go.GridLayout.prototype.doLayout.call(this, coll);
       diagram.commitTransaction("PoolLayout");
     };
+
+    // compute the minimum length of the whole diagram needed to hold all of the Lane Groups
+    PoolLayout.prototype.computeMinPoolLength = function() {
+      var len = this.MINLENGTH;
+      myDiagram.findTopLevelGroups().each(function(lane) {
+        var holder = lane.placeholder;
+        if (holder !== null) {
+          var sz = holder.actualBounds;
+          len = Math.max(len, sz.height);
+        }
+      });
+      return len;
+    }
+
+    // compute the minimum size for a particular Lane Group
+    PoolLayout.prototype.computeLaneSize = function(lane) {
+      // assert(lane instanceof go.Group);
+      var sz = new go.Size(lane.isSubGraphExpanded ? this.MINBREADTH : 1, this.MINLENGTH);
+      if (lane.isSubGraphExpanded) {
+        var holder = lane.placeholder;
+        if (holder !== null) {
+          var hsz = holder.actualBounds;
+          sz.width = Math.max(sz.width, hsz.width);
+        }
+      }
+      // minimum breadth needs to be big enough to hold the header
+      var hdr = lane.findObject("HEADER");
+      if (hdr !== null) sz.width = Math.max(sz.width, hdr.actualBounds.width);
+      return sz;
+    }
     // end PoolLayout class
 
 
@@ -107,8 +92,8 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            // start everything in the middle of the viewport
-            contentAlignment: go.Spot.TopCenter,
+            // make sure the top-left corner of the viewport is occupied
+            contentAlignment: go.Spot.TopLeft,
             // use a simple layout to stack the top-level Groups next to each other
             layout: $(PoolLayout),
             // disallow nodes to be dragged to the diagram's background
@@ -120,23 +105,28 @@
             // automatically re-layout the swim lanes after dragging the selection
             "SelectionMoved": relayoutDiagram,  // this DiagramEvent listener is
             "SelectionCopied": relayoutDiagram, // defined above
-            "animationManager.isEnabled": false,
             "undoManager.isEnabled": true,
             // allow TextEditingTool to start without selecting first
-            "textEditingTool.starting": go.TextEditingTool.DoubleClick
+            "textEditingTool.starting": go.TextEditingTool.SingleClick
           });
 
       // Customize the dragging tool:
-      // When dragging a Node set its opacity to 0.7 and move it to the foreground layer
+      // When dragging a node set its opacity to 0.6 and move it to be in front of other nodes
       myDiagram.toolManager.draggingTool.doActivate = function() {
         go.DraggingTool.prototype.doActivate.call(this);
-        this.currentPart.opacity = 0.7;
+        this.currentPart.opacity = 0.6;
         this.currentPart.layerName = "Foreground";
       }
       myDiagram.toolManager.draggingTool.doDeactivate = function() {
         this.currentPart.opacity = 1;
         this.currentPart.layerName = "";
         go.DraggingTool.prototype.doDeactivate.call(this);
+      }
+
+      // this is called after nodes have been moved
+      function relayoutDiagram() {
+        myDiagram.selection.each(function(n) { n.invalidateLayout(); });
+        myDiagram.layoutDiagram();
       }
 
       // There are only three note colors by default, blue, red, and yellow but you could add more here:
@@ -182,6 +172,7 @@
       // unmovable node that acts as a button
       myDiagram.nodeTemplateMap.add('newbutton',
         $(go.Node, "Horizontal",
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           {
             selectable: false,
             click: function(e, node) {
@@ -255,7 +246,7 @@
               if (grp.diagram.undoManager.isUndoingRedoing) return;
               if (grp.isSubGraphExpanded) {
                 shp.width = grp._savedBreadth;
-              } else {
+              } else {  // remember the original width
                 grp._savedBreadth = shp.width;
                 shp.width = NaN;
               }
@@ -265,18 +256,13 @@
           new go.Binding("isSubGraphExpanded", "expanded").makeTwoWay(),
           // the lane header consisting of a TextBlock and an expander button
           $(go.Panel, "Horizontal",
-            {
-              name: "HEADER",
-              angle: 0,  // maybe rotate the header to read sideways going up
-              alignment: go.Spot.Left
-            },
+            { name: "HEADER", alignment: go.Spot.Left },
             $("SubGraphExpanderButton", { margin: 5 }),  // this remains always visible
-            $(go.Panel, "Horizontal",  // this is hidden when the swimlane is collapsed
+            $(go.TextBlock,  // the lane label
+              { font: "15px Lato, sans-serif", editable: true, margin: new go.Margin(2, 0, 0, 0) },
+              // this is hidden when the swimlane is collapsed
               new go.Binding("visible", "isSubGraphExpanded").ofObject(),
-              $(go.TextBlock,  // the lane label
-                { font: "15px Lato, sans-serif", editable: true, margin: new go.Margin(2, 0, 0, 0) },
-                new go.Binding("text", "text").makeTwoWay())
-            )
+              new go.Binding("text").makeTwoWay())
           ),  // end Horizontal Panel
           $(go.Panel, "Auto",  // the lane consisting of a background Shape and a Placeholder representing the subgraph
             $(go.Shape, "Rectangle",  // this is the resized object
@@ -287,21 +273,18 @@
               { padding: 12, alignment: go.Spot.TopLeft }),
             $(go.TextBlock,  // this TextBlock is only seen when the swimlane is collapsed
               {
-                name: "LABEL",
-                font: "15px Lato, sans-serif", editable: true,
+                name: "LABEL", font: "15px Lato, sans-serif", editable: true,
                 angle: 90, alignment: go.Spot.TopLeft, margin: new go.Margin(4, 0, 0, 2)
               },
               new go.Binding("visible", "isSubGraphExpanded", function(e) { return !e; }).ofObject(),
-              new go.Binding("text", "text").makeTwoWay())
+              new go.Binding("text").makeTwoWay())
           )  // end Auto Panel
         );  // end Group
 
-      load();
-
-      // Set up a Part as a legend, and place it directly on the diagram
+      // Set up an unmodeled Part as a legend, and place it directly on the diagram.
       myDiagram.add(
         $(go.Part, "Table",
-          { position: new go.Point(300, 10), selectable: false },
+          { position: new go.Point(10, 10), selectable: false },
           $(go.TextBlock, "Key",
             { row: 0, font: "700 14px Droid Serif, sans-serif" }),  // end row 0
           $(go.Panel, "Horizontal",
@@ -327,6 +310,8 @@
           )  // end row 3
         ));
 
+      load();
+
     }  // end init
 
     // Show the diagram's model in JSON format
@@ -336,7 +321,6 @@
     }
     function load() {
       myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-      myDiagram.delayInitialization(relayoutDiagram);
     }
   </script>
 </head>

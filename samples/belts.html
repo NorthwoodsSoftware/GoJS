@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Belts</title>
+  <meta name="description" content="Belts & gears: chains, pulleys, tensioners, conveyor belts, rollers." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        {
+          "InitialLayoutCompleted": function(e) {
+            updateBelts();  // changes the bounds of the "Belt"s
+            e.diagram.alignDocument(go.Spot.Center, go.Spot.Center);
+          },
+          "animationManager.isEnabled": false,
+          "undoManager.isEnabled": true,
+          allowCopy: false,
+          allowDelete: false,
+          "draggingTool.moveParts": function(parts, offset, check) {
+            go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
+            updateBelts();  // this is inefficient if there are a lot of belts
+          }
+        });
+
+    function commonStyle() {
+      return [
+        new go.Binding("location", "xy", go.Point.parse).makeTwoWay(go.Point.stringify),
+        {
+          locationSpot: go.Spot.Center, locationObjectName: "GUIDE",
+          selectionAdorned: false,
+          dragComputation: function(node, newloc, snaploc) {
+            // don't allow rollers or drums to overlap each other
+            var oldloc = node.location;
+            var noderad = node.findObject("GUIDE").actualBounds.width/2;
+            var ok = true;
+            var it = node.diagram.nodes.iterator;
+            while (it.next()) {
+              var n = it.value;
+              if (n === node || n.category === "Belt") continue;
+              var dist2 = newloc.distanceSquaredPoint(n.location);
+              var rad = n.findObject("GUIDE").actualBounds.width/2;
+              if (dist2 < (noderad+rad)*(noderad+rad)) { ok = false; break; }
+            }
+            return ok ? newloc : oldloc;
+          }
+        }
+      ];
+    }
+
+    myDiagram.nodeTemplateMap.add("Roller",
+      $(go.Node, "Spot", commonStyle(),
+        $(go.Shape, "Circle",
+          { name: "GUIDE", fill: "lightgray", strokeWidth: 0, width: 20, height: 20 },
+          new go.Binding("width", "diameter").makeTwoWay(),
+          new go.Binding("height", "diameter")),
+        $(go.TextBlock,
+          { font: "6pt sans-serif", stroke: "black" },
+          new go.Binding("text", "key"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Drum",
+      $(go.Node, "Spot", commonStyle(),
+        $(go.Shape, "Circle",
+          { name: "GUIDE", fill: "lightgray", stroke: "gray", width: 80, height: 80 },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { font: "6pt sans-serif", stroke: "darkblue" },
+          new go.Binding("text", "key"))
+      ));
+
+    myDiagram.nodeTemplateMap.add("Belt",
+      $(go.Node,
+        { selectionAdorned: false, layerName: "Foreground", copyable: false, movable: false },
+        $(go.Shape,
+          { name: "BELT", fill: null, stroke: "gray", strokeWidth: 2, strokeDashArray: [4, 2] },
+          new go.Binding("stroke", "color"))
+      ));
+
+    load();
+  } // end init
+
+  function updateBelts(coll) {
+    if (!coll) coll = myDiagram.nodes;
+    myDiagram.startTransaction();
+    coll.each(updateBelt);
+    myDiagram.commitTransaction("updated belts");
+  }
+
+  function updateBelt(node) {
+    if (node.category !== "Belt") return;
+    var belt = node.findObject("BELT");
+    var diagram = node.diagram;
+    var guideinfos = node.data.guides;
+    if (!Array.isArray(guideinfos)) throw new Error("data.guides is not an Array for Belt node: " + node.data.key);
+
+    // gather basic information about each guide node
+    var guides = [];  // holds Objects with handy information
+    for (var i = 0; i < guideinfos.length; i++) {
+      var info = guideinfos[i];
+      var guidenode = diagram.findNodeForKey(info.k);
+      if (guidenode !== null && guidenode.location.isReal()) {
+        var loc = guidenode.location;
+        var cyl = guidenode.findObject("GUIDE");
+        var radius = (cyl !== null) ? cyl.measuredBounds.width / 2 : 10;
+        if (guides.length > 0) {
+          var prevguide = guides[guides.length - 1];
+          var prevloc = prevguide.location;
+          var prevradius = prevguide.radius;
+          var dist = Math.sqrt(prevloc.distanceSquaredPoint(loc));
+          if (dist < Math.abs(prevradius-radius)) {  // one is completely inside the other
+            if (prevradius > radius) {
+              continue;  // skip this smaller guide
+            } else {
+              guides.pop();  // skip the previous guide, which was smaller
+            }
+          }
+        }
+        guides.push({
+          node: guidenode,
+          location: guidenode.location.copy(),
+          radius: radius + belt.strokeWidth/2,
+          outside: !!info.outside,
+          from: null,  // these Points will be computed by computeContacts
+          to: null
+        });
+      }
+    }
+
+    // handle some degenerate cases
+    if (guides.length < 2) {
+      if (guides.length === 1) {
+        node.location = guides[0].location;
+      }
+      if (belt !== null) {
+        belt.geometry = new go.Geometry(go.Geometry.Ellipse);
+      }
+      return;
+    }
+
+    // compute the contact points
+    // assume guides are listed in clockwise order
+    for (var i = 0; i < guides.length; i++) {
+      var guide = guides[i];
+      var next = guides[(i + 1) % guides.length];
+      computeContacts(guide, next);
+    }
+
+    // skip any guides that should not contact the Belt, because they're cannot touch the path
+    var i = 0;
+    while (guides.length > 2 && i < guides.length) {
+      var guide = guides[i];
+      var next = guides[(i + 1) % guides.length];
+      var follow = guides[(i + 2) % guides.length];
+      // is NEXT on the wrong side of the line from GUIDE to FOLLOW?
+      var wrongside = comparePointWithLine(guide.from.x, guide.from.y, follow.to.x, follow.to.y, next.to.x, next.to.y) < 0;
+      if (next.outside) wrongside = !wrongside;
+      if (wrongside) {
+        computeContacts(guide, follow);
+        // get rid of NEXT
+        if (i + 1 < guides.length) {
+          guides.splice(i + 1, 1);
+        } else {
+          guides.splice(0, 1);
+        }
+        // now also need to check whether GUIDE has become on the wrong side!
+        if (i > 0) i--;
+      } else {
+        i++;
+      }
+    }
+
+    // construct the Geometry for the belt Shape
+    var geo = new go.Geometry();
+    var fig = null;
+    for (var i = 0; i < guides.length; i++) {
+      var guide = guides[i];
+      var next = guides[(i + 1) % guides.length];
+      if (fig === null) {
+        fig = new go.PathFigure(guide.from.x, guide.from.y, true);
+        geo.add(fig);
+      }
+      fig.add(new go.PathSegment(go.PathSegment.Line, next.to.x, next.to.y));
+      var startang = next.location.directionPoint(next.to);
+      var endang = next.location.directionPoint(next.from);
+      var sweep = (endang > startang) ? endang-startang : (360 - startang) + endang;
+      if (next.outside) {  // go counter-clockwise
+        fig.add(new go.PathSegment(go.PathSegment.Arc, startang, sweep - 360, next.location.x, next.location.y, next.radius, next.radius));
+      } else {  // positive sweep angle
+        fig.add(new go.PathSegment(go.PathSegment.Arc, startang, sweep, next.location.x, next.location.y, next.radius, next.radius));
+      }
+    }
+
+    // update the Belt's Shape.geometry
+    if (belt !== null) {
+      var pos = geo.normalize();
+      belt.geometry = geo;
+      // account for the thickness of the belt shape's stroke
+      node.position = new go.Point(-pos.x - belt.strokeWidth / 2, -pos.y - belt.strokeWidth / 2);
+      node.ensureBounds();
+    }
+  }  // end updateBelt
+
+  function comparePointWithLine(a1x, a1y, a2x, a2y, p1x, p1y) {
+    var x2 = a2x - a1x;
+    var y2 = a2y - a1y;
+    var px = p1x - a1x;
+    var py = p1y - a1y;
+    var ccw = px * y2 - py * x2;
+    if (ccw === 0) {
+      ccw = px * x2 + py * y2;
+      if (ccw > 0) {
+        px -= x2;
+        py -= y2;
+        ccw = px * x2 + py * y2;
+        if (ccw < 0) ccw = 0;
+      }
+    }
+    return (ccw < 0) ? -1 : ((ccw > 0) ? 1 : 0);
+  }
+
+  function computeContacts(guideA, guideB) {
+    var locA = guideA.location;
+    var x1 = locA.x;
+    var y1 = locA.y;
+    var r1 = guideA.radius;
+    var locB = guideB.location;
+    var x2 = locB.x;
+    var y2 = locB.y;
+    var r2 = guideB.radius;
+
+    // this assumes that belts only go clockwise
+    var g = Math.atan2(y2 - y1, x2 - x1);
+    var d = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+
+    var bb = ((guideA.outside === guideB.outside) ? (r2 - r1) : (r2 + r1)) / d;
+    if (bb < -1) bb = -1; else if (bb > 1) bb = 1;
+    var b = Math.asin(bb);
+
+    if (guideB.outside) {
+      if (guideA.outside) {  // both outside
+        var a = Math.PI / 2 - b - g;
+        var cosa = Math.cos(a);
+        var sina = Math.sin(a);
+        guideA.from = new go.Point(x1 - r1 * cosa, y1 + r1 * sina);
+        guideB.to = new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
+      } else {  // inside A, outside B
+        var a = Math.PI / 2 - Math.abs(b) - g;
+        var cosa = Math.cos(a);
+        var sina = Math.sin(a);
+        guideA.from = new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
+        guideB.to = new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
+      }
+    } else {
+      if (guideA.outside) {  // outside A, inside B
+        var a = Math.abs(b) - Math.PI / 2 - g;
+        var cosa = Math.cos(a);
+        var sina = Math.sin(a);
+        guideA.from = new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
+        guideB.to = new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
+      } else {  // both inside
+        var a = Math.PI / 2 + b - g;
+        var cosa = Math.cos(a);
+        var sina = Math.sin(a);
+        guideA.from = new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
+        guideB.to = new go.Point(x2 + r2 * cosa, y2 - r2 * sina);
+      }
+    }
+  }
+
+  // Show the diagram's model in JSON format that the user may edit
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+
+  var beltAnimation = null;
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+
+    // Animate the flow in the pipes
+    if (beltAnimation) beltAnimation.stop();
+    var animation = new go.Animation();
+    animation.easing = go.Animation.EaseLinear;
+    myDiagram.nodes.each(function(node) {
+      if (node.category !== "Belt") return;
+      animation.add(node.findObject("BELT"), "strokeDashOffset", 36, 0)
+    });
+    // Run indefinitely
+    animation.runCount = Infinity;
+    animation.start();
+    beltAnimation = animation;
+  }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <button id="SaveButton" onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  Diagram Model saved in JSON format:
+  <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":"P111", "category":"Roller", "xy":"450 610"},
+{"key":"P112", "category":"Roller", "xy":"400 660"},
+{"key":"P113", "category":"Roller", "xy":"350 725"},
+{"key":"P114", "category":"Roller", "xy":"305 800"},
+{"key":"P115", "category":"Roller", "xy":"280 705"},
+{"key":"P116", "category":"Roller", "xy":"200 720"},
+{"key":"P117", "category":"Roller", "xy":"200 620"},
+{"key":"D1", "category":"Drum", "xy":"300 540"},
+{"key":"D2", "category":"Drum", "xy":"300 622"},
+{"key":"B1", "category":"Belt", "color":"blue",
+ "guides":[ {"k":"D2"},{"k":"P111"},{"k":"P112", "outside":true},{"k":"P113", "outside":true},{"k":"P114"},{"k":"P115", "outside":true},{"k":"P116"},{"k":"P117"} ]},
+{"key":"P211", "category":"Roller", "xy":"100 750"},
+{"key":"P212", "category":"Roller", "xy":"150 800"},
+{"key":"B2", "category":"Belt", "color":"green",
+  "guides":[ {"k":"P211"},{"k":"P116"},{"k":"P212"} ]}
+ ],
+  "linkDataArray": []}
+  </textarea>
+</div>
+</body>
+</html>

@@ -1187,13 +1187,12 @@ export function init() {
           const ok = myDiagram.commandHandler.addTopLevelParts(myDiagram.selection, true);
           if (!ok) myDiagram.currentTool.doCancel();
         },
+        resizingTool: new LaneResizingTool(),
         linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
         relinkingTool: new BPMNRelinkingTool(), // defined in BPMNClasses.js
         'SelectionMoved': relayoutDiagram,  // defined below
         'SelectionCopied': relayoutDiagram
       });
-
-  myDiagram.toolManager.mouseDownTools.insertAt(0, new LaneResizingTool());
 
   myDiagram.addDiagramListener('LinkDrawn', function (e) {
     if (e.subject.fromNode.category === 'annotation') {
@@ -1485,10 +1484,6 @@ function computeMinLaneSize(lane: go.Group) {
 
 // define a custom ResizingTool to limit how far one can shrink a lane Group
 class LaneResizingTool extends go.ResizingTool {
-  public constructor() {
-    super();
-    this.name = "LaneResizingTool";
-  }
   public isLengthening() {
     return (this.handle !== null && this.handle.alignment === go.Spot.Right);
   }
@@ -1496,10 +1491,10 @@ class LaneResizingTool extends go.ResizingTool {
   public computeMinSize(): go.Size {
     if (this.adornedObject === null) return new go.Size(MINLENGTH, MINBREADTH);
     const lane = this.adornedObject.part;
-    if (!(lane instanceof go.Group) || lane.containingGroup === null) return new go.Size(MINLENGTH, MINBREADTH);
+    if (!(lane instanceof go.Group)) return go.ResizingTool.prototype.computeMinSize.call(this);
     // assert(lane instanceof go.Group && lane.category !== "Pool");
     const msz = computeMinLaneSize(lane);  // get the absolute minimum size
-    if (this.isLengthening()) {  // compute the minimum length of all lanes
+    if (lane.containingGroup !== null && this.isLengthening()) {  // compute the minimum length of all lanes
       const sz = computeMinPoolSize(lane.containingGroup);
       msz.width = Math.max(msz.width, sz.width);
     } else {  // find the minimum size of this single lane
@@ -1510,21 +1505,10 @@ class LaneResizingTool extends go.ResizingTool {
     return msz;
   }
 
-  public canStart(): boolean {
-    if (!go.ResizingTool.prototype.canStart.call(this)) return false;
-
-    // if this is a resize handle for a "Lane", we can start.
-    const diagram = this.diagram;
-    const handl = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
-    if (handl === null || handl.part === null) return false;
-    const ad = handl.part as go.Adornment;
-    if (ad.adornedObject === null || ad.adornedObject.part === null) return false;
-    return (ad.adornedObject.part.category === 'Lane');
-  }
-
   public resize(newr: go.Rect): void {
     if (this.adornedObject === null) return;
     const lane = this.adornedObject.part;
+    if (!(lane instanceof go.Group)) return go.ResizingTool.prototype.resize.call(this, newr);
     if (lane instanceof go.Group && lane.containingGroup !== null && this.isLengthening()) {  // changing the length of all of the lanes
       lane.containingGroup.memberParts.each((l) => {
         if (!(l instanceof go.Group)) return;

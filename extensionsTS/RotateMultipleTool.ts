@@ -18,15 +18,15 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Holds references to all selected non-Link Parts and their offset & angles
    */
-  public initialInfo: go.Map<go.Part, PartInfo> | null = null;
+  private _initialInfo: go.Map<go.Part, PartInfo> | null = null;
   /**
    * Initial angle when rotating as a whole
    */
-  public initialAngle: number = 0;
+  private _initialAngle: number = 0;
   /**
    * Rotation point of selection
    */
-  public centerPoint: go.Point = new go.Point();
+  private _centerPoint: go.Point = new go.Point();
 
   /**
    * Constructs a RotateMultipleTool and sets the name for the tool.
@@ -44,10 +44,10 @@ export class RotateMultipleTool extends go.RotatingTool {
     super.doActivate();
     const diagram = this.diagram;
     // center point of the collection
-    this.centerPoint = diagram.computePartsBounds(diagram.selection).center;
+    this._centerPoint = diagram.computePartsBounds(diagram.selection).center;
 
     // remember the angle relative to the center point when rotating the whole collection
-    this.initialAngle = this.centerPoint.directionPoint(diagram.lastInput.documentPoint);
+    this._initialAngle = this._centerPoint.directionPoint(diagram.lastInput.documentPoint);
 
     // remember initial angle and distance for each Part
     const infos = new go.Map<go.Part, PartInfo>();
@@ -55,7 +55,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     diagram.selection.each(function(part) {
       tool.walkTree(part, infos);
     });
-    this.initialInfo = infos;
+    this._initialInfo = infos;
   }
 
   /**
@@ -63,10 +63,10 @@ export class RotateMultipleTool extends go.RotatingTool {
    */
   private walkTree(part: go.Part, infos: go.Map<go.Part, PartInfo>): void {
     if (part === null || part instanceof go.Link) return;
-    // distance from centerPoint to locationSpot of part
-    const dist = Math.sqrt(this.centerPoint.distanceSquaredPoint(part.location));
+    // distance from _centerPoint to locationSpot of part
+    const dist = Math.sqrt(this._centerPoint.distanceSquaredPoint(part.location));
     // calculate initial relative angle
-    const dir = this.centerPoint.directionPoint(part.location);
+    const dir = this._centerPoint.directionPoint(part.location);
     // saves part-angle combination in array
     infos.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
     // recurse into Groups
@@ -80,7 +80,7 @@ export class RotateMultipleTool extends go.RotatingTool {
    * Clean up any references to Parts.
    */
   public doDeactivate(): void {
-    this.initialInfo = null;
+    this._initialInfo = null;
     super.doDeactivate();
   }
 
@@ -90,19 +90,19 @@ export class RotateMultipleTool extends go.RotatingTool {
    */
   public rotate(newangle: number): void {
     const diagram = this.diagram;
-    if (this.initialInfo === null) return;
+    if (this._initialInfo === null) return;
     const node = this.adornedObject !== null ? this.adornedObject.part : null;
     if (node === null) return;
     const e = diagram.lastInput;
     // when rotating individual parts, remember the original angle difference
     const angleDiff = newangle - node.rotateObject.angle;
     const tool = this;
-    this.initialInfo.each(function(kvp) {
+    this._initialInfo.each(function(kvp) {
       const part = kvp.key;
       if (part instanceof go.Link) return; // only Nodes and simple Parts
       const partInfo = kvp.value;
       // rotate every selected non-Link Part
-      // find information about the part set in RotateMultipleTool.initialInformation
+      // find information about the part set in RotateMultipleTool._initialInformation
       if (e.control || e.meta) {
         if (node === part) {
           part.rotateObject.angle = newangle;
@@ -115,7 +115,7 @@ export class RotateMultipleTool extends go.RotatingTool {
         const offsetX = partInfo.distance * Math.cos(radAngle + partInfo.placementAngle);
         const offsetY = partInfo.distance * Math.sin(radAngle + partInfo.placementAngle);
         // move part
-        part.location = new go.Point(tool.centerPoint.x + offsetX, tool.centerPoint.y + offsetY);
+        part.location = new go.Point(tool._centerPoint.x + offsetX, tool._centerPoint.y + offsetY);
         // rotate part
         part.rotateObject.angle = partInfo.rotationAngle + newangle;
       }
@@ -139,7 +139,7 @@ export class RotateMultipleTool extends go.RotatingTool {
         angle = rotationPoint.directionPoint(newPoint);
       }
     } else {  // relative to the center of the whole selection
-      angle = this.centerPoint.directionPoint(newPoint) - this.initialAngle;
+      angle = this._centerPoint.directionPoint(newPoint) - this._initialAngle;
     }
     if (angle >= 360) angle -= 360;
     else if (angle < 0) angle += 360;

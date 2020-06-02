@@ -814,12 +814,12 @@ var __extends = (this && this.__extends) || (function () {
                     if (!ok)
                         myDiagram.currentTool.doCancel();
                 },
+                resizingTool: new LaneResizingTool(),
                 linkingTool: new BPMNClasses_js_1.BPMNLinkingTool(),
                 relinkingTool: new BPMNClasses_js_1.BPMNRelinkingTool(),
                 'SelectionMoved': relayoutDiagram,
                 'SelectionCopied': relayoutDiagram
             });
-        myDiagram.toolManager.mouseDownTools.insertAt(0, new LaneResizingTool());
         myDiagram.addDiagramListener('LinkDrawn', function (e) {
             if (e.subject.fromNode.category === 'annotation') {
                 e.subject.category = 'annotation'; // annotation association
@@ -1073,9 +1073,7 @@ var __extends = (this && this.__extends) || (function () {
     var LaneResizingTool = /** @class */ (function (_super) {
         __extends(LaneResizingTool, _super);
         function LaneResizingTool() {
-            var _this = _super.call(this) || this;
-            _this.name = "LaneResizingTool";
-            return _this;
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         LaneResizingTool.prototype.isLengthening = function () {
             return (this.handle !== null && this.handle.alignment === go.Spot.Right);
@@ -1084,11 +1082,11 @@ var __extends = (this && this.__extends) || (function () {
             if (this.adornedObject === null)
                 return new go.Size(MINLENGTH, MINBREADTH);
             var lane = this.adornedObject.part;
-            if (!(lane instanceof go.Group) || lane.containingGroup === null)
-                return new go.Size(MINLENGTH, MINBREADTH);
+            if (!(lane instanceof go.Group))
+                return go.ResizingTool.prototype.computeMinSize.call(this);
             // assert(lane instanceof go.Group && lane.category !== "Pool");
             var msz = computeMinLaneSize(lane); // get the absolute minimum size
-            if (this.isLengthening()) { // compute the minimum length of all lanes
+            if (lane.containingGroup !== null && this.isLengthening()) { // compute the minimum length of all lanes
                 var sz = computeMinPoolSize(lane.containingGroup);
                 msz.width = Math.max(msz.width, sz.width);
             }
@@ -1099,23 +1097,12 @@ var __extends = (this && this.__extends) || (function () {
             }
             return msz;
         };
-        LaneResizingTool.prototype.canStart = function () {
-            if (!go.ResizingTool.prototype.canStart.call(this))
-                return false;
-            // if this is a resize handle for a "Lane", we can start.
-            var diagram = this.diagram;
-            var handl = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
-            if (handl === null || handl.part === null)
-                return false;
-            var ad = handl.part;
-            if (ad.adornedObject === null || ad.adornedObject.part === null)
-                return false;
-            return (ad.adornedObject.part.category === 'Lane');
-        };
         LaneResizingTool.prototype.resize = function (newr) {
             if (this.adornedObject === null)
                 return;
             var lane = this.adornedObject.part;
+            if (!(lane instanceof go.Group))
+                return go.ResizingTool.prototype.resize.call(this, newr);
             if (lane instanceof go.Group && lane.containingGroup !== null && this.isLengthening()) { // changing the length of all of the lanes
                 lane.containingGroup.memberParts.each(function (l) {
                     if (!(l instanceof go.Group))

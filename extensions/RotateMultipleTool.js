@@ -25,11 +25,11 @@ function RotateMultipleTool() {
   go.RotatingTool.call(this);
   this.name = "RotateMultiple";
   // holds references to all selected non-Link Parts and their offset & angles
-  this.initialInfo = null;
+  this._initialInfo = null;
   // initial angle when rotating as a whole
-  this.initialAngle = 0;
+  this._initialAngle = 0;
   // rotation point of selection
-  this.centerPoint = null;
+  this._centerPoint = null;
  }
 go.Diagram.inherit(RotateMultipleTool, go.RotatingTool);
 
@@ -42,10 +42,10 @@ RotateMultipleTool.prototype.doActivate = function() {
   go.RotatingTool.prototype.doActivate.call(this);
   var diagram = this.diagram;
   // center point of the collection
-  this.centerPoint = diagram.computePartsBounds(diagram.selection).center;
+  this._centerPoint = diagram.computePartsBounds(diagram.selection).center;
 
   // remember the angle relative to the center point when rotating the whole collection
-  this.initialAngle = this.centerPoint.directionPoint(diagram.lastInput.documentPoint);
+  this._initialAngle = this._centerPoint.directionPoint(diagram.lastInput.documentPoint);
 
   // remember initial angle and distance for each Part
   var infos = new go.Map(/*go.Part, PartInfo*/);
@@ -53,7 +53,7 @@ RotateMultipleTool.prototype.doActivate = function() {
   diagram.selection.each(function(part) {
     tool.walkTree(part, infos);
   });
-  this.initialInfo = infos;
+  this._initialInfo = infos;
 }
 
 /**
@@ -63,10 +63,10 @@ RotateMultipleTool.prototype.doActivate = function() {
 */
 RotateMultipleTool.prototype.walkTree = function(part, infos) {
   if (part === null || part instanceof go.Link) return;
-  // distance from centerPoint to locationSpot of part
-  var dist = Math.sqrt(this.centerPoint.distanceSquaredPoint(part.location));
+  // distance from _centerPoint to locationSpot of part
+  var dist = Math.sqrt(this._centerPoint.distanceSquaredPoint(part.location));
   // calculate initial relative angle
-  var dir = this.centerPoint.directionPoint(part.location);
+  var dir = this._centerPoint.directionPoint(part.location);
   // saves part-angle combination in array
   infos.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
   // recurse into Groups
@@ -91,7 +91,7 @@ function PartInfo(placementAngle, distance, rotationAngle) {
 * @this {RotateMultipleTool}
 */
 RotateMultipleTool.prototype.doDeactivate = function() {
-  this.initialInfo = null;
+  this._initialInfo = null;
   go.RotatingTool.prototype.doDeactivate.call(this);
 };
 
@@ -107,7 +107,7 @@ RotateMultipleTool.prototype.rotate = function(newangle) {
   // when rotating individual parts, remember the original angle difference
   var angleDiff = newangle - this.adornedObject.part.rotateObject.angle;
   var tool = this;
-  this.initialInfo.each(function(kvp) {
+  this._initialInfo.each(function(kvp) {
     var part = kvp.key;
     if (part instanceof go.Link) return; // only Nodes and simple Parts
     var partInfo = kvp.value;
@@ -125,7 +125,7 @@ RotateMultipleTool.prototype.rotate = function(newangle) {
       var offsetX = partInfo.distance * Math.cos(radAngle + partInfo.placementAngle);
       var offsetY = partInfo.distance * Math.sin(radAngle + partInfo.placementAngle);
       // move part
-      part.location = new go.Point(tool.centerPoint.x + offsetX, tool.centerPoint.y + offsetY);
+      part.location = new go.Point(tool._centerPoint.x + offsetX, tool._centerPoint.y + offsetY);
       // rotate part
       part.rotateObject.angle = partInfo.rotationAngle + newangle;
     }
@@ -147,7 +147,7 @@ RotateMultipleTool.prototype.computeRotate = function(newPoint) {
     var rotationPoint = part.getDocumentPoint(part.locationSpot);
     angle = rotationPoint.directionPoint(newPoint);
   } else {  // relative to the center of the whole selection
-    angle = this.centerPoint.directionPoint(newPoint) - this.initialAngle;
+    angle = this._centerPoint.directionPoint(newPoint) - this._initialAngle;
   }
   if (angle >= 360) angle -= 360;
   else if (angle < 0) angle += 360;

@@ -133,16 +133,16 @@ var __extends = (this && this.__extends) || (function () {
                 var v = e.fromVertex;
                 var w = e.toVertex;
                 if (v.angle === 0) {
-                    link.fromSpot = go.Spot.MiddleLeft;
+                    link.fromSpot = go.Spot.Left;
                 }
                 else if (v.angle === 180) {
-                    link.fromSpot = go.Spot.MiddleRight;
+                    link.fromSpot = go.Spot.Right;
                 }
                 if (w.angle === 0) {
-                    link.toSpot = go.Spot.MiddleLeft;
+                    link.toSpot = go.Spot.Left;
                 }
                 else if (w.angle === 180) {
-                    link.toSpot = go.Spot.MiddleRight;
+                    link.toSpot = go.Spot.Right;
                 }
             });
             // move the parent node to the location of the last dummy
@@ -280,7 +280,7 @@ var __extends = (this && this.__extends) || (function () {
             var result = _super.prototype.computePoints.call(this);
             if (result) {
                 // insert middle point to maintain horizontal lines
-                if (this.fromSpot.equals(go.Spot.MiddleRight) || this.fromSpot.equals(go.Spot.MiddleLeft)) {
+                if (this.fromSpot.equals(go.Spot.Right) || this.fromSpot.equals(go.Spot.Left)) {
                     var p1 = void 0;
                     // deal with root node being on the "wrong" side
                     var fromnode = this.fromNode;
@@ -289,14 +289,14 @@ var __extends = (this && this.__extends) || (function () {
                         // pretend the link is coming from the opposite direction than the declared FromSpot
                         var fromctr = fromport.getDocumentPoint(go.Spot.Center);
                         var fromfar = fromctr.copy();
-                        fromfar.x += (this.fromSpot.equals(go.Spot.MiddleLeft) ? 99999 : -99999);
+                        fromfar.x += (this.fromSpot.equals(go.Spot.Left) ? 99999 : -99999);
                         p1 = this.getLinkPointFromPoint(fromnode, fromport, fromctr, fromfar, true).copy();
                         // update the route points
                         this.setPoint(0, p1);
                         var endseg = this.fromEndSegmentLength;
                         if (isNaN(endseg))
                             endseg = fromport.fromEndSegmentLength;
-                        p1.x += (this.fromSpot.equals(go.Spot.MiddleLeft)) ? endseg : -endseg;
+                        p1.x += (this.fromSpot.equals(go.Spot.Left)) ? endseg : -endseg;
                         this.setPoint(1, p1);
                     }
                     else {
@@ -307,17 +307,17 @@ var __extends = (this && this.__extends) || (function () {
                     if (tonode !== null && toport !== null) {
                         var toctr = toport.getDocumentPoint(go.Spot.Center);
                         var far = toctr.copy();
-                        far.x += (this.fromSpot.equals(go.Spot.MiddleLeft)) ? -99999 / 2 : 99999 / 2;
+                        far.x += (this.fromSpot.equals(go.Spot.Left)) ? -99999 / 2 : 99999 / 2;
                         far.y += (toctr.y < p1.y) ? 99999 : -99999;
                         var p2 = this.getLinkPointFromPoint(tonode, toport, toctr, far, false);
                         this.setPoint(2, p2);
                         var dx = Math.abs(p2.y - p1.y) / 2;
-                        if (this.fromSpot.equals(go.Spot.MiddleLeft))
+                        if (this.fromSpot.equals(go.Spot.Left))
                             dx = -dx;
                         this.insertPoint(2, new go.Point(p2.x + dx, p1.y));
                     }
                 }
-                else if (this.toSpot.equals(go.Spot.MiddleRight) || this.toSpot.equals(go.Spot.MiddleLeft)) {
+                else if (this.toSpot.equals(go.Spot.Right) || this.toSpot.equals(go.Spot.Left)) {
                     var p1 = this.getPoint(1); // points 1 & 2 should be OK already
                     var fromnode = this.fromNode;
                     var fromport = this.fromPort;
@@ -325,12 +325,12 @@ var __extends = (this && this.__extends) || (function () {
                         var parentlink = fromnode.findLinksInto().first();
                         var fromctr = fromport.getDocumentPoint(go.Spot.Center);
                         var far = fromctr.copy();
-                        far.x += (parentlink !== null && parentlink.fromSpot.equals(go.Spot.MiddleLeft)) ? -99999 / 2 : 99999 / 2;
+                        far.x += (parentlink !== null && parentlink.fromSpot.equals(go.Spot.Left)) ? -99999 / 2 : 99999 / 2;
                         far.y += (fromctr.y < p1.y) ? 99999 : -99999;
                         var p0 = this.getLinkPointFromPoint(fromnode, fromport, fromctr, far, true);
                         this.setPoint(0, p0);
                         var dx = Math.abs(p1.y - p0.y) / 2;
-                        if (parentlink !== null && parentlink.fromSpot.equals(go.Spot.MiddleLeft))
+                        if (parentlink !== null && parentlink.fromSpot.equals(go.Spot.Left))
                             dx = -dx;
                         this.insertPoint(1, new go.Point(p0.x + dx, p1.y));
                     }

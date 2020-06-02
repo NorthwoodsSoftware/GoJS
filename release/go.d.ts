@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.17
+ * Type definitions for GoJS v2.1.18
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8384,24 +8384,6 @@ export class TextEditingTool extends Tool {
      */
     acceptText(reason: EnumValue): void;
     /**
-     * Call the #textBlock's TextBlock#errorFunction, if there is one.
-     * This is called only when the #isValidText method returned false.
-     * The value of #state will be StateInvalid.
-     * When this method returns, the text editor will be shown again.
-     * @param oldstring
-     * @param newstring
-     */
-    doError(oldstring: string, newstring: string): void;
-    /**
-     * Call the #textBlock's TextBlock#textEdited event handler, if there is one.
-     * This is called just after the TextBlock.text has been set to the new string value.
-     * When this method returns, this tool raises the "TextEdited" DiagramEvent
-     * and commits the transaction.
-     * @param oldstring
-     * @param newstring
-     */
-    doSuccess(oldstring: string, newstring: string): void;
-    /**
      * Release the mouse.
      *
      * If the #currentTextEditor is an HTMLInfo, this calls HTMLInfo#hide.
@@ -11549,10 +11531,6 @@ export class Diagram {
     /**
      * Undocumented
      */
-    ensureDocumentBounds(): void;
-    /**
-     * Undocumented
-     */
     isVirtualized: boolean;
     /**
      * Gets or sets the scale transform of this Diagram.
@@ -12259,8 +12237,6 @@ export class Overview extends Diagram {
      * @param {Element|string} div A reference to a div or its ID as a string.
      */
     constructor(div?: Element | string);
-    private saveSnapshot;
-    private drawObserved;
     /**
      * Gets or sets the Diagram for which this Overview is
      * displaying a model and showing its viewport into that model.
@@ -15097,10 +15073,6 @@ export abstract class GraphObject {
      */
     setProperties(props: ObjectData): void;
     /**
-     * Undocumented
-     */
-    trigger(trigger: AnimationTrigger): void;
-    /**
      * This static function builds an object given its class and additional arguments
      * providing initial properties or GraphObjects that become Panel elements.
      *
@@ -15240,32 +15212,32 @@ export abstract class GraphObject {
     static make<T extends Adornment>(// for specific named builders
     cls: ('ToolTip' | 'ContextMenu'), ...initializers: Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
+    }) | Binding | AnimationTrigger | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout>>): T;
+    }) | Binding | AnimationTrigger | EnumValue | RowColumnDefinition | PanelLayout>>): T;
     static make<T extends Panel>(// for specific named Panel builders
     cls: ('Button' | 'TreeExpanderButton' | 'SubGraphExpanderButton' | 'ContextMenuButton' | 'PanelExpanderButton' | 'CheckBoxButton' | 'CheckBox'), ...initializers: Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
+    }) | Binding | AnimationTrigger | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout>>): T;
+    }) | Binding | AnimationTrigger | EnumValue | RowColumnDefinition | PanelLayout>>): T;
     static make<T extends GraphObject>(cls: string, // for named Panel builders
     ...initializers: Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
+    }) | Binding | AnimationTrigger | EnumValue | RowColumnDefinition | PanelLayout | Array<string | (Partial<GraphObject> & {
         [p: string]: any;
-    }) | Binding | EnumValue | RowColumnDefinition | PanelLayout>>): T;
+    }) | Binding | AnimationTrigger | EnumValue | RowColumnDefinition | PanelLayout>>): T;
     static make<CT extends ConstructorType<CT>>(cls: CT, ...initializers: Array<string | (Partial<InstanceType<CT>> & {
         [p: string]: any;
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue | HTMLDivElement | Array<string | (Partial<InstanceType<CT>> & {
+    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue | HTMLDivElement | Array<string | (Partial<InstanceType<CT>> & {
         [p: string]: any;
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue>>): InstanceType<CT>;
+    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue>>): InstanceType<CT>;
     /**
      * This static function defines a named function that GraphObject.make can use to build objects.
      * Once this is called one can use the name as the first argument for GraphObject.make.
@@ -15574,7 +15546,6 @@ export class Brush {
  * @unrestricted
  */
 export abstract class PanelLayout {
-    name: string;
     constructor();
     /**
      */
@@ -16274,10 +16245,6 @@ export class Panel extends GraphObject {
      * @since 1.4
      */
     itemIndex: number;
-    /**
-     * Undocumented
-     */
-    freezeBindings(): void;
     /**
      * Undocumented.
      * Make a deep copy of this Panel and allow it to be a template.
@@ -24990,6 +24957,15 @@ export class ForceDirectedLayout extends Layout {
      * @since 1.3
      */
     addComments(v: ForceDirectedVertex): void;
+    /**
+     * Move the vertex by its ForceDirectedVertex.forceX and ForceDirectedVertex.forceY.
+     * Return the square of the distance moved.
+     * This can be overridden in order to constrain the vertex's actual movement.
+     * @expose
+     * @param {ForceDirectedVertex} v
+     * @return {number} square of distance moved
+     */
+    moveVertex(v: ForceDirectedVertex): number;
     /**
      * Maybe move a vertex that #isFixed.
      * This is called each iteration on each such vertex.

@@ -1731,3 +1731,11 @@ arr.push([
   "gameOfLife",
   []
 ]);
+
+arr.push([
+  "belts",
+  "Belts and Rollers",
+  "Show continuous belts winding by circular rollers",
+  "belts",
+  []
+])
