@@ -1737,5 +1737,5 @@ arr.push([
   "Belts and Rollers",
   "Show continuous belts winding by circular rollers",
   "belts",
-  []
+  ["animation", "geometries"]
 ])

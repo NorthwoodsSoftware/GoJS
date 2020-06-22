@@ -40,7 +40,11 @@
 
         // define the normal node template, just some text
     myDiagram.nodeTemplate =
-        $(go.Node, 'Auto', $(go.TextBlock, new go.Binding('text'), new go.Binding('font', '', convertFont)));
+      $(go.Node,
+        $(go.TextBlock,
+          new go.Binding('text'),
+          new go.Binding('font', '', convertFont))
+      );
 
     function convertFont(data) {
         let size = data.size;
@@ -56,11 +60,17 @@
     // If you are only doing a FishboneLayout, you could just set Diagram.linkTemplate
     // to the template named "fishbone" here, and not switch templates dynamically.
     // define the non-fishbone link template
-    myDiagram.linkTemplateMap.add('normal', $(go.Link, { routing: go.Link.Orthogonal, corner: 4 }, $(go.Shape)));
+    myDiagram.linkTemplateMap.add('normal',
+      $(go.Link,
+        { routing: go.Link.Orthogonal, corner: 4 },
+        $(go.Shape)
+      ));
 
     // use this link template for fishbone layouts
-    myDiagram.linkTemplateMap.add('fishbone', $(FishboneLink, // defined above
-      $(go.Shape)));
+    myDiagram.linkTemplateMap.add('fishbone',
+      $(FishboneLink, // defined above
+        $(go.Shape)
+      ));
 
       // here is the structured data used to build the model
     const json = {

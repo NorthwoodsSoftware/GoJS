@@ -31,7 +31,7 @@
             { isReadOnly: true }); // do not allow the user to modify the diagram
         // define the normal node template, just some text
         myDiagram.nodeTemplate =
-            $(go.Node, 'Auto', $(go.TextBlock, new go.Binding('text'), new go.Binding('font', '', convertFont)));
+            $(go.Node, $(go.TextBlock, new go.Binding('text'), new go.Binding('font', '', convertFont)));
         function convertFont(data) {
             var size = data.size;
             if (size === undefined)

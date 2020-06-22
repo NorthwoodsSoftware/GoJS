@@ -323,6 +323,7 @@ export class GeometryReshapingTool extends go.Tool {
       // support the whole Node being rotated
       part.move(part.position.copy().subtract(offset.rotate(part.angle)));
     }
+    this.updateAdornments(part);  // update any Adornments of the Part
     this.diagram.maybeUpdate();  // force more frequent drawing for smoother looking behavior
   }
 

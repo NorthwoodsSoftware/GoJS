@@ -26,7 +26,7 @@ export function init() {
 
   // define the normal node template, just some text
   myDiagram.nodeTemplate =
-    $(go.Node, 'Auto',
+    $(go.Node,
       $(go.TextBlock,
         new go.Binding('text'),
         new go.Binding('font', '', convertFont))

@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.18
+ * Type definitions for GoJS v2.1.19
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10187,7 +10187,7 @@ export class Diagram {
      * ```js
      * $(go.Diagram, . . .,
      *    {
-     *        "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
+     *        "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(e.model); }
      *        . . .
      *    })
      * ```
@@ -11863,6 +11863,8 @@ export class Diagram {
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
+     *
+     * For the rendering to work, the diagram must have an HTML Div element as the #div.
      * @param {any=} options a JavaScript object detailing optional arguments for SVG creation.
      * @return {SVGElement}
      * @see #makeImage
@@ -11896,6 +11898,8 @@ export class Diagram {
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
+     *
+     * For the rendering to work, the diagram must have an HTML Div element as the #div.
      * @param {any=} options a JavaScript object detailing optional arguments for image creation, to be passed to #makeImageData.
      * @return {HTMLImageElement | null} An HTML Image element, or null if a callback is specified, or null if there is no DOM.
      * @see #makeImageData
@@ -11926,6 +11930,8 @@ export class Diagram {
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
+     *
+     * For the rendering to work, the diagram must have an HTML Div element as the #div.
      * @param {any=} options a JavaScript object detailing optional arguments for image creation.
      * Rendering options for both images and SVG:
      *   - **size:**
@@ -18247,6 +18253,8 @@ export class Part extends Panel {
      *
      * If this part is a Group, it also moves all of its members, recursively.
      * If this part is a Link, it also moves all of its label nodes.
+     *
+     * This method does not perform a transaction or start any animation.
      * @expose
      * @param {Point} newpos a new Point in document coordinates.
      * @param {boolean=} useLocation true if you want to set the #location instead of the position. False by default.
@@ -19692,7 +19700,7 @@ export class Node extends Part {
      * If you want to do both, call `expandTree` before calling `collapseTree` to
      * collapse nodes expanded due to the #wasTreeExpanded flag.
      *
-     * This method does not perform a transaction.
+     * This method does not perform a transaction or start any animation.
      * You may want to call the CommandHandler#collapseTree command, which does perform a transaction
      * and raise a DiagramEvent.
      *
@@ -19723,7 +19731,7 @@ export class Node extends Part {
      * If you want to do both, call `expandTree` before calling `collapseTree` to
      * collapse nodes expanded due to the #wasTreeExpanded flag.
      *
-     * This method does not perform a transaction.
+     * This method does not perform a transaction or start any animation.
      * You may want to call the CommandHandler#expandTree command, which does perform a transaction
      * and raise a DiagramEvent.
      *
@@ -20084,6 +20092,8 @@ export class Group extends Node {
      * For those nested Groups that were expanded,
      * #wasSubGraphExpanded is set to true.
      *
+     * This method does not perform a transaction or start any animation.
+     *
      * To collapse trees made of Nodes and Links, use Node#collapseTree.
      */
     collapseSubGraph(): void;
@@ -20096,6 +20106,8 @@ export class Group extends Node {
      *
      * This sets #isSubGraphExpanded to true on this group and on all of the nested Groups.
      * This will expand a nested group only if its #wasSubGraphExpanded property was true.
+     *
+     * This method does not perform a transaction or start any animation.
      *
      * To expand trees made of Nodes and Links, use Node#expandTree.
      */
@@ -20129,6 +20141,8 @@ export class Group extends Node {
     subGraphExpandedChanged: ((thisGroup: Group) => void) | null;
     /**
      * Move this Group and all of its member parts, recursively.
+     *
+     * This method does not perform a transaction or start any animation.
      * @param {Point} newpos a new Point in document coordinates.
      * @param {boolean=} useLocation true if you want to set the #location instead of the position. False by default.
      */

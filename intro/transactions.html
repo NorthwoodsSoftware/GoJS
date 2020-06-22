@@ -54,7 +54,8 @@ But when you want to make state changes to a <a>Diagram</a> or a <a>GraphObject<
 do so within a transaction.
 </p>
 <p>
-The only exception is that transactions are unnecessary when initializing a model before assigning the model to the <a>Diagram.model</a>.
+The only exception is that transactions are unnecessary when initializing a model or a diagram before assigning
+the model to the <a>Diagram.model</a> property.
 (A Diagram only gets access to an UndoManager via the Model, the <a>Model.undoManager</a> property.)
 </p>
 <p>
@@ -77,6 +78,9 @@ Finally, some customizations, such as the <a>Node.linkValidation</a> predicate, 
 <p>
 Both model changes and diagram changes are recorded in the <a>UndoManager</a>
 only if the model's <a>UndoManager.isEnabled</a> has been set to true.
+If you do not want the user to be able to perform undo or redo and also prevent the recording of any <a>Transaction</a>s,
+but you still want to get "Transaction"-type <a>ChangedEvent</a>s because you want to update a database,
+you can set <a>UndoManager.maxHistoryLimit</a> to zero.
 </p>
 <p>
 To better understand the relationships between objects and transactions in memory, look at this diagram:
@@ -322,7 +326,7 @@ A typical case for using transactions is when some command makes a change to the
 <p>
 Changes to JavaScript data properties do not automatically result in any notifications that can be observed.
 Thus when you want to change the value of a property in a manner that can be undone and redone,
-you should call <a>Model.setDataProperty</a>.
+you should call <a>Model.setDataProperty</a> (or <a>Model.set</a>, which is an abbreviation for that method).
 This will get the previous value for the property, set the property to the new value, and
 call <a>Model.raiseDataChanged</a>, which will also automatically update any target bindings in the Node
 corresponding to the data.
