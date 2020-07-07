@@ -285,6 +285,19 @@ var __extends = (this && this.__extends) || (function () {
                 node.invalidateConnectedLinks();
         };
         /**
+         * This predicate decides whether or not the given Part should guide the dragged part.
+         * @param {Part} part  a stationary Part to which the dragged part might be aligned
+         * @param {Part} guidedpart  the Part being dragged
+         */
+        GuidedDraggingTool.prototype.isGuiding = function (part, guidedpart) {
+            return part instanceof go.Part &&
+                !part.isSelected &&
+                !(part instanceof go.Link) &&
+                guidedpart instanceof go.Part &&
+                part.containingGroup === guidedpart.containingGroup &&
+                part.layer !== null && !part.layer.isTemporary;
+        };
+        /**
          * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
          * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
          * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
@@ -293,6 +306,7 @@ var __extends = (this && this.__extends) || (function () {
          * @param {boolean} snap if true, snap the part to where the guideline would be
          */
         GuidedDraggingTool.prototype.showHorizontalMatches = function (part, guideline, snap) {
+            var _this = this;
             var objBounds = part.locationObject.getDocumentBounds();
             var p0 = objBounds.y;
             var p1 = objBounds.y + objBounds.height / 2;
@@ -302,7 +316,7 @@ var __extends = (this && this.__extends) || (function () {
             // compares with parts within narrow vertical area
             var area = objBounds.copy();
             area.inflate(distance, marginOfError + 1);
-            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary; }, true);
+            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return _this.isGuiding(p, part); }, true);
             var bestDiff = marginOfError;
             var bestObj = null; // TS 2.6 won't let this be go.Part | null
             var bestSpot = go.Spot.Default;
@@ -403,6 +417,7 @@ var __extends = (this && this.__extends) || (function () {
          * @param {boolean} snap if true, don't show guidelines but just snap the part to where the guideline would be
          */
         GuidedDraggingTool.prototype.showVerticalMatches = function (part, guideline, snap) {
+            var _this = this;
             var objBounds = part.locationObject.getDocumentBounds();
             var p0 = objBounds.x;
             var p1 = objBounds.x + objBounds.width / 2;
@@ -412,7 +427,7 @@ var __extends = (this && this.__extends) || (function () {
             // compares with parts within narrow vertical area
             var area = objBounds.copy();
             area.inflate(marginOfError + 1, distance);
-            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary; }, true);
+            var otherObjs = this.diagram.findObjectsIn(area, function (obj) { return obj.part; }, function (p) { return _this.isGuiding(p, part); }, true);
             var bestDiff = marginOfError;
             var bestObj = null; // TS 2.6 won't let this be go.Part | null
             var bestSpot = go.Spot.Default;

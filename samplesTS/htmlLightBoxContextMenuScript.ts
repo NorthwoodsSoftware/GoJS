@@ -45,6 +45,6 @@ export function init() {
       { from: 'Delta', to: 'Alpha' }
     ]);
 
-  myDiagram.contextMenu = (window as any).myHTMLLightBox; // window.myHTMLLightBox is defined in extensions/lightbox.js
+  myDiagram.contextMenu = (window as any).myHTMLLightBox; // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
 
 } // end init

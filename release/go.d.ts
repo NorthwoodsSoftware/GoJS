@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.19
+ * Type definitions for GoJS v2.1.20
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -7868,7 +7868,7 @@ export class PanningTool extends Tool {
  * <a href="../../samples/customContextMenu.html">Custom Context Menu</a> and
  * <a href="../../samples/htmlLightBoxContextMenu.html">HTML LightBox Context Menu</a> samples, the
  * <a href="../../samples/customTextEditingTool.html">Custom TextEditingTool sample</a>, and the
- * <a href="../../extensions/textEditor.html">Text Editor implementation extension</a>.
+ * <a href="../../extensions/TextEditor.html">Text Editor implementation extension</a>.
  *
  * Here is the outline for typical usage of HTMLInfo as a context menu:
  * ```js
@@ -7899,7 +7899,7 @@ export class PanningTool extends Tool {
  * ```
  *
  * By default, TextEditingTool#defaultTextEditor is an instance of HTMLInfo.
- * You can see its default implementation details <a href="../../extensions/textEditor.html">here</a>.
+ * You can see its default implementation details <a href="../../extensions/TextEditor.html">here</a>.
  * @unrestricted
  * @since 1.7
  * @category Tool
@@ -8312,7 +8312,7 @@ export class TextEditingTool extends Tool {
      * and HTMLInfo#hide during #doDeactivate.
      *
      * By default the value is an HTMLInfo, and the HTMLInfo#mainElement is an `HTMLTextArea`.
-     * You can see the default implementation details <a href="../../extensions/textEditor.html">here</a>.
+     * You can see the default implementation details <a href="../../extensions/TextEditor.html">here</a>.
      *
      * For typical operation, HTMLInfo implementations should have a way of calling TextEditingTool#acceptText.
      */
@@ -8578,6 +8578,7 @@ export class AnimationManager {
      * You should not add anything to or start the default animation, GoJS does so automatically, internally.
      * When the default animation begins it raises the `"AnimationStarting"` Diagram event,
      * upon completion it raises the `"AnimationFinished"` Diagram event.
+     * You should not modify the properties Animation#runCount or Animation#reversible on the default animation.
      *
      * See the <a href="../../intro/animation.html">Introduction Page on Animations</a> for more detail.
      * @since 2.1
@@ -8815,14 +8816,17 @@ export class Animation {
      * Gets or sets whether this Animation will repeat its animation in reverse at the end of the duration. Default false.
      *
      * A reversible Animation, if stopped early, will end at its original state.
-     *
      * Setting this to true doubles the effective #duration of the Animation.
+     *
+     * This property should not be set on the AnimationManager#defaultAnimation
      */
     reversible: boolean;
     /**
      * Gets or sets whether this Animation should be repeat, and how many times. The default is 1, which means the animation does not repeat.
      *
      * This can be set to any non-zero positive integer, or `Infinity`. Setting this to `Infinity` will repeat an animation forever.
+     *
+     * This property should not be set on the AnimationManager#defaultAnimation
      *
      * @see #reversible
      */

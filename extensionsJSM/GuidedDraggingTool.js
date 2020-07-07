@@ -227,6 +227,19 @@ export class GuidedDraggingTool extends go.DraggingTool {
             node.invalidateConnectedLinks();
     }
     /**
+     * This predicate decides whether or not the given Part should guide the dragged part.
+     * @param {Part} part  a stationary Part to which the dragged part might be aligned
+     * @param {Part} guidedpart  the Part being dragged
+     */
+    isGuiding(part, guidedpart) {
+        return part instanceof go.Part &&
+            !part.isSelected &&
+            !(part instanceof go.Link) &&
+            guidedpart instanceof go.Part &&
+            part.containingGroup === guidedpart.containingGroup &&
+            part.layer !== null && !part.layer.isTemporary;
+    }
+    /**
      * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
      * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
      * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
@@ -244,7 +257,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         // compares with parts within narrow vertical area
         const area = objBounds.copy();
         area.inflate(distance, marginOfError + 1);
-        const otherObjs = this.diagram.findObjectsIn(area, (obj) => obj.part, (p) => p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary, true);
+        const otherObjs = this.diagram.findObjectsIn(area, (obj) => obj.part, (p) => this.isGuiding(p, part), true);
         let bestDiff = marginOfError;
         let bestObj = null; // TS 2.6 won't let this be go.Part | null
         let bestSpot = go.Spot.Default;
@@ -354,7 +367,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         // compares with parts within narrow vertical area
         const area = objBounds.copy();
         area.inflate(marginOfError + 1, distance);
-        const otherObjs = this.diagram.findObjectsIn(area, (obj) => obj.part, (p) => p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary, true);
+        const otherObjs = this.diagram.findObjectsIn(area, (obj) => obj.part, (p) => this.isGuiding(p, part), true);
         let bestDiff = marginOfError;
         let bestObj = null; // TS 2.6 won't let this be go.Part | null
         let bestSpot = go.Spot.Default;

@@ -109,7 +109,6 @@ Depending on your situation, you may want to use SVG to print instead, and there
   window.myDiagram = diagram;
   myDiagram.autoScale = go.Diagram.Uniform;
 
-
   // define the Node template
   myDiagram.nodeTemplate =
     $(go.Node, "Spot",
@@ -202,19 +201,17 @@ Depending on your situation, you may want to use SVG to print instead, and there
       width = Math.max(width, 50);
       height = Math.max(height, 50);
 
-
-
       var imgDiv = document.getElementById('myImages');
       imgDiv.innerHTML = ''; // clear out the old images, if any
-      var db = myDiagram.documentBounds.copy();
+      var db = myDiagram.documentBounds;
       var boundswidth = db.width;
       var boundsheight = db.height;
       var imgWidth = width;
       var imgHeight = height;
-      var p = db.position.copy();
+      var p = db.position;
       for (var i = 0; i &lt; boundsheight; i += imgHeight) {
         for (var j = 0; j &lt; boundswidth; j += imgWidth) {
-          img = myDiagram.makeImage({
+          var img = myDiagram.makeImage({
             scale: 1,
             position: new go.Point(p.x + j, p.y + i),
             size: new go.Size(imgWidth, imgHeight)

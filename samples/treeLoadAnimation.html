@@ -36,48 +36,46 @@
       }
 
       myDiagram =
-        $(go.Diagram, "myDiagramDiv", {
-          // We want no default animation when the diagram loads
-          "animationManager.isInitial": false,
-          autoScale: go.Diagram.Uniform,
-          // Disable the diagram during the animation so that the links cannot be moved, which would call compute points
-          // The Diagram is reset to enabled when the animation is finished
-          isEnabled: false,
-          layout: $(go.ForceDirectedLayout, {
-            defaultSpringLength: 20,      // forces nodes closer together (default: 50)
-            defaultSpringStiffness: 0.20, // forces nodes closer together (default: 0.05)
-            isOngoing: false,
-            isRealtime: false
-          })
-        });
+        $(go.Diagram, "myDiagramDiv",
+          {
+            // We want no default animation when the diagram loads
+            "animationManager.isInitial": false,
+            autoScale: go.Diagram.Uniform,
+            // Disable the diagram during the animation so that the links cannot be moved, which would call compute points
+            // The Diagram is reset to enabled when the animation is finished
+            isEnabled: false,
+            layout: $(go.ForceDirectedLayout,
+              {
+                defaultSpringLength: 20,      // forces nodes closer together (default: 50)
+                defaultSpringStiffness: 0.20, // forces nodes closer together (default: 0.05)
+                isOngoing: false,
+                isRealtime: false
+              })
+          });
 
       myDiagram.nodeTemplate =
-        $(go.Node, {
-          locationSpot: go.Spot.Center,
-          resizable: true,
-          rotatable: true,
-          opacity: 0
-        }, "Auto",
+        $(go.Node, "Auto",
+          {
+            locationSpot: go.Spot.Center,
+            resizable: true,
+            rotatable: true,
+            opacity: 0
+          },
           new go.Binding("location"),
           new go.Binding("desiredSize"),
-          $(go.Shape, "RoundedRectangle", {
-            fill: "lightBlue"
-          }),
-          $(go.TextBlock, new go.Binding("text", "key")));
+          $(go.Shape, "RoundedRectangle", { fill: "lightBlue" }),
+          $(go.TextBlock, new go.Binding("text", "key"))
+        );
 
       myDiagram.linkTemplate =
-        $(go.Link, {
-          opacity: 0
-        },
+        $(go.Link,
+          { opacity: 0 },
           $(go.Shape),
-          $(go.Shape, {
-            toArrow: "Standard"
-          })
+          $(go.Shape, { toArrow: "Standard" })
         );
-      var treeArr = [{
-        key: 0
-      }];
+
       // Generate a tree
+      var treeArr = [{ key: 0 }];
       var childCount = 0;
       var currParent = 0;
       for (var i = 1; i < 100; i++) {
@@ -100,6 +98,7 @@
       myDiagram.commit(function() {
         myDiagram.nodes.first().opacity = 1;
       }, null);
+
       // Begin
       animateLinks(queue);
 
@@ -133,8 +132,7 @@
                   // Calculate waiting time for the element depending on how far it is along the link
                   if (link.geometry.figures.length === 0 || link.elt(i).segmentFraction < 0) {
                     offsetTime = link.elt(i).segmentFraction * animation.duration;
-                  }
-                  else {
+                  } else {
                     offsetTime = link.elt(i).segmentIndex / link.points.count * animation.duration
                   }
                   // Start scale animations after an offset
@@ -194,16 +192,14 @@
       function orthog() {
         myDiagram.startTransaction("change links");
         myDiagram.linkTemplate =
-          $(go.Link, {
-            opacity: 0, // links start out invisible
-            routing: go.Link.Orthogonal,
-            corner: Number(cornerSlider.value),
-          },
+          $(go.Link,
+            {
+              opacity: 0, // links start out invisible
+              routing: go.Link.Orthogonal,
+              corner: Number(cornerSlider.value)
+            },
             $(go.Shape),
-            $(go.Shape, {
-              toArrow: "Standard",
-              scale: 1
-            })
+            $(go.Shape, { toArrow: "Standard" })
           );
         myDiagram.layout.doLayout(myDiagram);
         // Root node should start visible
@@ -218,15 +214,14 @@
       function bezierLinks() {
         myDiagram.startTransaction("change links");
         myDiagram.linkTemplate =
-          $(go.Link, {
-            opacity: 0, // links start out invisible
-            curve: go.Link.Bezier,
-            curviness: Number(curvatureSlider.value),
-          },
+          $(go.Link,
+            {
+              opacity: 0, // links start out invisible
+              curve: go.Link.Bezier,
+              curviness: Number(curvatureSlider.value)
+            },
             $(go.Shape),
-            $(go.Shape, {
-              toArrow: "Standard"
-            }),
+            $(go.Shape, { toArrow: "Standard" })
           );
         myDiagram.layout.doLayout(myDiagram);
         // Root node should start visible
@@ -241,13 +236,10 @@
       function linearLinks() {
         myDiagram.startTransaction("change links");
         myDiagram.linkTemplate =
-          $(go.Link, {
-            opacity: 0, // links start out invisible
-          },
+          $(go.Link,
+            { opacity: 0 }, // links start out invisible
             $(go.Shape),
-            $(go.Shape, {
-              toArrow: "Standard"
-            })
+            $(go.Shape, { toArrow: "Standard" })
           );
         myDiagram.layout.doLayout(myDiagram);
         // Root node should start visible
@@ -262,8 +254,7 @@
     go.AnimationManager.defineAnimationEffect('customScale', function (part, startValue, endObj, easing, currentTime, duration, animation) {
       if (endObj.offsetTime < currentTime) {
         part.scale = easing(currentTime - endObj.offsetTime, startValue, (endObj.endValue - startValue), duration - endObj.offsetTime);
-      }
-      else {
+      } else {
         part.scale = startValue;
       }
     })
@@ -400,6 +391,7 @@
         }
       }
     );
+
     // Function returns points to draw a cubic bezier
     function sliceCubicBezier(currentTime, p1, p2, p3, p4, segment, duration, offsetX, offsetY) {
       var t = currentTime / duration;
@@ -421,6 +413,7 @@
       segment.endX = newp4.x + offsetX;
       segment.endY = newp4.y + offsetY;
     }
+
     // Uses same algorithm just for a quadratic bezier
     function sliceQuadBezier(currentTime, p1, p2, p3, segment, duration, offsetX, offsetY) {
       var t = currentTime / duration;
@@ -459,6 +452,7 @@
       }
       return tempMakeGeometry;
     }
+
     /*
       This custom makeGeometry slowly builds the geometry of the link, animating a segment then adding it to the geometry until all of the segments
       have been iterated through. Orthogonal links are made up of linear path segments and quadratic bezier corners which have to be treated
@@ -473,7 +467,6 @@
       var currptY = 0;
 
       function tempMakeGeometry() {
-
         animationState.newGeometry = geometry.copy();
 
         // Offset the position values so it is in the right spot relative to the document coordinates
@@ -534,9 +527,7 @@
             animationState.points[3],
             currSegment, animationState.duration, animationState.offsetX,
             animationState.offsetY);
-        }
-        // Line segment case
-        else {
+        } else {  // Line segment case
           // Only do once per segment
           if (animationState.firstItr === true) {
             animationState.endValue = new go.Point(currSegment.endX, currSegment.endY);
@@ -611,14 +602,10 @@
     <span id="cornerDisplay"></span><br> Curvature: <input type="range" min="-50" max="50" value="40" class="slider"
       id="curvature">
     <span id="curvatureDisplay"></span><br>
-
-
     <p>
       This sample demonstrates defining custom animation effects with <a>AnimationManager,defineAnimationEffect</a>,
       and chaining animations to recursively animate a tree.
     </p>
   </div>
-
 </body>
-
 </html>

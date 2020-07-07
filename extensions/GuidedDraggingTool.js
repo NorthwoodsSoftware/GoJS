@@ -142,6 +142,20 @@ GuidedDraggingTool.prototype.invalidateLinks = function(node) {
 }
 
 /**
+ * This predicate decides whether or not the given Part should guide the dragged part.
+ * @param {Part} part  a stationary Part to which the dragged part might be aligned
+ * @param {Part} guidedpart  the Part being dragged
+ */
+GuidedDraggingTool.prototype.isGuiding = function(part, guidedpart) {
+  return part instanceof go.Part &&
+         !part.isSelected &&
+         !(part instanceof go.Link) &&
+         guidedpart instanceof go.Part &&
+         part.containingGroup === guidedpart.containingGroup &&
+         !part.layer.isTemporary;
+}
+
+/**
 * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
 * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
 * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
@@ -162,9 +176,10 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
   // compares with parts (or location objects) within narrow vertical area
   var area = objBounds.copy();
   area.inflate(distance, marginOfError + 1);
+  var tool = this;
   var otherParts = this.diagram.findObjectsIn(area,
       function(obj) { return obj.part; },
-      function(part) { return part instanceof go.Part && !part.isSelected && !(part instanceof go.Link) && part.isTopLevel && !part.layer.isTemporary; },
+      function(other) { return tool.isGuiding(other, part); },
       true);
 
   var bestDiff = marginOfError;
@@ -257,9 +272,10 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
   // compares with parts within narrow vertical area
   var area = objBounds.copy();
   area.inflate(marginOfError + 1, distance);
+  var tool = this;
   var otherParts = this.diagram.findObjectsIn(area,
       function(obj) { return obj.part; },
-    function(part) { return part instanceof go.Part && !part.isSelected && !(part instanceof go.Link) && part.isTopLevel && !part.layer.isTemporary; },
+      function(other) { return tool.isGuiding(other, part); },
       true);
 
   var bestDiff = marginOfError;

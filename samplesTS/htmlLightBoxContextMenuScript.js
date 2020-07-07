@@ -43,7 +43,7 @@
             { from: 'Gamma', to: 'Delta' },
             { from: 'Delta', to: 'Alpha' }
         ]);
-        myDiagram.contextMenu = window.myHTMLLightBox; // window.myHTMLLightBox is defined in extensions/lightbox.js
+        myDiagram.contextMenu = window.myHTMLLightBox; // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
     } // end init
     exports.init = init;
 });

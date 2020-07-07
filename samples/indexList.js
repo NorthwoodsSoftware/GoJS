@@ -1293,7 +1293,7 @@ arr.push([
   "../extensions/DataInspector",
   "Data Inspector",
   "A simple drop-in for inspecting and editing Part data.",
-  "dataInspector",
+  "DataInspector",
   ["groups", "extensions", "inspector", "html"]
 ]);
 

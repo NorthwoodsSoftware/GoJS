@@ -259,6 +259,20 @@ export class GuidedDraggingTool extends go.DraggingTool {
   }
 
   /**
+   * This predicate decides whether or not the given Part should guide the dragged part.
+   * @param {Part} part  a stationary Part to which the dragged part might be aligned
+   * @param {Part} guidedpart  the Part being dragged
+   */
+  protected isGuiding(part: go.Part, guidedpart: go.Part): boolean {
+    return part instanceof go.Part &&
+           !part.isSelected &&
+           !(part instanceof go.Link) &&
+           guidedpart instanceof go.Part &&
+           part.containingGroup === guidedpart.containingGroup &&
+           part.layer !== null && !part.layer.isTemporary;
+  }
+
+  /**
    * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
    * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
    * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
@@ -279,7 +293,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     area.inflate(distance, marginOfError + 1);
     const otherObjs = this.diagram.findObjectsIn(area,
       (obj) => obj.part as go.Part,
-      (p) => p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary,
+      (p) => this.isGuiding(p as go.Part, part),
       true) as go.Set<go.Part>;
 
     let bestDiff: number = marginOfError;
@@ -393,7 +407,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     area.inflate(marginOfError + 1, distance);
     const otherObjs = this.diagram.findObjectsIn(area,
       (obj) => obj.part as go.Part,
-      (p) => p instanceof go.Part && !p.isSelected && !(p instanceof go.Link) && p.isTopLevel && p.layer !== null && !p.layer.isTemporary,
+      (p) => this.isGuiding(p as go.Part, part),
       true) as go.Set<go.Part>;
 
     let bestDiff: number = marginOfError;
