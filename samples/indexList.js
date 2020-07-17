@@ -1089,6 +1089,14 @@ arr.push([
 ]);
 
 arr.push([
+  "../extensions/SwimLaneLayout",
+  "Swim Lane Layout",
+  "A custom Layout that puts nodes into swimlanes with dependencies that cross lanes.",
+  "SwimLaneLayout",
+  ["customlayout", "extensions"]
+]);
+
+arr.push([
   "../extensions/TreeMap",
   "Tree Map Layout",
   "A custom Layout that renders nested Groups into the viewport with each Node having an area proportional to its declared 'size'.",

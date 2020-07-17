@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.20
+ * Type definitions for GoJS v2.1.21
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11826,12 +11826,25 @@ export class Diagram {
      */
     raiseDiagramEvent(name: DiagramEventName, obj?: ObjectData, param?: any): void;
     /**
-     * Gets or sets the Margin that describes the Diagram's autoScrollRegion. The default value is a Margin of 16 on all sides.
+     * Gets or sets number of milliseconds between autoscroll events.
+     * The default value is 250.
+     */
+    autoScrollInterval: number;
+    /**
+     * Gets or sets the Margin that describes the area along the inside edges of the viewport,
+     * in viewport coordinates, where autoscrolling will occur while the mouse is held there
+     * during dragging or linking or drag-selecting.
+     *
+     * The default value is a Margin of 16 on all sides.
+     * Increase this value in order to make it easier for the user to autoscroll by having
+     * a larger area in which to hold the mouse down during a dragging operation.
+     *
      * When the mouse drag point is within this region on the left or right sides,
-     * the view will automatically scroll horizontally in that direction.  When the point is within
-     * the region on the top or bottom, the view will automatically scroll
-     * vertically in that direction.  You can specify a distance of zero to disable autoscrolling
-     * in a direction; a value of 0,0,0,0 turns off autoscrolling altogether.
+     * the view will automatically scroll horizontally in that direction.
+     * When the point is within the region on the top or bottom, the view will automatically scroll
+     * vertically in that direction.
+     * You can specify a Margin side of zero to disable autoscrolling in a particular direction;
+     * a value of Margin(0,0,0,0) turns off autoscrolling in all four directions.
      */
     autoScrollRegion: MarginLike;
     /**
@@ -11843,6 +11856,13 @@ export class Diagram {
      * Undocumented
      */
     stopAutoScroll(): void;
+    /**
+     * Undocumented
+     * @expose
+     * @param {Point} viewPnt in viewport coordinates
+     * @return {Point} in document coordinates
+     */
+    computeAutoScrollPosition(viewPnt: Point): Point;
     /**
      * Create an SVGElement that contains a SVG rendering of the current Diagram.
      *

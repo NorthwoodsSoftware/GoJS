@@ -347,8 +347,9 @@ var myExtensionMenu = '\
           <li><a href="../extensions/Parallel.html">Parallel Layout</a></li>\
           <li><a href="../extensions/Serpentine.html">Serpentine Layout</a></li>\
           <li><a href="../extensions/Spiral.html">Spiral Layout</a></li>\
-          <li><a href="../extensions/TreeMap.html">Tree Map Layout</a></li>\
+          <li><a href="../extensions/SwimLaneLayout.html">Swim Lane Layout</a></li>\
           <li><a href="../extensions/Table.html">Table Layout</a></li>\
+          <li><a href="../extensions/TreeMap.html">Tree Map Layout</a></li>\
           <hr>\
           <li><a href="../extensions/RealtimeDragSelecting.html">Realtime Selecting</a></li>\
           <li><a href="../extensions/DragCreating.html">Drag Creating</a></li>\
