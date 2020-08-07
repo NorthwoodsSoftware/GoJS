@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 // A "HyperlinkText" is either a TextBlock or a Panel containing a TextBlock that when clicked
 // opens a new browser window with a given or computed URL.

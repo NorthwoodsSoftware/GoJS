@@ -1041,7 +1041,7 @@ arr.push([
 arr.push([
   "svgDataUrl",
   "SVG Data URL",
-  "In makeSVG, replace image sources with Base64",
+  "In makeSvg, replace image sources with Base64",
   "svgDataUrl",
   ["svg", "export"]
 ]);
@@ -1157,6 +1157,14 @@ arr.push([
   "Rotate Multiple",
   "A custom RotatingTool that lets the user rotate many selected objects at once.",
   "RotateMultiple",
+  ["tools", "extensions"]
+]);
+
+arr.push([
+  "../extensions/Rescaling",
+  "Rescaling",
+  "A custom Tool that lets a user change the scale of an object.",
+  "Rescaling",
   ["tools", "extensions"]
 ]);
 

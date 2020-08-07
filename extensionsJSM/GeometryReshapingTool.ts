@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 /**
  * The GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user

@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 /**
  * The PolylineLinkingTool class the user to draw a new {@link Link} by clicking where the route should go,

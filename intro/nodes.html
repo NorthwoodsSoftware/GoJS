@@ -208,7 +208,7 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
     );
 
   diagram.model.nodeDataArray = [
-    { text: "kitten", img: "images/50x40.png" }
+    { text: "Jellylorum", img: "images/50x40.png" }
   ];
 </pre>
 <script>goCode("icons", 300, 150)</script>
@@ -256,7 +256,7 @@ Another commonly seen kind of node can be implemented using a Horizontal <a>Pane
     );
 
   diagram.model.nodeDataArray = [
-    { text: "kitten", img: "images/50x40.png" }
+    { text: "Alonzo", img: "images/50x40.png" }
   ];
 </pre>
 <script>goCode("smallicons", 300, 150)</script>
@@ -329,6 +329,23 @@ to indicate what state it is in.
 <p>
 One way to implement this is to use a Spot <a>Panel</a>, where the main element is itself a Panel
 containing the elements that you always want to display, and there are additional objects located at spots around the main element.
+The basic outline would be:
+</p>
+<pre>
+Node, "Spot"
+    Panel, "Auto"  // the contents with border
+        Shape        // the border
+        Panel, ...   // the contents
+           . . .
+    Shape  // the decoration
+</pre>
+<p>
+So the basic body of the node is in a "Vertical" or any kind of Panel,
+which is surrounded by a border using an "Auto" Panel,
+which gets decorations using the "Spot" Panel that is also the Node.
+</p>
+<p>
+The same design of having the Node be a "Spot" Panel can also used for placing ports relative to the body of a node.
 </p>
 <pre class="lang-js" id="spotdecorations">
   diagram.nodeTemplate =
@@ -366,8 +383,8 @@ containing the elements that you always want to display, and there are additiona
     );
 
   diagram.model.nodeDataArray = [
-    { text: "kitten", img: "images/50x40.png", info: "" },
-    { text: "kitten", img: "images/50x40.png", error: true, info: "shredded curtains" }
+    { text: "Demeter", img: "images/50x40.png", info: "" },
+    { text: "Copricat", img: "images/50x40.png", error: true, info: "shredded curtains" }
   ];
 </pre>
 <script>goCode("spotdecorations", 300, 150)</script>

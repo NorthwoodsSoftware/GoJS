@@ -10,7 +10,7 @@
 
 // Caution: these may change in a future version.
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 // Set up the default templates that each Diagram starts off with.
 function setupDiagramTemplates(diagram: go.Diagram) {

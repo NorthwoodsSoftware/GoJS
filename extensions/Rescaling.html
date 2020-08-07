@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Rescaling GraphObjects using the RescalingTool</title>
+  <meta name="description" content="A demonstration of the RescalingTool extension." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script src="RescalingTool.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+                    {
+                      layout: $(go.TreeLayout),
+                      "undoManager.isEnabled": true  // enable undo & redo
+                    });
+
+      // install the RescalingTool as a mouse-down tool
+      myDiagram.toolManager.mouseDownTools.add(new RescalingTool());
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { locationSpot: go.Spot.Center },
+          new go.Binding("scale").makeTwoWay(),
+          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 8 },
+            new go.Binding("text"))
+        );
+
+      // but use the default Link template, by not setting Diagram.linkTemplate
+
+      // create the model data that will be represented by Nodes and Links
+      myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: "Alpha", color: "lightblue" },
+        { key: 2, text: "Beta", color: "orange" },
+        { key: 3, text: "Gamma", color: "lightgreen" },
+        { key: 4, text: "Delta", color: "pink" }
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 3, to: 4 }
+      ]);
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>
+  <p>
+    Selecting a node will show a rescaling handle that when dragged will modify the node's <a>GraphObject.scale</a> property.
+  </p>
+  <p>
+    Just as the <a>ResizingTool</a> changes the <a>GraphObject.desiredSize</a> of an object,
+    and just as the <a>RotatingTool</a> changes the <a>GraphObject.angle</a> of an object,
+    the <a>RescalingTool</a> changes the <a>GraphObject.scale</a> of an object.
+  </p>
+</div>
+</body>
+</html>

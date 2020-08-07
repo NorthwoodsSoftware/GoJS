@@ -294,7 +294,7 @@ function printDiagram() {
   let y = bnds.y;
   while (y < bnds.bottom) {
     while (x < bnds.right) {
-      const svg = (window as any).myDiagram.makeSVG({ scale: 1.0, position: new go.Point(x, y), size: printSize });
+      const svg = (window as any).myDiagram.makeSvg({ scale: 1.0, position: new go.Point(x, y), size: printSize });
       svgWindow.document.body.appendChild(svg);
       x += printSize.width;
     }

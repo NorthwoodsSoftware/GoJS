@@ -228,7 +228,7 @@
         var y = bnds.y;
         while (y < bnds.bottom) {
             while (x < bnds.right) {
-                var svg = window.myDiagram.makeSVG({ scale: 1.0, position: new go.Point(x, y), size: printSize });
+                var svg = window.myDiagram.makeSvg({ scale: 1.0, position: new go.Point(x, y), size: printSize });
                 svgWindow.document.body.appendChild(svg);
                 x += printSize.width;
             }

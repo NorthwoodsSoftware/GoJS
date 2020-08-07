@@ -764,33 +764,32 @@ export class VirtualizedPackedLayout extends go.Layout {
 
     if (!nodes.length) return fits;
 
-    let n1: go.Rect | ListNode<go.Rect> = nodes[0].bounds.copy().inflate(sideSpacing, sideSpacing);
-    n1.setTo(0, 0, n1.width === 0 ? 0.1 : n1.width, n1.height === 0 ? 0.1 : n1.height);
-    fits.push(n1.setTo(0, 0, n1.width, n1.height));
-    this._bounds.unionRect(n1);
+    let r1: go.Rect = nodes[0].bounds.copy().inflate(sideSpacing, sideSpacing);
+    r1.setTo(0, 0, r1.width === 0 ? 0.1 : r1.width, r1.height === 0 ? 0.1 : r1.height);
+    fits.push(r1.setTo(0, 0, r1.width, r1.height));
+    this._bounds.unionRect(r1);
     if (nodes.length < 2) return fits;
 
-    let n2: go.Rect | ListNode<go.Rect> = nodes[1].bounds.copy().inflate(sideSpacing, sideSpacing);
-    n2.setTo(0, 0, n2.width === 0 ? 0.1 : n2.width, n2.height === 0 ? 0.1 : n2.height);
-    fits.push(n2.setTo(-n2.width, n1.centerY - n2.width / 2, n2.width, n2.height));
-    this._bounds.unionRect(n2);
+    let r2: go.Rect = nodes[1].bounds.copy().inflate(sideSpacing, sideSpacing);
+    r2.setTo(0, 0, r2.width === 0 ? 0.1 : r2.width, r2.height === 0 ? 0.1 : r2.height);
+    fits.push(r2.setTo(-r2.width, r1.centerY - r2.width / 2, r2.width, r2.height));
+    this._bounds.unionRect(r2);
     if (nodes.length < 3) return fits;
 
-    let n3: go.Rect | ListNode<go.Rect> = nodes[2].bounds.copy().inflate(sideSpacing, sideSpacing);
-    n3.setTo(0, 0, n3.width === 0 ? 0.1 : n3.width, n3.height === 0 ? 0.1 : n3.height);
-    fits.push(place(n2, n1, n3));
-    this._bounds.unionRect(n3);
+    let r3: go.Rect = nodes[2].bounds.copy().inflate(sideSpacing, sideSpacing);
+    r3.setTo(0, 0, r3.width === 0 ? 0.1 : r3.width, r3.height === 0 ? 0.1 : r3.height);
+    fits.push(place(r2, r1, r3));
+    this._bounds.unionRect(r3);
 
 
-
-    n2 = frontChain.push(n2);
-    n3 = frontChain.push(n3);
-    n1 = frontChain.push(n1);
+    let n2: ListNode<go.Rect> = frontChain.push(r2);
+    let n3: ListNode<go.Rect> = frontChain.push(r3);
+    let n1: ListNode<go.Rect> = frontChain.push(r1);
 
     pack: for (let i = 3; i < nodes.length; i++) {
-      n3 = nodes[i].bounds.copy().inflate(sideSpacing, sideSpacing);
-      n3.setTo(0, 0, n3.width === 0 ? 0.1 : n3.width, n3.height === 0 ? 0.1 : n3.height);
-      place(n1.data, n2.data, n3);
+      r3 = nodes[i].bounds.copy().inflate(sideSpacing, sideSpacing);
+      r3.setTo(0, 0, r3.width === 0 ? 0.1 : r3.width, r3.height === 0 ? 0.1 : r3.height);
+      place(n1.data, n2.data, r3);
 
       let j = n2.next;
       let k = n1.prev;
@@ -798,13 +797,13 @@ export class VirtualizedPackedLayout extends go.Layout {
       let sk = n1.data.width / 2;
       do {
         if (sj <= sk) {
-          if (intersects(j.data, n3)) {
+          if (intersects(j.data, r3)) {
             n2 = frontChain.removeBetween(n1, j), i--;
             continue pack;
           }
           sj += j.data.width / 2, j = j.next;
         } else {
-          if (intersects(k.data, n3)) {
+          if (intersects(k.data, r3)) {
             frontChain.removeBetween(k, n2);
             n1 = k, i--;
             continue pack;
@@ -813,10 +812,10 @@ export class VirtualizedPackedLayout extends go.Layout {
         }
       } while (j !== k.next);
 
-      fits.push(n3);
-      this._bounds.unionRect(n3);
+      fits.push(r3);
+      this._bounds.unionRect(r3);
 
-      n2 = n3 = frontChain.insertAfter(n3, n1);
+      n2 = n3 = frontChain.insertAfter(r3, n1);
 
       if (this.packShape !== VirtualizedPackedLayout.Spiral) {
         let aa = score(n1);

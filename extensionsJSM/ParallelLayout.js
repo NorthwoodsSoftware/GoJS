@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 /**
  * A custom {@link TreeLayout} that requires a "Split" node and a "Merge" node, by category.
  * The "Split" node should be the root of a tree-like structure if one excludes links to the "Merge" node.

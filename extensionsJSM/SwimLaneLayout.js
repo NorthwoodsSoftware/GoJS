@@ -1,19 +1,6 @@
 /*
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 /*
 * This is an extension and not part of the main GoJS library.
 * Note that the API for this class may change with any version, even point releases.
@@ -21,7 +8,7 @@ var __extends = (this && this.__extends) || (function () {
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 /**
  * A custom LayeredDigraphLayout that knows about "lanes"
  * and that positions each node in its respective lane.
@@ -38,187 +25,153 @@ import * as go from '../release/go-module.js';
  * That number's unit is columns, {@link LayeredDigraphLayout#columnSpacing}, not in document coordinates.
  * @category Layout Extension
  */
-var SwimLaneLayout = /** @class */ (function (_super) {
-    __extends(SwimLaneLayout, _super);
-    function SwimLaneLayout() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+export class SwimLaneLayout extends go.LayeredDigraphLayout {
+    constructor() {
+        super(...arguments);
         // settable properties
-        _this._laneProperty = "lane"; // how to get lane identifier string from node data
-        _this._laneNames = []; // lane names, may be sorted using this.laneComparer
-        _this._laneComparer = null;
-        _this._laneSpacing = 0; // in columns
-        _this._router = { linkSpacing: 4 };
-        _this._reducer = null;
+        this._laneProperty = "lane"; // how to get lane identifier string from node data
+        this._laneNames = []; // lane names, may be sorted using this.laneComparer
+        this._laneComparer = null;
+        this._laneSpacing = 0; // in columns
+        this._router = { linkSpacing: 4 };
+        this._reducer = null;
         // computed, read-only state
-        _this._lanePositions = new go.Map(); // lane names --> start columns, left to right
-        _this._laneBreadths = new go.Map(); // lane names --> needed width in columns
+        this._lanePositions = new go.Map(); // lane names --> start columns, left to right
+        this._laneBreadths = new go.Map(); // lane names --> needed width in columns
         // internal state
-        _this._layers = [[]];
-        _this._neededSpaces = [];
-        return _this;
+        this._layers = [[]];
+        this._neededSpaces = [];
     }
-    Object.defineProperty(SwimLaneLayout.prototype, "laneProperty", {
-        /**
-         * Gets or sets the name of the data property that holds the string which is the name of the lane that the node should be in.
-         * The default value is "lane".
-         */
-        get: function () { return this._laneProperty; },
-        set: function (val) {
-            if (typeof val !== 'string' && typeof val !== 'function')
-                throw new Error("new value for SwimLaneLayout.laneProperty must be a property name, not: " + val);
-            if (this._laneProperty !== val) {
-                this._laneProperty = val;
-                this.invalidateLayout();
+    /**
+     * Gets or sets the name of the data property that holds the string which is the name of the lane that the node should be in.
+     * The default value is "lane".
+     */
+    get laneProperty() { return this._laneProperty; }
+    set laneProperty(val) {
+        if (typeof val !== 'string' && typeof val !== 'function')
+            throw new Error("new value for SwimLaneLayout.laneProperty must be a property name, not: " + val);
+        if (this._laneProperty !== val) {
+            this._laneProperty = val;
+            this.invalidateLayout();
+        }
+    }
+    /**
+     * Gets or sets an Array of lane names.
+     * If you set this before a layout happens, it will use those lanes in that order.
+     * Any additional lane names that it discovers will be added to the end of this Array.
+     *
+     * This property is reset to an empty Array at the end of each layout.
+     * The default value is an empty Array.
+     */
+    get laneNames() { return this._laneNames; }
+    set laneNames(val) {
+        if (!Array.isArray(val))
+            throw new Error("new value for SwimLaneLayout.laneNames must be an Array, not: " + val);
+        if (this._laneNames !== val) {
+            this._laneNames = val;
+            this.invalidateLayout();
+        }
+    }
+    /**
+     * Gets or sets a function by which to compare lane names, for ordering the lanes within the {@link #laneNames} Array.
+     * By default the function is null -- the lanes are not sorted.
+     */
+    get laneComparer() { return this._laneComparer; }
+    set laneComparer(val) {
+        if (typeof val !== 'function')
+            throw new Error("new value for SwimLaneLayout.laneComparer must be a function, not: " + val);
+        if (this._laneComparer !== val) {
+            this._laneComparer = val;
+            this.invalidateLayout();
+        }
+    }
+    /**
+     * Gets or sets the amount of additional space it allocates between the lanes.
+     * This number specifies the number of columns, with the same meaning as {@link LayeredDigraphLayout#columnSpacing}.
+     * The number unit is not in document coordinate or pixels.
+     * The default value is zero columns.
+     */
+    get laneSpacing() { return this._laneSpacing; }
+    set laneSpacing(val) {
+        if (typeof val !== 'number')
+            throw new Error("new value for SwimLaneLayout.laneSpacing must be a number, not: " + val);
+        if (this._laneSpacing !== val) {
+            this._laneSpacing = val;
+            this.invalidateLayout();
+        }
+    }
+    /**
+     * @hidden
+     */
+    get router() { return this._router; }
+    set router(val) {
+        if (this._router !== val) {
+            this._router = val;
+            this.invalidateLayout();
+        }
+    }
+    /**
+     * @hidden
+     */
+    get reducer() { return this._reducer; }
+    set reducer(val) {
+        if (this._reducer !== val) {
+            this._reducer = val;
+            if (val) {
+                const lay = this;
+                val.findLane = function (v) { return lay.getLane(v); };
+                val.getIndex = function (v) { return v.index; };
+                val.getBary = function (v) { return v.bary || 0; };
+                val.setBary = function (v, val) { v.bary = val; };
+                val.getConnectedNodesIterator = function (v) { return v.vertexes; };
             }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "laneNames", {
-        /**
-         * Gets or sets an Array of lane names.
-         * If you set this before a layout happens, it will use those lanes in that order.
-         * Any additional lane names that it discovers will be added to the end of this Array.
-         *
-         * This property is reset to an empty Array at the end of each layout.
-         * The default value is an empty Array.
-         */
-        get: function () { return this._laneNames; },
-        set: function (val) {
-            if (!Array.isArray(val))
-                throw new Error("new value for SwimLaneLayout.laneNames must be an Array, not: " + val);
-            if (this._laneNames !== val) {
-                this._laneNames = val;
-                this.invalidateLayout();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "laneComparer", {
-        /**
-         * Gets or sets a function by which to compare lane names, for ordering the lanes within the {@link #laneNames} Array.
-         * By default the function is null -- the lanes are not sorted.
-         */
-        get: function () { return this._laneComparer; },
-        set: function (val) {
-            if (typeof val !== 'function')
-                throw new Error("new value for SwimLaneLayout.laneComparer must be a function, not: " + val);
-            if (this._laneComparer !== val) {
-                this._laneComparer = val;
-                this.invalidateLayout();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "laneSpacing", {
-        /**
-         * Gets or sets the amount of additional space it allocates between the lanes.
-         * This number specifies the number of columns, with the same meaning as {@link LayeredDigraphLayout#columnSpacing}.
-         * The number unit is not in document coordinate or pixels.
-         * The default value is zero columns.
-         */
-        get: function () { return this._laneSpacing; },
-        set: function (val) {
-            if (typeof val !== 'number')
-                throw new Error("new value for SwimLaneLayout.laneSpacing must be a number, not: " + val);
-            if (this._laneSpacing !== val) {
-                this._laneSpacing = val;
-                this.invalidateLayout();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "router", {
-        /**
-         * @hidden
-         */
-        get: function () { return this._router; },
-        set: function (val) {
-            if (this._router !== val) {
-                this._router = val;
-                this.invalidateLayout();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "reducer", {
-        /**
-         * @hidden
-         */
-        get: function () { return this._reducer; },
-        set: function (val) {
-            if (this._reducer !== val) {
-                this._reducer = val;
-                if (val) {
-                    var lay_1 = this;
-                    val.findLane = function (v) { return lay_1.getLane(v); };
-                    val.getIndex = function (v) { return v.index; };
-                    val.getBary = function (v) { return v.bary || 0; };
-                    val.setBary = function (v, val) { v.bary = val; };
-                    val.getConnectedNodesIterator = function (v) { return v.vertexes; };
-                }
-                this.invalidateLayout();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "lanePositions", {
-        /**
-         * The computed positions of each lane,
-         * in the form of a {@link Map} mapping lane names (strings) to numbers.
-         */
-        get: function () { return this._lanePositions; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SwimLaneLayout.prototype, "laneBreadths", {
-        /**
-         * The computed breadths (widths or heights depending on the direction) of each lane,
-         * in the form of a {@link Map} mapping lane names (strings) to numbers.
-         */
-        get: function () { return this._laneBreadths; },
-        enumerable: true,
-        configurable: true
-    });
+            this.invalidateLayout();
+        }
+    }
+    /**
+     * The computed positions of each lane,
+     * in the form of a {@link Map} mapping lane names (strings) to numbers.
+     */
+    get lanePositions() { return this._lanePositions; }
+    /**
+     * The computed breadths (widths or heights depending on the direction) of each lane,
+     * in the form of a {@link Map} mapping lane names (strings) to numbers.
+     */
+    get laneBreadths() { return this._laneBreadths; }
     /**
      * @hidden
      * @param coll
      */
-    SwimLaneLayout.prototype.doLayout = function (coll) {
+    doLayout(coll) {
         this.lanePositions.clear(); // lane names --> start columns, left to right
         this.laneBreadths.clear(); // lane names --> needed width in columns
         this._layers = [[]];
         this._neededSpaces = [];
-        _super.prototype.doLayout.call(this, coll);
+        super.doLayout(coll);
         this.lanePositions.clear();
         this.laneBreadths.clear();
         this._layers = [[]];
         this._neededSpaces = [];
         this.laneNames = []; // clear out for next layout
-    };
+    }
     /**
      * @hidden
      * @param v
      * @param topleft
      */
-    SwimLaneLayout.prototype.nodeMinLayerSpace = function (v, topleft) {
+    nodeMinLayerSpace(v, topleft) {
         if (!this._neededSpaces)
             this._neededSpaces = this.computeNeededLayerSpaces(this.network);
         if (v.node === null)
             return 0;
-        var lay = v.layer;
+        let lay = v.layer;
         if (!topleft) {
             if (lay > 0)
                 lay--;
         }
-        var overlaps = (this._neededSpaces[lay] || 0) / 2;
-        var edges = this.countEdgesForDirection(v, (this.direction > 135) ? !topleft : topleft);
-        var needed = Math.max(overlaps, edges) * this.router.linkSpacing * 1.5;
+        const overlaps = (this._neededSpaces[lay] || 0) / 2;
+        const edges = this.countEdgesForDirection(v, (this.direction > 135) ? !topleft : topleft);
+        const needed = Math.max(overlaps, edges) * this.router.linkSpacing * 1.5;
         if (this.direction === 90 || this.direction === 270) {
             if (topleft) {
                 return v.focus.y + 10 + needed;
@@ -235,10 +188,10 @@ var SwimLaneLayout = /** @class */ (function (_super) {
                 return v.bounds.width - v.focus.x + 10 + needed;
             }
         }
-    };
-    SwimLaneLayout.prototype.countEdgesForDirection = function (vertex, topleft) {
-        var c = 0;
-        var lay = vertex.layer;
+    }
+    countEdgesForDirection(vertex, topleft) {
+        let c = 0;
+        const lay = vertex.layer;
         vertex.edges.each(function (e) {
             if (topleft) {
                 if (e.getOtherVertex(vertex).layer >= lay)
@@ -250,43 +203,43 @@ var SwimLaneLayout = /** @class */ (function (_super) {
             }
         });
         return c;
-    };
-    SwimLaneLayout.prototype.computeNeededLayerSpaces = function (net) {
+    }
+    computeNeededLayerSpaces(net) {
         // group all edges by their connected vertexes' least layer
-        var layerMinEdges = [];
+        const layerMinEdges = [];
         net.edges.each(function (e) {
             // consider all edges, including dummy ones!
-            var f = e.fromVertex;
-            var t = e.toVertex;
+            const f = e.fromVertex;
+            const t = e.toVertex;
             if (f.column === t.column)
                 return; // skip edges that don't go between columns
             if (Math.abs(f.layer - t.layer) > 1)
                 return; // skip edges that don't go between adjacent layers
-            var lay = Math.min(f.layer, t.layer);
-            var arr = layerMinEdges[lay];
+            const lay = Math.min(f.layer, t.layer);
+            let arr = layerMinEdges[lay];
             if (!arr)
                 arr = layerMinEdges[lay] = [];
             arr.push(e);
         });
         // sort each array of edges by their lowest connected vertex column
         // for edges with the same minimum column, sort by their maximum column
-        var layerMaxEdges = []; // same as layerMinEdges, but sorted by maximum column
+        const layerMaxEdges = []; // same as layerMinEdges, but sorted by maximum column
         layerMinEdges.forEach(function (arr, lay) {
             if (!arr)
                 return;
             arr.sort(function (e1, e2) {
-                var f1c = e1.fromVertex.column;
-                var t1c = e1.toVertex.column;
-                var f2c = e2.fromVertex.column;
-                var t2c = e2.toVertex.column;
-                var e1mincol = Math.min(f1c, t1c);
-                var e2mincol = Math.min(f2c, t2c);
+                const f1c = e1.fromVertex.column;
+                const t1c = e1.toVertex.column;
+                const f2c = e2.fromVertex.column;
+                const t2c = e2.toVertex.column;
+                const e1mincol = Math.min(f1c, t1c);
+                const e2mincol = Math.min(f2c, t2c);
                 if (e1mincol > e2mincol)
                     return 1;
                 if (e1mincol < e2mincol)
                     return -1;
-                var e1maxcol = Math.max(f1c, t1c);
-                var e2maxcol = Math.max(f2c, t2c);
+                const e1maxcol = Math.max(f1c, t1c);
+                const e2maxcol = Math.max(f2c, t2c);
                 if (e1maxcol > e2maxcol)
                     return 1;
                 if (e1maxcol < e2maxcol)
@@ -295,18 +248,18 @@ var SwimLaneLayout = /** @class */ (function (_super) {
             });
             layerMaxEdges[lay] = arr.slice(0);
             layerMaxEdges[lay].sort(function (e1, e2) {
-                var f1c = e1.fromVertex.column;
-                var t1c = e1.toVertex.column;
-                var f2c = e2.fromVertex.column;
-                var t2c = e2.toVertex.column;
-                var e1maxcol = Math.max(f1c, t1c);
-                var e2maxcol = Math.max(f2c, t2c);
+                const f1c = e1.fromVertex.column;
+                const t1c = e1.toVertex.column;
+                const f2c = e2.fromVertex.column;
+                const t2c = e2.toVertex.column;
+                const e1maxcol = Math.max(f1c, t1c);
+                const e2maxcol = Math.max(f2c, t2c);
                 if (e1maxcol > e2maxcol)
                     return 1;
                 if (e1maxcol < e2maxcol)
                     return -1;
-                var e1mincol = Math.min(f1c, t1c);
-                var e2mincol = Math.min(f2c, t2c);
+                const e1mincol = Math.min(f1c, t1c);
+                const e2mincol = Math.min(f2c, t2c);
                 if (e1mincol > e2mincol)
                     return 1;
                 if (e1mincol < e2mincol)
@@ -315,23 +268,23 @@ var SwimLaneLayout = /** @class */ (function (_super) {
             });
         });
         // run through each array of edges to count how many overlaps there might be
-        var layerOverlaps = [];
+        const layerOverlaps = [];
         layerMinEdges.forEach(function (arr, lay) {
-            var mins = arr; // sorted by min column
-            var maxs = layerMaxEdges[lay]; // sorted by max column
-            var maxoverlap = 0; // maximum count for this layer
+            const mins = arr; // sorted by min column
+            const maxs = layerMaxEdges[lay]; // sorted by max column
+            let maxoverlap = 0; // maximum count for this layer
             if (mins && maxs && mins.length > 1 && maxs.length > 1) {
-                var mini = 0;
-                var min = null;
-                var maxi = 0;
-                var max = null;
+                let mini = 0;
+                let min = null;
+                let maxi = 0;
+                let max = null;
                 while (mini < mins.length || maxi < maxs.length) {
                     if (mini < mins.length)
                         min = mins[mini];
-                    var mincol = min ? Math.min(min.fromVertex.column, min.toVertex.column) : 0;
+                    const mincol = min ? Math.min(min.fromVertex.column, min.toVertex.column) : 0;
                     if (maxi < maxs.length)
                         max = maxs[maxi];
-                    var maxcol = max ? Math.max(max.fromVertex.column, max.toVertex.column) : Infinity;
+                    const maxcol = max ? Math.max(max.fromVertex.column, max.toVertex.column) : Infinity;
                     maxoverlap = Math.max(maxoverlap, Math.abs(mini - maxi));
                     if (mincol <= maxcol && mini < mins.length) {
                         mini++;
@@ -344,23 +297,23 @@ var SwimLaneLayout = /** @class */ (function (_super) {
             layerOverlaps[lay] = maxoverlap * 1.5; // # of parallel links
         });
         return layerOverlaps;
-    };
-    SwimLaneLayout.prototype.setupLanes = function () {
+    }
+    setupLanes() {
         // set up some data structures
-        var layout = this;
-        var laneNameSet = new go.Set().addAll(this.laneNames);
-        var laneIndexes = new go.Map(); // lane names --> index when sorted
-        var vit = this.network.vertexes.iterator;
+        const layout = this;
+        const laneNameSet = new go.Set().addAll(this.laneNames);
+        const laneIndexes = new go.Map(); // lane names --> index when sorted
+        const vit = this.network.vertexes.iterator;
         while (vit.next()) {
-            var v = vit.value;
-            var lane = this.getLane(v); // cannot call findLane yet
+            const v = vit.value;
+            const lane = this.getLane(v); // cannot call findLane yet
             if (lane !== null && !laneNameSet.has(lane)) {
                 laneNameSet.add(lane);
                 this.laneNames.push(lane);
             }
-            var layer = v.layer;
+            const layer = v.layer;
             if (layer >= 0) {
-                var arr = this._layers[layer];
+                const arr = this._layers[layer];
                 if (!arr) {
                     this._layers[layer] = [v];
                 }
@@ -372,54 +325,54 @@ var SwimLaneLayout = /** @class */ (function (_super) {
         // sort laneNames and initialize laneIndexes
         if (typeof this.laneComparer === "function")
             this.laneNames.sort(this.laneComparer);
-        for (var i = 0; i < this.laneNames.length; i++) {
+        for (let i = 0; i < this.laneNames.length; i++) {
             laneIndexes.add(this.laneNames[i], i);
         }
         // now OK to call findLane
         // sort vertexes so that vertexes are grouped by lane
-        for (var i = 0; i <= this.maxLayer; i++) {
+        for (let i = 0; i <= this.maxLayer; i++) {
             this._layers[i].sort(function (a, b) { return layout.compareVertexes(a, b); });
         }
-    };
+    }
     /**
      * @hidden
      * Replace the standard reduceCrossings behavior so that it respects lanes.
      */
-    SwimLaneLayout.prototype.reduceCrossings = function () {
+    reduceCrossings() {
         this.setupLanes();
         // this just cares about the .index and ignores .column
-        var layers = this._layers;
-        var red = this.reducer;
+        const layers = this._layers;
+        const red = this.reducer;
         if (red) {
-            for (var i = 0; i < layers.length - 1; i++) {
+            for (let i = 0; i < layers.length - 1; i++) {
                 red.reduceCrossings(layers[i], layers[i + 1]);
                 layers[i].forEach(function (v, j) { v.index = j; });
             }
-            for (var i = layers.length - 1; i > 0; i--) {
+            for (let i = layers.length - 1; i > 0; i--) {
                 red.reduceCrossings(layers[i], layers[i - 1]);
                 layers[i].forEach(function (v, j) { v.index = j; });
             }
         }
         this.computeLanes(); // and recompute all vertex.column values
-    };
-    SwimLaneLayout.prototype.computeLanes = function () {
+    }
+    computeLanes() {
         // compute needed width for each lane, in columns
-        for (var i = 0; i < this.laneNames.length; i++) {
-            var lane = this.laneNames[i];
+        for (let i = 0; i < this.laneNames.length; i++) {
+            const lane = this.laneNames[i];
             this.laneBreadths.add(lane, this.computeMinLaneWidth(lane));
         }
-        var lwidths = new go.Map(); // reused for each layer
-        var _loop_1 = function (i) {
-            var arr = this_1._layers[i];
+        const lwidths = new go.Map(); // reused for each layer
+        for (let i = 0; i <= this.maxLayer; i++) {
+            const arr = this._layers[i];
             if (arr) {
-                var layout_1 = this_1;
+                const layout = this;
                 // now run through Array finding width (in columns) of each lane
                 // and max with this.laneBreadths.get(lane)
-                for (var j = 0; j < arr.length; j++) {
-                    var v = arr[j];
-                    var w = this_1.nodeMinColumnSpace(v, true) + 1 + this_1.nodeMinColumnSpace(v, false);
-                    var ln = this_1.findLane(v) || "";
-                    var totw = lwidths.get(ln);
+                for (let j = 0; j < arr.length; j++) {
+                    const v = arr[j];
+                    const w = this.nodeMinColumnSpace(v, true) + 1 + this.nodeMinColumnSpace(v, false);
+                    const ln = this.findLane(v) || "";
+                    const totw = lwidths.get(ln);
                     if (totw === null) {
                         lwidths.set(ln, w);
                     }
@@ -428,47 +381,43 @@ var SwimLaneLayout = /** @class */ (function (_super) {
                     }
                 }
                 lwidths.each(function (kvp) {
-                    var lane = kvp.key;
-                    var colsInLayer = kvp.value;
-                    var colsMax = layout_1.laneBreadths.get(lane) || 0;
+                    const lane = kvp.key;
+                    const colsInLayer = kvp.value;
+                    const colsMax = layout.laneBreadths.get(lane) || 0;
                     if (colsInLayer > colsMax)
-                        layout_1.laneBreadths.set(lane, colsInLayer);
+                        layout.laneBreadths.set(lane, colsInLayer);
                 });
                 lwidths.clear();
             }
-        };
-        var this_1 = this;
-        for (var i = 0; i <= this.maxLayer; i++) {
-            _loop_1(i);
         }
         // compute starting positions for each lane
-        var x = 0;
-        for (var i = 0; i < this.laneNames.length; i++) {
-            var lane = this.laneNames[i];
+        let x = 0;
+        for (let i = 0; i < this.laneNames.length; i++) {
+            const lane = this.laneNames[i];
             this.lanePositions.set(lane, x);
-            var w = this.laneBreadths.get(lane) || 0;
+            const w = this.laneBreadths.get(lane) || 0;
             x += w + this.laneSpacing;
         }
         this.renormalizeColumns();
-    };
-    SwimLaneLayout.prototype.renormalizeColumns = function () {
+    }
+    renormalizeColumns() {
         // set new column and index on each vertex
-        for (var i = 0; i < this._layers.length; i++) {
-            var prevlane = null;
-            var c = 0;
-            var arr = this._layers[i];
-            for (var j = 0; j < arr.length; j++) {
-                var v = arr[j];
+        for (let i = 0; i < this._layers.length; i++) {
+            let prevlane = null;
+            let c = 0;
+            const arr = this._layers[i];
+            for (let j = 0; j < arr.length; j++) {
+                const v = arr[j];
                 v.index = j;
-                var l = this.findLane(v);
+                const l = this.findLane(v);
                 if (l && prevlane !== l) {
                     c = this.lanePositions.get(l) || 0;
-                    var w = this.laneBreadths.get(l) || 0;
+                    const w = this.laneBreadths.get(l) || 0;
                     // compute needed breadth within lane, in columns
-                    var z = this.nodeMinColumnSpace(v, true) + 1 + this.nodeMinColumnSpace(v, false);
-                    var k = j + 1;
+                    let z = this.nodeMinColumnSpace(v, true) + 1 + this.nodeMinColumnSpace(v, false);
+                    let k = j + 1;
                     while (k < arr.length && this.findLane(arr[k]) === l) {
-                        var vz = arr[k];
+                        const vz = arr[k];
                         z += this.nodeMinColumnSpace(vz, true) + 1 + this.nodeMinColumnSpace(vz, false);
                         k++;
                     }
@@ -484,31 +433,31 @@ var SwimLaneLayout = /** @class */ (function (_super) {
                 prevlane = l;
             }
         }
-    };
+    }
     /**
      * Return the minimum lane width, in columns
      * @param lane
      */
-    SwimLaneLayout.prototype.computeMinLaneWidth = function (lane) { return 0; };
+    computeMinLaneWidth(lane) { return 0; }
     /**
      * @hidden
      * Disable normal straightenAndPack behavior, which would mess up the columns.
      */
-    SwimLaneLayout.prototype.straightenAndPack = function () { };
+    straightenAndPack() { }
     /**
      * Given a vertex, get the lane (name) that its node belongs in.
      * If the lane appears to be undefined, this returns the empty string.
      * For dummy vertexes (with no node) this will return null.
      * @param v
      */
-    SwimLaneLayout.prototype.getLane = function (v) {
+    getLane(v) {
         if (v === null)
             return null;
-        var node = v.node;
+        const node = v.node;
         if (node !== null) {
-            var data = node.data;
+            const data = node.data;
             if (data !== null) {
-                var lane = null;
+                let lane = null;
                 if (typeof this.laneProperty === "function") {
                     lane = this.laneProperty(data);
                 }
@@ -521,7 +470,7 @@ var SwimLaneLayout = /** @class */ (function (_super) {
             }
         }
         return null;
-    };
+    }
     /**
      * This is just like {@link #getLane} but handles dummy vertexes
      * for which the {@link #getLane} returns null by returning the
@@ -529,17 +478,17 @@ var SwimLaneLayout = /** @class */ (function (_super) {
      * This can only be called after the lanes have been set up internally.
      * @param v
      */
-    SwimLaneLayout.prototype.findLane = function (v) {
+    findLane(v) {
         if (v !== null) {
-            var lane = this.getLane(v);
+            const lane = this.getLane(v);
             if (lane !== null) {
                 return lane;
             }
             else {
-                var srcv = this.findRealSource(v.sourceEdges.first());
-                var dstv = this.findRealDestination(v.destinationEdges.first());
-                var srcLane = this.getLane(srcv);
-                var dstLane = this.getLane(dstv);
+                const srcv = this.findRealSource(v.sourceEdges.first());
+                const dstv = this.findRealDestination(v.destinationEdges.first());
+                const srcLane = this.getLane(srcv);
+                const dstLane = this.getLane(dstv);
                 if (srcLane !== null || dstLane !== null) {
                     if (srcLane === dstLane)
                         return srcLane;
@@ -551,28 +500,28 @@ var SwimLaneLayout = /** @class */ (function (_super) {
             }
         }
         return null;
-    };
-    SwimLaneLayout.prototype.findRealSource = function (e) {
+    }
+    findRealSource(e) {
         if (e === null)
             return null;
-        var fv = e.fromVertex;
+        const fv = e.fromVertex;
         if (fv && fv.node)
             return fv;
         return this.findRealSource(fv.sourceEdges.first());
-    };
-    SwimLaneLayout.prototype.findRealDestination = function (e) {
+    }
+    findRealDestination(e) {
         if (e === null)
             return null;
-        var tv = e.toVertex;
+        const tv = e.toVertex;
         if (tv.node)
             return tv;
         return this.findRealDestination(tv.destinationEdges.first());
-    };
-    SwimLaneLayout.prototype.compareVertexes = function (v, w) {
-        var laneV = this.findLane(v);
+    }
+    compareVertexes(v, w) {
+        let laneV = this.findLane(v);
         if (laneV === null)
             laneV = "";
-        var laneW = this.findLane(w);
+        let laneW = this.findLane(w);
         if (laneW === null)
             laneW = "";
         if (laneV < laneW)
@@ -580,8 +529,6 @@ var SwimLaneLayout = /** @class */ (function (_super) {
         if (laneV > laneW)
             return 1;
         return 0;
-    };
+    }
     ;
-    return SwimLaneLayout;
-}(go.LayeredDigraphLayout));
-export { SwimLaneLayout };
+}

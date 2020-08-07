@@ -356,6 +356,7 @@ var myExtensionMenu = '\
           <li><a href="../extensions/DragZooming.html">Drag Zooming</a></li>\
           <li><a href="../extensions/ResizeMultiple.html">Resize Multiple</a></li>\
           <li><a href="../extensions/RotateMultiple.html">Rotate Multiple</a></li>\
+          <li><a href="../extensions/Rescaling.html">Rescaling</a></li>\
           <li><a href="../extensions/CurvedLinkReshaping.html">Bez. Link Reshaping</a></li>\
           <li><a href="../extensions/OrthogonalLinkReshaping.html">Orth. Link Reshaping</a></li>\
           <li><a href="../extensions/SnapLinkReshaping.html">Snap Link Reshaping</a></li>\

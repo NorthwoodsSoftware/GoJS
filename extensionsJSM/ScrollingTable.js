@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 // A "ScrollingTable" Panel
 // This also defines an "AutoRepeatButton" Panel,
 // which is used by the scrollbar in the "ScrollingTable" Panel.
@@ -112,7 +112,7 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
     }
     return $(go.Panel, 'Table', {
         _updateScrollBar: updateScrollBar
-    }, 
+    },
     // this actually holds the item elements
     $(go.Panel, 'Table', {
         name: tablename,
@@ -121,9 +121,9 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
         background: 'whitesmoke',
         rowSizing: go.RowColumnDefinition.None,
         defaultAlignment: go.Spot.Top
-    }), 
+    }),
     // this is the scrollbar
-    $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, 'Table', { column: 1, stretch: go.GraphObject.Vertical, background: '#DDDDDD' }, 
+    $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, 'Table', { column: 1, stretch: go.GraphObject.Vertical, background: '#DDDDDD' },
     // the scroll up button
     $('AutoRepeatButton', {
         name: 'UP',
@@ -132,7 +132,7 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
         'ButtonBorder.figure': 'Rectangle',
         'ButtonBorder.fill': 'lightgray',
         click: function (e, obj) { incrTableIndex(obj, -1); }
-    }, $(go.Shape, 'TriangleUp', { stroke: null, desiredSize: new go.Size(6, 6) })), 
+    }, $(go.Shape, 'TriangleUp', { stroke: null, desiredSize: new go.Size(6, 6) })),
     // (someday implement a thumb here and support dragging to scroll)
     // the scroll down button
     $('AutoRepeatButton', {

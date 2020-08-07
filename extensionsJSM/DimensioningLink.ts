@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 /**
  * A custom routed {@link Link} for showing the distances between a point on one node and a point on another node.

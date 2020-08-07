@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 /**
  * The LinkShiftingTool class lets the user shift the end of a link to be anywhere along the edges of the port;

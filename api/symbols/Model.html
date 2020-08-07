@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.21 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.21<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.22 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.22<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Model</h1>
@@ -1403,11 +1403,13 @@ myDiagram.model = go.Model.fromJson(modelAsText);</code></pre>
 								the Array and without replacing any existing node data objects that are identified by key.</p>
 								<p>For node data objects that have the same key value, this makes calls to <a href="Model.html#setDataProperty">setDataProperty</a>
 									to update the existing node data object.
-									For new keys, this calls <a href="Model.html#addNodeData">addNodeData</a> on a copy of the data to add a new node to the model.
+									For new keys, this calls <a href="Model.html#cloneDeep">cloneDeep</a> to copy the data and then <a href="Model.html#addNodeData">addNodeData</a> to add a new node to the model.
 									For existing nodes that have keys that are not present in the given Array,
 								this calls <a href="Model.html#removeNodeData">removeNodeData</a> to remove the existing node from the model.</p>
 								<p>This method is typically used when GoJS is being used within an application that is maintaining state
-								related to the diagram model. When state is updated, this method can be called to keep the GoJS model synchronized.</p>
+									related to the diagram model. When state is updated, this method can be called to keep the GoJS model synchronized.
+									Any updates to the data should use new references since this method will use reference equality to check
+								if a node data object needs to be updated.</p>
 								<p>This method does not conduct a transaction.</p>
 								<dl class="tsd-comment-tags">
 									<dt>since</dt>

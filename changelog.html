@@ -205,6 +205,30 @@
 
     <hr/>
 
+    <h4 id="2.1.22">Changes for 2.1.22</h4>
+    <ul>
+      <li>
+        Added the <a href="extensions/RescalingTool.js" target="_blank">Rescaling Tool</a> extension,
+        demonstrated in the <a href="extensions/Rescaling.html" target="_blank">Rescaling</a> sample.
+        This tool modifies the <a>GraphObject.scale</a> property,
+        unlike the <a>ResizingTool</a> which modifies the <a>GraphObject.desiredSize</a> property.
+      </li>
+      <li>
+        Improved performance of <a>Model.mergeNodeDataArray</a>, <a>GraphLinksModel.mergeLinkDataArray</a>, and <a>Model.toIncrementalData</a>.
+        The merge methods require that references are not shared between the the GoJS model and the external data provided and will now make deep copies
+        of any new data objects before adding them to the model. This means <a>Model.cloneDeep</a> doesn't need to be called on the arrays passed in,
+        as the merge methods will make the necessary calls.
+      </li>
+      <li>
+        Fixed `go-module.js` to work when treated as an ES6 module in Node.js.
+        At the same time we have added `go.mjs` and `go-debug.mjs` as copies of `go-module.js` and `go-debug-module.js`.
+        For compatibility the kit will contain both sets of files.
+      </li>
+      <li>
+        Fixed automatically performing layouts of outer groups after inner nested groups changed size.
+      </li>
+    </ul>
+
     <h4 id="2.1.21">Changes for 2.1.21</h4>
     <ul>
       <li>
@@ -213,8 +237,8 @@
         This layout is a version of <a>LayeredDigraphLayout</a> that positions each node in the lane in which it is supposed to be.
       </li>
       <li>
-        Fix for parts that have their location or position set when not in the Diagram.
-        This issue could affect temporary parts, such as adornments created by tools that are repeatedly added and removed from the Diagram.
+        Fixed parts that have their location or position set when not in the Diagram.
+        This issue affected temporary parts, such as Adornments created by Tools that were repeatedly added and removed from the Diagram.
       </li>
       <li>
         Fixed ordering of links on a <a>Spot,TopSide</a> or <a>Spot,BottomSide</a> port when linking with a node to the right.
@@ -231,11 +255,19 @@
       </li>
       <li>
         Fixed the recording of model changes bound to a Part's <code>position</code> or <code>location</code>, where they may not have been recorded
-        in the undo manager when modifying the <code>position</code>, <code>location</code>, or <code>desiredSize</code>. This also fixes a regression from 2.1.14.
+        in the UndoManager when modifying the <code>position</code>, <code>location</code>, or <code>desiredSize</code>.
+        This also fixes a regression from 2.1.14.
       </li>
-      <li>Fixed <a>LinearGradient</a> painting when used as a <a>Shape.stroke</a>. This drawing issue was most apparent when the Shape's geometry was one-dimensional.</li>
-      <li>Fixed warning messages in Chrome about passive touch event listeners.</li>
-      <li>Fixed JumpOver and AvoidsNodes issues where ongoing animations might stop them from updating.</li>
+      <li>
+        Fixed <a>LinearGradient</a> painting when used as a <a>Shape.stroke</a>.
+        This drawing issue was most apparent when the Shape's geometry was one-dimensional.
+      </li>
+      <li>
+        Fixed warning messages in Chrome about passive touch event listeners.
+      </li>
+      <li>
+        Fixed JumpOver and AvoidsNodes issues where ongoing animations might stop them from updating.
+      </li>
     </ul>
 
     <h4 id="2.1.19">Changes for 2.1.19</h4>

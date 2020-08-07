@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.21
+ * Type definitions for GoJS v2.1.22
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11998,6 +11998,17 @@ export class Diagram {
      *   - **document:**
      *     An HTML Document, defaulting to `window.document` (or the root object in other contexts)
      *     This may be useful to set if you intend your Image or SVG to be opened in a new window.
+     *   - **callback:**
+     *     The function to call when an image is finished creation.
+     *     It has one argument, which is of the type specified by the value of the **returnType** or SVG DOM.
+     *     If provided, call the callback when finished instead of returning immediately. This can be useful if you need to wait for image assets to load.
+     *     This also respects the **callbackTimeout**.
+     *     This argument is necessary if the **returnType** is `"blob"`, however a callback can be used with any **returnType**.
+     *     See the <a href="../../samples/minimalBlob.html">Minimal Image Blob Download sample</a> for an example usage,
+     *     which also demonstrates downloading an image file without involving a web server.
+     *   - **callbackTimeout:**
+     *     If a **callback** is specified, the additional amount of time in milliseconds a call will wait before completeing. Right now, it will only wait if
+     *     image assets in the Diagram are not yet loaded. Default is 300 (milliseconds).
      *
      * Additional image-specific arguments (not for SVG):
      *   - **type:**
@@ -12010,16 +12021,6 @@ export class Diagram {
      *     The `"Image"` option returns an `HTMLImageElement` using `ImageData` as the `HTMLImageElement.src`.
      *     The `"blob"` option requires that the **callback** property is also defined.
      *     The default value is `"string"`, and unrecognized values will return a string.
-     *   - **callback:**
-     *     The function to call when an image is finished creation. It has one argument, which is of the type specified by the value of the **returnType**.
-     *     If provided, call the callback when finished instead of returning immediately. This can be useful if you need to wait for image assets to load.
-     *     This also respects the **callbackTimeout**.
-     *     This argument is necessary if the **returnType** is `"blob"`, however a callback can be used with any **returnType**.
-     *     See the <a href="../../samples/minimalBlob.html">Minimal Image Blob Download sample</a> for an example usage,
-     *     which also demonstrates downloading an image file without involving a web server.
-     *   - **callbackTimeout:**
-     *     If a **callback** is specified, the additional amount of time in milliseconds a call will wait before completeing. Right now, it will only wait if
-     *     image assets in the Diagram are not yet loaded. Default is 300 (milliseconds).
      *   - **details:**
      *     The optional details to pass to the HTMLCanvasElement's toDataURL function.
      *     If the type is `"image/jpeg"` then this can be a number from `0` to `1`, inclusive, describing the desired jpeg quality.
@@ -22549,13 +22550,6 @@ export class Model {
      */
     cloneDeep<T>(obj: T): T;
     /**
-     * Undocumented
-     * @param {Model} newmodel
-     * @param {string=} classname for the written model, defaults to the name of the class of the model
-     * @return {string}
-     */
-    computeJsonDifference(newmodel: Model, classname?: string): string;
-    /**
      * Produce a JSON-format string representing the changes in the most recent Transaction.
      * This writes out JSON for a model, but recording only changes in the given Transaction,
      * with the addition of the "incremental" property to mark it as different from a complete model.
@@ -23051,12 +23045,14 @@ export class Model {
      *
      * For node data objects that have the same key value, this makes calls to #setDataProperty
      * to update the existing node data object.
-     * For new keys, this calls #addNodeData on a copy of the data to add a new node to the model.
+     * For new keys, this calls #cloneDeep to copy the data and then #addNodeData to add a new node to the model.
      * For existing nodes that have keys that are not present in the given Array,
      * this calls #removeNodeData to remove the existing node from the model.
      *
      * This method is typically used when GoJS is being used within an application that is maintaining state
      * related to the diagram model. When state is updated, this method can be called to keep the GoJS model synchronized.
+     * Any updates to the data should use new references since this method will use reference equality to check
+     * if a node data object needs to be updated.
      *
      * This method does not conduct a transaction.
      * @param {Array.<ObjectData>} arr
@@ -24272,12 +24268,14 @@ export class GraphLinksModel extends Model {
      *
      * For link data objects that have the same key value, this makes calls to #setDataProperty
      * to update the existing link data object.
-     * For new keys, this calls #addLinkData on a copy of the data to add a new link to the model.
+     * For new keys, this calls #cloneDeep to copy the data and then #addLinkData to add a new link to the model.
      * For existing links that have keys that are not present in the given Array,
      * this calls #removeLinkData to remove the existing link from the model.
      *
      * This method is typically used when GoJS is being used within an application that is maintaining state
      * related to the diagram model. When state is updated, this method can be called to keep the GoJS model synchronized.
+     * Any updates to the data should use new references since this method will use reference equality to check
+     * if a link data object needs to be updated.
      *
      * This method does not conduct a transaction.
      * @param {Array.<ObjectData>} arr

@@ -10,63 +10,65 @@
 </head>
 <body onload="goIntro()">
 <div id="container" class="container-fluid">
-<div id="content">
-<h1>Using GoJS with Node.js</h1>
+  <div id="content">
+    <h1>Using GoJS with Node.js</h1>
 
-<p>
-  As of 2.0, GoJS can be used in DOM-less contexts like Node.js. However there are some considerations:
-  <ul>
-    <li>Since there is no Diagram DIV, you must instead set the <a>Diagram.viewSize</a> property.
-      This affects all the same values as the DIV size, like Diagram.position and layout results from layouts that are viewport-sized.</li>
-    <li>Cannot measure go.Pictures, you must set a <a>GraphObject.desiredSize</a> instead.</li>
-    <li>Cannot measure go.TextBlocks accurately, you should set a <a>GraphObject.desiredSize</a> instead.</li></li>
-  </ul>
-</p>
+    <p>
+      As of 2.0, GoJS can be used in DOM-less contexts like Node.js. However there are some considerations:
+      <ul>
+        <li>
+          Since there is no Diagram DIV, you must instead set the <a>Diagram.viewSize</a> property.
+          This affects all the same values as the DIV size, like Diagram.position and layout results from layouts that are viewport-sized.
+        </li>
+        <li>Cannot measure go.Pictures, you must set a <a>GraphObject.desiredSize</a> instead.</li>
+        <li>Cannot measure go.TextBlocks accurately, you should set a <a>GraphObject.desiredSize</a> instead.</li></li>
+      </ul>
+    </p>
 
-<p>
-  For server-side operations that need to measure Pictures or TextBlocks, you should consider using a headless browser with Node.
-  <a href="serverSideImages.html">Click here for examples using Node with Puppeteer (headless Chrome)</a>.
-</p>
+    <p>
+      For server-side operations that need to measure Pictures or TextBlocks, you should consider using a headless browser with Node.
+      <a href="serverSideImages.html">Click here for examples using Node with Puppeteer (headless Chrome)</a>.
+    </p>
 
-<h2 id="NodeJSExample">Node.js example</h2>
+    <h2 id="NodeJSExample">Node.js example</h2>
 
-<p>
-If you saved the following JavaScript as <code>nodescript.js</code> and run it with node (<code>node nodescript.js</code>),
-it will output Model JSON results in the console, which include the locations of laid-out Nodes. You can use Node.js
-in this way to do server-side operations like large layouts, and then send the JSON to the client.
-</p>
+    <p>
+      If you saved the following JavaScript as <code>nodescript.js</code> and run it with node (<code>node nodescript.js</code>),
+      it will output Model JSON results in the console, which include the locations of laid-out Nodes. You can use Node.js
+      in this way to do server-side operations like large layouts, and then send the JSON to the client.
+    </p>
 
 <pre class="lang-js">
-// This example loads the GoJS library, creates a Diagram with a layout and prints the JSON results,
+// nodescript.js
+// This example loads the GoJS library, creates a Diagram with a layout and prints the JSON results.
 
-// Reference GoJS. This assumes its in the same directory as this script:
-require('./go.js');
+// Load GoJS.  This assumes using require and CommonJS:
+require("gojs");
 
-var $ = go.GraphObject.make;  // for conciseness in defining templates
+const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-myDiagram = $(go.Diagram, '', // No DIV
-              {
-                viewSize: new go.Size(400,400), // Set this property in DOM-less environments
-                layout: $(go.LayeredDigraphLayout),
-                'animationManager.isEnabled': false
-              });
+const myDiagram =
+  $(go.Diagram, '', // No DOM, so there can be no DIV!
+    {
+      viewSize: new go.Size(400,400), // Set this property in DOM-less environments
+      layout: $(go.LayeredDigraphLayout)
+    });
 
-// define a simple Node template
 myDiagram.nodeTemplate =
   $(go.Node, 'Auto',
-    new go.Binding('location', 'loc', go.Point.Parse).makeTwoWay(go.Point.Stringify),
+    // specify the size of the node rather than measuring the size of the text
+    { width: 80, height: 40 },
+    // automatically save the Node.location to the node's data object
+    new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
     $(go.Shape, 'RoundedRectangle', { strokeWidth: 0},
-      // Shape.fill is bound to Node.data.color
       new go.Binding('fill', 'color')),
     $(go.TextBlock,
-      { margin: 8 },  // some room around the text
-      // TextBlock.text is bound to Node.data.key
       new go.Binding('text', 'key'))
   );
 
 // After the layout, output results:
 myDiagram.addDiagramListener('InitialLayoutCompleted', function() {
-  console.log(myDiagram.model.toJSON());
+  console.log(myDiagram.model.toJson());
 });
 
 // load a model:
@@ -80,16 +82,26 @@ myDiagram.model = new go.GraphLinksModel(
 [
   { from: 'Alpha', to: 'Beta' },
   { from: 'Alpha', to: 'Gamma' },
-  { from: 'Beta', to: 'Beta' },
   { from: 'Gamma', to: 'Delta' },
   { from: 'Delta', to: 'Alpha' }
 ]);
-
 </pre>
 
+<p>
+  Alternatively, if your code is saved as <code>nodescript.mjs</code> or your project is of <code>"type": "module"</code>,
+  you can use GoJS as an ES6 module:
+</p>
+<pre class="lang-js">
+// nodescript.mjs
+// This example loads the GoJS library, creates a Diagram with a layout and prints the JSON results.
 
+// Load GoJS.  This assumes using import and ES6 modules:
+import * as go from "gojs/release/go.mjs";
 
-</div>
+const $ = go.GraphObject.make;
+. . .
+</pre>
+  </div>
 </div>
 </body>
 </html>

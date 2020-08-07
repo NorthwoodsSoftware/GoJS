@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 
 /**
  * A custom LayeredDigraphLayout that knows about "lanes"
@@ -48,7 +48,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
   private _layers: Array<Array<go.LayeredDigraphVertex>> = [[]];
   private _neededSpaces: Array<number> = [];
 
-  
+
   /**
    * Gets or sets the name of the data property that holds the string which is the name of the lane that the node should be in.
    * The default value is "lane".
@@ -151,7 +151,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
 
   /**
    * @hidden
-   * @param coll 
+   * @param coll
    */
   doLayout(coll: (go.Diagram | go.Group | go.Iterable<go.Part>)): void {
     this.lanePositions.clear();  // lane names --> start columns, left to right
@@ -168,8 +168,8 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
 
   /**
    * @hidden
-   * @param v 
-   * @param topleft 
+   * @param v
+   * @param topleft
    */
   nodeMinLayerSpace(v: go.LayeredDigraphVertex, topleft: boolean): number {
     if (!this._neededSpaces) this._neededSpaces = this.computeNeededLayerSpaces(this.network as go.LayeredDigraphNetwork);
@@ -439,7 +439,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
 
   /**
    * Return the minimum lane width, in columns
-   * @param lane 
+   * @param lane
    */
   public computeMinLaneWidth(lane: string): number { return 0; }
 

@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.21 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.21<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.22 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.22<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Diagram</h1>
@@ -4656,6 +4656,17 @@ DerivedClass.prototype.someMethod = ...;</code></pre>
 											<li><strong>document:</strong>
 												An HTML Document, defaulting to <code>window.document</code> (or the root object in other contexts)
 											This may be useful to set if you intend your Image or SVG to be opened in a new window.</li>
+											<li><strong>callback:</strong>
+												The function to call when an image is finished creation.
+												It has one argument, which is of the type specified by the value of the <strong>returnType</strong> or SVG DOM.
+												If provided, call the callback when finished instead of returning immediately. This can be useful if you need to wait for image assets to load.
+												This also respects the <strong>callbackTimeout</strong>.
+												This argument is necessary if the <strong>returnType</strong> is <code>&quot;blob&quot;</code>, however a callback can be used with any <strong>returnType</strong>.
+												See the <a href="../../samples/minimalBlob.html">Minimal Image Blob Download sample</a> for an example usage,
+											which also demonstrates downloading an image file without involving a web server.</li>
+											<li><strong>callbackTimeout:</strong>
+												If a <strong>callback</strong> is specified, the additional amount of time in milliseconds a call will wait before completeing. Right now, it will only wait if
+											image assets in the Diagram are not yet loaded. Default is 300 (milliseconds).</li>
 										</ul>
 										<p>Additional image-specific arguments (not for SVG):</p>
 										<ul>
@@ -4669,16 +4680,6 @@ DerivedClass.prototype.someMethod = ...;</code></pre>
 												The <code>&quot;Image&quot;</code> option returns an <code>HTMLImageElement</code> using <code>ImageData</code> as the <code>HTMLImageElement.src</code>.
 												The <code>&quot;blob&quot;</code> option requires that the <strong>callback</strong> property is also defined.
 											The default value is <code>&quot;string&quot;</code>, and unrecognized values will return a string.</li>
-											<li><strong>callback:</strong>
-												The function to call when an image is finished creation. It has one argument, which is of the type specified by the value of the <strong>returnType</strong>.
-												If provided, call the callback when finished instead of returning immediately. This can be useful if you need to wait for image assets to load.
-												This also respects the <strong>callbackTimeout</strong>.
-												This argument is necessary if the <strong>returnType</strong> is <code>&quot;blob&quot;</code>, however a callback can be used with any <strong>returnType</strong>.
-												See the <a href="../../samples/minimalBlob.html">Minimal Image Blob Download sample</a> for an example usage,
-											which also demonstrates downloading an image file without involving a web server.</li>
-											<li><strong>callbackTimeout:</strong>
-												If a <strong>callback</strong> is specified, the additional amount of time in milliseconds a call will wait before completeing. Right now, it will only wait if
-											image assets in the Diagram are not yet loaded. Default is 300 (milliseconds).</li>
 											<li><strong>details:</strong>
 												The optional details to pass to the HTMLCanvasElement&#39;s toDataURL function.
 											If the type is <code>&quot;image/jpeg&quot;</code> then this can be a number from <code>0</code> to <code>1</code>, inclusive, describing the desired jpeg quality.</li>

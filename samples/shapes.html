@@ -22,14 +22,6 @@
             padding: new go.Margin(5, 5, 25, 5) // to see the names of shapes on the bottom row
           });
 
-      function mouseEnter(e, obj) {
-        obj.isHighlighted = true;
-      };
-
-      function mouseLeave(e, obj) {
-        obj.isHighlighted = false;
-      };
-
       // Names of the built in shapes, which we will color green instead of pink.
       // The pinks shapes are instead defined in the "../extensions/Figures.js" file.
       var builtIn = ["Rectangle", "Square", "RoundedRectangle", "Border", "Ellipse", "Circle", "TriangleRight", "TriangleDown", "TriangleLeft", "TriangleUp", "Triangle", "Diamond", "LineH", "LineV", "None", "BarH", "BarV", "MinusLine", "PlusLine", "XLine"];
@@ -37,12 +29,11 @@
         return builtIn.indexOf(shapeName) >= 0;
       }
 
-
       myDiagram.nodeTemplate =
         $(go.Node, "Vertical",
           {
-            mouseEnter: mouseEnter,
-            mouseLeave: mouseLeave,
+            mouseEnter: function(e, node) { node.isHighlighted = true; },
+            mouseLeave: function(e, node) { node.isHighlighted = false; },
             locationSpot: go.Spot.Center,  // the location is the center of the Shape
             locationObjectName: "SHAPE",
             selectionAdorned: false,  // no selection handle when selected

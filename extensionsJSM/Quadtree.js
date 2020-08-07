@@ -1,7 +1,7 @@
 /*
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 /**
  * @hidden
  */

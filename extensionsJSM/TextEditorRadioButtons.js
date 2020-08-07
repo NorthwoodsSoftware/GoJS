@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 // HTML + JavaScript text editor menu, using HTML radio inputs and HTMLInfo.
 // This file exposes one instance of HTMLInfo, window.TextEditorRadioButtons
 // see /samples/customTextEditingTool.html

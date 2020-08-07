@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go-module.js';
+import * as go from '../release/go.mjs';
 /**
  * The SectorReshapingTool class lets the user interactively modify the angles of a "pie"-shaped sector of a circle.
  * When a node is selected, this shows two handles for changing the angles of the sides of the sector and one handle for changing the radius.
