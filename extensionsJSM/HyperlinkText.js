@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 // A "HyperlinkText" is either a TextBlock or a Panel containing a TextBlock that when clicked
 // opens a new browser window with a given or computed URL.
 // When the user's mouse passes over a "HyperlinkText", the text is underlined.

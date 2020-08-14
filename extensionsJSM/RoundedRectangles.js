@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 // This file holds the definitions of two useful figures: "RoundedTopRectangle" and "RoundedBottomRectangle".
 // These are demonstrated at ../samples/twoHalves.html and ../samples/roundedGroups.html.
 go.Shape.defineFigureGenerator('RoundedTopRectangle', function (shape, w, h) {

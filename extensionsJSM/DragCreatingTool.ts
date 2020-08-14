@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 /**
  * The DragCreatingTool lets the user create a new node by dragging in the background

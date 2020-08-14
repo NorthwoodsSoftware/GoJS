@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 /**
  * Given a root {@link Node}, this arranges connected nodes in concentric rings,
  * layered by the minimum link distance from the root.

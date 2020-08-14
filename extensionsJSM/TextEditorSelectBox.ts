@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 // HTML + JavaScript text editor using an HTML Select Element and HTMLInfo.
 // This file exposes one instance of HTMLInfo, window.TextEditorSelectBox

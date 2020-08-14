@@ -13,7 +13,7 @@
 // just those definitions into your own code.  Do not load this file unless you really want to
 // define a lot of code that your app does not use and will not get garbage-collected.
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 // The following functions and variables are used throughout this file:
 

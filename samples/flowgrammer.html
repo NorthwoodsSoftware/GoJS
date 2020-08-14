@@ -6,524 +6,595 @@
   <meta name="description" content="An editor for a flowchart-like diagram with a restricted syntax -- add nodes by dropping them onto existing nodes or links." />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
-
-  <style>
-    /* Use a Flexbox to make the Palette/Overview/Diagram responsive and size things relatively */
-    #myFlexDiv {
-      display: -webkit-flex;
-      display: flex;
-      width: 100%;
-      height: 700px;
-    }
-
-    #myPODiv {
-      display: -webkit-flex;
-      display: flex;
-    }
-
-    @media (min-width: 768px) {
-      #myFlexDiv {
-        flex-flow: row;
-      }
-
-      #myPODiv {
-        width: 105px;
-        height: 100%;
-        margin-right: 10px;
-        flex-flow: column;
-      }
-
-      #myPaletteDiv {
-        height: 75%;
-      }
-
-      #myOverviewDiv {
-        margin-top: 3px;
-        flex: 1;
-      }
-
-      #myDiagramDiv {
-        flex: 1;
-      }
-    }
-
-    @media (max-width: 767px) {
-      #myFlexDiv {
-        flex-flow: column;
-        align-items: center;
-      }
-
-      #myPODiv {
-        width: 90%;
-        height: 105px;
-        margin-bottom: 10px;
-        flex-flow: row;
-      }
-
-      #myPaletteDiv {
-        width: 75%;
-      }
-
-      #myOverviewDiv {
-        margin-left: 3px;
-        flex: 1;
-      }
-
-      #myDiagramDiv {
-        width: 90%;
-        flex: 1;
-      }
-    }
-  </style>
   <script src="../release/go.js"></script>
-  <script src="../extensions/Figures.js"></script>
+  <script src="../extensions/ParallelLayout.js"></script>
   <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-  <script id="code">
+  <script>
+    // two custom figures, for "For Each" loops
+    go.Shape.defineFigureGenerator("ForEach", function(shape, w, h) {
+      var param1 = shape ? shape.parameter1 : NaN; // length of triangular area in direction that it is pointing
+      if (isNaN(param1)) param1 = 10;
+      var d = Math.min(h/2, param1);
+      var geo = new go.Geometry();
+      var fig = new go.PathFigure(w, h-d, true);
+      geo.add(fig);
+      fig.add(new go.PathSegment(go.PathSegment.Line, w/2, h));
+      fig.add(new go.PathSegment(go.PathSegment.Line, 0, h-d));
+      fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0));
+      fig.add(new go.PathSegment(go.PathSegment.Line, w, 0).close());
+      geo.spot1 = go.Spot.TopLeft;
+      geo.spot2 = new go.Spot(1, 1, 0, Math.min(-d+2, 0));
+      return geo;
+    });
+
+    go.Shape.defineFigureGenerator("EndForEach", function(shape, w, h) {
+      var param1 = shape ? shape.parameter1 : NaN; // length of triangular area in direction that it is pointing
+      if (isNaN(param1)) param1 = 10;
+      var d = Math.min(h/2, param1);
+      var geo = new go.Geometry();
+      var fig = new go.PathFigure(w, d, true);
+      geo.add(fig);
+      fig.add(new go.PathSegment(go.PathSegment.Line, w, h));
+      fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
+      fig.add(new go.PathSegment(go.PathSegment.Line, 0, d));
+      fig.add(new go.PathSegment(go.PathSegment.Line, w/2, 0).close());
+      geo.spot1 = new go.Spot(0, 0, 0, Math.min(d, 0));
+      geo.spot2 = go.Spot.BottomRight;
+      return geo;
+    });
+
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+      var $ = go.GraphObject.make;
 
+      // initialize main Diagram
       myDiagram =
-        $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+        $(go.Diagram, "myDiagramDiv",
           {
-            initialContentAlignment: go.Spot.Top,
-            // make the layout a vertical Layered Digraph- links "flow" downward
-            layout:
-              $(go.LayeredDigraphLayout,
-                { direction: 90, layerSpacing: 6, columnSpacing: 6, setsPortSpots: false }),
-            maxSelectionCount: 1,
+            allowMove: false,
             allowCopy: false,
-            "textEditingTool.starting": go.TextEditingTool.SingleClick,
-            "SelectionDeleting": function(e) {
-              // assume maxSelectionCount === 1
-              exciseNode(e.subject.first());  // defined below
+            "SelectionDeleting": function(e) {  // before a delete happens
+              // handle deletions by excising the node and reconnecting the link where the node had been
+              new go.List(e.diagram.selection).each(function(part) { deletingNode(part); });
             },
-            "SelectionDeleted": function(e) {
-              deleteDisconnectedNodes(e.diagram);  // defined below
+            layout: $(ParallelLayout, { angle: 90, layerSpacing: 21, nodeSpacing: 30 }),
+            "ExternalObjectsDropped": function(e) {  // handle drops from the Palette
+              var newnode = e.diagram.selection.first();
+              if (!newnode) return;
+              if (!(newnode instanceof go.Group) && newnode.linksConnected.count === 0) {
+                // when the selection is dropped but not hooked up to the rest of the graph, delete it
+                e.diagram.removeParts(e.diagram.selection, false);
+              } else {
+                e.diagram.commandHandler.scrollToPart(newnode);
+              }
             },
             "undoManager.isEnabled": true
           });
 
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("SaveButton");
-        if (button) button.disabled = !e.diagram.isModified;
-        var idx = document.title.indexOf("*");
-        if (e.diagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.substr(0, idx);
-        }
-      });
-
-      // Parts dragged in from the Palette will be partly translucent
+      // dragged nodes are translucent so that the user can see highlighting of links and nodes
       myDiagram.findLayer("Tool").opacity = 0.5;
 
-      // Define a gradient brush for each Node type, shared by the Diagram and Palette
-      var greenBrush = $(go.Brush, "Linear", { 0: "rgb(200,255,200)", .67: "rgb(15,160,15)" });
-      var redBrush = $(go.Brush, "Linear", { 0: "rgb(255,240,240)", .67: "rgb(255,0,0)" });
-      var blueBrush = $(go.Brush, "Linear", { 0: "rgb(250,250,255)", .67: "rgb(90,125,200)" });
-      var yellowBrush = $(go.Brush, "Linear", { 0: "rgb(255,255,240)", .67: "rgb(190,200,10)" });
-      var pinkBrush = $(go.Brush, "Linear", { 0: "rgb(255,250,250)", .67: "rgb(255,180,200)" });
-      var lightBrush = $(go.Brush, "Linear", { 0: "rgb(240,240,250)", .67: "rgb(150,200,250)" });
-
-      // Define common properties and bindings for most kinds of nodes
+      // some common styles for most of the node templates
       function nodeStyle() {
-        return [new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        {
+        return {
+          deletable: false,
           locationSpot: go.Spot.Center,
-          toSpot: go.Spot.Top,
-          fromSpot: go.Spot.NotTopSide,  // port properties on the node
-          portSpreading: go.Node.SpreadingNone,
-          layoutConditions: go.Part.LayoutAdded | go.Part.LayoutRemoved,
-          // If a node from the pallette is dragged over this node, its outline will turn green
-          mouseDragEnter: function(e, node) { node.isHighlighted = true; },
-          mouseDragLeave: function(e, node) { node.isHighlighted = false; },
-          // A node dropped onto this will draw a link from itself to this node
+          mouseDragEnter: function(e, node) {
+            var sh = node.findObject("SHAPE");
+            if (sh) sh.fill = "lime";
+          },
+          mouseDragLeave: function(e, node) {
+            var sh = node.findObject("SHAPE");
+            if (sh) sh.fill = "white";
+          },
           mouseDrop: dropOntoNode
-        }];
+        };
       }
 
       function shapeStyle() {
+        return { name: "SHAPE", fill: "white" };
+      }
+
+      function textStyle() {
         return [
-          { stroke: "rgb(63,63,63)", strokeWidth: 2 },
-          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "chartreuse" : "rgb(63,63,63)"; }).ofObject(),
-          new go.Binding("strokeWidth", "isHighlighted", function(h) { return h ? 4 : 2; }).ofObject()
+          { name: "TEXTBLOCK", textAlign: "center", editable: true },
+          new go.Binding("text").makeTwoWay()
         ];
       }
 
-      // Define Node templates for various categories of nodes
+      // define the Node templates
+      myDiagram.nodeTemplate =  // regular action steps
+        $(go.Node, "Auto", nodeStyle(),
+          { deletable: true },  // override nodeStyle()
+          { minSize: new go.Size(10, 20) },
+          $(go.Shape, shapeStyle()),
+          $(go.TextBlock, textStyle(),
+            { margin: 4 })
+        );
+
       myDiagram.nodeTemplateMap.add("Start",
-        // the name of the Node category
-        $(go.Node, "Auto",
-          {
-            locationSpot: go.Spot.Center,
-            deletable: false  // do not allow this node to be removed by the user
-          },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Shape, "Ellipse",
-            {
-              fill: greenBrush,
-              strokeWidth: 2,
-              stroke: "green",
-              width: 40,
-              height: 40
-            }),
-          $(go.TextBlock, "Start")
+        $(go.Node, "Auto", nodeStyle(),
+          { desiredSize: new go.Size(32, 32) },
+          $(go.Shape, "Circle", shapeStyle()),
+          $(go.TextBlock, textStyle(), "Start")
         ));
 
       myDiagram.nodeTemplateMap.add("End",
-        $(go.Node, "Auto", nodeStyle(),  // use common properties and bindings
+        $(go.Node, "Auto", nodeStyle(),
+          { desiredSize: new go.Size(32, 32) },
+          $(go.Shape, "Circle", shapeStyle()),
+          $(go.TextBlock, textStyle(), "End")
+        ));
+
+      myDiagram.nodeTemplateMap.add("For",
+        $(go.Node, "Auto", nodeStyle(),
+          { minSize: new go.Size(64, 32) },
+          $(go.Shape, "ForEach", shapeStyle()),
+          $(go.TextBlock, textStyle(), "For Each",
+            { margin: 4 })
+        ));
+
+      myDiagram.nodeTemplateMap.add("EndFor",
+        $(go.Node, nodeStyle(),
+          $(go.Shape, "EndForEach", shapeStyle(),
+            { desiredSize: new go.Size(4, 4) })
+        ));
+
+      myDiagram.nodeTemplateMap.add("While",
+        $(go.Node, "Auto", nodeStyle(),
+          { minSize: new go.Size(32, 32) },
+          $(go.Shape, "ForEach", shapeStyle(),
+            { angle: -90, spot2: new go.Spot(1, 1, -6, 0) }),
+          $(go.TextBlock, textStyle(), "While",
+            { margin: 4 })
+        ));
+
+      myDiagram.nodeTemplateMap.add("EndWhile",
+        $(go.Node, nodeStyle(),
+          $(go.Shape, "Circle", shapeStyle(),
+            { desiredSize: new go.Size(4, 4) })
+        ));
+
+      myDiagram.nodeTemplateMap.add("If",
+        $(go.Node, "Auto", nodeStyle(),
+          { minSize: new go.Size(64, 32) },
+          $(go.Shape, "Diamond", shapeStyle()),
+          $(go.TextBlock, textStyle(), "If")
+        ));
+
+      myDiagram.nodeTemplateMap.add("EndIf",
+        $(go.Node, nodeStyle(),
+          $(go.Shape, "Diamond", shapeStyle(),
+            { desiredSize: new go.Size(4, 4) })
+        ));
+
+      myDiagram.nodeTemplateMap.add("Switch",
+        $(go.Node, "Auto", nodeStyle(),
+          { minSize: new go.Size(64, 32) },
+          $(go.Shape, "TriangleUp", shapeStyle()),
+          $(go.TextBlock, textStyle(), "Switch")
+        ));
+
+      myDiagram.nodeTemplateMap.add("Merge",
+        $(go.Node, nodeStyle(),
+          $(go.Shape, "TriangleDown", shapeStyle(),
+            { desiredSize: new go.Size(4, 4) })
+        ));
+
+      function groupColor(cat) {
+        switch (cat) {
+          case "If": return "rgba(255,0,0,0.05)";
+          case "For": return "rgba(0,255,0,0.05)";
+          case "While": return "rgba(0,0,255,0.05)";
+          default: return "rgba(0,0,0,0.05)";
+        }
+      }
+
+      // define the Group template, required but unseen
+      myDiagram.groupTemplate =
+        $(go.Group, "Auto",
           {
-            deletable: false,  // do not allow this node to be removed by the user
-            toSpot: go.Spot.NotBottomSide // port properties on the node
+            locationSpot: go.Spot.Center,
+            avoidableMargin: 10,  // extra space on the sides
+            layout: $(ParallelLayout, { angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
+            mouseDragEnter: function(e, group) {
+              var sh = group.findObject("SHAPE");
+              if (sh) { sh.width = Math.max(20, group.actualBounds.width-20); sh.stroke = "lime"; }
+            },
+            mouseDragLeave: function(e, group) {
+              var sh = group.findObject("SHAPE");
+              if (sh) sh.stroke = null;
+            },
+            mouseDrop: dropOntoNode
           },
-          $(go.Shape, "StopSign", shapeStyle(),
-            { fill: redBrush, width: 40, height: 40 }),
-          $(go.TextBlock, "End")
-        ));
-
-      myDiagram.nodeTemplateMap.add("Action",
-        $(go.Node, "Auto", nodeStyle(),
-          { fromSpot: go.Spot.Bottom },  // override fromSpot of nodeStyle()
-          $(go.Shape, "Rectangle", shapeStyle(),
-            { fill: yellowBrush }),
-          $(go.TextBlock,
-            { margin: 5, editable: true },
-            // user can edit node text by clicking on it
-            new go.Binding("text", "text").makeTwoWay())
-        ));
-
-      myDiagram.nodeTemplateMap.add("Effect",
-        $(go.Node, "Auto", nodeStyle(),
-          { fromSpot: go.Spot.Bottom },  // override fromSpot of nodeStyle()
-          $(go.Shape, "Rectangle", shapeStyle(),
-            { fill: blueBrush }),
-          $(go.TextBlock,
-            { margin: 5, editable: true },
-            new go.Binding("text", "text").makeTwoWay())
-        ));
-
-      myDiagram.nodeTemplateMap.add("Output",
-        $(go.Node, "Auto", nodeStyle(),
-          $(go.Shape, "RoundedRectangle", shapeStyle(),
-            { fill: pinkBrush }),
-          $(go.TextBlock,
-            { margin: 5, editable: true },
-            new go.Binding("text", "text").makeTwoWay())
-        ));
-
-      myDiagram.nodeTemplateMap.add("Condition",
-        $(go.Node, "Spot", nodeStyle(),
-          $(go.Panel, "Auto",
-            $(go.Shape, "Diamond", shapeStyle(),
-              { fill: lightBrush }),
-            $(go.TextBlock,
-              { margin: 5, editable: true },
-              new go.Binding("text", "text").makeTwoWay())
-          ),
-          $(go.Shape, "Circle",
+          $(go.Shape, "RoundedRectangle",
+            { fill: "rgba(0,0,0,0.05)", strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight },
+            new go.Binding("fill", "cat", groupColor)),
+          $(go.Placeholder),
+          $(go.Shape, "LineH",
             {
-              portId: "Left", fromSpot: go.Spot.Left,
-              alignment: go.Spot.Left, alignmentFocus: go.Spot.Left,
-              stroke: null, fill: null, width: 1, height: 1
-            }),
-          $(go.Shape, "Circle",
-            {
-              portId: "Right", fromSpot: go.Spot.Right,
-              alignment: go.Spot.Right, alignmentFocus: go.Spot.Right,
-              stroke: null, fill: null, width: 1, height: 1
+              name: "SHAPE",
+              height: 0, alignment: go.Spot.Bottom,
+              stroke: null, strokeWidth: 8
             })
-        ));
+        );
 
-      // Define the link template
       myDiagram.linkTemplate =
         $(go.Link,
           {
-            routing: go.Link.AvoidsNodes,
-            curve: go.Link.JumpOver,
-            corner: 5,
-            toShortLength: 4,
             selectable: false,
-            layoutConditions: go.Part.LayoutAdded | go.Part.LayoutRemoved,
-            // links cannot be selected, so they cannot be deleted
+            deletable: false,
+            routing: go.Link.Orthogonal, corner: 5,
+            toShortLength: 2,
+            // links cannot be deleted
             // If a node from the Palette is dragged over this node, its outline will turn green
-            mouseDragEnter: function(e, link) { link.isHighlighted = true; },
+            mouseDragEnter: function(e, link) { if (!isLoopBack(link)) link.isHighlighted = true; },
             mouseDragLeave: function(e, link) { link.isHighlighted = false; },
             // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
             mouseDrop: dropOntoLink
           },
-          $(go.Shape, shapeStyle()),
-          $(go.Shape,
-            { toArrow: "standard", stroke: null, fill: "black" }),
-          $(go.Panel,  // link label for conditionals, normally not visible
-            { visible: false, name: "LABEL", segmentIndex: 1, segmentFraction: 0.5 },
-            new go.Binding("visible", "", function(link) { return link.fromNode.category === "Condition" && !!link.data.text; }).ofObject(),
-            new go.Binding("segmentOffset", "side", function(s) { return s === "Left" ? new go.Point(0, 14) : new go.Point(0, -14); }),
-            $(go.TextBlock,
-              {
-                textAlign: "center",
-                font: "10pt sans-serif",
-                margin: 2,
-                editable: true
-              },
-              new go.Binding("text").makeTwoWay())
-          )
+          $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 8 },
+            new go.Binding("stroke", "isHighlighted", function(h) { return h ? "lime" : "transparent"; }).ofObject()),
+          $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 1.5 }),
+          $(go.Shape, { toArrow: "Standard", strokeWidth: 0 }),
+          // $(go.TextBlock, { segmentIndex: -2, segmentFraction: 0.75, editable: true },
+          //   new go.Binding("text").makeTwoWay(),
+          //   new go.Binding("background", "text", function(t) { return t ? "white" : null; }))
         );
 
-      myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-        var newnode = e.diagram.selection.first();
-        if (newnode.linksConnected.count === 0) {
-          // when the selection is dropped but not hooked up to the rest of the graph, delete it
-          e.diagram.commandHandler.deleteSelection();
-        }
-      });
+      function isLoopBack(link) {
+        if (!link) return false;
+        if (link.fromNode.containingGroup !== link.toNode.containingGroup) return false;
+        var cat = link.fromNode.category;
+        return (cat === "EndFor" || cat === "EndWhile" || cat === "EndIf");
+      }
 
+      // A node dropped onto a Merge node is spliced into a link coming into that node;
+      // otherwise it is spliced into a link that is coming out of that node.
+      function dropOntoNode(e, oldnode) {
+        if (oldnode instanceof go.Group) {
+          var merge = oldnode.layout.mergeNode;
+          if (merge) {
+            var it = merge.findLinksOutOf();
+            while (it.next()) {
+              var link = it.value;
+              if (link.fromNode.containingGroup !== link.toNode.containingGroup) {
+                dropOntoLink(e, link);
+                break;
+              }
+            }
+          }
+        } else if (oldnode instanceof go.Node) {
+          var cat = oldnode.category;
+          if (cat === "Merge" || cat === "End" || cat === "EndFor" || cat === "EndWhile" || cat === "EndIf") {
+            var link = oldnode.findLinksInto().first();
+            if (link) dropOntoLink(e, link);
+          } else {
+            var link = oldnode.findLinksOutOf().first();
+            if (link) dropOntoLink(e, link);
+          }
+        }
+      }
+
+      // Splice a node into a link.
+      // If the new node is of category "For" or "While" or "If", create a Group and splice it in,
+      // and add the new node to that group, and add any other desired nodes and links to that group.
+      function dropOntoLink(e, oldlink) {
+        if (!(oldlink instanceof go.Link)) return;
+        var diagram = e.diagram;
+        var newnode = diagram.selection.first();
+        if (!(newnode instanceof go.Node)) return;
+        if (!newnode.isTopLevel) return;
+        if (isLoopBack(oldlink)) {
+          // can't add nodes into links going back to the "For" node
+          diagram.remove(newnode);
+          return;
+        }
+
+        var fromnode = oldlink.fromNode;
+        var tonode = oldlink.toNode;
+        if (newnode.category === "") {  // add simple step into chain of actions
+          newnode.containingGroup = oldlink.containingGroup;
+          // Reconnect the existing link to the new node
+          oldlink.toNode = newnode;
+          // Then add links from the new node to the old node
+          if (newnode.category === "If") {
+            diagram.model.addLinkData({ from: newnode.key, to: tonode.key });
+            diagram.model.addLinkData({ from: newnode.key, to: tonode.key });
+          } else {
+            diagram.model.addLinkData({ from: newnode.key, to: tonode.key });
+          }
+        } else if (newnode.category === "For" || newnode.category === "While") {  // add loop group
+          // add group for loop
+          var groupdata = { isGroup: true, cat: newnode.category };
+          diagram.model.addNodeData(groupdata);
+          var group = diagram.findNodeForData(groupdata);
+          group.containingGroup = oldlink.containingGroup;
+          diagram.select(group);
+
+          newnode.containingGroup = group;
+
+          var enddata = { category: "End" + newnode.category };
+          diagram.model.addNodeData(enddata);
+          var endnode = diagram.findNodeForData(enddata);
+          endnode.containingGroup = group;
+          endnode.location = e.documentPoint;
+
+          diagram.model.addLinkData({ from: newnode.key, to: endnode.key });
+          diagram.model.addLinkData({ from: endnode.key, to: newnode.key });
+
+          // Reconnect the existing link to the new node
+          oldlink.toNode = newnode;
+          // Then add a link from the end node to the old node
+          diagram.model.addLinkData({ from: endnode.key, to: tonode.key });
+        } else if (newnode.category === "If") {  // add Conditional group
+          // add group for conditional
+          var groupdata = { isGroup: true, cat: newnode.category };
+          diagram.model.addNodeData(groupdata);
+          var group = diagram.findNodeForData(groupdata);
+          group.containingGroup = oldlink.containingGroup;
+          diagram.select(group);
+
+          newnode.containingGroup = group;
+
+          var enddata = { category: "EndIf" };
+          diagram.model.addNodeData(enddata);
+          var endnode = diagram.findNodeForData(enddata);
+          endnode.containingGroup = group;
+          endnode.location = e.documentPoint;
+
+          var truedata = { from: newnode.key, to: endnode.key, text: "true" };
+          diagram.model.addLinkData(truedata);
+          var truelink = diagram.findLinkForData(truedata);
+          var falsedata = { from: newnode.key, to: endnode.key, text: "false" };
+          diagram.model.addLinkData(falsedata);
+          var falselink = diagram.findLinkForData(falsedata);
+
+          // Reconnect the existing link to the new node
+          oldlink.toNode = newnode;
+          // Then add a link from the new node to the old node
+          diagram.model.addLinkData({ from: endnode.key, to: tonode.key });
+        } else if (newnode.category === "Switch") {  // add multi-way Switch group
+          // add group for loop
+          var groupdata = { isGroup: true, cat: newnode.category };
+          diagram.model.addNodeData(groupdata);
+          var group = diagram.findNodeForData(groupdata);
+          group.containingGroup = oldlink.containingGroup;
+          diagram.select(group);
+
+          newnode.containingGroup = group;
+
+          var enddata = { category: "Merge" };
+          diagram.model.addNodeData(enddata);
+          var endnode = diagram.findNodeForData(enddata);
+          endnode.containingGroup = group;
+          endnode.location = e.documentPoint;
+
+          var yesdata = { text: "yes,\ndo it" };
+          diagram.model.addNodeData(yesdata);
+          var yesnode = diagram.findNodeForData(yesdata);
+          yesnode.containingGroup = group;
+          yesnode.location = e.documentPoint;
+          diagram.model.addLinkData({ from: newnode.key, to: yesnode.key, text: "yes" });
+          diagram.model.addLinkData({ from: yesnode.key, to: endnode.key });
+
+          var nodata = { text: "no,\ndon't" };
+          diagram.model.addNodeData(nodata);
+          var nonode = diagram.findNodeForData(nodata);
+          nonode.containingGroup = group;
+          nonode.location = e.documentPoint;
+          diagram.model.addLinkData({ from: newnode.key, to: nonode.key, text: "no" });
+          diagram.model.addLinkData({ from: nonode.key, to: endnode.key });
+
+          var maybedata = { text: "??" };
+          diagram.model.addNodeData(maybedata);
+          var maybenode = diagram.findNodeForData(maybedata);
+          maybenode.containingGroup = group;
+          maybenode.location = e.documentPoint;
+          diagram.model.addLinkData({ from: newnode.key, to: maybenode.key, text: "maybe" });
+          diagram.model.addLinkData({ from: maybenode.key, to: endnode.key });
+
+          // Reconnect the existing link to the new node
+          oldlink.toNode = newnode;
+          // Then add a link from the end node to the old node
+          diagram.model.addLinkData({ from: endnode.key, to: tonode.key });
+        }
+        diagram.layoutDiagram(true);
+      }
+
+      function deletingNode(node) {  // excise node from the chain that it is in
+        if (!(node instanceof go.Node)) return;
+        if (node instanceof go.Group) {
+          var externals = node.findExternalLinksConnected();
+          var next = null;
+          externals.each(function(link) {
+            if (link.fromNode.isMemberOf(node)) next = link.toNode;
+          });
+          if (next) {
+            externals.each(function(link) {
+              if (link.toNode.isMemberOf(node)) link.toNode = next;
+            });
+          }
+        } else if (node.category === "") {
+          var next = node.findNodesOutOf().first();
+          if (next) {
+            new go.List(node.findLinksInto()).each(function(link) { link.toNode = next; });
+          }
+        }
+      }
 
       // initialize Palette
-      var myPalette =
-        $(go.Palette, "myPaletteDiv",  // refers to its DIV HTML element by id
+      myPalette =
+        $(go.Palette, "myPaletteDiv",
           {
-            layout: $(go.GridLayout),
-            maxSelectionCount: 1
+            maxSelectionCount: 1,
+            nodeTemplateMap: myDiagram.nodeTemplateMap,
+            model: new go.GraphLinksModel([
+              { text: "Action" },
+              { text: "For Each", category: "For" },
+              { text: "While", category: "While" },
+              { text: "If", category: "If" },
+              { text: "Switch", category: "Switch" }
+            ])
           });
 
-      // define simpler templates for the Palette than in the main Diagram
-      myPalette.nodeTemplateMap.add("Action",
-        $(go.Node, "Auto",
-          $(go.Shape, "Rectangle",
-            { fill: yellowBrush, strokeWidth: 2 }),
-          $(go.TextBlock,
-            { margin: 5 },
-            new go.Binding("text"))
-        ));
-      myPalette.nodeTemplateMap.add("Effect",
-        $(go.Node, "Auto",
-          $(go.Shape, "Rectangle",
-            { fill: blueBrush, strokeWidth: 2 }),
-          $(go.TextBlock,
-            { margin: 5 },
-            new go.Binding("text"))
-        ));
-      myPalette.nodeTemplateMap.add("Output",
-        $(go.Node, "Auto",
-          $(go.Shape, "RoundedRectangle",
-            { fill: pinkBrush, strokeWidth: 2 }),
-          $(go.TextBlock,
-            { margin: 5 },
-            new go.Binding("text"))
-        ));
-      myPalette.nodeTemplateMap.add("Condition",
-        $(go.Node, "Auto",
-          $(go.Shape, "Diamond",
-            { fill: lightBrush, strokeWidth: 2 }),
-          $(go.TextBlock,
-            { margin: 5 },
-            new go.Binding("text"))
-        ));
-
-      // add node data to the palette
-      myPalette.model.nodeDataArray = [
-        { key: "if1", category: "Condition", text: "if1" },
-        { key: "action1", category: "Action", text: "action1" },
-        { key: "action2", category: "Action", text: "action2" },
-        { key: "action3", category: "Action", text: "action3" },
-        { key: "effect1", category: "Effect", text: "effect1" },
-        { key: "effect2", category: "Effect", text: "effect2" },
-        { key: "effect3", category: "Effect", text: "effect3" },
-        { key: "output1", category: "Output", text: "output1" },
-        { key: "output2", category: "Output", text: "output2" }
-      ];
-
-
       // initialize Overview
-      var myOverview =
+      myOverview =
         $(go.Overview, "myOverviewDiv",
           {
             observed: myDiagram,
             contentAlignment: go.Spot.Center
           });
 
-      load();  // read model from textarea and initialize myDiagram
+      load();
     }
 
-    // Graph manipulation functions, to maintain the syntax of the diagram
-
-    function dropOntoNode(e, obj) {
-      var diagram = e.diagram;
-      var oldnode = obj.part;
-      if (oldnode.category === "Start") {
-        diagram.currentTool.doCancel();
-        return;
-      }
-      var newnode = diagram.selection.first();
-      if (!(newnode instanceof go.Node)) return;
-      if (newnode.linksConnected.count > 0) {
-        exciseNode(newnode);
-      }
-
-      if (newnode.category === "Effect" || newnode.category === "Action" || newnode.category === "Condition") {
-        // Take all links into oldnode and relink to newnode
-        var it = new go.List().addAll(oldnode.findLinksInto()).iterator;
-        while (it.next()) {
-          var link = it.value;
-          link.toNode = newnode;
-        }
-        // Then link newnode to oldnode
-        if (newnode.category === "Condition") {
-          diagram.model.addLinkData({ from: newnode.data.key, to: oldnode.data.key, text: "true", side: "Left" });
-          diagram.model.addLinkData({ from: newnode.data.key, to: oldnode.data.key, text: "false", side: "Right" });
-        } else {
-          diagram.model.addLinkData({ from: newnode.data.key, to: oldnode.data.key });
-        }
-      } else if (newnode.category === "Output") {
-        // Find the previous node and add a link from it; no links coming out of an "Output"
-        var prev = oldnode.findTreeParentNode();
-        if (prev !== null) {
-          if (prev.category === "Condition") {
-            diagram.model.addLinkData({ from: prev.data.key, to: newnode.data.key });
-          } else {
-            diagram.model.addLinkData({ from: prev.data.key, to: newnode.data.key });
-          }
-        }
-      }
-    }
-
-    function dropOntoLink(e, obj) {
-      var diagram = e.diagram;
-      var newnode = diagram.selection.first();
-      if (!(newnode instanceof go.Node)) return;
-      if (newnode.linksConnected.count > 0) {
-        exciseNode(newnode);
-      }
-
-      var oldlink = obj.part;
-      var fromnode = oldlink.fromNode;
-      var tonode = oldlink.toNode;
-      if (newnode.category === "Effect" || newnode.category === "Action" || newnode.category === "Condition") {
-        // Reconnect the existing link to the new node
-        oldlink.toNode = newnode;
-        // Then add links from the new node to the old node
-        if (newnode.category === "Condition") {
-          diagram.model.addLinkData({ from: newnode.data.key, to: tonode.data.key, text: "true", side: "Left" });
-          diagram.model.addLinkData({ from: newnode.data.key, to: tonode.data.key, text: "false", side: "Right" });
-        } else {
-          diagram.model.addLinkData({ from: newnode.data.key, to: tonode.data.key });
-        }
-      } else if (newnode.category === "Output") {
-        // Add a new link to the new node
-        if (fromnode.category === "Condition") {
-          diagram.model.addLinkData({ from: fromnode.data.key, to: newnode.data.key });
-        } else {
-          diagram.model.addLinkData({ from: fromnode.data.key, to: newnode.data.key });
-        }
-      }
-    }
-
-    // Draw links between the parent and children nodes of a node being deleted.
-    function exciseNode(node) {
-      if (node === null) return;
-      var linksOut = node.findLinksOutOf();
-      var to = null;
-      if (linksOut.count > 1) {
-        to = findMerge(node);
-      } else if (linksOut.count === 1) {  // if only one link out of the node to be deleted
-        to = linksOut.first().toNode;
-      }
-      if (to !== null) {
-        // now there is only a single output node to reconnect with
-        // for all links coming into the node to be deleted
-        var linksIn = new go.List().addAll(node.findLinksInto()).iterator;
-        while (linksIn.next()) {
-          var l = linksIn.value;  // reconnect all links going into deleted node
-          l.toNode = to;          // to that one destination node
-        }
-      } else {
-        node.diagram.removeParts(node.findLinksInto(), false);
-      }
-    }
-
-    // If there are multiple links going out of this node,
-    // return the node where the links merge back into one node, if any.
-    function findMerge(node) {
-      var it = node.findLinksOutOf();
-      if (it.count <= 1) return null;
-      node.diagram.nodes.each(function(n) { n._tag = 0; });
-      var i = 1;
-      while (it.next()) {
-        var n = walkDown(it.value.toNode, i);
-        if (n !== null) return n;
-        i++;
-      }
-      return null;
-    }
-
-    // Mark all downstream nodes, but return the first node found that was already marked
-    function walkDown(node, tag) {
-      var prev = node._tag;
-      if (prev !== 0 && prev !== tag) return node;
-      node._tag = tag;
-      if (prev === tag) return null;
-      var it = node.findNodesOutOf();
-      while (it.next()) {
-        var n = walkDown(it.value, tag);
-        if (n !== null) return n;
-      }
-      return null;
-    }
-
-    // Delete a Node if there are no Links coming into it, other than the "Start" Node.
-    function deleteDisconnectedNodes(diagram) {
-      var nodesToDelete = diagram.nodes.filter(function(n) { return n.category !== "Start" && n.findLinksInto().count === 0; });
-      if (nodesToDelete.count > 0) {
-        diagram.removeParts(nodesToDelete, false);
-        deleteDisconnectedNodes(diagram);
-      }
-    }
-
-
-    // Save a model to and load a model from JSON text, displayed below the Diagram.
+    // save a model to and load a model from Json text, displayed below the Diagram
     function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
+      var str = myDiagram.model.toJson();
+      document.getElementById("mySavedModel").value = str;
     }
     function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+      var str = document.getElementById("mySavedModel").value;
+      myDiagram.model = go.Model.fromJson(str);
+    }
+    function newDiagram() {
+      myDiagram.model = go.GraphObject.make(go.GraphLinksModel,
+        {
+          nodeDataArray:
+          [
+            {"key":1, "text":"S", "category":"Start"},
+            {"key":2, "text":"E", "category":"End"}
+          ],
+          linkDataArray:
+          [
+            {"from":1, "to":2}
+          ]
+        });
     }
   </script>
+
+<style>
+  /* Use a Flexbox to make the Palette/Overview/Diagram responsive and size things relatively */
+  #myFlexDiv {
+    display: flex;
+    width: 100%;
+    height: 600px;
+  }
+  #myPODiv {
+    display: flex;
+  }
+  @media (min-width: 768px) {
+    #myFlexDiv {
+      flex-flow: row;
+    }
+    #myPODiv {
+      width: 105px;
+      height: 100%;
+      margin-right: 3px;
+      flex-flow: column;
+    }
+    #myPaletteDiv {
+      height: 80%;
+    }
+    #myOverviewDiv {
+      margin-top: 3px;
+      flex: 1;
+    }
+    #myDiagramDiv {
+      flex: 1;
+    }
+  }
+  @media (max-width: 767px) {
+    #myFlexDiv {
+      flex-flow: column;
+      align-items: center;
+    }
+    #myPODiv {
+      width: 90%;
+      height: 105px;
+      margin-bottom: 3px;
+      flex-flow: row;
+    }
+    #myPaletteDiv {
+      width: 75%;
+    }
+    #myOverviewDiv {
+      margin-left: 3px;
+      flex: 1;
+    }
+    #myDiagramDiv {
+      width: 90%;
+      flex: 1;
+    }
+  }
+</style>
 </head>
 <body onload="init()">
 <div id="sample">
   <div id="myFlexDiv">
     <div id="myPODiv">
-      <div id="myPaletteDiv" style="border: solid 1px black"></div>
-      <div id="myOverviewDiv" style="border: solid 1px black"></div>
+      <div id="myPaletteDiv" style="background-color: floralwhite; border: solid 1px black"></div>
+      <div id="myOverviewDiv" style="background-color: whitesmoke; border: solid 1px black"></div>
     </div>
     <div id="myDiagramDiv" style="border: solid 1px black"></div>
   </div>
   <p>
     The Flowgrammer sample demonstrates how one can build a flowchart with a constrained syntax.
-    You can drag and drop Nodes onto Links and Nodes in the diagram in order to insert them into the graph.
-    Nodes dropped onto the diagram's background are ignored.
+    You can drag and drop Nodes onto Links and Nodes in the diagram in order to splice them into the graph.
+    There is visual feedback during the dragging process.
+    Nodes dropped onto the diagram's background are automatically deleted.
     Edit text by clicking on the text of selected nodes.
-    The "Start" and "End" nodes are not editable and are not deletable.
+    Deleting an action or step Node excises it from the chain of steps that it is in.
+    The "For", "While", and "If" are not deletable, but you can select and delete the Group holding the
+    whole body of the loop or conditional.
+    The "Start" and "End" nodes and Links are not deletable.
   </p>
-  <div>
-  <button id="SaveButton" onclick="save()">Save</button>
-  <button onclick="load()">Load</button>
+  <p>
+    The automatic layout of the diagram is accomplished with the <a>ParallelLayout</a> extension.
+  </p>
+  <div id="buttons">
+    <button id="loadModel" onclick="load()">Load</button>
+    <button id="saveModel" onclick="save()">Save</button>
+    <button onclick="newDiagram()">New Diagram</button>
   </div>
   <textarea id="mySavedModel" style="width:100%;height:200px">
-{
-  "class": "go.GraphLinksModel",
-  "linkFromPortIdProperty": "side",
-  "nodeDataArray": [
-{"key":"Start", "category":"Start", "loc":"0 0"},
-{"key":"End", "category":"End", "loc":"0 80"}
-  ],
-  "linkDataArray": [
- {"from":"Start", "to":"End"}
-  ]
-}
+{ "class": "GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":1, "text":"S", "category":"Start"},
+{"key":-1, "isGroup":true, "cat":"For"},
+{"key":2, "text":"For Each", "category":"For", "group":-1},
+{"key":3, "text":"Action 1", "group":-1},
+{"key":-2, "isGroup":true, "cat":"If", "group":-1},
+{"key":4, "text":"If", "category":"If", "group":-2},
+{"key":5, "text":"Action 2", "group":-2},
+{"key":6, "text":"Action 3", "group":-2},
+{"key":-3, "isGroup":true, "cat":"For", "group":-2},
+{"key":7, "text":"For Each\n(nested)", "category":"For", "group":-3},
+{"key":8, "text":"Action 4", "group":-3},
+{"key":9, "text":"", "category":"EndFor", "group":-3},
+{"key":10, "text":"", "category":"EndIf", "group":-2},
+{"key":11, "text":"Action 5", "group":-1},
+{"key":12, "text":"", "category":"EndFor", "group":-1},
+{"key":13, "text":"E", "category":"End"}
+ ],
+  "linkDataArray": [ 
+{"from":1, "to":2},
+{"from":2, "to":3},
+{"from":3, "to":4},
+{"from":4, "to":5, "text":"true"},
+{"from":4, "to":6, "text":"false"},
+{"from":6, "to":7},
+{"from":7, "to":8},
+{"from":8, "to":9},
+{"from":5, "to":10},
+{"from":9, "to":10},
+{"from":9, "to":7},
+{"from":10, "to":11},
+{"from":11, "to":12},
+{"from":12, "to":2},
+{"from":12, "to":13}
+ ]}
   </textarea>
 </div>
 </body>

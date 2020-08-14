@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 /**
  * The PolygonDrawingTool class lets the user draw a new polygon or polyline shape by clicking where the corners should go.

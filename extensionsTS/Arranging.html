@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Arranging Layout of the Class Hierarchy</title>
+  <meta name="description" content="Arrange disconnected circular subgraphs in a circle and put disconnected nodes in a grid underneath." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="../samples/assets/require.js"></script>
+  <script src="../assets/js/goSamples.js"></script> <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      require(["ArrangingScript"], function(app) {
+        app.init();
+      });
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:800px; min-width: 200px"></div>
+  <p>
+    This sample demonstrates a custom Layout, <a>ArrangingLayout</a>, that provides layouts of layouts.
+    It assumes the graph should be split up and laid out by potentially three separate Layouts.
+  </p>
+  <p>
+    The first step of ArrangingLayout is that all unconnected nodes are separated out to be laid out later by
+    the <a>ArrangingLayout.sideLayout</a>, which by default is a <a>GridLayout</a>.
+  </p>
+  <p>
+    The remaining nodes and links are partitioned into separate subgraphs with no links between subgraphs.
+    The <a>ArrangingLayout.primaryLayout</a> is performed on each subgraph.
+  </p>
+  <p>
+    If there is more than one subgraph, those subgraphs are treated as if they were individual nodes and are
+    laid out by the <a>ArrangingLayout.arrangingLayout</a>.
+  </p>
+  <p>
+    Finally the unconnected nodes are laid out by <a>ArrangingLayout.sideLayout</a> and they are all positioned
+    at the <a>ArrangingLayout.side</a> Spot relative to the main body of nodes and links.
+  </p>
+  <p>
+    This extension layout is defined in its own file, as <a href="ArrangingLayout.js">ArrangingLayout.js</a>.
+  </p>
+</div>
+</body>
+</html>

@@ -342,6 +342,7 @@ var myExtensionMenu = '\
       </div>\
       <div id="DiagramNavbar" class="navbar-collapse collapse sidebar-navbar-collapse">\
         <ul id="sections" class="classList nav navbar-nav">\
+          <li><a href="../extensions/Arranging.html">Arranging Layout</a></li>\
           <li><a href="../extensions/Fishbone.html">Fishbone Layout</a></li>\
           <li><a href="../extensions/PackedLayout.html">Packed Layout</a></li>\
           <li><a href="../extensions/Parallel.html">Parallel Layout</a></li>\

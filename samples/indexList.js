@@ -269,7 +269,7 @@ arr.push([
 arr.push([
   "doubleTree",
   "Double Tree",
-  "Displays a single diagram of two trees sharing a single root node growing in opposite directions, using two layouts.",
+  "Displays a single diagram of two trees sharing a single root node growing in opposite directions, using the DoubleTreeLayout extension.",
   "doubleTree",
   ["collections", "treelayout"]
 ]);
@@ -1057,6 +1057,14 @@ arr.push([
 // EXTENSIONS
 // Layouts
 arr.push([
+  "../extensions/Arranging",
+  "Arranging Layout",
+  "The Arranging layout is a layout of layouts, plus a third layout for arranging left-overs.",
+  "Arranging",
+  ["gridlayout", "customlayout", "extensions"]
+]);
+
+arr.push([
   "../extensions/Fishbone",
   "Fishbone Layout",
   "The Fishbone or Ishikawa layout is a tree layout for cause-and-effect relationships.",
@@ -1623,7 +1631,7 @@ arr.push([
 arr.push([
   "flowgrammer",
   "Flowgrammer",
-  "Demonstrates a flow-chart-like editor of a restricted syntax language.",
+  "Demonstrates a flow-chart-like editor of a restricted syntax language.  Uses the ParallelLayout extension.",
   "flowgrammer",
   ["collections", "layereddigraphlayout", "palette", "overview"]
 ]);

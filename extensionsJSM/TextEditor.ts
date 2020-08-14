@@ -6,7 +6,7 @@
 // when you set or bind TextBlock.editable to true.
 // You do not need to load this file in order to use in-place text editing.
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor

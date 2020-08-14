@@ -2,7 +2,7 @@
 *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 // A custom Tool to change the scale of an object in a Part.
 
@@ -240,7 +240,7 @@ export class RescalingTool extends go.Tool {
   }
 
   /**
-  * Set the {@link GraphObject.scale} of the {@link #findRescaleObject}.
+  * Set the {@link GraphObject#scale} of the {@link #findRescaleObject}.
   * @this {RescalingTool}
   * @param {number} newScale
   */

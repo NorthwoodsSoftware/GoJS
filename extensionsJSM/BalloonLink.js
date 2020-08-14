@@ -8,7 +8,7 @@
 * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 /**
  * This custom {@link Link} class customizes its {@link Shape} to surround the comment node (the from node).
  * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.

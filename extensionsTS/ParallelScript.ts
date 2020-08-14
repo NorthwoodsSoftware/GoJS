@@ -23,8 +23,7 @@ export function init() {
       {
         allowCopy: false,    // would need to merge copied nodes and links to
         allowDelete: false,  //   use the single "Split" and "Merge" nodes
-        layout: $(ParallelLayout,
-          { layerSpacing: 20, nodeSpacing: 10 })
+        layout: $(ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
       });
 
   // define the Node templates
@@ -64,7 +63,7 @@ export function init() {
   // define the Link template to be minimal
   myDiagram.linkTemplate =
     $(go.Link,
-      { routing: go.Link.Orthogonal, corner: 5, reshapable: true },
+      { routing: go.Link.Orthogonal, corner: 5 },
       $(go.Shape,
         { stroke: 'gray', strokeWidth: 1.5 })
     );
@@ -73,8 +72,7 @@ export function init() {
   myDiagram.groupTemplate =
     $(go.Group, 'Auto',
       {
-        layout: $(ParallelLayout,
-          { layerSpacing: 20, nodeSpacing: 10 })
+        layout: $(ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 })
       },
       $(go.Shape, { fill: 'transparent', stroke: 'darkgoldenrod' }),
       $(go.Placeholder, { padding: 10 }),

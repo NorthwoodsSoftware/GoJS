@@ -44,7 +44,7 @@
         }), $(go.TextBlock, new go.Binding('text'))));
         // define the Link template to be minimal
         myDiagram.linkTemplate =
-            $(go.Link, { routing: go.Link.Orthogonal, corner: 5, reshapable: true }, $(go.Shape, { stroke: 'gray', strokeWidth: 1.5 }));
+            $(go.Link, { routing: go.Link.Orthogonal, corner: 5 }, $(go.Shape, { stroke: 'gray', strokeWidth: 1.5 }));
         // define the Group template to be fairly simple
         myDiagram.groupTemplate =
             $(go.Group, 'Auto', {

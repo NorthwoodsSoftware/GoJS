@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.22
+ * Type definitions for GoJS v2.1.23
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -4304,6 +4304,10 @@ export class UndoManager {
      * Undocumented.
      */
     isPendingUnmodified: boolean;
+    /**
+     * Undocumented.
+     */
+    readonly isJustDiscarded: boolean;
 }
 /**
  * Tools handle mouse, keyboard, and touch events.

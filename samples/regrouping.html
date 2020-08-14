@@ -17,16 +17,41 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            // what to do when a drag-drop occurs in the Diagram's background
+            // when a drag-drop occurs in the Diagram's background, make it a top-level node
             mouseDrop: function(e) { finishDrop(e, null); },
             layout:  // Diagram has simple horizontal layout
               $(go.GridLayout,
                 { wrappingWidth: Infinity, alignment: go.GridLayout.Position, cellSize: new go.Size(1, 1) }),
-            "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
+            "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
             "undoManager.isEnabled": true
           });
 
-      // There are two templates for Groups, "OfGroups" and "OfNodes".
+      // The one template for Groups can be configured to be either layout out its members
+      // horizontally or vertically, each with a different default color.
+
+      function makeLayout(horiz) {  // a Binding conversion function
+        if (horiz) {
+          return $(go.GridLayout,
+            {
+              wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+              cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+            });
+        } else {
+          return $(go.GridLayout,
+            {
+              wrappingColumn: 1, alignment: go.GridLayout.Position,
+              cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+            });
+        }
+      }
+
+      function defaultColor(horiz) {  // a Binding conversion function
+        return horiz ? "#FFDD33" : "#33D3E5";
+      }
+
+      function defaultFont(horiz) {  // a Binding conversion function
+        return horiz ? "bold 18px sans-serif" : "bold 16px sans-serif";
+      }
 
       // this function is used to highlight a Group that the selection may be dropped into
       function highlightGroup(e, grp, show) {
@@ -56,51 +81,7 @@
         if (!ok) e.diagram.currentTool.doCancel();
       }
 
-      myDiagram.groupTemplateMap.add("OfGroups",
-        $(go.Group, "Auto",
-          {
-            background: "transparent",
-            // highlight when dragging into the Group
-            mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
-            mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
-            computesBoundsAfterDrag: true,
-            // when the selection is dropped into a Group, add the selected Parts into that Group;
-            // if it fails, cancel the tool, rolling back any changes
-            mouseDrop: finishDrop,
-            handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-            // Groups containing Groups lay out their members horizontally
-            layout:
-              $(go.GridLayout,
-                {
-                  wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-                  cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
-                })
-          },
-          new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
-          $(go.Shape, "Rectangle",
-            { fill: null, stroke: "#FFDD33", strokeWidth: 2 }),
-          $(go.Panel, "Vertical",  // title above Placeholder
-            $(go.Panel, "Horizontal",  // button next to TextBlock
-              { stretch: go.GraphObject.Horizontal, background: "#FFDD33" },
-              $("SubGraphExpanderButton",
-                { alignment: go.Spot.Right, margin: 5 }),
-              $(go.TextBlock,
-                {
-                  alignment: go.Spot.Left,
-                  editable: true,
-                  margin: 5,
-                  font: "bold 18px sans-serif",
-                  opacity: 0.75,
-                  stroke: "#404040"
-                },
-                new go.Binding("text", "text").makeTwoWay())
-            ),  // end Horizontal Panel
-            $(go.Placeholder,
-              { padding: 5, alignment: go.Spot.TopLeft })
-          )  // end Vertical Panel
-        ));  // end Group and call to add to template Map
-
-      myDiagram.groupTemplateMap.add("OfNodes",
+      myDiagram.groupTemplate =
         $(go.Group, "Auto",
           {
             background: "transparent",
@@ -113,20 +94,22 @@
             // if it fails, cancel the tool, rolling back any changes
             mouseDrop: finishDrop,
             handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-            // Groups containing Nodes lay out their members vertically
-            layout:
-              $(go.GridLayout,
-                {
-                  wrappingColumn: 1, alignment: go.GridLayout.Position,
-                  cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
-                })
+            // Groups containing Groups lay out their members horizontally
+            layout: makeLayout(false)
           },
-          new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
+          new go.Binding("layout", "horiz", makeLayout),
+          new go.Binding("background", "isHighlighted", function(h) {
+            return h ? "rgba(255,0,0,0.2)" : "transparent";
+          }).ofObject(),
           $(go.Shape, "Rectangle",
-            { fill: null, stroke: "#33D3E5", strokeWidth: 2 }),
+            { fill: null, stroke: defaultColor(false), strokeWidth: 2 },
+            new go.Binding("stroke", "horiz", defaultColor),
+            new go.Binding("stroke", "color")),
           $(go.Panel, "Vertical",  // title above Placeholder
             $(go.Panel, "Horizontal",  // button next to TextBlock
-              { stretch: go.GraphObject.Horizontal, background: "#33D3E5" },
+              { stretch: go.GraphObject.Horizontal, background: defaultColor(false) },
+              new go.Binding("background", "horiz", defaultColor),
+              new go.Binding("background", "color"),
               $("SubGraphExpanderButton",
                 { alignment: go.Spot.Right, margin: 5 }),
               $(go.TextBlock,
@@ -134,21 +117,22 @@
                   alignment: go.Spot.Left,
                   editable: true,
                   margin: 5,
-                  font: "bold 16px sans-serif",
-                  opacity: 0.75,
+                  font: defaultFont(false),
+                  opacity: 0.75,  // allow some color to show through
                   stroke: "#404040"
                 },
+                new go.Binding("font", "horiz", defaultFont),
                 new go.Binding("text", "text").makeTwoWay())
             ),  // end Horizontal Panel
             $(go.Placeholder,
               { padding: 5, alignment: go.Spot.TopLeft })
           )  // end Vertical Panel
-        ));  // end Group and call to add to template Map
+        );
 
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-            mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
+            mouseDrop: function(e, node) { finishDrop(e, node.containingGroup); }
           },
           $(go.Shape, "Rectangle",
             { fill: "#ACE600", stroke: null },
@@ -169,13 +153,15 @@
         $(go.Palette, "myPaletteDiv",
           {
             nodeTemplateMap: myDiagram.nodeTemplateMap,
-            groupTemplateMap: myDiagram.groupTemplateMap,
-            layout: $(go.GridLayout, { wrappingColumn: 1, alignment: go.GridLayout.Position })
+            groupTemplateMap: myDiagram.groupTemplateMap
           });
+
       myPalette.model = new go.GraphLinksModel([
         { text: "lightgreen", color: "#ACE600" },
         { text: "yellow", color: "#FFDD33" },
-        { text: "lightblue", color: "#33D3E5" }
+        { text: "lightblue", color: "#33D3E5" },
+        { isGroup: true, text: "H Group", horiz: true },
+        { isGroup: true, text: "V Group", horiz: false }
       ]);
 
       var slider = document.getElementById("levelSlider");
@@ -185,18 +171,18 @@
       load();
     }
 
+    function reexpand(e) {
+      myDiagram.commit(function(diag) {
+        var level = parseInt(document.getElementById("levelSlider").value);
+        diag.findTopLevelGroups().each(function(g) { expandGroups(g, 0, level); })
+      } ,"reexpand");
+    }
     function expandGroups(g, i, level) {
       if (!(g instanceof go.Group)) return;
       g.isSubGraphExpanded = i < level;
       g.memberParts.each(function(m) {
         expandGroups(m, i + 1, level);
       })
-    }
-    function reexpand(e) {
-      myDiagram.startTransaction("reexpand");
-      var level = parseInt(document.getElementById("levelSlider").value);
-      myDiagram.findTopLevelGroups().each(function(g) { expandGroups(g, 0, level); })
-      myDiagram.commitTransaction("reexpand");
     }
 
     // save a model to and load a model from JSON text, displayed below the Diagram
@@ -212,7 +198,7 @@
 <body onload="init()">
 <div id="sample">
   <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
+    <div id="myPaletteDiv" style="width: 130px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
     <div id="myDiagramDiv" style="flex-grow: 1; height: 500px; border: solid 1px black"></div>
   </div>
   <p>
@@ -230,10 +216,8 @@
   <p>
     When a drop occurs on a Group or a regular Node, the <a>GraphObject.mouseDrop</a> event handler
     adds the selection (the dragged Nodes) to the Group as new members.
-  </p>
-  <p>
-    The <a>TextBlock</a>s use the <a>GraphObject.opacity</a> property, which allows for the text
-    to somewhat match the color of what it's on top of.
+    The <a>Diagram.mouseDrop</a> event handler changes the dragged selected Nodes to be top-level,
+    rather than members of whatever Groups they had been in. 
   </p>
   <p>
     The slider controls how many nested levels of Groups are expanded. </br>
@@ -247,13 +231,13 @@
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
-{"key":1, "text":"Main 1", "isGroup":true, "category":"OfGroups"},
-{"key":2, "text":"Main 2", "isGroup":true, "category":"OfGroups"},
-{"key":3, "text":"Group A", "isGroup":true, "category":"OfNodes", "group":1},
-{"key":4, "text":"Group B", "isGroup":true, "category":"OfNodes", "group":1},
-{"key":5, "text":"Group C", "isGroup":true, "category":"OfNodes", "group":2},
-{"key":6, "text":"Group D", "isGroup":true, "category":"OfNodes", "group":2},
-{"key":7, "text":"Group E", "isGroup":true, "category":"OfNodes", "group":6},
+{"key":1, "isGroup":true, "text":"Main 1", "horiz":true},
+{"key":2, "isGroup":true, "text":"Main 2", "horiz":true},
+{"key":3, "isGroup":true, "text":"Group A", "group":1},
+{"key":4, "isGroup":true, "text":"Group B", "group":1},
+{"key":5, "isGroup":true, "text":"Group C", "group":2},
+{"key":6, "isGroup":true, "text":"Group D", "group":2},
+{"key":7, "isGroup":true, "text":"Group E", "group":6},
 {"text":"first A", "group":3, "key":-7},
 {"text":"second A", "group":3, "key":-8},
 {"text":"first B", "group":4, "key":-9},

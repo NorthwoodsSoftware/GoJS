@@ -15,7 +15,7 @@
 //       $(go.Shape, { toArrow: "Zigzag" })
 //     );
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 go.Shape.defineArrowheadGeometry('Standard', 'F1 m 0,0 l 8,4 -8,4 2,-4 z');
 go.Shape.defineArrowheadGeometry('Backward', 'F1 m 8,0 l -2,4 2,4 -8,-4 z');

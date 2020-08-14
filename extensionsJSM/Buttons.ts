@@ -10,7 +10,7 @@
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
-import * as go from '../release/go.mjs';
+import * as go from '../release/go-module.js';
 
 // These are the definitions for all of the predefined buttons.
 // You do not need to load this file in order to use buttons.
