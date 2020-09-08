@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ParallelLayout = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -72,7 +73,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._splitNode; },
             set: function (val) { this._splitNode = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ParallelLayout.prototype, "mergeNode", {
@@ -81,12 +82,12 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._mergeNode; },
             set: function (val) { this._mergeNode = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
          * Overridable predicate for deciding if a Node is a Split node.
-         * By default this checks the node's {@link Panel#category} to see if it is
+         * By default this checks the node's {@link Part#category} to see if it is
          * "Split", "Start", "For", "While", "If", or "Switch".
          * @param {Node} node
          * @return {boolean}
@@ -99,7 +100,7 @@ var __extends = (this && this.__extends) || (function () {
         };
         /**
          * Overridable predicate for deciding if a Node is a Merge node.
-         * By default this checks the node's {@link Panel#category} to see if it is
+         * By default this checks the node's {@link Part#category} to see if it is
          * "Merge", "End", "EndFor", "EndWhile", "EndIf", or "EndSwitch".
          * @param {Node} node
          * @return {boolean}

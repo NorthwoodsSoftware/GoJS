@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.cancel2 = exports.cancel1 = exports.BPMNdata53 = exports.BPMNdata52 = exports.BPMNdata51 = exports.basicOrderProcess = exports.alignColumns = exports.alignRows = exports.alignCenterY = exports.alignCemterX = exports.alignBottom = exports.alignTop = exports.alignRight = exports.alignLeft = exports.selectAll = exports.deleteSelection = exports.pasteSelection = exports.copySelection = exports.cutSelection = exports.redo = exports.undo = exports.closeElement = exports.openElement = exports.updateFileList = exports.removeFile = exports.loadDiagramProperties = exports.saveDiagramProperties = exports.loadJSON = exports.loadFile = exports.removeDocument = exports.openDocument = exports.saveDocumentAs = exports.saveDocument = exports.checkLocalStorage = exports.resetModel = exports.newDocument = exports.setCurrentFileName = exports.getCurrentFileName = exports.askSpace = exports.updateSnapOption = exports.updateGridOption = exports.rename = exports.addActivityNodeBoundaryEvent = exports.init = void 0;
     var DrawCommandHandler_js_1 = require("../../extensionsTS/DrawCommandHandler.js");
     require("../../extensionsTS/Figures.js");
     var go = require("../../release/go.js");
@@ -97,16 +98,13 @@ var __extends = (this && this.__extends) || (function () {
         go.Shape.defineFigureGenerator('Empty', function (shape, w, h) {
             return new go.Geometry();
         });
-        var annotationStr = 'M 150,0L 0,0L 0,600L 150,600 M 800,0';
-        var annotationGeo = go.Geometry.parse(annotationStr);
-        annotationGeo.normalize();
         go.Shape.defineFigureGenerator('Annotation', function (shape, w, h) {
-            var geo = annotationGeo.copy();
-            // calculate how much to scale the Geometry so that it fits in w x h
-            var bounds = geo.bounds;
-            var scale = Math.min(w / bounds.width, h / bounds.height);
-            geo.scale(scale, scale);
-            return geo;
+            var len = Math.min(w, 10);
+            return new go.Geometry()
+                .add(new go.PathFigure(len, 0)
+                .add(new go.PathSegment(go.PathSegment.Line, 0, 0))
+                .add(new go.PathSegment(go.PathSegment.Line, 0, h))
+                .add(new go.PathSegment(go.PathSegment.Line, len, h)));
         });
         var gearStr = 'F M 391,5L 419,14L 444.5,30.5L 451,120.5L 485.5,126L 522,141L 595,83L 618.5,92L 644,106.5' +
             'L 660.5,132L 670,158L 616,220L 640.5,265.5L 658.122,317.809L 753.122,322.809L 770.122,348.309L 774.622,374.309' +
@@ -486,7 +484,10 @@ var __extends = (this && this.__extends) || (function () {
         )), $(go.TextBlock, { alignment: go.Spot.Center, textAlign: 'center', margin: 5, editable: false }, new go.Binding('text')));
         // --------------------------------------------------------------------------------------------------------------
         var annotationNodeTemplate = $(go.Node, 'Auto', { background: GradientLightGray, locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), $(go.Shape, 'Annotation', // A left bracket shape
-        { portId: '', fromLinkable: true, cursor: 'pointer', fromSpot: go.Spot.Left, strokeWidth: 2, stroke: 'gray' }), $(go.TextBlock, { margin: 5, editable: true }, new go.Binding('text').makeTwoWay()));
+        {
+            portId: '', fromLinkable: true, cursor: 'pointer', fromSpot: go.Spot.Left,
+            strokeWidth: 2, stroke: 'gray', fill: 'transparent'
+        }), $(go.TextBlock, { margin: 5, editable: true }, new go.Binding('text').makeTwoWay()));
         var dataObjectNodeTemplate = $(go.Node, 'Vertical', { locationObjectName: 'SHAPE', locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), $(go.Shape, 'File', {
             name: 'SHAPE', portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer',
             fill: DataFill, desiredSize: new go.Size(EventNodeSize * 0.8, EventNodeSize)

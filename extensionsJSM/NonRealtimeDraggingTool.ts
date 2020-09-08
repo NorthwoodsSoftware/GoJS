@@ -20,9 +20,17 @@ import * as go from '../release/go-module.js';
  * @category Tool Extension
  */
 export class NonRealtimeDraggingTool extends go.DraggingTool {
+  private _duration: number = 0;  // duration of movement animation; <= 0 to disable
   private _imagePart: go.Part | null = null;  // a Part holding a translucent image of what would be dragged
   private _ghostDraggedParts: go.Map<go.Part, go.DraggingInfo> | null = null;  // a Map of the _imagePart and its dragging information
   private _originalDraggedParts: go.Map<go.Part, go.DraggingInfo> | null = null;  // the saved normal value of DraggingTool.draggedParts
+
+  /**
+  * Gets or sets how long the movement animation should be to move the actual parts upon a mouse-up.
+  * The default value is zero -- there is no animation of the movement.
+  */
+  get duration(): number { return this._duration; }
+  set duration(val: number) { this._duration = val; }
 
   /**
    * Call the base method, and then make an image of the returned collection,
@@ -78,10 +86,20 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
    * Do the normal mouse-up behavior, but only after restoring {@link #draggedParts}.
    */
   public doMouseUp(): void {
-    if (this._originalDraggedParts !== null) {
-      this.draggedParts = this._originalDraggedParts;
+    const partsmap = this._originalDraggedParts;
+    if (partsmap !== null) {
+      this.draggedParts = partsmap;
     }
     super.doMouseUp();
+    if (partsmap !== null && this.duration > 0) {
+      var anim = new go.Animation();
+      anim.duration = this.duration;
+      partsmap.each(function(kvp) {
+        var part = kvp.key;
+        anim.add(part, "location", kvp.value.point, part.location);
+      });
+      anim.start();
+    }
   }
 
   /**

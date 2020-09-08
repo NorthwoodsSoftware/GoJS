@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.VirtualizedPackedLayout = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -213,7 +214,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "packMode", {
@@ -231,7 +232,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "sortMode", {
@@ -248,7 +249,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "sortOrder", {
@@ -265,7 +266,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "comparer", {
@@ -298,7 +299,7 @@ var __extends = (this && this.__extends) || (function () {
                     this._comparer = value;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "aspectRatio", {
@@ -319,7 +320,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "size", {
@@ -351,7 +352,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "spacing", {
@@ -374,7 +375,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "hasCircularNodes", {
@@ -396,7 +397,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "actualSpacing", {
@@ -412,7 +413,7 @@ var __extends = (this && this.__extends) || (function () {
              * then, its behavior is undefined.
              */
             get: function () { return this.spacing + this._fixedSizeModeSpacing; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "actualBounds", {
@@ -424,7 +425,7 @@ var __extends = (this && this.__extends) || (function () {
              * then, its behavior is undefined.
              */
             get: function () { return this._actualBounds; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "enclosingCircle", {
@@ -466,7 +467,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 return this._enclosingCircle;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(VirtualizedPackedLayout.prototype, "arrangesToOrigin", {
@@ -483,7 +484,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
@@ -1353,8 +1354,8 @@ var __extends = (this && this.__extends) || (function () {
          * @param force whether or not to force an update based on the quadtree even if none of the segments were deleted
          */
         VirtualizedPackedLayout.prototype.fixMissingMinMaxSegments = function (force) {
-            if (force === void 0) { force = false; }
             var _a;
+            if (force === void 0) { force = false; }
             if (!this._minXSegment || !this._maxXSegment || !this._minYSegment || !this._maxYSegment || force) {
                 _a = this._tree.findExtremeObjects(), this._minXSegment = _a[0], this._maxXSegment = _a[1], this._minYSegment = _a[2], this._maxYSegment = _a[3];
             }

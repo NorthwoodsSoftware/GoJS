@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.RotateMultipleTool = void 0;
     var go = require("../release/go.js");
     /**
      * The RotateMultipleTool class lets the user rotate multiple objects at a time.

@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.back = exports.front = exports.rotate180 = exports.rotateNeg90 = exports.rotate90 = exports.rotateNeg45 = exports.rotate45 = exports.column = exports.row = exports.cenY = exports.cenX = exports.bottoms = exports.tops = exports.rights = exports.lefts = exports.arrowMode = exports.askSpace = exports.init = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.

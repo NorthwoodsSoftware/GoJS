@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ArrangingLayout = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -324,7 +325,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ArrangingLayout.prototype, "side", {
@@ -334,7 +335,6 @@ var __extends = (this && this.__extends) || (function () {
             * The default value is Spot.BottomSide.
             * Currently only handles a single side.
             * @name ArrangingLayout#side
-            * @function.
             * @return {Spot}
             */
             get: function () { return this._side; },
@@ -347,7 +347,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ArrangingLayout.prototype, "spacing", {
@@ -355,7 +355,6 @@ var __extends = (this && this.__extends) || (function () {
             * Gets or sets the space between the main layout and the side layout.
             * The default value is Size(20, 20).
             * @name ArrangingLayout#spacing
-            * @function.
             * @return {Size}
             */
             get: function () { return this._spacing; },
@@ -367,7 +366,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ArrangingLayout.prototype, "primaryLayout", {
@@ -383,7 +382,7 @@ var __extends = (this && this.__extends) || (function () {
                 this._primaryLayout = val;
                 this.invalidateLayout();
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ArrangingLayout.prototype, "arrangingLayout", {
@@ -400,7 +399,7 @@ var __extends = (this && this.__extends) || (function () {
                 this._arrangingLayout = val;
                 this.invalidateLayout();
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ArrangingLayout.prototype, "sideLayout", {
@@ -416,7 +415,7 @@ var __extends = (this && this.__extends) || (function () {
                 this._sideLayout = val;
                 this.invalidateLayout();
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return ArrangingLayout;

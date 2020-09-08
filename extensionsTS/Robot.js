@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Robot = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -54,7 +55,7 @@
                     throw new Error('Robot.diagram must be a Diagram, not: ' + val);
                 this._diagram = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

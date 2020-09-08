@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.23
+ * Type definitions for GoJS v2.1.24
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -2731,6 +2731,26 @@ export class Geometry {
      */
     getFractionForPoint(pt: Point): number;
     /**
+     * Undocumented.
+     * Flattened segments represents a series of points making up a Geometry.
+     * The inner arrays consist of a sequence of PathSegment coordinates making up a PathFigure,
+     * while the outer array represents the whole Geometry of these PathFigures.
+     */
+    readonly flattenedSegments: Array<Array<number>>;
+    /**
+     * Undocumented.
+     * Flattened lengths represents a series of lengths of the paths making up a Geometry.
+     * The inner arrays consist of a sequence of PathSegment lengths making up a PathFigure,
+     * while the outer array represents the whole Geometry of these PathFigures.
+     */
+    readonly flattenedLengths: Array<Array<number>>;
+    /**
+     * Undocumented.
+     * This read-only property returns the approximate length of the path.
+     * This is the overall distance of all the PathSegments that make up the geometry.
+     */
+    readonly flattenedTotalLength: number;
+    /**
      * Gets or sets the type of the Geometry.
      * The default type is Geometry.Path.
      * Other permissible values are Geometry.Line, Geometry.Ellipse,
@@ -3452,7 +3472,8 @@ export class InputEvent {
  *   - **"ExternalObjectsDropped"**, Parts have been copied into the Diagram by drag-and-drop from outside of the Diagram;<br/>
  *     the DiagramEvent#subject is the set of Parts that were dropped (which is also the Diagram#selection),
  *     the DiagramEvent#parameter is the source Diagram,
- *     and this is called within a transaction.
+ *     and this is called within a transaction.  If you choose, you can cancel the drop by executing:
+ *     <code>e.diagram.toolManager.draggingTool.transactionResult = null;</code>
  *   - **"GainedFocus"**, the diagram has gained keyboard focus, such as after a call to Diagram#focus.
  *   - **"InitialLayoutCompleted"**, the whole diagram layout has updated for the first time since a major change to the Diagram, such as replacing the Model;<br/>
  *     if you make any changes, you do not need to perform a transaction.
@@ -4304,6 +4325,7 @@ export class UndoManager {
      * Undocumented.
      */
     isPendingUnmodified: boolean;
+    isInternalTransaction: boolean;
     /**
      * Undocumented.
      */

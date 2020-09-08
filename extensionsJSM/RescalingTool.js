@@ -227,7 +227,7 @@ export class RescalingTool extends go.Tool {
         this.stopTool();
     }
     /**
-    * Set the {@link GraphObject.scale} of the {@link #findRescaleObject}.
+    * Set the {@link GraphObject#scale} of the {@link #findRescaleObject}.
     * @this {RescalingTool}
     * @param {number} newScale
     */

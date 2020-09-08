@@ -17,7 +17,7 @@ go.Diagram.inherit(DoubleTreeLayout, go.Layout);
 * when true, the layout show grow upwards and downwards.
 * The default value is false.
 * @name DoubleTreeLayout#vertical
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(DoubleTreeLayout.prototype, "vertical", {
@@ -38,7 +38,7 @@ Object.defineProperty(DoubleTreeLayout.prototype, "vertical", {
 * The value must be a function and must not be null.
 * It must return true if #isPositiveDirection should return true; otherwise it should return false.
 * @name DoubleTreeLayout#directionFunction
-* @function.
+
 * @return {function}
 */
 Object.defineProperty(DoubleTreeLayout.prototype, "directionFunction", {

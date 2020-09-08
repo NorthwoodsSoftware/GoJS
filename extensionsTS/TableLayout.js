@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.TableLayout = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -76,7 +77,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._defaultAlignment; },
             set: function (val) { this._defaultAlignment = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(TableLayout.prototype, "defaultStretch", {
@@ -88,7 +89,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._defaultStretch; },
             set: function (val) { this._defaultStretch = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(TableLayout.prototype, "rowCount", {
@@ -97,7 +98,7 @@ var __extends = (this && this.__extends) || (function () {
              * This value is only valid after the layout has been performed.
              */
             get: function () { return this._rowDefs.length; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(TableLayout.prototype, "columnCount", {
@@ -106,7 +107,7 @@ var __extends = (this && this.__extends) || (function () {
              * This value is only valid after the layout has been performed.
              */
             get: function () { return this._colDefs.length; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

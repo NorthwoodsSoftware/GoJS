@@ -48,7 +48,7 @@ go.Diagram.inherit(RowResizingTool, go.Tool);
 * A small GraphObject used as a resize handle for each row.
 * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
 * @name RowResizingTool#handleArchetype
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(RowResizingTool.prototype, "handleArchetype", {
@@ -59,7 +59,7 @@ Object.defineProperty(RowResizingTool.prototype, "handleArchetype", {
 /*
 * The name of the Table Panel to be resized, by default the name "TABLE".
 * @name RowResizingTool#tableName
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(RowResizingTool.prototype, "tableName", {
@@ -72,7 +72,7 @@ Object.defineProperty(RowResizingTool.prototype, "tableName", {
 * This will be contained by an {@link Adornment} whose category is "RowResizing".
 * Its {@link Adornment#adornedObject} is the same as the {@link #adornedTable}.
 * @name RowResizingTool#handle
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(RowResizingTool.prototype, "handle", {
@@ -83,7 +83,7 @@ Object.defineProperty(RowResizingTool.prototype, "handle", {
 * Gets the {@link Panel} of type {@link Panel#Table} whose rows may be resized.
 * This must be contained within the selected Part.
 * @name RowResizingTool#adornedTable
-* @function.
+
 * @return {Panel}
 */
 Object.defineProperty(RowResizingTool.prototype, "adornedTable", {

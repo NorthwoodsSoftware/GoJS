@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.BPMNRelinkingTool = exports.BPMNLinkingTool = exports.PoolLink = void 0;
     var go = require("../../release/go.js");
     // Contains PoolLink and BPMNLinkingTool classes for the BPMN sample
     /**

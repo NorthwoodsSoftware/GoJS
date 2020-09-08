@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.DimensioningLink = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -95,7 +96,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('DimensioningLink: invalid new direction: ' + val);
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(DimensioningLink.prototype, "extension", {
@@ -108,7 +109,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._extension; },
             set: function (val) { this._extension = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(DimensioningLink.prototype, "inset", {
@@ -127,7 +128,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('DimensionLink: invalid new inset: ' + val);
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(DimensioningLink.prototype, "gap", {
@@ -145,7 +146,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('DimensionLink: invalid new gap: ' + val);
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

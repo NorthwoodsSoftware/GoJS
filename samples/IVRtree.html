@@ -1,11 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
   <title>IVR Tree</title>
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
   <meta name="description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses." />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
 
   <script src="../release/go.js"></script>
   <script src="../extensions/Figures.js"></script>
@@ -59,6 +58,8 @@
       // controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
       myDiagram.nodeTemplate =  // the default node template
         $(go.Node, "Vertical",
+          new go.Binding("isTreeExpanded").makeTwoWay(),  // remember the expansion state for
+          new go.Binding("wasTreeExpanded").makeTwoWay(), //   when the model is re-loaded
           { selectionObjectName: "BODY" },
           // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
           $(go.Panel, "Auto",

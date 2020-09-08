@@ -44,7 +44,7 @@ BalloonLink.prototype.cloneProtected = function(copy) {
 * The width of the base of the triangle at the center point of the Link.fromNode.
 * The default value is 10.
 * @name BalloonLink#base
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(BalloonLink.prototype, "base", {

@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LinkShiftingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -82,7 +83,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._fromHandleArchetype; },
             set: function (value) { this._fromHandleArchetype = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(LinkShiftingTool.prototype, "toHandleArchetype", {
@@ -91,7 +92,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._toHandleArchetype; },
             set: function (value) { this._toHandleArchetype = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

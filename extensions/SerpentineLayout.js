@@ -154,7 +154,7 @@ SerpentineLayout.prototype.doLayout = function(coll) {
 * and whose height specifies the minimum vertical space between nodes.
 * The default value is 30x30.
 * @name SerpentineLayout#spacing
-* @function.
+
 * @return {Size}
 */
 Object.defineProperty(SerpentineLayout.prototype, "spacing", {
@@ -173,7 +173,7 @@ Object.defineProperty(SerpentineLayout.prototype, "spacing", {
 * The default value is NaN, which for {@link Diagram#layout}s means that it uses
 * the {@link Diagram#viewportBounds}.
 * @name SerpentineLayout#wrap
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(SerpentineLayout.prototype, "wrap", {

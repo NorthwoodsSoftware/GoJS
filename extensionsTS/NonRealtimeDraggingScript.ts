@@ -21,7 +21,7 @@ export function init() {
   const myDiagram =
     $(go.Diagram, 'myDiagramDiv',
       { // install the replacement DraggingTool:
-        draggingTool: new NonRealtimeDraggingTool(),
+        draggingTool: $(NonRealtimeDraggingTool, { duration: 600 }),
         'undoManager.isEnabled': true
       });
 

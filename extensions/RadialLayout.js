@@ -42,7 +42,7 @@ RadialLayout.prototype.cloneProtected = function(copy) {
 /*
 * The Node to act as the root or central node of the radial layout.
 * @name RadialLayout#root
-* @function.
+
 * @return {Node}
 */
 Object.defineProperty(RadialLayout.prototype, "root", {
@@ -58,7 +58,7 @@ Object.defineProperty(RadialLayout.prototype, "root", {
 /*
 * The thickness of each ring representing a layer.
 * @name RadialLayout#layerThickness
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(RadialLayout.prototype, "layerThickness", {
@@ -75,7 +75,7 @@ Object.defineProperty(RadialLayout.prototype, "layerThickness", {
 * The maximum number of layers to be shown, in addition to the root node at layer zero.
 * The default value is Infinity.
 * @name RadialLayout#maxLayers
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(RadialLayout.prototype, "maxLayers", {

@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GuidedDraggingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -90,7 +91,7 @@ var __extends = (this && this.__extends) || (function () {
                     this._guidelineSnapDistance = val;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineEnabled", {
@@ -107,7 +108,7 @@ var __extends = (this && this.__extends) || (function () {
                     this._isGuidelineEnabled = val;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "horizontalGuidelineColor", {
@@ -124,7 +125,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.guidelineHtop.elements.first().stroke = this._horizontalGuidelineColor;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "verticalGuidelineColor", {
@@ -141,7 +142,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.guidelineVright.elements.first().stroke = this._verticalGuidelineColor;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "centerGuidelineColor", {
@@ -158,7 +159,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.guidelineHcenter.elements.first().stroke = this._centerGuidelineColor;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "guidelineWidth", {
@@ -181,7 +182,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.guidelineHtop.elements.first().strokeWidth = val;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "searchDistance", {
@@ -199,7 +200,7 @@ var __extends = (this && this.__extends) || (function () {
                     this._searchDistance = val;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineSnapEnabled", {
@@ -216,7 +217,7 @@ var __extends = (this && this.__extends) || (function () {
                     this._isGuidelineSnapEnabled = val;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

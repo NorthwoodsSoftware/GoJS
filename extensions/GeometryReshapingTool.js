@@ -56,7 +56,7 @@ go.Diagram.inherit(GeometryReshapingTool, go.Tool);
 * A small GraphObject used as a reshape handle for each segment.
 * The default GraphObject is a small blue diamond.
 * @name GeometryReshapingTool#handleArchetype
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {
@@ -67,7 +67,7 @@ Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {
 /*
 * The name of the GraphObject to be reshaped.
 * @name GeometryReshapingTool#reshapeObjectName
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "reshapeObjectName", {
@@ -80,7 +80,7 @@ Object.defineProperty(GeometryReshapingTool.prototype, "reshapeObjectName", {
 * This will be contained by an {@link Adornment} whose category is "GeometryReshaping".
 * Its {@link Adornment#adornedObject} is the same as the {@link #adornedShape}.
 * @name GeometryReshapingTool#handle
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "handle", {
@@ -91,7 +91,7 @@ Object.defineProperty(GeometryReshapingTool.prototype, "handle", {
 * Gets the {@link Shape} that is being reshaped.
 * This must be contained within the selected Part.
 * @name GeometryReshapingTool#adornedShape
-* @function.
+
 * @return {Shape}
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "adornedShape", {
@@ -102,7 +102,7 @@ Object.defineProperty(GeometryReshapingTool.prototype, "adornedShape", {
 * This read-only property remembers the original value for {@link Shape#geometry},
 * so that it can be restored if this tool is cancelled.
 * @name GeometryReshapingTool#originalGeometry
-* @function.
+
 * @return {Geometry}
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "originalGeometry", {

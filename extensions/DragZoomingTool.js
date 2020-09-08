@@ -235,7 +235,7 @@ DragZoomingTool.prototype.zoomToRect = function(r) {
 * <p/>
 * Modifying this property while this tool {@link Tool#isActive} might have no effect.
 * @name DragZoomingTool#box
-* @function.
+
 * @return {Part}
 */
 Object.defineProperty(DragZoomingTool.prototype, "box", {
@@ -249,7 +249,7 @@ Object.defineProperty(DragZoomingTool.prototype, "box", {
 * The default value is 175 milliseconds.
 * Setting this property does not raise any events.
 * @name DragZoomingTool#delay
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(DragZoomingTool.prototype, "delay", {
@@ -264,7 +264,7 @@ Object.defineProperty(DragZoomingTool.prototype, "delay", {
 * The default value is null, which causes {@link #zoomToRect} to modify this tool's {@link Tool#diagram}.
 * Setting this property does not raise any events.
 * @name DragZoomingTool#zoomedDiagram
-* @function.
+
 * @return {Diagram}
 */
 Object.defineProperty(DragZoomingTool.prototype, "zoomedDiagram", {

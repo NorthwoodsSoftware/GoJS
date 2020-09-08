@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.DragZoomingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -103,7 +104,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._box; },
             set: function (val) { this._box = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(DragZoomingTool.prototype, "delay", {
@@ -116,7 +117,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._delay; },
             set: function (val) { this._delay = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(DragZoomingTool.prototype, "zoomedDiagram", {
@@ -129,7 +130,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._zoomedDiagram; },
             set: function (val) { this._zoomedDiagram = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

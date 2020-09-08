@@ -48,7 +48,7 @@ go.Diagram.inherit(ColumnResizingTool, go.Tool);
 * A small GraphObject used as a resize handle for each column.
 * This tool expects that this object's {@link GraphObject#desiredSize} (a.k.a width and height) has been set to real numbers.
 * @name ColumnResizingTool#handleArchetype
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(ColumnResizingTool.prototype, "handleArchetype", {
@@ -59,7 +59,7 @@ Object.defineProperty(ColumnResizingTool.prototype, "handleArchetype", {
 /*
 * The name of the Table Panel to be resized, by default the name "TABLE".
 * @name ColumnResizingTool#tableName
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(ColumnResizingTool.prototype, "tableName", {
@@ -72,7 +72,7 @@ Object.defineProperty(ColumnResizingTool.prototype, "tableName", {
 * This will be contained by an {@link Adornment} whose category is "ColumnResizing".
 * Its {@link Adornment#adornedObject} is the same as the {@link #adornedTable}.
 * @name ColumnResizingTool#handle
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(ColumnResizingTool.prototype, "handle", {
@@ -83,7 +83,7 @@ Object.defineProperty(ColumnResizingTool.prototype, "handle", {
 * Gets the {@link Panel} of type {@link Panel#Table} whose columns may be resized.
 * This must be contained within the selected Part.
 * @name ColumnResizingTool#adornedTable
-* @function.
+
 * @return {Panel}
 */
 Object.defineProperty(ColumnResizingTool.prototype, "adornedTable", {

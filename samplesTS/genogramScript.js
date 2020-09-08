@@ -9,6 +9,7 @@
 })(function (require, exports) {
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.setupParents = exports.setupMarriages = exports.findMarriage = exports.setupDiagram = exports.init = void 0;
     /*
     *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
