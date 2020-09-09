@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.PolygonDrawingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -74,7 +75,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._isPolygon; },
             set: function (val) { this._isPolygon = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
@@ -85,7 +86,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._hasArcs; },
             set: function (val) { this._hasArcs = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "isOrthoOnly", {
@@ -95,7 +96,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._isOrthoOnly; },
             set: function (val) { this._isOrthoOnly = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "isGridSnapEnabled", {
@@ -105,7 +106,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._isGridSnapEnabled; },
             set: function (val) { this._isGridSnapEnabled = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "archetypePartData", {
@@ -115,7 +116,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._archetypePartData; },
             set: function (val) { this._archetypePartData = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(PolygonDrawingTool.prototype, "temporaryShape", {
@@ -136,7 +137,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

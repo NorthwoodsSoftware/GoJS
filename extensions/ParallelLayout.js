@@ -260,7 +260,7 @@ ParallelLayout.prototype.commitLinks = function() {
 * This read-only property returns the Split Node of the Diagram or Group.
 * The value is only available once the layout has been performed.
 * @name ParallelLayout#splitNode
-* @function.
+
 * @return {Node}
 */
 Object.defineProperty(ParallelLayout.prototype, "splitNode", {
@@ -272,7 +272,7 @@ Object.defineProperty(ParallelLayout.prototype, "splitNode", {
 * This read-only property returns the Merge Node of the Diagram or Group.
 * The value is only available once the layout has been performed.
 * @name ParallelLayout#splitNode
-* @function.
+
 * @return {Node}
 */
 Object.defineProperty(ParallelLayout.prototype, "mergeNode", {

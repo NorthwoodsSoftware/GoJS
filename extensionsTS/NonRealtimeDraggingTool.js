@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.NonRealtimeDraggingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -44,11 +45,22 @@ var __extends = (this && this.__extends) || (function () {
         __extends(NonRealtimeDraggingTool, _super);
         function NonRealtimeDraggingTool() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this._duration = 0; // duration of movement animation; <= 0 to disable
             _this._imagePart = null; // a Part holding a translucent image of what would be dragged
             _this._ghostDraggedParts = null; // a Map of the _imagePart and its dragging information
             _this._originalDraggedParts = null; // the saved normal value of DraggingTool.draggedParts
             return _this;
         }
+        Object.defineProperty(NonRealtimeDraggingTool.prototype, "duration", {
+            /**
+            * Gets or sets how long the movement animation should be to move the actual parts upon a mouse-up.
+            * The default value is zero -- there is no animation of the movement.
+            */
+            get: function () { return this._duration; },
+            set: function (val) { this._duration = val; },
+            enumerable: false,
+            configurable: true
+        });
         /**
          * Call the base method, and then make an image of the returned collection,
          * show it using a Picture, and hold the Picture in a temporary Part, as _imagePart.
@@ -96,10 +108,20 @@ var __extends = (this && this.__extends) || (function () {
          * Do the normal mouse-up behavior, but only after restoring {@link #draggedParts}.
          */
         NonRealtimeDraggingTool.prototype.doMouseUp = function () {
-            if (this._originalDraggedParts !== null) {
-                this.draggedParts = this._originalDraggedParts;
+            var partsmap = this._originalDraggedParts;
+            if (partsmap !== null) {
+                this.draggedParts = partsmap;
             }
             _super.prototype.doMouseUp.call(this);
+            if (partsmap !== null && this.duration > 0) {
+                var anim = new go.Animation();
+                anim.duration = this.duration;
+                partsmap.each(function (kvp) {
+                    var part = kvp.key;
+                    anim.add(part, "location", kvp.value.point, part.location);
+                });
+                anim.start();
+            }
         };
         /**
          * If the user changes to "copying" mode by holding down the Control key,

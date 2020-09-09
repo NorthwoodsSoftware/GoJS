@@ -334,7 +334,7 @@ PolygonDrawingTool.prototype.undo = function() {
 * Gets or sets whether this tools draws a filled polygon or an unfilled open polyline.
 * The default value is true.
 * @name PolygonDrawingTool#isPolygon
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(PolygonDrawingTool.prototype, "isPolygon", {
@@ -346,7 +346,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "isPolygon", {
 * Gets or sets whether this tool draws shapes with quadratic bezier curves for each segment, or just straight lines.
 * The default value is false -- only use straight lines.
 * @name PolygonDrawingTool#hasArcs
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
@@ -358,7 +358,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "hasArcs", {
 * Gets or sets whether this tool draws shapes with only orthogonal segments, or segments in any direction.
 * The default value is false -- draw segments in any direction. This does not restrict the closing segment, which may not be orthogonal.
 * @name PolygonDrawingTool#isOrthoOnly
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(PolygonDrawingTool.prototype, "isOrthoOnly", {
@@ -370,7 +370,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "isOrthoOnly", {
 * Gets or sets whether this tool only places the shape's corners on the Diagram's visible grid.
 * The default value is false.
 * @name PolygonDrawingTool#isGridSnapEnabled
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(PolygonDrawingTool.prototype, "isGridSnapEnabled", {
@@ -383,7 +383,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "isGridSnapEnabled", {
 * Gets or sets the Shape that is used to hold the line as it is being drawn.
 * The default value is a simple Shape drawing an unfilled open thin black line.
 * @name PolygonDrawingTool#temporaryShape
-* @function.
+
 * @return {Shape}
 */
 Object.defineProperty(PolygonDrawingTool.prototype, "temporaryShape", {
@@ -403,7 +403,7 @@ Object.defineProperty(PolygonDrawingTool.prototype, "temporaryShape", {
 * Gets or sets the node data object that is copied and added to the model
 * when the drawing operation completes.
 * @name PolygonDrawingTool#archetypePartData
-* @function.
+
 * @return {Object}
 */
 Object.defineProperty(PolygonDrawingTool.prototype, "archetypePartData", {

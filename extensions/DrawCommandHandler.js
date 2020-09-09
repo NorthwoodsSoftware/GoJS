@@ -624,7 +624,7 @@ DrawCommandHandler.prototype.pasteFromClipboard = function() {
 * Gets or sets the arrow key behavior. Possible values are "move", "select", "scroll", and "tree".
 * The default value is "move".
 * @name DrawCommandHandler#arrowKeyBehavior
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(DrawCommandHandler.prototype, "arrowKeyBehavior", {
@@ -641,7 +641,7 @@ Object.defineProperty(DrawCommandHandler.prototype, "arrowKeyBehavior", {
 * Gets or sets the offset at which each repeated pasteSelection() puts the new copied parts from the clipboard.
 * The default value is (10,10).
 * @name DrawCommandHandler#pasteOffset
-* @function.
+
 * @return {Point}
 */
 Object.defineProperty(DrawCommandHandler.prototype, "pasteOffset", {

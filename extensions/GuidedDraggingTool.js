@@ -352,7 +352,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
 * The default value is 6.
 * Guidelines will show up when the aligned nods are ± 6px away from perfect alignment.
 * @name GuidedDraggingTool#guidelineSnapDistance
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "guidelineSnapDistance", {
@@ -369,7 +369,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "guidelineSnapDistance", {
 * Gets or sets whether the guidelines are enabled or disable.
 * The default value is true.
 * @name GuidedDraggingTool#isGuidelineEnabled
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineEnabled", {
@@ -386,7 +386,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineEnabled", {
 * Gets or sets the color of horizontal guidelines.
 * The default value is "gray".
 * @name GuidedDraggingTool#horizontalGuidelineColor
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "horizontalGuidelineColor", {
@@ -404,7 +404,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "horizontalGuidelineColor", 
 * Gets or sets the color of vertical guidelines.
 * The default value is "gray".
 * @name GuidedDraggingTool#verticalGuidelineColor
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "verticalGuidelineColor", {
@@ -422,7 +422,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "verticalGuidelineColor", {
 * Gets or sets the color of center guidelines.
 * The default value is "gray".
 * @name GuidedDraggingTool#centerGuidelineColor
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "centerGuidelineColor", {
@@ -440,7 +440,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "centerGuidelineColor", {
 * Gets or sets the width guidelines.
 * The default value is 1.
 * @name GuidedDraggingTool#guidelineWidth
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "guidelineWidth", {
@@ -463,7 +463,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "guidelineWidth", {
 * The default value is 1000.
 * Set this to Infinity if you want to search the entire diagram no matter how far away.
 * @name GuidedDraggingTool#searchDistance
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "searchDistance", {
@@ -480,7 +480,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "searchDistance", {
 * Gets or sets whether snapping to guidelines is enabled.
 * The default value is true.
 * @name GuidedDraggingTool#isGuidelineSnapEnabled
-* @function.
+
 * @return {Boolean}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineSnapEnabled", {

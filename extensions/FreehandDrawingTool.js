@@ -191,7 +191,7 @@ FreehandDrawingTool.prototype.doMouseUp = function() {
 * Gets or sets the Shape that is used to hold the line as it is being drawn.
 * The default value is a simple Shape drawing an unfilled open thin black line.
 * @name FreehandDrawingTool#temporaryShape
-* @function.
+
 * @return {Shape}
 */
 Object.defineProperty(FreehandDrawingTool.prototype, "temporaryShape", {
@@ -211,7 +211,7 @@ Object.defineProperty(FreehandDrawingTool.prototype, "temporaryShape", {
 * Gets or sets the node data object that is copied and added to the model
 * when the freehand drawing operation completes.
 * @name FreehandDrawingTool#archetypePartData
-* @function.
+
 * @return {Object}
 */
 Object.defineProperty(FreehandDrawingTool.prototype, "archetypePartData", {
@@ -224,7 +224,7 @@ Object.defineProperty(FreehandDrawingTool.prototype, "archetypePartData", {
 * rather than on top of an existing Part.
 * The default value is true.
 * @name FreehandDrawingTool#isBackgroundOnly
-* @function.
+
 * @return {Object}
 */
 Object.defineProperty(FreehandDrawingTool.prototype, "isBackgroundOnly", {

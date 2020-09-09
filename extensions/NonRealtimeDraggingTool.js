@@ -21,6 +21,7 @@
 */
 function NonRealtimeDraggingTool() {
   go.DraggingTool.call(this);
+  this._duration = 0;  // duration of movement animation; <= 0 to disable
   /** @type {Part} */
   this._imagePart = null;  // a Part holding a translucent image of what would be dragged
   /** @type {Map.<Part,DraggingInfo>} */
@@ -29,6 +30,17 @@ function NonRealtimeDraggingTool() {
   this._originalDraggedParts = null;  // the saved normal value of DraggingTool.draggedParts
 }
 go.Diagram.inherit(NonRealtimeDraggingTool, go.DraggingTool);
+
+/**
+* Gets or sets how long the movement animation should be to move the actual parts upon a mouse-up.
+* The default value is zero -- there is no animation of the movement.
+* @this {NonRealtimeDraggingTool}
+* @return {number}
+*/
+Object.defineProperty(NonRealtimeDraggingTool.prototype, "duration", {
+  get: function() { return this._duration; },
+  set: function(val) { this._duration = val; }
+});
 
 /**
 * Call the base method, and then make an image of the returned collection,
@@ -65,7 +77,7 @@ NonRealtimeDraggingTool.prototype.doActivate = function() {
     this.diagram.add(this._imagePart);
     this._originalDraggedParts = this.draggedParts;
     this._ghostDraggedParts = go.DraggingTool.prototype.computeEffectiveCollection.call(this,
-                                                         new go.List().addAll([this._imagePart]));
+                                                         new go.List().add(this._imagePart));
     this.draggedParts = this._ghostDraggedParts;
   }
 };
@@ -89,10 +101,20 @@ NonRealtimeDraggingTool.prototype.doDeactivate = function() {
 * @this {NonRealtimeDraggingTool}
 */
 NonRealtimeDraggingTool.prototype.doMouseUp = function() {
-  if (this._originalDraggedParts !== null) {
-    this.draggedParts = this._originalDraggedParts;
+  var partsmap = this._originalDraggedParts;
+  if (partsmap !== null) {
+    this.draggedParts = partsmap;
   }
   go.DraggingTool.prototype.doMouseUp.call(this);
+  if (partsmap !== null && this.duration > 0) {
+    var anim = new go.Animation();
+    anim.duration = this.duration;
+    partsmap.each(function(kvp) {
+      var part = kvp.key;
+      anim.add(part, "location", kvp.value.point, part.location);
+    });
+    anim.start();
+  }
 };
 
 /**

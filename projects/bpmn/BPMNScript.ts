@@ -96,16 +96,13 @@ export function init() {
     return new go.Geometry();
   });
 
-  const annotationStr = 'M 150,0L 0,0L 0,600L 150,600 M 800,0';
-  const annotationGeo = go.Geometry.parse(annotationStr);
-  annotationGeo.normalize();
   go.Shape.defineFigureGenerator('Annotation', function (shape, w, h) {
-    const geo = annotationGeo.copy();
-    // calculate how much to scale the Geometry so that it fits in w x h
-    const bounds = geo.bounds;
-    const scale = Math.min(w / bounds.width, h / bounds.height);
-    geo.scale(scale, scale);
-    return geo;
+    var len = Math.min(w, 10);
+    return new go.Geometry()
+      .add(new go.PathFigure(len, 0)
+           .add(new go.PathSegment(go.PathSegment.Line, 0, 0))
+           .add(new go.PathSegment(go.PathSegment.Line, 0, h))
+           .add(new go.PathSegment(go.PathSegment.Line, len, h)));
   });
 
   const gearStr = 'F M 391,5L 419,14L 444.5,30.5L 451,120.5L 485.5,126L 522,141L 595,83L 618.5,92L 644,106.5' +
@@ -681,7 +678,10 @@ export function init() {
       { background: GradientLightGray, locationSpot: go.Spot.Center },
       new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Shape, 'Annotation', // A left bracket shape
-        { portId: '', fromLinkable: true, cursor: 'pointer', fromSpot: go.Spot.Left, strokeWidth: 2, stroke: 'gray' }),
+        {
+          portId: '', fromLinkable: true, cursor: 'pointer', fromSpot: go.Spot.Left,
+          strokeWidth: 2, stroke: 'gray', fill: 'transparent'
+        }),
       $(go.TextBlock,
         { margin: 5, editable: true },
         new go.Binding('text').makeTwoWay())

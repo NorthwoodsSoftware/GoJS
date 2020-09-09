@@ -69,7 +69,7 @@ TableLayout.prototype.cloneProtected = function(copy) {
 * The default value is {@link Spot#Default}.
 * Setting this property does not raise any events.
 * @name TableLayout#defaultAlignment
-* @function.
+
 * @return {Spot}
 */
 Object.defineProperty(TableLayout.prototype, "defaultAlignment", {
@@ -82,7 +82,7 @@ Object.defineProperty(TableLayout.prototype, "defaultAlignment", {
 * The default value is {@link GraphObject#Default}.
 * Setting this property does not raise any events.
 * @name TableLayout#defaultStretch
-* @function.
+
 * @return {EnumValue}
 */
 Object.defineProperty(TableLayout.prototype, "defaultStretch", {
@@ -119,7 +119,7 @@ TableLayout.prototype.getRowDefinition = function(idx) {
 * This read-only property returns the number of rows in this TableLayout.
 * This value is only valid after the layout has been performed.
 * @name TableLayout#rowCount
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(TableLayout.prototype, "rowCount", {
@@ -183,7 +183,7 @@ TableLayout.prototype.getColumnDefinition = function(idx) {
 * This read-only property returns the number of columns in this TableLayout.
 * This value is only valid after the layout has been performed.
 * @name TableLayout#rowCount
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(TableLayout.prototype, "columnCount", {

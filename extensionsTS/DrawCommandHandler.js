@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.DrawCommandHandler = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -77,7 +78,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 this._arrowKeyBehavior = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(DrawCommandHandler.prototype, "pasteOffset", {
@@ -90,7 +91,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('DrawCommandHandler.pasteOffset must be a Point, not: ' + val);
                 this._pasteOffset.set(val);
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

@@ -131,7 +131,7 @@ TreeMapLayout.prototype.computeTotals = function(diagram) {
 * Gets or sets whether the top-level organization is horizontal or vertical.
 * The default value is false.
 * @name TreeMapLayout#isTopLevelHorizontal
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(TreeMapLayout.prototype, "isTopLevelHorizontal", {

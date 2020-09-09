@@ -81,7 +81,7 @@ function ZoomSlider(diagram, options) {
 /**
  * This read-only property returns the diagram for which the slider is handling zoom.
  * @name ZoomSlider#diagram
- * @function.
+ 
  * @return {Diagram}
  */
 Object.defineProperty(ZoomSlider.prototype, 'diagram', {
@@ -92,7 +92,7 @@ Object.defineProperty(ZoomSlider.prototype, 'diagram', {
  * Gets or sets the overall length, in pixels, that the slider will occupy.
  * The default value is 125.
  * @name ZoomSlider#size
- * @function.
+ 
  * @return {number}
  */
 Object.defineProperty(ZoomSlider.prototype, 'size', {
@@ -110,7 +110,7 @@ Object.defineProperty(ZoomSlider.prototype, 'size', {
  * Gets or sets the height/width of the buttons at each end of the slider.
  * The default value is 25.
  * @name ZoomSlider#buttonSize
- * @function.
+ 
  * @return {number}
  */
 Object.defineProperty(ZoomSlider.prototype, 'buttonSize', {
@@ -128,7 +128,7 @@ Object.defineProperty(ZoomSlider.prototype, 'buttonSize', {
  * Gets or sets the alignment Spot of this slider to determine where it should be placed relative to the diagram.
  * The default value is Spot.BottomRight.
  * @name ZoomSlider#alignment
- * @function.
+ 
  * @return {Spot}
  */
 Object.defineProperty(ZoomSlider.prototype, 'alignment', {
@@ -146,7 +146,7 @@ Object.defineProperty(ZoomSlider.prototype, 'alignment', {
  * Gets or sets the Spot on this slider to be used as the alignment point when placing it relative to the diagram.
  * The default value is Spot.BottomRight.
  * @name ZoomSlider#alignmentFocus
- * @function.
+ 
  * @return {Spot}
  */
 Object.defineProperty(ZoomSlider.prototype, 'alignmentFocus', {
@@ -165,7 +165,7 @@ Object.defineProperty(ZoomSlider.prototype, 'alignmentFocus', {
  * Must be either 'horizontal' or 'vertical' and is case-sensitive.
  * The default value is `'vertical'`.
  * @name ZoomSlider#orientation
- * @function.
+ 
  * @return {string}
  */
 Object.defineProperty(ZoomSlider.prototype, 'orientation', {
@@ -186,7 +186,7 @@ Object.defineProperty(ZoomSlider.prototype, 'orientation', {
  * Gets or sets the opacity of the slider.
  * The default value is 0.75.
  * @name ZoomSlider#opacity
- * @function.
+ 
  * @return {Spot}
  */
 Object.defineProperty(ZoomSlider.prototype, 'opacity', {

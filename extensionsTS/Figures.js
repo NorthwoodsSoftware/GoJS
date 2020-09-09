@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.FigureParameter = void 0;
     // This file holds definitions of all standard shape figures -- string values for Shape.figure.
     // You do not need to load this file in order to use named Shape figure.
     // The following figures are built-in to the go.js library and thus do not need to be redefined:
@@ -49,7 +50,7 @@
                     throw new Error('Shape name must be a valid string.');
                 this._name = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FigureParameter.prototype, "defaultValue", {
@@ -62,7 +63,7 @@
                     throw new Error('The default value must be a real number, not: ' + val);
                 this._defaultValue = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FigureParameter.prototype, "minimum", {
@@ -75,7 +76,7 @@
                     throw new Error('Minimum must be a real number, not: ' + val);
                 this._minimum = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FigureParameter.prototype, "maximum", {
@@ -88,7 +89,7 @@
                     throw new Error('Maximum must be a real number, not: ' + val);
                 this._maximum = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

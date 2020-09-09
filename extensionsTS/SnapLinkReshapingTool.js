@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SnapLinkReshapingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -67,7 +68,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('new value for SnapLinkReshapingTool.gridCellSize must be a Size, not: ' + val);
                 this._gridCellSize = val.copy();
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SnapLinkReshapingTool.prototype, "gridOrigin", {
@@ -82,7 +83,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('new value for SnapLinkReshapingTool.gridOrigin must be a Point, not: ' + val);
                 this._gridOrigin = val.copy();
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SnapLinkReshapingTool.prototype, "isGridSnapEnabled", {
@@ -98,7 +99,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('new value for SnapLinkReshapingTool.isGridSnapEnabled must be a boolean, not: ' + val);
                 this._isGridSnapEnabled = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SnapLinkReshapingTool.prototype, "avoidsNodes", {
@@ -115,7 +116,7 @@ var __extends = (this && this.__extends) || (function () {
                     throw new Error('new value for SnapLinkReshapingTool.avoidsNodes must be a boolean, not: ' + val);
                 this._avoidsNodes = val;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

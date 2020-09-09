@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SectorReshapingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -68,7 +69,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._radiusProperty; },
             set: function (val) { this._radiusProperty = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SectorReshapingTool.prototype, "angleProperty", {
@@ -79,7 +80,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._angleProperty; },
             set: function (val) { this._angleProperty = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SectorReshapingTool.prototype, "sweepProperty", {
@@ -90,7 +91,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._sweepProperty; },
             set: function (val) { this._sweepProperty = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

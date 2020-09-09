@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Multi-color Links</title>
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <meta name="description" content="Links that can render different colors for equal lengths along the link path.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+
+  // Assume that a Link may have a  linkdata.colors  property that is an Array of CSS color strings.
+  // Also assume that each Link has as many Shapes in it that are marked with  isPanelMain: true
+  // as you want to get a color from the data.colors Array.
+  function MultiColorLink() {
+    go.Link.call(this);
+  }
+  go.Diagram.inherit(MultiColorLink, go.Link);
+
+  MultiColorLink.prototype.makeGeometry = function() {
+    var geo = go.Link.prototype.makeGeometry.call(this);
+    var colors = this.data.colors;
+    if (Array.isArray(colors) && colors.length > 0) {
+      var paths = [];  // find all path Shapes
+      this.elements.each(function(elt) {
+        if (elt.isPanelMain && elt instanceof go.Shape) {
+          paths.push(elt);
+        }
+      });
+      var numcolors = Math.min(colors.length, paths.length);
+      if (numcolors > 0) {
+        var seclen = geo.flattenedTotalLength / numcolors;  // length of each color section
+        for (var i = 0; i < paths.length; i++) {  // go through all path Shapes
+          var shape = paths[i];
+          if (i < numcolors) {
+            shape.visible = true;  // make sure this Shape can be seen
+            shape.stroke = colors[i];  // and assign a color
+            if (i > 0) {  // and a stroke dash array so that it only draws the needed fraction
+              shape.strokeDashArray = [0, i * seclen, seclen, 99999];
+            }
+          } else {  // unneeded Shapes are not visible
+            shape.visible = false;
+          }
+        }
+      }
+    }
+    return geo;
+  }
+
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        {
+          layout: $(go.ForceDirectedLayout),
+          "undoManager.isEnabled": true
+        });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides },
+        $(go.Shape,
+          { fill: "white", strokeWidth: 0 },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 12 },
+          new go.Binding("text"))
+      );
+
+    function linkPath() {  // common styling for each colored section, each rendered by a different Shape
+      return $(go.Shape, { isPanelMain: true, strokeWidth: 5 });
+    }
+
+    myDiagram.linkTemplate =
+      $(MultiColorLink,
+        {
+          routing: go.Link.AvoidsNodes, corner: 10,
+          relinkableFrom: true, relinkableTo: true,
+          reshapable: true, resegmentable: true
+        },
+        linkPath(),  // this template can show at most 5 colors,
+        linkPath(),  // one for each link path Shape
+        linkPath(),
+        linkPath(),
+        linkPath()   // remove any unneeded path Shapes here, if you never need to show 5 colors at once in a single link
+      );
+
+    load();
+  }
+
+  // save a model to and load a model from Json text, displayed below the Diagram
+  function save() {
+    var str = myDiagram.model.toJson();
+    document.getElementById("mySavedModel").value = str;
+  }
+  function load() {
+    var str = document.getElementById("mySavedModel").value;
+    myDiagram.model = go.Model.fromJson(str);
+  }
+  </script>
+</head>
+<body onload="init()">
+  <div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px; background: #444"></div>
+    <button onclick="load()">Load</button>
+    <button onclick="save()">Save</button>
+    <textarea id="mySavedModel" style="width:100%;height:250px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":1, "text":"Alpha", "color":"lightblue"},
+{"key":2, "text":"Beta", "color":"orange"},
+{"key":3, "text":"Gamma", "color":"lightgreen"},
+{"key":4, "text":"Delta", "color":"pink"},
+{"key":5, "text":"Epsilon", "color":"gold"}
+ ],
+  "linkDataArray": [ 
+{"from":1, "to":2, "colors":[ "red","orange","gold","green","blue" ]},
+{"from":1, "to":3, "colors":[ "red","blue" ]},
+{"from":1, "to":4, "colors":[ "purple","orange","green" ]},
+{"from":4, "to":5, "colors":[ "fuchsia" ]},
+{"from":5, "to":2}
+ ]}
+    </textarea>
+    <p>
+      The Link template depends on a custom <b>MultiColorLink</b> class to
+      render sections of each of the path Shapes that it has in a different color.
+      The colors are specified in the link data object's <b>colors</b> property, an Array of CSS color strings.
+      The template must have as many <a>GraphObject.isPanelMain</a> Shapes in it as the maximum length of the Arrays of colors.
+      This sample's template has five path Shapes in it so that it can render in five different colors.
+      But if for example you need to show at most two colors,
+      for efficiency you should change the template to have only two path Shapes in it.
+    </p>
+  </div>
+</body>
+</html>

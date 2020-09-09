@@ -42,7 +42,7 @@ go.Diagram.inherit(SnapLinkReshapingTool, go.LinkReshapingTool);
 * Gets or sets the {@link Size} of each grid cell to which link points will be snapped.
 * The default value is NaNxNaN, which means use the {@link Diagram#grid}'s {@link Panel#gridCellSize}.
 * @name SnapLinkReshapingTool#gridCellSize
-* @function.
+
 * @return {Size}
 */
 Object.defineProperty(SnapLinkReshapingTool.prototype, "gridCellSize", {
@@ -57,7 +57,7 @@ Object.defineProperty(SnapLinkReshapingTool.prototype, "gridCellSize", {
 * Gets or sets the {@link Point} origin for the grid to which link points will be snapped.
 * The default value is NaN,NaN, which means use the {@link Diagram#grid}'s {@link Panel#gridOrigin}.
 * @name SnapLinkReshapingTool#gridOrigin
-* @function.
+
 * @return {Point}
 */
 Object.defineProperty(SnapLinkReshapingTool.prototype, "gridOrigin", {

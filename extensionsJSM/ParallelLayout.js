@@ -52,7 +52,7 @@ export class ParallelLayout extends go.TreeLayout {
     set mergeNode(val) { this._mergeNode = val; }
     /**
      * Overridable predicate for deciding if a Node is a Split node.
-     * By default this checks the node's {@link Panel#category} to see if it is
+     * By default this checks the node's {@link Part#category} to see if it is
      * "Split", "Start", "For", "While", "If", or "Switch".
      * @param {Node} node
      * @return {boolean}
@@ -65,7 +65,7 @@ export class ParallelLayout extends go.TreeLayout {
     }
     /**
      * Overridable predicate for deciding if a Node is a Merge node.
-     * By default this checks the node's {@link Panel#category} to see if it is
+     * By default this checks the node's {@link Part#category} to see if it is
      * "Merge", "End", "EndFor", "EndWhile", "EndIf", or "EndSwitch".
      * @param {Node} node
      * @return {boolean}

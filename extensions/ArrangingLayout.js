@@ -276,7 +276,7 @@ ArrangingLayout.prototype.moveSideCollection = function(sidecoll, mainbounds, si
 * The default value is a function that is true when there are any links connecting with the node.
 * Such default behavior will have the sideLayout position all of the singleton nodes.
 * @name ArrangingLayout#side
-* @function.
+
 * @return {function}
 */
 Object.defineProperty(ArrangingLayout.prototype, "filter", {
@@ -296,7 +296,7 @@ Object.defineProperty(ArrangingLayout.prototype, "filter", {
 * The default value is Spot.BottomSide.
 * Currently only handles a single side.
 * @name ArrangingLayout#side
-* @function.
+
 * @return {Spot}
 */
 Object.defineProperty(ArrangingLayout.prototype, "side", {
@@ -316,7 +316,7 @@ Object.defineProperty(ArrangingLayout.prototype, "side", {
 * Gets or sets the space between the main layout and the side layout.
 * The default value is Size(20, 20).
 * @name ArrangingLayout#spacing
-* @function.
+
 * @return {Size}
 */
 Object.defineProperty(ArrangingLayout.prototype, "spacing", {
@@ -335,7 +335,7 @@ Object.defineProperty(ArrangingLayout.prototype, "spacing", {
 * The default value is an instance of GridLayout.
 * Any new value must not be null.
 * @name ArrangingLayout#primaryLayout
-* @function.
+
 * @return {Layout}
 */
 Object.defineProperty(ArrangingLayout.prototype, "primaryLayout", {
@@ -353,7 +353,7 @@ Object.defineProperty(ArrangingLayout.prototype, "primaryLayout", {
 * Set this property to null in order to get the default behavior of the @{link #primaryLayout}
 * when dealing with multiple connected graphs as a whole.
 * @name ArrangingLayout#arrangingLayout
-* @function.
+
 * @return {Layout}
 */
 Object.defineProperty(ArrangingLayout.prototype, "arrangingLayout", {
@@ -370,7 +370,7 @@ Object.defineProperty(ArrangingLayout.prototype, "arrangingLayout", {
 * The default value is an instance of GridLayout.
 * Any new value must not be null.
 * @name ArrangingLayout#sideLayout
-* @function.
+
 * @return {Layout}
 */
 Object.defineProperty(ArrangingLayout.prototype, "sideLayout", {

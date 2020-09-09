@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ColumnResizingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -70,7 +71,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._handleArchetype; },
             set: function (val) { this._handleArchetype = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ColumnResizingTool.prototype, "tableName", {
@@ -81,7 +82,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._tableName; },
             set: function (val) { this._tableName = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ColumnResizingTool.prototype, "handle", {
@@ -91,7 +92,7 @@ var __extends = (this && this.__extends) || (function () {
              * Its {@link Adornment#adornedObject} is the same as the {@link #adornedTable}.
              */
             get: function () { return this._handle; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ColumnResizingTool.prototype, "adornedTable", {
@@ -100,7 +101,7 @@ var __extends = (this && this.__extends) || (function () {
              * This must be contained within the selected {@link Part}.
              */
             get: function () { return this._adornedTable; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

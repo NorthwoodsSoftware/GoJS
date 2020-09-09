@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.init = void 0;
     var go = require("../release/go.js");
     var RotateMultipleTool_js_1 = require("./RotateMultipleTool.js");
     function init() {

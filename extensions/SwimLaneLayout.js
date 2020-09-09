@@ -422,7 +422,6 @@ SwimLaneLayout.prototype.getLane = function(v) {
       } else {
         lane = data[this.laneProperty];
       }
-console.log("added " + lane)
       if (typeof lane === "string") return lane;
       return "";
     }

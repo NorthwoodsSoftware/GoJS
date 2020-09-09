@@ -275,14 +275,6 @@ arr.push([
 ]);
 
 arr.push([
-  "doubleTreeJSON",
-  "Double Tree JSON",
-  "Double Tree, loading JSON from server.",
-  "doubleTree",
-  ["collections", "treelayout", "frameworks"]
-]);
-
-arr.push([
   "mindMap",
   "Mind Map",
   "A Mind Map, a double-tree whose nodes have an \"add\" button when selected and a context menu.",
@@ -419,6 +411,14 @@ arr.push([
   "Demonstrates custom routing for Links running through other Nodes.",
   "multiNodePathLinks",
   ["collections", "links"]
+]);
+
+arr.push([
+  "multiColorLinks",
+  "Multi-color Links",
+  "Demonstrates a custom Link that can be stroked with multiple consecutive colors.",
+  "multiColorLinks",
+  ["links", "forcedirectedlayout", "geometries"]
 ]);
 
 arr.push([
@@ -1492,14 +1492,6 @@ arr.push(["minimal",
 ]);
 
 // Previously unlisted samples
-arr.push([
-  "minimalJSON",
-  "Minimal JSON",
-  "Minimal, loading JSON from server.",
-  "minimal",
-  ["frameworks"]
-]);
-
 arr.push([
   "minimalBlob",
   "Minimal Image Download",

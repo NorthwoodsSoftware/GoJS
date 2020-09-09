@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SwimLaneLayout = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -82,7 +83,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "laneNames", {
@@ -103,7 +104,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "laneComparer", {
@@ -120,7 +121,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "laneSpacing", {
@@ -139,7 +140,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "router", {
@@ -153,7 +154,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "reducer", {
@@ -175,7 +176,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.invalidateLayout();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "lanePositions", {
@@ -184,7 +185,7 @@ var __extends = (this && this.__extends) || (function () {
              * in the form of a {@link Map} mapping lane names (strings) to numbers.
              */
             get: function () { return this._lanePositions; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(SwimLaneLayout.prototype, "laneBreadths", {
@@ -193,7 +194,7 @@ var __extends = (this && this.__extends) || (function () {
              * in the form of a {@link Map} mapping lane names (strings) to numbers.
              */
             get: function () { return this._laneBreadths; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

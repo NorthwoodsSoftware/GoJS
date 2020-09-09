@@ -9,6 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Quadtree = void 0;
     /*
     *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
     */
@@ -115,7 +116,7 @@
              * Gets the node capacity of this quadtree. This is the number of objects a node can contain before it splits.
              */
             get: function () { return this._nodeCapacity; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Quadtree.prototype, "maxLevels", {
@@ -123,7 +124,7 @@
              * Gets the maximum depth the Quadtree will allow before it will no longer split..
              */
             get: function () { return this._maxLevels; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Quadtree.prototype, "bounds", {
@@ -131,7 +132,7 @@
              * Gets the boundaries of the node. All nodes should be square.
              */
             get: function () { return this._root.bounds; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Quadtree.prototype, "root", {
@@ -139,7 +140,7 @@
              * Gets the root node of the tree
              */
             get: function () { return this._root; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GeometryReshapingTool = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -76,7 +77,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._handleArchetype; },
             set: function (value) { this._handleArchetype = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GeometryReshapingTool.prototype, "reshapeObjectName", {
@@ -85,7 +86,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._reshapeObjectName; },
             set: function (value) { this._reshapeObjectName = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GeometryReshapingTool.prototype, "handle", {
@@ -95,7 +96,7 @@ var __extends = (this && this.__extends) || (function () {
              * Its {@link Adornment#adornedObject} is the same as the {@link #adornedShape}.
              */
             get: function () { return this._handle; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GeometryReshapingTool.prototype, "adornedShape", {
@@ -104,7 +105,7 @@ var __extends = (this && this.__extends) || (function () {
              * This must be contained within the selected Part.
              */
             get: function () { return this._adornedShape; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GeometryReshapingTool.prototype, "originalGeometry", {
@@ -113,7 +114,7 @@ var __extends = (this && this.__extends) || (function () {
              * so that it can be restored if this tool is cancelled.
              */
             get: function () { return this._originalGeometry; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ZoomSlider = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -104,7 +105,7 @@
              * This read-only property returns the diagram for which the slider is handling zoom.
              */
             get: function () { return this._diagram; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ZoomSlider.prototype, "size", {
@@ -120,7 +121,7 @@
                     this.resize();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ZoomSlider.prototype, "buttonSize", {
@@ -136,7 +137,7 @@
                     this.resize();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ZoomSlider.prototype, "alignment", {
@@ -152,7 +153,7 @@
                     this.realign();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ZoomSlider.prototype, "alignmentFocus", {
@@ -168,7 +169,7 @@
                     this.realign();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ZoomSlider.prototype, "orientation", {
@@ -188,7 +189,7 @@
                     this.resize(true);
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ZoomSlider.prototype, "opacity", {
@@ -206,7 +207,7 @@
                     }
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

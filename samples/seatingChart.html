@@ -1,11 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
   <title>Seating Chart</title>
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
   <meta name="description" content="A seating chart editor for assigning places at tables." />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
 
   <style>
     /* Use a Flexbox to make the Palette/Diagram responsive */
@@ -286,6 +285,13 @@
           if (isPerson(n)) unassignSeat(n.data);
         });
       });
+
+      go.AnimationManager.defineAnimationEffect("location",
+        function(obj, startValue, endValue, easing, currentTime, duration, animationState) {
+          obj.location = new go.Point(easing(currentTime, startValue.x, endValue.x - startValue.x, duration),
+                                      easing(currentTime, startValue.y, endValue.y - startValue.y, duration));
+        }
+      );
     } // end init
 
     function isPerson(n) { return n !== null && n.category === ""; }
@@ -453,7 +459,10 @@
       if (table && person) {
         var seat = table.findObject(guest.seat.toString());
         var loc = seat.getDocumentPoint(go.Spot.Center);
-        person.location = loc;
+        // animate movement, instead of: person.location = loc;
+        var animation = new go.Animation();
+        animation.add(person, "location", person.location, loc);
+        animation.start();
       }
     }
 

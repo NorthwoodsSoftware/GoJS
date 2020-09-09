@@ -43,7 +43,7 @@ function FigureParameter(name, def, min, max) {
 /**
 * Gets or sets the name of the figure.
 * @name FigureParamater#name
-* @function.
+
 * @return {string}
 */
 Object.defineProperty(FigureParameter.prototype, "name", {
@@ -71,7 +71,7 @@ Object.defineProperty(FigureParameter.prototype, "defaultValue", {
 /**
 * Gets or sets the minimum value allowed for the figure parameter.
 * @name FigureParameter#minimum
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(FigureParameter.prototype, "minimum", {
@@ -85,7 +85,7 @@ Object.defineProperty(FigureParameter.prototype, "minimum", {
 /**
 * Gets or sets the maximum value allowed for the figure parameter.
 * @name FigureParameter#maximum
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(FigureParameter.prototype, "maximum", {

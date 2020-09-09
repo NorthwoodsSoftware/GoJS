@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.init = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -26,7 +27,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         var myDiagram = $(go.Diagram, 'myDiagramDiv', {
-            draggingTool: new NonRealtimeDraggingTool_js_1.NonRealtimeDraggingTool(),
+            draggingTool: $(NonRealtimeDraggingTool_js_1.NonRealtimeDraggingTool, { duration: 600 }),
             'undoManager.isEnabled': true
         });
         myDiagram.nodeTemplate =

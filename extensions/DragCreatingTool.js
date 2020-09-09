@@ -235,7 +235,7 @@ DragCreatingTool.prototype.insertPart = function(bounds) {
 * <p/>
 * Modifying this property while this tool {@link Tool#isActive} might have no effect.
 * @name DragCreatingTool#box
-* @function.
+
 * @return {Part}
 */
 Object.defineProperty(DragCreatingTool.prototype, "box", {
@@ -250,7 +250,7 @@ Object.defineProperty(DragCreatingTool.prototype, "box", {
 * A value of zero will allow this tool to run without any wait after the mouse down.
 * Setting this property does not raise any events.
 * @name DragCreatingTool#delay
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(DragCreatingTool.prototype, "delay", {
@@ -264,7 +264,7 @@ Object.defineProperty(DragCreatingTool.prototype, "delay", {
 * The value must be non-null for this tool to be able to run.
 * Setting this property does not raise any events.
 * @name DragCreatingTool#archetypeNodeData
-* @function.
+
 * @return {Object}
 */
 Object.defineProperty(DragCreatingTool.prototype, "archetypeNodeData", {

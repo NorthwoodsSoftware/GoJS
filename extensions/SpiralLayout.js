@@ -145,7 +145,7 @@ SpiralLayout.prototype.diameter = function(v) {
 * Gets or sets the radius distance.
 * The default value is NaN.
 * @name SpiralLayout#radius
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(SpiralLayout.prototype, "radius", {
@@ -163,7 +163,7 @@ Object.defineProperty(SpiralLayout.prototype, "radius", {
 * Gets or sets the spacing between nodes.
 * The default value is 100.
 * @name SpiralLayout#spacing
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(SpiralLayout.prototype, "spacing", {
@@ -181,7 +181,7 @@ Object.defineProperty(SpiralLayout.prototype, "spacing", {
 * Gets or sets whether the spiral should go clockwise or counter-clockwise.
 * The default value is true.
 * @name SpiralLayout#clockwise
-* @function.
+
 * @return {boolean}
 */
 Object.defineProperty(SpiralLayout.prototype, "clockwise", {

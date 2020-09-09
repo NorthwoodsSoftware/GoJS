@@ -65,7 +65,7 @@ DimensioningLink.prototype.cloneProtected = function(copy) {
 * New values must be one of: 0, 90, 180, 270, or NaN.
 * The value NaN indicates that the measurement is point-to-point and not orthogonal.
 * @name DimensioningLink#direction
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(DimensioningLink.prototype, "direction", {
@@ -85,7 +85,7 @@ Object.defineProperty(DimensioningLink.prototype, "direction", {
 * Larger values mean further away from the nodes.
 * The new value must be greater than or equal to zero.
 * @name DimensioningLink#extension
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(DimensioningLink.prototype, "extension", {
@@ -98,7 +98,7 @@ Object.defineProperty(DimensioningLink.prototype, "extension", {
 * extension lines that are orthogonal to the dimension line.
 * The default value is 10.
 * @name DimensioningLink#inset
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(DimensioningLink.prototype, "inset", {
@@ -116,7 +116,7 @@ Object.defineProperty(DimensioningLink.prototype, "inset", {
 * The distance that the extension lines should come short of the measured points.
 * The default value is 10.
 * @name DimensioningLink#gap
-* @function.
+
 * @return {number}
 */
 Object.defineProperty(DimensioningLink.prototype, "gap", {

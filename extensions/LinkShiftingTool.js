@@ -54,7 +54,7 @@ go.Diagram.inherit(LinkShiftingTool, go.Tool);
 /*
 * A small GraphObject used as a shifting handle.
 * @name LinkShiftingTool#fromHandleArchetype
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(LinkShiftingTool.prototype, "fromHandleArchetype", {
@@ -65,7 +65,7 @@ Object.defineProperty(LinkShiftingTool.prototype, "fromHandleArchetype", {
 /*
 * A small GraphObject used as a shifting handle.
 * @name LinkShiftingTool#toHandleArchetype
-* @function.
+
 * @return {GraphObject}
 */
 Object.defineProperty(LinkShiftingTool.prototype, "toHandleArchetype", {

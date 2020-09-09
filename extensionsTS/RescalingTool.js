@@ -25,6 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.RescalingTool = void 0;
     var go = require("../release/go.js");
     // A custom Tool to change the scale of an object in a Part.
     /*
@@ -81,7 +82,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._adornedObject; },
             set: function (val) { this._adornedObject = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(RescalingTool.prototype, "handleArchetype", {
@@ -99,7 +100,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._handleArchetype; },
             set: function (val) { this._handleArchetype = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(RescalingTool.prototype, "handle", {
@@ -113,7 +114,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._handle; },
             set: function (val) { this._handle = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(RescalingTool.prototype, "rescaleObjectName", {
@@ -125,7 +126,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._rescaleObjectName; },
             set: function (val) { this._rescaleObjectName = val; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
@@ -269,7 +270,7 @@ var __extends = (this && this.__extends) || (function () {
             this.stopTool();
         };
         /**
-        * Set the {@link GraphObject.scale} of the {@link #findRescaleObject}.
+        * Set the {@link GraphObject#scale} of the {@link #findRescaleObject}.
         * @this {RescalingTool}
         * @param {number} newScale
         */
