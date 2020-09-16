@@ -715,6 +715,14 @@ arr.push([
 ]);
 
 arr.push([
+  "connectionBoxNode",
+  "Connection Box",
+  "A Node containing ports that allow linking between them, within the node as well as between nodes, with custom link validation.",
+  "connectionBoxNode",
+  ["tables", "itemarrays", "links", "ports"]
+]);
+
+arr.push([
   "selectablePorts",
   "Selectable Ports",
   "A Node with ports that can be selected and deleted.",

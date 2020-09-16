@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Box Nodes</title>
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+  <meta name="description" content="Support link connections within a node as well as between nodes.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+      var $ = go.GraphObject.make;
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            initialContentAlignment: go.Spot.Center,  // for v1.*
+            initialScale: 1.4,
+            "undoManager.isEnabled": true,
+            "linkingTool.direction": go.LinkingTool.ForwardsOnly,
+            "ModelChanged": function(e) {     // just for demonstration purposes,
+              if (e.isTransactionFinished) {  // show the model data in the page's TextArea
+                document.getElementById("mySavedModel").textContent = e.model.toJson();
+              }
+            }
+          });
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Table",
+          new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+          {
+            selectionObjectName: "BODY",
+            linkValidation: function(fromnode, fromport, tonode, toport, link) {
+              if (!fromport || !toport) return false;
+              if (fromnode === tonode) {
+                // inside a node must go from an input port to an output port
+                return fromport.portId[0] === "i" && toport.portId[0] === "o";
+              } else {
+                // between nodes the port colors must match
+                if (fromport.fill !== toport.fill) return false;
+                // between nodes must go from an output port to an input port
+                return fromport.portId[0] === "o" && toport.portId[0] === "i";
+              }
+              return true;
+            }
+          },
+
+          $(go.RowColumnDefinition, { column: 1, width: 70 }),
+          $(go.Shape,
+            {
+              name: "BODY",
+              row: 0, rowSpan: 99, column: 0, columnSpan: 3, stretch: go.GraphObject.Fill,
+              fill: "gray", strokeWidth: 0, margin: new go.Margin(0, 8)
+            },
+          ),
+          $(go.TextBlock,
+            { row: 0, columnSpan: 3, margin: new go.Margin(4, 2, 2, 2) },
+            new go.Binding("text")),
+          $(go.TextBlock,
+            { row: 2, columnSpan: 3, margin: new go.Margin(4, 2, 2, 2) },
+            new go.Binding("text", "text2")),
+
+          $(go.Panel, "Table",
+            new go.Binding("itemArray", "inPorts"),
+            {
+              row: 1, column: 0,
+              defaultSeparatorPadding: new go.Margin(4, 0),
+              itemTemplate:  // input ports
+                $(go.Panel, "TableRow",
+                  { background: "white" },
+                  $(go.Shape,
+                    {
+                      width: 6, height: 6, strokeWidth: 0, margin: new go.Margin(2, 6, 2, 0),
+                      fromSpot: go.Spot.Right, toSpot: go.Spot.Left,
+                      fromLinkable: true, toLinkable: true,
+                      fromLinkableSelfNode: true, toLinkableSelfNode: true, cursor: "pointer"
+                    },
+                    new go.Binding("portId", "row", function(r) { return "i" + r; }).ofObject(),
+                    new go.Binding("fill", "", convertToColor))
+                )
+            }
+          ),
+          $(go.Shape,
+            {
+              row: 1, column: 1, fill: "white", strokeWidth: 0,
+              stretch: go.GraphObject.Fill
+            }),
+          $(go.Panel, "Table",
+            new go.Binding("itemArray", "outPorts"),
+            {
+              row: 1, column: 2,
+              defaultSeparatorPadding: new go.Margin(4, 0),
+              itemTemplate:  // output ports
+                $(go.Panel, "TableRow",
+                  { background: "white" },
+                  $(go.Shape,
+                    {
+                      width: 6, height: 6, strokeWidth: 0, margin: new go.Margin(2, 0, 2, 6),
+                      fromSpot: go.Spot.Right, toSpot: go.Spot.Left,
+                      fromLinkable: true, toLinkable: true,
+                      fromLinkableSelfNode: true, toLinkableSelfNode: true, cursor: "pointer"
+                    },
+                    new go.Binding("portId", "row", function(r) { return "o" + r; }).ofObject(),
+                    new go.Binding("fill", "", convertToColor))
+                )
+            }
+          ),
+        );
+
+      function convertToColor(n) {
+        switch (n) {
+          case "r": return "brown";
+          case "g": return "olivedrab";
+          case "b": return "cornflowerblue";
+          default: return "black";
+        }
+      }
+
+      myDiagram.linkTemplate =
+        $(go.Link,
+          { relinkableFrom: true, relinkableTo: true },
+          $(go.Shape,
+            { strokeWidth: 2 },
+            new go.Binding("stroke", "fromPort", function(p) {
+              return p.fill;
+            }).ofObject())
+        );
+
+      myDiagram.model = $(go.GraphLinksModel, {
+        linkFromPortIdProperty: "fpid",
+        linkToPortIdProperty: "tpid",
+        copiesArrays: true, 
+        copiesArrayObjects: true,
+        nodeDataArray:
+          [
+            {
+              key: 1, text: "Alpha",
+              location: "0 0",
+              inPorts: ["r", "r", "r", "g", "b"],
+              outPorts: ["r", "g", "g", "b", "b"]
+            },
+            {
+              key: 2, text: "Beta",
+              location: "200 -80",
+              inPorts: ["r", "r", "g", "g", "b"],
+              outPorts: ["r", "r", "g", "g", "b"]
+            },
+            {
+              key: 3, text: "Gamma",
+              location: "200 80",
+              inPorts: ["r", "r", "g", "g", "b"],
+              outPorts: ["r", "r", "g", "g", "b"]
+            }
+          ],
+        linkDataArray:
+          [
+            { from: 1, fpid: "i0", to: 1, tpid: "o1" },
+            { from: 1, fpid: "i1", to: 1, tpid: "o4" },
+            { from: 1, fpid: "i2", to: 1, tpid: "o0" },
+            { from: 1, fpid: "i3", to: 1, tpid: "o3" },
+            { from: 1, fpid: "i4", to: 1, tpid: "o2" },
+
+            { from: 1, fpid: "o0", to: 2, tpid: "i0" },
+            { from: 1, fpid: "o2", to: 2, tpid: "i2" },
+            { from: 1, fpid: "o2", to: 3, tpid: "i2" },
+            { from: 1, fpid: "o3", to: 2, tpid: "i4" },
+            { from: 1, fpid: "o3", to: 3, tpid: "i4" },
+
+            { from: 2, fpid: "i0", to: 2, tpid: "o1" },
+            { from: 2, fpid: "i2", to: 2, tpid: "o0" },
+            { from: 2, fpid: "i4", to: 2, tpid: "o2" },
+            { from: 3, fpid: "i2", to: 3, tpid: "o3" },
+            { from: 3, fpid: "i1", to: 3, tpid: "o1" }
+          ]
+        });
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <p>
+    You can draw new links between ports, both between nodes and within a node.
+    Between nodes, the link validation predicate requires new link connections to connect ports of the same color.
+    However, within a node, links may connect ports of different colors.
+  </p>
+  <textarea id="mySavedModel" style="width:100%;height:250px"></textarea>
+</div>
+</body>
+</html>

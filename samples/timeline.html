@@ -16,9 +16,37 @@
 
       myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
+          "animationManager.isEnabled": false,
+          "commandHandler.decreaseZoom": function() { changeScale(1/1.05) },
+          "commandHandler.increaseZoom": function() { changeScale(1.05) },
+          "commandHandler.resetZoom": function() { setScale(1.0) },
           layout: $(TimelineLayout),
           isTreePathToChildren: false  // arrows from children (events) to the parent (timeline bar)
         });
+
+      function changeScale(factor) {
+        var oldscale = myDiagram.model.modelData.scale || 1.0;
+        var newscale = factor ? (oldscale * factor) : 1.0;
+        setScale(newscale);
+      }
+
+      function setScale(scale) {
+        var docpt = myDiagram.lastInput.documentPoint.copy();
+        var line = null;
+        myDiagram.commit(function(diag) {
+          diag.model.set(diag.model.modelData, "scale", scale);
+          diag.nodes.each(function(n) {
+            if (n.category === "Line") {
+              line = n;
+              n.updateTargetBindings();
+              return;
+            }
+          });
+        }, null);  // no UndoManager
+        if (line !== null && docpt.x > line.position.x) {
+          myDiagram.position = new go.Point(docpt.x - (docpt.x-line.position.x)/scale, myDiagram.position.y);
+        }
+      }
 
       myDiagram.nodeTemplate =
         $(go.Node, "Table",
@@ -68,7 +96,8 @@
           new go.Binding("graduatedMax", "", timelineDays),
           $(go.Shape, "LineH",
             { name: "MAIN", stroke: "#519ABA", height: 1, strokeWidth: 3 },
-            new go.Binding("width", "length").makeTwoWay()
+            new go.Binding("width", "length", function(l, shape) { return l * (shape.diagram.model.modelData.scale || 1.0); })
+              .makeTwoWay(function(w, data, model) { return w/model.modelData.scale; })
           ),
           $(go.Shape, { geometryString: "M0 0 V10", interval: 7, stroke: "#519ABA", strokeWidth: 2 }),
           $(go.TextBlock,
