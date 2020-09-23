@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.25
+ * Type definitions for GoJS v2.1.26
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -4325,6 +4325,10 @@ export class UndoManager {
      * Undocumented.
      */
     isPendingUnmodified: boolean;
+    /**
+     * Undocumented.
+     * Gets or sets whether the transaction should be considered nested, even if transactionLevel is zero
+     */
     isInternalTransaction: boolean;
     /**
      * Undocumented.
@@ -6898,7 +6902,7 @@ export class LinkReshapingTool extends Tool {
  * Override #computeCellSize to change this behavior.
  *
  * Pressing the Shift key or resizing a Shape with a Shape#geometryStretch of
- * GraphObject.Uniform or GraphObject.UniformToFill will maintain the aspect ratio during the resize.
+ * GraphObject.Uniform will maintain the aspect ratio during the resize.
  * Override #computeReshape to change this behavior.
  *
  * This tool makes use of an Adornment, shown when the Part or Node is selected,
@@ -7190,6 +7194,13 @@ export class ResizingTool extends Tool {
      * Setting this property does not raise any events.
      */
     isGridSnapEnabled: boolean;
+    /**
+     * Gets or sets whether the ResizingTool moves the member Parts of a Group that has no Group#placeholder.
+     * By default this property is true.
+     * Setting this property does not raise any events.
+     * @since 2.1.26
+     */
+    dragsMembers: boolean;
     /**
      * Undocumented.
      * Gets the Point opposite to the chosen, dragged handle of the "Resizing" Adornment.
@@ -12206,6 +12217,11 @@ export class DraggingOptions {
      * By default this property is true.
      */
     groupsAlwaysMove: boolean;
+    /**
+     * Determines whether dragging a Group also drags its member Parts if there is no Group.placeholder.
+     * By default this property is true.
+     */
+    dragsMembers: boolean;
     constructor();
 }
 /**
@@ -13295,6 +13311,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  * for usage information and examples.
  * <h3>GraphObject Size and Position within Panel</h3>
  * Several GraphObject properties guide the containing Panel for how to size and position the object within the panel.
+ *
  *   - The #alignment specifies where the object should be relative to some area of the panel.
  *     For example, an alignment value of Spot.BottomRight means that the GraphObject should be at the bottom-right corner of the panel.
  *   - The #alignmentFocus specifies precisely which point of the GraphObject should be aligned at the #alignment spot.
@@ -13519,18 +13536,20 @@ export abstract class GraphObject {
     static Fill: EnumValue;
     /**
      * Pictures with this enumeration as the value of Picture#imageStretch are drawn with equal
-     * scale in both directions to fit the arranged (actual) bounds;
+     * scale in both directions to fit the larger side of the image bounds;
      * Panels of type Viewbox with this as the value of Panel#viewboxStretch
-     * are scaled equally in both directions to fit in the given bounds.
+     * scale the contained element equally in both directions to fit the larger side
+     * of the element's bounds in the given bounds.
      * @constant
      */
     static Uniform: EnumValue;
     /**
      * Pictures with this enumeration as the value of Picture#imageStretch are drawn with equal
-     * scale in both directions to fit the larger side of the image bounds;
+     * scale in both directions to fit the arranged (actual) bounds;
      * Panels of type Viewbox with this as the value of Panel#viewboxStretch
-     * are scaled equally in both directions to fit the larger side of the element's bounds.
-     * there may be clipping in one dimension.
+     * scale the contained element equally in both directions to fit the smaller side
+     * of the element's bounds in the given bounds.
+     * There may be clipping in one dimension.
      * @constant
      */
     static UniformToFill: EnumValue;
@@ -14269,13 +14288,13 @@ export abstract class GraphObject {
      *
      * When you want a link label Node to be positioned by its location spot rather than by this alignmentFocus spot,
      * you can set this property to Spot.None, only on Nodes.
-     * @see Panel#alignmentFocusName
      *
      * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
      *
      * WARNING: Since 2.0, for Spot Panels, the offsetX/offsetY of #alignmentFocus has been reversed.
      * The offsetX/Y now describes offset distance from the alignmentFocus point to the alignment point, rather than the opposite.
      * This is what it has always described when using #alignmentFocus with Link Labels.
+     * @see Panel#alignmentFocusName
      */
     alignmentFocus: Spot;
     /**********************************************************
@@ -16522,7 +16541,7 @@ export class Panel extends GraphObject {
     static readonly Table: PanelLayout;
     /**
      * This value for #type rescales a single GraphObject to fit inside the panel
-     * depending on the element's GraphObject#stretch property.
+     * depending on the panel's Panel#viewboxStretch property.
      * @constant
      */
     static readonly Viewbox: PanelLayout;
@@ -18874,8 +18893,8 @@ export class Part extends Panel {
      *
      * The initial value is `Spot.Default`.
      *
-     * @since 2.0
      * @see #rotateObjectName
+     * @since 2.0
      */
     rotationSpot: Spot;
     /**
@@ -20424,14 +20443,14 @@ export class Link extends Part {
     /**
      * Used as a value for Link#curve, to indicate that
      * orthogonal link segments will be discontinuous where they cross over
-     * other orthogonal link segments that have a Link#curve or JumpOver or JumpGap.
+     * other orthogonal link segments that have a Link#curve of JumpOver or JumpGap.
      * @constant
      */
     static JumpGap: EnumValue;
     /**
      * Used as a value for Link#curve, to indicate that
      * orthogonal link segments will veer around where they cross over
-     * other orthogonal link segments that have a Link#curve or JumpOver or JumpGap.
+     * other orthogonal link segments that have a Link#curve of JumpOver or JumpGap.
      * @constant
      */
     static JumpOver: EnumValue;
@@ -21194,7 +21213,7 @@ export class Link extends Part {
     protected computeMidOrthoPosition(fromX: number, fromY: number, toX: number, toY: number, vertical: boolean): number;
     /**
      * Find the index of the segment that is closest to a given point.
-     * This assume the route only has straight line segments.
+     * This assumes the route only has straight line segments.
      * It ignores any jump-overs or jump-gaps.
      * @param {Point} p the Point, in document coordinates.
      * @return {number} int the index of the segment, from zero to the number of points minus 2.

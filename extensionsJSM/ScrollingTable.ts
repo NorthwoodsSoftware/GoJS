@@ -19,7 +19,21 @@ import * as go from '../release/go-module.js';
 
 // This defines a custom "Button" that automatically repeats its click
 // action when the user holds down the mouse.
+// The first optional argument may be a number indicating the number of milliseconds
+// to wait between calls to the click function.  Default is 50.
+// The second optional argument may be a number indicating the number of milliseconds
+// to delay before starting calls to the click function.  Default is 500.
+
+// Example:
+//   $("AutoRepeatButton", 150,  // slower than the default 50 milliseconds between calls
+//     {
+//       click: function(e, button) { doSomething(button.part); }
+//     },
+//     $(go.Shape, "Circle", { width: 8, height: 8 })
+//   )
 go.GraphObject.defineBuilder('AutoRepeatButton', function(args) {
+  const repeat = go.GraphObject.takeBuilderArgument(args, 50, function(x) { return typeof x === "number"; });
+  const delay = go.GraphObject.takeBuilderArgument(args, 500, function(x) { return typeof x === "number"; });
   const $ = go.GraphObject.make;
   // some internal helper functions for auto-repeating
   function delayClicking(e: go.InputEvent, obj: any) {
@@ -27,7 +41,7 @@ go.GraphObject.defineBuilder('AutoRepeatButton', function(args) {
     if (obj.click) {
       obj._timer =
         setTimeout(function() { repeatClicking(e, obj); },
-          500);  // wait 0.5 seconds before starting clicks
+          delay);  // wait milliseconds before starting clicks
     }
   }
   function repeatClicking(e: go.InputEvent, obj: any) {
@@ -35,12 +49,12 @@ go.GraphObject.defineBuilder('AutoRepeatButton', function(args) {
     if (obj.click) {
       obj._timer =
         setTimeout(function() {
-          if (obj.click) {
-            (obj.click)(e, obj);
-            repeatClicking(e, obj);
-          }
-        },
-          100);  // 0.1 seconds between clicks
+            if (obj.click) {
+              (obj.click)(e, obj);
+              repeatClicking(e, obj);
+            }
+          },
+          repeat);  // milliseconds between clicks
     }
   }
   function endClicking(e: go.InputEvent, obj: any) {
