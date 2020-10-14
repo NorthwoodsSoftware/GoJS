@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.26
+ * Type definitions for GoJS v2.1.27
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -17047,7 +17047,10 @@ export class Shape extends GraphObject {
      *
      * Value must be a real number greater than or equal to zero.
      * The default value is 1.0.
+     *
      * A value of zero will cause the stroke not to be drawn.
+     * However, Main Shapes of Link Selection Adornments with a strokeWidth of 0
+     * will inherit the strokeWidth from the Link's main Shape.
      *
      * The stroke width will affect the GraphObject#measuredBounds and GraphObject#actualBounds of this shape.
      * The stroke is drawn centered on the path of the geometry.
@@ -17768,7 +17771,7 @@ export class Picture extends GraphObject {
      * Setting this attribute creates an HTMLImageElement and sets the Picture#element
      * attribute to that element.
      * Setting the source of multiple Pictures to the same URL will cause only one HTMLImageElement
-     * to be created and shared.
+     * to be created and shared. Setting the source to the empty string will set Picture#element to null.
      * It is commonplace to either specify a constant URL or to data bind this property to some data property,
      * perhaps using a conversion function in order to produce a proper URL.
      *

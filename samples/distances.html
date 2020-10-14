@@ -14,12 +14,11 @@
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
-        $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
+        $(go.Diagram, "myDiagramDiv", // must be the ID or a reference to a DIV
           {
-            initialAutoScale: go.Diagram.UniformToFill,
-            padding: 10,
+            initialAutoScale: go.Diagram.Uniform,
             contentAlignment: go.Spot.Center,
-            layout: $(go.ForceDirectedLayout, { defaultSpringLength: 10 }),
+            layout: $(go.ForceDirectedLayout, { defaultSpringLength: 10, maxIterations: 300 }),
             maxSelectionCount: 2
           });
 
@@ -30,23 +29,27 @@
             locationSpot: go.Spot.Center,  // Node.location is the center of the Shape
             locationObjectName: "SHAPE",
             selectionAdorned: false,
-            selectionChanged: nodeSelectionChanged
+            selectionChanged: nodeSelectionChanged  // defined below
           },
-          $(go.Panel, "Auto",
-            $(go.Shape, "Ellipse",
+          $(go.Panel, "Spot",
+            $(go.Shape, "Circle",
               {
                 name: "SHAPE",
                 fill: "lightgray",  // default value, but also data-bound
-                stroke: "transparent",  // modified by highlighting
-                strokeWidth: 2,
+                strokeWidth: 0,
                 desiredSize: new go.Size(30, 30),
-                portId: ""
-              },  // so links will go to the shape, not the whole node
-              new go.Binding("fill", "isSelected", function(s, obj) { return s ? "red" : obj.part.data.color; }).ofObject()),
+                portId: ""  // so links will go to the shape, not the whole node
+              },
+              new go.Binding("fill", "isSelected", function(s, obj) {
+                  return s ? "red" : obj.part.data.color;
+                }).ofObject()),
             $(go.TextBlock,
-              new go.Binding("text", "distance", function(d) { if (d === Infinity) return "INF"; else return d | 0; }))),
+              new go.Binding("text", "distance", function(d) {
+                  return (d === Infinity) ? "INF" : d | 0;
+                }))),
           $(go.TextBlock,
-            new go.Binding("text")));
+            new go.Binding("text"))
+        );
 
       // define the Link template
       myDiagram.linkTemplate =
@@ -94,26 +97,10 @@
 
       generateGraph();
 
-      // select two nodes that connect from the first one to the second one
-      var num = myDiagram.model.nodeDataArray.length;
-      var node1 = null;
-      var node2 = null;
-      for (var i = 0; i < num; i++) {
-        node1 = myDiagram.findNodeForKey(i);
-        var distances = findDistances(node1);
-        for (var j = 0; j < num; j++) {
-          node2 = myDiagram.findNodeForKey(j);
-          var dist = distances.get(node2);
-          if (dist > 1 && dist < Infinity) {
-            node1.isSelected = true;
-            node2.isSelected = true;
-            break;
-          }
-        }
-        if (myDiagram.selection.count > 0) break;
-      }
+      chooseTwoNodes();
     }
 
+    // Create an assign a model that has a bunch of nodes with a bunch of random links between them.
     function generateGraph() {
       var names = [
         "Joshua", "Kathryn", "Robert", "Jason", "Scott", "Betsy", "John",
@@ -129,12 +116,137 @@
       var linkDataArray = [];
       var num = nodeDataArray.length;
       for (var i = 0; i < num * 2; i++) {
-        var a = Math.floor(Math.random() * num);
+        var a = Math.floor(i/2);
         var b = Math.floor(Math.random() * num / 4) + 1;
         linkDataArray.push({ from: a, to: (a + b) % num, color: go.Brush.randomColor(0, 127) });
       }
 
       myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    }
+
+    // Select two nodes at random for which there is a path that connects from the first one to the second one.
+    function chooseTwoNodes() {
+      myDiagram.clearSelection();
+      var num = myDiagram.model.nodeDataArray.length;
+      var node1 = null;
+      var node2 = null;
+      for (var i = Math.floor(Math.random()*num); i < num*2; i++) {
+        node1 = myDiagram.findNodeForKey(i%num);
+        var distances = findDistances(node1);
+        for (var j = Math.floor(Math.random()*num); j < num*2; j++) {
+          node2 = myDiagram.findNodeForKey(j%num);
+          var dist = distances.get(node2);
+          if (dist > 1 && dist < Infinity) {
+            node1.isSelected = true;
+            node2.isSelected = true;
+            break;
+          }
+        }
+        if (myDiagram.selection.count > 0) break;
+      }
+    }
+
+
+    // This event handler is declared in the node template and is called when a node's
+    //   Node.isSelected property changes value.
+    // When a node is selected show distances from the first selected node.
+    // When a second node is selected, highlight the shortest path between two selected nodes.
+    // If a node is deselected, clear all highlights.
+    function nodeSelectionChanged(node) {
+      var diagram = node.diagram;
+      if (diagram === null) return;
+      diagram.clearHighlighteds();
+      if (node.isSelected) {
+        // when there is a selection made, always clear out the list of all paths
+        var sel = document.getElementById("myPaths");
+        sel.innerHTML = "";
+
+        // show the distance for each node from the selected node
+        var begin = diagram.selection.first();
+        showDistances(begin);
+
+        if (diagram.selection.count === 2) {
+          var end = node;  // just became selected
+
+          // highlight the shortest path
+          highlightShortestPath(begin, end);
+
+          // list all paths
+          listAllPaths(begin, end);
+        }
+      }
+    }
+
+
+    // Have each node show how far it is from the BEGIN node.
+    // This sets the "distance" property on each node.data.
+    function showDistances(begin) {
+      // compute and remember the distance of each node from the BEGIN node
+      distances = findDistances(begin);
+
+      // show the distance on each node
+      var it = distances.iterator;
+      while (it.next()) {
+        var n = it.key;
+        var dist = it.value;
+        myDiagram.model.setDataProperty(n.data, "distance", dist);
+      }
+    }
+
+
+    // Highlight links along one of the shortest paths between the BEGIN and the END nodes.
+    // Assume links are directional.
+    function highlightShortestPath(begin, end) {
+      highlightPath(findShortestPath(begin, end));
+    }
+
+
+    // A collection of all of the paths between a pair of nodes, a List of Lists of Nodes
+    var paths = null;
+
+    // List all paths from BEGIN to END
+    function listAllPaths(begin, end) {
+      // compute and remember all paths from BEGIN to END: Lists of Nodes
+      paths = collectAllPaths(begin, end);
+
+      // update the Selection element with a bunch of Option elements, one per path
+      var sel = document.getElementById("myPaths");
+      sel.innerHTML = "";  // clear out any old Option elements
+      paths.each(function(p) {
+        var opt = document.createElement("option");
+        opt.text = pathToString(p);
+        sel.add(opt, null);
+      });
+      sel.onchange = highlightSelectedPath;
+    }
+
+    // Return a string representation of a path for humans to read.
+    function pathToString(path) {
+      var s = path.length + ": ";
+      for (var i = 0; i < path.length; i++) {
+        if (i > 0) s += " -- ";
+        s += path.get(i).data.text;
+      }
+      return s;
+    }
+
+    // This is only used for listing all paths for the selection onchange event.
+
+    // When the selected item changes in the Selection element,
+    // highlight the corresponding path of nodes.
+    function highlightSelectedPath() {
+      var sel = document.getElementById("myPaths");
+      highlightPath(paths.get(sel.selectedIndex));
+    }
+
+    // Highlight a particular path, a List of Nodes.
+    function highlightPath(path) {
+      myDiagram.clearHighlighteds();
+      for (var i = 0; i < path.count - 1; i++) {
+        var f = path.get(i);
+        var t = path.get(i + 1);
+        f.findLinksTo(t).each(function(l) { l.isHighlighted = true; });
+      }
     }
 
 
@@ -148,7 +260,7 @@
     //    which is used by highlightSelectedPath.  This does not depend on findDistances.
 
     // Returns a Map of Nodes with distance values from the given source Node.
-    // Assumes all links are unidirectional.
+    // Assumes all links are directional.
     function findDistances(source) {
       var diagram = source.diagram;
       // keep track of distances from the source node
@@ -247,7 +359,7 @@
     // Recursively walk the graph starting from the BEGIN node;
     // when reaching the END node remember the list of nodes along the current path.
     // Finally return the collection of paths, which may be empty.
-    // This assumes all links are unidirectional.
+    // This assumes all links are directional.
     function collectAllPaths(begin, end) {
       var stack = new go.List(/*go.Node*/);
       var coll = new go.List(/*go.List*/);
@@ -271,108 +383,6 @@
       find(begin, end);
       return coll;
     }
-
-    // Return a string representation of a path for humans to read.
-    function pathToString(path) {
-      var s = path.length + ": ";
-      for (var i = 0; i < path.length; i++) {
-        if (i > 0) s += " -- ";
-        s += path.get(i).data.text;
-      }
-      return s;
-    }
-
-
-    // When a node is selected show distances from the first selected node.
-    // When a second node is selected, highlight the shortest path between two selected nodes.
-    // If a node is deselected, clear all highlights.
-    function nodeSelectionChanged(node) {
-      var diagram = node.diagram;
-      if (diagram === null) return;
-      diagram.clearHighlighteds();
-      if (node.isSelected) {
-        // when there is a selection made, always clear out the list of all paths
-        var sel = document.getElementById("myPaths");
-        sel.innerHTML = "";
-
-        // show the distance for each node from the selected node
-        var begin = diagram.selection.first();
-        showDistances(begin);
-
-        if (diagram.selection.count === 2) {
-          var end = node;  // just became selected
-
-          // highlight the shortest path
-          highlightShortestPath(begin, end);
-
-          // list all paths
-          listAllPaths(begin, end);
-        }
-      }
-    }
-
-
-    // Have each node show how far it is from the BEGIN node.
-    function showDistances(begin) {
-      // compute and remember the distance of each node from the BEGIN node
-      distances = findDistances(begin);
-
-      // show the distance on each node
-      var it = distances.iterator;
-      while (it.next()) {
-        var n = it.key;
-        var dist = it.value;
-        myDiagram.model.setDataProperty(n.data, "distance", dist);
-      }
-    }
-
-
-    // Highlight links along one of the shortest paths between the BEGIN and the END nodes.
-    // Assume links are unidirectional.
-    function highlightShortestPath(begin, end) {
-      highlightPath(findShortestPath(begin, end));
-    }
-
-
-    // List all paths from BEGIN to END
-    function listAllPaths(begin, end) {
-      // compute and remember all paths from BEGIN to END: Lists of Nodes
-      paths = collectAllPaths(begin, end);
-
-      // update the Selection element with a bunch of Option elements, one per path
-      var sel = document.getElementById("myPaths");
-      sel.innerHTML = "";  // clear out any old Option elements
-      paths.each(function(p) {
-        var opt = document.createElement("option");
-        opt.text = pathToString(p);
-        sel.add(opt, null);
-      });
-      sel.onchange = highlightSelectedPath;
-    }
-
-    // A collection of all of the paths between a pair of nodes, a List of Lists of Nodes
-    var paths = null;
-    // This is only used for listing all paths for the selection onchange event.
-
-    // When the selected item changes in the Selection element,
-    // highlight the corresponding path of nodes.
-    function highlightSelectedPath() {
-      var sel = document.getElementById("myPaths");
-      var idx = sel.selectedIndex;
-      var opt = sel.options[idx];
-      var val = opt.value;
-      highlightPath(paths.get(sel.selectedIndex));
-    }
-
-    // Highlight a particular path, a List of Nodes.
-    function highlightPath(path) {
-      myDiagram.clearHighlighteds();
-      for (var i = 0; i < path.count - 1; i++) {
-        var f = path.get(i);
-        var t = path.get(i + 1);
-        f.findLinksTo(t).each(function(l) { l.isHighlighted = true; });
-      }
-    }
   </script>
 </head>
 <body onload="init()">
@@ -381,8 +391,10 @@
   Click on a node to show distances from that node to each other node.
   Click on a second node to show a shortest path from the first node to the second node.
   (Note that there might not be any path between the nodes.)
-  <p>
   Clicking on a third node will de-select the first two.
+  <p>
+    <button onclick="chooseTwoNodes()">Choose another two nodes at random</button>
+  </p>
   <p>
   Here is a list of all paths between the first and second selected nodes.
   Select a path to highlight it in the diagram.

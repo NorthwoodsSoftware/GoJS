@@ -34,7 +34,7 @@ export class ResizeMultipleTool extends go.ResizingTool {
   public resize(newr: go.Rect): void {
     const diagram = this.diagram;
     diagram.selection.each(function(part) {
-      if (part instanceof go.Link || part instanceof go.Group) return; // only Nodes and simple Parts
+      if (part instanceof go.Link) return; // only Nodes and simple Parts
       const obj = part.resizeObject;
 
       // calculate new location

@@ -32,7 +32,7 @@ ResizeMultipleTool.prototype.resize = function(newr) {
   var diagram = this.diagram;
   if (diagram === null) return;
   diagram.selection.each(function(part) {
-    if (part instanceof go.Link || part instanceof go.Group) return; // only Nodes and simple Parts
+    if (part instanceof go.Link) return; // only Nodes and simple Parts
     var obj = part.resizeObject;
 
     // calculate new location
