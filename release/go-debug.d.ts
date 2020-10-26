@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.27
+ * Type definitions for GoJS v2.1.28
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -11570,6 +11570,16 @@ export class Diagram {
      */
     readonly documentBounds: Rect;
     /**
+     * Ensures that the #documentBounds are up to date.
+     * This is sometimes necessary when operations need updated document bounds immediately.
+     *
+     * It is uncommon to call this method outside of customization.
+     * For efficiency, do not call this method unnecessarily.
+     * @since 2.1
+     * @see Part#ensureBounds
+     */
+    ensureBounds(): void;
+    /**
      * Undocumented
      */
     isVirtualized: boolean;
@@ -18406,6 +18416,7 @@ export class Part extends Panel {
      *
      * For efficiency, do not call this method unnecessarily.
      * @since 1.6
+     * @see Diagram#ensureBounds
      */
     ensureBounds(): void;
     /**
