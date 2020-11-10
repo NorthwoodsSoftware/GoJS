@@ -28,7 +28,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv');
+            $(go.Diagram, 'myDiagramDiv', { "undoManager.isEnabled": true });
         // install custom linking tool, defined in PolylineLinkingTool.js
         var tool = new PolylineLinkingTool_js_1.PolylineLinkingTool();
         // tool.temporaryLink.routing = go.Link.Orthogonal;  // optional, but need to keep link template in sync, below
@@ -52,14 +52,12 @@
     exports.init = init;
     // save a model to and load a model from Json text, displayed below the Diagram
     function save() {
-        var str = myDiagram.model.toJson();
-        document.getElementById('mySavedModel').value = str;
+        document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+        myDiagram.isModified = false;
     }
     exports.save = save;
     function load() {
-        var str = document.getElementById('mySavedModel').value;
-        myDiagram.model = go.Model.fromJson(str);
-        myDiagram.model.undoManager.isEnabled = true;
+        myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
     }
     exports.load = load;
 });

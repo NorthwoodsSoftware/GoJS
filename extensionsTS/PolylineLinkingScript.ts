@@ -21,7 +21,8 @@ export function init() {
   const $ = go.GraphObject.make;
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv');
+    $(go.Diagram, 'myDiagramDiv',
+      { "undoManager.isEnabled": true });
 
   // install custom linking tool, defined in PolylineLinkingTool.js
   const tool = new PolylineLinkingTool();
@@ -60,11 +61,9 @@ export function init() {
 
 // save a model to and load a model from Json text, displayed below the Diagram
 export function save() {
-  const str = myDiagram.model.toJson();
-  (document.getElementById('mySavedModel') as any).value = str;
+  (document.getElementById('mySavedModel') as any).value = myDiagram.model.toJson();
+  myDiagram.isModified = false;
 }
 export function load() {
-  const str = (document.getElementById('mySavedModel') as any).value;
-  myDiagram.model = go.Model.fromJson(str);
-  myDiagram.model.undoManager.isEnabled = true;
+  myDiagram.model = go.Model.fromJson((document.getElementById('mySavedModel') as any).value);
 }

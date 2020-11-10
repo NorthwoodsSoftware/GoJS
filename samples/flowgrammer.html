@@ -449,15 +449,15 @@
       load();
     }
 
-    // save a model to and load a model from Json text, displayed below the Diagram
+    // Show the diagram's model in JSON format
     function save() {
-      var str = myDiagram.model.toJson();
-      document.getElementById("mySavedModel").value = str;
+      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
     }
     function load() {
-      var str = document.getElementById("mySavedModel").value;
-      myDiagram.model = go.Model.fromJson(str);
+      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
     }
+
     function newDiagram() {
       myDiagram.model = go.GraphObject.make(go.GraphLinksModel,
         {

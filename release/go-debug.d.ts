@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.28
+ * Type definitions for GoJS v2.1.29
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10143,18 +10143,18 @@ export class Diagram {
      */
     moveParts(coll: Iterable<Part> | Array<Part>, offset: Point, check: boolean, dragOptions?: DraggingOptions): void;
     /**
-     * You do not need to call or orverride this method, but you may want to override DraggingTool#computeMove, which calls this method.
-     *
      * This method computes the new location for a Node or simple Part,
-     * given a new desired location and an optional Map of dragged parts,
+     * given a new desired location,
      * taking any grid-snapping into consideration,
      * any Part#dragComputation function,
      * and any Part#minLocation and Part#maxLocation.
      *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @param {Part} n the Node or simple Part that is being moved
      * @param {Point} newloc the proposed new location
-     * @param {DraggingOptions} dragOptions the proposed new location
+     * @param {DraggingOptions} dragOptions the dragging options
      * @param {Point=} result an optional Point that is modified and returned
      * @return {Point} the possibly grid-snapped computed Point that is within the minimum and maximum permitted locations
      * @since 2.0
@@ -10916,7 +10916,7 @@ export class Diagram {
      * If you do provide a function that makes changes to the diagram or to its model,
      * you should do so within a transaction -- call #startTransaction and #commitTransaction.
      * @see GraphObject#mouseHold
-     * @seev ToolManager#doMouseHover
+     * @see ToolManager#doMouseHover
      */
     mouseHold: ((e: InputEvent) => void) | null;
     /**
@@ -17722,7 +17722,7 @@ export class TextBlock extends GraphObject {
  * ```js
  * var $ = go.GraphObject.make;  // for conciseness in defining GraphObjects
  *
- * // A shape with the figure set to "example.png". It will show a gray area until the image is loaded:
+ * // A picture with the source set to "example.png". It will show a gray area until the image is loaded:
  * $(go.Picture, { source: "example.png", background: "gray", width: 50, height: 50 })
  * // Alternatively:
  * $(go.Picture, "example.png", { background: "gray", width: 50, height: 50 })
@@ -25429,7 +25429,7 @@ export class ForceDirectedEdge extends LayoutEdge {
  * so that all links come in one side and go out the other side.
  * However if you want "backwards" links to go more directly between nodes, set #setsPortSpots to false and
  * the node's GraphObject#fromSpot and GraphObject#toSpot both to `Spot.TopBottomSides`.
- * (Of course if the #direction is zero or 180, you'll want to use `Spot.LeftRightSides`.
+ * (Of course if the #direction is zero or 180, you'll want to use `Spot.LeftRightSides`.)
  *
  * If the diagram is structured in a tree-like fashion,
  * it may be better to use TreeLayout,
@@ -25667,7 +25667,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     aggressiveOption: EnumValue;
     /**
-     * Gets or sets the options used by the straighten and pack function,
+     * Gets or sets the options used by the straighten and pack function.
      * The default value is LayeredDigraphLayout.PackAll.
      */
     packOption: number;

@@ -78,6 +78,7 @@ export function updateAllAdornments() {  // called after checkboxes change Diagr
 export function save() {
   const str = '{ "position": "' + go.Point.stringify(myDiagram.position) + '",\n  "model": ' + myDiagram.model.toJson() + ' }';
   (document.getElementById('mySavedDiagram') as any).value = str;
+  myDiagram.isModified = false;
 }
 export function load() {
   const str = (document.getElementById('mySavedDiagram') as any).value;

@@ -16,7 +16,8 @@
       var $ = go.GraphObject.make;
 
       myDiagram =
-        $(go.Diagram, "myDiagramDiv");
+        $(go.Diagram, "myDiagramDiv",
+          { "undoManager.isEnabled": true });
 
       // install custom linking tool, defined in PolylineLinkingTool.js
       var tool = new PolylineLinkingTool();
@@ -53,15 +54,13 @@
       load();  // load a simple diagram from the textarea
     }
 
-    // save a model to and load a model from Json text, displayed below the Diagram
+    // Show the diagram's model in JSON format
     function save() {
-      var str = myDiagram.model.toJson();
-      document.getElementById("mySavedModel").value = str;
+      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
     }
     function load() {
-      var str = document.getElementById("mySavedModel").value;
-      myDiagram.model = go.Model.fromJson(str);
-      myDiagram.model.undoManager.isEnabled = true;
+      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
     }
   </script>
 </head>

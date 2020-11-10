@@ -64,6 +64,7 @@
     function save() {
         var str = '{ "position": "' + go.Point.stringify(myDiagram.position) + '",\n  "model": ' + myDiagram.model.toJson() + ' }';
         document.getElementById('mySavedDiagram').value = str;
+        myDiagram.isModified = false;
     }
     exports.save = save;
     function load() {
