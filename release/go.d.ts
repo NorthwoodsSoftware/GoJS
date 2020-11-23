@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.29
+ * Type definitions for GoJS v2.1.30
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5028,10 +5028,16 @@ export class ToolManager extends Tool {
      */
     mouseWheelBehavior: EnumValue;
     /**
-     * Gets or sets the ToolManager's default gestureBehavior behavior. Allowed values are ToolManager.GestureZoom and
+     * Gets or sets the ToolManager's touch pinching behavior.
+     * Allowed values are ToolManager.GestureZoom and
      * ToolManager.GestureCancel and ToolManager.GestureNone.
-     *
      * The default value is ToolManager.GestureZoom.
+     *
+     * If you want to control whether a single finger touch movement
+     * causes a pan (i.e. scroll) of the diagram's contents or scrolls the page,
+     * consider either disabling the PanningTool by setting its property
+     * Tool#isEnabled to false or by setting PanningTool#bubbles to true.
+     *
      * @since 1.5
      */
     gestureBehavior: EnumValue;
@@ -23118,6 +23124,10 @@ export class Model {
      * @since 2.1
      */
     mergeNodeDataArray(arr: Array<ObjectData>): void;
+    /**
+     * @param {string|number=} key
+     */
+    clearUnresolvedReferences(key?: Key): void;
     /**
      * Gets or sets a function that makes a copy of a node data object.
      *
