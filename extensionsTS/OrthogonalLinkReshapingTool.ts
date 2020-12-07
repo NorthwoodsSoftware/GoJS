@@ -89,6 +89,7 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
           this.handle.segmentIndex = index;
         } else if (index === link.lastPickIndex - 1) {
           link.insertPoint(index, link.getPoint(index).copy());
+          if (index - 1 === link.firstPickIndex + 1) this.handle.segmentIndex = index - 1;
         }
       }
       const behavior = this.getReshapingBehavior(this.handle);

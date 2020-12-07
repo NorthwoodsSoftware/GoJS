@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.30
+ * Type definitions for GoJS v2.1.31
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16341,9 +16341,14 @@ export class Panel extends GraphObject {
      * Undocumented.
      * Make a deep copy of this Panel and allow it to be a template.
      * This makes copies of Bindings, unlike the regular copy().
+     * Pass true as the argument in order to freeze the Bindings,
+     * allowing it to operate efficiently as a template.
+     * A false value (which is the default) allows further additions/modifications
+     * of the bindings in the copied panel.
+     * @param {boolean=} freeze whether to freeze the Bindings in the copy; default is false
      * @return {Panel}
      */
-    copyTemplate(): Panel;
+    copyTemplate(freeze?: boolean): Panel;
     /**
      * Re-evaluate all data bindings on this panel,
      * in order to assign new property values to the GraphObjects in this visual tree
@@ -21284,7 +21289,8 @@ export class Link extends Part {
      */
     adjusting: EnumValue;
     /**
-     * Returns the #adjusting value, unless this Link's Diagram is animating, then it will return Link.End|End
+     * Returns the #adjusting value, unless this Link's Diagram is animating and the routing is AvoidsNodes --
+     * then it will return Link.End|End
      *
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.

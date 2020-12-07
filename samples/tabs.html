@@ -70,20 +70,26 @@
 
 
     $(function() {
+      // first time flag for each diagram
       var firstTime = true;
+      var firstTime2 = true;
       $("#tabs").tabs({
         activate: function(event, ui) {
           // Needed the first time you tab to a tab with a Diagram in it,
           // because the diagram in the tab had zero size while initializing:
-          if (firstTime) {
-            myDiagram.delayInitialization(function() { myDiagram.requestUpdate(); });
-            myDiagram2.delayInitialization(function() { myDiagram.requestUpdate(); });
-            firstTime = false;
+          if (ui.newTab[0].innerText === "GoJS Tab") { // The first tab with a Diagram in it
+            if (firstTime) {
+              myDiagram.delayInitialization(function() { myDiagram.requestUpdate(); });
+              firstTime = false;
+            }
+            myDiagram.requestUpdate();
+          } else if (ui.newTab[0].innerText === "GoJS 2") { // The second tab with a Diagram
+            if (firstTime2) {
+              myDiagram2.delayInitialization(function() { myDiagram.requestUpdate(); });
+              firstTime2 = false;
+            }
+            myDiagram2.requestUpdate();
           }
-
-          // every time after you need nothing, or in case the Diagram div changed size, this:
-          myDiagram.requestUpdate();
-          myDiagram2.requestUpdate();
         }
       });
 

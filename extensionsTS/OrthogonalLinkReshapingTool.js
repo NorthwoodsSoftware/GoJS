@@ -107,6 +107,8 @@ var __extends = (this && this.__extends) || (function () {
                     }
                     else if (index === link.lastPickIndex - 1) {
                         link.insertPoint(index, link.getPoint(index).copy());
+                        if (index - 1 === link.firstPickIndex + 1)
+                            this.handle.segmentIndex = index - 1;
                     }
                 }
                 var behavior = this.getReshapingBehavior(this.handle);
