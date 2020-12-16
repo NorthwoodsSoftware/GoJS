@@ -27,6 +27,7 @@
       var op = document.createElement("option");
       op.text = list[i];
       op.value = list[i];
+      if (list[i] === textBlock.text) op.selected = true;
       customSelectBox.add(op, null);
 
       // consider also adding the current value, if it is not in the choices list
@@ -58,7 +59,8 @@
     customSelectBox.style.position = 'absolute';
     customSelectBox.style.zIndex = 100; // place it in front of the Diagram
 
-    diagram.div.appendChild(customSelectBox);
+    if (diagram.div !== null) diagram.div.appendChild(customSelectBox);
+    customSelectBox.focus();
   }
 
   customEditor.hide = function(diagram, tool) {

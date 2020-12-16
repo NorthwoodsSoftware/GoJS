@@ -81,8 +81,8 @@
 		<div class="tsd-page-title">
 			<div class="container-fluid plr15">
 				<div class="top-copyright">
-					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.31 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.31<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<!--<b>GoJS</b>&reg; Diagramming Components<br/>version &lt;br/&gt;version 2.1.32 for TypeScript/HTML<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>-->
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.32<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class AnimationManager</h1>
@@ -195,7 +195,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets the set of currently animating <a href="Animation.html">Animation</a>s being managed by this AnimationManager.</p>
+								<p>Gets the set of currently animating <a href="Animation.html">Animation</a>s being managed by this AnimationManager, including any running <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>since</dt>
 									<dd><p>2.1</p>
@@ -214,7 +214,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This read-only property gets the <a href="Animation.html">Animation</a> that carries out default GoJS animations.
+								<p>This read-only property gets the <a href="Animation.html">Animation</a> that carries out the default built-in GoJS animations.
 									This animation is usually only referenced to modify default animation properties,
 								such as the <a href="Animation.html#easing">Animation.easing</a> or <a href="Animation.html#duration">Animation.duration</a>.</p>
 								<p>You should not add anything to or start the default animation, GoJS does so automatically, internally.
@@ -239,7 +239,8 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the default duration, in milliseconds, used as the duration for animations that have their <a href="Animation.html#duration">Animation.duration</a> set to <code>NaN</code>.</p>
+								<p>Gets or sets the default duration, in milliseconds, used as the duration for the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>
+								and for animations that have their <a href="Animation.html#duration">Animation.duration</a> set to <code>NaN</code>.</p>
 								<p>Typically these values are short. The default value is 600 milliseconds.
 									The value must be a number greater than or equal to 1.
 								Setting this property does not raise any events.</p>
@@ -296,7 +297,8 @@ myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This read-only property is true when the animation manger is currently animating.</p>
+								<p>This read-only property is true when the animation manger is currently animating any animation,
+								including the <a href="AnimationManager.html#defaultAnimation">defaultAnimation</a>.</p>
 								<p>This value cannot be set, but animation can be stopped by calling <a href="AnimationManager.html#stopAnimation">stopAnimation</a>,
 								and it can be prevented by setting <a href="AnimationManager.html#isEnabled">isEnabled</a>.</p>
 							</div>
@@ -315,7 +317,13 @@ myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting
 								<p>The default value is true.
 									Setting this to false does not stop an animation, it only stops future animations.
 									To stop any ongoing animation, use <a href="AnimationManager.html#stopAnimation">stopAnimation</a>.
-								Setting this property does not raise any events.</p>
+								To disable only the default animations, set <a href="AnimationManager.html#canStart">canStart</a> to a function that always returns <code>false</code>.</p>
+								<p>Setting this property does not raise any events.</p>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="AnimationManager.html#canStart">canStart</a></p>
+									</dd>
+								</dl>
 							</div>
 						</li>
 					</ul>
@@ -328,7 +336,7 @@ myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets whether an animation is performed on an initial layout.</p>
+								<p>Gets or sets whether a default animation is performed on an initial layout.</p>
 								<p>The default value is true.
 									Changing the value does not affect any ongoing animation.
 								Setting this property does not raise any events.</p>
@@ -352,7 +360,7 @@ myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting
 							<div class="tsd-comment tsd-typography">
 								<p>This read-only property is true when the animation manger is in the middle of an animation tick.
 								Animation only operates on GraphObjects during ticks, but code outside of AnimationManager&#39;s control may execute between ticks.</p>
-								<p>isTicking can only be true when <a href="AnimationManager.html#isAnimating">isAnimating</a> is also true.</p>
+								<p><code>isTicking</code> can only be true when <a href="AnimationManager.html#isAnimating">isAnimating</a> is also true.</p>
 							</div>
 						</li>
 					</ul>
@@ -371,10 +379,12 @@ myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This method is passed the reason the animation is to begin,
+								<p>This method is passed the reason a default animation is to begin,
 									and must return true or false based on whether or not the animation is to be allowed.
 								Returning true means the animation will occur, returning false will stop the animation&#39;s setup.</p>
-								<p>By default, this method always returns true.</p>
+								<p>By default, this method always returns true.
+									Setting this to a function that always returns false will disable all default animations,
+								but allow other animations, such as <a href="AnimationTrigger.html">AnimationTrigger</a>s, to run.</p>
 								<p>These are the possible reasons GoJS will begin an animation:</p>
 								<pre><code class="hljs md">  Called by CommandHandler:
 <span class="hljs-code">    "Collapse SubGraph"</span>
@@ -389,10 +399,15 @@ myDiagram.addDiagramListener(<span class="hljs-string">'InitialAnimationStarting
   Called by AnimationTriggers:
 <span class="hljs-code">    "Trigger"</span></code></pre>
 								<p>Example usage:</p>
-								<pre><code class="hljs js"><span class="hljs-comment">// disallow expand/collapse animations, but allow all others</span>
+								<pre><code class="hljs js"><span class="hljs-comment">// disallow expand/collapse animations, but allow all other default animations:</span>
 myDiagram.animationManager.canStart = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">reason</span>) </span>{
   <span class="hljs-keyword">if</span> (reason === <span class="hljs-string">"Expand Tree"</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-comment">// disallow all default animations:</span>
+myDiagram.animationManager.canStart = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">reason</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
 }</code></pre>
 								<dl class="tsd-comment-tags">
 									<dt>since</dt>

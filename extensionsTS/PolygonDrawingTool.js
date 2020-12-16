@@ -131,9 +131,11 @@ var __extends = (this && this.__extends) || (function () {
                     val.name = 'SHAPE';
                     var panel = this._temporaryShape.panel;
                     if (panel !== null) {
-                        panel.remove(this._temporaryShape);
+                        if (panel !== null)
+                            panel.remove(this._temporaryShape);
                         this._temporaryShape = val;
-                        panel.add(this._temporaryShape);
+                        if (panel !== null)
+                            panel.add(this._temporaryShape);
                     }
                 }
             },

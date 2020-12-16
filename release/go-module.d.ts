@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.31
+ * Type definitions for GoJS v2.1.32
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8525,11 +8525,13 @@ export class AnimationManager {
      */
     readonly animationReasons: Set<string>;
     /**
-     * This method is passed the reason the animation is to begin,
+     * This method is passed the reason a default animation is to begin,
      * and must return true or false based on whether or not the animation is to be allowed.
      * Returning true means the animation will occur, returning false will stop the animation's setup.
      *
      * By default, this method always returns true.
+     * Setting this to a function that always returns false will disable all default animations,
+     * but allow other animations, such as AnimationTriggers, to run.
      *
      * These are the possible reasons GoJS will begin an animation:
      * ```md
@@ -8550,10 +8552,15 @@ export class AnimationManager {
      * Example usage:
      *
      * ```js
-     * // disallow expand/collapse animations, but allow all others
+     * // disallow expand/collapse animations, but allow all other default animations:
      * myDiagram.animationManager.canStart = function(reason) {
      *   if (reason === "Expand Tree") return false;
      *   return true;
+     * }
+     *
+     * // disallow all default animations:
+     * myDiagram.animationManager.canStart = function(reason) {
+     *   return false;
      * }
      * ```
      * @param {string} reason Reason for starting the animation
@@ -8577,11 +8584,15 @@ export class AnimationManager {
      * The default value is true.
      * Setting this to false does not stop an animation, it only stops future animations.
      * To stop any ongoing animation, use #stopAnimation.
+     * To disable only the default animations, set #canStart to a function that always returns `false`.
+     *
      * Setting this property does not raise any events.
+     * @see #canStart
      */
     isEnabled: boolean;
     /**
-     * Gets or sets the default duration, in milliseconds, used as the duration for animations that have their Animation#duration set to `NaN`.
+     * Gets or sets the default duration, in milliseconds, used as the duration for the #defaultAnimation
+     * and for animations that have their Animation#duration set to `NaN`.
      *
      * Typically these values are short. The default value is 600 milliseconds.
      * The value must be a number greater than or equal to 1.
@@ -8591,7 +8602,8 @@ export class AnimationManager {
      */
     duration: number;
     /**
-     * This read-only property is true when the animation manger is currently animating.
+     * This read-only property is true when the animation manger is currently animating any animation,
+     * including the #defaultAnimation.
      *
      * This value cannot be set, but animation can be stopped by calling #stopAnimation,
      * and it can be prevented by setting #isEnabled.
@@ -8601,11 +8613,11 @@ export class AnimationManager {
      * This read-only property is true when the animation manger is in the middle of an animation tick.
      * Animation only operates on GraphObjects during ticks, but code outside of AnimationManager's control may execute between ticks.
      *
-     * isTicking can only be true when #isAnimating is also true.
+     * `isTicking` can only be true when #isAnimating is also true.
      */
     readonly isTicking: boolean;
     /**
-     * Gets or sets whether an animation is performed on an initial layout.
+     * Gets or sets whether a default animation is performed on an initial layout.
      *
      * The default value is true.
      * Changing the value does not affect any ongoing animation.
@@ -8614,7 +8626,7 @@ export class AnimationManager {
      */
     isInitial: boolean;
     /**
-     * This read-only property gets the Animation that carries out default GoJS animations.
+     * This read-only property gets the Animation that carries out the default built-in GoJS animations.
      * This animation is usually only referenced to modify default animation properties,
      * such as the Animation#easing or Animation#duration.
      *
@@ -8628,7 +8640,7 @@ export class AnimationManager {
      */
     readonly defaultAnimation: Animation;
     /**
-     * Gets the set of currently animating Animations being managed by this AnimationManager.
+     * Gets the set of currently animating Animations being managed by this AnimationManager, including any running #defaultAnimation.
      * @since 2.1
      */
     readonly activeAnimations: Set<Animation>;

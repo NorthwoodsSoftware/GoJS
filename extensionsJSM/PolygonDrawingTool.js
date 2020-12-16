@@ -83,9 +83,11 @@ export class PolygonDrawingTool extends go.Tool {
             val.name = 'SHAPE';
             const panel = this._temporaryShape.panel;
             if (panel !== null) {
-                panel.remove(this._temporaryShape);
+                if (panel !== null)
+                    panel.remove(this._temporaryShape);
                 this._temporaryShape = val;
-                panel.add(this._temporaryShape);
+                if (panel !== null)
+                    panel.add(this._temporaryShape);
             }
         }
     }
