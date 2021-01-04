@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
 */
 // These are the definitions for all of the predefined arrowheads.
 // You do not need to load this file in order to use arrowheads.

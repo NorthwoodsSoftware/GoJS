@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved. */
 /**
  * Be sure to add any new samples to this list, to assets/js/goSamples.js, and to samples/all.html.
  */

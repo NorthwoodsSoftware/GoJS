@@ -11,7 +11,7 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = void 0;
     /*
-    *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go.js");
     var myDiagram;

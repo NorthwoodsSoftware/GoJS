@@ -24,7 +24,7 @@ var __extends = (this && this.__extends) || (function () {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GenogramLayout = void 0;
     /*
-    *  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go.js");
     // A custom layout that shows the two families related to a person's parents

@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
 */
 // This is the definitions of the predefined text editor used by TextEditingTool
 // when you set or bind TextBlock.editable to true.

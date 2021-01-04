@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // This example loads the GoJS library then adds HTML from scratch and evaluates some JavaScript,

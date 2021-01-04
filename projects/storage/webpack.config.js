@@ -35,7 +35,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.BannerPlugin("Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.")
+        new webpack.BannerPlugin("Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.")
         ////new UglifyJSPlugin({ sourceMap: true })
     ]
 };

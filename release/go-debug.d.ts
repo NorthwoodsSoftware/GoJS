@@ -1,9 +1,9 @@
 /*
- * Type definitions for GoJS v2.1.32
+ * Type definitions for GoJS v2.1.33
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
- * Copyright (C) 1998-2020 by Northwoods Software Corporation.
+ * Copyright (C) 1998-2021 by Northwoods Software Corporation.
  * This requires TypeScript v2.8 or later.
  */
 
@@ -8047,7 +8047,7 @@ export class ContextMenuTool extends Tool {
      */
     constructor();
     /**
-     * Return true if it's a mouse right click that hasn't moved Tool#isBeyondDragSize
+     * Return true if it's a single mouse right click that hasn't moved Tool#isBeyondDragSize
      * and that is on a GraphObject with a GraphObject#contextMenu.
      * This is also true if the mouse right click is in the diagram background
      * and the diagram's Diagram#contextMenu is non-null.
