@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.33
+ * Type definitions for GoJS v2.1.34
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5370,7 +5370,7 @@ export class ToolManager extends Tool {
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    rotatingTool: Tool;
+    rotatingTool: RotatingTool;
     /**
      * Gets or sets the mode-less LinkingTool, normally one of the #mouseMoveTools.
      *
@@ -13254,6 +13254,15 @@ export class CommandHandler {
      * @since 1.1
      */
     zoomFactor: number;
+    /**
+     * Gets or sets whether the #zoomToFit command ever restores the previous
+     * Diagram scale and position.
+     * When this property is false, this command always calls Diagram#zoomToFit.
+     *
+     * The default value is true.
+     * Setting this property does not raise any events.
+     */
+    isZoomToFitRestoreEnabled: boolean;
     /**
      * Find the actual collection of nodes and links to be moved or copied,
      * given an initial collection.
