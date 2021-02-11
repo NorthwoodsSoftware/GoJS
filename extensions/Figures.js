@@ -5267,7 +5267,7 @@ go.Shape.defineFigureGenerator("Gear", function(shape, w, h) {
 
 go.Shape.defineFigureGenerator("Hand", function(shape, w, h) {
   var geo = new go.Geometry();
-  var fig = new go.PathFigure(0, 0.5 * h, false);
+  var fig = new go.PathFigure(0, 0.5 * h, true);
   geo.add(fig);
 
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0.1 * w, 0.3 * h, 0, 0.375 * h, 0.05 * w, 0.325 * h));
@@ -5277,16 +5277,15 @@ go.Shape.defineFigureGenerator("Hand", function(shape, w, h) {
   fig.add(new go.PathSegment(go.PathSegment.Line, 0.9 * w, 0.4 * h));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0.9 * w, 0.55 * h, w, 0.4 * h, w, 0.55 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0.425 * w, 0.55 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Move, 0.6 * w, 0.55 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0.6 * w, 0.55 * h));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0.6 * w, 0.7 * h, 0.675 * w, 0.55 * h, 0.675 * w, 0.7 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0.4 * w, 0.7 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Move, 0.575 * w, 0.7 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0.575 * w, 0.7 * h));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0.575 * w, 0.85 * h, 0.65 * w, 0.7 * h, 0.65 * w, 0.85 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, 0.4 * w, 0.85 * h));
-  fig.add(new go.PathSegment(go.PathSegment.Move, 0.525 * w, 0.85 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0.525 * w, 0.85 * h));
   fig.add(new go.PathSegment(go.PathSegment.Bezier, 0.535 * w, h, 0.61 * w, 0.85 * h, 0.61 * w, h));
-  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0.9 * h, 0.435 * w, h, 0, h));
-  fig.add(new go.PathSegment(go.PathSegment.Line, 0, 0.5 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0.9 * h, 0.435 * w, h, 0, h).close());
   return geo;
 });
 

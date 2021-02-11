@@ -253,6 +253,12 @@ which iterate over the changes in a transaction and group them into a JSON-forma
     ... send to server/database ...
   });
 </pre>
+<p>
+Caution: don't call <code>JSON.stringify</code> on the result of <a>Model.toIncrementalData</a>,
+because that will not properly handle any instances of JavaScript classes that are referenced by the object's properties.
+Instead call <a>Model.toIncrementalJson</a>, which will produce a more compact textual serialization.
+If you have to do your own serialization, please ignore the internal hash id property that is placed on objects.
+</p>
 
 
 <h2 id="DiagramAndGraphObjectChanges">Diagram and GraphObject changes</h2>

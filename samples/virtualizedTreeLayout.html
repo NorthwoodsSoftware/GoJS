@@ -22,7 +22,6 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            contentAlignment: go.Spot.Center,
             initialDocumentSpot: go.Spot.Center,
             initialViewportSpot: go.Spot.Center,
 
@@ -139,9 +138,9 @@
 
     // The normal mechanism for determining the size of the document depends on all of the
     // Nodes and Links existing, so we need to use a function that depends only on the model data.
-    function computeDocumentBounds(model) {
+    function computeDocumentBounds() {
       var b = new go.Rect();
-      var ndata = model.nodeDataArray;
+      var ndata = myWholeModel.nodeDataArray;
       for (var i = 0; i < ndata.length; i++) {
         var d = ndata[i];
         if (!d.bounds) continue;
@@ -169,6 +168,7 @@
       var ndata = myWholeModel.nodeDataArray;
       for (var i = 0; i < ndata.length; i++) {
         var n = ndata[i];
+        if (model.containsNodeData(n)) continue;
         if (!n.bounds) continue;
         if (n.bounds.intersectsRect(viewb)) {
           model.addNodeData(n);
@@ -350,7 +350,7 @@
 
       go.TreeLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
-      this.diagram.fixedBounds = computeDocumentBounds(this.model);
+      this.diagram.fixedBounds = computeDocumentBounds();
       // update the positions of any existing Nodes
       this.diagram.nodes.each(function(node) {
         node.updateTargetBindings();

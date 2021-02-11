@@ -629,34 +629,37 @@
                 }
             }
             if (decProp && decProp.type === 'select') {
-                input = document.createElement('select');
-                this.updateSelect(decProp, input, propertyName, propertyValue);
-                input.addEventListener('change', updateall);
+                var inputs = input = document.createElement('select');
+                this.updateSelect(decProp, inputs, propertyName, propertyValue);
+                inputs.addEventListener('change', updateall);
             }
             else {
-                input = document.createElement('input');
-                input.value = this.convertToString(propertyValue);
+                var inputi_1 = input = document.createElement('input');
+                if (inputi_1 && inputi_1.setPointerCapture) {
+                    inputi_1.addEventListener("pointerdown", function (e) { return inputi_1.setPointerCapture(e.pointerId); });
+                }
+                inputi_1.value = this.convertToString(propertyValue);
                 if (decProp) {
                     var t = decProp.type;
                     if (t !== 'string' && t !== 'number' && t !== 'boolean' &&
                         t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
                         t !== 'rect' && t !== 'spot' && t !== 'margin') {
-                        input.setAttribute('type', decProp.type);
+                        inputi_1.setAttribute('type', decProp.type);
                     }
                     if (decProp.type === 'color') {
-                        if (input.type === 'color') {
-                            input.value = this.convertToColor(propertyValue);
+                        if (inputi_1.type === 'color') {
+                            inputi_1.value = this.convertToColor(propertyValue);
                             // input.addEventListener('input', updateall); // removed with multi select
-                            input.addEventListener('change', updateall);
+                            inputi_1.addEventListener('change', updateall);
                         }
                     }
                     if (decProp.type === 'checkbox') {
-                        input.checked = !!propertyValue;
-                        input.addEventListener('change', updateall);
+                        inputi_1.checked = !!propertyValue;
+                        inputi_1.addEventListener('change', updateall);
                     }
                 }
-                if (input.type !== 'color')
-                    input.addEventListener('blur', updateall);
+                if (inputi_1.type !== 'color')
+                    inputi_1.addEventListener('blur', updateall);
             }
             if (input) {
                 input.tabIndex = this.tabIndex++;

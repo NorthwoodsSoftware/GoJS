@@ -410,7 +410,9 @@ Inspector.prototype.buildPropertyRow = function(propertyName, propertyValue) {
     input.addEventListener("change", updateall);
   } else {
     input = document.createElement("input");
-
+    if (input.setPointerCapture) {
+      input.addEventListener("pointerdown", function(e) { input.setPointerCapture(e.pointerId); });
+    }
     input.value = this.convertToString(propertyValue);
     if (decProp) {
       var t = decProp.type;

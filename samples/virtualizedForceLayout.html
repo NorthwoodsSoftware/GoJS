@@ -19,8 +19,6 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            contentAlignment: go.Spot.Center,
-
             // use a virtualized ForceDirectedLayout which does not require
             // that the Nodes and Links exist first for an accurate layout
             layout: $(VirtualizedForceDirectedLayout,
@@ -168,9 +166,9 @@
 
     // The normal mechanism for determining the size of the document depends on all of the
     // Nodes and Links existing, so we need to use a function that depends only on the model data.
-    function computeDocumentBounds(model) {
+    function computeDocumentBounds() {
       var b = new go.Rect();
-      var ndata = model.nodeDataArray;
+      var ndata = myWholeModel.nodeDataArray;
       for (var i = 0; i < ndata.length; i++) {
         var d = ndata[i];
         if (!d.bounds) continue;
@@ -198,24 +196,24 @@
       var ndata = myWholeModel.nodeDataArray;
       for (var i = 0; i < ndata.length; i++) {
         var n = ndata[i];
+        if (model.containsNodeData(n)) continue;
         if (!n.bounds) continue;
         if (n.bounds.intersectsRect(viewb)) {
-          model.addNodeData(n);
+          addNode(diagram, n);
         }
+
         if (model instanceof go.TreeModel) {
           // make sure links to all parent nodes appear
           var parentkey = myWholeModel.getParentKeyForNodeData(n);
           var parent = myWholeModel.findNodeDataForKey(parentkey);
           if (parent !== null) {
             if (n.bounds.intersectsRect(viewb)) {  // N is inside viewport
-              model.addNodeData(parent);  // so that link to parent appears
+              addNode(diagram, parent);  // so that link to parent appears
               var node = diagram.findNodeForData(n);
               if (node !== null) {
                 var link = node.findTreeParentLink();
                 if (link !== null) {
                   // do this now to avoid delayed routing outside of transaction
-                  link.fromNode.ensureBounds();
-                  link.toNode.ensureBounds();
                   link.updateRoute();
                 }
               }
@@ -225,14 +223,12 @@
               b.set(n.bounds);
               b.unionRect(parent.bounds);
               if (b.intersectsRect(viewb)) {
-                model.addNodeData(n);  // add N so that link to parent appears
+                addNode(diagram, n);  // add N so that link to parent appears
                 var child = diagram.findNodeForData(n);
                 if (child !== null) {
                   var link = child.findTreeParentLink();
                   if (link !== null) {
                     // do this now to avoid delayed routing outside of transaction
-                    link.fromNode.ensureBounds();
-                    link.toNode.ensureBounds();
                     link.updateRoute();
                   }
                 }
@@ -246,6 +242,8 @@
         var ldata = myWholeModel.linkDataArray;
         for (var i = 0; i < ldata.length; i++) {
           var l = ldata[i];
+          if (model.containsLinkData(l)) continue;
+
           var fromkey = myWholeModel.getFromKeyForLinkData(l);
           if (fromkey === undefined) continue;
           var from = myWholeModel.findNodeDataForKey(fromkey);
@@ -261,14 +259,12 @@
           if (b.intersectsRect(viewb)) {
             // also make sure both connected nodes are present,
             // so that link routing is authentic
-            model.addNodeData(from);
-            model.addNodeData(to);
+            addNode(diagram, from);
+            addNode(diagram, to);
             model.addLinkData(l);
             var link = diagram.findLinkForData(l);
             if (link !== null) {
               // do this now to avoid delayed routing outside of transaction
-              link.fromNode.ensureBounds();
-              link.toNode.ensureBounds();
               link.updateRoute();
             }
           }
@@ -283,6 +279,14 @@
       }
 
       updateCounts();  // only for this sample
+    }
+    
+    function addNode(diagram, data) {
+      const model = diagram.model;
+      if (model.containsNodeData(data)) return;
+      model.addNodeData(data);
+      const n = diagram.findNodeForData(data);
+      if (n !== null) n.ensureBounds();
     }
 
     // occasionally remove Parts that are offscreen from the Diagram
@@ -352,7 +356,7 @@
     VirtualizedForceDirectedLayout.prototype.commitLayout = function() {
       go.ForceDirectedLayout.prototype.commitLayout.call(this);
       // can't depend on regular bounds computation that depends on all Nodes existing
-      this.diagram.fixedBounds = computeDocumentBounds(this.model);
+      this.diagram.fixedBounds = computeDocumentBounds();
       // update the positions of any existing Nodes
       this.diagram.nodes.each(function(node) {
         node.updateTargetBindings();

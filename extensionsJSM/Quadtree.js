@@ -3,7 +3,7 @@
 */
 import * as go from '../release/go-module.js';
 /**
- * @hidden
+ * @hidden @internal
  */
 class QuadNode {
     constructor(bounds, parent, level) {
@@ -39,11 +39,12 @@ class QuadNode {
     }
 }
 /**
+ * @internal @hidden
  * Object to be contained by the {@link Quadtree} class. This object needs
  * to have rectangular bounds (described by an {@link Rect} object), as well
  * as something (of any type) associated with it.
  */
-class TreeObject {
+class QuadObj {
     constructor(bounds, obj) {
         this.bounds = bounds;
         this.obj = obj;
@@ -212,7 +213,7 @@ export class Quadtree {
      */
     add(obj, x, y, w, h) {
         let bounds;
-        if (!(obj instanceof TreeObject) && (x === undefined || x === null)) {
+        if (!(obj instanceof QuadObj) && (x === undefined || x === null)) {
             throw new Error('Invalid bounds for added object');
         }
         if (x instanceof go.Rect) {
@@ -222,13 +223,13 @@ export class Quadtree {
             bounds = new go.Rect(x, y, w, h);
         }
         let treeObj;
-        if (obj instanceof TreeObject) {
+        if (obj instanceof QuadObj) {
             treeObj = obj;
             obj = treeObj.obj;
             bounds = treeObj.bounds;
         }
         else {
-            treeObj = new TreeObject(bounds, obj);
+            treeObj = new QuadObj(bounds, obj);
         }
         if (isNaN(bounds.x) || bounds.x === Infinity ||
             isNaN(bounds.y) || bounds.y === Infinity ||
@@ -249,7 +250,7 @@ export class Quadtree {
             const len = Math.max(Math.abs(bounds.x - this._root.bounds.x), Math.abs(bounds.y - this._root.bounds.y));
             this._root.bounds = new go.Rect(Math.min(this._root.bounds.x, bounds.x), Math.min(this._root.bounds.y, bounds.y), len, len);
         }
-        // map the object to its corresponding TreeObject (so that the bounds of this object can be retrieved later)
+        // map the object to its corresponding QuadObj (so that the bounds of this object can be retrieved later)
         this._treeObjectMap.add(obj, treeObj);
         // grow as many times as necessary to fit the new object
         while (!this._root.bounds.containsRect(bounds)) {
@@ -345,7 +346,7 @@ export class Quadtree {
      * on the tree.
      * @this {Quadtree}
      * @param {QuadNode<T>} root the current node being operated on
-     * @param {TreeObject<T>} treeObj the object being added
+     * @param {QuadObj<T>} treeObj the object being added
      * @return {void}
      */
     _addHelper(root, treeObj) {
@@ -909,7 +910,7 @@ export class Quadtree {
      * Recursive helper function for {@link #findExtremeObjects}
      * @this {Quadtree}
      * @param {QuadNode<T>} root the current root node being searched
-     * @return {Array<TreeObject<T>>} maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
+     * @return {Array<QuadObj<T>>} maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
      */
     _findExtremeObjectsHelper(root = this._root) {
         let minX = null;

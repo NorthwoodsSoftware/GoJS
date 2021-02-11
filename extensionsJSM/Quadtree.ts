@@ -4,14 +4,14 @@
 import * as go from '../release/go-module.js';
 
 /**
- * @hidden
+ * @hidden @internal
  */
 class QuadNode<T> {
   public bounds: go.Rect;
   public parent: QuadNode<T> | null;
   public level: number;
   public objects: Array<T> = [];
-  public treeObjects: Array<TreeObject<T>> = [];
+  public treeObjects: Array<QuadObj<T>> = [];
   public totalObjects = 0; // total in this node + in all children (recursively)
   public nodes: Array<QuadNode<T> | null> = [null, null, null, null];
 
@@ -49,11 +49,12 @@ class QuadNode<T> {
 }
 
 /**
+ * @internal @hidden
  * Object to be contained by the {@link Quadtree} class. This object needs
  * to have rectangular bounds (described by an {@link Rect} object), as well
  * as something (of any type) associated with it.
  */
-class TreeObject<T> {
+class QuadObj<T> {
   public bounds: go.Rect;
   public obj: T;
 
@@ -88,7 +89,7 @@ export class Quadtree<T> {
 
   /** @hidden @internal */ private readonly _nodeCapacity: number = 1;
   /** @hidden @internal */ private readonly _maxLevels: number = Infinity;
-  /** @hidden @internal */ private _treeObjectMap: go.Map<T, TreeObject<T>> = new go.Map<T, TreeObject<T>>();
+  /** @hidden @internal */ private _treeObjectMap: go.Map<T, QuadObj<T>> = new go.Map<T, QuadObj<T>>();
 
   // we can avoid unnecessary work when adding objects if there are no objects with 0 width or height.
   // Note that after being set to true, these flags are not ever set again to false, even if all objects
@@ -238,9 +239,9 @@ export class Quadtree<T> {
    * @param {number} h Height to be used if x,y are specified;
    * @return {void}
    */
-  public add(obj: T | TreeObject<T>, x?: go.Rect | go.Point | number, y?: go.Point | go.Size | number, w?: number, h?: number): void {
+  public add(obj: T | QuadObj<T>, x?: go.Rect | go.Point | number, y?: go.Point | go.Size | number, w?: number, h?: number): void {
     let bounds: go.Rect;
-    if (!(obj instanceof TreeObject) && (x === undefined || x === null)) {
+    if (!(obj instanceof QuadObj) && (x === undefined || x === null)) {
       throw new Error('Invalid bounds for added object');
     }
     if (x instanceof go.Rect) {
@@ -249,13 +250,13 @@ export class Quadtree<T> {
       bounds = new go.Rect(x, y, w, h);
     }
 
-    let treeObj: TreeObject<T>;
-    if (obj instanceof TreeObject) {
+    let treeObj: QuadObj<T>;
+    if (obj instanceof QuadObj) {
       treeObj = obj;
       obj = treeObj.obj;
       bounds = treeObj.bounds;
     } else {
-      treeObj = new TreeObject<T>(bounds, obj);
+      treeObj = new QuadObj<T>(bounds, obj);
     }
 
     if (isNaN(bounds.x) || bounds.x === Infinity ||
@@ -281,7 +282,7 @@ export class Quadtree<T> {
       this._root.bounds = new go.Rect(Math.min(this._root.bounds.x, bounds.x), Math.min(this._root.bounds.y, bounds.y), len, len);
     }
 
-    // map the object to its corresponding TreeObject (so that the bounds of this object can be retrieved later)
+    // map the object to its corresponding QuadObj (so that the bounds of this object can be retrieved later)
     this._treeObjectMap.add(obj, treeObj);
 
     // grow as many times as necessary to fit the new object
@@ -391,10 +392,10 @@ export class Quadtree<T> {
    * on the tree.
    * @this {Quadtree}
    * @param {QuadNode<T>} root the current node being operated on
-   * @param {TreeObject<T>} treeObj the object being added
+   * @param {QuadObj<T>} treeObj the object being added
    * @return {void}
    */
-  private _addHelper(root: QuadNode<T>, treeObj: TreeObject<T>): void {
+  private _addHelper(root: QuadNode<T>, treeObj: QuadObj<T>): void {
     root.totalObjects++;
 
     if (root.nodes[0]) {
@@ -453,7 +454,7 @@ export class Quadtree<T> {
     }
 
     const toRemove: Array<number> = [];
-    const toAdd: Array<TreeObject<T>> = [];
+    const toAdd: Array<QuadObj<T>> = [];
     for (let i = 0; i < root.objects.length; i++) {
       const obj = root.treeObjects[i];
       if (obj.bounds.width === 0 && obj.bounds.x === root.bounds.x) {
@@ -489,7 +490,7 @@ export class Quadtree<T> {
     }
 
     const toRemove: Array<number> = [];
-    const toAdd: Array<TreeObject<T>> = [];
+    const toAdd: Array<QuadObj<T>> = [];
     for (let i = 0; i < root.objects.length; i++) {
       const obj = root.treeObjects[i];
       if (obj.bounds.height === 0 && obj.bounds.y === root.bounds.y) {
@@ -549,7 +550,7 @@ export class Quadtree<T> {
     return null;
   }
 
-  private _findHelper(root: QuadNode<T>, treeObj: TreeObject<T>): QuadNode<T> | null {
+  private _findHelper(root: QuadNode<T>, treeObj: QuadObj<T>): QuadNode<T> | null {
     for (const object of root.treeObjects) {
       if (object === treeObj) {
         return root;
@@ -989,13 +990,13 @@ export class Quadtree<T> {
    * Recursive helper function for {@link #findExtremeObjects}
    * @this {Quadtree}
    * @param {QuadNode<T>} root the current root node being searched
-   * @return {Array<TreeObject<T>>} maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
+   * @return {Array<QuadObj<T>>} maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
    */
-  private _findExtremeObjectsHelper(root = this._root): [TreeObject<T> | null, TreeObject<T> | null, TreeObject<T> | null, TreeObject<T> | null] {
-    let minX: TreeObject<T> | null = null;
-    let maxX: TreeObject<T> | null = null;
-    let minY: TreeObject<T> | null = null;
-    let maxY: TreeObject<T> | null = null;
+  private _findExtremeObjectsHelper(root = this._root): [QuadObj<T> | null, QuadObj<T> | null, QuadObj<T> | null, QuadObj<T> | null] {
+    let minX: QuadObj<T> | null = null;
+    let maxX: QuadObj<T> | null = null;
+    let minY: QuadObj<T> | null = null;
+    let maxY: QuadObj<T> | null = null;
     if (root.nodes[0]) { // if root is split
       for (const node of root.nodes) {
         if (node !== null) {
