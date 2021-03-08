@@ -492,6 +492,69 @@ You will still need to specify the column for each object in each row.
 The same kind of organization is also possible with columns by using <a>Panel,TableColumn</a> Panels.
 </p>
 
+<h2 id="Examples">Examples</h2>
+<p>
+  In this example the first column spans two rows, because <a>GraphObject.rowSpan</a> is 2 on the <a>Picture</a>.
+</p>
+<p>
+  The second column (column #1) has a <a>RowColumnDefinition.minimum</a> width of 100,
+  so that column is at least that wide even if the elements in that column's cells are narrower.
+</p>
+<p>
+  The first column only takes as much width as it naturally needs and any excess width is given to the second column.
+  This occurs because the <a>RowColumnDefinition</a> for column #0 has <a>RowColumnDefinition.sizing</a> set to None.
+  The same is true for the first row -- any extra height is given to the second row.
+</p>
+<p>
+  There is a column separator line just before the second column, and there is a row separator just before
+  the second row because the respective <a>RowColumnDefinition.separatorStroke</a> properties have been set
+  to a color.  But the row separator is not visible in the first column because that column's definition
+  sets <a>RowColumnDefinition.background</a> to "white" and sets <a>RowColumnDefinition.coversSeparators</a> to true.
+</p>
+<pre class="lang-js" id="example1">
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { resizable: true, minSize: new go.Size(162, 62) },
+      $(go.Shape, { fill: "white" }),
+      $(go.Panel, "Table",
+        { stretch: go.GraphObject.Fill, margin: 0.5 },
+
+        $(go.RowColumnDefinition,
+          { column: 0, sizing: go.RowColumnDefinition.None, background: "white", coversSeparators: true }),
+        $(go.RowColumnDefinition,
+          { column: 1, minimum: 100, background: "white", separatorStroke: "black" }),
+        $(go.RowColumnDefinition,
+          { row: 0, sizing: go.RowColumnDefinition.None }),
+        $(go.RowColumnDefinition,
+          { row: 1, separatorStroke: "black" }),
+
+        $(go.Picture,
+          { row: 0, column: 0, rowSpan: 2, width: 48, height: 48, margin: 6 },
+          new go.Binding("source", "pic")),
+        $(go.TextBlock,
+          { row: 0, column: 1, stretch: go.GraphObject.Horizontal, margin: 2, textAlign: "center" },
+          new go.Binding("text", "text1")),
+        $(go.TextBlock,
+          { row: 1, column: 1, stretch: go.GraphObject.Horizontal, margin: 2, textAlign: "center" },
+          new go.Binding("text", "text2"))
+      ),
+    );
+
+  diagram.model.nodeDataArray = [
+    {
+      pic: "../samples/images/hs1.jpg",
+      text1: "top",
+      text2: "bottom gets extra space"
+    },
+    {
+      pic: "../samples/images/hs2.jpg",
+      text1: "top has more description that wraps",
+      text2: "node is taller due to more text"
+    }
+  ]
+</pre>
+<script>goCode("example1", 600, 200)</script>
+
 </div>
 </div>
 </body>

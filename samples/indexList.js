@@ -269,7 +269,7 @@ arr.push([
 arr.push([
   "doubleTree",
   "Double Tree",
-  "Displays a single diagram of two trees sharing a single root node growing in opposite directions, using the DoubleTreeLayout extension.",
+  "Displays a bow-tie diagram of two trees sharing a single root node growing in opposite directions, using the DoubleTreeLayout extension.",
   "doubleTree",
   ["collections", "treelayout"]
 ]);

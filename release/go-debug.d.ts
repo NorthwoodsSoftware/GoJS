@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.35
+ * Type definitions for GoJS v2.1.36
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -6259,7 +6259,7 @@ export abstract class LinkingBaseTool extends Tool {
      * nor may it change the validity of any potential link connection.
      * @since 1.2
      */
-    portTargeted: ((node: Node, port: GraphObject, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void) | null;
+    portTargeted: ((node: Node | null, port: GraphObject | null, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void) | null;
 }
 /**
  * The LinkingTool lets a user draw a new Link between two ports,
@@ -19492,6 +19492,8 @@ export class Node extends Part {
     invalidateConnectedLinks(ignore?: Set<Part>): void;
     /**
      * Gets or sets how link points are computed when the port spot is a "side" spot.
+     * The value must be one of Node.SpreadingNone|SpreadingNone,
+     * Node.SpreadingEvenly|SpreadingEvenly, Node.SpreadingPacked|SpreadingPacked.
      * The default value is Node.SpreadingEvenly.
      * @since 1.5
      */
@@ -22682,14 +22684,16 @@ export class Model {
      * By default, this method will make deep clones of arrays and JavaScript objects and maintain any shared or cyclic references.
      * It will properly copy any `Date` or `RegExp` object, and will call a `copy` function on any object where one exists.
      * It also handles certain GoJS classes: `Point`, `Size`, `Rect`, `Margin`, `Spot`, `List`, `Set`, and `Map`.
+     * It will not handle instances of `Diagram`, `Layer`, `GraphObject`, `Tool`, `CommandHandler`, `AnimationManager` or subclasses or related classes.
      *
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * Only override this method when the default behavior doesn't suit the data.
-     * When cloning objects, we suggest skipping the `__gohashid` property.
+     * When cloning objects, we recommend skipping the `__gohashid` property, which is used internally.
      * @expose
      * @param {T} obj
      * @return {T}
+     * @since 2.1
      */
     cloneDeep<T>(obj: T): T;
     /**
