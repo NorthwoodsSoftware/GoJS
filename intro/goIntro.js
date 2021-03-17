@@ -275,6 +275,7 @@ var myMenu = '\
       <li><a href="printing.html">Printing</a></li>\
       <li><a href="serverSideImages.html">Server-side Images</a></li>\
       <li><a href="nodeScript.html">GoJS in Node.js</a></li>\
+      <li><a href="testing.html">Testing</a></li>\
       <li><a href="storage.html">Storage</a></li>\
       <li><a href="performance.html">Performance</a></li>\
       <li><a href="source.html">Building from Source</a></li>\

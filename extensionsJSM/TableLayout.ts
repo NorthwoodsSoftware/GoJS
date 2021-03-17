@@ -330,13 +330,13 @@ export class TableLayout extends go.Layout {
       if (!rowcol[i]) continue;
       lcol = rowcol[i].length; // column length in this row
       const rowHerald = this.getRowDefinition(i);
-      rowHerald.actual = 0; // Reset rows (only on first pass)
+      rowHerald.measured = 0; // Reset rows (only on first pass)
       for (let j = 0; j < lcol; j++) {
         // foreach column j in row i...
         if (!rowcol[i][j]) continue;
         const colHerald = this.getColumnDefinition(j);
         if (resetCols[j] === undefined) { // make sure we only reset these once
-          colHerald.actual = 0;
+          colHerald.measured = 0;
           resetCols[j] = true;
         }
 
@@ -390,12 +390,13 @@ export class TableLayout extends go.Layout {
           const mheight = Math.max(m.height + margh, 0);
 
           //  Make sure the heralds have the right layout size
-          //    the row/column should use the largest meausured size of any
+          //    the row/column should use the largest measured size of any
           //    GraphObject contained, constrained by mins and maxes
           if (child.rowSpan === 1 && (realheight || stretch === go.GraphObject.None || stretch === go.GraphObject.Horizontal)) {
             const def = this.getRowDefinition(i);
             amt = Math.max(mheight - def.actual, 0);
             if (amt > rowleft) amt = rowleft;
+            def.measured = def.measured + amt;
             def.actual = def.actual + amt;
             rowleft = Math.max(rowleft - amt, 0);
           }
@@ -404,6 +405,7 @@ export class TableLayout extends go.Layout {
             const def = this.getColumnDefinition(j);
             amt = Math.max(mwidth - def.actual, 0);
             if (amt > colleft) amt = colleft;
+            def.measured = def.measured + amt;
             def.actual = def.actual + amt;
             colleft = Math.max(colleft - amt, 0);
           }
@@ -419,12 +421,12 @@ export class TableLayout extends go.Layout {
     l = this.columnCount;
     for (let i = 0; i < l; i++) {
       if (this._colDefs[i] === undefined) continue;
-      totalColWidth += this.getColumnDefinition(i).actual;
+      totalColWidth += this.getColumnDefinition(i).measured;
     }
     l = this.rowCount;
     for (let i = 0; i < l; i++) {
       if (this._rowDefs[i] === undefined) continue;
-      totalRowHeight += this.getRowDefinition(i).actual;
+      totalRowHeight += this.getRowDefinition(i).measured;
     }
     colleft = Math.max(width - totalColWidth, 0);
     rowleft = Math.max(height - totalRowHeight, 0);
@@ -443,12 +445,12 @@ export class TableLayout extends go.Layout {
       const margw = marg.right + marg.left;
       const margh = marg.top + marg.bottom;
 
-      if (colHerald.actual === 0 && (nosizeCols as any)[child.column] !== undefined) {
+      if (colHerald.measured === 0 && (nosizeCols as any)[child.column] !== undefined) {
         (nosizeCols as any)[child.column] = Math.max(mb.width + margw, (nosizeCols as any)[child.column]);
       } else {
         (nosizeCols as any)[child.column] = null; // obey the column herald
       }
-      if (rowHerald.actual === 0 && (nosizeRows as any)[child.row] !== undefined) {
+      if (rowHerald.measured === 0 && (nosizeRows as any)[child.row] !== undefined) {
         (nosizeRows as any)[child.row] = Math.max(mb.height + margh, (nosizeRows as any)[child.row]);
       } else {
         (nosizeRows as any)[child.row] = null; // obey the row herald
@@ -531,11 +533,13 @@ export class TableLayout extends go.Layout {
 
       oldAmount = rowHerald.actual;
       rowHerald.actual = Math.max(rowHerald.actual, mheight);
+      rowHerald.measured = Math.max(rowHerald.measured, mheight);
       amt = rowHerald.actual - oldAmount;
       rowleft = Math.max(rowleft - amt, 0);
 
       oldAmount = colHerald.actual;
       colHerald.actual = Math.max(colHerald.actual, mwidth);
+      colHerald.measured = Math.max(colHerald.measured, mwidth);
       amt = colHerald.actual - oldAmount;
       colleft = Math.max(colleft - amt, 0);
     } // end no fixed size objects

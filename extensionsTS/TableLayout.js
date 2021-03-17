@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -371,14 +371,14 @@ var __extends = (this && this.__extends) || (function () {
                     continue;
                 lcol = rowcol[i].length; // column length in this row
                 var rowHerald = this.getRowDefinition(i);
-                rowHerald.actual = 0; // Reset rows (only on first pass)
+                rowHerald.measured = 0; // Reset rows (only on first pass)
                 for (var j = 0; j < lcol; j++) {
                     // foreach column j in row i...
                     if (!rowcol[i][j])
                         continue;
                     var colHerald = this.getColumnDefinition(j);
                     if (resetCols[j] === undefined) { // make sure we only reset these once
-                        colHerald.actual = 0;
+                        colHerald.measured = 0;
                         resetCols[j] = true;
                     }
                     var cell = rowcol[i][j];
@@ -426,13 +426,14 @@ var __extends = (this && this.__extends) || (function () {
                         var mwidth = Math.max(m.width + margw, 0);
                         var mheight = Math.max(m.height + margh, 0);
                         //  Make sure the heralds have the right layout size
-                        //    the row/column should use the largest meausured size of any
+                        //    the row/column should use the largest measured size of any
                         //    GraphObject contained, constrained by mins and maxes
                         if (child.rowSpan === 1 && (realheight || stretch === go.GraphObject.None || stretch === go.GraphObject.Horizontal)) {
                             var def = this.getRowDefinition(i);
                             amt = Math.max(mheight - def.actual, 0);
                             if (amt > rowleft)
                                 amt = rowleft;
+                            def.measured = def.measured + amt;
                             def.actual = def.actual + amt;
                             rowleft = Math.max(rowleft - amt, 0);
                         }
@@ -441,6 +442,7 @@ var __extends = (this && this.__extends) || (function () {
                             amt = Math.max(mwidth - def.actual, 0);
                             if (amt > colleft)
                                 amt = colleft;
+                            def.measured = def.measured + amt;
                             def.actual = def.actual + amt;
                             colleft = Math.max(colleft - amt, 0);
                         }
@@ -455,13 +457,13 @@ var __extends = (this && this.__extends) || (function () {
             for (var i = 0; i < l; i++) {
                 if (this._colDefs[i] === undefined)
                     continue;
-                totalColWidth += this.getColumnDefinition(i).actual;
+                totalColWidth += this.getColumnDefinition(i).measured;
             }
             l = this.rowCount;
             for (var i = 0; i < l; i++) {
                 if (this._rowDefs[i] === undefined)
                     continue;
-                totalRowHeight += this.getRowDefinition(i).actual;
+                totalRowHeight += this.getRowDefinition(i).measured;
             }
             colleft = Math.max(width - totalColWidth, 0);
             rowleft = Math.max(height - totalRowHeight, 0);
@@ -478,13 +480,13 @@ var __extends = (this && this.__extends) || (function () {
                 var marg = child.margin;
                 var margw = marg.right + marg.left;
                 var margh = marg.top + marg.bottom;
-                if (colHerald.actual === 0 && nosizeCols[child.column] !== undefined) {
+                if (colHerald.measured === 0 && nosizeCols[child.column] !== undefined) {
                     nosizeCols[child.column] = Math.max(mb.width + margw, nosizeCols[child.column]);
                 }
                 else {
                     nosizeCols[child.column] = null; // obey the column herald
                 }
-                if (rowHerald.actual === 0 && nosizeRows[child.row] !== undefined) {
+                if (rowHerald.measured === 0 && nosizeRows[child.row] !== undefined) {
                     nosizeRows[child.row] = Math.max(mb.height + margh, nosizeRows[child.row]);
                 }
                 else {
@@ -577,10 +579,12 @@ var __extends = (this && this.__extends) || (function () {
                 var oldAmount = 0.0;
                 oldAmount = rowHerald.actual;
                 rowHerald.actual = Math.max(rowHerald.actual, mheight);
+                rowHerald.measured = Math.max(rowHerald.measured, mheight);
                 amt = rowHerald.actual - oldAmount;
                 rowleft = Math.max(rowleft - amt, 0);
                 oldAmount = colHerald.actual;
                 colHerald.actual = Math.max(colHerald.actual, mwidth);
+                colHerald.measured = Math.max(colHerald.measured, mwidth);
                 amt = colHerald.actual - oldAmount;
                 colleft = Math.max(colleft - amt, 0);
             } // end no fixed size objects

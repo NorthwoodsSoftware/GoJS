@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.36
+ * Type definitions for GoJS v2.1.37
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16963,6 +16963,10 @@ export class RowColumnDefinition {
      * @see #sizing
      */
     actual: number;
+    /**
+     * Undocumented
+     */
+    measured: number;
     /**
      * This read-only property returns the total arranged row height or column width, after arrangement, in local coordinates.
      * This value gives the #actual size plus the #separatorPadding and #separatorStrokeWidth.
