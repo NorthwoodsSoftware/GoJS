@@ -27,16 +27,16 @@
   textarea.addEventListener('keydown', function(e) {
     var tool = TextEditor.tool;
     if (tool.textBlock === null) return;
-    var keynum = e.which;
-    if (keynum === 13) { // Enter
+    var key = e.key;
+    if (key === "Enter") {
       if (tool.textBlock.isMultiline === false) e.preventDefault();
       tool.acceptText(go.TextEditingTool.Enter);
       return;
-    } else if (keynum === 9) { // Tab
+    } else if (key === "Tab") {
       tool.acceptText(go.TextEditingTool.Tab);
       e.preventDefault();
       return;
-    } else if (keynum === 27) { // Esc
+    } else if (key === "Escape") {
       tool.doCancel();
       if (tool.diagram !== null) tool.diagram.doFocus();
     }

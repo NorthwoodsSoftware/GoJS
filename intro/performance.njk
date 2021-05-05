@@ -1,0 +1,131 @@
+﻿{% extends "_includes/intro.njk" %}
+
+{% block title %}GoJS Performance Considerations -- Northwoods Software{% endblock %}
+
+{% block content %}
+
+
+
+
+<h1>Performance Considerations</h1>
+
+<p>
+  Getting good performance for your diagrams does not require any effort on your part when
+  the diagrams are limited to a few hundreds of nodes and links, especially on the desktop.
+  However when your app might deal with thousands or tens of thousands of nodes and links,
+  you may need to adapt your implementation to avoid expensive features.
+</p>
+
+<p>
+  The perceived performance of your diagram depends on many different factors.
+</p>
+<ul>
+  <li>JavaScript code is normally several to many times slower than Java or .NET code
+      on the same hardware platform.</li>
+  <li>JavaScript code performance varies between different browsers and versions of browsers.</li>
+  <li>Memory limitations, particularly on mobile devices, affect performance.</li>
+  <li>There can be a wide variation of drawing performance on different platforms.</li>
+  <li>Drawing and animation effects take resources.</li>
+  <li>Complicated nodes or links are slower to build and update and draw than simple ones.</li>
+  <li>Some layouts are inherently slower than others.</li>
+</ul>
+
+<h2 id="EffectsAndAppearances">Effects and Appearances</h2>
+<p>
+  Shadows are relatively expensive to draw, so consider not setting <a>Part.isShadowed</a> to true.
+  Gradient <a>Brush</a>es are slower to draw than solid colors.
+  Complex <a>Shape</a> <a>Geometry</a>s are slower to draw than simpler ones, and they require more
+  computation when computing intersections.
+</p>
+<p>
+  Animation takes up resources; consider setting <a>AnimationManager.isEnabled</a> to false.
+</p>
+
+<h2 id="ConstructingAndSizingNodes">Constructing and Sizing Nodes</h2>
+<p>
+  Keep your Nodes and Links as simple as you can make it.
+  Limit how many GraphObjects that you use in your templates.
+  Use simpler Panel types when feasible -- the "Table" Panel is the most featureful,
+  but maybe you can just use a "Horizontal" or a "Vertical" or a "Spot" or an "Auto" Panel.
+  A Panel should have two or more elements in them (although there can be exceptions).
+  If you have no elements in a Panel, delete the panel.
+  If you have only one element in a Panel, consider removing the panel and merging the element
+  into the panel's containing panel.
+</p>
+<p>
+  Do not include objects that not visible.
+  Limit how much data binding that you use, and avoid <a>Binding</a>s with no source property name
+  or that are <a>Binding.ofObject</a>.
+</p>
+<p>
+	If you have a <a>Picture</a> and you know its intended size beforehand,
+  it's best to set its <a>GraphObject.desiredSize</a>
+  (or <a>GraphObject.width</a> and <a>GraphObject.height</a>)
+  so that it does not have to re-measured once the image loads.
+  When nodes change size a <a>Layout</a> might need to be performed again,
+  so having fixed size nodes helps reduce diagram layouts.
+  In general, setting <a>GraphObject.desiredSize</a> on the elements of your nodes,
+  especially <a>Picture</a>s, will speed up how quickly <b>GoJS</b> can measure and arrange
+  the <a>Panel</a>s that form your Nodes or Links.
+</p>
+
+<h2 id="Links">Links</h2>
+<p>
+  The <a>Link.routing</a> property value <a>Link,AvoidsNodes</a> can be slow in very large graphs.
+  Consider not using it in performance-minded large graphs,
+  or setting it only after the intial layout is completed (use "InitialLayoutCompleted" <a href="events.html">Diagram event listener</a>),
+  or ideally setting it at that time only on select Links.
+</p>
+<p>
+  Using a <a>Link.curve</a> value of either <a>Link,JumpOver</a> or <a>Link,JumpGap</a> is a lot slower than not
+  having to compute all the points where such links cross and drawing the small arc or drawing a gap.
+</p>
+
+<h2 id="Layouts">Layouts</h2>
+<p>
+  <a>GridLayout</a> and <a>TreeLayout</a> are fast. <a>LayeredDigraphLayout</a> is slow.
+</p>
+
+<h2 id="Virtualization">Virtualization</h2>
+<p>
+	For diagrams with many nodes and links that only display a fraction of them at a time,
+  you could implement some form of virtualization to optimize your diagram.
+	The <a href="../samples/virtualizedTree.html">Virtualized Tree sample</a> contains 123,456
+  total nodes, yet is fairly quick to load and render, because it only constructs nodes
+  and links that intersect with the viewport.
+</p>
+<p>
+  But this does complicate the implementation of the diagram, because you need to use a
+  separate model from the <a>Diagram.model</a> and manage adding and removing Nodes and
+  Links when the viewport changes.
+  Furthermore layout is more complicated because it needs to work on <a>LayoutVertex</a>es
+  and <a>LayoutEdge</a>s, not on <a>Node</a>s and <a>Link</a>s.
+</p>
+<p>
+  Other virtualization samples are listed in the <a href="../samples/index.html#performance">samples index</a>.
+</p>
+
+<h2 id="OtherConsiderations">Other considerations</h2>
+<p>
+  If you want to disassociate the Diagram from the HTML Div element, set <a>Diagram.div</a> to null.
+  If you remove a part of the HTML DOM containing a Div with a Diagram, you will need to
+  set <a>Diagram.div</a> to null in order for the page to garbage collect the memory.
+</p>
+<p>
+	Depending on your app, it may be worthwhile to selectively toggle off some features
+  (like shadows and animation) or to use simpler templates altogether,
+  when slower environments are present, such as on mobile devices.
+</p>
+<p>
+	You can use multiple templates depending on your zoom level.
+  If you are zoomed out far enough (and therefore have a lot of nodes on the screen)
+  you can switch to a simplified template so that rendering (when panning, dragging, etc) is faster.
+  The process of switching templates has a performance cost, though,
+  since Parts have to rebuild themselves.
+</p>
+
+<p>
+  If you think you have a unique or high node count Diagramming situation that may benefit from other drawing optimizations, <a href="https://www.nwoods.com/contact.html">contact support</a>.
+</p>
+
+{% endblock %}

@@ -1,0 +1,149 @@
+﻿{% extends "_includes/intro.njk" %}
+
+{% block title %}GoJS with ES6 Modules -- Northwoods Software{% endblock %}
+
+{% block content %}
+
+
+
+<div id="container" class="container-fluid">
+  <div id="content">
+
+    <h1>GoJS and ES6 Modules</h1>
+    <p>
+      The GoJS kit contains examples of using GoJS with ES6 modules.
+    </p>
+
+
+    <h2 id="GoJSDirectly">Using GoJS as an ES6 module</h2>
+
+    <p>
+      By default the GoJS library does not use the <code>export</code> keyword, for compatibility reasons.
+      So we have had to provide different libraries that are ES6 modules.
+      In the <code>release</code> folder, they are the <code>go-module.js</code> and <code>go-debug-module.js</code> libraries.
+      In addition, there is an ES6 module-specific TypeScript definition file: <code>go-module.d.ts</code>.
+    </p>
+    <p>
+      In <code>samplesTS</code>, the <a href="../samplesTS/minimalModule.html">minimalModule.html</a> sample uses ES6.
+      It references:
+    </p>
+<pre class="lang-ts"><code>import * as go from '../release/go-module.js';</code></pre>
+
+    <p>In order to load GoJS and other ES6 modules, the HTML page also uses the <code>type="module"</code> script tag:</p>
+<pre class="lang-html"><code>
+  &lt;!-- requires minimalModule.js, built from minimalModule.ts --&gt;
+  &lt;script type="module"&gt;
+    import { init } from "./minimalModule.js";
+    // lib needs: export const go = self.go;
+    window.onload = function() {
+      init();
+    }
+  &lt;/script&gt;
+</code></pre>
+
+    <p>
+      Most browsers will not display resources with <code>&lt;script type="module"&gt;</code> if they are served from a local file system,
+      so you may need to open <code>minimalModule.html</code> from a server to see the results on localhost:.
+    </p>
+
+    <h2 id="GoJSES6">GoJS Extensions as ES6 Modules</h2>
+
+    <p>
+      The extension classes can also be loaded as ES6 modules if you modify the <code>tsconfig.json</code> configuration in the <code>extensionsTS</code>
+      folder, and then rebuild.
+    </p>
+<pre class="lang-json"><code>
+  {
+    "compilerOptions": {
+      "target": "es6",
+      "strict": true
+    }
+  }</code></pre>
+    <p>
+      Recompiling those TypeScript classes will then produce module-friendly JS libraries.
+    </p>
+
+    <p>
+      Depending on your toolchain, you could also include compiler options directly into your project,
+      as is done in the <a href="https://github.com/NorthwoodsSoftware/GoJS-projects/tree/master/vue-webpack">vue-webpack GoJS project</a>.
+      In its <code>webpack.config.js</code> file, we specify new compiler options for the TypeScript loader so that Webpack + Vue
+      compiles the extensions with ES6 module support instead of the <code>extensionsTS</code> defaults.
+    </p>
+    <pre class="lang-json"><code>
+/* ... in webpack.config.ts in the vue-webpack project ... */
+
+// files with `.ts` or `.tsx` extension will be handled by `ts-loader`
+{ test: /\.tsx?$/,
+  loader: 'ts-loader',
+  options: {
+    // We want to override the tsconfig file currently in:
+    // vue-webpack\node_modules\gojs\extensionsTS
+    // Because it uses ES5 + umd modules and we want to use ES6 + ES6.
+    compilerOptions: {
+      "module": "ES6",
+      "target": "ES6",
+      "noImplicitAny": true
+    }
+  }</code></pre>
+
+
+    <h2 id="GoJSRequireJS">GoJS with <code>RequireJS</code></h2>
+    <p>
+      Both the <code>go.js</code> library and the <code>go-debug.js</code> library can be loaded via <a href="https://requirejs.org/">RequireJS</a>.
+    </p>
+    <p>
+      The <code>extensionsTS</code> directory contains all of the extension classes from the
+      <code>extensions</code> directory, but in TypeScript and pre-compiled as UMD modules.
+      This is reflected in that directory's <code>tsconfig.json</code>:
+    </p>
+    <pre class="lang-json"><code>
+  {
+    "compilerOptions": {
+      "module": "umd",
+      "target": "es5",
+      "strict": true
+    }
+  }</code></pre>
+    <p>
+      The generated JavaScript can then be loaded as UMD modules via <code>require</code>.
+    </p>
+<pre class="lang-html"><code>
+&lt;script src="../samples/assets/require.js"&gt;&lt;/script&gt;
+&lt;script id="code"&gt;
+function init() {
+  require(["CheckBoxesScript"], function (app) {
+    app.init();
+  });
+}
+&lt;/script&gt;</code></pre>
+
+
+  <h2 id="GoJSWithES6Modules">GoJS with ES6 Modules</h2>
+  <p>
+    The GoJS library is available as an ES6/JavaScript module at <code>release/go-module.js</code>.
+    A debug version is also available: <code>release/go-debug-module.js</code>.
+  </p>
+  <p>
+    Samples and extension classes as modules are in the <code>extensionsJSM</code> directory.
+    These include the modules directly using the <code>type="module"</code> <code>script</code> tag.
+    For example, in the sample <a href="../extensionsJSM/LinkLabelDragging.html">LinkLabelDragging</a>:
+  </p>
+  <pre class="lang-html"><code>
+&lt;script type="module" id="code"&gt;
+  import * as go from "../release/go-module.js";
+  import { LinkLabelDraggingTool } from './LinkLabelDraggingTool.js';
+
+  const $ = go.GraphObject.make;
+
+  const myDiagram =
+    $(go.Diagram, 'myDiagramDiv', ...);
+
+  // install the LinkLabelDraggingTool as a "mouse move" tool
+  myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelDraggingTool());
+&lt;/script&gt;
+  </code></pre>
+
+</div >
+
+{% endblock %}
+

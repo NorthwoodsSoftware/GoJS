@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.38
+ * Type definitions for GoJS v2.1.39
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5809,10 +5809,10 @@ export class DraggingTool extends Tool {
      * @param {Point} offset The offset, before snapping, to move parts.
      * This offset reflects the total amount moved during tool operation,
      * based on original Part locations remembered when the DraggingTool activated.
-     * @param {boolean} check  Whether to check Part#canMove on each part.
+     * @param {boolean=} check  Whether to check Part#canMove on each part.  The default value is false.
      * @since 1.1
      */
-    moveParts(parts: Map<Part, DraggingInfo>, offset: Point, check: boolean): void;
+    moveParts(parts: Map<Part, DraggingInfo>, offset: Point, check?: boolean): void;
     /**
      * Undocumented.
      * @expose
@@ -8563,20 +8563,19 @@ export class AnimationManager {
      * but allow other animations, such as AnimationTriggers, to run.
      *
      * These are the possible reasons GoJS will begin an animation:
-     * ```md
-     *   Called by CommandHandler:
-     *     "Collapse SubGraph"
-     *     "Expand SubGraph"
-     *     "Collapse Tree"
-     *     "Expand Tree"
-     *     "Scroll To Part"
-     *     "Zoom To Fit"
-     *   Called by Diagram:
-     *     "Model"
-     *     "Layout"
-     *   Called by AnimationTriggers:
-     *     "Trigger"
-     * ```
+     *
+     * **Called by CommandHandler:**
+     *   - "Collapse SubGraph"
+     *   - "Expand SubGraph"
+     *   - "Collapse Tree"
+     *   - "Expand Tree"
+     *   - "Scroll To Part"
+     *   - "Zoom To Fit"
+     * **Called by Diagram:**
+     *   - "Model"
+     *   - "Layout"
+     * **Called by AnimationTriggers:**
+     *   - "Trigger"
      *
      * Example usage:
      *
@@ -10166,10 +10165,10 @@ export class Diagram {
      *
      * At this time there is no "addParts" method -- just call Diagram#add on each Part.
      * @param {Iterable.<Part>|Array.<Part>} coll A List or Set or Iterator or Array of Parts.
-     * @param {boolean} check Whether to check Part#canDelete on each part.
+     * @param {boolean=} check Whether to check Part#canDelete on each part; default value is false.
      * @since 1.3
      */
-    removeParts(coll: Iterable<Part> | Array<Part>, check: boolean): void;
+    removeParts(coll: Iterable<Part> | Array<Part>, check?: boolean): void;
     /**
      * Make a copy of a collection of Parts and return them in a Map mapping each original Part to its copy.
      * It may optionally add them to a given Diagram.
@@ -10182,11 +10181,11 @@ export class Diagram {
      * The CommandHandler#copySelection command may also copy additional Parts as well, depending on CommandHandler#copiesTree.
      * @param {Iterable.<Part>|Array.<Part>} coll A List or a Set or Iterator of Parts, or an Array of Parts.
      * @param {Diagram} diagram The destination diagram; if null, the copied parts are not added to this diagram.
-     * @param {boolean} check Whether to check Part#canCopy on each part.
+     * @param {boolean=} check Whether to check Part#canCopy on each part.  The default value is false.
      * @return {Map.<Part,Part>}
      * @since 1.3
      */
-    copyParts(coll: Iterable<Part> | Array<Part>, diagram: Diagram | null, check: boolean): Map<Part, Part>;
+    copyParts(coll: Iterable<Part> | Array<Part>, diagram: Diagram | null, check?: boolean): Map<Part, Part>;
     /**
      * Move a collection of Parts in this Diagram by a given offset.
      * Moving a Group will also move its member Nodes and Links.
@@ -10197,11 +10196,11 @@ export class Diagram {
      * @param {Iterable.<Part>|Array.<Part>} coll A List or a Set or Iterator of Parts, or an Array of Parts,
      * or null to move all of the Parts in this Diagram.
      * @param {Point} offset the amount to move each Part, in document coordinates.
-     * @param {boolean} check Whether to check Part#canMove on each part.
+     * @param {boolean=} check Whether to check Part#canMove on each part.  The default value is false.
      * @param {DraggingOptions=} dragOptions Optional dragging options. By default this uses the settings from the Diagram's DraggingTool.
      * @since 1.3
      */
-    moveParts(coll: Iterable<Part> | Array<Part>, offset: Point, check: boolean, dragOptions?: DraggingOptions): void;
+    moveParts(coll: Iterable<Part> | Array<Part>, offset: Point, check?: boolean, dragOptions?: DraggingOptions): void;
     /**
      * This method computes the new location for a Node or simple Part,
      * given a new desired location,
@@ -18839,6 +18838,15 @@ export class Part extends Panel {
      *
      * To finely control shadows, you may need to set GraphObject#shadowVisible on
      * elements of this Part, so that they explicitly do or do not get shadowed accordingly.
+     *
+     * The color of the shadow is determined by #shadowColor.
+     * The opacity of the shadow color is multiplied by the opacity of the shadowed object's brush.
+     * So, for example, if you have a <a>Panel</a> with a <a>GraphObject.background</a>
+     * that is "transparent", the shadow that is drawn for the panel will also be transparent.
+     *
+     * The direction of the shadow that is cast is controlled by #shadowOffset,
+     * and is independent of the Diagram#scale.
+     * The sharpness of the shadow is controlled by #shadowBlur.
      * @see #shadowOffset
      * @see #shadowColor
      * @see #shadowBlur
@@ -19181,13 +19189,17 @@ export class Part extends Panel {
     /**
      * Gets or sets the CSS string that describes a shadow color. Default is 'gray'.
      * Brushes cannot be used for this property -- only strings.
+     *
+     * The opacity of the shadow color is multiplied by the opacity of the shadowed object's brush.
+     * So, for example, if you have a <a>Panel</a> with a <a>GraphObject.background</a>
+     * that is "transparent", the shadow that is drawn for the panel will also be transparent.
      * @see #isShadowed
      * @see #shadowOffset
      * @see #shadowBlur
      */
     shadowColor: string;
     /**
-     * Gets or sets the numerical value that describes the shadow's blur. Number must be a non-negative non-infinity float.
+     * Gets or sets the numerical value that describes the shadow's blur. Number must be non-negative and non-infinity.
      * A value of 0 would mean the shadow does not blur and larger numbers represent increasingly more blur.
      * The total blur area is independent of the Part's area and can become quite large as this number is increased.
      *
@@ -25973,6 +25985,16 @@ export class LayeredDigraphVertex extends LayoutVertex {
 export class LayeredDigraphEdge extends LayoutEdge {
     constructor(network: LayeredDigraphNetwork);
     /**
+     * Gets or sets the LayoutVertex that this edge comes from.
+     * Setting this property does not change any LayoutVertex#destinationEdges collection.
+     */
+    fromVertex: LayeredDigraphVertex | null;
+    /**
+     * Gets or sets the LayoutVertex that this edge goes to.
+     * Setting this property does not change any LayoutVertex#sourceEdges collection.
+     */
+    toVertex: LayeredDigraphVertex | null;
+    /**
      * True if the link is part of the proper digraph.
      * The default value is false.
      */
@@ -27376,6 +27398,16 @@ export class TreeEdge extends LayoutEdge {
      * Commits the position of the Link and routes it.
      */
     commit(): void;
+    /**
+     * Gets or sets the LayoutVertex that this edge comes from.
+     * Setting this property does not change any LayoutVertex#destinationEdges collection.
+     */
+    fromVertex: TreeVertex;
+    /**
+     * Gets or sets the LayoutVertex that this edge goes to.
+     * Setting this property does not change any LayoutVertex#sourceEdges collection.
+     */
+    toVertex: TreeVertex | null;
     /**
      * Gets or sets a Point, relative to the parent node,
      * that may be useful in routing this link.

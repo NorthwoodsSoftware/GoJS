@@ -1,0 +1,789 @@
+﻿{% extends "_includes/intro.njk" %}
+
+{% block title %}GoJS Data Binding -- Northwoods Software{% endblock %}
+
+{% block content %}
+
+
+
+
+<h1>Data Binding</h1>
+<p>
+Data binding is a way to extract a value from a source object and set a property on a target object.
+The target objects are normally <a>GraphObject</a>s;
+the source objects are usually JavaScript data objects held in a model.
+</p>
+<p>
+You could write code that gets a desired value from the model data,
+searches the <a>Diagram</a> for the appropriate <a>Part</a>, searches for the target <a>GraphObject</a>
+within the visual tree of that Part, and then sets one or more properties on that GraphObject with that value,
+perhaps after modifying or converting the original value in a way appropriate for the individual properties.
+However data binding offers a declarative way to specify such behavior just by supplying a
+<a>Binding</a> that names the properties on the source object and on the target object.
+</p>
+<p>
+Trying to bind a non-existent property of a <a>GraphObject</a> will probably result in a warning or error
+that you can see in the console log.  Always check the console log for any kinds of potential exceptions that
+are normally suppressed by the binding system.
+</p>
+<p>
+Data bindings are used to keep <a>GraphObject</a> properties in sync with their <a>Part</a>'s data's properties.
+They are not used to establish or maintain relationships between Parts.  Each kind of <a>Model</a> has its
+own methods for declaring the relationships between parts.
+</p>
+
+<h2 id="RelationshipsOfPartsAndDataAndBinding">The Relationships of Parts and Data and Binding</h2>
+<p>
+  First, look at a diagram that includes comments about the GraphObjects used to build some example nodes and links:
+</p>
+<pre class="lang-js" id="commented" style="display:none"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { scale : 1.6, isShadowed: true },
+      new go.Binding("location", "pos", go.Point.parse),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 4, portId: "TEXTBLOCK" },
+        new go.Binding("text", "txt"))
+  );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      { isShadowed: true },
+      $(go.Shape,
+        { strokeWidth: 5, stroke: "orange" })
+  );
+
+  // Represents the nodeDataArray for the two nodes
+  diagram.nodeTemplateMap.add("dataNode",
+    $(go.Node, "Auto",
+      {
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        shadowColor: "#C5C1AA"
+      },
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.Shape, "Rectangle",
+        { fill: "lightgray" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(), // Header:
+          { portId: "HEADER" },
+          new go.Binding("text", "head")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Location:
+          { portId: "LOCATION" },
+          new go.Binding("text", "loc")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Fill:
+          { portId: "FILL" },
+          new go.Binding("text", "color")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Text:
+          { portId: "TEXT" },
+          new go.Binding("text", "txt")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Text:
+          { portId: "PARENT" },
+          new go.Binding("text", "parent"))
+      )
+    )
+  );
+
+  diagram.linkTemplateMap.add("dataNode", // Links from dataNode to Nodes
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape, { stroke: "gray", strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", stroke: "gray", fill: "gray" })
+  ));
+
+  diagram.nodeTemplateMap.add("title",
+     $(go.Node, "Auto",
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.TextBlock,
+        { font: "bold 25pt sans-serif", textAlign: "center"},
+        new go.Binding("text", "txt"))
+  ));
+
+  diagram.nodeTemplateMap.add("nodeDataArray",
+    $(go.Node, "Auto",
+      {
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        shadowColor: "#C5C1AA"
+      },
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(),
+          { portId: "HEADER", text: "nodeDataArray" }),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(),
+          { portId: "dataNode1", desiredSize: new go.Size(NaN,16) }),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(),
+          { portId: "dataNode2", desiredSize: new go.Size(NaN,16) })
+      )
+    ));
+
+  // Comments
+  diagram.nodeTemplateMap.add("Comment", // Template for comment node
+    $(go.Node,
+      new go.Binding("location", "pos", go.Point.parse),
+      { locationSpot: go.Spot.Center},
+      $(go.TextBlock,
+        { stroke: "brown", textAlign: "center" },
+        new go.Binding("text", "txt"),
+        new go.Binding("font", "bold", function(b) { return b ? "bold 10pt sans-serif" : "10pt sans-serif"; }))
+  ));
+
+  diagram.nodeTemplateMap.add("LinkLabel", // Template for comments on links
+    $(go.Node,
+      new go.Binding("segmentIndex"),
+      new go.Binding("segmentOffset")
+  ));
+
+  diagram.linkTemplateMap.add("Comment", // Template for links from comments
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      new go.Binding("curviness"),
+      $(go.Shape, { stroke: "brown" }),
+      $(go.Shape, { toArrow: "OpenTriangle", stroke: "brown" })
+  ));
+
+  diagram.linkTemplateMap.add("Binding",
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      new go.Binding("curviness"),
+      $(go.Shape, { stroke: "green" , strokeWidth: 2, strokeDashArray: [10, 10] }),
+      $(go.Shape, { toArrow: "OpenTriangle", stroke: "green", strokeWidth: 2 })
+  ));
+
+  diagram.linkTemplateMap.add("Data",
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      new go.Binding("curviness"),
+      $(go.Shape, { stroke: "gray" , strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", fill: "gray", stroke: "gray", strokeWidth: 2 }),
+      $(go.TextBlock, ".data", { font: "bold 12pt Courier", segmentOffset: new go.Point(0, -10) })
+  ));
+
+  var model = new go.GraphLinksModel();
+  model.linkFromPortIdProperty = "fPID";
+  model.linkToPortIdProperty = "tPID"
+  model.linkLabelKeysProperty = "labels";
+
+  model.nodeDataArray = [
+    { key: 1, txt: "Alpha", color: "lightblue",  pos: "50 20"},
+    { key: 2, txt: "Beta",  color: "lightgreen", pos: "50 270"},
+    { key: 3, category: "dataNode", pos: "300 66",  head: "key: 1", txt: "text: Alpha", color: "color: lightblue",  loc: "location: 50 0",   parent: "parent: null"},
+    { key: 4, category: "dataNode", pos: "300 316", head: "key: 2", txt: "text: Beta",  color: "color: lightgreen", loc: "location: 50 250", parent: "parent: 1"},
+    { key: 5, category: "nodeDataArray", pos: "500 125"},
+    { key: 6, category: "title", pos: "320 -100", txt: "TreeModel,\n data"},
+    { key: 7, category: "title", pos: "-50 -100", txt: "Diagram,\nNodes, Links"},
+    { key: -1, category: "Comment", pos: "310 190", txt: "These two\ndata Objects are\nare held in the\nnodeDataArray."},
+    { key: -2, category: "Comment", pos: "100 100", txt: "a Link", bold: true},
+    { key: -21, category: "LinkLabel"},
+    { key: -3, category: "Comment", pos: "0 130",  txt: "two Nodes", bold: true},
+    { key: -4, category: "Comment", pos: "190 180",  txt: "data binding", bold: true},
+    { key: -41, category: "LinkLabel", segmentOffset: new go.Point(45, 0)},
+    { key: -42, category: "LinkLabel", segmentOffset: new go.Point(20, 0)},
+    { key: -43, category: "LinkLabel", segmentOffset: new go.Point(-10, 0)},
+    { key: -44, category: "LinkLabel", segmentOffset: new go.Point(25, 0)},
+    { key: -45, category: "LinkLabel", segmentOffset: new go.Point(20, 0)},
+    { key: -46, category: "LinkLabel", segmentOffset: new go.Point(-10, 0)}
+  ];
+  model.linkDataArray = [
+    { from: 1, to: 2, labels: [-21] },
+    { from: 1, tPID: "HEADER", to: 3, category: "Data", curviness: 0},
+    { from: 2, tPID: "HEADER", to: 4, category: "Data", curviness: 0},
+    { from: -21, tPID: "HEADER", to: 4, category: "Data", curviness: -50},
+    { from: 5, fPID: "dataNode1", to: 3, tPID: "HEADER", category: "dataNode"},
+    { from: 5, fPID: "dataNode2", to: 4, tPID: "HEADER", category: "dataNode"},
+
+    { from: -1, to: 3, category: "Comment"},
+    { from: -1, to: 4, category: "Comment"},
+    { from: -2, to: -21, category: "Comment", curviness: 10},
+    { from: -3, to: 1, category: "Comment", curviness: 10},
+    { from: -3, to: 2, category: "Comment", curviness: -10},
+    { from: -4, to: -41, category: "Comment", curviness: 5},
+    { from: -4, to: -42, category: "Comment", curviness: 5},
+    { from: -4, to: -43, category: "Comment", curviness: 5},
+    { from: -4, to: -44, category: "Comment", curviness: 5},
+    { from: -4, to: -45, category: "Comment", curviness: 5},
+    { from: -4, to: -46, category: "Comment", curviness: 5},
+    { from: -4, to: -47, category: "Comment", curviness: 5},
+
+    { from: 3, fPID: "LOCATION", to: 1, tPID: "NODE", category: "Binding", curviness: 10, labels: [-41]},
+    { from: 3, fPID: "FILL", to: 1, tPID: "SHAPE" , category: "Binding", curviness: 30, labels: [-42]},
+    { from: 3, fPID: "TEXT", to: 1, tPID: "TEXTBLOCK", category: "Binding", curviness: 50, labels: [-43]},
+    { from: 4, fPID: "LOCATION", to: 2, tPID: "NODE", category: "Binding", curviness: 10, labels: [-44]},
+    { from: 4, fPID: "FILL", to: 2, tPID: "SHAPE" , category: "Binding", curviness: 30, labels: [-45]},
+    { from: 4, fPID: "TEXT", to: 2, tPID: "TEXTBLOCK", category: "Binding", curviness: 50, labels: [-46]}
+  ];
+
+  diagram.model = model;
+
+  // Formatting
+  function headerStyle() {
+    return {
+      margin: 3,
+      font: "bold 12pt sans-serif",
+      minSize: new go.Size(16, 16),
+      maxSize: new go.Size(120, NaN),
+      textAlign: "center"
+    };
+  }
+  function textStyle() {
+    return {
+      margin: 2,
+      font: "10pt sans-serif",
+      minSize: new go.Size(16, 16),
+      maxSize: new go.Size(120, NaN),
+      textAlign: "center"
+    };
+  }
+</code></pre>
+<script>goCode("commented", 650, 550)</script>
+<p>
+The two <a>Node</a>s and one <a>Link</a> belong to the <a>Diagram</a> and are on the left side, with shadows.
+The <a>TreeModel</a> and the two data objects in its <a>Model.nodeDataArray</a> are on the right side, in gray.
+</p>
+<p>
+Each <a>Node</a> and <a>Link</a> has a <a>Panel.data</a> property that references the data object in the model.
+Thus it is easy, given a Node, to refer to all of the data properties that you have put on the data in the model.
+These references are drawn as gray links.
+</p>
+<p>
+Each <a>Node</a> also has three <a>Binding</a>s, drawn with dashed green lines:
+</p>
+<ul>
+  <li>to the <a>Part.location</a> property from the <code>data.location</code> property</li>
+  <li>to the <a>Shape.fill</a> property from the <code>data.color</code> property</li>
+  <li>to the <a>TextBlock.text</a> property from the <code>data.text</code> property</li>
+</ul>
+<p>
+The use of templates and data binding greatly simplify the information that must be stored in model data,
+and allow great flexibility in representing nodes and links in various manners independent of the model data.
+But not all data properties need to be used in Bindings in the template.
+</p>
+<p>
+Note that <a>Binding</a>s are <em>not</em> references from the data to any <a>Part</a>.
+The whole point of separating models from diagrams is to avoid references from data to Diagrams or Nodes or Links or Tools.
+The only references from diagram to model are the <a>Diagram.model</a> property and each node or link's <a>Panel.data</a> property.
+</p>
+
+<h2 id="BindingStringAndNumberProperties">Binding string and number properties</h2>
+<p>
+It is easy to data bind <a>GraphObject</a> properties to data properties.
+In this example we not only data bind <a>TextBlock.text</a> and <a>Shape.fill</a> in nodes to property values of node data,
+but for thicker colored lines we also bind <a>Shape.stroke</a> and <a>Shape.strokeWidth</a> in links to property values of link data.
+</p>
+<p>
+All you need to do is add to the target <a>GraphObject</a> a new <a>Binding</a> that
+names the target property on the visual object and the source property on the data object.
+Of course the target property must be a settable property; some GraphObject properties are not settable.
+If you specify a target property name that does not exist you will get warning messages in the console.
+If the source property value is undefined, the binding is not evaluated.
+</p>
+<pre class="lang-js" id="simpleModelWithBind"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),  // shape.fill = data.color
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))  // textblock.text = data.key
+    );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape,
+        new go.Binding("stroke", "color"),  // shape.stroke = data.color
+        new go.Binding("strokeWidth", "thick")),  // shape.strokeWidth = data.thick
+      $(go.Shape,
+        { toArrow: "OpenTriangle", fill: null },
+        new go.Binding("stroke", "color"),  // shape.stroke = data.color
+        new go.Binding("strokeWidth", "thick"))  // shape.strokeWidth = data.thick
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "pink" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta", color: "blue", thick: 2 }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</code></pre>
+<script>goCode("simpleModelWithBind", 250, 150)</script>
+<p>
+Note that there are two bindings using the "color" property of the source link data.
+There is one for each target <a>Shape</a> in the <a>Link</a> template;
+each binds the <a>Shape.stroke</a> property.
+</p>
+
+<h2 id="BindingObjectPropertiesSuchAsLocation">Binding object properties such as <b>Part.location</b></h2>
+<p>
+You can also data bind properties that have values that are objects.
+For example it is common to data bind the <a>Part.location</a> property.
+</p>
+<p>
+The value of Part.location is a <a>Point</a>, so in this example the data property must be a Point.
+</p>
+<pre class="lang-js" id="bindLocationPoint"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc"),  // get the Node.location from the data.loc value
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    // for each node specify the location using Point values
+    { key: "Alpha", color: "lightblue", loc: new go.Point(0, 0) },
+    { key: "Beta", color: "pink", loc: new go.Point(100, 50) }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</code></pre>
+<script>goCode("bindLocationPoint", 250, 150)</script>
+<p>
+For conciseness the rest of these examples make use of the default <a>Diagram.linkTemplate</a>.
+</p>
+
+<h2 id="ConversionFunctions">Conversion functions</h2>
+<p>
+But what if you want the data property value for the location to be something other than a <a>Point</a>?
+You can provide a conversion function that converts the actual data property value to the needed value type or format.
+</p>
+<p>
+For situations like this example, the <a>Point</a> class includes a static function,
+<a>Point,parse</a>, that you can use to convert a string into a Point object.
+It expects two numbers to be in the input string, representing the <a>Point.x</a> and <a>Point.y</a> values.
+It returns a Point object with those values.
+</p>
+<p>
+You can pass a conversion function as the third argument to the <a>Binding</a> constructor.
+In this case it is <a>Point,parse</a>.
+This allows the location to be specified in the form of a string ("100 50") rather than as an expression that returns a <a>Point</a>.
+For data properties on model objects, you will often want to use strings as the representation of
+<a>Point</a>s, <a>Size</a>s, <a>Rect</a>s, <a>Margin</a>s, and <a>Spot</a>s, rather than references to objects of those classes.
+Strings are easily read and written in JSON and XML.
+Trying to read/write classes of objects would take extra space and would require additional cooperation on the part of both the writer and the reader.
+</p>
+<pre class="lang-js" id="bindLocationString"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),  // convert string into a Point value
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white" },
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", color: "lightblue", loc: "0 0" },  // note string values for location
+    { key: "Beta", color: "pink", loc: "100 50" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</code></pre>
+<script>goCode("bindLocationString", 250, 150)</script>
+
+<p>
+Conversion functions can be named or anonymous functions.
+They take a data property value and return a value suitable for the property that is being set.
+They should not have any side-effects.
+They may get called any number of times in any order.
+</p>
+<p>
+Here is an example that has several <a>Shape</a> properties data-bound to the same boolean data property named "highlight".
+Each conversion function takes the boolean value and returns the appropriate value for the property that is data-bound.
+This makes it trivial to control the appearance of each node from the data by setting the "highlight" data property to be either false or true.
+</p>
+<pre class="lang-js" id="bindHighlight"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle",
+        { // default values if the data.highlight is undefined:
+          fill: "yellow", stroke: "orange", strokeWidth: 2 },
+        new go.Binding("fill", "highlight", function(v) { return v ? "pink" : "lightblue"; }),
+        new go.Binding("stroke", "highlight", function(v) { return v ? "red" : "blue"; }),
+        new go.Binding("strokeWidth", "highlight", function(v) { return v ? 3 : 1; })),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: "0 0", highlight: false },
+    { key: "Beta", loc: "100 50", highlight: true },
+    { key: "Gamma", loc: "0 100" }  // highlight property undefined: use defaults
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</code></pre>
+<script>goCode("bindHighlight", 250, 150)</script>
+
+<p class="box bg-danger">
+Note that a conversion function can only return property values.
+You cannot return GraphObjects to replace objects in the visual tree of the Part.
+If you need to show different GraphObjects based on bound data,
+you can bind the <a>GraphObject.visible</a> or the <a>GraphObject.opacity</a> property.
+If you really want different visual structures
+you can use multiple templates (<a href="templateMaps.html">Template Maps</a>).
+</p>
+
+<h2 id="ChangingDataValues">Changing data values</h2>
+<p>
+The examples above all depend on the data bindings being evaluated when the <a>Part</a>
+has been created and its <a>Panel.data</a> property is set to refer to the corresponding
+node or link data.
+These actions occur automatically when the <a>Diagram</a> creates diagram parts
+for the data in the model upon setting <a>Diagram.model</a>.
+</p>
+<p>
+However, <b>GoJS</b> cannot know when the data property of an arbitrary JavaScript object has been modified.
+If you want to change some data object in a model and have the diagram be automatically updated,
+what you should do depends on the nature of the property that you are changing.
+</p>
+<p>
+For most data properties, ones that the model does not treat specially but are data-bound,
+you can just call <a>Model.setDataProperty</a>.
+In this example we modify the value of "highlight" on a node data object.
+For fun, this modification occurs about twice a second.
+</p>
+<pre class="lang-js" id="changeBoundValue"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { locationSpot: go.Spot.Center },
+      $(go.Shape, "RoundedRectangle",
+        { // default values if the data.highlight is undefined:
+          fill: "yellow", stroke: "orange", strokeWidth: 2 },
+        new go.Binding("fill", "highlight", function(v) { return v ? "pink" : "lightblue"; }),
+        new go.Binding("stroke", "highlight", function(v) { return v ? "red" : "blue"; }),
+        new go.Binding("strokeWidth", "highlight", function(v) { return v ? 3 : 1; })),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", highlight: false }  // just one node, and no links
+  ];
+
+  function flash() {
+    // all model changes should happen in a transaction
+    diagram.model.commit(function(m) {
+      var data = m.nodeDataArray[0];  // get the first node data
+      m.set(data, "highlight", !data.highlight);
+    }, "flash");
+  }
+  function loop() {
+    setTimeout(function() { flash(); loop(); }, 500);
+  }
+  loop();
+</code></pre>
+<script>goCode("changeBoundValue", 250, 150)</script>
+
+<h2 id="ChangingGraphStructure">Changing graph structure</h2>
+<p>
+Data binding is not used to establish relationships between parts.
+For data properties that a particular model knows about,
+such as "to" or "from" for link data in a <a>GraphLinksModel</a>,
+you must call the appropriate model methods in order to modify the data property.
+Modifying a data property directly without calling the appropriate model method
+may cause inconsistencies or undefined behavior.
+</p>
+<p>
+For node data, the model methods are
+<a>Model.setCategoryForNodeData</a>,
+<a>Model.setKeyForNodeData</a>,
+<a>GraphLinksModel.setGroupKeyForNodeData</a>,
+<a>TreeModel.setParentKeyForNodeData</a>, and
+<a>TreeModel.setParentLinkCategoryForNodeData</a>.
+For link data, the model methods are
+<a>GraphLinksModel.setCategoryForLinkData</a>,
+<a>GraphLinksModel.setFromKeyForLinkData</a>,
+<a>GraphLinksModel.setFromPortIdForLinkData</a>,
+<a>GraphLinksModel.setToKeyForLinkData</a>,
+<a>GraphLinksModel.setToPortIdForLinkData</a>, and
+<a>GraphLinksModel.setLabelKeysForLinkData</a>.
+</p>
+<p>
+This example changes the "to" property of a link data, causing the link to
+connect to a different node.
+This example uses the default Link template, which does not have any
+data bindings.
+The change in the link relationship is accomplished by calling a model method,
+not via a data binding.
+</p>
+<pre class="lang-js" id="changeLinkTo"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { locationSpot: go.Spot.Center },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "yellow", stroke: "orange", strokeWidth: 2 }),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta" },
+    { key: "Gamma" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+  function switchTo() {
+    // all model changes should happen in a transaction
+    diagram.model.commit(function(m) {
+      var data = m.linkDataArray[0];  // get the first link data
+      if (m.getToKeyForLinkData(data) === "Beta")
+        m.setToKeyForLinkData(data, "Gamma");
+      else
+        m.setToKeyForLinkData(data, "Beta");
+    }, "reconnect link");
+  }
+  function loop() {
+    setTimeout(function() { switchTo(); loop(); }, 1000);
+  }
+  loop();
+</code></pre>
+<script>goCode("changeLinkTo", 250, 150)</script>
+
+<h2 id="BindingToGraphObjectSources">Binding to <b>GraphObject</b> sources</h2>
+<p>
+The binding source object need not be a plain JavaScript data object held in the diagram's model.
+The source object may instead be a named <a>GraphObject</a> in the same <a>Part</a>.
+The source property must be a settable property of the class.
+The binding is evaluated when the property is set to a new value.
+</p>
+<p>
+One common use of such a binding is to change the appearance of a Part when the <a>Part.isSelected</a>.
+Call <a>Binding.ofObject</a> to cause the Binding to use the object whose <a>GraphObject.name</a> is the given name.
+Use the empty string, "", or no argument, to refer to the whole Part itself.
+This is a convenience so that you do not need to name the whole Part.
+"ofObject" really means "of the GraphObject named ...", as found by <a>Panel.findObject</a> when there is a string argument.
+</p>
+<p>
+In the example below, the <a>Shape.fill</a> is bound to the <a>Part.isSelected</a> property.
+When the node is selected or de-selected, the <a>Part.isSelected</a> property changes value, so the binding is evaluated.
+The conversion function gets a boolean value and returns the desired brush color to be used as the shape's fill.
+This example also turns off selection adornments, so that the only visual way to tell that a node is selected is by the shape's fill color.
+</p>
+<pre class="lang-js" id="bindingElements"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { selectionAdorned: false },  // no blue selection handle!
+      $(go.Shape, "RoundedRectangle",
+        // bind Shape.fill to Node.isSelected converted to a color
+        new go.Binding("fill", "isSelected", function(sel) {
+              return sel ? "dodgerblue" : "lightgray";
+            }).ofObject()),  // no name means bind to the whole Part
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "descr"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { descr: "Select me!" },
+    { descr: "I turn blue when selected." }
+  ];
+</code></pre>
+<script>goCode("bindingElements", 450, 100)</script>
+
+<p>
+Caution: do not declare cycles of binding dependencies -- that will result in undefined behavior.
+<a>GraphObject</a> binding sources also require the <a>Part</a> to be bound to data (i.e. <a>Part.data</a> must be non-null).
+The property on the GraphObject must be settable, so it does not work on read-only properties
+such as ones that return computed values (e.g. <a>Part.isTopLevel</a>) or Iterators (e.g. <a>Node.linksConnected</a>).
+</p>
+
+<h2 id="BindingToSharedModelDataSource">Binding to the shared <b>Model.modelData</b> source</h2>
+<p>
+  The binding source object may be a third kind of source, besides the <a>Panel.data</a> or some <a>GraphObject</a> within the panel.
+  It can also be the JavaScript Object that is the shared <a>Model.modelData</a> object.
+  This permits binding of Node or Link element properties to shared properties in the model
+  that will exist and may be modified even though no nodes or links exist in the model.
+</p>
+<p>
+  In the example below, the <a>Shape.fill</a> is bound to the "color" property on the <a>Model.modelData</a> object.
+  As you click the button the <code>changeColor</code> function modifies the <code>modelData</code> object
+  by calling <a>Model.setDataProperty</a>.
+</p>
+<pre class="lang-js" id="bindingModel"><code>
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "RoundedRectangle",
+      { fill: "white" },  // the default value if there is no modelData.color property
+      new go.Binding("fill", "color").ofModel()),  // meaning a property of Model.modelData
+    $(go.TextBlock,
+      { margin: 5 },
+      new go.Binding("text"))
+  );
+
+// start all nodes yellow
+diagram.model.modelData.color = "yellow";
+
+diagram.model.nodeDataArray = [
+  { text: "Alpha" },
+  { text: "Beta" }
+];
+
+diagram.undoManager.isEnabled = true;
+
+changeColor = function() {  // define a function named "changeColor" callable by button.onclick
+  diagram.model.commit(function(m) {
+    // alternate between lightblue and lightgreen colors
+    var oldcolor = m.modelData.color;
+    var newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
+    m.set(m.modelData, "color", newcolor);
+  }, "changed shared color");
+}
+</code></pre>
+<script>goCode("bindingModel", 450, 100)</script>
+<button id="changeColorButton" onclick="changeColor()">Change shared color</button>
+
+<h2 id="TwoWayDataBinding">Two-way data binding</h2>
+<p>
+All of the bindings above only transfer values from the source data to target properties.
+But sometimes you would like to be able to transfer values from <a>GraphObject</a>s back to the model data,
+to keep the model data up-to-date with the diagram.
+This is possible by using a TwoWay <a>Binding</a>, which can pass values not only from source to target,
+but also from the target object back to the source data.
+</p>
+<pre class="lang-js" id="bindTwoWay"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { locationSpot: go.Spot.Center },
+      new go.Binding("location", "loc").makeTwoWay(),  // TwoWay Binding
+      $(go.Shape, "RoundedRectangle",
+        { fill: "lightblue", stroke: "blue", strokeWidth: 2 }),
+      $(go.TextBlock,
+        { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", loc: new go.Point(0, 0) }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+
+  window.shiftNode = (function() {  // define a function named "shiftNode" callable by button.onclick
+    // all model changes should happen in a transaction
+    diagram.commit(function(d) {
+      var data = d.model.nodeDataArray[0];  // get the first node data
+      var node = d.findNodeForData(data);   // find the corresponding Node
+      var p = node.location.copy();  // make a copy of the location, a Point
+      p.x += 10;
+      if (p.x > 200) p.x = 0;
+      // changing the Node.location also changes the data.loc property due to TwoWay binding
+      node.location = p;
+      // show the updated location held by the "loc" property of the node data
+      document.getElementById("bindTwoWayData").textContent = data.loc.toString();
+    }, "shift node");
+  });
+  window.shiftNode();
+
+</code></pre>
+<p>
+Click on the button to move the <a>Node</a>.
+The effect is basically what happens when the user drags the node.
+In this example, the TwoWay <a>Binding</a> on <a>Node.location</a> will update the
+"loc" property of the node data that is the Node's <a>Part.data</a>.
+</p>
+<button onclick="shiftNode()">shiftNode()</button>
+nodedata.loc: <code id="bindTwoWayData"></code>
+<script>goCode("bindTwoWay", 250, 150)</script>
+<p>
+Just as you can use a conversion function when going from source to target,
+you can supply a conversion function to <a>Binding.makeTwoWay</a> for going from target to source.
+For example, to represent the location as a string in the model data instead of as a <a>Point</a>:
+</p>
+<pre class="lang-js"><code>
+// storage representation of Points/Sizes/Rects/Margins/Spots is as strings, not objects:
+new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
+</code></pre>
+<p>
+However, you must not have a TwoWay binding on the node data property that is the "key" property.
+(That defaults to the name "key" but is actually the value of <a>Model.nodeKeyProperty</a>.)
+That property value must always be unique among all node data within the model and is known by the Model.
+A TwoWay binding might change the value, causing a multitude of problems.
+Similarly, the <a>Node.key</a> property is read-only, to prevent accidental changes of the key value.
+</p>
+
+<h2 id="ReasonsForTwoWayBindings">Reasons for TwoWay Bindings</h2>
+<p>
+The basic reason for using a TwoWay <a>Binding</a> on a settable property is to make sure that any changes to that property
+will be copied to the corresponding model data.
+By making sure that the <a>Model</a> is up-to-date, you can easily "save the diagram" just by saving the model
+and "loading a diagram" is just a matter of loading a model into memory and setting <a>Diagram.model</a>.
+If you are careful to only hold JSON-serializable data in the model data, you can just use the <a>Model.toJson</a>
+and <a>Model,fromJson</a> methods for converting a model to and from a textual representation.
+</p>
+<p>
+<em>Most bindings do not need to be TwoWay.</em>
+For performance reasons you should not make a Binding be TwoWay unless you actually need to propagate changes back to the data.
+Most settable properties are only set on initialization and then never change.
+</p>
+<p>
+Settable properties only change value when some code sets them.
+That code might be in code that you write as part of your app.
+Or it might be in a command (see <a href="commands.html">Commands</a>) or a tool (see <a href="tools.html">Tools</a>).
+Here is a list of properties for which a TwoWay Binding is plausible because one of the predefined commands or tools modify them:
+</p>
+<ul>
+<li><a>Part.location</a>, by <a>DraggingTool</a> if it is enabled</li>
+<li><a>Link.points</a>, by <a>LinkReshapingTool</a> if it is enabled</li>
+<li><a>GraphObject.desiredSize</a>, by <a>ResizingTool</a> if it is enabled</li>
+<li><a>GraphObject.angle</a>, by <a>RotatingTool</a> if it is enabled</li>
+<li><a>TextBlock.text</a>, by <a>TextEditingTool</a> if it is enabled</li>
+<li><a>Part.isSelected</a>, by many tools and commands</li>
+<li><a>Node.isTreeExpanded</a> and <a>Node.wasTreeExpanded</a>, by <a>CommandHandler.collapseTree</a> and <a>CommandHandler.expandTree</a>, called by a "TreeExpanderButton"</li>
+<li><a>Group.isSubGraphExpanded</a> and <a>Group.wasSubGraphExpanded</a>, by <a>CommandHandler.collapseSubGraph</a> and <a>CommandHandler.expandSubGraph</a>, called by a "SubGraphExpanderButton"</li>
+</ul>
+<p>
+You will not need to use a TwoWay binding on a property if the Tool that modifies it cannot run,
+or if the command that modifies it cannot be invoked.
+You probably will not need a TwoWay binding on any other properties unless you write code to modify them.
+And even then it is sometimes better to write the code to modify the model data directly by calling <a>Model.setDataProperty</a>,
+depending on a OneWay Binding to update the GraphObject property.
+</p>
+<p>
+It is also possible to use TwoWay Bindings where the source is a GraphObject rather than model data.
+This is needed less frequently, when you do <em>not</em> want to have the state stored in the model,
+but you do want to synchronize properties of GraphObjects within the same Part.
+<em>Use TwoWay Bindings sparingly.</em>
+</p>
+
+{% endblock %}

@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -164,16 +164,29 @@ var __extends = (this && this.__extends) || (function () {
             return (obj === null);
         };
         /**
+        * Start a transaction, capture the mouse, use a "crosshair" cursor,
+        * and start accumulating points in the geometry of the {@link #temporaryShape}.
+        * @this {PolygonDrawingTool}
+        */
+        PolygonDrawingTool.prototype.doStart = function () {
+            _super.prototype.doStart.call(this);
+            var diagram = this.diagram;
+            if (!diagram)
+                return;
+            this.startTransaction(this.name);
+            diagram.currentCursor = diagram.defaultCursor = "crosshair";
+            if (!diagram.lastInput.isTouchEvent)
+                diagram.isMouseCaptured = true;
+        };
+        /**
          * Start a transaction, capture the mouse, use a "crosshair" cursor,
          * and start accumulating points in the geometry of the {@link #temporaryShape}.
          */
         PolygonDrawingTool.prototype.doActivate = function () {
             _super.prototype.doActivate.call(this);
             var diagram = this.diagram;
-            this.startTransaction(this.name);
-            if (!diagram.lastInput.isTouchEvent)
-                diagram.isMouseCaptured = true;
-            diagram.currentCursor = 'crosshair';
+            if (!diagram)
+                return;
             // the first point
             if (!diagram.lastInput.isTouchEvent)
                 this.addPoint(diagram.lastInput.documentPoint);
@@ -181,13 +194,15 @@ var __extends = (this && this.__extends) || (function () {
         /**
          * Stop the transaction and clean up.
          */
-        PolygonDrawingTool.prototype.doDeactivate = function () {
-            _super.prototype.doDeactivate.call(this);
+        PolygonDrawingTool.prototype.doStop = function () {
+            _super.prototype.doStop.call(this);
             var diagram = this.diagram;
+            if (!diagram)
+                return;
+            diagram.currentCursor = diagram.defaultCursor = "auto";
             if (this.temporaryShape !== null && this.temporaryShape.part !== null) {
                 diagram.remove(this.temporaryShape.part);
             }
-            diagram.currentCursor = '';
             if (diagram.isMouseCaptured)
                 diagram.isMouseCaptured = false;
             this.stopTransaction();

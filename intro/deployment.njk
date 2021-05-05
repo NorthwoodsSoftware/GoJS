@@ -1,0 +1,150 @@
+﻿{% extends "_includes/intro.njk" %}
+
+{% block title %}GoJS Deployment -- Northwoods Software{% endblock %}
+
+{% block content %}
+
+
+
+
+<h1>Deployment</h1>
+<p>
+  If you have downloaded a copy of the <b>GoJS</b> library from <a href="https://gojs.net">gojs.net</a>
+  for use in your own app, you have probably noticed that a watermark appears in the diagram.
+  For version 1.7 and beyond, you need to use a license key to remove this watermark from your domain.
+  For version 1.6 and older, you need to get a generated <code>go.js</code> or <code>go-debug.js</code> library that is tied to your particular domain.
+</p>
+<p>
+  When you want to deploy to your own web site your app that uses <b>GoJS</b>, you will need to make a request at:
+  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs" target="_blank">https://www.nwoods.com/app/activate.aspx?sku=gojs</a>.
+</p>
+<p>
+  Enter your e-mail address and the e-mail address of the person who purchased a license for <b>GoJS</b>,
+  the order number for that purchase, and your web site's domain name.
+  Please make sure that e-mail from "nwoods.com" is not caught in your corporate or personal spam filter.
+  If you <a href="https://www.nwoods.com/contact.html">contact us</a> for further help either via our web site
+  or by sending us email, please include the e-mail that our web server sent to you.
+</p>
+<p>
+  Regarding domain names, for example, if your app will be at:
+  <code>https://www.example.com/app/ProcessEditor.html</code>,
+  enter <code>example.com</code> as the domain name.
+  This procedure works for internal corporate web sites as well as for public web sites, with hostnames and with IP addresses.
+  The protocol and port number do not matter.
+  It will work when the HTML page is served from a subdomain of the licensed domain,
+  such as from <code>editors.example.com</code>.
+  It will also work when "localhost" is the domain, to help your debugging and testing efforts.
+</p>
+<p>
+  The GoJS library never "phones home" -- it will never initiate any network traffic other than when explicitly directed to do so,
+  such as for downloading image files.
+</p>
+
+<h2 id="For1.7AndLater">For 1.7 and Later</h2>
+<p>
+  Our server will generate a GoJS license key for you, in the form of a JavaScript statement that you will need to include with your code.
+  It must execute after the GoJS library file has been loaded, but before you create your first <a>Diagram</a>.
+</p>
+<pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
+go.Diagram.licenseKey = "YourKeyHere";
+</code></pre>
+Before version 2.0, you need to write:
+<pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
+go.licenseKey = "YourKeyHere";
+</code></pre>
+<p>
+  This mechanism works when using either the release library, <code>go.js</code>, or the debug library,
+  <code>go-debug.js</code>, but only with GoJS version 1.7 or later.
+  Note that this assignment is of a static property of the Diagram class: <a>Diagram,licenseKey</a>.
+  Of course you will need to substitute your generated license key string for <code>"YourKeyHere"</code> in the <code>go.Diagram.licenseKey</code> assignment statement.
+  License keys are long strings without any embedded whitespace or punctuation.
+  You can request license keys for as many domains as you have licensed.
+</p>
+<p>
+  Unlike the older activation method, you no longer need to get a new domain-specific <code>go.js</code> library each time you update or upgrade.
+  Once your key is in place, you can continue to use the same key while updating the patch version of GoJS.
+  For example, a license key for version 1.7.3 will work for all versions 1.7.*.
+  Remember to get a new license key when upgrading to a new major or minor version of GoJS.
+  For example, when upgrading from version 5.3.1 to version 5.4.6, you will need a new license key.
+</p>
+<p>
+  License keys only depend on the major/minor version number and the domain from which the HTML page was served.
+  License keys are valid forever, as long as the major and minor version number of the library do not change and
+  as long as the HTML page is served from the same domain.
+</p>
+<p>
+  You can download the <code>go.js</code> library from the <a href="../download.html" target="_blank">GoJS Downloads page</a>,
+  or you can install it via <a href="https://www.npmjs.com/package/gojs" target="_blank">Node package manager (npm)</a>
+  or via <a href="https://www.nuget.org/packages/Northwoods.GoJS/" target="_blank">NuGet</a>,
+  or you can link to a CDN such as <a href="https://unpkg.com/browse/gojs/" target="_blank">UNPKG</a> or <a href="https://www.jsdelivr.com/package/npm/gojs">JSDELIVR</a>.
+  Most customers will no longer need a special build of GoJS, as had been the case before version 1.7.
+</p>
+
+<h2 id="ForUnlimitedDomainsOEMCustomers">For Unlimited Domains OEM Customers</h2>
+<p>
+  If you are an ISV and intend to distribute your app to run on many customers' web sites,
+  <a href="https://www.nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and
+  instructions on requesting and using a custom <code>go.js</code> library that works on any site or platform.
+</p>
+<p>
+  When building a desktop application using Electron or Cordova or NW or when hosted in a WebView as part of a desktop application,
+  your HTML page is not being served from a web server at a domain.
+  In such circumstances you will need to use the Unlimited Domains option to make sure your Diagram does not display a watermark.
+  You should use your organization's domain as the requested domain name.
+</p>
+<p>
+  The procedure for unlimited domains is similar to the procedure followed for the 1.6 and older versions,
+  but with the addition of requiring a license key.
+</p>
+
+<h2 id="For1.6AndOlder">For 1.6 and Older</h2>
+<p>
+  Our automated web server will create <code>go.js</code> and <code>go-debug.js</code> libraries that are customized
+  not to show a watermark on pages from that domain and will e-mail you instructions for how to download them.
+</p>
+<p>
+  You can request libraries for as many domains as you have licensed.
+  If there is a problem you will receive e-mail from our web server describing the problem.
+</p>
+<p>
+  When updating or upgrading to a new version of <b>GoJS</b> less than version 1.7,
+  you will need to get a new domain-specific <code>go.js</code> library again using the same procedure.
+  (We too had to produce one for the domain "gojs.net" each time we updated our web site.)
+</p>
+
+<!--
+<p>
+  If you are building a Windows Store JavaScript app, there is no domain name.
+  Instead you should use the application-specific "appId", a GUID.
+  To obtain the proper ID your app must first be <a href="https://msdn.microsoft.com/en-us/library/windows/apps/hh454036.aspx">packaged with the windows app store</a>,
+  so that the package name is the one to be used in production.
+  Once you have associated your app with the windows store,
+  you can find this GUID in your <code>package.appxmanifest</code> file as the <code>&lt;Package&gt;</code> <code>&lt;Identity&gt;</code> <code>Name</code> attribute.
+</p>
+-->
+
+<h2 id="InternationalizationAndLocalization">Internationalization and Localization</h2>
+<p>
+  <b>GoJS</b> apps can display text in non-Latin languages.
+  For example, see <a href="../samples/familyTreeJP.html" target="samples">Japanese Family Tree</a>.
+</p>
+<p>
+  The <b>GoJS</b> library does not manipulate currency values or date/time values or addresses,
+  so there are no localization issues with those data types and values.
+  <b>GoJS</b> does not contain any of its own icons (images) or cursors.
+</p>
+<p>
+  Nor does <b>GoJS</b> display any built-in text strings, so no translation is needed.
+  There are error and warning messages that may be output to the console, but
+  those messages are only meant for debugging by programmers, not for consumption by end users.
+  Reading and writing of numeric values is only performed internally
+  when reading and writing JSON or geometry path strings or CSS colors, which are all defined to use non-localized formats.
+</p>
+<p>
+  All user-visible text is completely under the control of the programmer.
+  For localizability you may find it convenient to use conversion functions in <a>Binding</a>s.
+  The <a>TextEditingTool</a> uses an HTML TextArea element to implement in-place text input and text editing,
+  thereby utilising the browser's support for input method editors.
+</p>
+
+{% endblock %}

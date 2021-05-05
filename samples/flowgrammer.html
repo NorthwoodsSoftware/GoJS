@@ -1,15 +1,111 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Flowgrammer</title>
-  <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <meta name="description" content="An editor for a flowchart-like diagram with a restricted syntax -- add nodes by dropping them onto existing nodes or links." />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+<meta name="description" content="An editor for a flowchart-like diagram with a restricted syntax -- add nodes by dropping them onto existing nodes or links."/> 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<title>Flowgrammer</title>
+</head>
 
-  <script src="../release/go.js"></script>
+<body>
+  <!-- This top nav is not part of the sample code -->
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
+    <!-- * * * * * * * * * * * * * -->
+    <!-- Start of GoJS sample code -->
+    
+    <script src="../release/go.js"></script>
+    <div class="p-4 w-full">
+
+<style>
+  /* Use a Flexbox to make the Palette/Overview/Diagram responsive and size things relatively */
+  #myFlexDiv {
+    display: flex;
+    width: 100%;
+    height: 600px;
+  }
+  #myPODiv {
+    display: flex;
+  }
+  @media (min-width: 768px) {
+    #myFlexDiv {
+      flex-flow: row;
+    }
+    #myPODiv {
+      width: 105px;
+      height: 100%;
+      margin-right: 3px;
+      flex-flow: column;
+    }
+    #myPaletteDiv {
+      height: 80%;
+    }
+    #myOverviewDiv {
+      margin-top: 3px;
+      flex: 1;
+    }
+    #myDiagramDiv {
+      flex: 1;
+    }
+  }
+  @media (max-width: 767px) {
+    #myFlexDiv {
+      flex-flow: column;
+      align-items: center;
+    }
+    #myPODiv {
+      width: 90%;
+      height: 105px;
+      margin-bottom: 3px;
+      flex-flow: row;
+    }
+    #myPaletteDiv {
+      width: 75%;
+    }
+    #myOverviewDiv {
+      margin-left: 3px;
+      flex: 1;
+    }
+    #myDiagramDiv {
+      width: 90%;
+      flex: 1;
+    }
+  }
+</style>
   <script src="../extensions/ParallelLayout.js"></script>
-  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-  <script>
+    <script>
     // two custom figures, for "For Each" loops
     go.Shape.defineFigureGenerator("ForEach", function(shape, w, h) {
       var param1 = shape ? shape.parameter1 : NaN; // length of triangular area in direction that it is pointing
@@ -44,7 +140,6 @@
     });
 
     function init() {
-      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;
 
       // initialize main Diagram
@@ -472,65 +567,10 @@
           ]
         });
     }
+
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 
-<style>
-  /* Use a Flexbox to make the Palette/Overview/Diagram responsive and size things relatively */
-  #myFlexDiv {
-    display: flex;
-    width: 100%;
-    height: 600px;
-  }
-  #myPODiv {
-    display: flex;
-  }
-  @media (min-width: 768px) {
-    #myFlexDiv {
-      flex-flow: row;
-    }
-    #myPODiv {
-      width: 105px;
-      height: 100%;
-      margin-right: 3px;
-      flex-flow: column;
-    }
-    #myPaletteDiv {
-      height: 80%;
-    }
-    #myOverviewDiv {
-      margin-top: 3px;
-      flex: 1;
-    }
-    #myDiagramDiv {
-      flex: 1;
-    }
-  }
-  @media (max-width: 767px) {
-    #myFlexDiv {
-      flex-flow: column;
-      align-items: center;
-    }
-    #myPODiv {
-      width: 90%;
-      height: 105px;
-      margin-bottom: 3px;
-      flex-flow: row;
-    }
-    #myPaletteDiv {
-      width: 75%;
-    }
-    #myOverviewDiv {
-      margin-left: 3px;
-      flex: 1;
-    }
-    #myDiagramDiv {
-      width: 90%;
-      flex: 1;
-    }
-  }
-</style>
-</head>
-<body onload="init()">
 <div id="sample">
   <div id="myFlexDiv">
     <div id="myPODiv">
@@ -560,7 +600,7 @@
   </div>
   <textarea id="mySavedModel" style="width:100%;height:200px">
 { "class": "GraphLinksModel",
-  "nodeDataArray": [ 
+  "nodeDataArray": [
 {"key":1, "text":"S", "category":"Start"},
 {"key":-1, "isGroup":true, "cat":"For"},
 {"key":2, "text":"For Each", "category":"For", "group":-1},
@@ -578,7 +618,7 @@
 {"key":12, "text":"", "category":"EndFor", "group":-1},
 {"key":13, "text":"E", "category":"End"}
  ],
-  "linkDataArray": [ 
+  "linkDataArray": [
 {"from":1, "to":2},
 {"from":2, "to":3},
 {"from":3, "to":4},
@@ -597,5 +637,11 @@
  ]}
   </textarea>
 </div>
+    </div>
+    <!-- * * * * * * * * * * * * * -->
+    <!--  End of GoJS sample code  -->
+  </div>
 </body>
+<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+<script src="../assets/js/goSamples.js"></script>
 </html>

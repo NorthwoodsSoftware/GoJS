@@ -30,11 +30,11 @@
         {
             'undoManager.isEnabled': true // enable undo & redo
         });
-        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_js_1.GeometryReshapingTool());
+        myDiagram.toolManager.mouseDownTools.insertAt(3, $(GeometryReshapingTool_js_1.GeometryReshapingTool, { isResegmenting: true }));
         myDiagram.nodeTemplate =
             $(go.Node, { reshapable: true }, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
             $(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 }, new go.Binding('geometryString', 'geo').makeTwoWay()));
-        myDiagram.model = new go.GraphLinksModel([{ geo: 'F M0 145 L75 2 L131 87 L195 0 L249 143z', key: -1 }], []);
+        myDiagram.model = new go.GraphLinksModel([{ geo: "F M0 145 L75 8 C100 20 120 40 131 87 C160 70 180 50 195 0 L249 133z", key: -1 }], []);
         // Attach to the window for console manipulation
         window.myDiagram = myDiagram;
     }

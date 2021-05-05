@@ -1,17 +1,130 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GoJS Tools -- Northwoods Software</title>
-  <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <script src="../release/go.js"></script>
-  <script src="../extensions/Figures.js"></script>
-  <script src="goIntro.js"></script>
-</head>
-<body onload="goIntro()">
-<div id="container" class="container-fluid">
-<div id="content">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+ 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Tools -- Northwoods Software </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"  />
+  </head>
+  <script>
+    
+    window.diagrams = [];
+    window.goCode = function(pre, w, h, parentid, animation) {
+      window.diagrams.push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+    
+    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
+      <div class="flex-shrink-0 px-8 py-4">
+        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
+          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="animation.html">Animation</a>
+  <a href="toolTips.html">ToolTips</a>
+  <a href="contextmenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="resizing.html">Resizing Diagrams</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="makingSVG.html">Diagram SVG</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="storage.html">Storage</a>
+  <a href="performance.html">Performance</a>
+  <a href="source.html">Building from Source</a>
+  <a href="deployment.html">Deployment</a>
+      </nav>
+    </div>      
+      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
 
 <h1>Tools</h1>
 <p>
@@ -110,14 +223,14 @@ Some commonly set properties include:
 Remember that all of the individual tools are available via the <a>Diagram.toolManager</a>.
 For example, to enable the <a>ClickCreatingTool</a>:
 </p>
-<pre class="lang-js">
+<pre class="lang-js"><code>
   myDiagram.toolManager.clickCreatingTool.archetypeNodeData =
     { key: "Node", text: "some description", color: "green" };
-</pre>
+</code></pre>
 <p>
 You can also set tool properties when using <a>GraphObject,make</a> to define your <a>Diagram</a>:
 </p>
-<pre class="lang-js">
+<pre class="lang-js"><code>
   var diagram =
     $(go.Diagram, "myDiagramDiv",
       {
@@ -137,7 +250,7 @@ You can also set tool properties when using <a>GraphObject,make</a> to define yo
         "rotatingTool.snapAngleEpsilon": 45
       }
     );
-</pre>
+</code></pre>
 <p>
 At this time the syntax for setting properties on predefined subobjects only works for the <a>Diagram</a> class.
 </p>
@@ -148,7 +261,7 @@ At this time the syntax for setting properties on predefined subobjects only wor
   cycle as "starting" when the ToolManager is alerted of some input event and begins searching through the pertinent list of tools (i.e.,
   if the mouse-down event is registered, ToolManager starts searching its <a>ToolManager.mouseDownTools</a> list). Below is a diagram
   representing the general lifecycle of a tool.
-                                                                          <pre class="lang-js" id="toolLifecycle" style="display: none">
+                                                                          <pre class="lang-js" id="toolLifecycle" style="display: none"><code>
   diagram.nodeTemplate =
       $(go.Node, "Auto", { locationSpot: go.Spot.Center },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -214,7 +327,7 @@ At this time the syntax for setting properties on predefined subobjects only wor
         ]
       }
       );
-</pre>
+</code></pre>
 <script>goCode("toolLifecycle", 700, 900)</script>
 <p>
   For more information on how these specific functions work, see the <a>Tool</a> documentation.
@@ -238,7 +351,7 @@ resize handles, four at the corners and four at the middles of the sides.
 If you want to let the user resize the whole node, just set <a>Part.resizable</a> to true.
 In this case resizing will set the Node's <a>GraphObject.desiredSize</a>.
 </p>
-<pre class="lang-js" id="resizing">
+<pre class="lang-js" id="resizing"><code>
   diagram.add(
     $(go.Node, "Auto",
       { resizable: true },
@@ -246,7 +359,7 @@ In this case resizing will set the Node's <a>GraphObject.desiredSize</a>.
       $(go.TextBlock, "Hello!", { margin: 5 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("resizing", 600, 100)</script>
 
 <p>
@@ -255,7 +368,7 @@ you need to name that object and assign <a>Part.resizeObjectName</a>.
 Resizing will set the <a>Part.resizeObject</a>'s <a>GraphObject.desiredSize</a>,
 in this case the Shape's desiredSize.
 </p>
-<pre class="lang-js" id="resizingObject">
+<pre class="lang-js" id="resizingObject"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",  // resize the Shape, not the Node
@@ -265,7 +378,7 @@ in this case the Shape's desiredSize.
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("resizingObject", 600, 100)</script>
 
 <p>
@@ -273,7 +386,7 @@ You can limit the minimum and maximum size for the resized object by setting
 <a>GraphObject.maxSize</a> and <a>GraphObject.minSize</a>.
 Note that these GraphObject properties are set on the <a>Part.resizeObject</a>, not on the <a>Part</a> itself.
 </p>
-<pre class="lang-js" id="resizingMaxMin">
+<pre class="lang-js" id="resizingMaxMin"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -285,13 +398,13 @@ Note that these GraphObject properties are set on the <a>Part.resizeObject</a>, 
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("resizingMaxMin", 600, 100)</script>
 
 <p>
 You can also cause resizing to be multiples of a given size by setting <a>Part.resizeCellSize</a>.
 </p>
-<pre class="lang-js" id="resizingCellSize">
+<pre class="lang-js" id="resizingCellSize"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -303,7 +416,7 @@ You can also cause resizing to be multiples of a given size by setting <a>Part.r
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("resizingCellSize", 600, 100)</script>
 
 <p>
@@ -312,7 +425,7 @@ This can be accomplished with a TwoWay <a>Binding</a> on the <a>GraphObject.desi
 But note that the binding needs to be on the actual GraphObject that is resized, not on the whole Node.
 In this case, because the <a>Part.resizeObjectName</a> is referring to a Shape, that means the binding needs to be on the Shape.
 </p>
-<pre class="lang-js" id="resizingObjectBinding">
+<pre class="lang-js" id="resizingObjectBinding"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -324,7 +437,7 @@ In this case, because the <a>Part.resizeObjectName</a> is referring to a Shape, 
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("resizingObjectBinding", 600, 100)</script>
 
 <p>
@@ -335,7 +448,7 @@ The Adornment is implemented as a Spot Panel that surrounds a <a>Placeholder</a>
 representing the adorned Shape, with two rectangular blue Shapes, each representing a handle.
 There is also a TextBlock placed above the adorned shape showing the shape's current width.
 </p>
-<pre class="lang-js" id="resizingTemplate">
+<pre class="lang-js" id="resizingTemplate"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { resizable: true, resizeObjectName: "SHAPE",
@@ -362,7 +475,7 @@ There is also a TextBlock placed above the adorned shape showing the shape's cur
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("resizingTemplate", 600, 100)</script>
 <p>
 Note also that because <a>Part.selectionAdorned</a> is false, there is no blue rectangle default selection adornment.
@@ -384,7 +497,7 @@ Since the default <a>GraphObject.angle</a> is zero, the rotate handle typically 
 If you want to let the user rotate the whole node, just set <a>Part.rotatable</a> to true.
 Rotating will set the Node's <a>GraphObject.angle</a>.
 </p>
-<pre class="lang-js" id="rotating">
+<pre class="lang-js" id="rotating"><code>
   diagram.add(
     $(go.Node, "Auto",
       { rotatable: true, locationSpot: go.Spot.Center },
@@ -392,7 +505,7 @@ Rotating will set the Node's <a>GraphObject.angle</a>.
       $(go.TextBlock, "Hello!", { margin: 5 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("rotating", 600, 150)</script>
 
 <p>
@@ -401,7 +514,7 @@ you need to name that object and assign <a>Part.rotateObjectName</a>.
 Rotating will set the <a>Part.rotateObject</a>'s <a>GraphObject.angle</a>,
 in this case the Shape's angle.
 </p>
-<pre class="lang-js" id="rotatingObject">
+<pre class="lang-js" id="rotatingObject"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { rotatable: true, rotateObjectName: "SHAPE",  // rotate the Shape, not the Node
@@ -412,7 +525,7 @@ in this case the Shape's angle.
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("rotatingObject", 600, 150)</script>
 
 <p>
@@ -421,7 +534,7 @@ This can be accomplished with a TwoWay <a>Binding</a> on the <a>GraphObject.angl
 But note that the binding needs to be on the actual GraphObject that is rotated, not on the whole Node.
 In this case, because the <a>Part.rotateObjectName</a> is referring to a Shape, that means the binding needs to be on the Shape.
 </p>
-<pre class="lang-js" id="rotatingObjectBinding">
+<pre class="lang-js" id="rotatingObjectBinding"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { rotatable: true, rotateObjectName: "SHAPE",
@@ -433,7 +546,7 @@ In this case, because the <a>Part.rotateObjectName</a> is referring to a Shape, 
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("rotatingObjectBinding", 600, 150)</script>
 
 <p>
@@ -441,7 +554,7 @@ Another common customization is to position the rotate handle above the object w
 i.e. when its <a>GraphObject.angle</a> is zero.
 This is accomplished by setting <a>RotatingTool.handleAngle</a> to 270.
 </p>
-<pre class="lang-js" id="rotatingToolAngle">
+<pre class="lang-js" id="rotatingToolAngle"><code>
   diagram.add(
     $(go.Node, "Auto",
       { rotatable: true, locationSpot: go.Spot.Center },
@@ -451,13 +564,13 @@ This is accomplished by setting <a>RotatingTool.handleAngle</a> to 270.
     ));
   diagram.toolManager.rotatingTool.handleAngle = 270;
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("rotatingToolAngle", 600, 150)</script>
 
 <p>
 You can customize the rotate handle by setting <a>Part.rotateAdornmentTemplate</a>.
 </p>
-<pre class="lang-js" id="rotatingTemplate">
+<pre class="lang-js" id="rotatingTemplate"><code>
   diagram.add(
     $(go.Node, "Vertical",
       { rotatable: true, rotateObjectName: "SHAPE",
@@ -474,7 +587,7 @@ You can customize the rotate handle by setting <a>Part.rotateAdornmentTemplate</
       $(go.TextBlock, "Hello!", { margin: 3 })
     ));
   diagram.commandHandler.selectAll();
-</pre>
+</code></pre>
 <script>goCode("rotatingTemplate", 600, 150)</script>
 <p>
 There are example custom rotating tools defined in the samples and extensions directories:
@@ -493,7 +606,7 @@ The user can drag a relinking handle to reconnect that end of the link to anothe
 The <a>RelinkingTool</a> will automatically update the relationships between the nodes/ports,
 both in the diagram and in the model.  No <a>Binding</a>s are needed for such model updates.
 </p>
-<pre class="lang-js" id="relinking">
+<pre class="lang-js" id="relinking"><code>
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Rectangle",
@@ -518,7 +631,7 @@ both in the diagram and in the model.  No <a>Binding</a>s are needed for such mo
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
   diagram.select(diagram.findLinkForData(linkDataArray[0]));
-</pre>
+</code></pre>
 <script>goCode("relinking", 600, 150)</script>
 <p>
 The relinking handles can be customized by setting <a>RelinkingTool.fromHandleArchetype</a>
@@ -543,7 +656,7 @@ This can be accomplished with a TwoWay <a>Binding</a> on the <a>Link.points</a> 
 If one also uses the property name "points" on the link data, <a>Model.toJson</a> will
 automatically convert the <a>List</a> of <a>Point</a>s into an Array of numbers and vice-versa.
 </p>
-<pre class="lang-js" id="linkReshaping">
+<pre class="lang-js" id="linkReshaping"><code>
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -568,7 +681,7 @@ automatically convert the <a>List</a> of <a>Point</a>s into an Array of numbers 
   ]);
 
   diagram.select(diagram.findLinkForData(diagram.model.linkDataArray[0]));
-</pre>
+</code></pre>
 <script>goCode("linkReshaping", 600, 150)</script>
 <p>
 The reshape handles are small blue squares.
@@ -583,7 +696,7 @@ For orthogonal links, two new segments are introduced in order to maintain ortho
 When the user reshapes the link so that adjacent segments are co-linear (or nearly so),
 the segment(s) are removed from the route.
 </p>
-<pre class="lang-js" id="linkResegmenting">
+<pre class="lang-js" id="linkResegmenting"><code>
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -608,7 +721,7 @@ the segment(s) are removed from the route.
   ]);
 
   diagram.select(diagram.findLinkForData(diagram.model.linkDataArray[0]));
-</pre>
+</code></pre>
 <script>goCode("linkResegmenting", 600, 150)</script>
 <p>
 The resegmenting handles can be customized by setting <a>LinkReshapingTool.midHandleArchetype</a>.
@@ -635,7 +748,7 @@ The <a>DragSelectingTool</a> uses the <a>DragSelectingTool.box</a> to show the a
 Normally this is a simple magenta rectangular shape.  You can change it.  For example here is a drag-selecting box
 that is in the shape of a blue-outlined cloud.
 </p>
-<pre class="lang-js" id="dragSelecting">
+<pre class="lang-js" id="dragSelecting"><code>
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse),
@@ -658,7 +771,7 @@ that is in the shape of a blue-outlined cloud.
   ], [
     { from: "Alpha", to: "Beta" }
   ]);
-</pre>
+</code></pre>
 <script>goCode("dragSelecting", 600, 200)</script>
 <p>
 Note that the <a>DragSelectingTool</a> expects that the object in the "box" to be resized is named "SHAPE".
@@ -687,7 +800,7 @@ The originating port and the potential target port are shown by the <a>LinkingBa
 and <a>LinkingBaseTool.temporaryToNode</a>.
 The default temporary ports are magenta rectangles.
 </p>
-<pre class="lang-js" id="linkingTools">
+<pre class="lang-js" id="linkingTools"><code>
 
   diagram.nodeTemplate =
     $(go.Node, "Spot",
@@ -731,7 +844,7 @@ The default temporary ports are magenta rectangles.
     { key: "Beta", loc: "200 50" },
     { key: "Gamma", loc: "400 0" }
   ]);  // start off with no links
-</pre>
+</code></pre>
 <script>goCode("linkingTools", 600, 150)</script>
 <p>
 Try drawing a link from one node to the other.
@@ -768,7 +881,121 @@ There are examples of linking tools defined in the samples and extensions direct
   </ul>
 
 
-</div>
-</div>
-</body>
+      </div>
+    </div>
+  
+  <div class="bg-nwoods-primary">
+    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
+      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
+    </section>
+  </div><footer class="bg-white">
+  <div class="container max-w-screen-lg mx-auto  px-8">
+    <div class="w-full flex flex-col md:flex-row py-6">
+      <div class="flex-1">
+
+        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto divide-y divide-gray-200 px-4 sm:px-6 md:px-8">
+          <ul class="text-sm font-medium pb-14 sm:pb-20 grid grid-cols-1 sm:grid-cols-3 gap-y-10">
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="samples/index.html">Samples</a>
+                </li>
+                <li>
+                  <a href="learn/index.html">Learn</a>
+                </li>
+                <li>
+                  <a href="intro/index.html">Intro</a>
+                </li>
+                <li>
+                  <a href="api/index.html">API</a>
+                </li>
+                <li>
+                  <a href="changelog.html">Changelog</a>
+                </li>
+                <li>
+                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Support</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                </li>
+                <li>
+                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                </li>
+                <li>
+                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Company</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com">Northwoods</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/about.html">About Us</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/contact.html">Contact Us</a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/northwoodsgo">Twitter</a>
+                </li>
+
+              </ul>
+            </li>
+          </ul>
+
+      </div>
+
+      <p class="text-sm text-gray-500 md:mb-6">
+        Copyright 1998-2021 <a href="https://www.nwoods.com">Northwoods Software</a>
+      </p>
+    </div>
+  </div>
+</footer>  </body>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script> 
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+
+  // topnav
+  var topButton = document.getElementById("topnavButton");
+  var topnavList = document.getElementById("topnavList");
+  topButton.addEventListener("click", function() {
+    this.classList.toggle("active");
+    topnavList.classList.toggle("hidden");
+    document.getElementById("topnavOpen").classList.toggle("hidden");
+    document.getElementById("topnavClosed").classList.toggle("hidden");
+  });
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+<script src="../extensions/Figures.js"></script>  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
+      if (window.goDoc) window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra) window.extra();
+    });
+  </script>
 </html>

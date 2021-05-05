@@ -1,23 +1,140 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GoJS Deployment -- Northwoods Software</title>
-  <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <script src="../release/go.js"></script>
-  <script src="goIntro.js"></script>
-</head>
-<body onload="goIntro()">
-<div id="container" class="container-fluid">
-<div id="content">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+ 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Deployment -- Northwoods Software </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"  />
+  </head>
+  <script>
+    
+    window.diagrams = [];
+    window.goCode = function(pre, w, h, parentid, animation) {
+      window.diagrams.push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+    
+    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
+      <div class="flex-shrink-0 px-8 py-4">
+        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
+          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="animation.html">Animation</a>
+  <a href="toolTips.html">ToolTips</a>
+  <a href="contextmenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="resizing.html">Resizing Diagrams</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="makingSVG.html">Diagram SVG</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="storage.html">Storage</a>
+  <a href="performance.html">Performance</a>
+  <a href="source.html">Building from Source</a>
+  <a href="deployment.html">Deployment</a>
+      </nav>
+    </div>      
+      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
+
+
+
 
 <h1>Deployment</h1>
 <p>
-  If you have downloaded a copy of the <b>GoJS</b> library from <a href="https://gojs.net">gojs.net</a> or npm or GitHub
+  If you have downloaded a copy of the <b>GoJS</b> library from <a href="https://gojs.net">gojs.net</a>
   for use in your own app, you have probably noticed that a watermark appears in the diagram.
-  For version 1.8 and beyond, you need to use a license key to remove this watermark from your domain.
-  For versions 1.7 and earlier, which are no longer really supported, contact us for instructions.
+  For version 1.7 and beyond, you need to use a license key to remove this watermark from your domain.
+  For version 1.6 and older, you need to get a generated <code>go.js</code> or <code>go-debug.js</code> library that is tied to your particular domain.
 </p>
 <p>
   When you want to deploy to your own web site your app that uses <b>GoJS</b>, you will need to make a request at:
@@ -45,29 +162,30 @@
   such as for downloading image files.
 </p>
 
-<h2 id="For1.8AndLater">For 1.8 and Later</h2>
+<h2 id="For1.7AndLater">For 1.7 and Later</h2>
 <p>
   Our server will generate a GoJS license key for you, in the form of a JavaScript statement that you will need to include with your code.
   It must execute after the GoJS library file has been loaded, but before you create your first <a>Diagram</a>.
 </p>
-<pre class="lang-js">// Must execute after loading the library and before you create your first Diagram:
+<pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
 go.Diagram.licenseKey = "YourKeyHere";
-</pre>
+</code></pre>
 Before version 2.0, you need to write:
-<pre class="lang-js">// Must execute after loading the library and before you create your first Diagram:
+<pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
 go.licenseKey = "YourKeyHere";
-</pre>
+</code></pre>
 <p>
   This mechanism works when using either the release library, <code>go.js</code>, or the debug library,
-  <code>go-debug.js</code>, but only with GoJS version 1.8 or later.
+  <code>go-debug.js</code>, but only with GoJS version 1.7 or later.
   Note that this assignment is of a static property of the Diagram class: <a>Diagram,licenseKey</a>.
   Of course you will need to substitute your generated license key string for <code>"YourKeyHere"</code> in the <code>go.Diagram.licenseKey</code> assignment statement.
   License keys are long strings without any embedded whitespace or punctuation.
   You can request license keys for as many domains as you have licensed.
 </p>
 <p>
+  Unlike the older activation method, you no longer need to get a new domain-specific <code>go.js</code> library each time you update or upgrade.
   Once your key is in place, you can continue to use the same key while updating the patch version of GoJS.
-  For example, a license key for version 1.8.3 will work for all versions 1.8.*.
+  For example, a license key for version 1.7.3 will work for all versions 1.7.*.
   Remember to get a new license key when upgrading to a new major or minor version of GoJS.
   For example, when upgrading from version 5.3.1 to version 5.4.6, you will need a new license key.
 </p>
@@ -81,18 +199,51 @@ go.licenseKey = "YourKeyHere";
   or you can install it via <a href="https://www.npmjs.com/package/gojs" target="_blank">Node package manager (npm)</a>
   or via <a href="https://www.nuget.org/packages/Northwoods.GoJS/" target="_blank">NuGet</a>,
   or you can link to a CDN such as <a href="https://unpkg.com/browse/gojs/" target="_blank">UNPKG</a> or <a href="https://www.jsdelivr.com/package/npm/gojs">JSDELIVR</a>.
+  Most customers will no longer need a special build of GoJS, as had been the case before version 1.7.
 </p>
 
 <h2 id="ForUnlimitedDomainsOEMCustomers">For Unlimited Domains OEM Customers</h2>
 <p>
   If you are an ISV and intend to distribute your app to run on many customers' web sites,
-  <a href="https://www.nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and instructions.
+  <a href="https://www.nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and
+  instructions on requesting and using a custom <code>go.js</code> library that works on any site or platform.
 </p>
 <p>
-  When building a desktop application using Electron or when hosted in a WebView as part of a desktop application,
+  When building a desktop application using Electron or Cordova or NW or when hosted in a WebView as part of a desktop application,
   your HTML page is not being served from a web server at a domain.
   In such circumstances you will need to use the Unlimited Domains option to make sure your Diagram does not display a watermark.
+  You should use your organization's domain as the requested domain name.
 </p>
+<p>
+  The procedure for unlimited domains is similar to the procedure followed for the 1.6 and older versions,
+  but with the addition of requiring a license key.
+</p>
+
+<h2 id="For1.6AndOlder">For 1.6 and Older</h2>
+<p>
+  Our automated web server will create <code>go.js</code> and <code>go-debug.js</code> libraries that are customized
+  not to show a watermark on pages from that domain and will e-mail you instructions for how to download them.
+</p>
+<p>
+  You can request libraries for as many domains as you have licensed.
+  If there is a problem you will receive e-mail from our web server describing the problem.
+</p>
+<p>
+  When updating or upgrading to a new version of <b>GoJS</b> less than version 1.7,
+  you will need to get a new domain-specific <code>go.js</code> library again using the same procedure.
+  (We too had to produce one for the domain "gojs.net" each time we updated our web site.)
+</p>
+
+<!--
+<p>
+  If you are building a Windows Store JavaScript app, there is no domain name.
+  Instead you should use the application-specific "appId", a GUID.
+  To obtain the proper ID your app must first be <a href="https://msdn.microsoft.com/en-us/library/windows/apps/hh454036.aspx">packaged with the windows app store</a>,
+  so that the package name is the one to be used in production.
+  Once you have associated your app with the windows store,
+  you can find this GUID in your <code>package.appxmanifest</code> file as the <code>&lt;Package&gt;</code> <code>&lt;Identity&gt;</code> <code>Name</code> attribute.
+</p>
+-->
 
 <h2 id="InternationalizationAndLocalization">Internationalization and Localization</h2>
 <p>
@@ -118,7 +269,121 @@ go.licenseKey = "YourKeyHere";
   thereby utilising the browser's support for input method editors.
 </p>
 
-</div>
-</div>
-</body>
+      </div>
+    </div>
+  
+  <div class="bg-nwoods-primary">
+    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
+      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
+    </section>
+  </div><footer class="bg-white">
+  <div class="container max-w-screen-lg mx-auto  px-8">
+    <div class="w-full flex flex-col md:flex-row py-6">
+      <div class="flex-1">
+
+        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto divide-y divide-gray-200 px-4 sm:px-6 md:px-8">
+          <ul class="text-sm font-medium pb-14 sm:pb-20 grid grid-cols-1 sm:grid-cols-3 gap-y-10">
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="samples/index.html">Samples</a>
+                </li>
+                <li>
+                  <a href="learn/index.html">Learn</a>
+                </li>
+                <li>
+                  <a href="intro/index.html">Intro</a>
+                </li>
+                <li>
+                  <a href="api/index.html">API</a>
+                </li>
+                <li>
+                  <a href="changelog.html">Changelog</a>
+                </li>
+                <li>
+                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Support</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                </li>
+                <li>
+                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                </li>
+                <li>
+                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Company</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com">Northwoods</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/about.html">About Us</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/contact.html">Contact Us</a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/northwoodsgo">Twitter</a>
+                </li>
+
+              </ul>
+            </li>
+          </ul>
+
+      </div>
+
+      <p class="text-sm text-gray-500 md:mb-6">
+        Copyright 1998-2021 <a href="https://www.nwoods.com">Northwoods Software</a>
+      </p>
+    </div>
+  </div>
+</footer>  </body>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script> 
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+
+  // topnav
+  var topButton = document.getElementById("topnavButton");
+  var topnavList = document.getElementById("topnavList");
+  topButton.addEventListener("click", function() {
+    this.classList.toggle("active");
+    topnavList.classList.toggle("hidden");
+    document.getElementById("topnavOpen").classList.toggle("hidden");
+    document.getElementById("topnavClosed").classList.toggle("hidden");
+  });
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
+      if (window.goDoc) window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra) window.extra();
+    });
+  </script>
 </html>

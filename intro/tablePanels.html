@@ -1,16 +1,133 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GoJS Table Panels -- Northwoods Software</title>
-  <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <script src="../release/go.js"></script>
-  <script src="goIntro.js"></script>
-</head>
-<body onload="goIntro()">
-<div id="container" class="container-fluid">
-<div id="content">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+ 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Table Panels -- Northwoods Software </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"  />
+  </head>
+  <script>
+    
+    window.diagrams = [];
+    window.goCode = function(pre, w, h, parentid, animation) {
+      window.diagrams.push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+    
+    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
+      <div class="flex-shrink-0 px-8 py-4">
+        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
+          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="animation.html">Animation</a>
+  <a href="toolTips.html">ToolTips</a>
+  <a href="contextmenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="resizing.html">Resizing Diagrams</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="makingSVG.html">Diagram SVG</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="storage.html">Storage</a>
+  <a href="performance.html">Performance</a>
+  <a href="source.html">Building from Source</a>
+  <a href="deployment.html">Deployment</a>
+      </nav>
+    </div>      
+      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
+
+
+
 
 <h1>Table Panels</h1>
 <p>
@@ -25,7 +142,7 @@ See samples that make use of tables in the <a href="../samples/index.html#tables
 Each object in a Table Panel is put into the cell indexed by the value of <a>GraphObject.row</a> and <a>GraphObject.column</a>.
 The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
 </p>
-<pre class="lang-js" id="simpleTable">
+<pre class="lang-js" id="simpleTable"><code>
   diagram.add(
     // all Parts are Panels
     $(go.Part, go.Panel.Table,  // or "Table"
@@ -38,7 +155,7 @@ The panel will look at the rows and columns for all of the objects in the panel 
         $(go.TextBlock, "row 1\ncol 2",
           { row: 1, column: 2, margin: 2, background: "lightgray" })
     ));
-</pre>
+</code></pre>
 <script>goCode("simpleTable", 600, 100)</script>
 <p>
 Note that not every "cell" of the table needs to have a <a>GraphObject</a> in it.
@@ -47,7 +164,7 @@ Note that not every "cell" of the table needs to have a <a>GraphObject</a> in it
 If there are multiple objects in a cell, they will probably overlap each other in the cell.
 By default objects are center-aligned in each cell.
 </p>
-<pre class="lang-js" id="multipleInCell">
+<pre class="lang-js" id="multipleInCell"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -68,13 +185,13 @@ By default objects are center-aligned in each cell.
           { row: 1, column: 2, margin: 2, background: "lightgray" })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("multipleInCell", 600, 100)</script>
 
 <p>
 If a column or a row has no objects in it, that column or row is ignored.
 </p>
-<pre class="lang-js" id="emptyColumns">
+<pre class="lang-js" id="emptyColumns"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -88,7 +205,7 @@ If a column or a row has no objects in it, that column or row is ignored.
           { row: 1, column: 12, margin: 2, background: "lightgray" })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("emptyColumns", 600, 100)</script>
 
 <h2 id="SizingOfRowsOrColumns">Sizing of Rows or Columns</h2>
@@ -110,7 +227,7 @@ For example, if the minimum is 50 but the natural value is 40, the actual value 
 <p>
 This example demonstrates how the column width may be controlled.
 </p>
-<pre class="lang-js" id="columnSizes">
+<pre class="lang-js" id="columnSizes"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -153,7 +270,7 @@ This example demonstrates how the column width may be controlled.
         $(go.TextBlock, "min & max", { row: 2, column: 3 })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("columnSizes", 600, 120)</script>
 <p>
 Note how the column with a minimum of 150 has a lot of extra space in it,
@@ -182,7 +299,7 @@ The same inheritance is true for the stretch value for a GraphObject: <a>GraphOb
 </p>
 
 <h3 id="AlignmentInColumns">Alignment in Columns</h3>
-<pre class="lang-js" id="columns">
+<pre class="lang-js" id="columns"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -215,11 +332,11 @@ The same inheritance is true for the stretch value for a GraphObject: <a>GraphOb
         $(go.TextBlock, "stretch: Horizontal", { row: 3, column: 2 })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("columns", 600, 120)</script>
 
 <h3 id="AlignmentInRows">Alignment in Rows</h3>
-<pre class="lang-js" id="rows">
+<pre class="lang-js" id="rows"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -252,7 +369,7 @@ The same inheritance is true for the stretch value for a GraphObject: <a>GraphOb
         $(go.TextBlock, "stretch:\nVertical", { row: 2, column: 3 })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("rows", 600, 120)</script>
 
 <h2 id="SpanningRowsOrColumns">Spanning Rows or Columns</h2>
@@ -263,7 +380,7 @@ For example, if the value of GraphObject.columnSpan is greater than one, it spec
 that object may cover, starting with the value of <a>GraphObject.column</a>, but excluding the column
 indexed by column + columnSpan.
 </p>
-<pre class="lang-js" id="columnSpan">
+<pre class="lang-js" id="columnSpan"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -280,13 +397,13 @@ indexed by column + columnSpan.
           { row: 2, column: 2, margin: 2, background: "lightgray" })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("columnSpan", 600, 120)</script>
 
 <p>
 Here is an example that includes both column spanning and row spanning.
 </p>
-<pre class="lang-js" id="columnSpan2">
+<pre class="lang-js" id="columnSpan2"><code>
   diagram.add(
     $(go.Part,
       $(go.Panel, "Table",
@@ -309,7 +426,7 @@ Here is an example that includes both column spanning and row spanning.
             margin: 2, background: "lightgray" })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("columnSpan2", 600, 120)</script>
 
 <h2 id="SeparatorsAndRowColumnPadding">Separators and Row/Column Padding</h2>
@@ -322,7 +439,7 @@ The <a>RowColumnDefinition.separatorStroke</a> and <a>RowColumnDefinition.separa
 For example, if you want to treat the first row and the first column as "headers",
 you can separate them from the rest of the table by drawing a black line before row 1 and column 1.
 </p>
-<pre class="lang-js" id="spacing">
+<pre class="lang-js" id="spacing"><code>
   diagram.add(
     $(go.Part, "Auto",
       $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
@@ -350,7 +467,7 @@ you can separate them from the rest of the table by drawing a black line before 
         $(go.TextBlock, "row 3 col 2", { row: 3, column: 2, margin: 2 })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("spacing", 600, 150)</script>
 
 <p>
@@ -369,7 +486,7 @@ If you want to have a default separator between each row, set the default separa
 Any separator properties set on a particular RowColumnDefinition will take precedence over the default values provided on the Panel.
 This permits keeping the special black line separating the header row and header column from the rest.
 </p>
-<pre class="lang-js" id="spacing2">
+<pre class="lang-js" id="spacing2"><code>
   diagram.add(
     $(go.Part, "Auto",
       $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
@@ -399,7 +516,7 @@ This permits keeping the special black line separating the header row and header
         $(go.TextBlock, "row 3 col 2", { row: 3, column: 2, margin: 2 })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("spacing2", 600, 150)</script>
 
 <p>
@@ -407,7 +524,7 @@ RowColumnDefinitions also have a <a>RowColumnDefinition.separatorPadding</a> pro
 which can be used to add extra space to rows or columns.
 When a <a>RowColumnDefinition.background</a> is set, it includes the padding in its area.
 </p>
-<pre class="lang-js" id="padding">
+<pre class="lang-js" id="padding"><code>
   diagram.add(
     $(go.Part, "Auto",
       $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
@@ -443,7 +560,7 @@ When a <a>RowColumnDefinition.background</a> is set, it includes the padding in 
         $(go.TextBlock, "row 3 col 2", { row: 3, column: 2, margin: 2 })
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("padding", 600, 200)</script>
 
 <h2 id="TableRowsAndTableColumns">TableRows and TableColumns</h2>
@@ -452,7 +569,7 @@ To avoid having to specify the row for each object, you can make use of a specia
 the <a>Panel,TableRow</a> panel type.  Put all of the objects for each row into a TableRow Panel.
 You will still need to specify the column for each object in each row.
 </p>
-<pre class="lang-js" id="spacing3">
+<pre class="lang-js" id="spacing3"><code>
   diagram.add(
     $(go.Part, "Auto",
       $(go.Shape, { fill: "white", stroke: "gray", strokeWidth: 3 }),
@@ -486,76 +603,127 @@ You will still need to specify the column for each object in each row.
         )
       )
     ));
-</pre>
+</code></pre>
 <script>goCode("spacing3", 600, 150)</script>
 <p>
 The same kind of organization is also possible with columns by using <a>Panel,TableColumn</a> Panels.
 </p>
 
-<h2 id="Examples">Examples</h2>
-<p>
-  In this example the first column spans two rows, because <a>GraphObject.rowSpan</a> is 2 on the <a>Picture</a>.
-</p>
-<p>
-  The second column (column #1) has a <a>RowColumnDefinition.minimum</a> width of 100,
-  so that column is at least that wide even if the elements in that column's cells are narrower.
-</p>
-<p>
-  The first column only takes as much width as it naturally needs and any excess width is given to the second column.
-  This occurs because the <a>RowColumnDefinition</a> for column #0 has <a>RowColumnDefinition.sizing</a> set to None.
-  The same is true for the first row -- any extra height is given to the second row.
-</p>
-<p>
-  There is a column separator line just before the second column, and there is a row separator just before
-  the second row because the respective <a>RowColumnDefinition.separatorStroke</a> properties have been set
-  to a color.  But the row separator is not visible in the first column because that column's definition
-  sets <a>RowColumnDefinition.background</a> to "white" and sets <a>RowColumnDefinition.coversSeparators</a> to true.
-</p>
-<pre class="lang-js" id="example1">
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { resizable: true, minSize: new go.Size(162, 62) },
-      $(go.Shape, { fill: "white" }),
-      $(go.Panel, "Table",
-        { stretch: go.GraphObject.Fill, margin: 0.5 },
+      </div>
+    </div>
+  
+  <div class="bg-nwoods-primary">
+    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
+      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
+    </section>
+  </div><footer class="bg-white">
+  <div class="container max-w-screen-lg mx-auto  px-8">
+    <div class="w-full flex flex-col md:flex-row py-6">
+      <div class="flex-1">
 
-        $(go.RowColumnDefinition,
-          { column: 0, sizing: go.RowColumnDefinition.None, background: "white", coversSeparators: true }),
-        $(go.RowColumnDefinition,
-          { column: 1, minimum: 100, background: "white", separatorStroke: "black" }),
-        $(go.RowColumnDefinition,
-          { row: 0, sizing: go.RowColumnDefinition.None }),
-        $(go.RowColumnDefinition,
-          { row: 1, separatorStroke: "black" }),
+        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto divide-y divide-gray-200 px-4 sm:px-6 md:px-8">
+          <ul class="text-sm font-medium pb-14 sm:pb-20 grid grid-cols-1 sm:grid-cols-3 gap-y-10">
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="samples/index.html">Samples</a>
+                </li>
+                <li>
+                  <a href="learn/index.html">Learn</a>
+                </li>
+                <li>
+                  <a href="intro/index.html">Intro</a>
+                </li>
+                <li>
+                  <a href="api/index.html">API</a>
+                </li>
+                <li>
+                  <a href="changelog.html">Changelog</a>
+                </li>
+                <li>
+                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Support</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                </li>
+                <li>
+                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                </li>
+                <li>
+                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Company</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com">Northwoods</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/about.html">About Us</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/contact.html">Contact Us</a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/northwoodsgo">Twitter</a>
+                </li>
 
-        $(go.Picture,
-          { row: 0, column: 0, rowSpan: 2, width: 48, height: 48, margin: 6 },
-          new go.Binding("source", "pic")),
-        $(go.TextBlock,
-          { row: 0, column: 1, stretch: go.GraphObject.Horizontal, margin: 2, textAlign: "center" },
-          new go.Binding("text", "text1")),
-        $(go.TextBlock,
-          { row: 1, column: 1, stretch: go.GraphObject.Fill, margin: 2, textAlign: "center" },
-          new go.Binding("text", "text2"))
-      ),
-    );
+              </ul>
+            </li>
+          </ul>
 
-  diagram.model.nodeDataArray = [
-    {
-      pic: "../samples/images/hs1.jpg",
-      text1: "top",
-      text2: "bottom gets extra space"
-    },
-    {
-      pic: "../samples/images/hs2.jpg",
-      text1: "top has more description that wraps",
-      text2: "node is taller due to more text"
-    }
-  ]
-</pre>
-<script>goCode("example1", 600, 200)</script>
+      </div>
 
-</div>
-</div>
-</body>
+      <p class="text-sm text-gray-500 md:mb-6">
+        Copyright 1998-2021 <a href="https://www.nwoods.com">Northwoods Software</a>
+      </p>
+    </div>
+  </div>
+</footer>  </body>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script> 
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+
+  // topnav
+  var topButton = document.getElementById("topnavButton");
+  var topnavList = document.getElementById("topnavList");
+  topButton.addEventListener("click", function() {
+    this.classList.toggle("active");
+    topnavList.classList.toggle("hidden");
+    document.getElementById("topnavOpen").classList.toggle("hidden");
+    document.getElementById("topnavClosed").classList.toggle("hidden");
+  });
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
+      if (window.goDoc) window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra) window.extra();
+    });
+  </script>
 </html>

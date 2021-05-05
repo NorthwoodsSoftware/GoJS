@@ -113,16 +113,29 @@ export class PolygonDrawingTool extends go.Tool {
         return (obj === null);
     }
     /**
+    * Start a transaction, capture the mouse, use a "crosshair" cursor,
+    * and start accumulating points in the geometry of the {@link #temporaryShape}.
+    * @this {PolygonDrawingTool}
+    */
+    doStart() {
+        super.doStart();
+        var diagram = this.diagram;
+        if (!diagram)
+            return;
+        this.startTransaction(this.name);
+        diagram.currentCursor = diagram.defaultCursor = "crosshair";
+        if (!diagram.lastInput.isTouchEvent)
+            diagram.isMouseCaptured = true;
+    }
+    /**
      * Start a transaction, capture the mouse, use a "crosshair" cursor,
      * and start accumulating points in the geometry of the {@link #temporaryShape}.
      */
     doActivate() {
         super.doActivate();
-        const diagram = this.diagram;
-        this.startTransaction(this.name);
-        if (!diagram.lastInput.isTouchEvent)
-            diagram.isMouseCaptured = true;
-        diagram.currentCursor = 'crosshair';
+        var diagram = this.diagram;
+        if (!diagram)
+            return;
         // the first point
         if (!diagram.lastInput.isTouchEvent)
             this.addPoint(diagram.lastInput.documentPoint);
@@ -130,13 +143,15 @@ export class PolygonDrawingTool extends go.Tool {
     /**
      * Stop the transaction and clean up.
      */
-    doDeactivate() {
-        super.doDeactivate();
-        const diagram = this.diagram;
+    doStop() {
+        super.doStop();
+        var diagram = this.diagram;
+        if (!diagram)
+            return;
+        diagram.currentCursor = diagram.defaultCursor = "auto";
         if (this.temporaryShape !== null && this.temporaryShape.part !== null) {
             diagram.remove(this.temporaryShape.part);
         }
-        diagram.currentCursor = '';
         if (diagram.isMouseCaptured)
             diagram.isMouseCaptured = false;
         this.stopTransaction();

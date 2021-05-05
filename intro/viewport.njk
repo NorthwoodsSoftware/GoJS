@@ -1,0 +1,860 @@
+﻿{% extends "_includes/intro.njk" %}
+{% block title %}GoJS Coordinate Systems-- Northwoods Software{% endblock %}
+{% block content %}
+
+<h1>Coordinate Systems</h1>
+<p>
+A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document and view coordinates.
+Furthermore each <a>Panel</a> within a <a>Part</a> has its own coordinate system that its elements use.
+</p>
+<p>
+All coordinate systems in <b>GoJS</b> have <a>Point</a>s with increasing values of X going rightwards and
+increasing values of Y going downwards.
+</p>
+
+<h2 id="DocumentAndViewCoordinates">Document and View coordinates</h2>
+<p>
+The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates.
+Thus the <a>Point</a>s that may be saved in the model's node data are normally in document coordinates:
+</p>
+<pre class="lang-js"><code>
+  diagram.model.nodeDataArray = [
+    { key: "Alpha", loc: "0 0" },
+    { key: "Beta", loc: "100 50" }
+  ];
+</code></pre>
+<p>
+But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn at the top-left corner of
+the HTML Div element that the user sees in the page.
+When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas.
+And if the user zooms in to make the parts appear larger, the parts will be drawn at different points in the canvas.
+Yet the <a>Part.location</a> does not change value as the user scrolls or zooms the diagram.
+</p>
+<p>
+Points in the canvas are in view coordinates: distances from the top-left corner in device-independent pixels.
+The differences between document coordinates and view coordinates are primarily controlled by two <a>Diagram</a> properties:
+<a>Diagram.position</a> and <a>Diagram.scale</a>.
+Scrolling and panning change the Diagram.position.
+Zooming in or out changes the Diagram.scale.
+You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and <a>Diagram.transformViewToDoc</a>.
+However very few properties and method arguments or return values are in view coordinates -- almost everything is in document
+coordinates or in panel coordinates.
+</p>
+<p>
+The <i>viewport</i> is the area of the document that is visible in the canvas.
+That area is available as the <a>Diagram.viewportBounds</a>.
+Note that the viewport bounds is in document coordinates, not in view coordinates!
+The top-left corner of the viewport is (0,0) in view coordinates but is at <a>Diagram.position</a> in document coordinates.
+The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates.
+The bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
+</p>
+<p>
+As an example of showing the viewport in the context of the whole document, an <a>Overview</a> does exactly that.
+Take a look at the overview that is in the <a href="../samples/orgChartStatic.html">Org Chart sample</a>.
+The overview shows the whole document of the main diagram.
+The magenta box shows the main diagram's viewport within the whole document.
+As you scroll or pan the main diagram, the viewport moves.
+As you zoom out, the viewport gets larger.
+</p>
+<p>
+To better understand the difference between document and viewport coordinates, look at this diagram:
+</p>
+<pre class="lang-js" id="diffCoordSystems" style="display:none"><code>
+  diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    { scale : 1.3},
+    new go.Binding("location", "loc", gridPointParse),
+    new go.Binding("scale", "scale"),
+    { locationSpot: go.Spot.Center, portId: "NODE" },
+    $(go.Shape, "RoundedRectangle",
+      { fill: "white", portId: "SHAPE" },
+      new go.Binding("fill", "color"),
+      new go.Binding("strokeWidth", "strokeW")),
+    $(go.TextBlock,
+      { margin: 4, portId: "TEXTBLOCK" },
+      new go.Binding("text", "text"),
+      new go.Binding("stroke", "textColor"))
+  );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape, { stroke: "darkgray", strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", stroke: "darkgray", fill: "darkgray" })
+  );
+
+  // colors
+  var docGridStroke = "rgba(70, 130, 180, 0.5)";
+  var viewGridStroke = "rgba(255, 128, 128, 1)";
+  var commentStroke = "brown";
+
+  var cellSide = 20; // side length of one grid cell
+  var cellSize = new go.Size(cellSide * 5, cellSide * 5);
+  var pointSize = 7;
+
+  function gridSizeParse(size) {
+    if (!(size instanceof go.Size)) {
+      size = go.Size.parse(size);
+    }
+    size.setTo(size.width * cellSide, size.height * cellSide);
+    return size;
+  }
+  function gridPointParse(point) {
+    if (!(point instanceof go.Point)) {
+      point = go.Point.parse(point);
+    }
+    point.setTo(point.x * cellSide, point.y * cellSide);
+    return point;
+  }
+
+  function LabelledPoint(x, y, label) {
+    return {
+      x: x,
+      y: y,
+      label: label
+    }
+  }
+
+  diagram.nodeTemplateMap.add("Description", // Template for comment node
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", gridPointParse),
+      new go.Binding("scale", "scale"),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color"),
+        new go.Binding("strokeWidth", "strokeW")),
+      $(go.Panel, "Vertical",
+       $(go.TextBlock,
+         {font: "bold 11pt sans-serif", margin: new go.Margin(3, 0, 0, 0)},
+         new go.Binding("text", "header"),
+         new go.Binding("stroke", "textColor")),
+        $(go.TextBlock,
+          { margin: 3, portId: "TEXTBLOCK" },
+          new go.Binding("text", "text"),
+          new go.Binding("stroke", "textColor"))
+      )
+  ));
+
+  diagram.nodeTemplateMap.add("DeltaDescription", // Template for comment node
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", gridPointParse),
+      new go.Binding("scale", "scale"),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color"),
+        new go.Binding("strokeWidth", "strokeW")),
+      $(go.Panel, "Vertical",
+       $(go.TextBlock,
+         {font: "bold 11pt sans-serif", margin: new go.Margin(3, 0, 0, 0)},
+         new go.Binding("text", "header"),
+         new go.Binding("stroke", "textColor")),
+        $(go.TextBlock,
+          { margin: 3, portId: "TEXTBLOCK", alignment: go.Spot.Left },
+          new go.Binding("text", "text"),
+          new go.Binding("stroke", "textColor")),
+        $(go.TextBlock,
+          { margin: 3, portId: "TEXTBLOCK", font: "italic 10pt sans-serif" },
+          new go.Binding("text", "desc"),
+          new go.Binding("stroke", "textColor"))
+      )
+  ));
+
+  diagram.nodeTemplateMap.add("Point", // template for denoting points on the grid
+    $(go.Node, "Vertical",
+      { movable: false },
+      new go.Binding("location", "point", function gridPointLocation(point) {
+          label = point.label;
+          // measure the longest line's width
+          textLines = label.split("\n");
+          width = 0
+          textLines.forEach(function(text) {
+            var textBlock = $(go.TextBlock, { text: text, font: "bold 10pt sans-serif"});
+            if (textBlock.naturalBounds.right > width) {
+              width = textBlock.naturalBounds.right;
+            }
+          });
+
+          // text block with entire string to measure height
+          var textBlock = $(go.TextBlock, { text: label, font: "bold 10pt sans-serif" });
+          point = new go.Point(point.x, point.y);
+
+          // convert from grid coordinates to diagram coordinates
+          gridPointParse(point);
+
+          // offset
+          point.setTo(point.x - width / 2, point.y - pointSize / 2 - textBlock.naturalBounds.bottom); // align to center of circle to intersection instead of top left corner
+          return point;
+        }),
+
+      $(go.TextBlock,
+        {position: new go.Point(0, -pointSize - 7), textAlign: "center", font : "bold 10pt sans-serif"},
+        new go.Binding("text", "point", function getLabel(point) {
+          return point.label;
+        }), new go.Binding("margin", "margin")),
+      $(go.Shape,
+        "Circle",
+        {width: pointSize, height: pointSize, alignment: go.Spot.Center})
+  ));
+
+  diagram.linkTemplateMap.add("Comment", // Template for links from comments
+    $(go.Link,
+      { curve: go.Link.Bezier },
+      new go.Binding("curviness"),
+      new go.Binding("fromSpot", "fromSpot"),
+      new go.Binding("toSpot", "toSpot"),
+      $(go.Shape, { stroke: commentStroke },
+        new go.Binding("stroke", "stroke")),
+      $(go.Shape, { toArrow: "OpenTriangle", stroke: commentStroke },
+        new go.Binding("stroke", "stroke"))
+  ));
+
+  diagram.groupTemplateMap.add("Grid",
+    $(go.Group, "Position",
+      { movable: false },
+      $(go.Shape, "Rectangle", { fill: "transparent", strokeWidth: 2},
+        new go.Binding("fill", "fill"),
+        new go.Binding("stroke", "border"),
+        new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify)),
+      $(go.Panel, "Grid",
+        { name: "DOCGRID", desiredSize: cellSize, gridCellSize: new go.Size(cellSide, cellSide) },
+        new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify),
+        new go.Binding("gridCellSize", "cell", go.Size.parse).makeTwoWay(go.Size.stringify),
+        $(go.Shape, "LineV",
+          new go.Binding("stroke")),
+        $(go.Shape, "LineH",
+          new go.Binding("stroke"))
+      ),
+      new go.Binding("location", "loc", gridPointParse)
+  ));
+
+  diagram.initialContentAlignment = go.Spot.Center;
+
+  var model = new go.GraphLinksModel();
+  model.linkFromPortIdProperty = "fPID";
+  model.linkToPortIdProperty = "tPID"
+
+  model.nodeDataArray = [
+    { key: "docGrid", isGroup: true, category: "Grid", stroke: docGridStroke, fill: "transparent", size: "24 20", border: docGridStroke },
+    { key: "viewGrid", isGroup: true, group: "docGrid", category: "Grid", fill: "rgb(248,248,248)",stroke: viewGridStroke, size: "13.7 9.95", loc: "5.8 5.2", cell: "25 25", border: viewGridStroke},
+    { key: "alpha", group: "docGrid", text: "Alpha", loc: "1.95 6.95"},
+    { key: "beta", group: "docGrid", text: "Beta", loc: "12.4 1.25"},
+    { key: "gamma", group: "docGrid", text: "Gamma", loc: "10 7.95"},
+    { key: "delta", group: "docGrid", text: "Delta", loc: "14.5 11.95"},
+    { key: "epsilon", group: "docGrid", text: "Epsilon", loc: "7.9 17.95"},
+    { key: "zeta", group: "docGrid", text: "Zeta", loc: "12.35 18.7"},
+    { key: "eta", group: "docGrid", text: "Eta", loc: "22.5 11.95"},
+    { key: "point1", group: "docGrid", category: "Point", point: LabelledPoint(5.8, 5.2, "(300, 250) Document Coordinates\n(0, 0) Viewport Coordinates")},
+    { key: "point2", group: "docGrid", category: "Point", point: LabelledPoint(19.3, 14.9, "(850, 650) Document Coordinates\n(550, 400) Viewport Coordinates"), margin: new go.Margin(0, 0, 4, 0)},
+    { key: "point1", group: "docGrid", category: "Point", point: LabelledPoint(0, 0, "(0, 0) Document Coordinates")},
+    { key: "point1", group: "docGrid", category: "Point", point: LabelledPoint(24, 20, "(1200, 1000) Document Coordinates")},
+    { key: "viewportDesc", category: "Description", header: "Viewport", text: "position: (300, 250)\nviewportBounds: (550, 400)\nscale: 1.25", textColor: "brown", loc: "0 17"},
+    { key: "documentDesc", category: "Description", header: "Document", text: "documentBounds: (1200, 1000)\npadding: (5, 5, 5, 5)", textColor: "rgb(50, 120, 160)", loc: "22 -3"},
+    { key: "deltaDesc", category: "DeltaDescription", header: "Delta", text: "location: (650, 550)", desc: "Location is in document\ncoordinates, and does not\nchange with viewport\nmovement or scaling.", textColor: "black", loc: "26 6"}
+  ];
+  model.linkDataArray = [
+    { to: "viewGrid", from: "viewportDesc", category: "Comment", stroke: "brown"},
+    { to: "docGrid", from: "documentDesc", category: "Comment", stroke: "rgb(50, 120, 160)"},
+    { to: "delta", from: "deltaDesc", category: "Comment", stroke: "black", curviness: -10},
+    { to: "gamma", from: "alpha"},
+    { to: "gamma", from: "beta"},
+    { to: "delta", from: "gamma"},
+    { to: "epsilon", from: "delta"},
+    { to: "zeta", from: "delta"},
+    { to: "eta", from: "delta"}
+  ];
+
+  diagram.model = model;
+
+
+  // Formatting
+  function headerStyle() {
+    return {
+      margin: 3,
+      font: "bold 12pt sans-serif",
+      minSize: new go.Size(140, 16),
+      maxSize: new go.Size(120, NaN),
+      textAlign: "center"
+    };
+  }
+  function textStyle() {
+    return {
+      margin: 3,
+      font: "italic 10pt sans-serif",
+      minSize: new go.Size(16, 16),
+      maxSize: new go.Size(160, NaN),
+      textAlign: "left"
+    };
+  }
+</code></pre>
+<script>goCode("diffCoordSystems", 750, 650)</script>
+
+<h2 id="CoordinateSystemsExample">Coordinate systems example</h2>
+<p>
+This example shows three Parts at three different locations in document coordinates.
+Pass the mouse over each of the parts to see where those locations are in view coordinates.
+Initially you will see that the only difference between document and view coordinates are a constant offset.
+That offset is due to the <a>Diagram.padding</a> that puts a little space between the edge of the canvas and
+the edge of where the diagram's objects are.
+It is also due to <a>Part.locationSpot</a> having the location be at the center of the "+" Shape,
+not at the top-left corner of the whole Part.
+</p>
+<pre class="lang-js" id="coordsystems"><code>
+  // read-only to avoid accidentally moving any Part in document coordinates
+  diagram.isReadOnly = true;
+
+  diagram.nodeTemplate =
+    $(go.Part,  // no links or grouping, so use the simpler Part class instead of Node
+      {
+        locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+        layerName: "Background",
+        mouseOver: function (e, obj) { showPoint(obj.part.location); },
+        click: function (e, obj) { showPoint(obj.part.location); }
+      },
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "PlusLine",
+        { name: "SHAPE", width: 8, height: 8 }),
+      $(go.TextBlock,
+        { position: new go.Point(6, 6), font: "8pt sans-serif" },
+        new go.Binding("text", "loc"))
+    );
+
+  diagram.model.nodeDataArray = [
+    { loc: "0 0" },
+    { loc: "100 0" },
+    { loc: "100 50" }
+  ];
+
+  function showPoint(loc) {
+    var docloc = diagram.transformDocToView(loc);
+    var elt = document.getElementById("Message1");
+    elt.textContent = "Selected node location,\ndocument coordinates: " + loc.x.toFixed(2) + " " + loc.y.toFixed(2) +
+                      "\nview coordinates: " + docloc.x.toFixed(2) + " " + docloc.y.toFixed(2);
+  }
+  // make accessible to the HTML buttons:
+  myDiagram = diagram;
+</code></pre>
+<script>goCode("coordsystems", 300, 150)</script>
+<textarea id="Message1" style="width: 300px; height: 70px">(move mouse over node to see points in document and in view coordinates)</textarea>
+<input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
+<input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
+<p>
+Then try scrolling or zooming in and looking at the locations of those parts in view coordinates.
+Zooming in increases the <a>Diagram.scale</a> by a small factor.
+That changes the locations in view coordinates, even though the locations in document coordinates did not change.
+</p>
+<p class="box bg-info">
+  To "move" a node one must change its <a>GraphObject.position</a> or <a>Part.location</a> in document coordinates.
+  To "scroll" a diagram one must change the <a>Diagram.position</a>.
+  Either way will cause a node to appear at a different point in the viewport.
+</p>
+
+<h2 id="DocumentBounds">Document bounds</h2>
+<p>
+All of the <a>Part</a>s of a diagram have positions and sizes (i.e. their <a>GraphObject.actualBounds</a>) in document coordinates.
+The union of all of those parts' actualBounds constitutes the <a>Diagram.documentBounds</a>.
+If all of the parts are close together, the document bounds might be small.
+If some or all of the parts are far apart from each other, the document bounds might be large, even if there are only two parts
+or if there is just one really large part.
+The <a>Diagram.documentBounds</a> value is independent of the <a>Diagram.viewportBounds</a>.
+The former only depends on the bounds of the parts; the latter only depends on the size of the canvas and the diagram's
+position and scale.
+</p>
+<p>
+<a>Diagram.computeBounds</a>, which is responsible for the bounds computation,
+also adds the <a>Diagram.padding</a> Margin so that no Parts appear directly up against the edge of the diagram when scrolled to that side.
+You may want to keep some parts, particularly background decorations, from being included in the document bounds computation.
+Just set <a>Part.isInDocumentBounds</a> to false for such parts.
+</p>
+<p>
+The diagram does not compute a new value for <a>Diagram.documentBounds</a> immediately upon any change to any part
+or the addition or removal of a part.
+Thus the <a>Diagram.documentBounds</a> property value may not be up-to-date until after a transaction completes.
+</p>
+<p>
+The relative sizes of the <a>Diagram.documentBounds</a> and <a>Diagram.viewportBounds</a> control whether or not
+scrollbars are needed.
+You can set <a>Diagram.hasHorizontalScrollbar</a> and/or <a>Diagram.hasVerticalScrollbar</a> to false to
+make sure no scrollbar appears even when needed.
+</p>
+<p>
+If you do not want the <a>Diagram.documentBounds</a> to always reflect the sizes and locations of all of the nodes and links,
+you can set the <a>Diagram.fixedBounds</a> property.
+However if there are any nodes that are located beyond the fixedBounds, the user may be unable to scroll the diagram to see them.
+</p>
+<p>
+If you want to be notified whenever the document bounds changes, you can register a "DocumentBoundsChanged" <a>DiagramEvent</a> listener.
+</p>
+
+<h2 id="ViewportBounds">Viewport bounds</h2>
+<p>
+The <a>Diagram.viewportBounds</a> always has x and y values that are given by the <a>Diagram.position</a>.
+It always has width and height values that are computed from the canvas size and the <a>Diagram.scale</a>.
+</p>
+<p>
+Users can scroll the document contents using keyboard commands, scrollbars or panning.
+Programmatically, you can scroll using several means:
+</p>
+<ul>
+  <li>setting <a>Diagram.position</a></li>
+  <li>calling <a>Diagram.scrollToRect</a> or <a>Diagram.centerRect</a> or <a>Diagram.scroll</a></li>
+  <li>calling <a>Diagram.alignDocument</a></li>
+  <li>setting <a>Diagram.contentAlignment</a></li>
+  <li>calling <a>CommandHandler.scrollToPart</a></li>
+</ul>
+<p>
+Furthermore, scrolling may happen automatically as nodes or links are added to or removed from or change visibility in the diagram.
+Also, zooming will typically result in scrolling as well.
+</p>
+<p>
+When scrolling, the <a>Diagram.position</a> normally will be limited to the range specified by the <a>Diagram.documentBounds</a>.
+The short or "line" scrolling distance is controlled by <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a>.
+The long or "page" scrolling distance is controlled by the size of the viewport.
+If you want to control the precise values that the <a>Diagram.position</a> may have,
+you can specify a <a>Diagram.positionComputation</a> function. See the example below.
+</p>
+<p>
+User can zoom in or out using keyboard commands, mouse wheel, or pinching.
+Programmatically, you can zoom using several means:
+</p>
+<ul>
+  <li>setting <a>Diagram.scale</a></li>
+  <li>calling <a>Diagram.zoomToFit</a> or <a>Diagram.zoomToRect</a></li>
+  <li>setting <a>Diagram.autoScale</a></li>
+  <li>calling <a>CommandHandler.decreaseZoom</a>, <a>CommandHandler.increaseZoom</a>, <a>CommandHandler.resetZoom</a>, or
+      <a>CommandHandler.zoomToFit</a></li>
+</ul>
+<p>
+When zooming in or out, the <a>Diagram.scale</a> normally will be limited to the range given by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>.
+If you want to control the precise values that the <a>Diagram.scale</a> may have,
+you can specify a <a>Diagram.scaleComputation</a> function. See the example below.
+</p>
+<p>
+If you want to be notified whenever the viewport bounds changes, you can register a "ViewportBoundsChanged" <a>DiagramEvent</a> listener.
+</p>
+
+<h2 id="ScrollMargin">Scroll margin</h2>
+<p>
+  <a>Diagram.scrollMargin</a> allows the user to scroll into empty space at the edges of the viewport,
+  when the document bounds (including its <a>Diagram.padding</a> margin) is greater than the viewport bounds.
+  This can be useful when users need extra space at the edges of a Diagram,
+  for instance to have an area to create new nodes with the <a>ClickCreatingTool</a>.
+</p>
+<p>
+  <a>Diagram.padding</a> is added as if part of the document bounds,
+  whereas <code>scrollMargin</code> makes sure you can scroll to empty space beyond the document bounds.
+  Because of this, <code>scrollMargin</code> does not create additional scrollable empty space if none
+  is needed to scroll the margin distance beyond, such as when the document bounds are very small in the viewport.
+</p>
+<p>
+  Below is a Diagram with <code>scrollMargin</code> set to <code>100</code>.
+  As you drag to the boundary, you will find the additional space created by the margin.
+</p>
+
+<pre class="lang-js" id="scrollmargin" style="display: none;"><code>
+  diagram.grid = $(go.Panel, "Grid",
+          $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
+          $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
+          $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5 }),
+          $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+        );
+  diagram.scrollMargin = 100;
+
+diagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "RoundedRectangle",
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 3 },
+      new go.Binding("text", "key"))
+  );
+
+var nodes = [];
+for (var i = 0; i < 99; i++) {
+  nodes.push({ key: "Alpha", color: "lightblue" });
+}
+diagram.model = new go.GraphLinksModel(nodes,[]);
+
+</code></pre>
+<script>goCode("scrollmargin", 400, 400)</script>
+
+
+<h2 id="ScrollingModes">Scrolling modes</h2>
+<p>
+  <a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>Diagram,DocumentScroll</a> (the default),
+  or scroll endlessly with <a>Diagram,InfiniteScroll</a>.
+</p>
+<p>
+  <a>Diagram.positionComputation</a> and <a>Diagram.scaleComputation</a> allow you to determine what positions
+  and scales are acceptable to be scrolled to.
+  For instance, you could allow only integer position values, or only allow scaling to the values of 0.5, 1, or 2.
+</p>
+<p>
+  The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all the code for the example below,
+  which lets you toggle these three properties.
+</p>
+
+<pre class="lang-js" id="scrollmodes" style="display: none;"><code>
+    diagram.minScale = 0.25;
+    diagram.grid = $(go.Panel, "Grid",
+            $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
+            $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
+            $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5 }),
+            $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+          );
+    diagram.toolManager.draggingTool.isGridSnapEnabled = true;
+    diagram.undoManager.isEnabled = true;
+
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },
+        new go.Binding("text", "key"))
+    );
+
+  // create the model data that will be represented by Nodes and Links
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta",  color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ],
+  [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ]);
+
+  // make accessible to the HTML buttons
+  myDiagram2 = diagram;
+</code></pre>
+<script>goCode("scrollmodes", 400, 400)</script>
+<p>
+  <label><input id="infscroll" type="checkbox" />Enable Infinite Scrolling, setting <a>Diagram.scrollMode</a></label>
+</p>
+<pre class="lang-js"><code>
+  myDiagram.scrollMode = checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
+</code></pre>
+
+<p>
+  <label><input id="poscomp" type="checkbox" />Enable <a>Diagram.positionComputation</a> function</label>
+</p>
+<pre class="lang-js"><code>
+  function positionfunc(diagram, pos) {
+    var size = diagram.grid.gridCellSize;
+    return new go.Point(
+      Math.round(pos.x / size.width) * size.width,
+      Math.round(pos.y / size.height) * size.height);
+  }
+</code></pre>
+
+<p>
+  <label><input id="scalecomp" type="checkbox" />Enable <a>Diagram.scaleComputation</a> function</label>
+</p>
+<pre class="lang-js"><code>
+  function scalefunc(diagram, scale) {
+    var oldscale = diagram.scale;
+    if (scale > oldscale) {
+      return oldscale + 0.25;
+    } else if (scale < oldscale) {
+      return oldscale - 0.25;
+    }
+    return oldscale;
+  }
+</code></pre>
+<script type="text/javascript">
+  function positionfunc(diagram, pos) {
+    var size = diagram.grid.gridCellSize;
+    return new go.Point(
+      Math.round(pos.x / size.width) * size.width,
+      Math.round(pos.y / size.height) * size.height);
+  }
+
+  function scalefunc(diagram, scale) {
+    var oldscale = diagram.scale;
+    if (scale > oldscale) {
+      return oldscale + 0.25;
+    } else if (scale < oldscale) {
+      return oldscale - 0.25;
+    }
+    return oldscale;
+  }
+
+  var infscroll = document.getElementById('infscroll');
+  infscroll.addEventListener('change', function(e) {
+    myDiagram2.commit(function(d) { d.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll; });
+  });
+
+  var poscomp = document.getElementById('poscomp');
+  poscomp.addEventListener('change', function(e) {
+    myDiagram2.commit(function(d) { d.positionComputation = poscomp.checked ? positionfunc : null; });
+  });
+
+  var scalecomp = document.getElementById('scalecomp');
+  scalecomp.addEventListener('change', function(e) {
+    myDiagram2.commit(function(d) { d.scaleComputation = scalecomp.checked ? scalefunc : null; });
+  });
+</script>
+
+<h2 id="PanelCoordinates">Panel coordinates</h2>
+<p>
+A <a>GraphObject</a> that is not a <a>Part</a> but is an element of a <a>Panel</a> has measurements
+that are in panel coordinates, not in document coordinates.
+That means that <a>GraphObject.position</a>, <a>GraphObject.actualBounds</a>, <a>GraphObject.maxSize</a>,
+<a>GraphObject.minSize</a>, <a>GraphObject.measuredBounds</a>, <a>GraphObject.margin</a>, and
+<a>RowColumnDefinition</a> properties apply to all elements of a panel using the same coordinate system.
+</p>
+<p>
+Some <a>GraphObject</a> properties use units that have values before they are transformed for use by
+the containing <a>Panel</a>'s coordinate system.
+In particular, <a>GraphObject.desiredSize</a> (which means <a>GraphObject.width</a> and <a>GraphObject.height</a>),
+<a>GraphObject.naturalBounds</a>, <a>Shape.geometry</a>, and <a>Shape.strokeWidth</a> are in "local" coordinates,
+before the object is scaled and rotated by the value of <a>GraphObject.scale</a> and <a>GraphObject.angle</a>.
+</p>
+<p>
+<a>GraphObject.actualBounds</a> will tell you the position and size of an element within its panel.
+If you want to get the document position of some object that is within a Node,
+call <a>GraphObject.getDocumentPoint</a>.
+</p>
+<p>
+For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizing GraphObjects</a>.
+</p>
+
+<h3 id="NestedPanelCoordinates">Nested Panel coordinates</h3>
+<pre class="lang-js" id="nestedpanelcoords" style="display: none;"><code>
+  // read-only to avoid accidentally moving any Part in document coordinates
+  diagram.isReadOnly = true;
+  diagram.allowSelect = false;
+  diagram.initialPosition = new go.Point(-5, -5);
+  diagram.initialScale = 0.45;
+
+  // data objects for data tables.
+  function InfoBox(key,gro,loc) {
+    this.category = "info";
+    this.key = key;
+    this.location = go.Point.parse(loc);
+    this.gro = gro;
+  }
+
+  // alignment properties for TextBlocks in data tables.
+  function AlignmentObject(column,columnSpan) {
+    this.column = column;
+    this.columnSpan = columnSpan;
+    this.verticalAlignment = go.Spot.Center;
+    this.textAlign = "center";
+    this.alignment = go.Spot.Center;
+    this.height = 24;
+  }
+
+  // creates functions which have limited precision return values.
+  function prec(conv) { return function (g) { return conv(g).toPrecision(3) }}
+
+  // generates cells in data tables
+  function dataBlock(conv, alo1, alo2) {
+    return $(go.TextBlock, "", new go.Binding("text", "gro", prec(conv)), new AlignmentObject(alo1, alo2));
+  }
+
+  var nodeTemplates = new go.Map();
+
+  // Template for data tables
+  nodeTemplates.add("info",
+    $(go.Node, "Auto",
+      // Allows location to be set in data object
+      new go.Binding("location"), { padding: 0, scale: 2 },
+      $(go.Panel, "Table",
+        {name: "table",
+          defaultRowSeparatorStroke: "black", defaultColumnSeparatorStroke: "black",
+          defaultAlignment: go.Spot.Center, background: "white"
+        },
+        // sets a different look for the defining row.
+        $(go.RowColumnDefinition,
+          {row: 0,
+            background: "lightgray", separatorStrokeWidth: 0,
+            separatorPadding: 0, coversSeparators: true,
+            height: 24
+          }),
+        // sets a different look for the defining column.
+        $(go.RowColumnDefinition,
+          {column: 0,
+            coversSeparators: true, separatorStrokeWidth: 0,
+            separatorPadding: 0, background: "lightgray",
+            width: 45
+          }),
+        // necessary to keep weirdness involving the columnSpan of certain elements in the table
+        // from causing separators to go through elements.
+        $(go.RowColumnDefinition, {column: 1, width: 28}),
+        $(go.RowColumnDefinition, {column: 2, separatorStroke: "transparent", width: 28}),
+        $(go.RowColumnDefinition, {column: 3, width: 28}),
+        $(go.RowColumnDefinition, {column: 4, separatorStroke: "transparent", width: 28}),
+        // defining row
+        $(go.Panel, "TableRow", {row: 0},
+          $(go.TextBlock, "Container", new AlignmentObject(1,2)),
+          $(go.TextBlock, "Diagram", new AlignmentObject(3,2))),
+
+        // angle row
+        $(go.Panel, "TableRow", {row: 1},
+          $(go.TextBlock, "angle", {column: 0}),
+          // container angle
+          dataBlock(function (g) { return g.angle }, 1, 2),
+          // document angle
+          dataBlock(function (g) { return g.getDocumentAngle() }, 3, 2)),
+
+        // scale row
+        $(go.Panel, "TableRow", {row: 2},
+          $(go.TextBlock, "scale", {column: 0}),
+          // container scale
+          dataBlock(function (g) { return g.scale }, 1, 2),
+          // document scale
+          dataBlock(function (g) { return g.getDocumentScale() }, 3, 2)),
+
+        // position row
+        $(go.Panel, "TableRow", {row: 3},
+
+          $(go.TextBlock, "X Y", {column: 0}),
+
+          // container x and y values
+          dataBlock(function (g) { return g.actualBounds.x }, 1, 1),
+          dataBlock(function (g) { return g.actualBounds.y }, 2, 1),
+
+          // document x and y values
+          dataBlock(function (g) { return g.getDocumentBounds().x }, 3, 1),
+          dataBlock(function (g) { return g.getDocumentBounds().y }, 4, 1)),
+
+        // dimension row
+        $(go.Panel, "TableRow", {row: 4},
+          $(go.TextBlock, "size", {column: 0}),
+
+          // container width and height
+          dataBlock(function (g) { return g.actualBounds.width }, 1, 1),
+          dataBlock(function (g) { return g.actualBounds.height }, 2, 1),
+
+          // document width and height
+          dataBlock(function (g) { return g.getDocumentBounds().width }, 3, 1),
+          dataBlock(function (g) { return g.getDocumentBounds().width }, 4, 1)))));
+
+
+  // data object for labels on data tables
+  function WordBubble(key,width,loc,desc,color) {
+    this.key = key; this.category = "words"; this.width = width;
+    this.desc = desc; this.location = go.Point.parse(loc); this.color = color;
+  }
+
+  // template for wordbubble objects
+  nodeTemplates.add("words",
+    $(go.Node, "Auto",
+      new go.Binding("location"),
+      $(go.TextBlock, "",
+        new go.Binding("text", "desc"),
+        new go.Binding("stroke","color"),
+        new go.Binding("width"),
+        { textAlign: "left", font: "24pt sans-serif" })));
+
+  // creating the main node's template, adding the nested Panels to it, and adding it to the node template map.
+  let vertPanel = posPanel = spotPanel = vertLabel = topLabel = {};
+  var BigNode =
+  $(go.Node, "Auto",
+    {
+      location: new go.Point(300,0),
+    },
+    vertPanel =
+    $(go.Panel, "Vertical",
+      {portId: "vertPanel",
+        angle: 165, scale: 1.5,
+        background: "lightblue",
+        padding: 20
+      },
+      vertLabel =
+      $(go.TextBlock, "Vertical Panel", {font: "bold 12pt sans-serif"}),
+      posPanel =
+      $(go.Panel, "Position",
+        {portId: "posPanel",
+          angle: 120, scale: 0.8, padding: 50,
+          background: go.Brush.mix("brown", "lightyellow", 0.4)},
+        $(go.Panel, "Auto", { position: new go.Point(25,0), desiredSize: new go.Size(60,90)},
+          $(go.Shape, "Triangle", { fill: "transparent" }),
+          $(go.TextBlock, "This Side Up")),
+        $(go.TextBlock, "Position Panel", { position: new go.Point(0,100), font: "bold 12pt sans-serif" }),
+       ),
+      spotPanel =
+      $(go.Panel, "Spot",
+        {portId: "spotPanel",
+          angle: 30, scale: 1.5,
+          background: "lightgreen" },
+        $(go.Shape, "RoundedRectangle", {strokeWidth: 0, desiredSize: new go.Size(50,100), fill: "transparent"}),
+        $(go.TextBlock, "Spot Panel",
+          {
+            font: "bold 12pt sans-serif",
+            alignment: go.Spot.Center,
+          }
+         ),
+        $(go.TextBlock, "Top",
+          {
+            margin: 5,
+            font: "bold 12pt sans-serif",
+            alignment: go.Spot.Top,
+          }
+         ),
+        bottomLabel =
+        $(go.TextBlock, "Bottom",
+          {portId: "bottomLabel",
+            font: "bold 12pt sans-serif",
+            alignment: go.Spot.Bottom
+          }))));
+  nodeTemplates.add("", BigNode);
+
+  diagram.nodeTemplateMap = nodeTemplates;
+
+  diagram.linkTemplate =
+    $(go.Link,
+      new go.Binding("fromNode", "from", diagram.findNodeForKey),
+      new go.Binding("to"), new go.Binding("toPortId"),
+      $(go.Shape, {strokeWidth: 5}),
+      $(go.Shape, {scale: 3,toArrow: "Standard"}));
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    {key: "bn"},
+    // creating infoboxes
+    new InfoBox(0,vertPanel,"-20 30"),
+    new InfoBox(1,posPanel,"20 470"),
+    new InfoBox(2,spotPanel,"900 500"),
+    new InfoBox(3,bottomLabel,"900 180"),
+
+    // creating wordbubbles
+    new WordBubble(4,250,"60 0","Vertical Panel","blue"),
+    new WordBubble(5,250,"60 440","Position Panel","red"),
+    new WordBubble(6,250,"980 470","Spot Panel","green"),
+    new WordBubble(7,275,"960 105","TextBlock aligned at Spot.Bottom","black")
+  ],
+  [
+    // linking each infobox to an item on the main node.
+    {from: 0, to: "bn", toPortId: "vertPanel"},
+    {from: 1, to: "bn", toPortId: "posPanel"},
+    {from: 2, to: "bn", toPortId: "spotPanel"},
+    {from: 3, to: "bn", toPortId: "bottomLabel"}
+  ]);
+</code></pre>
+<p>
+  The transformations of each element in a <a>Panel</a> are compounded by that panel's transformations.
+</p>
+<script>goCode("nestedpanelcoords", 600, 400)</script>
+<p>
+  The <a>TextBlock</a> that is "Bottom" has the default <a>GraphObject.angle</a> of zero, so that the text is drawn upright.
+  But that TextBlock is an element in the green "Spot" <a>Panel</a> whose <a>GraphObject.angle</a> to 30,
+  so it and its text should appear somewhat tilted.
+  However the blue "Vertical" Panel itself has an <a>GraphObject.angle</a> of 165.
+  Because each Panel has its own coordinate system and because transformations on nested elements are compounded,
+  the effective angle for the green Panel is 195 degrees, the sum of those individual angles (30 + 165), which is nearly upside down.
+</p>
+<p>
+  The <a>GraphObject.scale</a> property also affects how an object is sized in its container Panel.
+  The brown "Position" <a>Panel</a> has a scale of 0.8 relative to its container.
+  But because the "Vertical" Panel has a scale of 1.5, its effective scale is 1.2 overall,
+  the product of those individual scales (0.8 x 1.5).
+</p>
+{% endblock %}

@@ -1,16 +1,131 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GoJS Animation -- Northwoods Software</title>
-  <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <script src="../release/go.js"></script>
-  <script src="goIntro.js"></script>
-</head>
-<body onload="goIntro()">
-<div id="container" class="container-fluid">
-<div id="content">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+ 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Animation -- Northwoods Software </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"  />
+  </head>
+  <script>
+    
+    window.diagrams = [];
+    window.goCode = function(pre, w, h, parentid, animation) {
+      window.diagrams.push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+    
+    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
+      <div class="flex-shrink-0 px-8 py-4">
+        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
+          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="animation.html">Animation</a>
+  <a href="toolTips.html">ToolTips</a>
+  <a href="contextmenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="resizing.html">Resizing Diagrams</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="makingSVG.html">Diagram SVG</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="storage.html">Storage</a>
+  <a href="performance.html">Performance</a>
+  <a href="source.html">Building from Source</a>
+  <a href="deployment.html">Deployment</a>
+      </nav>
+    </div>      
+      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
+
 
 <h1>GoJS Animation</h1>
 <p>
@@ -82,7 +197,7 @@ This method can be overridden to return <code>false</code> if you wish to stop s
 </p>
 
 
-<pre id="animationStyles">
+<pre class="lang-js" id="animationStyles"><code>
     diagram.nodeTemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle", { strokeWidth: 0, fill: "lightblue" }),
@@ -131,13 +246,13 @@ This method can be overridden to return <code>false</code> if you wish to stop s
       diagram.model = go.Model.fromJSON(diagram.model.toJSON());
     }
 
-    </pre>
-    <script>goCode("animationStyles", 600, 200)</script>
+    </code></pre>
+    <script>goCode("animationStyles", 600, 200, null, true)</script>
     <p>
-      <input id="Animate Colors" type="button" onclick="animateDefault()" value="animationStyle: Default" />
-      <input id="Animate Colors" type="button" onclick="animateLocations()" value="animationStyle: AnimateLocations" />
-      <input id="Animate Colors" type="button" onclick="animateNone()" value="animationStyle: None (does nothing!)" />
-      <input id="Animate Colors" type="button" onclick="animateCustom()" value="animationStyle: None + Custom Animation" />
+      <button id="Animate Colors" onclick="animateDefault()">animationStyle: Default</button>
+      <button id="Animate Colors" onclick="animateLocations()">animationStyle: AnimateLocations</button>
+      <button id="Animate Colors" onclick="animateNone()">animationStyle: None (does nothing!)</button>
+      <button id="Animate Colors" onclick="animateCustom()">animationStyle: None + Custom Animation</button>
 
 
 
@@ -201,7 +316,7 @@ It is possible to animate other properties if they are defined by the programmer
   In templates, triggers are defined in a similar fashion to Bindings:
 </p>
 
-<pre class="lang-js">
+<pre class="lang-js"><code>
 // In this shape definition, two triggers are defined on a Shape.
 // These will cause all changes to Shape.stroke and Shape.fill to animate
 // from their old values to their new values.
@@ -210,13 +325,13 @@ $(go.Shape, "Rectangle",
   new go.AnimationTrigger('stroke'),
   new go.AnimationTrigger('fill')
 )
-</pre>
+</code></pre>
 
 <p>
 Here is an example, with an HTML button that sets the Shape's <code>stroke</code> and <code>fill</code> to new random values:
 </p>
 
-<pre id="animateTrigger1">
+<pre class="lang-js" id="animateTrigger1"><code>
 diagram.nodeTemplate =
   $(go.Node,
     $(go.Shape, "Rectangle",
@@ -237,9 +352,9 @@ window.animateTrigger1 = function() {
   });
 }
 
-</pre>
-<script>goCode("animateTrigger1", 600, 200)</script>
-<p><input id="Animate Colors" type="button" onclick="animateTrigger1()" value="Animate Colors" />
+</code></pre>
+<script>goCode("animateTrigger1", 600, 200, null, true)</script>
+<p><button id="Animate Colors" onclick="animateTrigger1()">Animate Colors</button>
 
 <p>
   AnimationTriggers can invoke an animation immediately, starting a new animation with each property of each GraphObject that has been modified,
@@ -264,21 +379,21 @@ window.animateTrigger1 = function() {
   General animation of GraphObject and Diagram properties is possible by creating one or more instances of the <a>Animation</a> class.
 </p>
 
-<pre class="lang-js">
+<pre class="lang-js"><code>
 var animation = new go.Animation();
-// Animate the node's angle from its current value to a random value between 0 and 150 degrees
-animation.add(node, "angle", node.angle, Math.random() * 150);
+// Animate the node's angle from its current value to a random value between 0 and 180 degrees
+animation.add(node, "angle", node.angle, Math.random() * 180);
 animation.duration = 1000; // Animate over 1 second, instead of the default 600 milliseconds
 animation.start(); // starts the animation immediately
-</pre>
+</code></pre>
 
 <p>
   <a>Animation.add</a> is used to specify which objects should animate, which properties, and their starting and ending values:
 </p>
 
-<pre class="lang-js">
+<pre class="lang-js"><code>
   animation.add(GraphObjectOrDiagram, "EffectName", StartingValue, EndingValue);
-</pre>
+</code></pre>
 
 <p>
   Here's the above animation in an example, where each node is animated by an HTML button.
@@ -287,7 +402,7 @@ animation.start(); // starts the animation immediately
   (for instance, it is possible if they are all going to start at the same time and have the same duration).
 </p>
 
-<pre id="animate1">
+<pre id="animate1" class="lang-js"><code>
 // define a simple Node template
 diagram.nodeTemplate =
   $(go.Node, "Spot",
@@ -321,18 +436,18 @@ window.animate1 = function() {
   animation.duration = 1000; // Animate over 1 second, instead of the default 600 milliseconds
   animation.start(); // starts the animation immediately
 }
-</pre>
-<script>goCode("animate1", 600, 250)</script>
-<p><input id="Animate Nodes" type="button" onclick="animate1()" value="Animate Node Angles" />
+</code></pre>
+<script>goCode("animate1", 600, 250, null, true)</script>
+<p><button id="Animate Nodes" onclick="animate1()">Animate Node Angles</button>
 
 <p>
   Animating the Diagram is possible by passing it as the object to be animated:
 </p>
-<pre class="lang-js">
+<pre class="lang-js"><code>
   animation.add(myDiagram, "position", myDiagram.position, myDiagram.position.copy().offset(200, 15));
   ...
   animation.add(myDiagram, "scale", myDiagram.scale, 0.2);
-</pre>
+</code></pre>
 
 <p>
   Animations can also be reversed, as is common with animations that are intended to be cosmetic in nature, by setting <a>Animation.reversible</a> to true.
@@ -342,7 +457,7 @@ window.animate1 = function() {
   Below are several example Animations, all with <a>Animation.reversible</a> set to true. The first animates Nodes, the other three animate Diagram position and scale.
 </p>
 
-<pre id="animate2">
+<pre class="lang-js" id="animate2"><code>
     // define a simple Node template
     diagram.nodeTemplate =
       $(go.Node, "Spot",
@@ -403,13 +518,13 @@ window.animate1 = function() {
       protectedAnimation(function(animation) {
         animation.add(diagram, "scale", diagram.scale, 4);
       });
-  </pre>
-  <script>goCode("animate2", 600, 250)</script>
+  </code></pre>
+  <script>goCode("animate2", 600, 250, null, true)</script>
   <p>
-    <input id="AnimateAngleReverse" type="button" onclick="animateAngleReverse()" value="Animate Angles (reverse)" />
-    <input id="AnimateDiagramPosition" type="button" onclick="animateDiagramPosition()" value="Animate Diagram Position (reverse)" />
-    <input id="AnimateZoomOut" type="button" onclick="animateZoomOut()" value="Zoom Out (reverse)" />
-    <input id="AnimateZoomIn" type="button" onclick="animateZoomIn()" value="Zoom In (reverse)" />
+    <button id="AnimateAngleReverse" onclick="animateAngleReverse()">Animate Angles (reverse)</button>
+    <button id="AnimateDiagramPosition" onclick="animateDiagramPosition()">Animate Diagram Position (reverse)</button>
+    <button id="AnimateZoomOut" onclick="animateZoomOut()">Zoom Out (reverse)</button>
+    <button id="AnimateZoomIn" onclick="animateZoomIn()">Zoom In (reverse)</button>
   </p>
   <p>
     Without the call to <a>AnimationManager.stopAnimation</a> to protect against rapid button clicks,
@@ -434,13 +549,13 @@ window.animate1 = function() {
     Here is an example, creating an <code>"fraction"</code> Animation effect to animate the value of <a>GraphObject.segmentFraction</a>,
     which will give the appearance of a Link label moving along its path.
   </p>
-<pre>
+<pre class="lang-js"><code>
 // This presumes the object to be animated is a label within a Link
 go.AnimationManager.defineAnimationEffect('fraction',
 function(obj, startValue, endValue, easing, currentTime, duration, animation) {
   obj.segmentFraction = easing(currentTime, startValue, endValue - startValue, duration);
 });
-</pre>
+</code></pre>
 
 <p>
   After defining this, we can use it as a property name in an Animation.
@@ -449,7 +564,7 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
   This produces labels that appear to move along their path while pulsating colors. The setting of <a>Animation.reversible</a>
   causes them to go backwards once finished, to start from their beginning again.
 </p>
-<pre>
+<pre class="lang-js"><code>
   function animateColorAndFraction() {
     // create one Animation for each link, so that they have independent durations
     myDiagram.links.each(function(node) {
@@ -462,9 +577,9 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
       animation.start();
     });
   }
-</pre>
+</code></pre>
 
-<pre id="animate3" style="display: none;">
+<pre id="animate3" style="display: none;"><code>
   diagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
@@ -513,9 +628,9 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
       animation.start();
     });
   }
-  </pre>
-  <script>goCode("animate3", 600, 200)</script>
-  <p><input id="animateColorAndFraction" type="button" onclick="animateColorAndFraction()" value="Animate Color and Segment Fraction" />
+  </code></pre>
+  <script>goCode("animate3", 600, 200, null, true)</script>
+  <p><button id="animateColorAndFraction" onclick="animateColorAndFraction()">Animate Color and Segment Fraction</button>
 
   <p>Since <a>Animation.runCount</a> was set to <code>Infinity</code>, this Animation wil run indefinitely.</p>
 
@@ -536,7 +651,7 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
     and spun around (by animating angle), to give the appearance of swirling away. There are other example
     deletion (and creation) effects in the <a href="../samples/customAnimations.html">Custom Animations extension sample</a>.
   </p>
-  <pre class="lang-js">
+  <pre class="lang-js"><code>
 myDiagram.addDiagramListener('SelectionDeleting', function(e) {
   // the DiagramEvent.subject is the collection of Parts about to be deleted
   e.subject.each(function(part) {
@@ -549,7 +664,7 @@ myDiagram.addDiagramListener('SelectionDeleting', function(e) {
     animation.start();
   });
 });
-</pre>
+</code></pre>
 
 
 <pre id="animate4" style="display: none;">
@@ -594,9 +709,9 @@ myDiagram.addDiagramListener('SelectionDeleting', function(e) {
       if (diagram.selection.count === 0) diagram.select(diagram.nodes.first());
       diagram.commandHandler.deleteSelection();
     }
-  </pre>
-  <script>goCode("animate4", 600, 200)</script>
-  <p><input type="button" onclick="deleteNode()" value="Delete a Node" />
+  </code></pre>
+  <script>goCode("animate4", 600, 200, null, true)</script>
+  <p><button onclick="deleteNode()">Delete a Node</button>
 
 
   <h3 id="AnimationExamples">Animation Examples</h3>
@@ -619,7 +734,121 @@ myDiagram.addDiagramListener('SelectionDeleting', function(e) {
     <li><a href="../samples/stateChart.html" target="_blank">State Chart</a> - Initial animation is disabled in favor of a custom zoom fade-in animation.</li>
   </ul>
 
-</div>
-</div>
-</body>
+      </div>
+    </div>
+  
+  <div class="bg-nwoods-primary">
+    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
+      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
+    </section>
+  </div><footer class="bg-white">
+  <div class="container max-w-screen-lg mx-auto  px-8">
+    <div class="w-full flex flex-col md:flex-row py-6">
+      <div class="flex-1">
+
+        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto divide-y divide-gray-200 px-4 sm:px-6 md:px-8">
+          <ul class="text-sm font-medium pb-14 sm:pb-20 grid grid-cols-1 sm:grid-cols-3 gap-y-10">
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="samples/index.html">Samples</a>
+                </li>
+                <li>
+                  <a href="learn/index.html">Learn</a>
+                </li>
+                <li>
+                  <a href="intro/index.html">Intro</a>
+                </li>
+                <li>
+                  <a href="api/index.html">API</a>
+                </li>
+                <li>
+                  <a href="changelog.html">Changelog</a>
+                </li>
+                <li>
+                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Support</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                </li>
+                <li>
+                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                </li>
+                <li>
+                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
+                </li>
+              </ul>
+            </li>
+            <li class="list-none row-span-2">
+              <h2 class="text-base font-semibold tracking-wide">Company</h2>
+              <ul class="list-none space-y-4 md:space-y-1 px-0">
+                <li>
+                  <a href="https://www.nwoods.com">Northwoods</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/about.html">About Us</a>
+                </li>
+                <li>
+                  <a href="https://www.nwoods.com/contact.html">Contact Us</a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/northwoodsgo">Twitter</a>
+                </li>
+
+              </ul>
+            </li>
+          </ul>
+
+      </div>
+
+      <p class="text-sm text-gray-500 md:mb-6">
+        Copyright 1998-2021 <a href="https://www.nwoods.com">Northwoods Software</a>
+      </p>
+    </div>
+  </div>
+</footer>  </body>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script> 
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+
+  // topnav
+  var topButton = document.getElementById("topnavButton");
+  var topnavList = document.getElementById("topnavList");
+  topButton.addEventListener("click", function() {
+    this.classList.toggle("active");
+    topnavList.classList.toggle("hidden");
+    document.getElementById("topnavOpen").classList.toggle("hidden");
+    document.getElementById("topnavClosed").classList.toggle("hidden");
+  });
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
+      if (window.goDoc) window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra) window.extra();
+    });
+  </script>
 </html>

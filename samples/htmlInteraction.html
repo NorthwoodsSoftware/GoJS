@@ -1,168 +1,206 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>HTML Interaction</title>
-  <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <meta name="description" content="Show a GoJS Palette in a floating window and use an Inspector for changing the appearance of the selected node." />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
-  <script src="../assets/js/jquery.min.js"></script>
-  <script src="../assets/js/jquery-ui.min.js"></script>
-
-  <script src="../release/go.js"></script>
-  <script src="../extensions/Figures.js"></script>
-  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-
-  <link rel='stylesheet' href='../extensions/DataInspector.css' />
-  <script src="../extensions/DataInspector.js"></script>
-
-  <script id="code">
-    function init() {
-      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-
-      // Note that we do not use $ here as an alias for go.GraphObject.make because we are using $ for jQuery
-      var GO = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        GO(go.Diagram, "myDiagramDiv",
-          { "undoManager.isEnabled": true });
-
-      // define several shared Brushes
-      var fill1 = "rgb(105,210,231)"
-      var brush1 = "rgb(65,180,181)";
-
-      var fill2 = "rgb(167,219,216)"
-      var brush2 = "rgb(127,179,176)";
-
-      var fill3 = "rgb(224,228,204)"
-      var brush3 = "rgb(184,188,164)";
-
-      var fill4 = "rgb(243,134,48)"
-      var brush4 = "rgb(203,84,08)";
-
-      myDiagram.nodeTemplateMap.add("", // default category
-        GO(go.Node, "Auto",
-          { locationSpot: go.Spot.Center },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          GO(go.Shape, "Ellipse",
-            { strokeWidth: 2, fill: fill1, name: "SHAPE" },
-            new go.Binding("figure", "figure"),
-            new go.Binding("fill", "fill"),
-            new go.Binding("stroke", "stroke")
-          ),
-          GO(go.TextBlock,
-            {
-              margin: 5,
-              maxSize: new go.Size(200, NaN),
-              wrap: go.TextBlock.WrapFit,
-              textAlign: "center",
-              editable: true,
-              font: "bold 9pt Helvetica, Arial, sans-serif",
-              name: "TEXT"
-            },
-            new go.Binding("text", "text").makeTwoWay())));
-
-      // On selection changed, make sure infoDraggable will resize as necessary
-      myDiagram.addDiagramListener("ChangedSelection", function(diagramEvent) {
-        var idrag = document.getElementById("infoDraggable");
-        idrag.style.width = "";
-        idrag.style.height = "";
-      });
-
-
-      // initialize the Palette that is in a floating, draggable HTML container
-      myPalette = new go.Palette("myPaletteDiv");  // must name or refer to the DIV HTML element
-      myPalette.nodeTemplateMap = myDiagram.nodeTemplateMap;
-      myPalette.model = new go.GraphLinksModel([
-        { text: "Lake", fill: fill1, stroke: brush1, figure: "Hexagon" },
-        { text: "Ocean", fill: fill2, stroke: brush2, figure: "Rectangle" },
-        { text: "Sand", fill: fill3, stroke: brush3, figure: "Diamond" },
-        { text: "Goldfish", fill: fill4, stroke: brush4, figure: "Octagon" }
-      ]);
-
-      myPalette.addDiagramListener("InitialLayoutCompleted", function(diagramEvent) {
-        var pdrag = document.getElementById("paletteDraggable");
-        var palette = diagramEvent.diagram;
-        pdrag.style.width = palette.documentBounds.width + 28 + "px"; // account for padding/borders
-        pdrag.style.height = palette.documentBounds.height + 38 + "px";
-      });
-
-
-      $(function() {
-        $("#paletteDraggable").draggable({ handle: "#paletteDraggableHandle" }).resizable({
-          // After resizing, perform another layout to fit everything in the palette's viewport
-          stop: function() { myPalette.layoutDiagram(true); }
-        });
-
-        $("#infoDraggable").draggable({ handle: "#infoDraggableHandle" });
-
-
-        var inspector = new Inspector('myInfo', myDiagram,
-          {
-            properties: {
-              // key would be automatically added for nodes, but we want to declare it read-only also:
-              "key": { readOnly: true, show: Inspector.showIfPresent },
-              // fill and stroke would be automatically added for nodes, but we want to declare it a color also:
-              "fill": { show: Inspector.showIfPresent, type: 'color' },
-              "stroke": { show: Inspector.showIfPresent, type: 'color' }
-            }
-          });
-      });
-
-    }
-  </script>
-
-  <style type="text/css">
-        .draggable {
-          display: inline-block;
-          vertical-align: top;
-          border: 4px solid #BBB;
-          border-radius: 4px;
-          background-color: #F5F5F5;
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          z-index: 500;
-        }
-
-        .handle {
-          background-color: lightblue;
-          cursor: move;
-          text-align: center;
-          font: bold 12px sans-serif;
-        }
-
-        #infoDraggable {
-          font: 12px helvetica, sans-serif;
-          min-width: 213px;
-        }
-
-        #myInfo {
-          width: 100%;
-          overflow: hidden;
-        }
-
-        #myPaletteDiv {
-          background-color: #F5F5F5;
-          width: 100%;
-          height: 100%;
-        }
-
-        /*
-    One simple way of making a div fill its space,
-    with allowances for the title (top) and the resize handle (bottom)
-    */
-        #paletteContainer {
-          position: absolute;
-          bottom: 14px;
-          left: 0px;
-          right: 0px;
-          top: 14px;
-        }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+<meta name="description" content="Show a GoJS Palette in a floating window and use an Inspector for changing the appearance of the selected node."/> 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<title>HTML Interaction</title>
 </head>
-<body onload="init()">
+
+<body>
+  <!-- This top nav is not part of the sample code -->
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
+    <!-- * * * * * * * * * * * * * -->
+    <!-- Start of GoJS sample code -->
+    
+    <script src="../release/go.js"></script>
+    <div class="p-4 w-full">
+<style type="text/css">
+      .draggable {
+        display: inline-block;
+        vertical-align: top;
+        border: 4px solid #BBB;
+        border-radius: 4px;
+        background-color: #F5F5F5;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 500;
+      }
+
+      .handle {
+        background-color: lightblue;
+        cursor: move;
+        text-align: center;
+        font: bold 12px sans-serif;
+      }
+
+      #infoDraggable {
+        font: 12px helvetica, sans-serif;
+        min-width: 213px;
+      }
+
+      #myInfo {
+        width: 100%;
+        overflow: hidden;
+      }
+
+      #myPaletteDiv {
+        background-color: #F5F5F5;
+        width: 100%;
+        height: 100%;
+      }
+
+      /*
+  One simple way of making a div fill its space,
+  with allowances for the title (top) and the resize handle (bottom)
+  */
+      #paletteContainer {
+        position: absolute;
+        bottom: 14px;
+        left: 0px;
+        right: 0px;
+        top: 14px;
+      }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+<script src="../extensions/Figures.js"></script>
+<link rel='stylesheet' href='../extensions/DataInspector.css' />
+<script src="../extensions/DataInspector.js"></script>
+
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+    // Note that we do not use $ here as an alias for go.GraphObject.make because we are using $ for jQuery
+    var GO = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      GO(go.Diagram, "myDiagramDiv",
+        { "undoManager.isEnabled": true });
+
+    // define several shared Brushes
+    var fill1 = "rgb(105,210,231)"
+    var brush1 = "rgb(65,180,181)";
+
+    var fill2 = "rgb(167,219,216)"
+    var brush2 = "rgb(127,179,176)";
+
+    var fill3 = "rgb(224,228,204)"
+    var brush3 = "rgb(184,188,164)";
+
+    var fill4 = "rgb(243,134,48)"
+    var brush4 = "rgb(203,84,08)";
+
+    myDiagram.nodeTemplateMap.add("", // default category
+      GO(go.Node, "Auto",
+        { locationSpot: go.Spot.Center },
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        GO(go.Shape, "Ellipse",
+          { strokeWidth: 2, fill: fill1, name: "SHAPE" },
+          new go.Binding("figure", "figure"),
+          new go.Binding("fill", "fill"),
+          new go.Binding("stroke", "stroke")
+        ),
+        GO(go.TextBlock,
+          {
+            margin: 5,
+            maxSize: new go.Size(200, NaN),
+            wrap: go.TextBlock.WrapFit,
+            textAlign: "center",
+            editable: true,
+            font: "bold 9pt Helvetica, Arial, sans-serif",
+            name: "TEXT"
+          },
+          new go.Binding("text", "text").makeTwoWay())));
+
+    // On selection changed, make sure infoDraggable will resize as necessary
+    myDiagram.addDiagramListener("ChangedSelection", function(diagramEvent) {
+      var idrag = document.getElementById("infoDraggable");
+      idrag.style.width = "";
+      idrag.style.height = "";
+    });
+
+
+    // initialize the Palette that is in a floating, draggable HTML container
+    myPalette = new go.Palette("myPaletteDiv");  // must name or refer to the DIV HTML element
+    myPalette.nodeTemplateMap = myDiagram.nodeTemplateMap;
+    myPalette.model = new go.GraphLinksModel([
+      { text: "Lake", fill: fill1, stroke: brush1, figure: "Hexagon" },
+      { text: "Ocean", fill: fill2, stroke: brush2, figure: "Rectangle" },
+      { text: "Sand", fill: fill3, stroke: brush3, figure: "Diamond" },
+      { text: "Goldfish", fill: fill4, stroke: brush4, figure: "Octagon" }
+    ]);
+
+    myPalette.addDiagramListener("InitialLayoutCompleted", function(diagramEvent) {
+      var pdrag = document.getElementById("paletteDraggable");
+      var palette = diagramEvent.diagram;
+      pdrag.style.width = palette.documentBounds.width + 28 + "px"; // account for padding/borders
+      pdrag.style.height = palette.documentBounds.height + 38 + "px";
+    });
+
+
+    $(function() {
+      $("#paletteDraggable").draggable({ handle: "#paletteDraggableHandle" }).resizable({
+        // After resizing, perform another layout to fit everything in the palette's viewport
+        stop: function() { myPalette.layoutDiagram(true); }
+      });
+
+      $("#infoDraggable").draggable({ handle: "#infoDraggableHandle" });
+
+
+      var inspector = new Inspector('myInfo', myDiagram,
+        {
+          properties: {
+            // key would be automatically added for nodes, but we want to declare it read-only also:
+            "key": { readOnly: true, show: Inspector.showIfPresent },
+            // fill and stroke would be automatically added for nodes, but we want to declare it a color also:
+            "fill": { show: Inspector.showIfPresent, type: 'color' },
+            "stroke": { show: Inspector.showIfPresent, type: 'color' }
+          }
+        });
+    });
+
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
 <div id="sample">
 
     <div id="paletteDraggable" class="draggable" style="height: 300px;">
@@ -194,5 +232,11 @@
     </p>
 
 </div>
+    </div>
+    <!-- * * * * * * * * * * * * * -->
+    <!--  End of GoJS sample code  -->
+  </div>
 </body>
+<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+<script src="../assets/js/goSamples.js"></script>
 </html>

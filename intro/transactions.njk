@@ -1,0 +1,359 @@
+﻿{% extends "_includes/intro.njk" %}
+
+{% block title %}GoJS Transactions -- Northwoods Software{% endblock %}
+
+{% block content %}
+
+
+
+
+<h1>Transactions and the UndoManager</h1>
+<p>
+<b>GoJS</b> models and diagrams make use of an <a>UndoManager</a> that can record all changes and support
+undoing and redoing those changes.
+Each state change is recorded in a <a>ChangedEvent</a>, which includes enough information about both before and after
+to be able to reproduce the state change in either direction, backward (undo) or forward (redo).
+Such changes are grouped together into <a>Transaction</a>s so that a user action, which may result in many changes,
+can be undone and redone as a single operation.
+</p>
+<p>
+Not all state changes result in <a>ChangedEvent</a>s that can be recorded by the UndoManager.
+Some properties are considered transient, such as <a>Diagram.position</a>, <a>Diagram.scale</a>,
+<a>Diagram.currentTool</a>, <a>Diagram.currentCursor</a>, or <a>Diagram.isModified</a>.
+Some changes are structural or considered unchanging, such as <a>Diagram.model</a>, any property of <a>CommandHandler</a>,
+or any of the tool or layout properties.
+But most <a>GraphObject</a> and model properties do raise a ChangedEvent on the Diagram or Model, respectively,
+when a property value has been changed.
+</p>
+
+<h2 id="Transactions">Transactions</h2>
+<p>
+Whenever you modify a model or its data programmatically in response to some event, you should wrap the code in a transaction.
+Call <a>Diagram.startTransaction</a> or <a>Model.startTransaction</a>, make the changes,
+and then call <a>Diagram.commitTransaction</a> or <a>Model.commitTransaction</a>.
+Although the primary benefit from using transactions is to group together side-effects for undo/redo,
+you should use transactions even if your application does not support undo/redo by the user.
+</p>
+<p>
+As with database transactions, you will want to perform transactions that are short and infrequent.
+Do not leave transactions ongoing between user actions.
+Consider whether it would be better to have a single transaction surrounding a loop
+instead of starting and finishing a transaction repeatedly within a loop.
+Do not execute transactions within a property setter -- such granularity is too small.
+Instead execute a transaction where the properties are set in response to some user action or external event.
+</p>
+<p>
+However, unlike database transactions, you do not need to conduct a transaction in order to access any state.
+All JavaScript objects are in memory, so you can look at their properties at any time that it would make sense to do so.
+But when you want to make state changes to a <a>Diagram</a> or a <a>GraphObject</a> or a <a>Model</a> or a JavaScript object in a model,
+do so within a transaction.
+</p>
+<p>
+The only exception is that transactions are unnecessary when initializing a model or a diagram before assigning
+the model to the <a>Diagram.model</a> property.
+(A Diagram only gets access to an UndoManager via the Model, the <a>Model.undoManager</a> property.)
+</p>
+<p>
+Furthermore many event handlers and listeners are already executed within transactions
+that are conducted by <a>Tool</a>s or <a>CommandHandler</a> commands,
+so you often will not need to start and commit a transaction within such functions.
+Read the API documentation for details about whether a function is called within a transaction.
+For example, setting <a>GraphObject.click</a> to an event handler to respond to a click on an object
+needs to perform a transaction if it wants to modify the model or the diagram.
+Most custom click event handlers do not change the diagram but instead update some HTML.
+</p>
+<p>
+But implementing an "ExternalObjectsDropped" <a>DiagramEvent</a> listener, which usually does want to
+modify the just-dropped Parts in the <a>Diagram.selection</a>, is called within the <a>DraggingTool</a>'s
+transaction, so no additional start/commit transaction calls are needed.
+</p>
+<p>
+Finally, some customizations, such as the <a>Node.linkValidation</a> predicate, should not modify the diagram or model at all.
+</p>
+<p>
+Both model changes and diagram changes are recorded in the <a>UndoManager</a>
+only if the model's <a>UndoManager.isEnabled</a> has been set to true.
+If you do not want the user to be able to perform undo or redo and also prevent the recording of any <a>Transaction</a>s,
+but you still want to get "Transaction"-type <a>ChangedEvent</a>s because you want to update a database,
+you can set <a>UndoManager.maxHistoryLimit</a> to zero.
+</p>
+<p>
+To better understand the relationships between objects and transactions in memory, look at this diagram:
+<p>
+<pre class="lang-js" id="transactionsDiagram" style="display:none"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { scale : 1.6, isShadowed: true },
+      new go.Binding("location", "pos", go.Point.parse),
+      { locationSpot: go.Spot.Center, portId: "NODE" },
+      $(go.Shape, "RoundedRectangle",
+        { fill: "white", portId: "SHAPE" },
+        new go.Binding("fill", "color"),
+        new go.Binding("strokeWidth", "strokeW")),
+      $(go.TextBlock,
+        { margin: 4, portId: "TEXTBLOCK" },
+        new go.Binding("text", "txt"))
+    );
+
+  // Represents the nodeDataArray for the two nodes
+  diagram.nodeTemplateMap.add("dataNode",
+    $(go.Node, "Auto",
+      {
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        isShadowed: true
+      },
+      new go.Binding("location", "pos", go.Point.parse),
+      new go.Binding("toSpot", "tSpot"),
+      new go.Binding("fromSpot", "fSpot"),
+      $(go.Shape, "Rectangle",
+        { fill: "white" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(), // Header:
+          {portId: "HEADER" },
+          new go.Binding("text", "head")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Location:
+          { portId: "ROW1" },
+          new go.Binding("text", "txt1")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Fill:
+          { portId: "ROW2" },
+          new go.Binding("text", "txt2"))
+      )
+    )
+  );
+
+  diagram.nodeTemplateMap.add("dataNodeChanged",
+    $(go.Node, "Auto",
+      {
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        isShadowed: true
+      },
+      new go.Binding("location", "pos", go.Point.parse),
+      new go.Binding("toSpot", "tSpot"),
+      new go.Binding("fromSpot", "fSpot"),
+      $(go.Shape, "Rectangle",
+        { fill: "white" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(), // Header:
+          {portId: "HEADER" },
+          new go.Binding("text", "head")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Location:
+          { portId: "ROW1" },
+          new go.Binding("text", "txt1")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Fill:
+          { portId: "ROW2" },
+          new go.Binding("text", "txt2")),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(), // Text:
+          { portId: "ROW3" },
+          new go.Binding("text", "txt3")),
+      )
+    )
+  );
+
+  diagram.linkTemplateMap.add("dataNode", // Links from dataNode to Nodes
+    $(go.Link,
+      { routing: go.Link.Orthogonal, corner: 5 },
+      $(go.Shape, { stroke: "gray", strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", stroke: "gray", fill: "gray" })
+  ));
+
+  diagram.nodeTemplateMap.add("title",
+     $(go.Node, "Auto",
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.TextBlock,
+        { font: "bold 25pt sans-serif", textAlign: "center"},
+        new go.Binding("text", "txt"))
+  ));
+
+  diagram.nodeTemplateMap.add("nodeDataArray",
+    $(go.Node, "Auto",
+      {
+        locationSpot: go.Spot.Center,
+        scale: 1.2,
+        selectionAdorned: true,
+        fromSpot: go.Spot.AllSides,
+        toSpot: go.Spot.AllSides,
+        shadowColor: "#C5C1AA"
+      },
+      new go.Binding("location", "pos", go.Point.parse),
+      $(go.Shape, "Rectangle", { fill: "lightgray" }),
+      $(go.Panel, "Vertical",
+        { defaultStretch: go.GraphObject.Horizontal },
+        $(go.TextBlock, headerStyle(),
+          { portId: "HEADER", text: "nodeDataArray" }),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(),
+          { portId: "dataNode1", desiredSize: new go.Size(NaN,16) }),
+        $(go.Shape, "LineH", { height: 1, stretch: go.GraphObject.Fill }),
+        $(go.TextBlock, textStyle(),
+          { portId: "dataNode2", desiredSize: new go.Size(NaN,16) })
+      )
+    ));
+
+  diagram.linkTemplateMap.add("Data",
+    $(go.Link,
+      { corner: 10, routing: go.Link.Orthogonal },
+      new go.Binding("curviness"),
+      $(go.Shape, { stroke: "gray" , strokeWidth: 2 }),
+      $(go.Shape, { toArrow: "Standard", fill: "gray", stroke: "gray", strokeWidth: 2 }),
+      $(go.TextBlock, { font: "bold 12pt Courier", segmentOffset: new go.Point(0, -10) },
+        new go.Binding("text", "label"),
+        new go.Binding("segmentOffset", "offset"))
+  ));
+
+  diagram.scale = 0.8;
+
+  var model = new go.GraphLinksModel();
+  model.linkFromPortIdProperty = "fPID";
+  model.linkToPortIdProperty = "tPID"
+
+  model.nodeDataArray = [
+    { key: 1, txt: "Diagram", color: "white",  pos: "15 305"},
+    { key: 2, txt: "Model",  color: "white", pos: "215 305"},
+    { key: 3, category: "dataNode", pos: "215 440",  head: "Node Data Array", txt1: "nodeDataArray[0]", txt2: "nodeDataArray[1]"},
+    { key: 4, pos: "215 187", color: "white", txt: "UndoManager"},
+    { key: 5, pos: "215, 50", category: "dataNode", head: "List of Transactions", txt1: "history[0]", txt2: "history[1]"},
+    { key: 6, pos: "630, 230", category: "dataNode", head: "List of ChangedEvents", txt1: "changes[0]", txt2: "changes[1]", fSpot: go.Spot.RightSide},
+    { key: 7, pos: "15, 561", txt: "Alpha", color: "palegreen"},
+    { key: 8, category: "dataNode", pos: "510 590",  head: "Node Data", txt1: "color: \"palegreen\"", txt2: "text: \"Alpha\""},
+    { key: 9, category: "dataNodeChanged", pos: "630 422", head: "ChangedEvent", txt1: "propertyName: \"color\"", txt2: "newValue: \"palegreen\"", txt3: "oldValue: \"red\""},
+    { key: 10, category: "dataNodeChanged", pos: "530, 60", head: "Transaction", txt1: "name: \"change color\"", txt2: "isComplete: true", txt3: "changes: . . ."},
+  ];
+  model.linkDataArray = [
+    { from: 1, to: 2, category: "Data", label: ".model", offset: new go.Point(12, 14)},
+    { from: 2, to: 4, category: "Data", label: ".undoManager", offset: new go.Point(-10, 60)},
+    { from: 1, to: 4, category: "Data", label: ".undoManager", offset: new go.Point(0, -63)},
+    { from: 2, tPID: "HEADER", to: 3, category: "Data", label: ".nodeDataArray", offset: new go.Point(0, -72)},
+    { from: 4, to: 5, category: "Data", label: ".history", offset: new go.Point(0, -45)},
+    { from: 5, fPID: "ROW1", tPID: "HEADER", to: 10, category: "Data", label: "history[0]", offset: new go.Point(35,  10)},
+    { from: 1, to: 7, category: "Data", curviness: -70},
+    { from: 7, tPID: "HEADER", to: 8, category: "Data", curviness: -70, label: ".data", offset: new go.Point(-70, -10)},
+    { from: 3, tPID: "HEADER", fPID: "ROW1", to: 8, category: "Data", label: "nodeDataArray[0]", offset: new go.Point(-15, -85)},
+    { from: 6, to: 9, fPID: "ROW2", category: "Data", label: "changes[1]", offset: new go.Point(0, 54)},
+    { from: 9, to: 8, category: "Data", label: ".object", offset: new go.Point(-10, -13)},
+    { from: 10, to: 6, fPID: "ROW3", category: "Data", label: ".changes", offset: new go.Point(-10, 13)},
+  ];
+
+  diagram.model = model;
+
+  // Formatting
+  function headerStyle() {
+    return {
+      margin: 3,
+      font: "bold 12pt sans-serif",
+      minSize: new go.Size(140, 16),
+      maxSize: new go.Size(120, NaN),
+      textAlign: "center"
+    };
+  }
+  function textStyle() {
+    return {
+      margin: 3,
+      font: "italic 10pt sans-serif",
+      minSize: new go.Size(16, 16),
+      maxSize: new go.Size(160, NaN),
+      textAlign: "left"
+    };
+  }
+</code></pre>
+<script>goCode("transactionsDiagram", 650, 550)</script>
+<p>
+A typical case for using transactions is when some command makes a change to the model.
+</p>
+<pre class="lang-js" id="transaction"><code>
+  // define a function named "addChild" that is invoked by a button click
+  addChild = function() {
+    var selnode = diagram.selection.first();
+    if (!(selnode instanceof go.Node)) return;
+    diagram.commit(function(d) {
+      // have the Model add a new node data
+      var newnode = { key: "N" };
+      d.model.addNodeData(newnode);  // this makes sure the key is unique
+      // and then add a link data connecting the original node with the new one
+      var newlink = { from: selnode.data.key, to: newnode.key };
+      // add the new link to the model
+      d.model.addLinkData(newlink);
+    }, "add node and link");
+  };
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+
+  diagram.layout = $(go.TreeLayout);
+
+  var nodeDataArray = [
+    { key: "Alpha" },
+    { key: "Beta" }
+  ];
+  var linkDataArray = [
+    { from: "Alpha", to: "Beta" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  diagram.model.undoManager.isEnabled = true;
+</code></pre>
+<p>
+  In the following example, select a node and then click the button.
+  The addChild function adds a link connecting the selected node to a new node.
+  When no Node is selected, nothing happens.
+</p>
+<input type="button" onclick="addChild()" value="addChild() to selected Node" />
+<script>goCode("transaction", 600, 200)</script>
+
+<h2 id="SupportUndoManager">Supporting the UndoManager</h2>
+<p>
+Changes to JavaScript data properties do not automatically result in any notifications that can be observed.
+Thus when you want to change the value of a property in a manner that can be undone and redone,
+you should call <a>Model.setDataProperty</a> (or <a>Model.set</a>, which is an abbreviation for that method).
+This will get the previous value for the property, set the property to the new value, and
+call <a>Model.raiseDataChanged</a>, which will also automatically update any target bindings in the Node
+corresponding to the data.
+</p>
+<pre class="lang-js" id="changingData"><code>
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "someValue"))  // bind to the "someValue" data property
+    );
+
+  var nodeDataArray = [
+    { key: "Alpha", someValue: 1 }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+  diagram.model.undoManager.isEnabled = true;
+
+  // define a function named "incrementData" callable by onclick
+  incrementData = function() {
+    diagram.model.commit(function(m) {
+      var data = m.nodeDataArray[0];  // get the first node data
+      m.set(data, "someValue", data.someValue + 1);
+    }, "increment");
+  };
+</code></pre>
+<p>
+Move the node around.
+Click on the button to increase the value of the "someValue" property on the first node data.
+Click to focus in the Diagram and then Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
+</p>
+<input type="button" onclick="incrementData()" value="incrementData()" />
+<script>goCode("changingData", 250, 150)</script>
+
+{% endblock %}

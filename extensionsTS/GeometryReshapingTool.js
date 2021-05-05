@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -54,20 +54,29 @@ var __extends = (this && this.__extends) || (function () {
          */
         function GeometryReshapingTool() {
             var _this = _super.call(this) || this;
-            _this._reshapeObjectName = 'SHAPE'; // ??? can't add Part.reshapeObjectName property
             // there's no Part.reshapeAdornmentTemplate either
             // internal state
             _this._handle = null;
             _this._adornedShape = null;
             _this._originalGeometry = null; // in case the tool is cancelled and the UndoManager is not enabled
+            _this.name = 'GeometryReshaping';
             var h = new go.Shape();
             h.figure = 'Diamond';
-            h.desiredSize = new go.Size(7, 7);
+            h.desiredSize = new go.Size(8, 8);
             h.fill = 'lightblue';
             h.stroke = 'dodgerblue';
             h.cursor = 'move';
             _this._handleArchetype = h;
-            _this.name = 'GeometryReshaping';
+            h = new go.Shape();
+            h.figure = 'Circle';
+            h.desiredSize = new go.Size(7, 7);
+            h.fill = 'lightblue';
+            h.stroke = 'dodgerblue';
+            h.cursor = 'move';
+            _this._midHandleArchetype = h;
+            _this._isResegmenting = false;
+            _this._resegmentingDistance = 3;
+            _this._reshapeObjectName = 'SHAPE';
             return _this;
         }
         Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {
@@ -80,9 +89,43 @@ var __extends = (this && this.__extends) || (function () {
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(GeometryReshapingTool.prototype, "midHandleArchetype", {
+            /**
+             * A small GraphObject used as a reshape handle at the middle of each segment for inserting a new segment.
+             * The default GraphObject is a small blue circle.
+             */
+            get: function () { return this._midHandleArchetype; },
+            set: function (value) { this._midHandleArchetype = value; },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(GeometryReshapingTool.prototype, "isResegmenting", {
+            /**
+            * Gets or sets whether this tool supports the user's addition or removal of segments in the geometry.
+            * The default value is false.
+            * When the value is true, copies of the {@link #midHandleArchetype} will appear in the middle of each segment.
+            * At the current time, resegmenting is limited to straight segments, not curved ones.
+            */
+            get: function () { return this._isResegmenting; },
+            set: function (val) { this._isResegmenting = val; },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(GeometryReshapingTool.prototype, "resegmentingDistance", {
+            /**
+            * The maximum distance at which a resegmenting handle being positioned on a straight line
+            * between the adjacent points will cause one of the segments to be removed from the geometry.
+            * The default value is 3.
+            */
+            get: function () { return this._resegmentingDistance; },
+            set: function (val) { this._resegmentingDistance = val; },
+            enumerable: false,
+            configurable: true
+        });
         Object.defineProperty(GeometryReshapingTool.prototype, "reshapeObjectName", {
             /**
              * The name of the GraphObject to be reshaped.
+             * The default name is "SHAPE".
              */
             get: function () { return this._reshapeObjectName; },
             set: function (value) { this._reshapeObjectName = value; },
@@ -96,6 +139,7 @@ var __extends = (this && this.__extends) || (function () {
              * Its {@link Adornment#adornedObject} is the same as the {@link #adornedShape}.
              */
             get: function () { return this._handle; },
+            set: function (val) { this._handle = val; },
             enumerable: false,
             configurable: true
         });
@@ -119,7 +163,7 @@ var __extends = (this && this.__extends) || (function () {
         });
         /**
          * Show an {@link Adornment} with a reshape handle at each point of the geometry.
-         * Don't show anything if {@link #reshapeObjectName} doesn't identify a {@link Shape}
+         * Don't show anything if {@link #reshapeObjectName} doesn't return a {@link Shape}
          * that has a {@link Shape#geometry} of type {@link Geometry.Path}.
          */
         GeometryReshapingTool.prototype.updateAdornments = function (part) {
@@ -131,26 +175,48 @@ var __extends = (this && this.__extends) || (function () {
                     selelt.actualBounds.isReal() && selelt.isVisibleObject() &&
                     part.canReshape() && part.actualBounds.isReal() && part.isVisible() &&
                     selelt.geometry.type === go.Geometry.Path) {
-                    var adornment = part.findAdornment(this.name);
-                    if (adornment === null) {
-                        adornment = this.makeAdornment(selelt);
+                    var geo = selelt.geometry;
+                    var adornment_1 = part.findAdornment(this.name);
+                    if (adornment_1 === null || (this._countHandles(geo) !== adornment_1.elements.count - 1)) {
+                        adornment_1 = this.makeAdornment(selelt);
                     }
-                    if (adornment !== null) {
+                    if (adornment_1 !== null) {
                         // update the position/alignment of each handle
-                        var geo_1 = selelt.geometry;
-                        var b_1 = geo_1.bounds;
+                        var b = geo.bounds;
                         // update the size of the adornment
-                        var body = adornment.findObject('BODY');
+                        var body = adornment_1.findObject('BODY');
                         if (body !== null)
-                            body.desiredSize = b_1.size;
-                        adornment.elements.each(function (h) {
-                            if (h._typ === undefined)
-                                return;
-                            var fig = geo_1.figures.elt(h._fig);
-                            var seg = fig.segments.elt(h._seg);
+                            body.desiredSize = b.size;
+                        var unneeded = null;
+                        var elts = adornment_1.elements;
+                        for (var i = 0; i < elts.count; i++) {
+                            var h = adornment_1.elt(i);
+                            if (typeof h._typ !== "number")
+                                continue;
+                            var typ = h._typ;
+                            if (typeof h._fig !== "number")
+                                continue;
+                            var figi = h._fig;
+                            if (figi >= geo.figures.count) {
+                                if (unneeded === null)
+                                    unneeded = [];
+                                unneeded.push(h);
+                                continue;
+                            }
+                            var fig = geo.figures.elt(figi);
+                            if (typeof h._seg !== "number")
+                                continue;
+                            var segi = h._seg;
+                            if (segi >= fig.segments.count) {
+                                if (unneeded === null)
+                                    unneeded = [];
+                                unneeded.push(h);
+                                continue;
+                            }
+                            var seg = fig.segments.elt(segi);
                             var x = 0;
                             var y = 0;
-                            switch (h._typ) {
+                            switch (typ) {
                                 case 0:
                                     x = fig.startX;
                                     y = fig.startY;
@@ -167,18 +233,60 @@ var __extends = (this && this.__extends) || (function () {
                                     x = seg.point2X;
                                     y = seg.point2Y;
                                     break;
+                                case 4:
+                                    x = (fig.startX + seg.endX) / 2;
+                                    y = (fig.startY + seg.endY) / 2;
+                                    break;
+                                case 5:
+                                    x = (fig.segments.elt(segi - 1).endX + seg.endX) / 2;
+                                    y = (fig.segments.elt(segi - 1).endY + seg.endY) / 2;
+                                    break;
+                                case 6:
+                                    x = (fig.startX + seg.endX) / 2;
+                                    y = (fig.startY + seg.endY) / 2;
+                                    break;
+                                default: throw new Error('unexpected handle type');
                             }
-                            h.alignment = new go.Spot(0, 0, x - b_1.x, y - b_1.y);
-                        });
-                        part.addAdornment(this.name, adornment);
-                        adornment.location = selelt.getDocumentPoint(go.Spot.TopLeft);
-                        adornment.angle = selelt.getDocumentAngle();
+                            h.alignment = new go.Spot(0, 0, x - b.x, y - b.y);
+                        }
+                        if (unneeded !== null) {
+                            unneeded.forEach(function (h) { if (adornment_1)
+                                adornment_1.remove(h); });
+                        }
+                        part.addAdornment(this.name, adornment_1);
+                        adornment_1.location = selelt.getDocumentPoint(go.Spot.TopLeft);
+                        adornment_1.angle = selelt.getDocumentAngle();
                         return;
                     }
                 }
             }
             part.removeAdornment(this.name);
         };
+        /**
+         * @hidden @internal
+         */
+        GeometryReshapingTool.prototype._countHandles = function (geo) {
+            var reseg = this.isResegmenting;
+            var c = 0;
+            geo.figures.each(function (fig) {
+                c++;
+                fig.segments.each(function (seg) {
+                    if (reseg) {
+                        if (seg.type === go.PathSegment.Line)
+                            c++;
+                        if (seg.isClosed)
+                            c++;
+                    }
+                    c++;
+                    if (seg.type === go.PathSegment.QuadraticBezier)
+                        c++;
+                    else if (seg.type === go.PathSegment.Bezier)
+                        c += 2;
+                });
+            });
+            return c;
+        };
+        ;
         /**
          * @hidden @internal
          */
@@ -195,6 +303,33 @@ var __extends = (this && this.__extends) || (function () {
             adornment.add(h);
             var geo = selelt.geometry;
             if (geo !== null) {
+                if (this.isResegmenting) {
+                    for (var f = 0; f < geo.figures.count; f++) {
+                        var fig = geo.figures.elt(f);
+                        for (var g = 0; g < fig.segments.count; g++) {
+                            var seg = fig.segments.elt(g);
+                            var h_1 = void 0;
+                            if (seg.type === go.PathSegment.Line) {
+                                h_1 = this.makeResegmentHandle(selelt, fig, seg);
+                                if (h_1 !== null) {
+                                    h_1._typ = (g === 0) ? 4 : 5;
+                                    h_1._fig = f;
+                                    h_1._seg = g;
+                                    adornment.add(h_1);
+                                }
+                            }
+                            if (seg.isClosed) {
+                                h_1 = this.makeResegmentHandle(selelt, fig, seg);
+                                if (h_1 !== null) {
+                                    h_1._typ = 6;
+                                    h_1._fig = f;
+                                    h_1._seg = g;
+                                    adornment.add(h_1);
+                                }
+                            }
+                        }
+                    }
+                }
                 // requires Path Geometry, checked above in updateAdornments
                 for (var f = 0; f < geo.figures.count; f++) {
                     var fig = geo.figures.elt(f);
@@ -251,6 +386,15 @@ var __extends = (this && this.__extends) || (function () {
             return h.copy();
         };
         /**
+         * @hidden @internal
+         */
+        GeometryReshapingTool.prototype.makeResegmentHandle = function (pathshape, fig, seg) {
+            var h = this.midHandleArchetype;
+            if (h === null)
+                return null;
+            return h.copy();
+        };
+        /**
          * This tool may run when there is a mouse-down event on a reshape handle.
          */
         GeometryReshapingTool.prototype.canStart = function () {
@@ -276,15 +420,62 @@ var __extends = (this && this.__extends) || (function () {
          */
         GeometryReshapingTool.prototype.doActivate = function () {
             var diagram = this.diagram;
-            this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
-            if (this._handle === null)
+            if (diagram === null)
                 return;
-            var shape = this._handle.part.adornedObject;
-            if (!shape)
+            this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
+            var h = this._handle;
+            if (h === null)
+                return;
+            var shape = h.part.adornedObject;
+            if (!shape || !shape.part)
                 return;
             this._adornedShape = shape;
             diagram.isMouseCaptured = true;
             this.startTransaction(this.name);
+            var typ = h._typ;
+            var figi = h._fig;
+            var segi = h._seg;
+            if (this.isResegmenting && typ >= 4 && shape.geometry !== null) {
+                var locpt = shape.getLocalPoint(diagram.firstInput.documentPoint);
+                var geo = shape.geometry.copy();
+                var fig = geo.figures.elt(figi);
+                var seg = fig.segments.elt(segi);
+                var newseg = seg.copy();
+                switch (typ) {
+                    case 4: {
+                        newseg.endX = (fig.startX + seg.endX) / 2;
+                        newseg.endY = (fig.startY + seg.endY) / 2;
+                        newseg.isClosed = false;
+                        fig.segments.insertAt(segi, newseg);
+                        break;
+                    }
+                    case 5: {
+                        var prevseg = fig.segments.elt(segi - 1);
+                        newseg.endX = (prevseg.endX + seg.endX) / 2;
+                        newseg.endY = (prevseg.endY + seg.endY) / 2;
+                        newseg.isClosed = false;
+                        fig.segments.insertAt(segi, newseg);
+                        break;
+                    }
+                    case 6: {
+                        newseg.endX = (fig.startX + seg.endX) / 2;
+                        newseg.endY = (fig.startY + seg.endY) / 2;
+                        newseg.isClosed = seg.isClosed;
+                        seg.isClosed = false;
+                        fig.add(newseg);
+                        break;
+                    }
+                }
+                shape.geometry = geo; // modify the Shape
+                var part = shape.part;
+                part.ensureBounds();
+                this.updateAdornments(part); // update any Adornments of the Part
+                this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
+                if (this._handle === null) {
+                    this.doDeactivate(); // need to rollback the transaction and not set .isActive
+                    return;
+                }
+            }
             this._originalGeometry = shape.geometry;
             this.isActive = true;
         };
@@ -296,7 +487,8 @@ var __extends = (this && this.__extends) || (function () {
             this._handle = null;
             this._adornedShape = null;
             var diagram = this.diagram;
-            diagram.isMouseCaptured = false;
+            if (diagram !== null)
+                diagram.isMouseCaptured = false;
             this.isActive = false;
         };
         /**
@@ -316,7 +508,7 @@ var __extends = (this && this.__extends) || (function () {
          */
         GeometryReshapingTool.prototype.doMouseMove = function () {
             var diagram = this.diagram;
-            if (this.isActive) {
+            if (this.isActive && diagram !== null) {
                 var newpt = this.computeReshape(diagram.lastInput.documentPoint);
                 this.reshape(newpt);
             }
@@ -327,9 +519,73 @@ var __extends = (this && this.__extends) || (function () {
          */
         GeometryReshapingTool.prototype.doMouseUp = function () {
             var diagram = this.diagram;
-            if (this.isActive) {
+            if (this.isActive && diagram !== null) {
                 var newpt = this.computeReshape(diagram.lastInput.documentPoint);
                 this.reshape(newpt);
+                var shape = this.adornedShape;
+                if (this.isResegmenting && shape && shape.geometry && shape.part) {
+                    var typ = this.handle._typ;
+                    var figi = this.handle._fig;
+                    var segi = this.handle._seg;
+                    var fig = shape.geometry.figures.elt(figi);
+                    if (fig && fig.segments.count > 2) { // avoid making a degenerate polygon
+                        var ax = void 0, ay = void 0, bx = void 0, by = void 0, cx = void 0, cy = void 0;
+                        if (typ === 0) {
+                            var lastseg = fig.segments.length - 1;
+                            ax = fig.segments.elt(lastseg).endX;
+                            ay = fig.segments.elt(lastseg).endY;
+                            bx = fig.startX;
+                            by = fig.startY;
+                            cx = fig.segments.elt(0).endX;
+                            cy = fig.segments.elt(0).endY;
+                        }
+                        else {
+                            if (segi <= 0) {
+                                ax = fig.startX;
+                                ay = fig.startY;
+                            }
+                            else {
+                                ax = fig.segments.elt(segi - 1).endX;
+                                ay = fig.segments.elt(segi - 1).endY;
+                            }
+                            bx = fig.segments.elt(segi).endX;
+                            by = fig.segments.elt(segi).endY;
+                            if (segi >= fig.segments.length - 1) {
+                                cx = fig.startX;
+                                cy = fig.startY;
+                            }
+                            else {
+                                cx = fig.segments.elt(segi + 1).endX;
+                                cy = fig.segments.elt(segi + 1).endY;
+                            }
+                        }
+                        var q = new go.Point(bx, by);
+                        q.projectOntoLineSegment(ax, ay, cx, cy);
+                        // if B is within resegmentingDistance of the line from A to C,
+                        // and if Q is between A and C, remove that point from the geometry
+                        var dist = q.distanceSquaredPoint(new go.Point(bx, by));
+                        if (dist < this.resegmentingDistance * this.resegmentingDistance) {
+                            var geo = shape.geometry.copy();
+                            var fig_1 = geo.figures.elt(figi);
+                            if (typ === 0) {
+                                var first = fig_1.segments.first();
+                                if (first) {
+                                    fig_1.startX = first.endX;
+                                    fig_1.startY = first.endY;
+                                }
+                            }
+                            if (segi > 0) {
+                                var prev = fig_1.segments.elt(segi - 1);
+                                var seg = fig_1.segments.elt(segi);
+                                prev.isClosed = seg.isClosed;
+                            }
+                            fig_1.segments.removeAt(segi);
+                            shape.geometry = geo;
+                            shape.part.removeAdornment(this.name);
+                            this.updateAdornments(shape.part);
+                        }
+                    }
+                }
                 this.transactionResult = this.name; // success
             }
             this.stopTool();
@@ -347,11 +603,18 @@ var __extends = (this && this.__extends) || (function () {
                 return;
             var locpt = shape.getLocalPoint(newPoint);
             var geo = shape.geometry.copy();
-            var type = this.handle._typ;
+            var h = this.handle;
+            if (!h)
+                return;
+            var type = h._typ;
             if (type === undefined)
                 return;
-            var fig = geo.figures.elt(this.handle._fig);
-            var seg = fig.segments.elt(this.handle._seg);
+            if (h._fig >= geo.figures.count)
+                return;
+            var fig = geo.figures.elt(h._fig);
+            if (h._seg >= fig.segments.count)
+                return;
+            var seg = fig.segments.elt(h._seg);
             switch (type) {
                 case 0:
                     fig.startX = locpt.x;
