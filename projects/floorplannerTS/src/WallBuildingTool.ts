@@ -6,7 +6,7 @@
  * Used to construct new Walls in a Floorplan with mouse clicking / mouse point
  */
 
-import * as go from 'gojs';
+import * as go from '../../../release/go';
 import { Floorplan } from './Floorplan.js';
 import { WallReshapingTool } from './WallReshapingTool.js';
 

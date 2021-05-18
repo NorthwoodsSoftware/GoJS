@@ -1481,7 +1481,7 @@ arr.push([
   "BPMN Editor",
   "The start of a Business Process Model and Notation editor.",
   "BPMN",
-  ["tables", "itemarrays", "collections", "customlayout", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "html", "frameworks"]
+  ["tables", "itemarrays", "collections", "customlayout", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "geometries", "html", "frameworks"]
 ]);
 
 arr.push([
@@ -1489,7 +1489,7 @@ arr.push([
   "Floor Planner (TypeScript)",
   "A feature-rich editor for users to create robust, detailed floor plans.",
   "FloorPlannerTS",
-  ["featured", "collections", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "extensions", "geometries", "grid", "html"]
+  ["featured", "collections", "groups", "tooltips", "contextmenus", "tools", "palette", "overview", "buttons", "geometries", "grid", "html"]
 ]);
 
 arr.push(["minimal",

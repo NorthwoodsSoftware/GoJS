@@ -34,8 +34,10 @@
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
         </ul>
       </div>
     </div>
@@ -44,7 +46,7 @@
     
     <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
-      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
+      <div class="pt-4 px-2 lg:px-4 pb-16 w-full overflow-hidden">
 
 <h1>GoJS Samples</h1>
 
@@ -197,6 +199,7 @@
     return filteredSamples;
   }
 </script>
+<link rel="prefetch" as="script" href="../release/go.js">
       </div>
     </div>
 <footer class="bg-white">
@@ -210,19 +213,19 @@
               <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="samples/index.html">Samples</a>
+                  <a href="../samples/index.html">Samples</a>
                 </li>
                 <li>
-                  <a href="learn/index.html">Learn</a>
+                  <a href="../learn/index.html">Learn</a>
                 </li>
                 <li>
-                  <a href="intro/index.html">Intro</a>
+                  <a href="../intro/index.html">Intro</a>
                 </li>
                 <li>
-                  <a href="api/index.html">API</a>
+                  <a href="../api/index.html">API</a>
                 </li>
                 <li>
-                  <a href="changelog.html">Changelog</a>
+                  <a href="../changelog.html">Changelog</a>
                 </li>
                 <li>
                   <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
@@ -233,7 +236,8 @@
               <h2 class="text-base font-semibold tracking-wide">Support</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                  <a href="https://www.nwoods.com/contact.html"
+                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
                 </li>
                 <li>
                   <a href="https://forum.nwoods.com/c/gojs">Forum</a>
@@ -242,7 +246,8 @@
                   <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
                 </li>
                 <li>
-                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                  <a href="https://www.nwoods.com/sales/index.html"
+                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
                 </li>
                 <li>
                   <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
@@ -283,6 +288,13 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+  var getOutboundLink = function(url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
 
   // topnav
   var topButton = document.getElementById("topnavButton");

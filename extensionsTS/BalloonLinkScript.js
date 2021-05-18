@@ -23,7 +23,7 @@
     var go = require("../release/go.js");
     var BalloonLink_js_1 = require("./BalloonLink.js");
     function init() {
-        if (window.goSamples())
+        if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element

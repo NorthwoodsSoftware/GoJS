@@ -82,7 +82,8 @@ if (coll !== null) {
     var lowerhref = aTags[i].href.toLowerCase();
     if (lowerhref.indexOf('/' + url) !== -1) {
       currentindex = i;
-      aTags[i].classList.add("bg-nwoods-secondary", "text-white");
+      aTags[i].classList.add("bg-nwoods-secondary");
+      aTags[i].style = "color: white";
       break;
     }
   }

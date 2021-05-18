@@ -34,8 +34,10 @@
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
         </ul>
       </div>
     </div>
@@ -214,13 +216,22 @@
     }
 
 
+    // A custom Link class that routes directly to the closest horizontal point of an "HBar" node.
+    // If the regular node is too far to the left or right of the "HBar" node, the link connects
+    // with the closest end of the "HBar" node.
     function BarLink() {
       go.Link.call(this);
     }
     go.Diagram.inherit(BarLink, go.Link);
 
+    BarLink.prototype.computeSpot = function(from, port) {
+      if (from && this.toNode && this.toNode.category === "HBar") return go.Spot.TopBottomSides;
+      if (!from && this.fromNode && this.fromNode.category === "HBar") return go.Spot.TopBottomSides;
+      return go.Link.prototype.computeSpot.call(this, from, port);
+    }
+
     BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-      if (node.category === "HBar") {
+      if (!from && node.category === "HBar") {
         var op = go.Link.prototype.getLinkPoint.call(this, othernode, otherport, this.computeSpot(!from), !from, ortho, node, port);
         var r = port.getDocumentBounds();
         var y = (op.y > r.centerY) ? r.bottom : r.top;
@@ -233,10 +244,14 @@
     };
 
     BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
-      var p = port.getDocumentPoint(go.Spot.Center);
-      var op = otherport.getDocumentPoint(go.Spot.Center);
-      var below = op.y > p.y;
-      return below ? 90 : 270;
+      if (node.category === "HBar" || othernode.category === "HBar") {
+        var p = port.getDocumentPoint(go.Spot.Center);
+        var op = otherport.getDocumentPoint(go.Spot.Center);
+        var below = op.y > p.y;
+        return below ? 90 : 270;
+      } else {
+        return go.Link.prototype.getLinkDirection.call(this, node, port, linkpoint, spot, from, ortho, othernode, otherport);
+      }
     };
     // end BarLink class
 

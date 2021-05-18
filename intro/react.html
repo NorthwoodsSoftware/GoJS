@@ -39,8 +39,10 @@
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
         </ul>
       </div>
     </div>
@@ -118,6 +120,7 @@
   <a href="printing.html">Printing</a>
   <a href="serverSideImages.html">Server-side Images</a>
   <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="testing.html">Testing</a>
   <a href="storage.html">Storage</a>
   <a href="performance.html">Performance</a>
   <a href="source.html">Building from Source</a>
@@ -285,7 +288,7 @@
 </p>
 <p>
   Below, we'll pass linkDataArray and modelData as props to the ReactDiagram, but note that they are not always needed in gojs-react components,
-  so your app may not need to include htem. For proper initial loading of data, one should have the data ready before the ReactDiagram component mounts.
+  so your app may not need to include them. For proper initial loading of data, one should have the data ready before the ReactDiagram component mounts.
   This allows layouts and linking to occur properly with the initial data set.
 </p>
 <pre class="lang-js"><code>
@@ -582,19 +585,19 @@
               <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="samples/index.html">Samples</a>
+                  <a href="../samples/index.html">Samples</a>
                 </li>
                 <li>
-                  <a href="learn/index.html">Learn</a>
+                  <a href="../learn/index.html">Learn</a>
                 </li>
                 <li>
-                  <a href="intro/index.html">Intro</a>
+                  <a href="../intro/index.html">Intro</a>
                 </li>
                 <li>
-                  <a href="api/index.html">API</a>
+                  <a href="../api/index.html">API</a>
                 </li>
                 <li>
-                  <a href="changelog.html">Changelog</a>
+                  <a href="../changelog.html">Changelog</a>
                 </li>
                 <li>
                   <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
@@ -605,7 +608,8 @@
               <h2 class="text-base font-semibold tracking-wide">Support</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                  <a href="https://www.nwoods.com/contact.html"
+                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
                 </li>
                 <li>
                   <a href="https://forum.nwoods.com/c/gojs">Forum</a>
@@ -614,7 +618,8 @@
                   <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
                 </li>
                 <li>
-                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                  <a href="https://www.nwoods.com/sales/index.html"
+                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
                 </li>
                 <li>
                   <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
@@ -655,6 +660,13 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+  var getOutboundLink = function(url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
 
   // topnav
   var topButton = document.getElementById("topnavButton");

@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A class for saving / loading GoJS diagram model data to / from popular storage services" />
+    <title>GoCloudStorageManager Demo</title>
+
+    <!-- CDN's -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://js.live.net/v7.2/OneDrive.js"></script>
+    <!-- both these are necesary for GoDropBox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropbox.js/2.5.7/Dropbox-sdk.min.js"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="3sm2ko6q7u1gbix"></script>
+
+    <!-- requireJS -->
+    <script src="../../samples/assets/require.js"></script>
+
+    <!-- CSS for GoCloudStorageManager -->
+    <link rel="stylesheet" type="text/css" href="index.css" />
+</head>
+
+<body>
+
+    <button onclick="handlePromise('New')">New</button>
+    <button id="openButton" onclick="handlePromise('Load')">Load </button>
+    <button id="removeButton" onclick="handlePromise('Delete')">Remove</button>
+    <button id="saveButton" onclick="handlePromise('SaveAs')">Save As</button>
+    <button id="saveButton" onclick="handlePromise('Save')">Save</button>
+    <input type="checkbox" id="isAutoSavingCheckbox" checked /> <label for="isAutoSavingCheckbox">Autosave Enabled</label>
+    <p>Current storage service: <span id="currentStorageSpan"></span> <button onclick="updateCurrentStorageSpan()">Change</button></p>
+
+    <h3 id="currentFile">Untitled </h3>
+    <div class="diagramBox">
+        <h4>Diagram</h4>
+        <div id="myDiagramDiv" style="height: 300px; width: 300px; background-color: lightgray;"></div>
+    </div>
+
+    <div id="text">
+        <p>
+            This sample showcases the <a href="../../../api/symbols/GoCloudStorageManager.html">GoCloudStorageManager</a>
+            class,
+            which bundles a user-defined set of <a href="../../../api/symbols/GoCloudStorage.html">GoCloudStorage</a>
+            subclasses and allows for easy, graphical saving and loading of GoJS <a href="../../../../api/symbols/Diagram.html">Diagram</a>
+            <a href="../../../../api/symbols/Model.html">Model</a> data to and from various cloud storage services.
+            As of now, the supported services are:
+            <ul>
+                <li>Google Drive, managed with <a href="../../../api/symbols/GoGoogleDrive.html">GoGoogleDrive</a></li>
+                <li>Microsoft OneDrive, managed with <a href="../../../api/symbols/GoOneDrive.html">GoOneDrive</a></li>
+                <li>Dropbox, managed with <a href="../../../api/symbols/GoDropBox.html">GoDropBox</a></li>
+                <li>Local Storage, managed with <a href="../../../api/symbols/GoLocalStorage.html">GoLocalStorage</a></li>
+            </ul>
+        </p>
+        <p>
+            GoCloudStorage subclasses are <a href="../../../intro/storage.html#GoCloudStorageSubclassConstruction">easy
+                to construct</a>
+            and can manage model data for any set of Diagrams on a page. All the GoCloudStorage subclasses
+            <a href="../../../intro/storage.html#GoCloudStorageManager">managed by</a> the instance of
+            GoCloudStorageManager displayed here handle file <a href="../../../intro/storage.html#SavingLoadingData">saving
+                / loading</a>
+            and file <a href="../../../intro/storage.html#CreatingRemovingData">creation / removal</a> for the above
+            Diagram. For a sample of how <code>GoCloudStorageManager</code> can handle multiple diagrams, see our <a
+                href="./multipleDiagrams.html">GoCloudStorage with Multiple Diagrams</a> sample.
+        </p>
+        <p>
+            <strong>Note</strong>: Any page that uses GoCloudStorage subclasses (other than GoLocalStorage) must be
+            served from a server to work.
+        </p>
+    </div>
+    <script>
+
+        require(["./StorageScript"], function (app) {
+            app.init();
+        });
+
+    </script>
+
+</body>
+
+</html>

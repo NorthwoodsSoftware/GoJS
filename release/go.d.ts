@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.39
+ * Type definitions for GoJS v2.1.40
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -15675,7 +15675,7 @@ export class Brush {
  * It is possible to create your own Panel type by creating a subclass of PanelLayout,
  * though this is not common and not recommended for beginners.
  *
- * By default, GoJS has 12 panel types, each corresponding to a PanelLayout subclass:
+ * By default, GoJS has 12 Panel types, each corresponding to a PanelLayout subclass:
  *   - `'Position', PanelLayoutPosition`
  *   - `'Horizontal', PanelLayoutHorizontal`
  *   - `'Vertical', PanelLayoutVertical`
@@ -15700,9 +15700,12 @@ export class Brush {
  * Panel.definePanelLayout('Table', new PanelLayoutTable());
  * ```
  *
- * Each PanelLayout defines a #measure and #arrange routine.
+ * Each PanelLayout must define a #measure and #arrange routine.
  * The measure routine must call #measureElement with each element of the Panel,
- * and the arrange routine must similarly call #arrangeElement with each element of the Panel.
+ * which sets each element's GraphObject#measuredBounds. These bounds can be used to determine object layout.
+ * The arrange routine must call #arrangeElement with each element of the Panel to position the objects relative to the Panel.
+ *
+ *
  *
  * There is an example PanelLayout in the <a href="../../samples/panelLayout.html">PanelLayout sample</a>.
  * @since 2.0
@@ -15716,26 +15719,35 @@ export abstract class PanelLayout {
     readonly classType: Function;
     /**
      * Given the available size, measure the Panel and
-     * determine its expected drawing size. Sets the measuredBounds of the object.
+     * determine its expected drawing size.
      *
-     * This must call #measureElement with each Panel element.
+     * This must call #measureElement with each Panel element, which will set the
+     * GraphObject#measuredBounds of those elements. Depending on how the Panel intends to lay out its elements,
+     * the programmer must construction the `union` by setting `union.width` and `union.height` of the supplied argument.
+     * For example the PanelLayoutHorizontal measures its elements and sums their widths to set its `union.width`,
+     * and takes the maximum of their heights to set its `union.height`.
      *
-     * This must also construct the union.width and union.height of the passed in union Rect argument.
-     * This union must reflect the measured size of the panel.
+     * This union must reflect the measured size of the Panel. After measure is called, the Panel class will modify this union Rect,
+     * constraining its size by the Panel's GraphObject#desiredSize, GraphObject#minSize, and GraphObject#maxSize,
+     * before passing it to #arrange.
      *
      * @expose
      * @param {Panel} panel Panel which called this layout
-     * @param {number} width expected width of the panel
-     * @param {number} height expected height of the panel
+     * @param {number} width expected width of the Panel, informed by any containing Panel and by the Panel's own
+     * GraphObject#desiredSize, GraphObject#minSize, and GraphObject#maxSize.
+     * Often Infinity.
+     * @param {number} height expected height of the Panel.
      * @param {Array.<GraphObject>} elements Array of Panel elements
-     * @param {Rect} union rectangle to contain the expected union bounds of every element in the Panel. Useful for arrange.
-     * @param {number} minw minimum width of the panel
-     * @param {number} minh minimum height of the panel
+     * @param {Rect} union rectangle to be modified to contain the expected union bounds of every element in the Panel,
+     * to be potentially used in #arrange.
+     * @param {number} minw expected minimum width of the Panel, informed by any containing Panel. Often zero.
+     * @param {number} minh expected minimum height of the Panel.
      */
     measure(panel: Panel, width: number, height: number, elements: Array<GraphObject>, union: Rect, minw: number, minh: number): void;
     /**
      * Given the available size, measure one element of the Panel and
-     * determine its expected drawing size. Sets the measuredBounds of the object.
+     * determine its expected drawing size. This sets the GraphObject#measuredBounds of the object,
+     * which can then be used to determine the arrangement of objects in the PanelLayout.
      *
      * @param {GraphObject} obj Panel which called this layout
      * @param {number} width expected width of the GraphObject
@@ -15745,12 +15757,17 @@ export abstract class PanelLayout {
      */
     protected measureElement(obj: GraphObject, width: number, height: number, minw: number, minh: number): void;
     /**
-     * Given the panel and its list of elements, arrange each element.
-     *
+     * After measuring, a Panel must arrange each element, giving the elements a position and size in the Panel's coordinate system.
      * This must call #arrangeElement with each Panel element, which will set that element's GraphObject#actualBounds.
      *
-     * For arranging some elements, it is useful to know the total unioned area of every element.
+     * For arranging some elements, it is useful to know the total unioned area of every element, which is given as the `union` argument.
      * This Rect can be used to right-align or center-align, etc, elements within an area.
+     *
+     * For example, the PanelLayoutHorizontal arranges each element sequentially, starting with an `x` value of `0`,
+     * and increasing it by each previous element's GraphObject#measuredBounds `width`.
+     * The horizontal Panel arranges each element with a `y` value determined by  the `union` argument's `height`
+     * considering the GraphObject#alignment of the element, and the GraphObject's own `measuredBounds.height`.
+     *
      *
      * @expose
      * @param {Panel} panel Panel which called this layout
@@ -15761,17 +15778,25 @@ export abstract class PanelLayout {
     /**
      * Arranges the GraphObject onto its parent Panel.
      * The passed-in numbers typically account for GraphObject#margin and other offsets.
-     * This sets GraphObject#actualBounds.
+     * The `x` and `y` coordinates are where GraphObjects will be placed within the Panel's own coordinates
+     * (from the Panel's top-left corner). The `width` and `height` are the size it will take up within the Panel's coordinates.
+     *
+     * This sets the GraphObject#actualBounds of the `obj`.
      *
      * @param {GraphObject} obj GraphObject to be arranged.
-     * @param {number} fx The final x value of actualBounds that the Panel computes for the GraphObject.
-     * @param {number} fy The final y value of actualBounds that the Panel computes for the GraphObject.
-     * @param {number} fw The final width value of actualBounds that the Panel computes for the GraphObject.
-     * @param {number} fh The final height value of actualBounds that the Panel computes for the GraphObject.
+     * @param {number} x The final x value of actualBounds that the Panel computes for the GraphObject.
+     * @param {number} y The final y value of actualBounds that the Panel computes for the GraphObject.
+     * @param {number} width The final width value of actualBounds that the Panel computes for the GraphObject.
+     * @param {number} height The final height value of actualBounds that the Panel computes for the GraphObject.
      * @param {Rect=} clipRect an optional area to constrain this actualBounds to when picking and drawing.
-     * By default, this is only used with Fixed/Table panels element, provided as a Rect.
+     * By default, this is only used with Table Panel elements, which are clipped to their cell sizes.
      */
-    protected arrangeElement(obj: GraphObject, fx: number, fy: number, fw: number, fh: number, clipRect?: Rect): void;
+    protected arrangeElement(obj: GraphObject, x: number, y: number, width: number, height: number, clipRect?: Rect): void;
+    /**
+     * Undocumented
+     * @param {GraphObject} obj GraphObject to be invalidated.
+     */
+    remeasureObject(obj: GraphObject): void;
 }
 /**
  * A Panel is a GraphObject that holds other GraphObjects as its elements.

@@ -9,18 +9,6 @@
   <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
   <meta charset="UTF-8">
 
-  <!-- Local JS -->
-  <!-- GoJS -->
-  <script src="../../release/go.js"></script>
-  <!-- GoEditor framework basic setup -->
-  <script src="./goeditor-setup.js"></script>
-  <!-- Base Data Inspector class -->
-  <script src="./DataInspector.js"></script>
-  <!-- Floorplanner specific tweaks to Data Inspector class -->
-  <script src="./floorplanner-datainspector-overrides.js"></script>
-
-  <!-- Go Cloud Storage Classes -->
-  <script src="../../projects/storage/lib/gcs.js"></script>
 
   <!-- CDN's for GoCloud Storage subclasses -->
   <script src="https://apis.google.com/js/api.js"></script>
@@ -28,15 +16,11 @@
   <script src="https://js.live.net/v7.2/OneDrive.js"></script>
   <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="3sm2ko6q7u1gbix"></script>
 
-  <!-- GoFloorPlanner bundle -->
-  <script src="./lib/gfp.js"></script>
-
-  <!-- jQuery / UI JS -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+  <!-- requireJS -->
+  <script src="../../samples/assets/require.js"></script>
 
   <!-- CSS for GoCloudStorage/Manager -->
-  <link rel="stylesheet" type="text/css" href="../../projects/storage/samples/GoCloudStorageUI.css" />
+  <link rel="stylesheet" type="text/css" href="../../projects/storage/index.css" />
 
   <!-- jQuery UI CSS -->
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
@@ -47,172 +31,18 @@
 
   <script>
 
-    JQUERY = $;
-
     function init() {
 
-      Floorplan = gfp.Floorplan;
-      FloorplanPalette = gfp.FloorplanPalette;
-      WallBuildingTool = gfp.WallBuildingTool;
-      WallReshapingTool = gfp.WallReshapingTool;
-
-      // Do not remove this function call! This sets up your editor
-      setupEditorApplication(1, 2, "../../projects/storage", Floorplan);
-
-      // replace generic palettes with FloorplanPalettes
-      myFloorplan = diagrams[0];
-      palettes[0].div = null;
-      palettes[1].div = null;
-
-      furniturePalette = new FloorplanPalette("ge-palette-0", myFloorplan);
-      furniturePalette.model = new go.GraphLinksModel(myFloorplan.makeDefaultFurniturePaletteNodeData());
-      palettes[0] = furniturePalette;
-
-      wallPartsPalette = new FloorplanPalette("ge-palette-1", myFloorplan);
-      wallPartsPalette.model = new go.GraphLinksModel(myFloorplan.makeDefaultWallpartsPaletteNodeData());
-      palettes[1] = wallPartsPalette;
-
-      // set default model for all Cloud Storage subclasses
-      for (i in storages) {
-        var storage = storages[i];
-        var dm = JSON.stringify({
-          "class": "GraphLinksModel",
-          "copiesKey": false,
-          "modelData": { "units": "meters", "unitsAbbreviation": "m", "unitsConversionFactor": 0.02, "gridSize": 10, "wallThickness": 10, "preferences": { "showWallGuidelines": true, "showWallLengths": true, "showWallAngles": true, "showOnlySmallWallAngles": true, "showGrid": true, "gridSnap": true } },
-          "nodeDataArray": [],
-          "linkDataArray": []
-        });
-        storage.defaultModel = dm;
-      }
-
-      // listen if the model of the Floorplan changes completely -- if so, there has been a load event, and we must update walls / rooms
-      myFloorplan.addDiagramListener("InitialLayoutCompleted", function (e) {
-
-        // update units, grid size, units / px, showGrid, and preferences from the loading model's modelData
-        var unitsForm = document.getElementById('unitsForm');
-        var gridSizeInput = document.getElementById('gridSizeInput');
-        var showGridCheckbox = document.getElementById('showGridCheckbox');
-        var gridSnapCheckbox = document.getElementById('gridSnapCheckbox');
-        var showWallGuidelinesCheckbox = document.getElementById('wallGuidelinesCheckbox');
-        var showWallLengthsCheckbox = document.getElementById('wallLengthsCheckbox');
-        var showWallAnglesCheckbox = document.getElementById('wallAnglesCheckbox');
-        var showOnlySmallWallAnglesCheckbox = document.getElementById('onlySmallWallAnglesCheckbox');
-
-        var unitsConversionFactorInput = document.getElementById('unitsConversionFactorInput');
-
-        var fp = e.diagram;
-        var md = fp.model.modelData;
-        var units = md.units;
-        // if (units === undefined) return;
-        var unitsRadioChecked = document.getElementById(units);
-        unitsRadioChecked.checked = true;
-        var gridSize = md.gridSize;
-        gridSize = fp.convertPixelsToUnits(gridSize);
-        gridSizeInput.value = gridSize;
-        fp.changeGridSize(gridSizeInput);
-        var unitsConversionFactor = md.unitsConversionFactor;
-        unitsConversionFactorInput.value = unitsConversionFactor;
-        fp.changeUnitsConversionFactor(unitsConversionFactorInput, gridSizeInput);
-        fp.changeUnits(unitsForm);
-
-        var showGrid = md.preferences.showGrid;
-        var gridSnap = md.preferences.gridSnap;
-        var showWallGuidelines = md.preferences.showWallGuidelines;
-        var showWallLengths = md.preferences.showWallLengths;
-        var showWallAngles = md.preferences.showWallAngles;
-        var showOnlySmallWallAngles = md.preferences.showOnlySmallWallAngles;
-
-        showGridCheckbox.checked = showGrid;
-        gridSnapCheckbox.checked = gridSnap;
-        showWallGuidelinesCheckbox.checked = showWallGuidelines;
-        showWallLengthsCheckbox.checked = showWallLengths;
-        showWallAnglesCheckbox.checked = showWallAngles;
-        showOnlySmallWallAnglesCheckbox = showOnlySmallWallAngles;
-
-        fp.checkboxChanged('showGridCheckbox');
-        fp.checkboxChanged('gridSnapCheckbox');
-        fp.checkboxChanged('wallGuidelinesCheckbox');
-        fp.checkboxChanged('wallLengthsCheckbox');
-        fp.checkboxChanged('wallAnglesCheckbox');
-        fp.checkboxChanged('onlySmallWallAnglesCheckbox');
-
-        // update walls and rooms geometries
-        fp.nodes.iterator.each(function (n) {
-          if (n.category === "WallGroup") {
-            fp.updateWall(n);
-          }
-
-          if (n.category === "RoomNode") {
-            fp.updateRoom(n);
-          }
-        });
-
+      requirejs.config({
+        "paths": {
+          "jquery": "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min",
+          "jquery-ui": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min"
+        },
       });
 
-      // Update the tools buttons so the tool in use is highlighted
-      updateButtons = function (func, el) {
-        func.call(myFloorplan);
-        var toolButtons = document.getElementsByClassName('toolButtons');
-        for (var i = 0; i < toolButtons.length; i++) {
-          var tb = toolButtons[i];
-          if (tb === el) {
-            tb.style.background = "#4b545f";
-            tb.style.color = "white";
-          }
-          else {
-            tb.style.background = "rgb(221, 221, 221)";
-            tb.style.color = "black";
-          }
-        }
-      }
-
-      JQUERY(function () {
-        JQUERY("#ge-palettes-container").accordion({
-          heightStyle: "content",
-          activate: function (event, ui) {
-            for (var i = 0; i < palettes.length; i++) {
-              var palette = palettes[i];
-              palette.requestUpdate();
-            }
-          }
-        });
-        //JQUERY("#ge-overviews-container").accordion();
-        var draggables = document.getElementsByClassName("ge-draggable");
-        for (var i = 0; i < draggables.length; i++) {
-          var draggable = draggables[i];
-          var id = "#" + draggable.id; var hid = id + "-handle";
-          // When a window is dragged, its height is set. this is bad. unset height / maybe width after dragging
-          JQUERY(id).draggable({
-            handle: hid, stack: ".ge-draggable", containment: "parent", scroll: false, stop: function (event) {
-              this.style.height = "unset";
-              var did = event.target.id;
-              // only unset width for inspector and options menu, whose widths are dependent on contents
-              if (did === 'ge-inspector-window' || did === 'optionsWindow') {
-                this.style.width = "unset";
-              }
-            }
-          });
-        }
-      }); // end jQuery
-
-      // add options window hotkey (other hotkeys are defined in goeditor-setup.js)
-      document.body.addEventListener("keydown", function (e) {
-        var keynum = e.which;
-        if (e.ctrlKey) {
-          e.preventDefault();
-          switch (keynum) {
-            case 66: geHideShowWindow('optionsWindow'); break; // ctrl + b
-          }
-        }
+      require(["jquery", "./src/FloorplannerScript", "jquery-ui"], function ($, app) {
+        app.init($);
       });
-
-      // function to tweal inspector for app-specific stuff is in floorplanner-datainspector-overrides.js
-      tweakInspectorForFloorplanner(inspector);
-
-      var defaultModelTextarea = document.getElementById('defaultModelTextarea');
-      var defaultModelString = defaultModelTextarea.value;
-      var defaultModelJson = JSON.parse(defaultModelString);
-      myFloorplan.model = go.Model.fromJson(defaultModelJson);
 
     } // end init
 
@@ -222,9 +52,7 @@
 
 <body onload="init();">
   <div>
-
     <nav>
-
       <span id="currentStorageSpan"></span>
       <ul id="ge-filemenus">
         <li>
@@ -410,9 +238,7 @@
     allows users to save / load diagram files to / from LocalStorage, Google Drive, Microsoft OneDrive, and Dropbox.
   </p>
   <p>
-    To modify this extension, one must modify the .ts source files (in this project's 'src' directory'), then run <code>npm run build</code>
-    from the project's main directory. This will output a new
-    <code>gfp.js</code> bundle that can be used.
+    To modify this extension, one must modify the .ts source files (in this project's 'src' directory'), then run <code>tsc</code>.
   </p>
 
   <textarea style='visibility: hidden;' id='defaultModelTextarea'>

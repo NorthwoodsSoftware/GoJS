@@ -2,7 +2,7 @@
 *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-import * as go from 'gojs';
+import * as go from '../../../release/go';
 
 // A custom Tool for moving a label on a Node
 export class NodeLabelDraggingTool extends go.Tool {

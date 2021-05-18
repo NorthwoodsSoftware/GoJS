@@ -5,11 +5,12 @@ document.addEventListener("DOMContentLoaded", function() {
   p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS/blob/master/" +
                 path + "' target='_blank'>View this sample page's source on GitHub</a>";
   document.getElementById("sample").appendChild(p1);
-  if (window.go) {
-    var p2 = document.createElement("p");
-    p2.innerHTML = 'GoJS ' + go.version;
-    document.getElementById("sample").appendChild(p2);
-  }
+  var version = '';
+  if (window.go) version = 'GoJS version ' + go.version + '. '
+  var p2 = document.createElement("p");
+  p2.classList = "text-xs";
+  p2.innerHTML = version + 'Copyright 1998-2021 by Northwoods Software.';
+  document.getElementById("sample").appendChild(p2);
 
   document.getElementById("navSide").innerHTML = (dirName[0] === 'samples') ? (navContent + navContent2) : (navContent + navContentExtensions);
   var sidebutton = document.getElementById("navButton");
@@ -30,7 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var lowerhref = aTags[i].href.toLowerCase();
     if (lowerhref.indexOf('/' + url) !== -1) {
       currentindex = i;
-      aTags[i].classList.add("bg-nwoods-secondary", "text-white");
+      aTags[i].classList.add("bg-nwoods-secondary");
+      aTags[i].style = "color: white";
       break;
     }
   }
@@ -41,6 +43,13 @@ document.addEventListener("DOMContentLoaded", function() {
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+  var getOutboundLink = function(url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
 
   // topnav
   var topButton = document.getElementById("topnavButton");

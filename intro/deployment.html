@@ -39,8 +39,10 @@
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
         </ul>
       </div>
     </div>
@@ -118,6 +120,7 @@
   <a href="printing.html">Printing</a>
   <a href="serverSideImages.html">Server-side Images</a>
   <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="testing.html">Testing</a>
   <a href="storage.html">Storage</a>
   <a href="performance.html">Performance</a>
   <a href="source.html">Building from Source</a>
@@ -131,10 +134,10 @@
 
 <h1>Deployment</h1>
 <p>
-  If you have downloaded a copy of the <b>GoJS</b> library from <a href="https://gojs.net">gojs.net</a>
+  If you have downloaded a copy of the <b>GoJS</b> library from <a href="https://gojs.net">gojs.net</a> or npm or GitHub
   for use in your own app, you have probably noticed that a watermark appears in the diagram.
-  For version 1.7 and beyond, you need to use a license key to remove this watermark from your domain.
-  For version 1.6 and older, you need to get a generated <code>go.js</code> or <code>go-debug.js</code> library that is tied to your particular domain.
+  For version 1.8 and beyond, you need to use a license key to remove this watermark from your domain.
+  For versions 1.7 and earlier, which are no longer really supported, contact us for instructions.
 </p>
 <p>
   When you want to deploy to your own web site your app that uses <b>GoJS</b>, you will need to make a request at:
@@ -162,7 +165,7 @@
   such as for downloading image files.
 </p>
 
-<h2 id="For1.7AndLater">For 1.7 and Later</h2>
+<h2 id="For1.8AndLater">For 1.8 and Later</h2>
 <p>
   Our server will generate a GoJS license key for you, in the form of a JavaScript statement that you will need to include with your code.
   It must execute after the GoJS library file has been loaded, but before you create your first <a>Diagram</a>.
@@ -176,16 +179,15 @@ go.licenseKey = "YourKeyHere";
 </code></pre>
 <p>
   This mechanism works when using either the release library, <code>go.js</code>, or the debug library,
-  <code>go-debug.js</code>, but only with GoJS version 1.7 or later.
+  <code>go-debug.js</code>, but only with GoJS version 1.8 or later.
   Note that this assignment is of a static property of the Diagram class: <a>Diagram,licenseKey</a>.
   Of course you will need to substitute your generated license key string for <code>"YourKeyHere"</code> in the <code>go.Diagram.licenseKey</code> assignment statement.
   License keys are long strings without any embedded whitespace or punctuation.
   You can request license keys for as many domains as you have licensed.
 </p>
 <p>
-  Unlike the older activation method, you no longer need to get a new domain-specific <code>go.js</code> library each time you update or upgrade.
   Once your key is in place, you can continue to use the same key while updating the patch version of GoJS.
-  For example, a license key for version 1.7.3 will work for all versions 1.7.*.
+  For example, a license key for version 1.8.3 will work for all versions 1.8.*.
   Remember to get a new license key when upgrading to a new major or minor version of GoJS.
   For example, when upgrading from version 5.3.1 to version 5.4.6, you will need a new license key.
 </p>
@@ -199,51 +201,18 @@ go.licenseKey = "YourKeyHere";
   or you can install it via <a href="https://www.npmjs.com/package/gojs" target="_blank">Node package manager (npm)</a>
   or via <a href="https://www.nuget.org/packages/Northwoods.GoJS/" target="_blank">NuGet</a>,
   or you can link to a CDN such as <a href="https://unpkg.com/browse/gojs/" target="_blank">UNPKG</a> or <a href="https://www.jsdelivr.com/package/npm/gojs">JSDELIVR</a>.
-  Most customers will no longer need a special build of GoJS, as had been the case before version 1.7.
 </p>
 
 <h2 id="ForUnlimitedDomainsOEMCustomers">For Unlimited Domains OEM Customers</h2>
 <p>
   If you are an ISV and intend to distribute your app to run on many customers' web sites,
-  <a href="https://www.nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and
-  instructions on requesting and using a custom <code>go.js</code> library that works on any site or platform.
+  <a href="https://www.nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and instructions.
 </p>
 <p>
-  When building a desktop application using Electron or Cordova or NW or when hosted in a WebView as part of a desktop application,
+  When building a desktop application using Electron or when hosted in a WebView as part of a desktop application,
   your HTML page is not being served from a web server at a domain.
   In such circumstances you will need to use the Unlimited Domains option to make sure your Diagram does not display a watermark.
-  You should use your organization's domain as the requested domain name.
 </p>
-<p>
-  The procedure for unlimited domains is similar to the procedure followed for the 1.6 and older versions,
-  but with the addition of requiring a license key.
-</p>
-
-<h2 id="For1.6AndOlder">For 1.6 and Older</h2>
-<p>
-  Our automated web server will create <code>go.js</code> and <code>go-debug.js</code> libraries that are customized
-  not to show a watermark on pages from that domain and will e-mail you instructions for how to download them.
-</p>
-<p>
-  You can request libraries for as many domains as you have licensed.
-  If there is a problem you will receive e-mail from our web server describing the problem.
-</p>
-<p>
-  When updating or upgrading to a new version of <b>GoJS</b> less than version 1.7,
-  you will need to get a new domain-specific <code>go.js</code> library again using the same procedure.
-  (We too had to produce one for the domain "gojs.net" each time we updated our web site.)
-</p>
-
-<!--
-<p>
-  If you are building a Windows Store JavaScript app, there is no domain name.
-  Instead you should use the application-specific "appId", a GUID.
-  To obtain the proper ID your app must first be <a href="https://msdn.microsoft.com/en-us/library/windows/apps/hh454036.aspx">packaged with the windows app store</a>,
-  so that the package name is the one to be used in production.
-  Once you have associated your app with the windows store,
-  you can find this GUID in your <code>package.appxmanifest</code> file as the <code>&lt;Package&gt;</code> <code>&lt;Identity&gt;</code> <code>Name</code> attribute.
-</p>
--->
 
 <h2 id="InternationalizationAndLocalization">Internationalization and Localization</h2>
 <p>
@@ -287,19 +256,19 @@ go.licenseKey = "YourKeyHere";
               <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="samples/index.html">Samples</a>
+                  <a href="../samples/index.html">Samples</a>
                 </li>
                 <li>
-                  <a href="learn/index.html">Learn</a>
+                  <a href="../learn/index.html">Learn</a>
                 </li>
                 <li>
-                  <a href="intro/index.html">Intro</a>
+                  <a href="../intro/index.html">Intro</a>
                 </li>
                 <li>
-                  <a href="api/index.html">API</a>
+                  <a href="../api/index.html">API</a>
                 </li>
                 <li>
-                  <a href="changelog.html">Changelog</a>
+                  <a href="../changelog.html">Changelog</a>
                 </li>
                 <li>
                   <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
@@ -310,7 +279,8 @@ go.licenseKey = "YourKeyHere";
               <h2 class="text-base font-semibold tracking-wide">Support</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="https://www.nwoods.com/contact.html" onclick="ga('send','event','Outbound Link','click','contact');">Contact</a>
+                  <a href="https://www.nwoods.com/contact.html"
+                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
                 </li>
                 <li>
                   <a href="https://forum.nwoods.com/c/gojs">Forum</a>
@@ -319,7 +289,8 @@ go.licenseKey = "YourKeyHere";
                   <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
                 </li>
                 <li>
-                  <a href="https://www.nwoods.com/sales/index.html" onclick="ga('send','event','Outbound Link','click','buy');">Buy</a>
+                  <a href="https://www.nwoods.com/sales/index.html"
+                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
                 </li>
                 <li>
                   <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
@@ -360,6 +331,13 @@ go.licenseKey = "YourKeyHere";
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+  var getOutboundLink = function(url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
 
   // topnav
   var topButton = document.getElementById("topnavButton");
