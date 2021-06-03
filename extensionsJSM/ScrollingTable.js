@@ -121,7 +121,7 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
             rowh = table.elt(idx + 1).actualBounds.height;
         const numVisibleRows = Math.max(1, Math.ceil(tabh / rowh) - 1);
         const needed = idx > 0 || idx + numVisibleRows <= table.rowCount;
-        bar.opacity = needed ? 1.0 : 0.0;
+        bar.opacity = needed ? 1.0 : 0.5;
     }
     return $(go.Panel, 'Table', {
         _updateScrollBar: updateScrollBar

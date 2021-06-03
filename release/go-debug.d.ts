@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.40
+ * Type definitions for GoJS v2.1.41
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -7446,11 +7446,12 @@ export class RotatingTool extends Tool {
      */
     readonly originalAngle: number;
     /**
-     * This read-only property returns the value returned by the call to #computeRotationPoint.
+     * Gets or sets the Point at which the axis of the rotation should be.
+     * #doActivate saves here the value returned by the call to #computeRotationPoint.
      * The value is invalid when this tool is not active.
      * @since 2.0
      */
-    readonly rotationPoint: Point;
+    rotationPoint: Point;
     /**
      * Gets or sets the spot to locate the Adornment for the rotation handle when it does not have a Placeholder.
      * This assumes the Adornment's location will be at the center of the rotation handle.
@@ -11542,13 +11543,16 @@ export class Diagram {
      */
     readonly viewportBounds: Rect;
     /**
-     * Gets or sets a fixed bounding rectangle to be returned by #viewportBounds
-     * when #div is null.
-     * By default this is (NaN, NaN), and it is not typically set except in DOM-less environments
-     * where there will not be a Diagram DIV. Normally, the viewportBounds is sized by the DIV.
+     * Gets or sets a fixed size in document coordinates to be returned by #viewportBounds when the Diagram's #div is `null`.
+     * This property is intended to be used in DOM-less environments where there is no Diagram #div expected, to simulate the size of the DIV.
+     * Normally, the #viewportBounds is sized by the DIV instead.
      *
-     * See the intro page on <a href="../../intro/nodeScript.html">GoJS within Node</a> for a usage example.
+     * By default this is `Size(NaN, NaN)`.
+     * If #div is set, its size will be used for #viewportBounds instead of this property.
      *
+     * See the intro page on <a href="../../intro/nodeScript.html">GoJS within Node.js</a> for a usage example.
+     *
+     * @see #viewportBounds
      * @since 2.0
      */
     viewSize: Size;
@@ -15724,7 +15728,7 @@ export abstract class PanelLayout {
      * This must call #measureElement with each Panel element, which will set the
      * GraphObject#measuredBounds of those elements. Depending on how the Panel intends to lay out its elements,
      * the programmer must construction the `union` by setting `union.width` and `union.height` of the supplied argument.
-     * For example the PanelLayoutHorizontal measures its elements and sums their widths to set its `union.width`,
+     * For example PanelLayoutHorizontal measures its elements and sums their widths to set its `union.width`,
      * and takes the maximum of their heights to set its `union.height`.
      *
      * This union must reflect the measured size of the Panel. After measure is called, the Panel class will modify this union Rect,
@@ -15763,7 +15767,7 @@ export abstract class PanelLayout {
      * For arranging some elements, it is useful to know the total unioned area of every element, which is given as the `union` argument.
      * This Rect can be used to right-align or center-align, etc, elements within an area.
      *
-     * For example, the PanelLayoutHorizontal arranges each element sequentially, starting with an `x` value of `0`,
+     * For example, PanelLayoutHorizontal arranges each element sequentially, starting with an `x` value of `0`,
      * and increasing it by each previous element's GraphObject#measuredBounds `width`.
      * The horizontal Panel arranges each element with a `y` value determined by  the `union` argument's `height`
      * considering the GraphObject#alignment of the element, and the GraphObject's own `measuredBounds.height`.

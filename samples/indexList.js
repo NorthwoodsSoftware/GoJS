@@ -1136,6 +1136,14 @@ arr.push([
   ["customlayout", "extensions"]
 ]);
 
+arr.push([
+  "../extensionsTS/VirtualizedPacked",
+  "Virtualized Packed Layout",
+  "A virtualized version of PackedLayout that positions nodes in a packed area.",
+  "VirtualizedPacked",
+  ["customlayout", "extensions", "performance"]
+]);
+
 // Tools
 arr.push([
   "../extensions/RealtimeDragSelecting",
@@ -1173,6 +1181,14 @@ arr.push([
   "Rotate Multiple",
   "A custom RotatingTool that lets the user rotate many selected objects at once.",
   "RotateMultiple",
+  ["tools", "extensions"]
+]);
+
+arr.push([
+  "../extensions/SpotRotating",
+  "Spot Rotating",
+  "A custom RotatingTool that lets the user shift the rotation point.",
+  "SpotRotating",
   ["tools", "extensions"]
 ]);
 
