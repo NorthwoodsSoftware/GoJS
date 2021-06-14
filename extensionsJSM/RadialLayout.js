@@ -82,8 +82,10 @@ export class RadialLayout extends go.Layout {
         if (this.network === null) {
             this.network = this.makeNetwork(coll);
         }
-        if (this.network.vertexes.count === 0)
+        if (this.network.vertexes.count === 0) {
+            this.network = null;
             return;
+        }
         if (this.root === null) {
             // If no root supplied, choose one without any incoming edges
             const rit = this.network.vertexes.iterator;
@@ -100,8 +102,10 @@ export class RadialLayout extends go.Layout {
             const first = this.network.vertexes.first();
             this.root = first === null ? null : first.node;
         }
-        if (this.root === null)
-            return; // nothing to do
+        if (this.root === null) { // nothing to do
+            this.network = null;
+            return; 
+        }
         const rootvert = this.network.findVertex(this.root);
         if (rootvert === null)
             throw new Error('RadialLayout.root must be a Node in the LayoutNetwork that the RadialLayout is operating on');

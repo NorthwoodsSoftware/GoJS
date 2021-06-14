@@ -121,8 +121,10 @@ var __extends = (this && this.__extends) || (function () {
             if (this.network === null) {
                 this.network = this.makeNetwork(coll);
             }
-            if (this.network.vertexes.count === 0)
+            if (this.network.vertexes.count === 0) {
+                this.network = null;
                 return;
+            }
             if (this.root === null) {
                 // If no root supplied, choose one without any incoming edges
                 var rit = this.network.vertexes.iterator;
@@ -139,8 +141,10 @@ var __extends = (this && this.__extends) || (function () {
                 var first = this.network.vertexes.first();
                 this.root = first === null ? null : first.node;
             }
-            if (this.root === null)
-                return; // nothing to do
+            if (this.root === null) { // nothing to do
+                this.network = null;
+                return;
+            }
             var rootvert = this.network.findVertex(this.root);
             if (rootvert === null)
                 throw new Error('RadialLayout.root must be a Node in the LayoutNetwork that the RadialLayout is operating on');

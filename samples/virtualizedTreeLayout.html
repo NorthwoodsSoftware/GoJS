@@ -393,14 +393,15 @@
     go.TreeLayout.prototype.commitLayout.call(this);
     // can't depend on regular bounds computation that depends on all Nodes existing
     this.diagram.fixedBounds = computeDocumentBounds();
-    // update the positions of any existing Nodes
-    this.diagram.nodes.each(function(node) {
-      node.updateTargetBindings();
-    });
 
     this.diagram.remove(VirtualizedTreeEdge._dummyFromNode);
     this.diagram.remove(VirtualizedTreeEdge._dummyToNode);
     this.diagram.remove(VirtualizedTreeEdge._dummyLink);
+
+    // update the positions of any existing Nodes
+    this.diagram.nodes.each(function(node) {
+      node.updateTargetBindings();
+    });
   };
 
   VirtualizedTreeLayout._cachedLinks = [];

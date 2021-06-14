@@ -336,9 +336,9 @@
               var shp = grp.resizeObject;
               if (grp.diagram.undoManager.isUndoingRedoing) return;
               if (grp.isSubGraphExpanded) {
-                shp.width = grp._savedBreadth;
+                shp.width = grp.data.savedBreadth;
               } else {
-                grp._savedBreadth = shp.width;
+                if (!isNaN(shp.width)) grp.diagram.model.set(grp.data, "savedBreadth", shp.width);
                 shp.width = NaN;
               }
               updateCrossLaneLinks(grp);
@@ -524,7 +524,7 @@
   </p>
   <p>
     Each Group is collapsible.
-    The previous breadth of that lane is saved in the _savedBreadth property, to be restored when expanded.
+    The previous breadth of that lane is saved in the savedBreadth property, to be restored when expanded.
   </p>
   <p>
     When a Group/lane is selected, its custom <a>Part.resizeAdornmentTemplate</a>

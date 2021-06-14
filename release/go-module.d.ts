@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.41
+ * Type definitions for GoJS v2.1.42
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8610,10 +8610,13 @@ export class AnimationManager {
     /**
      * Gets or sets whether this AnimationManager operates.
      *
-     * The default value is true.
-     * Setting this to false does not stop an animation, it only stops future animations.
+     * The default value is `true`.
+     * Setting this to `false` does not stop an animation, it only stops future animations.
      * To stop any ongoing animation, use #stopAnimation.
      * To disable only the default animations, set #canStart to a function that always returns `false`.
+     *
+     * If any indefinite animations (animations with Animation#runCount set to `Infinity`) were running
+     * when this is set to `false`, they will be resumed when this is set to `true`.
      *
      * Setting this property does not raise any events.
      * @see #canStart
@@ -17566,6 +17569,16 @@ export class TextBlock extends GraphObject {
      */
     static OverflowEllipsis: EnumValue;
     /**
+     * Undocumented
+     * @constant
+     */
+    static FormatTrim: EnumValue;
+    /**
+     * Undocumented
+     * @constant
+     */
+    static FormatNone: EnumValue;
+    /**
      * Gets or sets the current font settings.
      * The font property must be a valid CSS string describing a font.
      * The font string can accept several CSS properties but they must be
@@ -17802,6 +17815,10 @@ export class TextBlock extends GraphObject {
      * Undocumented
      */
     spacingBelow: number;
+    /**
+     * Undocumented
+     */
+    formatting: EnumValue;
     /**
      * Gets or sets the maximum number of lines that this TextBlock can display.
      * Value must be a greater than zero whole number or `Infinity`.

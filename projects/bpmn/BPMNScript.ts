@@ -930,9 +930,9 @@ export function init() {
           if (grp.diagram.undoManager.isUndoingRedoing) return;
           const shp = grp.resizeObject;
           if (grp.isSubGraphExpanded) {
-            shp.height = (grp as any)['_savedBreadth'];
+            shp.height = grp.data.savedBreadth;
           } else {
-            (grp as any)['_savedBreadth'] = shp.height;
+            if (!isNaN(shp.height)) grp.diagram.model.set(grp.data, "savedBreadth", shp.height);
             shp.height = NaN;
           }
           updateCrossLaneLinks(grp);
