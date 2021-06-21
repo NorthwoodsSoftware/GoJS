@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.42<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.43<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class LinkingTool</h1>
@@ -334,8 +334,10 @@
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Start the linking operation.</p>
-								<p>If the <a href="LinkingTool.html#startObject">startObject</a> is already set, it uses that object to find the starting port.
-								If it is not set, this calls <a href="LinkingTool.html#findLinkablePort">findLinkablePort</a> and remembers it as the starting port.</p>
+								<p>This calls <a href="LinkingTool.html#findLinkablePort">findLinkablePort</a> to find the port from which to start drawing a new link.
+									If the <a href="LinkingTool.html#startObject">startObject</a> is already set, it uses that object to find the starting port.
+									If it is not set, it looks for a linkable port at the <a href="Diagram.html#firstInput">Diagram.firstInput</a> point.
+								If it finds one, it remembers it as the starting port, otherwise it stops this tool.</p>
 								<p>It then starts a transaction, captures the mouse, and changes the cursor.
 									Next it initializes and adds the <a href="LinkingBaseTool.html#temporaryFromNode">LinkingBaseTool.temporaryFromNode</a>,
 									<a href="LinkingBaseTool.html#temporaryToNode">LinkingBaseTool.temporaryToNode</a>, and <a href="LinkingBaseTool.html#temporaryLink">LinkingBaseTool.temporaryLink</a> to the diagram.
@@ -459,6 +461,9 @@
 							<div class="tsd-comment tsd-typography">
 								<p>Return the <a href="GraphObject.html">GraphObject</a> at the mouse-down point,
 								if it is part of a node and if it is valid to link with it.</p>
+								<p>This starts looking for a port at the <a href="LinkingTool.html#startObject">startObject</a> if it is non-null,
+									otherwise it looks for an object at the <a href="Diagram.html#firstInput">Diagram.firstInput</a>&#39;s <a href="InputEvent.html#documentPoint">InputEvent.documentPoint</a>.
+								If it finds no object, or if the object it finds is not in a node, this method returns null.</p>
 								<p>This method may be overridden, but we recommend that you call this base method.
 								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
 							</div>

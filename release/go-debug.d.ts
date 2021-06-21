@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.42
+ * Type definitions for GoJS v2.1.43
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5315,6 +5315,8 @@ export class ToolManager extends Tool {
      * Gets or sets the time between when the mouse stops moving and a hover event,
      * in milliseconds. This value affects the delay before GraphObject#toolTips are shown.
      * The default value is 850 milliseconds.
+     *
+     * Set #toolTipDuration to control how long a tooltip will remain visible.
      */
     hoverDelay: number;
     /**
@@ -5335,6 +5337,8 @@ export class ToolManager extends Tool {
      * The default value is 5000 milliseconds.
      *
      * This is used by #showToolTip to determine how long to wait before calling #hideToolTip.
+     *
+     * Set #hoverDelay to control how long the mouse should stay stationary before it shows a tooltip.
      */
     toolTipDuration: number;
     /**
@@ -6392,6 +6396,10 @@ export class LinkingTool extends LinkingBaseTool {
      * Return the GraphObject at the mouse-down point,
      * if it is part of a node and if it is valid to link with it.
      *
+     * This starts looking for a port at the #startObject if it is non-null,
+     * otherwise it looks for an object at the Diagram#firstInput's InputEvent#documentPoint.
+     * If it finds no object, or if the object it finds is not in a node, this method returns null.
+     *
      * This method may be overridden, but we recommend that you call this base method.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
@@ -6407,8 +6415,10 @@ export class LinkingTool extends LinkingBaseTool {
     /**
      * Start the linking operation.
      *
+     * This calls #findLinkablePort to find the port from which to start drawing a new link.
      * If the #startObject is already set, it uses that object to find the starting port.
-     * If it is not set, this calls #findLinkablePort and remembers it as the starting port.
+     * If it is not set, it looks for a linkable port at the Diagram#firstInput point.
+     * If it finds one, it remembers it as the starting port, otherwise it stops this tool.
      *
      * It then starts a transaction, captures the mouse, and changes the cursor.
      * Next it initializes and adds the LinkingBaseTool#temporaryFromNode,
@@ -22231,14 +22241,23 @@ export class LayoutVertex {
     network: LayoutNetwork;
     /**
      * This read-only property returns an iterator for all of the vertexes that are connected with edges coming into this vertex.
+     *
+     * Note that this is inefficient compared to iterating over the edges (#sourceEdges) due to the need
+     * to avoid duplicate vertexes if there happen to be multiple edges connecting with the same vertex.
      */
     readonly sourceVertexes: Iterator<LayoutVertex>;
     /**
      * This read-only property returns an iterator for all of the vertexes that are connected with edges going out of this vertex.
+     *
+     * Note that this is inefficient compared to iterating over the edges (#destinationEdges) due to the need
+     * to avoid duplicate vertexes if there happen to be multiple edges connecting with the same vertex.
      */
     readonly destinationVertexes: Iterator<LayoutVertex>;
     /**
      * This read-only property returns an iterator for all of the vertexes that are connected in either direction with this vertex.
+     *
+     * Note that this is inefficient compared to iterating over the edges (#sourceEdges and #destinationEdges) due to the need
+     * to avoid duplicate vertexes if there happen to be multiple edges connecting with the same vertex.
      */
     readonly vertexes: Iterator<LayoutVertex>;
     /**
@@ -22251,6 +22270,8 @@ export class LayoutVertex {
     readonly destinationEdges: Iterator<LayoutEdge>;
     /**
      * This read-only property returns an iterator for all of the edges that are connected with this vertex in either direction.
+     *
+     * Note that this is inefficient compared to iterating over the edges: #sourceEdges and #destinationEdges.
      */
     readonly edges: Iterator<LayoutEdge>;
     /**
