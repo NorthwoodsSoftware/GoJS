@@ -1525,7 +1525,7 @@ arr.push([
 ]);
 
 arr.push([
-  "minimalSVG",
+  "minimalSvg",
   "Minimal SVG Download",
   "Minimal, showing SVG creation with Diagram.makeSvg, and download.",
   "minimal",
