@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+<meta name="description" content="Minimal, showing SVG rendering and download with Diagram.makeSvg."/> 
+<link rel="stylesheet" href="../assets/css/style.css"/> 
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<title>Minimal SVG Download</title>
+</head>
+
+<body>
+  <!-- This top nav is not part of the sample code -->
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">GoJS</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
+        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
+          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
+           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
+    <!-- * * * * * * * * * * * * * -->
+    <!-- Start of GoJS sample code -->
+    
+    <script src="../release/go.js"></script>
+    <div class="p-4 w-full">
+    <script id="code">
+    function init() {
+
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+        {
+          "undoManager.isEnabled": true  // enable undo & redo
+        });
+
+      // define a simple Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",  // the Shape will go around the TextBlock
+          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+            // Shape.fill is bound to Node.data.color
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 8 },  // some room around the text
+            // TextBlock.text is bound to Node.data.key
+            new go.Binding("text", "key"))
+        );
+
+      // but use the default Link template, by not setting Diagram.linkTemplate
+
+      // create the model data that will be represented by Nodes and Links
+      myDiagram.model = new go.GraphLinksModel(
+        [
+          { key: "Alpha", color: "lightblue" },
+          { key: "Beta", color: "orange" },
+          { key: "Gamma", color: "lightgreen" },
+          { key: "Delta", color: "pink" }
+        ],
+        [
+          { from: "Alpha", to: "Beta" },
+          { from: "Alpha", to: "Gamma" },
+          { from: "Beta", to: "Beta" },
+          { from: "Gamma", to: "Delta" },
+          { from: "Delta", to: "Alpha" }
+        ]);
+
+      document.getElementById("svgButton").addEventListener("click", makeSvg);
+    }
+
+    // When the blob is complete, make an anchor tag for it and use the tag to initiate a download
+    // Works in Chrome, Firefox, Safari, Edge, IE11
+    function myCallback(blob) {
+      var url = window.URL.createObjectURL(blob);
+      var filename = "mySVGFile.svg";
+
+      var a = document.createElement("a");
+      a.style = "display: none";
+      a.href = url;
+      a.download = filename;
+
+      // IE 11
+      if (window.navigator.msSaveBlob !== undefined) {
+        window.navigator.msSaveBlob(blob, filename);
+        return;
+      }
+
+      document.body.appendChild(a);
+      requestAnimationFrame(function() {
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      });
+    }
+
+    function makeSvg() {
+      var svg = myDiagram.makeSvg({ scale: 1, background: "white" });
+      var svgstr = new XMLSerializer().serializeToString(svg);
+      var blob = new Blob([svgstr], { type: "image/svg+xml" });
+      myCallback(blob);
+    }
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+<div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       This also adds a border to help see the edges of the viewport. -->
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <button id="svgButton">Make SVG and Download</button>
+  <p>
+    This sample shows how to use <a>Diagram.makeSvg</a> function to render all or part of a diagram
+    and to initiate a file download.
+  </p>
+</div>
+    </div>
+    <!-- * * * * * * * * * * * * * -->
+    <!--  End of GoJS sample code  -->
+  </div>
+</body>
+<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+<script src="../assets/js/goSamples.js"></script>
+</html>
