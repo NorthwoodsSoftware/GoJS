@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minimal GoJS Sample Generating PDF</title>
+<meta name="description" content="A simple demonstration of generating a PDF file in the browser, showing it in the page, and downloading it as a file." />
+<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="https://unpkg.com/gojs"></script>
+<script src="../../samples/assets/require.js"></script>
+<script id="code">
+  // This just creates and initializes a Diagram.\
+  // The details do not really matter for this demo.
+  function init() {
+    var $ = go.GraphObject.make;
+
+    myDiagram = $(go.Diagram, "myDiagramDiv",
+                  {
+                    "undoManager.isEnabled": true,
+                    "grid.visible": true
+                  });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          { strokeWidth: 0, fill: "white" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8 },
+          new go.Binding("text", "key"))
+      );
+
+    myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: "Alpha", color: "lightblue" },
+      { key: "Beta", color: "orange" },
+      { key: "Gamma", color: "lightgreen" },
+      { key: "Delta", color: "pink" }
+    ],
+    [
+      { from: "Alpha", to: "Beta" },
+      { from: "Alpha", to: "Gamma" },
+      { from: "Beta", to: "Beta" },
+      { from: "Gamma", to: "Delta" },
+      { from: "Delta", to: "Alpha" }
+    ]);
+  }
+
+
+  // This common function is called both when showing the PDF in an iframe and when downloading a PDF file.
+  // The options include:
+  //   "pageSize", either "A4" or "LETTER" (the default)
+  //   "layout", either "portrait" (the default) or "landscape"
+  //   "margin" for the uniform page margin on each page (default is 36 pt)
+  //   "padding" instead of the Diagram.padding when adjusting the Diagram.documentBounds for the area to render
+  //   "imgWidth", size of diagram image for one page; defaults to the page width minus margins
+  //   "imgHeight", size of diagram image for one page; defaults to the page height minus margins
+  //   "imgResolutionFactor" for how large the image should be scaled when rendered for each page;
+  //     larger is better but significantly increases memory usage (default is 3)
+  //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeImageData
+  function generatePdf(action, diagram, options) {
+    if (!(diagram instanceof go.Diagram)) throw new Error("no Diagram provided when calling generatePdf");
+    if (!options) options = {};
+
+    var pageSize = options.pageSize || "LETTER";
+    pageSize = pageSize.toUpperCase();
+    if (pageSize !== "LETTER" && pageSize !== "A4") throw new Error("unknown page size: " + pageSize);
+    // LETTER: 612x792 pt == 816x1056 CSS units
+    // A4: 595.28x841.89 pt == 793.71x1122.52 CSS units
+    var pageWidth = (pageSize === "LETTER" ? 612 : 595.28) * 96 / 72;  // convert from pt to CSS units
+    var pageHeight = (pageSize === "LETTER" ? 792 : 841.89) * 96 / 72;
+
+    var layout = options.layout || "portrait";
+    layout = layout.toLowerCase();
+    if (layout !== "portrait" && layout !== "landscape") throw new Error("unknown layout: " + layout);
+    if (layout === "landscape") {
+      var temp = pageWidth;
+      pageWidth = pageHeight;
+      pageHeight = temp;
+    }
+
+    var margin = options.margin !== undefined ? options.margin : 36;  // pt: 0.5 inch margin on each side
+    var padding = options.padding !== undefined ? options.padding : diagram.padding;  // CSS units
+
+    var imgWidth = options.imgWidth !== undefined ? options.imgWidth : (pageWidth-margin/72*96*2);  // CSS units
+    var imgHeight = options.imgHeight !== undefined ? options.imgHeight : (pageHeight-margin/72*96*2);  // CSS units
+    var imgResolutionFactor = options.imgResolutionFactor !== undefined ? options.imgResolutionFactor : 1;
+
+    var pageOptions = {
+      size: pageSize,
+      margin: margin,  // pt
+      layout: layout
+    };
+
+    require(["blob-stream", "pdfkit"], function(blobStream, PDFDocument) {
+      var doc = new PDFDocument(pageOptions);
+      var stream = doc.pipe(blobStream());
+      var bnds = diagram.documentBounds;
+
+      // add some descriptive text
+      //doc.text(diagram.nodes.count + " nodes, " + diagram.links.count + " links  Diagram size: " + bnds.width.toFixed(2) + " x " + bnds.height.toFixed(2));
+
+      var db = diagram.documentBounds.copy().subtractMargin(diagram.padding).addMargin(padding);
+      var p = db.position;
+
+      // if any page has no Parts partially or fully in it, skip rendering that page
+      var r = new go.Rect(p.x, p.y, db.width, db.height);
+
+      var makeOptions = {};
+      if (options.parts !== undefined) makeOptions.parts = options.parts;
+      if (options.background !== undefined) makeOptions.background = options.background;
+      if (options.showTemporary !== undefined) makeOptions.showTemporary = options.showTemporary;
+      if (options.showGrid !== undefined) makeOptions.showGrid = options.showGrid;
+      makeOptions.scale = imgResolutionFactor;
+      makeOptions.position = new go.Point(p.x, p.y);
+      makeOptions.size = new go.Size(db.width*imgResolutionFactor, db.height*imgResolutionFactor);
+      makeOptions.maxSize = new go.Size(Infinity, Infinity);
+
+      var imgdata = diagram.makeImageData(makeOptions);
+      doc.image(imgdata, { scale: 1/(imgResolutionFactor * 96/72 * Math.max(db.width/imgWidth, db.height/imgHeight)) });
+
+      doc.end();
+      stream.on('finish', function() { action(stream.toBlob('application/pdf')); });
+    });
+  }
+
+
+  // Two different uses of generatePdf: one shows the PDF document in the page,
+  // the other downloads it as a file and the user specifies where to save it.
+
+  var pdfOptions =  // shared by both ways of generating PDF
+    {
+      // layout: "landscape",  // instead of "portrait"
+      // pageSize: "A4"        // instead of "LETTER"
+    };
+
+  function showPdf() {
+    generatePdf(function(blob) {
+      var datauri = window.URL.createObjectURL(blob);
+      var frame = document.getElementById("myFrame");
+      if (frame) {
+        frame.style.display = "block";
+        frame.src = datauri;  // doesn't work in IE 11, but works everywhere else
+        setTimeout(function() { window.URL.revokeObjectURL(datauri); }, 1);
+      }
+    }, myDiagram, pdfOptions);
+  }
+
+  function downloadPdf() {
+    generatePdf(function(blob) {
+      var datauri = window.URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.style = "display: none";
+      a.href = datauri;
+      a.download = "myDiagram.pdf";
+
+      if (window.navigator.msSaveBlob !== undefined) {  // IE 11 & Edge
+        window.navigator.msSaveBlob(blob, a.download);
+        window.URL.revokeObjectURL(datauri);
+        return;
+      }
+
+      document.body.appendChild(a);
+      requestAnimationFrame(function() {
+        a.click();
+        window.URL.revokeObjectURL(datauri);
+        document.body.removeChild(a);
+      });
+    }, myDiagram, pdfOptions);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <div><button onclick="showPdf()">Show PDF</button> <button onclick="downloadPdf()">Download PDF</button></div>
+  <iframe id="myFrame" style="display:none; width:1000px; height:1000px"></iframe>
+</div>
+</body>
+</html>

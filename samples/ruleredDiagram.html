@@ -182,11 +182,13 @@
         if (!vb.isReal()) return;
         myDiagram.commit(function(diag) {
           // Update properties of horizontal scale to reflect viewport
+          gradScaleHoriz.elt(0).width = diag.viewportBounds.width * diag.scale;
           gradScaleHoriz.location = new go.Point(vb.x, vb.y);
           gradScaleHoriz.graduatedMin = vb.x;
           gradScaleHoriz.graduatedMax = vb.right;
           gradScaleHoriz.scale = 1 / diag.scale;
           // Update properties of vertical scale to reflect viewport
+          gradScaleVert.elt(0).height = diag.viewportBounds.height * diag.scale;
           gradScaleVert.location = new go.Point(vb.x, vb.y);
           gradScaleVert.graduatedMin = vb.y;
           gradScaleVert.graduatedMax = vb.bottom;
@@ -230,7 +232,7 @@
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        This also adds a border to help see the edges of the viewport. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"
        onmouseover="showIndicators()" onmouseout="hideIndicators()"></div>
   <p>
     This sample demonstrates a diagram with rulers at its edges and indicators which display the mouse's position.

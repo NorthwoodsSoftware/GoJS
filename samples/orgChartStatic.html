@@ -283,7 +283,8 @@
       if (input.value) {
         // search four different data properties for the string, any of which may match for success
         // create a case insensitive RegExp from what the user typed
-        var regex = new RegExp(input.value, "i");
+        var safe = input.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var regex = new RegExp(safe, "i");
         var results = myDiagram.findNodesByExample({ name: regex },
           { nation: regex },
           { title: regex },

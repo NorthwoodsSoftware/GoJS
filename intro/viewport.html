@@ -132,7 +132,7 @@
 
 <h1>Coordinate Systems</h1>
 <p>
-A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document and view coordinates.
+A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document coordinates and view coordinates.
 Furthermore each <a>Panel</a> within a <a>Part</a> has its own coordinate system that its elements use.
 </p>
 <p>
@@ -143,7 +143,7 @@ increasing values of Y going downwards.
 <h2 id="DocumentAndViewCoordinates">Document and View coordinates</h2>
 <p>
 The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates.
-Thus the <a>Point</a>s that may be saved in the model's node data are normally in document coordinates:
+Thus the <a>Point</a> that may be saved for a Node's location in the model's node data object are normally in document coordinates:
 </p>
 <pre class="lang-js"><code>
   diagram.model.nodeDataArray = [
@@ -152,21 +152,18 @@ Thus the <a>Point</a>s that may be saved in the model's node data are normally i
   ];
 </code></pre>
 <p>
+The union of all of the Nodes and Links in a Diagram form the <a>Diagram.documentBounds</a>.
+This <a>Rect</a> has values that are in document coordinates.
+Depending on where the Nodes and Links are, the document bounds may cover a very large area.
+The range of the document bounds might be entirely positive x and y values, or that might be entirely negative,
+or more likely they may cover both negative and positive values.
+</p>
+<p>
 But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn at the top-left corner of
 the HTML Div element that the user sees in the page.
 When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas.
 And if the user zooms in to make the parts appear larger, the parts will be drawn at different points in the canvas.
 Yet the <a>Part.location</a> does not change value as the user scrolls or zooms the diagram.
-</p>
-<p>
-Points in the canvas are in view coordinates: distances from the top-left corner in device-independent pixels.
-The differences between document coordinates and view coordinates are primarily controlled by two <a>Diagram</a> properties:
-<a>Diagram.position</a> and <a>Diagram.scale</a>.
-Scrolling and panning change the Diagram.position.
-Zooming in or out changes the Diagram.scale.
-You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and <a>Diagram.transformViewToDoc</a>.
-However very few properties and method arguments or return values are in view coordinates -- almost everything is in document
-coordinates or in panel coordinates.
 </p>
 <p>
 The <i>viewport</i> is the area of the document that is visible in the canvas.
@@ -175,6 +172,17 @@ Note that the viewport bounds is in document coordinates, not in view coordinate
 The top-left corner of the viewport is (0,0) in view coordinates but is at <a>Diagram.position</a> in document coordinates.
 The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates.
 The bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
+</p>
+<p>
+Points in the canvas are in view coordinates, which are independent of document coordinates.
+View coordinates are distances from the top-left corner of the canvas in device-independent pixels.
+The differences between document coordinates and view coordinates are primarily controlled by two <a>Diagram</a> properties:
+<a>Diagram.position</a> and <a>Diagram.scale</a>.
+Scrolling and panning change the Diagram.position.
+Zooming in or out changes the Diagram.scale.
+You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and <a>Diagram.transformViewToDoc</a>.
+However very few properties or method arguments or return values are in view coordinates -- almost everything is in document
+coordinates or in panel coordinates.
 </p>
 <p>
 As an example of showing the viewport in the context of the whole document, an <a>Overview</a> does exactly that.
