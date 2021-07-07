@@ -17,7 +17,7 @@ function goCodeExecute(pre, w, h, parentId, animation) {
   // temporarily bind "diagram" to the main Diagram for the DIV, and "$" to go.GraphObject.make
   var f = eval("(function (diagram, $) {" + pre.textContent + "})");
   var d = new go.Diagram(div);
-  d.animationManager.isEnabled = !!animation;
+  d.animationManager.isInitial = !!animation;
   f(d, go.GraphObject.make);
 }
 

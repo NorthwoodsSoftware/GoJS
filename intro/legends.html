@@ -260,10 +260,9 @@ make them appear not to move as the user scrolls or zooms.
   diagram.add(
     $(go.Part,
       {
-        layerName: "Grid",  // must be in a Layer that is Layer.isTemporary,
-                            // to avoid being recorded by the UndoManager
+        layerName: "Grid",  // this Layer is behind everything and is not interactive
         _viewPosition: new go.Point(0,0)  // some position in the viewport,
-                                           // not in document coordinates
+                                          // not in document coordinates
       },
       $(go.TextBlock, "A Title", { font: "bold 24pt sans-serif", stroke: "green" })));
 
@@ -276,10 +275,10 @@ make them appear not to move as the user scrolls or zooms.
         // and only on those that have the "_viewPosition" property set to a Point
         if (part._viewPosition) {
           part.position = dia.transformViewToDoc(part._viewPosition);
-          part.scale = 1/dia.scale;
+          part.scale = 1/dia.scale;  // counteract any zooming
         }
       })
-    }, "fix Parts");
+    }, null);  // set skipsUndoManager to true, to avoid recording these changes
   });
 </code></pre>
 <script>goCode("static", 300, 200);</script>

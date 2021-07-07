@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.44
+ * Type definitions for GoJS v2.1.45
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -9782,6 +9782,9 @@ export class Diagram {
      * This is called during a Diagram update to determine a new value for #documentBounds.
      * By default this computes the union of the bounds of all the visible
      * GraphObjects in this Diagram, unless Diagram#fixedBounds is set.
+     * This ignores parts for which Part#isVisible is false and
+     * ignores those for which Part#isInDocumentBounds is false.
+     * The returned value includes the addition of the #padding margin.
      *
      * To compute the bounds of a collection of Parts, call #computePartsBounds.
      * @expose
@@ -17331,8 +17334,8 @@ export class Shape extends GraphObject {
     /**
      * This read-only property returns the natural bounds of this Shape as determined by its #geometry's bounds.
      * The bounds will always include the (0,0) point.
-     * If there is no geometry available, it returns a Rect with the #desiredSize,
-     * which may have NaN values for the width and height.
+     * If the #desiredSize is set, it returns a Rect with the #desiredSize. If no geometry is available,
+     * and no #desiredSize is set, this may have NaN values for the width and height.
      */
     readonly naturalBounds: Rect;
     /**
