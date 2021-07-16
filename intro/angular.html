@@ -173,7 +173,7 @@
             want to style them.
             First, you'll need to style a CSS class for the div of your GoJS Diagram / Palette / Overview such as:
         </p>
-        <pre class="lang-css">
+        <pre class="lang-css"> <code>
 /* app.component.css */
 .myDiagramDiv {
   background: whitesmoke;
@@ -181,7 +181,7 @@
   height: 300px;
   border: 1px solid black;
 }
-            </pre>
+           </code> </pre>
 
         <p>
             To style the GoJS Diagram / Palette / Overivew div, which will reside in the <code>gojs-angular</code>
@@ -199,14 +199,14 @@
             look something
             like:
         </p>
-        <pre class="lang-ts">
+        <pre class="lang-ts"> <code>
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-</pre>
+</code></pre>
         <p>
             <strong>Note:</strong> You may alternatively use the default <code>ViewEncapsulation.Emulated</code>
             value, if you assign additional CSS modifiers :host and ::ng-deep to your class selector. Be warned,
@@ -339,7 +339,7 @@
         <h2>Sample Diagram / Palette Component Usage</h2>
         <p>
             Here is an example of how one might set up their Diagram / Palette component properties
-            <pre class="lang-ts">
+            <pre class="lang-ts"> <code>
 // Big object that holds app-level state data
 // As of gojs-angular 2.0, immutability is required of state for change detection
 public state = {
@@ -421,14 +421,14 @@ public initPalette(): go.Palette {
 
   return palette;
 }
-</pre>
+</code></pre>
 
         <p>
             Once you've defined your <code>@Input</code> properties for your components, pass these properties
             to your DiagramComponent and PaletteComponent in your template, like so:
         </p>
 
-        <pre class="lang-html">
+        <pre class="lang-html"> <code>
 &lt;gojs-diagram
   [initDiagram]='initDiagram'
   [nodeDataArray]='state.diagramNodeData'
@@ -444,7 +444,7 @@ public initPalette(): go.Palette {
   [nodeDataArray]='state.paletteNodeData'
   [divClassName]='paletteDivClassName'&gt;
 &lt;/gojs-palette&gt;
-</pre>
+</code></pre>
 
         <p>
             You will now have a GoJS Diagram and Palette working in your Angular application. Again, for a full
@@ -467,25 +467,25 @@ public initPalette(): go.Palette {
             Define these properties in the component that will hold your Overview Component, like:
         </p>
 
-        <pre class="lang-ts">
+        <pre class="lang-ts"> <code>
 public oDivClassName = 'myOverviewDiv';
 public initOverview(): go.Overview {
   const $ = go.GraphObject.make;
   const overview = $(go.Overview);
   return overview;
 }
-public observedDiagram = null;</pre>
+public observedDiagram = null;</code></pre>
 
         <p>
             Then pass these properties to your Overview Component in your template, like:
         </p>
 
-        <pre class="lang-html">
+        <pre class="lang-html"> <code>
 &lt;gojs-overview
   [initOverview]='initOverview'
   [divClassName]='oDivClassName'
   [observedDiagram]='observedDiagram'&gt;
-&lt;/gojs-overview&gt;</pre>
+&lt;/gojs-overview&gt; </code></pre>
 
         <p>
             But, we're not done yet. <code>observedDiagram</code> is null, so the Overview won't observe
@@ -509,7 +509,7 @@ public observedDiagram = null;</pre>
             detectChanges(). Like so:
         </p>
 
-        <pre class="lang-ts">
+        <pre class="lang-ts"> <code>
 constructor(private cdr: ChangeDetectorRef) { }
 
 public ngAfterViewInit() {
@@ -521,7 +521,7 @@ public ngAfterViewInit() {
   // IMPORTANT: without this, Angular will throw ExpressionChangedAfterItHasBeenCheckedError (dev mode only)
   this.cdr.detectChanges();
 }
-      </pre>
+       </code></pre>
 
         <p>
             Now, after initialization, your Overview should display appropriately.
@@ -550,7 +550,7 @@ public ngAfterViewInit() {
             could do something like:
         </p>
 
-        <pre class="lang-ts">
+        <pre class="lang-ts"> <code>
 
 // myDiagramComponent is a reference to your DiagramComponent
 @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
@@ -561,7 +561,7 @@ public ngOnChanges () {
     this.myDiagramComponent.diagram.grid.visible = this.showGrid;
   }
 }
-      </pre>
+      </code></pre>
 
         <h2 id="MigratingTo2.0">Migrating to 2.0</h2>
         <p>

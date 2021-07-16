@@ -61,7 +61,7 @@
             "undoManager.isEnabled": true,  // enable undo & redo
             scrollMode: go.Diagram.InfiniteScroll,  // allow the diagram to be scrolled beyond content
             padding: 0,  // scales should be allowed right up against the edges of the viewport
-            "grid.visible": true
+            "grid.visible": true  // show that the ticks of the rulers always line up with the grid lines
           });
 
       myDiagram.nodeTemplate =
@@ -123,8 +123,7 @@
           )
         );
 
-      // These indicators are globally defined so they can be accessed by the div's mouseevents
-      gradIndicatorHoriz =
+      var gradIndicatorHoriz =
         $(go.Part,
           {
             pickable: false, layerName: "Grid", visible: false,
@@ -133,7 +132,7 @@
           $(go.Shape, { geometryString: "M0 0 V15", strokeWidth: 2, stroke: "red" })
         );
 
-      gradIndicatorVert =
+      var gradIndicatorVert =
         $(go.Part,
           {
             pickable: false, layerName: "Grid", visible: false,
@@ -144,8 +143,10 @@
 
       // Add listeners to keep the scales/indicators in sync with the viewport
       myDiagram.addDiagramListener("InitialLayoutCompleted", setupScalesAndIndicators);
-      myDiagram.addDiagramListener("ViewportBoundsChanged", updateScales);
-      myDiagram.addDiagramListener("ViewportBoundsChanged", updateIndicators);
+      myDiagram.mouseEnter = function() { showIndicators(true); };
+      myDiagram.mouseLeave = function() { showIndicators(false); };
+      myDiagram.addDiagramListener("ViewportBoundsChanged", function(e) { updateScales(); updateIndicators(); });
+
       // Override mousemove Tools such that doMouseMove will keep indicators in sync
       myDiagram.toolManager.doMouseMove = function() {
         go.ToolManager.prototype.doMouseMove.call(this);
@@ -177,18 +178,18 @@
         }, null);  // null says to skip UndoManager recording of changes
       }
 
-      function updateScales() {
-        var vb = myDiagram.viewportBounds;
+      function updateScales(vb) {
+        if (!vb) vb = myDiagram.viewportBounds;
         if (!vb.isReal()) return;
         myDiagram.commit(function(diag) {
           // Update properties of horizontal scale to reflect viewport
-          gradScaleHoriz.elt(0).width = diag.viewportBounds.width * diag.scale;
+          gradScaleHoriz.elt(0).width = vb.width * diag.scale;
           gradScaleHoriz.location = new go.Point(vb.x, vb.y);
           gradScaleHoriz.graduatedMin = vb.x;
           gradScaleHoriz.graduatedMax = vb.right;
           gradScaleHoriz.scale = 1 / diag.scale;
           // Update properties of vertical scale to reflect viewport
-          gradScaleVert.elt(0).height = diag.viewportBounds.height * diag.scale;
+          gradScaleVert.elt(0).height = vb.height * diag.scale;
           gradScaleVert.location = new go.Point(vb.x, vb.y);
           gradScaleVert.graduatedMin = vb.y;
           gradScaleVert.graduatedMax = vb.bottom;
@@ -208,32 +209,52 @@
           gradIndicatorVert.scale = 1 / diag.scale;
         }, null);
       }
-    }
 
-    // Show indicators on mouseover of the diagram div
-    function showIndicators() {
-      myDiagram.commit(function(diag) {
-        gradIndicatorHoriz.visible = true;
-        gradIndicatorVert.visible = true;
-      }, null);
-    }
+      // Show indicators on mouseEnter of the diagram div; hide on mouseLeave
+      function showIndicators(show) {
+        myDiagram.commit(function(diag) {
+          gradIndicatorHoriz.visible = show;
+          gradIndicatorVert.visible = show;
+        }, null);
+      }
 
-    // Hide indicators on mouseout of the diagram div
-    function hideIndicators() {
-      myDiagram.commit(function(diag) {
-        gradIndicatorHoriz.visible = false;
-        gradIndicatorVert.visible = false;
-      }, null);
+      // print the diagram by opening a new window holding SVG images of the diagram contents for each page
+      function printDiagram() {
+        var svgWindow = window.open();
+        if (!svgWindow) return;  // failure to open a new Window
+        var printSize = new go.Size(700, 960);
+        var bnds = myDiagram.documentBounds.copy().unionRect(myDiagram.viewportBounds);
+        var x = bnds.x;
+        var y = bnds.y;
+        while (y < bnds.bottom) {
+          while (x < bnds.right) {
+            var pagerect = new go.Rect(x, y, printSize.width, printSize.height);
+            updateScales(pagerect);
+            var svg = myDiagram.makeSvg({
+              scale: 1.0,
+              position: new go.Point(x, y),
+              size: printSize,
+              showGrid: true,
+              showTemporary: true
+            });
+            svgWindow.document.body.appendChild(svg);
+            x += printSize.width;
+          }
+          x = bnds.x;
+          y += printSize.height;
+        }
+        // invoke the browser's print command
+        setTimeout(function() { svgWindow.print(); updateScales(); }, 1);
+      }
+
+      document.getElementById("myPrintButton").addEventListener("click", printDiagram);
     }
 
     window.addEventListener('DOMContentLoaded', init);
   </script>
 
 <div id="sample">
-  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
-       This also adds a border to help see the edges of the viewport. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"
-       onmouseover="showIndicators()" onmouseout="hideIndicators()"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>
   <p>
     This sample demonstrates a diagram with rulers at its edges and indicators which display the mouse's position.
   </p>
@@ -261,8 +282,8 @@
         indicators in addition to its normal functionality.
       </li>
       <li>
-        Finally, the Diagram's div uses <code>onmouseover</code> and <code>onmouseout</code> events to show or hide the
-        indicators as the mouse moves into or out of the diagram.
+        Finally, the Diagram's <a>Diagram.mouseEnter</a> and <a>Diagram.mouseLeave</a> event handlers show and hide
+        the indicators as the mouse moves into or out of the diagram's HTMLDivElement.
       </li>
     </ul>
   </p>
@@ -272,6 +293,7 @@
     They are put in the "Grid" <a>Layer</a> so that any changes to them are not recorded
     by the UndoManager, because the "Grid" Layer has all of its Parts ignored by the UndoManager.
   </p>
+  <button id="myPrintButton">Print</button>
 </div>
     </div>
     <!-- * * * * * * * * * * * * * -->

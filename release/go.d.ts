@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.45
+ * Type definitions for GoJS v2.1.46
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10317,6 +10317,7 @@ export class Diagram {
     addModelChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Unregister a ChangedEvent handler from this Diagram's Diagram#model.
+     * The function argument must be the same reference as was passed to #addChangedListener.
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #addModelChangedListener
      * @since 1.6
@@ -10337,6 +10338,7 @@ export class Diagram {
     addChangedListener(listener: ((e: ChangedEvent) => void)): void;
     /**
      * Unregister a ChangedEvent handler.
+     * The function argument must be the same reference as was passed to #addChangedListener.
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #addChangedListener
      */
@@ -10413,6 +10415,9 @@ export class Diagram {
      * ```js
      * myDiagram.commit(d => d.remove(somePart), "Remove Part");
      * ```
+     * Note: passing null as the second argument will temporarily set Diagram#skipsUndoManager to true.
+     * It is commonplace to call this method with no second argument, which would commit a transaction with
+     * a transaction name that is the empty string.
      * @param {Function} func the function to call as the transaction body
      * @param {(string|null)=} tname a descriptive name for the transaction, or null to temporarily set #skipsUndoManager to true;
      *        if no string transaction name is given, an empty string is used as the transaction name
@@ -10473,7 +10478,7 @@ export class Diagram {
     /**
      * Deselect all selected Parts.
      * This removes all parts from the #selection collection.
-     * This method raises the "ChangingSelection" and "ChangedSelection" Diagram events.
+     * This method raises the "ChangingSelection" and "ChangedSelection" DiagramEvents.
      * @expose
      * @param {boolean=} skipsEvents if true, do not raise the DiagramEvents "ChangingSelection" and "ChangedSelection"; if not supplied the value is assumed to be false.
      * @see #select
@@ -10482,7 +10487,8 @@ export class Diagram {
     clearSelection(skipsEvents?: boolean): void;
     /**
      * Make the given object the only selected object.
-     * This method raises the "ChangingSelection" and "ChangedSelection" Diagram events.
+     * Afterwards the #selection collection will have only the given part in it.
+     * This method raises the "ChangingSelection" and "ChangedSelection" DiagramEvents.
      * @param {Part} part a Part that is already in a layer of this Diagram.
      * If the value is null, this does nothing.
      * @see #selectCollection
@@ -10491,7 +10497,7 @@ export class Diagram {
     select(part: Part | null): void;
     /**
      * Select all of the Parts supplied in the given collection, and deselect all other Parts.
-     * This method raises the "ChangingSelection" and "ChangedSelection" Diagram events.
+     * This method raises the "ChangingSelection" and "ChangedSelection" DiagramEvents.
      * @param {Iterable.<Part>|Array.<Part>} coll a List or Set or Iterator or Array, of Parts to be selected.
      * @see #select
      * @see #clearSelection
@@ -10509,6 +10515,7 @@ export class Diagram {
     clearHighlighteds(): void;
     /**
      * Make the given part the only highlighted part.
+     * Afterwards the #highlighteds collection will have only the given part in it.
      * @param {Part} part a Part that is already in a layer of this Diagram.
      * If the value is null, this does nothing.
      * @see Part#isHighlighted
@@ -10518,7 +10525,7 @@ export class Diagram {
      */
     highlight(part: Part | null): void;
     /**
-     * Highlight all of the Parts supplied in the given collection, and clear all other highlighted Parts.
+     * Highlight all of the Parts supplied in the given collection, and unhighlight all other highlighted Parts.
      * @param {Iterable.<Part>|Array.<Part>} coll a List or Set or Iterator or Array, of Parts to be highlighted.
      * @see Part#isHighlighted
      * @see #highlight
@@ -10538,7 +10545,7 @@ export class Diagram {
     scroll(unit: ('pixel' | 'line' | 'page' | 'document'), dir: ('up' | 'down' | 'left' | 'right'), dist?: number): void;
     /**
      * Modifies the #position to show a given Rect of the Diagram by centering the
-     * viewport on that Rect. Does nothing if the Rect is already in view.
+     * viewport on that Rect. Does nothing if the Rect is already entirely in view.
      *
      * See also #centerRect
      * @param {Rect} r
@@ -10550,6 +10557,10 @@ export class Diagram {
     /**
      * Modifies the #position to show a given Rect of the Diagram by centering the
      * viewport on that Rect.
+     *
+     * If the rect is near the #documentBounds and if the
+     * #scrollMargin is small, it might not be possible to scroll far enough to
+     * actually put the Rect area in the center of the viewport.
      * @param {Rect} r
      * @see #scrollToRect
      * @see #scroll
@@ -10901,7 +10912,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see #doubleClick
      * @see #contextClick
      * @see GraphObject#click
@@ -10921,7 +10933,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see #click
      * @see #contextClick
      * @see GraphObject#doubleClick
@@ -10941,7 +10954,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see #click
      * @see #doubleClick
      * @see GraphObject#contextClick
@@ -10974,7 +10988,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see #mouseOver
      * @see GraphObject#mouseHover
      * @see ToolManager#doMouseHover
@@ -10990,7 +11005,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see GraphObject#mouseHold
      * @see ToolManager#doMouseHover
      */
@@ -11073,7 +11089,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see #mouseLeave
      * @see GraphObject#mouseEnter
      * @since 2.0
@@ -11086,7 +11103,8 @@ export class Diagram {
      * By default this property is null.
      *
      * If you do provide a function that makes changes to the diagram or to its model,
-     * you should do so within a transaction -- call #startTransaction and #commitTransaction.
+     * you should do so within a transaction -- call #startTransaction and #commitTransaction,
+     * or call #commit.
      * @see #mouseEnter
      * @see GraphObject#mouseLeave
      * @since 2.0
