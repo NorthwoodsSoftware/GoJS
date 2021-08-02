@@ -67,7 +67,11 @@
     diagram.div.removeChild(customSelectBox);
   }
 
-  customEditor.valueFunction = function() { return customSelectBox.value; }
-
+  customEditor.valueFunction = function() {
+    let val = customSelectBox.value;
+    if(!customSelectBox.value){ val = "Select an option";}
+    return val;
+  }
+  
   window.TextEditorSelectBox = customEditor;
 })(window);
