@@ -61,7 +61,7 @@ export class ParallelLayout extends go.TreeLayout {
    * Overridable predicate for deciding if a Node is a Split node.
    * By default this checks the node's {@link Part#category} to see if it is
    * "Split", "Start", "For", "While", "If", or "Switch".
-   * @param {Node} node 
+   * @param {Node} node
    * @return {boolean}
    */
   isSplit(node: go.Node | null): boolean {
@@ -74,7 +74,7 @@ export class ParallelLayout extends go.TreeLayout {
    * Overridable predicate for deciding if a Node is a Merge node.
    * By default this checks the node's {@link Part#category} to see if it is
    * "Merge", "End", "EndFor", "EndWhile", "EndIf", or "EndSwitch".
-   * @param {Node} node 
+   * @param {Node} node
    * @return {boolean}
    */
   isMerge(node: go.Node | null): boolean {
@@ -86,7 +86,7 @@ export class ParallelLayout extends go.TreeLayout {
   /**
    * Overridable predicate for deciding if a Node is a conditional or "If" type of Split Node
    * expecting to have two links coming out of the sides.
-   * @param {Node} node 
+   * @param {Node} node
    * @return {boolean}
    */
   isConditional(node: go.Node | null): boolean {
@@ -97,7 +97,7 @@ export class ParallelLayout extends go.TreeLayout {
   /**
    * Overridable predicate for deciding if a Node is a "Switch" type of Split Node
    * expecting to have three links coming out of the bottom/right side.
-   * @param {Node} node 
+   * @param {Node} node
    * @return {boolean}
    */
   isSwitch(node: go.Node | null): boolean {
@@ -110,7 +110,7 @@ export class ParallelLayout extends go.TreeLayout {
    * This signals an error if there is not exactly one Node that {@link #isSplit}
    * and exactly one Node that {@link #isMerge}.
    * This can be overridden; any override must set {@link #splitNode} and {@link #mergeNode}.
-   * @param {Iterable<TreeVertex>} vertexes 
+   * @param {Iterable<TreeVertex>} vertexes
    */
   findSplitMerge(vertexes: go.Iterable<go.TreeVertex>): void {
     var split = null;
@@ -159,6 +159,17 @@ export class ParallelLayout extends go.TreeLayout {
     this.findSplitMerge(net.vertexes.iterator as go.Iterator<go.TreeVertex>);
     // don't have TreeLayout lay out the Merge node; commitNodes will do it
     if (this.mergeNode) net.deleteNode(this.mergeNode);
+    // for each vertex that does not have an incoming edge,
+    // connect to it from the splitNode vertex with a dummy edge
+    if (this.splitNode) {
+      var splitv = net.findVertex(this.splitNode);
+      net.vertexes.each(function(v) {
+        if (splitv === null || v === splitv) return;
+        if (v.sourceEdges.count === 0) {
+          net.linkVertexes(splitv, v, null);
+        }
+      });
+    }
     return net;
   }
 

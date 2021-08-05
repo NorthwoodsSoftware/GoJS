@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.46
+ * Type definitions for GoJS v2.1.47
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10478,58 +10478,76 @@ export class Diagram {
     /**
      * Deselect all selected Parts.
      * This removes all parts from the #selection collection.
+     *
      * This method raises the "ChangingSelection" and "ChangedSelection" DiagramEvents.
      * @expose
      * @param {boolean=} skipsEvents if true, do not raise the DiagramEvents "ChangingSelection" and "ChangedSelection"; if not supplied the value is assumed to be false.
      * @see #select
      * @see #selectCollection
+     * @see #clearHighlighteds
      */
     clearSelection(skipsEvents?: boolean): void;
     /**
      * Make the given object the only selected object.
      * Afterwards the #selection collection will have only the given part in it.
+     *
      * This method raises the "ChangingSelection" and "ChangedSelection" DiagramEvents.
      * @param {Part} part a Part that is already in a layer of this Diagram.
      * If the value is null, this does nothing.
      * @see #selectCollection
      * @see #clearSelection
+     * @see #highlight
      */
     select(part: Part | null): void;
     /**
      * Select all of the Parts supplied in the given collection, and deselect all other Parts.
+     *
      * This method raises the "ChangingSelection" and "ChangedSelection" DiagramEvents.
      * @param {Iterable.<Part>|Array.<Part>} coll a List or Set or Iterator or Array, of Parts to be selected.
      * @see #select
      * @see #clearSelection
+     * @see #highlightCollection
      */
     selectCollection(coll: Iterable<Part> | Array<Part>): void;
     /**
      * Remove highlights from all Parts.
      * This removes all parts from the #highlighteds collection.
+     *
+     * Note that no predefined command or tool operates on the #highlighteds collection,
+     * and there is no predefined visual rendering when a part becomes Part#isHighlighted.
      * @expose
      * @see #highlight
      * @see #highlightCollection
      * @see Part#isHighlighted
+     * @see #clearSelection
      * @since 1.4
      */
     clearHighlighteds(): void;
     /**
      * Make the given part the only highlighted part.
      * Afterwards the #highlighteds collection will have only the given part in it.
+     *
+     * Note that no predefined command or tool operates on the #highlighteds collection,
+     * and there is no predefined visual rendering when a part becomes Part#isHighlighted.
      * @param {Part} part a Part that is already in a layer of this Diagram.
      * If the value is null, this does nothing.
      * @see Part#isHighlighted
      * @see #highlightCollection
      * @see #clearHighlighteds
+     * @see #select
      * @since 1.4
      */
     highlight(part: Part | null): void;
     /**
      * Highlight all of the Parts supplied in the given collection, and unhighlight all other highlighted Parts.
+     *
+     * Note that no predefined command or tool operates on the #highlighteds collection,
+     * and there is no predefined visual rendering when a part becomes Part#isHighlighted.
      * @param {Iterable.<Part>|Array.<Part>} coll a List or Set or Iterator or Array, of Parts to be highlighted.
      * @see Part#isHighlighted
      * @see #highlight
      * @see #clearHighlighteds
+     * @see #selectCollection
      * @since 1.4
      */
     highlightCollection(coll: Iterable<Part> | Array<Part>): void;
@@ -11213,14 +11231,22 @@ export class Diagram {
     currentTool: Tool;
     /**
      * This read-only property returns the read-only collection of selected objects.
+     * Most commands and many tools operate on this collection.
      *
      * Do not modify this collection.
      * If you want to select or deselect a particular object in a Diagram,
      * set the Part#isSelected property.
+     * If you want to select a collection of Parts, call #selectCollection.
      * If you want to deselect all objects, call #clearSelection.
      * If you want to deselect all objects and select a single object, call #select.
      *
      * You can limit how many objects the user can select by setting #maxSelectionCount.
+     *
+     * There are also DiagramEvents for "ChangingSelection" and "ChangedSelection",
+     * which are raised by commands and tools before and after changes to this selection collection.
+     *
+     * Note that selection collection and Part#isSelected property are completely independent
+     * of the #highlighteds collection and the Part#isHighlighted property.
      */
     readonly selection: Set<Part>;
     /**
@@ -11262,8 +11288,13 @@ export class Diagram {
      * Do not modify this collection.
      * If you want to highlight or remove the highlight for a particular Part in a Diagram,
      * set the Part#isHighlighted property.
+     * If you want to highlight a collection of Parts, call #highlightCollection.
+     * If you want to remove all highlights and highlight a single object, call #highlight.
      * If you want to remove all highlights, call #clearHighlighteds.
-     * If you want to removal all highlights and highlight a single object, call #highlight.
+     *
+     * Note that highlighteds collection and Part#isHighlighted property are completely independent
+     * of the #selection collection and the Part#isSelected property.
+     * No predefined command or tool operates on this highlighteds collection.
      */
     readonly highlighteds: Set<Part>;
     /**
@@ -11577,12 +11608,13 @@ export class Diagram {
      */
     readonly viewportBounds: Rect;
     /**
-     * Gets or sets a fixed size in document coordinates to be returned by #viewportBounds when the Diagram's #div is `null`.
+     * Gets or sets a fixed size in document coordinates to be returned by #viewportBounds. This is typically only set when the Diagram's #div is `null`.
      * This property is intended to be used in DOM-less environments where there is no Diagram #div expected, to simulate the size of the DIV.
      * Normally, the #viewportBounds is sized by the DIV instead.
      *
      * By default this is `Size(NaN, NaN)`.
-     * If #div is set, its size will be used for #viewportBounds instead of this property.
+     * If this property is set, its size will always be used to compute the #viewportBounds, even if
+     * a #div is also set. It is uncommon to set both this property and a Diagram DIV.
      *
      * See the intro page on <a href="../../intro/nodeScript.html">GoJS within Node.js</a> for a usage example.
      *
@@ -16980,7 +17012,7 @@ export class RowColumnDefinition {
      * @see #background
      * @since 1.2
      */
-    separatorDashArray: Array<number>;
+    separatorDashArray: Array<number> | null;
     /**
      * Gets or sets the background color for a particular row or column,
      * which fills the entire span of the row or column, including any separatorPadding.

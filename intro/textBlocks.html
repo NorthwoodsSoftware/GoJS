@@ -207,10 +207,11 @@ Once you learn about models and data binding you will generally not create parts
 <p>
 Because different browsers measure canvas text differently,
 TextBlocks are the only objects in <b>GoJS</b> that may have inconsistent natural sizes between browsers or different devices.
-For this reason, if you need objects to measure precisely and consistently across all browsers,
-TextBlocks without an explicit size (<a>GraphObject.desiredSize</a>) should not be used to dictate
-the size of any objects (ie, a TextBlock with no explicit size should not be the main element
-of a <a>Panel</a> of type <a>Panel.Auto</a>).
+For this reason, if you need objects to measure precisely and consistently across all browsers (such as when testing),
+TextBlocks without an explicit size (<a>GraphObject.desiredSize</a> or <a>GraphObject.width</a> and <a>GraphObject.height</a>)
+should not be used to dictate the size of any objects.
+For example, if you have a TextBlock with natural size inside an <a>Panel.Auto</a> Panel,
+set the size on that Auto Panel.
 </p>
 
 
@@ -391,10 +392,30 @@ By default both multiline and wrapping are enabled.
                         wrap: go.TextBlock.WrapFit, textAlign: "center" })
     ));
 </code></pre>
-<script>goCode("multilineTextBlocks", 600, 230)</script>
+<script>goCode("multilineTextBlocks", 600, 300)</script>
+
+<h2 id="Indenting">Indenting</h2>
+<p>
+  Each line of text is normally trimmed of leading and trailing spaces before rendering.
+  If you wish to indent a line of text by preserving leading spaces, start the line with the
+  zero-width space character: <code>\u200B</code>.
+  <a href="https://en.wikipedia.org/wiki/Zero-width_space" target="_blank">Wikipedia: Zero-width space</a>
+</p>
+<pre class="lang-js" id="indent"><code>
+  diagram.add(
+    $(go.Part, "Vertical",
+      $(go.TextBlock, { text: "left aligned\n\u200B  indent two\n\u200B    indent four",
+                        background: "lightgreen", margin: 2, width: 150 }),
+      $(go.TextBlock, { text: "\u200B  This is an indented paragraph consisting of lots of text that wraps naturally.",
+                        background: "lightgreen", margin: 2, width: 150 })
+    ));
+</code></pre>
+<script>goCode("indent", 600, 200)</script>
+<p>
+  You can also use a <code>\u200B</code> character if you want to preserve spaces at the end of a line.
+</p>
 
 <h2 id="Flipping">Flipping</h2>
-
 <p>
   You can flip text horizontally and vertically with the <a>TextBlock.flip</a> property:
 </p>

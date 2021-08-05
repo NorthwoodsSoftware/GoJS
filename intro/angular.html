@@ -152,12 +152,13 @@
             package,
             which exports Angular Components for GoJS Diagrams, Palettes, and Overviews.
             More information about the package, including the various props it takes, can be found on the
-            <a href="https://npmjs.com/gojs-react" target="_blank">NPM</a> page. Our examples will be using a <a>GraphLinksModel</a>,
+            <a href="https://npmjs.com/gojs-react" target="_blank">NPM</a> page. Examples here will be using a <a>GraphLinksModel</a>,
             but any model can be used.
         </p>
 
         <p>
-            You can see a sample project using all GoJS / Angular Components <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">here</a>.
+            <b>Note:</b> This page is assumes use of <code>gojs-angular</code> version 2.0+. <a href="#MigratingTo2.0">Click here</a> for a discussion
+            on upgrading to version 2.0.
         </p>
 
         <h2 id="GeneralInformation">General Information</h2>
@@ -567,24 +568,96 @@ public ngOnChanges () {
         <p>
             This page assumes use of <code>gojs-angular</code> version 2.0, which
             requires
-            immutable state, unlike previous versions. It is recommended to use the 2.0 version. If you have a
-            <code>gojs-angular</code> project using an earlier version of the package, migrating to version 2.0
-            should be straightforward.
+            immutable state, unlike version 1.0. It is recommended to use the 2.0 version. If you have a
+            <code>gojs-angular</code> project using version 1.x and want to upgrade, reference this section for tips on migrating to version 2.
         </p>
+        <h3>Should I Upgrade?</h3>
+        <p>
+            In general, yes.
+        </p>
+        <p>
+            If you have very simple node and link data, using the latest 1.x version might be okay. But new features and quality of life changes
+            will be published on the
+            2.x branch moving forward.
+        </p>
+        <p>
+            Version 2.0 handles complex nested data much better than the previous version, due to its focus on immutable data. Additionally, it is a bit
+            smaller in file size.
+        </p>
+        <p>
+            One may wish to hold off on upgrading if they have lots of operations mutating their <code>@Input</code> properties, and they do not want to take the
+            time to rewrite those operations immutably. However, the guide below details one way one could do this. Our <code>gojs-angular-basic</code> sample also
+            has demonstrations of immutably updating <code>@Input</code> properties to make such a rewrite easier.
+        </p>
+        <h3>Upgrade gojs-angular Version </h3>
         <p>
             Update your <code>package.json</code> to require <code>gojs-angular</code> version 2.0 or greater,
             then run <code>npm install</code>
         </p>
         <p>
+            It is also recommended to upgrade to the lastest version of <code>gojs</code>.
+        </p>
+        <h3>Immutability</h3>
+        <p>
             The biggest change with 2.0 is you must enforce immutability of <code>@Input</code>
-            properties to your Diagram and Palette components. So, for instance, whenever an entry of <code>diagramNodeData</code>
-            is updated, removed, or changed, you will need to generate a whole new Array. This can be done in
-            many different ways with many different packages. To see some samples of this, see <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>,
-            particularly the <code>modelChange</code> property of the Diagram Component.
+            properties to your Diagram and Palette components.
         </p>
         <p>
+            So, for instance, whenever an entry of <code>diagramNodeData</code>
+            is updated, removed, or changed, you will need to generate a whole new Array for <code>DiagramComponent.diagramNodeData</code>. This can be done in
+            many different ways with many different packages. A popular choice is <a href="https://github.com/immerjs/immer">immer</a>, which exposes a <code>produce</code> function
+            that allows one to immutability manipulate their data on a <code>draft</code> variable. We will use that function here for demonstration purposes.
+        </p>
+
+        <h4>The Version 1.0 Way</h4>
+        <p>
+            In <code>gojs-angular</code> version 1, if you wanted to add some node data to your <code>diagramNodeData</code> <code>@Input</code> property,
+            you could do so by simply adding to the <code>diagramNodeData</code>, mutating it. Such as:
+        </p>
+
+        <pre>
+        <code>
+public addNode = function(nodeData: go.ObjectData) {
+  // sync changes with GoJS model
+  this.skipsDiagramUpdate = false;
+  this.diagramNodeData.push(nodeData);
+};
+          </code>
+        </pre>
+
+        <h4>The Version 2.0 Way</h4>
+        <p>
+            In <code>gojs-angular</code> version 2, that same <code>addNode</code> function must be changed so the <code>diagramNodeData</code>
+            property is updated immutably (that is, replaced with an entirely new Array). Here is an example of
+            doing that with immer's <code>produce</code> function.
+        </p>
+
+        <pre>
+        <code>
+public addNode = function(nodeData: go.ObjectData) {
+  this.state = produce(this.state, draft => {
+    var nodedata = { id: "Zeta", text: "Zorro", color: "red" };
+    draft.skipsDiagramUpdate = false;
+    draft.diagramNodeData.push(nodedata);
+  });
+}
+          </code>
+        </pre>
+
+        <p>
+            Notice we are also using a massive <code>state</code> object to hold <code>gojs-angular</code> component properties. This makes these kinds
+            of immutable operations (especially if you are using immer, or a package like it) straightforward (see how we were able to update both <code>skipsDiagramUpdate</code>
+            and <code>diagramNodeData</code> on the same <code>draft</code> variable).
+        </p>
+
+        <p>
+            To see more samples of enforcing immutability with <code>gojs-angular</code>, see <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>,
+            particularly the <code>modelChange</code> property of the Diagram Component.
+        </p>
+        <h3>Additional Considerations</h3>
+        <p>
             Additionally, PaletteComponent no longer supports <code>skipsPaletteUpdate</code> or <code>modelChange</code> properties. As GoJS Palettes are read-only by default, their models should not
-            be changing based on user input. Instead, if you need to update their node/link/model data, update their @Input properties (immutably, of course).
+            be changing based on user input. Instead, if you need to update their node/link/model data, update their <code>@Input</code> properties (immutably, of course).
         </p>
 
 

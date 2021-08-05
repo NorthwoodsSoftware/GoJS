@@ -195,6 +195,18 @@ var __extends = (this && this.__extends) || (function () {
             // don't have TreeLayout lay out the Merge node; commitNodes will do it
             if (this.mergeNode)
                 net.deleteNode(this.mergeNode);
+            // for each vertex that does not have an incoming edge,
+            // connect to it from the splitNode vertex with a dummy edge
+            if (this.splitNode) {
+                var splitv = net.findVertex(this.splitNode);
+                net.vertexes.each(function (v) {
+                    if (splitv === null || v === splitv)
+                        return;
+                    if (v.sourceEdges.count === 0) {
+                        net.linkVertexes(splitv, v, null);
+                    }
+                });
+            }
             return net;
         };
         /**

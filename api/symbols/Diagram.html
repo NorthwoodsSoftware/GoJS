@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.46<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.47<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Diagram</h1>
@@ -1446,8 +1446,12 @@
 								<p>Do not modify this collection.
 									If you want to highlight or remove the highlight for a particular Part in a Diagram,
 									set the <a href="Part.html#isHighlighted">Part.isHighlighted</a> property.
-									If you want to remove all highlights, call <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a>.
-								If you want to removal all highlights and highlight a single object, call <a href="Diagram.html#highlight">highlight</a>.</p>
+									If you want to highlight a collection of Parts, call <a href="Diagram.html#highlightCollection">highlightCollection</a>.
+									If you want to remove all highlights and highlight a single object, call <a href="Diagram.html#highlight">highlight</a>.
+								If you want to remove all highlights, call <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a>.</p>
+								<p>Note that highlighteds collection and <a href="Part.html#isHighlighted">Part.isHighlighted</a> property are completely independent
+									of the <a href="Diagram.html#selection">selection</a> collection and the <a href="Part.html#isSelected">Part.isSelected</a> property.
+								No predefined command or tool operates on this highlighteds collection.</p>
 							</div>
 						</li>
 					</ul>
@@ -2476,13 +2480,19 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the read-only collection of selected objects.</p>
+								<p>This read-only property returns the read-only collection of selected objects.
+								Most commands and many tools operate on this collection.</p>
 								<p>Do not modify this collection.
 									If you want to select or deselect a particular object in a Diagram,
 									set the <a href="Part.html#isSelected">Part.isSelected</a> property.
+									If you want to select a collection of Parts, call <a href="Diagram.html#selectCollection">selectCollection</a>.
 									If you want to deselect all objects, call <a href="Diagram.html#clearSelection">clearSelection</a>.
 								If you want to deselect all objects and select a single object, call <a href="Diagram.html#select">select</a>.</p>
 								<p>You can limit how many objects the user can select by setting <a href="Diagram.html#maxSelectionCount">maxSelectionCount</a>.</p>
+								<p>There are also <a href="DiagramEvent.html">DiagramEvent</a>s for &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot;,
+								which are raised by commands and tools before and after changes to this selection collection.</p>
+								<p>Note that selection collection and <a href="Part.html#isSelected">Part.isSelected</a> property are completely independent
+								of the <a href="Diagram.html#highlighteds">highlighteds</a> collection and the <a href="Part.html#isHighlighted">Part.isHighlighted</a> property.</p>
 							</div>
 						</li>
 					</ul>
@@ -2629,11 +2639,12 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets a fixed size in document coordinates to be returned by <a href="Diagram.html#viewportBounds">viewportBounds</a> when the Diagram&#39;s <a href="Diagram.html#div">div</a> is <code>null</code>.
+								<p>Gets or sets a fixed size in document coordinates to be returned by <a href="Diagram.html#viewportBounds">viewportBounds</a>. This is typically only set when the Diagram&#39;s <a href="Diagram.html#div">div</a> is <code>null</code>.
 									This property is intended to be used in DOM-less environments where there is no Diagram <a href="Diagram.html#div">div</a> expected, to simulate the size of the DIV.
 								Normally, the <a href="Diagram.html#viewportBounds">viewportBounds</a> is sized by the DIV instead.</p>
 								<p>By default this is <code>Size(NaN, NaN)</code>.
-								If <a href="Diagram.html#div">div</a> is set, its size will be used for <a href="Diagram.html#viewportBounds">viewportBounds</a> instead of this property.</p>
+									If this property is set, its size will always be used to compute the <a href="Diagram.html#viewportBounds">viewportBounds</a>, even if
+								a <a href="Diagram.html#div">div</a> is also set. It is uncommon to set both this property and a Diagram DIV.</p>
 								<p>See the intro page on <a href="../../intro/nodeScript.html">GoJS within Node.js</a> for a usage example.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
@@ -3061,9 +3072,11 @@
 							<div class="tsd-comment tsd-typography">
 								<p>Remove highlights from all <a href="Part.html">Part</a>s.
 								This removes all parts from the <a href="Diagram.html#highlighteds">highlighteds</a> collection.</p>
+								<p>Note that no predefined command or tool operates on the <a href="Diagram.html#highlighteds">highlighteds</a> collection,
+								and there is no predefined visual rendering when a part becomes <a href="Part.html#isHighlighted">Part.isHighlighted</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
-									<dd><p><a href="Diagram.html#highlight">highlight</a>, <a href="Diagram.html#highlightCollection">highlightCollection</a>, <a href="Part.html#isHighlighted">Part.isHighlighted</a></p>
+									<dd><p><a href="Diagram.html#highlight">highlight</a>, <a href="Diagram.html#highlightCollection">highlightCollection</a>, <a href="Part.html#isHighlighted">Part.isHighlighted</a>, <a href="Diagram.html#clearSelection">clearSelection</a></p>
 									</dd>
 									<dt>since</dt>
 									<dd><p>1.4</p>
@@ -3087,11 +3100,11 @@
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Deselect all selected <a href="Part.html">Part</a>s.
-									This removes all parts from the <a href="Diagram.html#selection">selection</a> collection.
-								This method raises the &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot; <a href="DiagramEvent.html">DiagramEvent</a>s.</p>
+								This removes all parts from the <a href="Diagram.html#selection">selection</a> collection.</p>
+								<p>This method raises the &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot; <a href="DiagramEvent.html">DiagramEvent</a>s.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
-									<dd><p><a href="Diagram.html#select">select</a>, <a href="Diagram.html#selectCollection">selectCollection</a></p>
+									<dd><p><a href="Diagram.html#select">select</a>, <a href="Diagram.html#selectCollection">selectCollection</a>, <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a></p>
 									</dd>
 								</dl>
 							</div>
@@ -4421,9 +4434,11 @@
 							<div class="tsd-comment tsd-typography">
 								<p>Make the given part the only highlighted part.
 								Afterwards the <a href="Diagram.html#highlighteds">highlighteds</a> collection will have only the given part in it.</p>
+								<p>Note that no predefined command or tool operates on the <a href="Diagram.html#highlighteds">highlighteds</a> collection,
+								and there is no predefined visual rendering when a part becomes <a href="Part.html#isHighlighted">Part.isHighlighted</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
-									<dd><p><a href="Part.html#isHighlighted">Part.isHighlighted</a>, <a href="Diagram.html#highlightCollection">highlightCollection</a>, <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a></p>
+									<dd><p><a href="Part.html#isHighlighted">Part.isHighlighted</a>, <a href="Diagram.html#highlightCollection">highlightCollection</a>, <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a>, <a href="Diagram.html#select">select</a></p>
 									</dd>
 									<dt>since</dt>
 									<dd><p>1.4</p>
@@ -4456,9 +4471,11 @@
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Highlight all of the <a href="Part.html">Part</a>s supplied in the given collection, and unhighlight all other highlighted Parts.</p>
+								<p>Note that no predefined command or tool operates on the <a href="Diagram.html#highlighteds">highlighteds</a> collection,
+								and there is no predefined visual rendering when a part becomes <a href="Part.html#isHighlighted">Part.isHighlighted</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
-									<dd><p><a href="Part.html#isHighlighted">Part.isHighlighted</a>, <a href="Diagram.html#highlight">highlight</a>, <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a></p>
+									<dd><p><a href="Part.html#isHighlighted">Part.isHighlighted</a>, <a href="Diagram.html#highlight">highlight</a>, <a href="Diagram.html#clearHighlighteds">clearHighlighteds</a>, <a href="Diagram.html#selectCollection">selectCollection</a></p>
 									</dd>
 									<dt>since</dt>
 									<dd><p>1.4</p>
@@ -5239,11 +5256,11 @@
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
 								<p>Make the given object the only selected object.
-									Afterwards the <a href="Diagram.html#selection">selection</a> collection will have only the given part in it.
-								This method raises the &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot; <a href="DiagramEvent.html">DiagramEvent</a>s.</p>
+								Afterwards the <a href="Diagram.html#selection">selection</a> collection will have only the given part in it.</p>
+								<p>This method raises the &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot; <a href="DiagramEvent.html">DiagramEvent</a>s.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
-									<dd><p><a href="Diagram.html#selectCollection">selectCollection</a>, <a href="Diagram.html#clearSelection">clearSelection</a></p>
+									<dd><p><a href="Diagram.html#selectCollection">selectCollection</a>, <a href="Diagram.html#clearSelection">clearSelection</a>, <a href="Diagram.html#highlight">highlight</a></p>
 									</dd>
 								</dl>
 							</div>
@@ -5272,11 +5289,11 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Select all of the <a href="Part.html">Part</a>s supplied in the given collection, and deselect all other Parts.
-								This method raises the &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot; <a href="DiagramEvent.html">DiagramEvent</a>s.</p>
+								<p>Select all of the <a href="Part.html">Part</a>s supplied in the given collection, and deselect all other Parts.</p>
+								<p>This method raises the &quot;ChangingSelection&quot; and &quot;ChangedSelection&quot; <a href="DiagramEvent.html">DiagramEvent</a>s.</p>
 								<dl class="tsd-comment-tags">
 									<dt>see</dt>
-									<dd><p><a href="Diagram.html#select">select</a>, <a href="Diagram.html#clearSelection">clearSelection</a></p>
+									<dd><p><a href="Diagram.html#select">select</a>, <a href="Diagram.html#clearSelection">clearSelection</a>, <a href="Diagram.html#highlightCollection">highlightCollection</a></p>
 									</dd>
 								</dl>
 							</div>

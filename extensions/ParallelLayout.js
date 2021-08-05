@@ -40,7 +40,7 @@ go.Diagram.inherit(ParallelLayout, go.TreeLayout);
  * Overridable predicate for deciding if a Node is a Split node.
  * By default this checks the node's {@link Part#category} to see if it is
  * "Split", "Start", "For", "While", "If", or "Switch".
- * @param {Node} node 
+ * @param {Node} node
  * @return {boolean}
  */
 ParallelLayout.prototype.isSplit = function(node) {
@@ -53,7 +53,7 @@ ParallelLayout.prototype.isSplit = function(node) {
  * Overridable predicate for deciding if a Node is a Merge node.
  * By default this checks the node's {@link Part#category} to see if it is
  * "Merge", "End", "EndFor", "EndWhile", "EndIf", or "EndSwitch".
- * @param {Node} node 
+ * @param {Node} node
  * @return {boolean}
  */
 ParallelLayout.prototype.isMerge = function(node) {
@@ -65,7 +65,7 @@ ParallelLayout.prototype.isMerge = function(node) {
 /**
  * Overridable predicate for deciding if a Node is a conditional or "If" type of Split Node
  * expecting to have two links coming out of the sides.
- * @param {Node} node 
+ * @param {Node} node
  * @return {boolean}
  */
 ParallelLayout.prototype.isConditional = function(node) {
@@ -76,7 +76,7 @@ ParallelLayout.prototype.isConditional = function(node) {
 /**
  * Overridable predicate for deciding if a Node is a "Switch" type of Split Node
  * expecting to have three links coming out of the bottom/right side.
- * @param {Node} node 
+ * @param {Node} node
  * @return {boolean}
  */
 ParallelLayout.prototype.isSwitch = function(node) {
@@ -89,7 +89,7 @@ ParallelLayout.prototype.isSwitch = function(node) {
  * This signals an error if there is not exactly one Node that {@link #isSplit}
  * and exactly one Node that {@link #isMerge}.
  * This can be overridden; any override must set {@link #splitNode} and {@link #mergeNode}.
- * @param {*} vertexes 
+ * @param {*} vertexes
  */
 ParallelLayout.prototype.findSplitMerge = function(vertexes) {
   var split = null;
@@ -114,7 +114,7 @@ ParallelLayout.prototype.findSplitMerge = function(vertexes) {
 
 /**
  * @hidden @internal
- * @param {*} coll 
+ * @param {*} coll
  */
 ParallelLayout.prototype.makeNetwork = function(coll) {
   var net = go.TreeLayout.prototype.makeNetwork.call(this, coll);
@@ -139,6 +139,17 @@ ParallelLayout.prototype.makeNetwork = function(coll) {
   this.findSplitMerge(net.vertexes);
   // don't have TreeLayout lay out the Merge node; commitNodes will do it
   if (this.mergeNode) net.deleteNode(this.mergeNode);
+  if (this.splitNode) {
+    // for each vertex that does not have an incoming edge,
+    // connect to it from the splitNode vertex with a dummy edge
+    var splitv = net.findVertex(this.splitNode);
+    net.vertexes.each(function(v) {
+      if (splitv === null || v === splitv) return;
+      if (v.sourceEdges.count === 0) {
+        net.linkVertexes(splitv, v, null);
+      }
+    });
+  }
   return net;
 };
 

@@ -104,7 +104,7 @@ export class RadialLayout extends go.Layout {
         }
         if (this.root === null) { // nothing to do
             this.network = null;
-            return; 
+            return;
         }
         const rootvert = this.network.findVertex(this.root);
         if (rootvert === null)

@@ -15,7 +15,7 @@ function goCodeExecute(pre, w, h, parentId, animation) {
     parent.appendChild(div);
   }
   // temporarily bind "diagram" to the main Diagram for the DIV, and "$" to go.GraphObject.make
-  var f = eval("(function (diagram, $) {" + pre.textContent + "})");
+  var f = eval("(function (diagram, $) {" + pre.textContent + "\n})");
   var d = new go.Diagram(div);
   d.animationManager.isInitial = !!animation;
   f(d, go.GraphObject.make);
