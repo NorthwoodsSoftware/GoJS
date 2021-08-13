@@ -57,9 +57,7 @@
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
-        {
-          "undoManager.isEnabled": true
-        });
+        { "undoManager.isEnabled": true });
 
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
@@ -85,6 +83,7 @@
             }
           ),
           { // the rows for the people
+            name: "TABLE",
             defaultAlignment: go.Spot.Left,
             defaultColumnSeparatorStroke: "black",
             itemTemplate:  // bound to a person/row data object
@@ -252,6 +251,7 @@
     myDiagram.startTransaction("removeColumn");
     var model = myDiagram.model;
     model.removeArrayItem(d.columnDefinitions, 3);
+    n.findObject("TABLE").removeColumnDefinition(coldef.column);
     // update columns for each person in this table
     var people = d.people;
     for (var j = 0; j < people.length; j++) {

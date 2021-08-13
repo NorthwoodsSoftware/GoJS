@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.47
+ * Type definitions for GoJS v2.1.48
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -18061,15 +18061,23 @@ export class Picture extends GraphObject {
      */
     imageAlignment: Spot;
     /**
-     * Gets or sets the function to call if an image fails to load.
-     * The arguments to this function are this Picture and the HTMLImageElement's "error" (onerror) Event.
+     * Gets or sets the function to call if an image set by #source fails to load.
+     * The arguments to this function are this Picture and the HTMLImageElement's "error" Event.
+     *
+     * This is called once per Picture, for every Picture that is using the same #source that failed to load.
+     * This will never be called if the #source is never set, and is not called with Pictures that use #element instead.
+     *
      * The default value is null, meaning that no specific action occurs when there is an error loading an image.
      * @see #successFunction
      */
     errorFunction: ((a: Picture, b: Event) => void) | null;
     /**
-     * Gets or sets the function to call when an image loads successfully.
+     * Gets or sets the function to call when an image set by #source loads successfully.
      * The arguments to this function are this Picture and the HTMLImageElement's "load" Event.
+     *
+     * This is called once per Picture, for every Picture that is using the same #source that loaded successfully.
+     * This will never be called if the #source is never set, and is not called with Pictures that use #element instead.
+     *
      * The default value is null, meaning that no specific action occurs when an image finishes loading.
      * @see #errorFunction
      * @since 1.7
