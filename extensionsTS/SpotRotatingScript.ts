@@ -35,7 +35,7 @@ export function init() {
         rotateObjectName: "SHAPE", // name of the graph object to be rotate
         rotationSpot: go.Spot.Center
       },
-      new go.Binding("location", "loc", go.Point.parse),
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       new go.Binding("rotationSpot", "rotSpot", go.Spot.parse).makeTwoWay(go.Spot.stringify),
       $(go.Shape, "RoundedRectangle",
         { name: "SHAPE", fill: "orange", strokeWidth: 2 },

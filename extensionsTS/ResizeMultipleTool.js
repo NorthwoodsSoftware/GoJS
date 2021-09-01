@@ -37,7 +37,7 @@ var __extends = (this && this.__extends) || (function () {
     /**
      * The ResizeMultipleTool class lets the user resize multiple objects at once.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/ResizeMultiple.html">Resize Multiple</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ResizeMultiple.html">Resize Multiple</a> sample.
      * @category Tool Extension
      */
     var ResizeMultipleTool = /** @class */ (function (_super) {

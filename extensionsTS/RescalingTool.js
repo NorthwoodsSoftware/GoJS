@@ -48,7 +48,7 @@ var __extends = (this && this.__extends) || (function () {
     * <a>RescalingTool.rescaleObjectName</a> and set <a>RescalingTool.isEnabled</a> to control
     * whether objects are rescalable and when.
     *
-    * If you want to experiment with this extension, try the <a href="../../extensionsTS/Rescaling.html">Rescaling</a> sample.
+    * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Rescaling.html">Rescaling</a> sample.
     * @category Tool Extension
     */
     var RescalingTool = /** @class */ (function (_super) {

@@ -40,7 +40,7 @@
                 rotatable: true,
                 rotateObjectName: "SHAPE",
                 rotationSpot: go.Spot.Center
-            }, new go.Binding("location", "loc", go.Point.parse), new go.Binding("rotationSpot", "rotSpot", go.Spot.parse).makeTwoWay(go.Spot.stringify), $(go.Shape, "RoundedRectangle", { name: "SHAPE", fill: "orange", strokeWidth: 2 }, new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding("angle").makeTwoWay()), $(go.TextBlock, new go.Binding("text")));
+            }, new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), new go.Binding("rotationSpot", "rotSpot", go.Spot.parse).makeTwoWay(go.Spot.stringify), $(go.Shape, "RoundedRectangle", { name: "SHAPE", fill: "orange", strokeWidth: 2 }, new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding("angle").makeTwoWay()), $(go.TextBlock, new go.Binding("text")));
         myDiagram.model = new go.GraphLinksModel([
             { key: 1, text: "Alpha", color: "lightblue" },
             { key: 2, text: "Beta", color: "orange" },

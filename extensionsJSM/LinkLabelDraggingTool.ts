@@ -19,7 +19,7 @@ import * as go from '../release/go-module.js';
  * that is positioned at the {@link Link#midPoint} plus some offset.
  * It does not work for labels that have a particular {@link GraphObject#segmentIndex}.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/LinkLabelDragging.html">Link Label Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/LinkLabelDragging.html">Link Label Dragging</a> sample.
  * @category Tool Extension
  */
 export class LinkLabelDraggingTool extends go.Tool {

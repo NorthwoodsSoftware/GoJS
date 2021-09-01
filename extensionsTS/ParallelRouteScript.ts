@@ -26,7 +26,7 @@ export function init() {
 
   myDiagram.nodeTemplate =
     $(go.Node, 'Auto',
-      new go.Binding('location', 'loc', go.Point.parse),
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Shape,
         {
           portId: '',

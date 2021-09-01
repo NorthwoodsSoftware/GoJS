@@ -39,7 +39,7 @@ var __extends = (this && this.__extends) || (function () {
      * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.
      * Thus the default layer for BalloonLinks is "Background".
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/BalloonLink.html">Balloon Links</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/BalloonLink.html">Balloon Links</a> sample.
      * @category Part Extension
      */
     var BalloonLink = /** @class */ (function (_super) {

@@ -31,7 +31,7 @@ import * as go from '../release/go.js';
  *    myDiagram.commandHandler = new DrawCommandHandler();
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/DrawCommandHandler.html">Drawing Commands</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DrawCommandHandler.html">Drawing Commands</a> sample.
  * @category Extension
  */
 export class DrawCommandHandler extends go.CommandHandler {

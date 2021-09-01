@@ -16,7 +16,7 @@ import * as go from '../release/go-module.js';
  * The GuidedDraggingTool class makes guidelines visible as the parts are dragged around a diagram
  * when the selected part is nearly aligned with another part.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/GuidedDragging.html">Guided Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/GuidedDragging.html">Guided Dragging</a> sample.
  * @category Tool Extension
  */
 export class GuidedDraggingTool extends go.DraggingTool {

@@ -15,7 +15,7 @@ import * as go from '../release/go-module.js';
  * This layout assumes the graph is a chain of {@link Node}s,
  * {@link #spacing} controls the spacing between nodes.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/Spiral.html">Spiral Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Spiral.html">Spiral Layout</a> sample.
  * @category Layout Extension
  */
 export class SpiralLayout extends go.Layout {

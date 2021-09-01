@@ -23,7 +23,7 @@ import * as go from '../release/go.js';
  * This tool uses a temporary {@link Shape}, {@link #temporaryShape}, held by a {@link Part} in the "Tool" layer,
  * to show interactively what the user is drawing.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/PolygonDrawing.html">Polygon Drawing</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/PolygonDrawing.html">Polygon Drawing</a> sample.
  * @category Tool Extension
  */
 export class PolygonDrawingTool extends go.Tool {

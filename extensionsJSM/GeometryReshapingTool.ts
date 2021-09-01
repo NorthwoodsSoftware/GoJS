@@ -22,7 +22,7 @@ import * as go from '../release/go-module.js';
  * this will not show any GeometryReshaping {@link Adornment}.
  * At the current time this tool does not support adding or removing {@link PathSegment}s to the Geometry.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/GeometryReshaping.html">Geometry Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/GeometryReshaping.html">Geometry Reshaping</a> sample.
  * @category Tool Extension
  */
 export class GeometryReshapingTool extends go.Tool {

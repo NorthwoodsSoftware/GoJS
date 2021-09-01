@@ -280,7 +280,7 @@
   There are a few things that should be set up in the wrapper component:
   <ul>
     <li>a set of props coming in from the parent component which holds state and handlers</li>
-    <li>a ref to the ReactDiagram component so getDiagram() can be used</li>
+    <li>a ref to the ReactDiagram component so getDiagram() and clear() can be used</li>
     <li>componentDidMount and componentWillUnmount methods to add/remove app-specific diagram listeners</li>
     <li>an initDiagram method to be passed to the ReactDiagram component</li>
   </ul>
@@ -561,6 +561,44 @@
         &lt;/div&gt;
       );
     }
+  }
+</code></pre>
+<h4>A Note on Diagram Reinitialization</h4>
+<p>
+  Occasionally you may want to treat a model update as if you were loading a completely new model.
+  But initialization is done via the initDiagram function, within the componentDidMount lifecycle method, and only once.
+  A regular model update is not treated as an initialization, so none of the <b>initial...</b> properties
+  of your Diagram will apply.
+</p>
+<p>
+  To address this problem, ReactDiagram exposes a clear() method.
+  When called, it clears its diagram of all nodes, links, and model data, and
+  prepares the next state update to be treated as a diagram initialization.
+  That will result in an initial layout and perform initial diagram content alignment and scaling.
+  Note that the initDiagram function is not called again.
+</p>
+<p>
+  Here is a small sample of how one might trigger diagram reinitilization using the clear() method.
+</p>
+<pre class="lang-js"><code>
+  public reinitModel() {
+    this.diagramRef.current.clear();
+    this.setState({
+      nodeDataArray: [
+        { key: 0, text: 'Epsilon', color: 'lightblue' },
+        { key: 1, text: 'Zeta', color: 'orange' },
+        { key: 2, text: 'Eta', color: 'lightgreen' },
+        { key: 3, text: 'Theta', color: 'pink' }
+      ],
+      linkDataArray: [
+        { key: -1, from: 0, to: 1 },
+        { key: -2, from: 0, to: 2 },
+        { key: -3, from: 1, to: 1 },
+        { key: -4, from: 2, to: 3 },
+        { key: -5, from: 3, to: 0 }
+      ],
+      skipsDiagramUpdate: false
+    });
   }
 </code></pre>
 <p>

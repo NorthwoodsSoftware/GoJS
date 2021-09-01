@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
      * The NonRealtimeDraggingTool class lets the user drag an image instead of actually moving any selected nodes,
      * until the mouse-up event.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/NonRealtimeDragging.html">Non Realtime Dragging</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/NonRealtimeDragging.html">Non Realtime Dragging</a> sample.
      * @category Tool Extension
      */
     var NonRealtimeDraggingTool = /** @class */ (function (_super) {

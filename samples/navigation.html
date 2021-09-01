@@ -63,7 +63,7 @@
       // define the node template
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          new go.Binding("location", "loc"),
+          new go.Binding("location").makeTwoWay(),
           {
             locationSpot: go.Spot.Center,
             toEndSegmentLength: 30, fromEndSegmentLength: 30
@@ -158,13 +158,13 @@
       // add nodes, including groups, and links to the model
       myDiagram.model = new go.GraphLinksModel(
         [ // node data
-          { key: "A", loc: new go.Point(320, 100) },
-          { key: "B", loc: new go.Point(420, 200) },
-          { key: "C", group: "Psi", loc: new go.Point(250, 225) },
-          { key: "D", group: "Omega", loc: new go.Point(270, 325) },
-          { key: "E", group: "Phi", loc: new go.Point(120, 225) },
-          { key: "F", group: "Omega", loc: new go.Point(200, 350) },
-          { key: "G", loc: new go.Point(180, 450) },
+          { key: "A", location: new go.Point(320, 100) },
+          { key: "B", location: new go.Point(420, 270) },
+          { key: "C", group: "Psi", location: new go.Point(270, 215) },
+          { key: "D", group: "Omega", location: new go.Point(270, 325) },
+          { key: "E", group: "Phi", location: new go.Point(120, 225) },
+          { key: "F", group: "Omega", location: new go.Point(200, 350) },
+          { key: "G", location: new go.Point(180, 450) },
           { key: "Chi", isGroup: true },
           { key: "Psi", isGroup: true, group: "Chi" },
           { key: "Phi", isGroup: true, group: "Psi" },
@@ -189,7 +189,7 @@
       myDiagram.addDiagramListener("ChangedSelection",
         function() { updateHighlights(getRadioButton()); });
 
-      myDiagram.select(myDiagram.findNodeForKey('C'));
+      myDiagram.select(myDiagram.findNodeForKey('A'));
     }
 
     // This highlights all graph objects that should be highlighted
@@ -487,14 +487,14 @@
       <div id="controls" style="border: solid 1px black; height: 560px; width: 200px; display: inline-block; vertical-align: top;">
         <div id="buttons" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px;">
           <b style="margin: 5px">Related Parts Highlighted</b> <br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="None" checked="checked">Unhighlight All</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="None">Unhighlight All</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksIn">Links Into</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksOut">Links Out Of</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="linksAll">Links Connected</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesIn">Nodes Into</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesOut">Nodes Out Of</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesConnect">Nodes Connected</label><br />
-          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesReach">Nodes Reachable</label><br />
+          <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesReach" checked="checked">Nodes Reachable</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="group">Containing Group (Parent)</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="groupsAll">Containing Groups (All)</label><br />
           <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="nodesMember">Member Nodes (Children)</label><br />

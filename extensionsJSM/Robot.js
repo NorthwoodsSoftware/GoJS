@@ -18,7 +18,7 @@ import * as go from '../release/go-module.js';
  * Although {@link InputEvent#targetDiagram} is a real property,
  * the `sourceDiagram` property is only used by these Robot methods.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/Robot.html">Simulating Input</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Robot.html">Simulating Input</a> sample.
  * @category Extension
  */
 export class Robot {

@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
      * Given a root {@link Node}, this arranges connected nodes in concentric rings,
      * layered by the minimum link distance from the root.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/Radial.html">Radial Layout</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Radial.html">Radial Layout</a> sample.
      * @category Layout Extension
      */
     var RadialLayout = /** @class */ (function (_super) {

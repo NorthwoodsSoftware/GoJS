@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.48<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.49<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class PanelLayout</h1>
@@ -98,6 +98,11 @@
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">PanelLayout</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="PanelLayoutFlow.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayoutFlow</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -125,14 +130,17 @@
 						When building from source, you can optionally exclude all of them except <code>Position</code>,
 						<code>Vertical</code>, <code>Auto</code>, <code>Link</code>, and <code>Grid</code>.
 					This is demonstrated in <code>minimalSource</code> and <code>maximalSource</code>, in the <code>/projects</code> folder.</p>
-					<p>Adding a new Layout is done by calling the static function, <a href="Panel.html#static-definePanelLayout">Panel.definePanelLayout</a>:</p>
-					<pre><code class="language-js"><span style="color: #9CDCFE">Panel</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">definePanelLayout</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;Table&#039;</span><span style="color: #D4D4D4">, </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">PanelLayoutTable</span><span style="color: #D4D4D4">());</span>
+					<p>Registering a new PanelLayout is done by calling the static function, <a href="Panel.html#static-definePanelLayout">Panel.definePanelLayout</a>:</p>
+					<pre><code class="language-js"><span style="color: #9CDCFE">Panel</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">definePanelLayout</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;Table&#039;</span><span style="color: #D4D4D4">, </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">PanelLayoutCustom</span><span style="color: #D4D4D4">());</span>
 </code></pre>
-					<p>Each PanelLayout must define a <a href="PanelLayout.html#measure">measure</a> and <a href="PanelLayout.html#arrange">arrange</a> routine.
-						The measure routine must call <a href="PanelLayout.html#measureElement">measureElement</a> with each element of the Panel,
+					<p>Each PanelLayout must define a <a href="PanelLayout.html#measure">measure</a> and <a href="PanelLayout.html#arrange">arrange</a> method.
+						The measure method must call <a href="PanelLayout.html#measureElement">measureElement</a> with each element of the Panel,
 						which sets each element&#39;s <a href="GraphObject.html#measuredBounds">GraphObject.measuredBounds</a>. These bounds can be used to determine object layout.
-					The arrange routine must call <a href="PanelLayout.html#arrangeElement">arrangeElement</a> with each element of the Panel to position the objects relative to the Panel.</p>
-					<p>There is an example PanelLayout in the <a href="../../samples/panelLayout.html">PanelLayout sample</a>.</p>
+						The arrange method must call <a href="PanelLayout.html#arrangeElement">arrangeElement</a> with each element of the Panel to position the objects relative to the Panel.
+					Remember that each Panel defines its own coordinate system, which is used for sizing and positioning of the panel&#39;s elements.</p>
+					<p>There is an example PanelLayout in the <a href="../../samples/panelLayout.html">PanelLayout sample</a>.
+						There is a Flow PanelLayout extension at <a href="PanelLayoutFlow.html">PanelLayoutFlow</a>, demonstrated at
+					<a href="../../extensionsJSM/PanelLayoutFlow.html">Flow PanelLayout sample</a>.</p>
 					<dl class="tsd-comment-tags">
 						<dt>since</dt>
 						<dd><p>2.0</p>
@@ -148,6 +156,12 @@
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="PanelLayout.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="PanelLayout.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -174,7 +188,26 @@
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This class is abstract.  Define your own subclass if you want to implement a custom panel layout.</p>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>
+						name
+					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets or sets the name of this instance of a particular panel layout.</p>
+							</div>
 						</li>
 					</ul>
 				</section>
@@ -436,6 +469,9 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="PanelLayout.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="PanelLayout.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="PanelLayout.html#arrange" class="tsd-kind-icon">arrange</a>

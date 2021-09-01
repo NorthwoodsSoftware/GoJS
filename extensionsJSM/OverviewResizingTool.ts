@@ -15,7 +15,7 @@ import * as go from '../release/go-module.js';
 /**
  * The OverviewResizingTool class lets the user resize the box within an overview.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/OverviewResizing.html">Overview Resizing</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/OverviewResizing.html">Overview Resizing</a> sample.
  * @category Tool Extension
  */
 export class OverviewResizingTool extends go.ResizingTool {

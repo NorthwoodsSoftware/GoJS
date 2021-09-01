@@ -16,7 +16,7 @@ import * as go from '../release/go.js';
  * The NonRealtimeDraggingTool class lets the user drag an image instead of actually moving any selected nodes,
  * until the mouse-up event.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/NonRealtimeDragging.html">Non Realtime Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/NonRealtimeDragging.html">Non Realtime Dragging</a> sample.
  * @category Tool Extension
  */
 export class NonRealtimeDraggingTool extends go.DraggingTool {

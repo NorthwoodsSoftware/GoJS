@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
      * The GuidedDraggingTool class makes guidelines visible as the parts are dragged around a diagram
      * when the selected part is nearly aligned with another part.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/GuidedDragging.html">Guided Dragging</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/GuidedDragging.html">Guided Dragging</a> sample.
      * @category Tool Extension
      */
     var GuidedDraggingTool = /** @class */ (function (_super) {

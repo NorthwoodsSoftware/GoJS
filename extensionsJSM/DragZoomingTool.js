@@ -39,7 +39,7 @@ import * as go from '../release/go-module.js';
  * but it does temporarily add the {@link #box} part to the diagram.
  * This tool does not modify the model or conduct any transaction.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/DragZooming.html">Drag Zooming</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DragZooming.html">Drag Zooming</a> sample.
  * @category Tool Extension
  */
 export class DragZoomingTool extends go.Tool {

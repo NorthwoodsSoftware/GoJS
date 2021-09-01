@@ -16,7 +16,7 @@ import * as go from '../release/go.js';
  * The LinkLabelOnPathDraggingTool class lets the user move a label on a {@link Link} while keeping the label on the link's path.
  * This tool only works when the Link has a label marked by the "_isLinkLabel" property.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/LinkLabelOnPathDragging.html">Link Label On Path Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/LinkLabelOnPathDragging.html">Link Label On Path Dragging</a> sample.
  * @category Tool Extension
  */
 export class LinkLabelOnPathDraggingTool extends go.Tool {

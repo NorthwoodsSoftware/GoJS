@@ -37,7 +37,7 @@ var __extends = (this && this.__extends) || (function () {
     /**
      * The RowResizingTool class lets the user resize each row of a named Table Panel in a selected Part.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/ColumnResizing.html">Column Resizing</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ColumnResizing.html">Column Resizing</a> sample.
      * @category Tool Extension
      */
     var RowResizingTool = /** @class */ (function (_super) {

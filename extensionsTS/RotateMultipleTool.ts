@@ -11,7 +11,7 @@ import * as  go from '../release/go.js';
  *
  * Caution: this only works for Groups that do *not* have a Placeholder.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/RotateMultiple.html">Rotate Multiple</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/RotateMultiple.html">Rotate Multiple</a> sample.
  * @category Tool Extension
  */
 export class RotateMultipleTool extends go.RotatingTool {

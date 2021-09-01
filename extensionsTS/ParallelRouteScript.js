@@ -30,7 +30,7 @@
             'undoManager.isEnabled': true
         });
         myDiagram.nodeTemplate =
-            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse), $(go.Shape, {
+            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), $(go.Shape, {
                 portId: '',
                 fromLinkable: true, toLinkable: true,
                 fromLinkableDuplicates: true, toLinkableDuplicates: true,

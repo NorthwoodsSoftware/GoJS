@@ -3,12 +3,12 @@
 *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
 */
 
-// A custom {@link TreeLayout} that can be used for laying out stylized flowcharts.
-// Each layout requires a single "Split" node and a single "Merge" node.
-// The "Split" node should be the root of a tree-like structure if one excludes links to the "Merge" node.
-// This will position the "Merge" node to line up with the "Split" node.
-
 /*
+* A custom {@link TreeLayout} that can be used for laying out stylized flowcharts.
+* Each layout requires a single "Split" node and a single "Merge" node.
+* The "Split" node should be the root of a tree-like structure if one excludes links to the "Merge" node.
+* This will position the "Merge" node to line up with the "Split" node.
+*
 * This is an extension and not part of the main GoJS library.
 * Note that the API for this class may change with any version, even point releases.
 * If you intend to use an extension in production, you should copy the code to your own source directory.

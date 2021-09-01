@@ -17,7 +17,7 @@ import * as go from '../release/go.js';
  * If {@link #avoidsNodes} is true and the link is orthogonal,
  * it also avoids reshaping the link so that any adjacent segments cross over any avoidable nodes.
  * 
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
  * @category Tool Extension
  */
 export class SnapLinkReshapingTool extends go.LinkReshapingTool {

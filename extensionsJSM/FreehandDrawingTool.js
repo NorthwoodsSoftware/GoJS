@@ -23,7 +23,7 @@ import * as go from '../release/go-module.js';
  * The Shape used during the drawing operation can be customized by setting {@link #temporaryShape}.
  * The node data added to the model can be customized by setting {@link #archetypePartData}.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/FreehandDrawing.html">Freehand Drawing</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/FreehandDrawing.html">Freehand Drawing</a> sample.
  * @category Tool Extension
  */
 export class FreehandDrawingTool extends go.Tool {

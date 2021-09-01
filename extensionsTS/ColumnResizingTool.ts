@@ -15,7 +15,7 @@ import * as go from '../release/go.js';
 /**
  * The ColumnResizingTool class lets the user resize each column of a named Table Panel in a selected Part.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/ColumnResizing.html">Column Resizing</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ColumnResizing.html">Column Resizing</a> sample.
  * @category Tool Extension
  */
 export class ColumnResizingTool extends go.Tool {

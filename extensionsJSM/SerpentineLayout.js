@@ -19,7 +19,7 @@ import * as go from '../release/go-module.js';
  *
  * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/Serpentine.html">Serpentine Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Serpentine.html">Serpentine Layout</a> sample.
  * @category Layout Extension
  */
 export class SerpentineLayout extends go.Layout {

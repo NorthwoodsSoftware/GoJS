@@ -55,7 +55,7 @@ var __extends = (this && this.__extends) || (function () {
      * nor background ({@link RowColumnDefinition#background} and {@link RowColumnDefinition#coversSeparators} properties).
      * There is no support for {@link RowColumnDefinition#sizing}, either.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/Table.html">Table Layout</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Table.html">Table Layout</a> sample.
      * @category Layout Extension
      */
     var TableLayout = /** @class */ (function (_super) {

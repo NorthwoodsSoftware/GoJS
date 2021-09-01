@@ -58,7 +58,7 @@
      * <p class="box">
      * The diagram div's parent element should use `position: relative` to ensure the slider gets positioned properly.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/ZoomSlider.html">Zoom Slider</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ZoomSlider.html">Zoom Slider</a> sample.
      * @category Extension
      */
     var ZoomSlider = /** @class */ (function () {

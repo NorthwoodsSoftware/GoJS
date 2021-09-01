@@ -54,6 +54,8 @@
     function init() {
       var $ = go.GraphObject.make;  // for conciseness in defining templates
 
+      var INTERVAL = 2000;  // this constant parameter cannot be set later
+
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
@@ -84,7 +86,9 @@
       myDiagram.nodeTemplate =
         $(go.Node,
           new go.Binding("location", "loc"),  // specified by data
-          new go.AnimationTrigger("position", { duration: 2000 }),
+          (INTERVAL > 20)  // don't animate if INTERVAL is <= 20 milliseconds
+            ? new go.AnimationTrigger("position", { duration: INTERVAL, easing: go.Animation.EaseLinear })
+            : {},
           { locationSpot: go.Spot.Center },   // at center of node
           $(go.Shape, "Circle",
             { width: 15, height: 15, strokeWidth: 3 },
@@ -112,7 +116,7 @@
         { key: "Demeter", src: "80x50", loc: new go.Point(140, 350), color: 8 }
       ];
 
-      // simulate some real-time position monitoring, once every 2 seconds
+      // simulate some real-time position monitoring, once every INTERVAL milliseconds
       function randomMovement() {
         var model = myDiagram.model;
         model.startTransaction("update locations");
@@ -120,19 +124,20 @@
         var picture = myDiagram.parts.first();
         for (var i = 0; i < arr.length; i++) {
           var data = arr[i];
+          // determine the new random location
           var pt = data.loc;
-          var x = pt.x + 25 * Math.random() - 10;
-          var y = pt.y + 25 * Math.random() - 10;
+          var x = pt.x + 25 * (Math.random() - 0.5);
+          var y = pt.y + 25 * (Math.random() - 0.5);
           // make sure the kittens stay inside the house
           var b = picture.actualBounds;
-          if (x < b.x || x > b.right) x = pt.x;
-          if (y < b.y || y > b.bottom) y = pt.y;
-          model.setDataProperty(data, "loc", new go.Point(x, y));
+          if (x < b.x + 40 || x > b.right - 80) x = pt.x;
+          if (y < b.y + 40 || y > b.bottom - 40) y = pt.y;
+          model.set(data, "loc", new go.Point(x, y));
         }
         model.commitTransaction("update locations");
       }
       function loop() {
-        setTimeout(function() { randomMovement(); loop(); }, 2000);
+        setTimeout(function() { randomMovement(); loop(); }, INTERVAL);
       }
       loop();  // start the simulation
 

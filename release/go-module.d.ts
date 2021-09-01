@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.48
+ * Type definitions for GoJS v2.1.49
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -276,6 +276,7 @@ export interface IContext {
     enableDash(strokeDashArray: Array<number>, strokeDashOffset: number): void;
     disableDash(): void;
     clearContextCache(clearFont: boolean): void;
+    closeClip(): void;
 }
 
 /**
@@ -5490,7 +5491,7 @@ export class ToolManager extends Tool {
  *     var loc = part.location;
  *     // find the padding inside the group's placeholder that is around the member parts
  *     var m = grp.placeholder.padding;
- *     // now limit the location appropriately
+ *     // now limit the location appropriately, assuming no grid-snapping
  *     var x = Math.max(p1.x + m.left, Math.min(pt.x, p2.x - m.right - b.width - 1)) + (loc.x-b.x);
  *     var y = Math.max(p1.y + m.top, Math.min(pt.y, p2.y - m.bottom - b.height - 1)) + (loc.y-b.y);
  *     return new go.Point(x, y);
@@ -8644,7 +8645,7 @@ export class AnimationManager {
      */
     duration: number;
     /**
-     * This read-only property is true when the animation manger is currently animating any animation,
+     * This read-only property is true when the animation manager is currently animating any animation,
      * including the #defaultAnimation.
      *
      * This value cannot be set, but animation can be stopped by calling #stopAnimation,
@@ -8652,7 +8653,7 @@ export class AnimationManager {
      */
     readonly isAnimating: boolean;
     /**
-     * This read-only property is true when the animation manger is in the middle of an animation tick.
+     * This read-only property is true when the animation manager is in the middle of an animation tick.
      * Animation only operates on GraphObjects during ticks, but code outside of AnimationManager's control may execute between ticks.
      *
      * `isTicking` can only be true when #isAnimating is also true.
@@ -8890,7 +8891,7 @@ export class Animation {
      * Instead you would animate to a very small (but still valid) value, such as 0.001.
      * @param {boolean=} cosmetic Determines if the animation should revert the property value to the start value at the end of animation.
      * Default false. This is commonly used when animating opacity or scale of "disappearing" nodes during collapse.
-     * Even though the node may appear to go to scale 0.001, the programmer usually wants the scale to be reflect its prior value, once hidden.
+     * Even though the node may appear to go to scale 0.001, the programmer usually wants the scale to reflect its prior value, once hidden.
      */
     add(obj: GraphObject | Diagram, effectName: string, startValue: any, endValue: any, cosmetic?: boolean): void;
     /**
@@ -8964,7 +8965,7 @@ export class Animation {
      */
     readonly isAnimating: boolean;
     /**
-     * Gets the ObjectData assocaited with this GraphObject or Diagram.
+     * Gets the ObjectData associated with this GraphObject or Diagram.
      * If no state exists, this creates and returns a new ObjectData.
      *
      * This can be used to store temporary information per animated object during the course of an animation.
@@ -15764,24 +15765,32 @@ export class Brush {
  * `Vertical`, `Auto`, `Link`, and `Grid`.
  * This is demonstrated in `minimalSource` and `maximalSource`, in the `/projects` folder.
  *
- * Adding a new Layout is done by calling the static function, Panel.definePanelLayout:
+ * Registering a new PanelLayout is done by calling the static function, Panel.definePanelLayout:
  *
  * ```js
- * Panel.definePanelLayout('Table', new PanelLayoutTable());
+ * Panel.definePanelLayout('Table', new PanelLayoutCustom());
  * ```
  *
- * Each PanelLayout must define a #measure and #arrange routine.
- * The measure routine must call #measureElement with each element of the Panel,
+ * Each PanelLayout must define a #measure and #arrange method.
+ * The measure method must call #measureElement with each element of the Panel,
  * which sets each element's GraphObject#measuredBounds. These bounds can be used to determine object layout.
- * The arrange routine must call #arrangeElement with each element of the Panel to position the objects relative to the Panel.
- *
- *
+ * The arrange method must call #arrangeElement with each element of the Panel to position the objects relative to the Panel.
+ * Remember that each Panel defines its own coordinate system, which is used for sizing and positioning of the panel's elements.
  *
  * There is an example PanelLayout in the <a href="../../samples/panelLayout.html">PanelLayout sample</a>.
+ * There is a Flow PanelLayout extension at #PanelLayoutFlow, demonstrated at
+ * <a href="../../extensionsJSM/PanelLayoutFlow.html">Flow PanelLayout sample</a>.
  * @since 2.0
  * @unrestricted
  */
 export abstract class PanelLayout {
+    /**
+     * Gets or sets the name of this instance of a particular panel layout.
+     */
+    name: string;
+    /**
+     * This class is abstract.  Define your own subclass if you want to implement a custom panel layout.
+     */
     constructor();
     /**
      * Undocumented
@@ -15879,7 +15888,7 @@ export abstract class PanelLayout {
  * determines how it will size and arrange its elements:
  *   - Panel.Position is used to arrange elements based on their absolute positions within the Panel's local coordinate system.
  *   - Panel.Vertical and Panel.Horizontal are used to create linear "stacks" of elements.
- *   - Panel.Auto is used to size the main element to fit around other elements in the Panel.
+ *   - Panel.Auto is used to size the main element to fit around other elements in the Panel -- this creates borders.
  *   - Panel.Spot is used to arrange elements based on the Spot properties GraphObject#alignment
  *     and GraphObject#alignmentFocus, relative to a main element of the panel.
  *     Spot panels can align relative to other elements by using Panel#alignmentFocusName.
@@ -15894,7 +15903,8 @@ export abstract class PanelLayout {
  *   - Panel.Link is only used by Link parts and Link Adornments.
  *   - Panel.Graduated is used to draw regular tick marks and text along the main Shape element.
  *
- * Using <a href="../../intro/buildingObjects.html">GraphObject.make</a>, the second argument can be used to declare the Panel type:
+ * Using <a href="../../intro/buildingObjects.html">GraphObject.make</a>, the second argument can be used to declare the Panel type.
+ * The second argument may also be an instance of PanelLayout, if you want to use a custom panel layout.
  * ```js
  * // Either:
  * $(go.Panel, go.Panel.Horizontal, ...
@@ -15994,12 +16004,17 @@ export abstract class PanelLayout {
  * to Spot Panels is that resizing of a Graduated Panel should generally be done on the main shape.
  * <p class="boxrun">Please read the <a href="../../intro/graduatedPanels.html">Introduction page on Graduated Panels</a>
  * for more examples and explanation.
+ *
  * <h3>Changing and accessing elements of a Panel</h3>
  *
  * You can change the collection of #elements by calling #add, #insertAt, #remove, or #removeAt.
  * You can get direct access to a particular element by calling #elt.
  *
+ * Alternatively you can control the number and order of elements that are copies of an item template by setting or binding the
+ * #itemArray property.  This is discussed below.
+ *
  * You can search the visual tree of a Panel for GraphObjects that given a GraphObject#name using #findObject.
+ *
  * <h3>Panel Size and Appearance</h3>
  *
  * Panels typically compute their own size based on their elements and Panel #type,
@@ -16027,6 +16042,7 @@ export abstract class PanelLayout {
  *
  * <p class="boxread">
  * For live examples of all Panel types, see the <a href="../../intro/panels.html">Introduction page on Panels.</a>
+ *
  * <h3>Data Binding</h3>
  *
  * Panels also provide fundamental support for data binding.
@@ -16076,7 +16092,8 @@ export class Panel extends GraphObject {
     copy(): this;
     /**
      * Gets or sets the type of the Panel, which controls how the Panel's elements are measured and arranged.
-     * The only accepted values are listed as constant properties of Panel, including:
+     * The value must be an instance of PanelLayout.
+     * The only predefined values are listed as constant properties of Panel, including:
      *   - Panel.Position
      *   - Panel.Vertical
      *   - Panel.Horizontal
@@ -17793,6 +17810,7 @@ export class TextBlock extends GraphObject {
      * If null, the TextBlock will use the default text editor of the TextEditingTool.
      * The default is null.
      * The value should be set to an instance of HTMLInfo.
+     * Setting this property might not affect any ongoing text editing operation.
      *
      * As of 2.0 setting this to an HTML Element is no longer supported.
      *
@@ -18077,6 +18095,8 @@ export class Picture extends GraphObject {
      *
      * This is called once per Picture, for every Picture that is using the same #source that loaded successfully.
      * This will never be called if the #source is never set, and is not called with Pictures that use #element instead.
+     * It is even called for a Picture source that has already loaded, so that creating copies of a Picture with this property set will
+     * call it once for each newly created Picture.
      *
      * The default value is null, meaning that no specific action occurs when an image finishes loading.
      * @see #errorFunction
@@ -19275,12 +19295,33 @@ export class Part extends Panel {
      *     var v = diagram.viewportBounds.copy();
      *     v.subtractMargin(diagram.padding);
      *     // get the bounds of the part being dragged
-     *     var b = part.actualBounds;
+     *     var bnd = part.actualBounds;
      *     var loc = part.location;
      *     // now limit the location appropriately
-     *     var x = Math.max(v.x+1, Math.min(pt.x, v.right-b.width-2)) + (loc.x-b.x);
-     *     var y = Math.max(v.y+1, Math.min(pt.y, v.bottom-b.height-2)) + (loc.y-b.y);
-     *     return new go.Point(x, y);
+     *     var l = v.x + (loc.x - bnd.x);
+     *     var r = v.right - (bnd.right - loc.x);
+     *     var t = v.y + (loc.y - bnd.y);
+     *     var b = v.bottom - (bnd.bottom - loc.y);
+     *     if (l <= gridpt.x && gridpt.x <= r && t <= gridpt.y && gridpt.y <= b) return gridpt;
+     *     var p = gridpt.copy();
+     *     if (diagram.toolManager.draggingTool.isGridSnapEnabled) {
+     *       // find a location that is inside V but also keeps the part's bounds within V
+     *       var cw = diagram.grid.gridCellSize.width;
+     *       if (cw > 0) {
+     *         while (p.x > r) p.x -= cw;
+     *         while (p.x < l) p.x += cw;
+     *       }
+     *       var ch = diagram.grid.gridCellSize.height;
+     *       if (ch > 0) {
+     *         while (p.y > b) p.y -= ch;
+     *         while (p.y < t) p.y += ch;
+     *       }
+     *       return p;
+     *     } else {
+     *       p.x = Math.max(l, Math.min(p.x, r));
+     *       p.y = Math.max(t, Math.min(p.y, b));
+     *       return p;
+     *     }
      *   }
      * ```
      * Note that for this functionality you will also probably want to set Diagram#autoScrollRegion to be a zero margin.

@@ -78,21 +78,40 @@
         $(go.Shape, { fill: "oldlace", strokeWidth: 0, desiredSize: myDiagram.fixedBounds.size })
       ));
 
-    // this function is the Node.dragComputation, to limit the movement of the parts
-    // use GRIDPT instead of PT if DraggingTool.isGridSnapEnabled and movement should snap to grid
+    // This function is the Node.dragComputation, to limit the movement of the parts.
     function stayInFixedArea(part, pt, gridpt) {
       var diagram = part.diagram;
       if (diagram === null) return pt;
       // compute the document area without padding
-      var v = diagram.documentBounds.copy();
-      v.subtractMargin(diagram.padding);
+      var v = diagram.documentBounds.copy().subtractMargin(diagram.padding);
       // get the bounds of the part being dragged
-      var b = part.actualBounds;
+      var bnd = part.actualBounds;
       var loc = part.location;
       // now limit the location appropriately
-      var x = Math.max(v.x, Math.min(pt.x, v.right - b.width)) + (loc.x - b.x);
-      var y = Math.max(v.y, Math.min(pt.y, v.bottom - b.height)) + (loc.y - b.y);
-      return new go.Point(x, y);
+      var l = v.x + (loc.x - bnd.x);
+      var r = v.right - (bnd.right - loc.x);
+      var t = v.y + (loc.y - bnd.y);
+      var b = v.bottom - (bnd.bottom - loc.y);
+      if (l <= gridpt.x && gridpt.x <= r && t <= gridpt.y && gridpt.y <= b) return gridpt;
+      var p = gridpt.copy();
+      if (diagram.toolManager.draggingTool.isGridSnapEnabled) {
+        // find a location that is inside V but also keeps the part's bounds within V
+        var cw = diagram.grid.gridCellSize.width;
+        if (cw > 0) {
+          while (p.x > r) p.x -= cw;
+          while (p.x < l) p.x += cw;
+        }
+        var ch = diagram.grid.gridCellSize.height;
+        if (ch > 0) {
+          while (p.y > b) p.y -= ch;
+          while (p.y < t) p.y += ch;
+        }
+        return p;
+      } else {
+        p.x = Math.max(l, Math.min(p.x, r));
+        p.y = Math.max(t, Math.min(p.y, b));
+        return p;
+      }
     }
 
     myDiagram.nodeTemplate =

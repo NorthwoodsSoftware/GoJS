@@ -61,7 +61,7 @@ import * as go from '../release/go-module.js';
  * </div>
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/DataInspector.html">Data Inspector</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DataInspector.html">Data Inspector</a> sample.
  * @category Extension
  */
 export class Inspector {

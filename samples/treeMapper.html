@@ -51,6 +51,10 @@
     <script src="../release/go.js"></script>
     <div class="p-4 w-full">
     <script id="code">
+    // Use a TreeNode so that when a node is not visible because a parent is collapsed,
+    // connected links seem to be connected with the lowest visible parent node.
+    // This also forces other links connecting with nodes in the group to be rerouted,
+    // because collapsing/expanding nodes will cause many nodes to move and to appear or disappear.
     function TreeNode() {
       go.Node.call(this);
       this.treeExpandedChanged = function(node) {
@@ -71,6 +75,8 @@
     };
     // end TreeNode
 
+    // Use a MappingLink so that the link routes stop at the edge of the group,
+    // rather than going all the way to the connected nodes.
     function MappingLink() {
       go.Link.call(this);
     }
@@ -85,6 +91,7 @@
       return new go.Point(x, r.centerY);
     };
     // end MappingLink
+
 
     function init() {
       var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -122,7 +129,13 @@
         $(TreeNode,
           { movable: false, copyable: false, deletable: false },  // user cannot move an individual node
           // no Adornment: instead change panel background color by binding to Node.isSelected
-          { selectionAdorned: false },
+          {
+            selectionAdorned: false,
+            background: "white",
+            mouseEnter: function(e, node) { node.background = "aquamarine"; },
+            mouseLeave: function(e, node) { node.background = node.isSelected ? "lightblue" : "white"; }
+          },
+          new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
           // whether the user can start drawing a link from or to this node depends on which group it's in
           new go.Binding("fromLinkable", "group", function(k) { return k === -1; }),
           new go.Binding("toLinkable", "group", function(k) { return k === -2; }),
@@ -140,7 +153,6 @@
             }),
           $(go.Panel, "Horizontal",
             { position: new go.Point(16, 0) },
-            new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
             //// optional icon for each tree node
             //$(go.Picture,
             //  { width: 14, height: 14,
@@ -181,23 +193,9 @@
 
       myDiagram.groupTemplate =
         $(go.Group, "Auto",
+          { deletable: false, layout: makeGroupLayout() },
           new go.Binding("position", "xy", go.Point.parse).makeTwoWay(go.Point.stringify),
-          {
-            deletable: false,
-            layout:
-              $(go.TreeLayout,
-                {
-                  alignment: go.TreeLayout.AlignmentStart,
-                  angle: 0,
-                  compaction: go.TreeLayout.CompactionNone,
-                  layerSpacing: 16,
-                  layerSpacingParentOverlap: 1,
-                  nodeIndentPastParent: 1.0,
-                  nodeSpacing: 0,
-                  setsPortSpot: false,
-                  setsChildPortSpot: false
-                })
-          },
+          new go.Binding("layout", "width", makeGroupLayout),
           $(go.Shape, { fill: "white", stroke: "lightgray" }),
           $(go.Panel, "Vertical",
             { defaultAlignment: go.Spot.Left },
@@ -208,9 +206,44 @@
           )
         );
 
+      function makeGroupLayout() {
+        return $(go.TreeLayout,  // taken from samples/treeView.html
+          {
+            alignment: go.TreeLayout.AlignmentStart,
+            angle: 0,
+            compaction: go.TreeLayout.CompactionNone,
+            layerSpacing: 16,
+            layerSpacingParentOverlap: 1,
+            nodeIndentPastParent: 1.0,
+            nodeSpacing: 0,
+            setsPortSpot: false,
+            setsChildPortSpot: false,
+            // after the tree layout, change the width of each node so that all
+            // of the nodes have widths such that the collection has a given width
+            commitNodes: function() {
+              go.TreeLayout.prototype.commitNodes.call(this);
+              updateNodeWidths(this.group, this.group.data.width || 100);
+            }
+          });
+      }
+
+      function updateNodeWidths(group, width) {
+        var minx = Infinity;
+        group.memberParts.each(function(n) {
+          if (n instanceof go.Node) {
+            minx = Math.min(minx, n.actualBounds.x);
+          }
+        });
+        if (minx === Infinity) return;
+        var right = minx + width;
+        group.memberParts.each(function(n) {
+          if (n instanceof go.Node) n.width = Math.max(0, right - n.actualBounds.x);
+        });
+      }
+
       var nodeDataArray = [
-        { isGroup: true, key: -1, text: "Left Side", xy: "0 0" },
-        { isGroup: true, key: -2, text: "Right Side", xy: "300 0" }
+        { isGroup: true, key: -1, text: "Left Side", xy: "0 0", width: 150 },
+        { isGroup: true, key: -2, text: "Right Side", xy: "300 0", width: 150 }
       ];
       var linkDataArray = [
         { from: 6, to: 1012, category: "Mapping" },

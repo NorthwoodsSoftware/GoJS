@@ -1144,6 +1144,14 @@ arr.push([
   ["customlayout", "extensions", "performance"]
 ]);
 
+arr.push([
+  "../extensions/PanelLayoutFlow",
+  "Flow PanelLayout",
+  "A custom PanelLayout that arranges panel elements into rows or columns.",
+  "PanelLayoutFlow",
+  ["customlayout", "extensions"]
+]);
+
 // Tools
 arr.push([
   "../extensions/RealtimeDragSelecting",

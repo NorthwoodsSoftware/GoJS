@@ -20,7 +20,7 @@ import * as go from '../release/go-module.js';
  * It works by modifying that label's {@link GraphObject#alignment} property to have an
  * offset from the center of the panel.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/NodeLabelDragging.html">Node Label Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/NodeLabelDragging.html">Node Label Dragging</a> sample.
  * @category Tool Extension
  */
 export class NodeLabelDraggingTool extends go.Tool {

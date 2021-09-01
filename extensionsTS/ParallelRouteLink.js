@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
      * This custom {@link Link} class customizes its route to go parallel to other links connecting the same ports,
      * if the link is not orthogonal and is not Bezier curved.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/ParallelRoute.html">Parallel Route Links</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ParallelRoute.html">Parallel Route Links</a> sample.
      * @category Part Extension
      */
     var ParallelRouteLink = /** @class */ (function (_super) {

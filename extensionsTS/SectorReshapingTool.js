@@ -41,7 +41,7 @@ var __extends = (this && this.__extends) || (function () {
      * This depends on there being three data properties, "angle", "sweep", and "radius",
      * that hold the needed information to be able to reproduce the sector.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/SectorReshaping.html">Sector Reshaping</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/SectorReshaping.html">Sector Reshaping</a> sample.
      * @category Tool Extension
      */
     var SectorReshapingTool = /** @class */ (function (_super) {

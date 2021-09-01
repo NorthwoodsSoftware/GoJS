@@ -12,7 +12,7 @@ import * as go from '../release/go-module.js';
 /**
  * The OrthogonalLinkReshapingTool class lets a user drag a tool handle along the link segment, which will move the whole segment.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/OrthogonalLinkReshaping.html">Orthogonal Link Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/OrthogonalLinkReshaping.html">Orthogonal Link Reshaping</a> sample.
  * @category Tool Extension
  */
 export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {

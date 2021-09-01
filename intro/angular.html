@@ -447,11 +447,39 @@ public initPalette(): go.Palette {
 &lt;/gojs-palette&gt;
 </code></pre>
 
-        <p>
-            You will now have a GoJS Diagram and Palette working in your Angular application. Again, for a full
-            example of a <code>gojs-angular</code> application, see <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>.
-        </p>
+  <p>
+    You will now have a GoJS Diagram and Palette working in your Angular application. Again, for a full
+    example of a <code>gojs-angular</code> application, see <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>.
+  </p>
 
+  <h4>A Note on Diagram Reinitialization</h4>
+  <p>
+    Occasionally you may want to treat a model update as if you were loading a completely new model.
+    But initialization is only done in your <code>initDiagram</code> function,
+    within the <code>DiagramComponent</code>'s <code>ngAfterViewInit</code> lifecycle hook, and only once.
+    A regular model update is not treated as an initialization, so none of the <code>initial...</code> properties
+    of your Diagram will apply.
+  </p>
+  <p>
+    To address this problem, <code>DiagramComponent</code> exposes a <code>clear</code> method.
+    When called, it clears its diagram of all nodes, links, and model data, and
+    prepares the next state update to be treated as a diagram initialization.
+    That will result in an initial layout and perform initial diagram content alignment and scaling.
+    Note that <code>initDiagram</code> is not called again.
+  </p>
+  <p>
+    Here is a small sample of how one might trigger diagram reinitilization using the <code>clear</code> method with <code>gojs-angular</code> 2.0.
+  </p>
+<pre class="lang-ts"><code>
+public reinitModel() {
+    this.myDiagramComponent.clear();
+    this.state = produce(this.state, draft => {
+        draft.skipsDiagramUpdate = false;
+        draft.diagramNodeData = [{ id: "Alpha", text: "Zorro", color: "red" }];
+        draft.diagramLinkData = [];
+    });
+}
+</code></pre>
 
         <br>
         <h2 id="UsingOverviewComponent">Using the Overview Component</h2>
@@ -615,15 +643,13 @@ public ngOnChanges () {
             you could do so by simply adding to the <code>diagramNodeData</code>, mutating it. Such as:
         </p>
 
-        <pre>
-        <code>
+        <pre class="lang-ts"><code>
 public addNode = function(nodeData: go.ObjectData) {
   // sync changes with GoJS model
   this.skipsDiagramUpdate = false;
   this.diagramNodeData.push(nodeData);
 };
-          </code>
-        </pre>
+          </code></pre>
 
         <h4>The Version 2.0 Way</h4>
         <p>
@@ -632,8 +658,7 @@ public addNode = function(nodeData: go.ObjectData) {
             doing that with immer's <code>produce</code> function.
         </p>
 
-        <pre>
-        <code>
+        <pre class="lang-ts"><code>
 public addNode = function(nodeData: go.ObjectData) {
   this.state = produce(this.state, draft => {
     var nodedata = { id: "Zeta", text: "Zorro", color: "red" };
@@ -641,8 +666,7 @@ public addNode = function(nodeData: go.ObjectData) {
     draft.diagramNodeData.push(nodedata);
   });
 }
-          </code>
-        </pre>
+          </code></pre>
 
         <p>
             Notice we are also using a massive <code>state</code> object to hold <code>gojs-angular</code> component properties. This makes these kinds

@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
      * The RealtimeDragSelectingTool class lets the user select and deselect Parts within the {@link DragSelectingTool#box}
      * during a drag, not just at the end of the drag.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/RealtimeDragSelecting.html">Realtime Drag Selecting</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/RealtimeDragSelecting.html">Realtime Drag Selecting</a> sample.
      * @category Tool Extension
      */
     var RealtimeDragSelectingTool = /** @class */ (function (_super) {

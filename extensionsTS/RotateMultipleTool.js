@@ -34,7 +34,7 @@ var __extends = (this && this.__extends) || (function () {
      *
      * Caution: this only works for Groups that do *not* have a Placeholder.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/RotateMultiple.html">Rotate Multiple</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/RotateMultiple.html">Rotate Multiple</a> sample.
      * @category Tool Extension
      */
     var RotateMultipleTool = /** @class */ (function (_super) {

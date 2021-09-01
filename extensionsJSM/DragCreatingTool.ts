@@ -40,7 +40,7 @@ import * as go from '../release/go-module.js';
  * but it does temporarily add the {@link #box} Part to the diagram.
  * This tool does conduct a transaction when inserting the new node.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/DragCreating.html">Drag Creating</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DragCreating.html">Drag Creating</a> sample.
  * @category Tool Extension
  */
 export class DragCreatingTool extends go.Tool {

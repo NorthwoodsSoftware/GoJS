@@ -31,7 +31,7 @@ import * as go from '../release/go-module.js';
  *   myDiagram.commandHandler = new LocalStorageCommandHandler();
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsTS/LocalStorageCommandHandler.html">Local Storage Commands</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../extensionsJSM/LocalStorageCommandHandler.html">Local Storage Commands</a> sample.
  * @category Extension
  */
 export class LocalStorageCommandHandler extends go.CommandHandler {

@@ -39,7 +39,7 @@ var __extends = (this && this.__extends) || (function () {
      * If {@link #avoidsNodes} is true and the link is orthogonal,
      * it also avoids reshaping the link so that any adjacent segments cross over any avoidable nodes.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
      * @category Tool Extension
      */
     var SnapLinkReshapingTool = /** @class */ (function (_super) {

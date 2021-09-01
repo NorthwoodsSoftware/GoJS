@@ -44,7 +44,7 @@ var __extends = (this && this.__extends) || (function () {
      * You can customize the {@link LinkingTool#archetypeLinkData} to specify property values
      * that can be data-bound by your link template for the Links that are actually created.
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/PolylineLinking.html">Polyline Linking</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/PolylineLinking.html">Polyline Linking</a> sample.
      * @category Tool Extension
      */
     var PolylineLinkingTool = /** @class */ (function (_super) {
