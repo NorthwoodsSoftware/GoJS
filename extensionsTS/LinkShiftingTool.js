@@ -105,7 +105,7 @@ var __extends = (this && this.__extends) || (function () {
             // show handles if link is selected, remove them if no longer selected
             var category = 'LinkShiftingFrom';
             var adornment = null;
-            if (link.isSelected && !this.diagram.isReadOnly) {
+            if (link.isSelected && !this.diagram.isReadOnly && link.fromPort) {
                 var selelt = link.selectionObject;
                 if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
                     selelt.actualBounds.isReal() && selelt.isVisibleObject()) {
@@ -128,7 +128,7 @@ var __extends = (this && this.__extends) || (function () {
                 link.removeAdornment(category);
             category = 'LinkShiftingTo';
             adornment = null;
-            if (link.isSelected && !this.diagram.isReadOnly) {
+            if (link.isSelected && !this.diagram.isReadOnly && link.toPort) {
                 var selelt = link.selectionObject;
                 if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
                     selelt.actualBounds.isReal() && selelt.isVisibleObject()) {

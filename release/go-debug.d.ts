@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.49
+ * Type definitions for GoJS v2.1.50
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -9024,7 +9024,7 @@ export class Animation {
  *   },
  *   $(go.Shape,
  *     // Animate all changes to Shape.opacity immediately
- *     new go.AnimationTrigger("opacity", null, startCondition: go.AnimationTrigger.Immediate),
+ *     new go.AnimationTrigger("opacity", null, go.AnimationTrigger.Immediate),
  *     {
  *      // ... Shape properties
  *     }
@@ -9078,7 +9078,7 @@ export class AnimationTrigger {
      *    // ...
      *    $(go.Shape,
      *      // Animate all changes to Shape.opacity immediately
-     *      new go.AnimationTrigger("opacity", null, startCondition: go.AnimationTrigger.Immediate),
+     *      new go.AnimationTrigger("opacity", null, go.AnimationTrigger.Immediate),
      *      {
      *       // ...
      *      }
@@ -9710,6 +9710,7 @@ export class Diagram {
     /**
      * Undocumented
      * Call #clear and also restore the templates, layers, layout and various Diagram properties to their original state.
+     * @expose
      */
     reset(): void;
     /**
@@ -10059,6 +10060,7 @@ export class Diagram {
      *
      * Invalidates all non-layout diagram state and forces an immediate redraw.
      * Because this can be very inefficent, to discourage its use it remains an undocumented part of the API.
+     * @expose
      */
     redraw(): void;
     /**
@@ -17580,7 +17582,7 @@ export class TextBlock extends GraphObject {
      * Gets the function that, given the TextBlock and numerical text height, computes the position to draw the baseline of a line of text in all TextBlocks.
      * By default this is null and default behavior returns `(textHeight * 0.75)`.
      *
-     * Note: This affects drawing only, and does not change TextBlock measurement calculations.
+     * This computation affects drawing only, and does not change TextBlock measurement calculations.
      * @return {(textBlock: TextBlock, textHeight: number) => number | null}
      * @since 2.0
      */
@@ -17588,7 +17590,11 @@ export class TextBlock extends GraphObject {
     /**
      * Sets the function that, given the TextBlock and numerical text height, computes the position to draw the baseline of a line of text in all TextBlocks.
      *
-     * Note: This affects drawing only, and does not change TextBlock measurement calculations.
+     * This computation affects drawing only, and does not change TextBlock measurement calculations.
+     * It is expected this method will be called before or during initialization of any Diagram.
+     * Diagrams will not redraw when this method has been called,
+     * and you should call Diagram#redraw if you are calling this method outside of your initialization.
+     *
      * @param {(textBlock: TextBlock, textHeight: number) => number | null} value
      * @since 2.0
      */
@@ -17597,7 +17603,7 @@ export class TextBlock extends GraphObject {
      * Gets the function that, given the TextBlock and numerical text height, computes the position to draw the underline of a line of text in all TextBlocks.
      * By default this is null and default behavior returns `(textHeight * 0.75)`.
      *
-     * Note: This affects drawing only, and does not change TextBlock measurement calculations.
+     * This computation affects drawing only, and does not change TextBlock measurement calculations.
      * @return {(textBlock: TextBlock, textHeight: number) => number | null}
      * @since 2.0
      */
@@ -17605,7 +17611,11 @@ export class TextBlock extends GraphObject {
     /**
      * Sets the function that, given the TextBlock and numerical text height, computes the position to draw the underline of a line of text in all TextBlocks.
      *
-     * Note: This affects drawing only, and does not change TextBlock measurement calculations.
+     * This computation affects drawing only, and does not change TextBlock measurement calculations.
+     * It is expected this method will be called before or during initialization of any Diagram.
+     * Diagrams will not redraw when this method has been called,
+     * and you should call Diagram#redraw if you are calling this method outside of your initialization.
+     *
      * @param {(textBlock: TextBlock, textHeight: number) => number | null} value
      * @since 2.0
      */

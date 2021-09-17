@@ -82,7 +82,7 @@ export class LinkShiftingTool extends go.Tool {
     // show handles if link is selected, remove them if no longer selected
     let category = 'LinkShiftingFrom';
     let adornment = null;
-    if (link.isSelected && !this.diagram.isReadOnly) {
+    if (link.isSelected && !this.diagram.isReadOnly && link.fromPort) {
       const selelt = link.selectionObject;
       if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
         selelt.actualBounds.isReal() && selelt.isVisibleObject()) {
@@ -104,7 +104,7 @@ export class LinkShiftingTool extends go.Tool {
 
     category = 'LinkShiftingTo';
     adornment = null;
-    if (link.isSelected && !this.diagram.isReadOnly) {
+    if (link.isSelected && !this.diagram.isReadOnly && link.toPort) {
       const selelt = link.selectionObject;
       if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
         selelt.actualBounds.isReal() && selelt.isVisibleObject()) {

@@ -75,20 +75,52 @@
     };
     // end TreeNode
 
-    // Use a MappingLink so that the link routes stop at the edge of the group,
-    // rather than going all the way to the connected nodes.
+    // Control how Mapping links are routed:
+    // - "Normal": normal routing with fixed fromEndSegmentLength & toEndSegmentLength
+    // - "ToGroup": so that the link routes stop at the edge of the group,
+    //     rather than going all the way to the connected nodes
+    // - "ToNode": so that they go all the way to the connected nodes
+    //     but only bend at the edge of the group
+    var ROUTINGSTYLE = "ToGroup";
+
+    // If you want the regular routing where the Link.[from/to]EndSegmentLength controls
+    // the length of the horizontal segment adjacent to the port, don't use this class.
+    // Replace MappingLink with a go.Link in the "Mapping" link template.
     function MappingLink() {
       go.Link.call(this);
     }
     go.Diagram.inherit(MappingLink, go.Link);
 
     MappingLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-      var r = port.getDocumentBounds();
-      var group = node.containingGroup;
-      var b = (group !== null) ? group.actualBounds : node.actualBounds;
-      var op = othernode.getDocumentPoint(go.Spot.Center);
-      var x = (op.x > r.centerX) ? b.right : b.left;
-      return new go.Point(x, r.centerY);
+      if (ROUTINGSTYLE !== "ToGroup") {
+        return go.Link.prototype.getLinkPoint.call(this, node, port, spot, from, ortho, othernode, otherport);
+      } else {
+        var r = port.getDocumentBounds();
+        var group = node.containingGroup;
+        var b = (group !== null) ? group.actualBounds : node.actualBounds;
+        var op = othernode.getDocumentPoint(go.Spot.Center);
+        var x = (op.x > r.centerX) ? b.right : b.left;
+        return new go.Point(x, r.centerY);
+      }
+    };
+
+    MappingLink.prototype.computePoints = function() {
+      var result = go.Link.prototype.computePoints.call(this);
+      if (result && ROUTINGSTYLE === "ToNode") {
+        var fn = this.fromNode;
+        var tn = this.toNode;
+        if (fn && tn) {
+          var fg = fn.containingGroup;
+          var fb = fg ? fg.actualBounds : fn.actualBounds;
+          var fpt = this.getPoint(0);
+          var tg = tn.containingGroup;
+          var tb = tg ? tg.actualBounds : tn.actualBounds;
+          var tpt = this.getPoint(this.pointsCount-1);
+          this.setPoint(1, new go.Point((fpt.x < tpt.x) ? fb.right : fb.left, fpt.y));
+          this.setPoint(this.pointsCount-2, new go.Point((fpt.x < tpt.x) ? tb.left : tb.right, tpt.y));
+        }
+      }
+      return result;
     };
     // end MappingLink
 
@@ -133,9 +165,9 @@
             selectionAdorned: false,
             background: "white",
             mouseEnter: function(e, node) { node.background = "aquamarine"; },
-            mouseLeave: function(e, node) { node.background = node.isSelected ? "lightblue" : "white"; }
+            mouseLeave: function(e, node) { node.background = node.isSelected ? "skyblue" : "white"; }
           },
-          new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
+          new go.Binding("background", "isSelected", function(s) { return (s ? "skyblue" : "white"); }).ofObject(),
           // whether the user can start drawing a link from or to this node depends on which group it's in
           new go.Binding("fromLinkable", "group", function(k) { return k === -1; }),
           new go.Binding("toLinkable", "group", function(k) { return k === -2; }),
@@ -222,25 +254,14 @@
             // of the nodes have widths such that the collection has a given width
             commitNodes: function() {
               go.TreeLayout.prototype.commitNodes.call(this);
-              updateNodeWidths(this.group, this.group.data.width || 100);
+              if (ROUTINGSTYLE === "ToGroup") {
+                updateNodeWidths(this.group, this.group.data.width || 100);
+              }
             }
           });
       }
 
-      function updateNodeWidths(group, width) {
-        var minx = Infinity;
-        group.memberParts.each(function(n) {
-          if (n instanceof go.Node) {
-            minx = Math.min(minx, n.actualBounds.x);
-          }
-        });
-        if (minx === Infinity) return;
-        var right = minx + width;
-        group.memberParts.each(function(n) {
-          if (n instanceof go.Node) n.width = Math.max(0, right - n.actualBounds.x);
-        });
-      }
-
+      // Create some random trees in each group
       var nodeDataArray = [
         { isGroup: true, key: -1, text: "Left Side", xy: "0 0", width: 150 },
         { isGroup: true, key: -2, text: "Right Side", xy: "300 0", width: 150 }
@@ -285,6 +306,47 @@
       return count;
     }
     window.addEventListener('DOMContentLoaded', init);
+
+
+    function updateNodeWidths(group, width) {
+      if (isNaN(width)) {
+        group.memberParts.each(function(n) {
+          if (n instanceof go.Node) n.width = NaN;  // back to natural width
+        });
+      } else {
+        var minx = Infinity;  // figure out minimum group width
+        group.memberParts.each(function(n) {
+          if (n instanceof go.Node) {
+            minx = Math.min(minx, n.actualBounds.x);
+          }
+        });
+        if (minx === Infinity) return;
+        var right = minx + width;
+        group.memberParts.each(function(n) {
+          if (n instanceof go.Node) n.width = Math.max(0, right - n.actualBounds.x);
+        });
+      }
+    }
+
+    // this function is only needed when changing the value of ROUTINGSTYLE dynamically
+    function changeStyle() {
+      // find user-chosen style name
+      var stylename = "ToGroup";
+      var radio = document.getElementsByName("MyRoutingStyle");
+      for (var i = 0; i < radio.length; i++) {
+        if (radio[i].checked) {
+          stylename = radio[i].value; break;
+        }
+      }
+      if (stylename !== ROUTINGSTYLE) {
+        myDiagram.commit(function(diag) {
+          ROUTINGSTYLE = stylename;
+          diag.findTopLevelGroups().each(function(g) { updateNodeWidths(g, NaN); });
+          diag.layoutDiagram(true);  // force layouts to happen again
+          diag.links.each(function(l) { l.invalidateRoute(); });
+        });
+      }
+    }
   </script>
 
 <div id="sample">
@@ -297,6 +359,15 @@
   <p>
     Draw new links by dragging from any field (i.e. any tree node).
     Reconnect a selected link by dragging its diamond-shaped handle.
+  </p>
+  <p>
+    This sample supports three different routing styles:<br>
+    <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="Normal" />
+    "Normal"<br>
+    <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="ToGroup" checked="checked"/>
+    "ToGroup", where the links stop at the border of the group<br>
+    <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="ToNode" />
+    "ToNode", where the links bend at the border of the group but go all the way to the node, as normal<br>
   </p>
   <p>The model data, automatically updated after each change or undo or redo:</p>
   <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>

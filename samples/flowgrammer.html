@@ -289,14 +289,14 @@
 
       // define the Group template, required but unseen
       myDiagram.groupTemplate =
-        $(go.Group, "Auto",
+        $(go.Group, "Spot",
           {
             locationSpot: go.Spot.Center,
             avoidableMargin: 10,  // extra space on the sides
             layout: $(ParallelLayout, { angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
             mouseDragEnter: function(e, group) {
               var sh = group.findObject("SHAPE");
-              if (sh) { sh.width = Math.max(20, group.actualBounds.width-20); sh.stroke = "lime"; }
+              if (sh) sh.stroke = "lime";
             },
             mouseDragLeave: function(e, group) {
               var sh = group.findObject("SHAPE");
@@ -304,14 +304,17 @@
             },
             mouseDrop: dropOntoNode
           },
-          $(go.Shape, "RoundedRectangle",
-            { fill: "rgba(0,0,0,0.05)", strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight },
-            new go.Binding("fill", "cat", groupColor)),
-          $(go.Placeholder),
+          $(go.Panel, "Auto",
+            $(go.Shape, "RoundedRectangle",
+              { fill: "rgba(0,0,0,0.05)", strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight },
+              new go.Binding("fill", "cat", groupColor)),
+            $(go.Placeholder)
+          ),
           $(go.Shape, "LineH",
             {
               name: "SHAPE",
-              height: 0, alignment: go.Spot.Bottom,
+              alignment: go.Spot.Bottom,
+              height: 0, stretch: go.GraphObject.Horizontal,
               stroke: null, strokeWidth: 8
             })
         );
@@ -322,6 +325,7 @@
             selectable: false,
             deletable: false,
             routing: go.Link.Orthogonal, corner: 5,
+            fromEndSegmentLength: 4, toEndSegmentLength: 4,
             toShortLength: 2,
             // links cannot be deleted
             // If a node from the Palette is dragged over this node, its outline will turn green
@@ -333,7 +337,7 @@
           $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 8 },
             new go.Binding("stroke", "isHighlighted", function(h) { return h ? "lime" : "transparent"; }).ofObject()),
           $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 1.5 }),
-          $(go.Shape, { toArrow: "Standard", strokeWidth: 0 }),
+          $(go.Shape, { toArrow: "Standard", strokeWidth: 0 })
           // $(go.TextBlock, { segmentIndex: -2, segmentFraction: 0.75, editable: true },
           //   new go.Binding("text").makeTwoWay(),
           //   new go.Binding("background", "text", function(t) { return t ? "white" : null; }))
