@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.50<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.51<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Model</h1>
@@ -1215,6 +1215,11 @@
 								<p>Note that properties with values that are functions are not written out by <a href="Model.html#toJson">toJson</a>,
 									so reading in such a model will require constructing such a model, initializing its functional property values,
 								and explicitly passing it in as the second argument.</p>
+								<p>In order to serialize instances of some classes and enumerated values and some other cases,
+									<a href="Model.html#toJson">Model.toJson</a> writes out special Objects that this <a href="Model.html#static-fromJson">Model.fromJson</a> function substitutes
+									with the intended values.
+									Those special objects will have a property named &quot;class&quot; whose value will be one of the special substitution cases:
+								&quot;NaN&quot;, &quot;Date&quot;, &quot;go.EnumValue&quot;, &quot;go.Point&quot;, &quot;go.Size&quot;, &quot;go.Rect&quot;, &quot;go.Margin&quot;, &quot;go.Spot&quot;, &quot;go.Brush&quot;, &quot;go.Geometry&quot;.</p>
 								<p>As a special case when deserializing an object, if the property is named &quot;points&quot; and the
 								property value is an Array with an even number of numbers, it will substitute a <a href="List.html">List</a> of <a href="Point.html">Point</a>s.</p>
 								<p>Typical usage:</p>
@@ -2097,7 +2102,10 @@
 									The <a href="Model.html#toJson">toJson</a> and <a href="Model.html#static-fromJson">Model.fromJson</a> methods automatically do such processing for numbers that are NaN
 									and for objects that are of class <a href="Point.html">Point</a>, <a href="Size.html">Size</a>, <a href="Rect.html">Rect</a>, <a href="Margin.html">Margin</a>, <a href="Spot.html">Spot</a>,
 									<a href="Brush.html">Brush</a> (but not for brush patterns), and for <a href="Geometry.html">Geometry</a>.
-									However, we recommend that you use Binding converters (static functions named &quot;parse&quot; and &quot;stringify&quot;)
+									For instances of those classes, special objects are written out with a property named &quot;class&quot; whose value
+									will be one of the special cases that will be substituted by <a href="Model.html#static-fromJson">Model.fromJson</a>:
+								&quot;NaN&quot;, &quot;Date&quot;, &quot;go.EnumValue&quot;, &quot;go.Point&quot;, &quot;go.Size&quot;, &quot;go.Rect&quot;, &quot;go.Margin&quot;, &quot;go.Spot&quot;, &quot;go.Brush&quot;, &quot;go.Geometry&quot;.</p>
+								<p>However, we recommend that you use Binding converters (static functions named &quot;parse&quot; and &quot;stringify&quot;)
 									to represent Points, Sizes, Rects, Margins, Spots, and Geometries as string values in your data, rather than as Objects.
 								This makes the JSON text smaller and simpler and easier to read.</p>
 								<p>As a special case when serializing an object, if the property is named &quot;points&quot; and the

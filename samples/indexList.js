@@ -953,7 +953,7 @@ arr.push([
 arr.push([
   "kittenMonitor",
   "Kitten Monitor",
-  "A monitoring diagram where the nodes (kittens) move about a house, with tooltips for each kitten.",
+  "A monitoring diagram where the nodes (kittens) move on a background image (a house plan), with tooltips describing kittens.",
   "kittenMonitor",
   ["tooltips", "monitoring", "animation"]
 ]);

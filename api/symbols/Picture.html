@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.50<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.51<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class Picture</h1>
@@ -216,6 +216,8 @@
 									This can be a HTMLImageElement, HTMLVideoElement, or HTMLCanvasElement.
 									If an image, this element must have its source (src) attribute defined.
 								Setting this does not set the <a href="Picture.html#source">Picture.source</a> attribute and that attribute may be unknowable.</p>
+								<p>If this property is set to an HTMLImageElement, and that element is not yet loaded before it is used, the Diagrams using that Element
+								will not redraw on their own. You must call <code>Diagram.redraw()</code> when the image is finished loading if you wish for the Diagram to redraw immediately.</p>
 							</div>
 						</li>
 					</ul>
@@ -339,14 +341,15 @@
 								<p>Gets or sets the Picture&#39;s source URL, which can be any valid image (png, jpg, gif, etc) URL.</p>
 								<p>The default value is the empty string, which specifies no image source.
 									Setting this attribute creates an HTMLImageElement and sets the <a href="Picture.html#element">Picture.element</a>
-									attribute to that element.
-									Setting the source of multiple Pictures to the same URL will cause only one HTMLImageElement
+									attribute to that element. When the element loads, this Picture may remeasure if no <a href="GraphObject.html#desiredSize">GraphObject.desiredSize</a> was set,
+								and Diagrams using the picture will redraw.</p>
+								<p>To avoid remeasuring and rearranging Parts as images load asynchronously,
+									be sure to set the <a href="GraphObject.html#desiredSize">GraphObject.desiredSize</a>
+								(or <a href="GraphObject.html#width">GraphObject.width</a> and <a href="GraphObject.html#height">GraphObject.height</a>) to fixed values.</p>
+								<p>Setting the source of multiple Pictures to the same URL will cause only one HTMLImageElement
 									to be created and shared. Setting the source to the empty string will set <a href="Picture.html#element">Picture.element</a> to null.
 									It is commonplace to either specify a constant URL or to data bind this property to some data property,
 								perhaps using a conversion function in order to produce a proper URL.</p>
-								<p>To avoid remeasuring and rearranging Parts as images load asynchronously,
-									be sure to set the <a href="GraphObject.html#desiredSize">GraphObject.desiredSize</a>
-								(or <a href="GraphObject.html#width">GraphObject.width</a> and <a href="GraphObject.html#height">GraphObject.height</a>) to fixed values</p>
 								<p>For cross-browser support of SVG sources additional care is needed.
 								See the final section of the <a href="../../intro/pictures.html">Introduction page on Pictures</a>.</p>
 							</div>

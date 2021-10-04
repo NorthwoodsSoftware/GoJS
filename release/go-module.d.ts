@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.50
+ * Type definitions for GoJS v2.1.51
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8444,11 +8444,12 @@ export class TextEditingTool extends Tool {
      */
     acceptText(reason: EnumValue): void;
     /**
-     * Call the #textBlock's TextBlock#errorFunction, if there is one.
+     * Call the #textBlock's TextBlock#errorFunction, if there is one,
+     * and then show the text editor again.
      * This is called only when the #isValidText method returned false.
      * The value of #state will be StateInvalid.
-     * When this method returns, the text editor will be shown again.
      * This method may be overridden.
+     * You may wish to override this method in order to not continue showing the editor.
      * @expose
      * @param oldstring
      * @param newstring
@@ -17996,6 +17997,9 @@ export class Picture extends GraphObject {
      * This can be a HTMLImageElement, HTMLVideoElement, or HTMLCanvasElement.
      * If an image, this element must have its source (src) attribute defined.
      * Setting this does not set the Picture#source attribute and that attribute may be unknowable.
+     *
+     * If this property is set to an HTMLImageElement, and that element is not yet loaded before it is used, the Diagrams using that Element
+     * will not redraw on their own. You must call `Diagram.redraw()` when the image is finished loading if you wish for the Diagram to redraw immediately.
      */
     element: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | null;
     /**
@@ -18003,15 +18007,17 @@ export class Picture extends GraphObject {
      *
      * The default value is the empty string, which specifies no image source.
      * Setting this attribute creates an HTMLImageElement and sets the Picture#element
-     * attribute to that element.
+     * attribute to that element. When the element loads, this Picture may remeasure if no GraphObject#desiredSize was set,
+     * and Diagrams using the picture will redraw.
+     *
+     * To avoid remeasuring and rearranging Parts as images load asynchronously,
+     * be sure to set the GraphObject#desiredSize
+     * (or GraphObject#width and GraphObject#height) to fixed values.
+     *
      * Setting the source of multiple Pictures to the same URL will cause only one HTMLImageElement
      * to be created and shared. Setting the source to the empty string will set Picture#element to null.
      * It is commonplace to either specify a constant URL or to data bind this property to some data property,
      * perhaps using a conversion function in order to produce a proper URL.
-     *
-     * To avoid remeasuring and rearranging Parts as images load asynchronously,
-     * be sure to set the GraphObject#desiredSize
-     * (or GraphObject#width and GraphObject#height) to fixed values
      *
      * For cross-browser support of SVG sources additional care is needed.
      * See the final section of the <a href="../../intro/pictures.html">Introduction page on Pictures</a>.
@@ -22959,6 +22965,10 @@ export class Model {
      * The #toJson and Model.fromJson methods automatically do such processing for numbers that are NaN
      * and for objects that are of class Point, Size, Rect, Margin, Spot,
      * Brush (but not for brush patterns), and for Geometry.
+     * For instances of those classes, special objects are written out with a property named "class" whose value
+     * will be one of the special cases that will be substituted by Model.fromJson:
+     * "NaN", "Date", "go.EnumValue", "go.Point", "go.Size", "go.Rect", "go.Margin", "go.Spot", "go.Brush", "go.Geometry".
+     *
      * However, we recommend that you use Binding converters (static functions named "parse" and "stringify")
      * to represent Points, Sizes, Rects, Margins, Spots, and Geometries as string values in your data, rather than as Objects.
      * This makes the JSON text smaller and simpler and easier to read.
@@ -23003,6 +23013,12 @@ export class Model {
      * Note that properties with values that are functions are not written out by #toJson,
      * so reading in such a model will require constructing such a model, initializing its functional property values,
      * and explicitly passing it in as the second argument.
+     *
+     * In order to serialize instances of some classes and enumerated values and some other cases,
+     * Model#toJson writes out special Objects that this Model.fromJson function substitutes
+     * with the intended values.
+     * Those special objects will have a property named "class" whose value will be one of the special substitution cases:
+     * "NaN", "Date", "go.EnumValue", "go.Point", "go.Size", "go.Rect", "go.Margin", "go.Spot", "go.Brush", "go.Geometry".
      *
      * As a special case when deserializing an object, if the property is named "points" and the
      * property value is an Array with an even number of numbers, it will substitute a List of Points.

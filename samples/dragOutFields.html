@@ -57,6 +57,7 @@
       go.DraggingTool.call(this);
       this.fieldTemplate = null;  // THIS NEEDS TO BE SET before a drag starts
       this.temporaryPart = null;
+      this.temporaryImage = null;
     }
     go.Diagram.inherit(FieldDraggingTool, go.DraggingTool);
 
@@ -69,7 +70,7 @@
         this.fieldTemplate !== null && this.temporaryPart === null) {
         var tempPart =
           go.GraphObject.make(go.Node, "Table",
-            { layerName: "Tool", locationSpot: go.Spot.Center },
+            { layerName: "Tool", locationSpot: go.Spot.Bottom },
             this.fieldTemplate.copy());  // copy the template!
         this.temporaryPart = tempPart;
         // assume OBJ is now a Panel representing a field, bound to field data
@@ -101,11 +102,33 @@
       // make sure the temporary Part is no longer in the Diagram
       diagram.remove(this.temporaryPart);
       this.temporaryPart = null;
+      if (this.temporaryImage !== null) {
+        document.body.removeChild(this.temporaryImage);
+        this.temporaryImage = null;
+      }
       // now do all the standard deactivation cleanup,
       // including setting isActive = false, clearing out draggedParts, calling stopTransaction(),
       // and setting diagram.isMouseCaptured = false
       go.DraggingTool.prototype.doDeactivate.call(this);
     };
+
+    FieldDraggingTool.prototype.makeImage = function() {
+      if (this.temporaryPart === null) return null;
+      var parts = new go.List();
+      parts.add(this.temporaryPart);
+      return this.diagram.makeImage({
+          parts: parts,
+          showTemporary: true,
+          callback: img => {
+            this.temporaryImage = img;
+            img.style.position = "absolute";
+            img.style.pointerEvents = "none";
+            img.style.zIndex = 999;
+            document.body.appendChild(img);
+            this.temporaryPart.opacity = 0;
+          }
+        });
+    }
 
     FieldDraggingTool.prototype.doMouseMove = function() {
       if (!this.isActive) return;
@@ -114,6 +137,27 @@
       // just move the temporaryPart (in draggedParts), without regard to moving or copying permissions of the Node
       var offset = diagram.lastInput.documentPoint.copy().subtract(diagram.firstInput.documentPoint);
       this.moveParts(this.draggedParts, offset, false);
+      if (diagram.viewportBounds.containsPoint(diagram.lastInput.documentPoint)) {
+        if (this.temporaryPart.opacity != 1) {
+          this.temporaryPart.opacity = 1;
+          if (this.temporaryImage !== null) {
+            document.body.removeChild(this.temporaryImage);
+            this.temporaryImage = null;
+          }
+        }
+      } else {
+        if (this.temporaryPart.opacity === 1) {
+          this.makeImage();  // also sets temporaryPart.opacity = 0
+        }
+        // move a temporary Image element instead
+        var img = this.temporaryImage;
+        if (img !== null) {
+          var e = diagram.lastInput.event;
+          img.style.left = (window.scrollX + e.clientX - img.width/2) + "px";
+          img.style.top = (window.scrollY + e.clientY - img.height/2) + "px";
+          // position the Image to be just above the mouse pointer
+        }
+      }
     };
 
     FieldDraggingTool.prototype.doMouseUp = function() {
@@ -177,11 +221,6 @@
       // This template represents a whole "record".
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
-          {
-            movable: false,
-            copyable: false,
-            deletable: false
-          },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           // this rectangular shape surrounds the content of the node
           $(go.Shape,
@@ -237,7 +276,10 @@
               {
                 key: "Record2",
                 fields: [
-                  { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond" }
+                  { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond", info: "diamond" },
+                  { name: "fieldB", info: "", color: "green", figure: "Circle", info: "circle" },
+                  { name: "fieldC", info: "", color: "red", figure: "Triangle", info: "triangle" },
+                  { name: "fieldD", info: "", figure: "XLine", info: "X" }
                 ],
                 loc: "250 0"
               }
@@ -249,10 +291,9 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px"></div>
-  <p>Drag a field from one of the record nodes and drop onto the PRE element below.
-     The "record" Nodes are not movable or copyable or deletable.</p>
+  <p>Drag a field from one of the record nodes and drop onto the PRE element below.</p>
   <p>Here you can drop a field from one of the records above:</p>
-  <pre id="myDroppedFields" style="width:200px;height:300px;border:dashed"></pre>
+  <pre id="myDroppedFields" style="padding:5px;width:200px;height:300px;border:dashed;font:bold 11pt sans-serif"></pre>
 </div>
     </div>
     <!-- * * * * * * * * * * * * * -->
