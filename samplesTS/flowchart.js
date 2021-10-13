@@ -236,7 +236,7 @@
             x = bnds.x;
             y += printSize.height;
         }
-        setTimeout(function () { svgWindow.print(); }, 1);
+        setTimeout(function () { return svgWindow.print(); }, 1);
     }
     // Add listeners for the buttons:
     document.getElementById('SaveButton').addEventListener('click', save);

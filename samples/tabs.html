@@ -93,18 +93,43 @@
         ]);
 
 
-      myDiagram2 = $(go.Diagram, "myDiagramDiv2",  // create a Diagram for the DIV HTML element
+      // create a different Diagram for the second tab
+      myDiagram2 = $(go.Diagram, "myDiagramDiv2",
         {
+          layout: $(go.TreeLayout),
           "undoManager.isEnabled": true  // enable undo & redo
         });
 
-      // define a simple Node template
-      myDiagram2.nodeTemplate = myDiagram.nodeTemplate;
+      myDiagram2.nodeTemplate =
+        $(go.Node,
+          $(go.TextBlock, { margin: 2 },
+            new go.Binding("text"))
+        );
 
-      // but use the default Link template, by not setting Diagram.linkTemplate
+      myDiagram2.linkTemplate =
+        $(go.Link,
+          { curve: go.Link.Bezier },
+          $(go.Shape, { strokeWidth: 1.5, strokeDashArray: [4, 2] })
+        );
 
       // create the model data that will be represented by Nodes and Links
-      myDiagram2.model = myDiagram.model;
+      myDiagram2.model = new go.GraphLinksModel(
+        [
+          { key: 1, text: "one" },
+          { key: 2, text: "two" },
+          { key: 3, text: "three" },
+          { key: 4, text: "four" },
+          { key: 5, text: "five" },
+          { key: 6, text: "six" }
+        ],
+        [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 3, to: 4 },
+          { from: 3, to: 5 },
+          { from: 4, to: 6 }
+        ]
+      );
     }
 
 
@@ -122,12 +147,14 @@
               firstTime = false;
             }
             myDiagram.requestUpdate();
+            myDiagram.focus();
           } else if (ui.newTab[0].innerText === "GoJS 2") { // The second tab with a Diagram
             if (firstTime2) {
               myDiagram2.delayInitialization(function() { myDiagram.requestUpdate(); });
               firstTime2 = false;
             }
             myDiagram2.requestUpdate();
+            myDiagram2.focus();
           }
         }
       });
@@ -157,6 +184,7 @@
     </div>
     <div id="tabs-4">
       <div id="myDiagramDiv2" style="border: solid 1px black; width:400px; height:400px;"></div>
+      A different Diagram with a different Model.
     </div>
   </div>
 

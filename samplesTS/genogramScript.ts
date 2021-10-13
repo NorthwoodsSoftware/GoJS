@@ -254,7 +254,7 @@ export function setupDiagram(diagram: go.Diagram, array: Array<Object>, focusId:
   if (node !== null) {
     diagram.select(node);
     // remove any spouse for the person under focus:
-    // node.linksConnected.each(function(l) {
+    // node.linksConnected.each(l => {
     //   if (!l.isLabeledLink) return;
     //   l.opacity = 0;
     //   var spouse = l.getOtherNode(node);

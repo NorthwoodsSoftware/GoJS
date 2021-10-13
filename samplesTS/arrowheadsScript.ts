@@ -22,7 +22,7 @@ export function init() {
             startAngle: 270  // first node will be at top
           }),
         // define a DiagramEvent listener
-        'LayoutCompleted': function(e: go.DiagramEvent) {
+        'LayoutCompleted': (e: go.DiagramEvent) => {
           // now that the CircularLayout has finished, we know where its center is
           const cntr = myDiagram.findNodeForKey('Center');
           if (cntr !== null) cntr.location = (myDiagram.layout as go.CircularLayout).actualCenter;

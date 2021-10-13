@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.51
+ * Type definitions for GoJS v2.1.52
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10071,10 +10071,10 @@ export class Diagram {
      *
      * This is useful in situations where you do not wish for the first content added to the diagram to be considered
      * the "initial" content, such as with a Node that represents a "Loading" bar.
-     * @param {function()|null=} func an optional function of actions to perform as part of another diagram initialization.
+     * @param {function(Diagram=)|null=} func an optional function of actions to perform as part of another diagram initialization.
      * @since 1.1
      */
-    delayInitialization(func?: (() => void) | null): void;
+    delayInitialization(func?: ((diag?: Diagram) => void) | null): void;
     /**
      * Usage of this method is uncommon and may affect performance,
      * for efficiency do not call this method unless you have a well-defined need.

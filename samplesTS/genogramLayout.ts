@@ -61,7 +61,7 @@ export class GenogramLayout extends go.LayeredDigraphLayout {
         // instead, code above adds label node for marriage link
         // assume a marriage Link has a label Node
         let marriages = 0;
-        node.linksConnected.each(function(l) { if (l.isLabeledLink) marriages++; });
+        node.linksConnected.each(l => { if (l.isLabeledLink) marriages++; });
         if (marriages === 0) {
           const vertex = net.addNode(node);
         } else if (marriages > 1) {
@@ -86,7 +86,7 @@ export class GenogramLayout extends go.LayeredDigraphLayout {
           if (parent !== null && child !== null) {  // an unmarried child
             net.linkVertexes(parent, child, link);
           } else if (parent !== null) {  // a married child
-            toNode.linksConnected.each(function(l) {
+            toNode.linksConnected.each(l => {
               if (!l.isLabeledLink) return;  // if it has no label node, it's a parent-child link
               // found the Marriage Link, now get its label Node
               const mlab = l.labelNodes.first();
@@ -113,12 +113,12 @@ export class GenogramLayout extends go.LayeredDigraphLayout {
       const dummyvert = net.createVertex();
       net.addVertex(dummyvert);
       const marriages = new go.Set() as go.Set<go.Link>;
-      cohort.each(function(n) {
-        n.linksConnected.each(function(l) {
+      cohort.each(n => {
+        n.linksConnected.each(l => {
           marriages.add(l);
         });
       });
-      marriages.each(function(link) {
+      marriages.each(link => {
         // find the vertex for the marriage link (i.e. for the label node)
         const mlab = link.labelNodes.first();
         if (mlab !== null) {
@@ -138,7 +138,7 @@ export class GenogramLayout extends go.LayeredDigraphLayout {
     if (coll.contains(node)) return;
     coll.add(node);
     const lay = this;
-    node.linksConnected.each(function(l) {
+    node.linksConnected.each(l => {
       if (l.isLabeledLink) {  // if it's a marriage link, continue with both spouses
         if (l.fromNode !== null) lay.extendCohort(coll, l.fromNode);
         if (l.toNode !== null) lay.extendCohort(coll, l.toNode);
