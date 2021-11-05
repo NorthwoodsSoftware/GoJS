@@ -193,7 +193,6 @@ export class DimensioningLink extends go.Link {
       }
     }
 
-    this.updateTargetBindings();
     return true;
   }
 }

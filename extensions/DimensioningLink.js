@@ -209,6 +209,5 @@ DimensioningLink.prototype.computePoints = function() {
     }
   }
 
-  this.updateTargetBindings();
   return true;
 };

@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.1.52
+ * Type definitions for GoJS v2.1.53
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -276,7 +276,6 @@ export interface IContext {
     enableDash(strokeDashArray: Array<number>, strokeDashOffset: number): void;
     disableDash(): void;
     clearContextCache(clearFont: boolean): void;
-    closeClip(): void;
 }
 
 /**

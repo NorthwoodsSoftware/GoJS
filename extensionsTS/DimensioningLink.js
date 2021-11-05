@@ -234,7 +234,6 @@ var __extends = (this && this.__extends) || (function () {
                     this.addPointAt(t1, topoint.y);
                 }
             }
-            this.updateTargetBindings();
             return true;
         };
         return DimensioningLink;

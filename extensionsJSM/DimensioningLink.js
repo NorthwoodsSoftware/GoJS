@@ -191,7 +191,6 @@ export class DimensioningLink extends go.Link {
                 this.addPointAt(t1, topoint.y);
             }
         }
-        this.updateTargetBindings();
         return true;
     }
 }
